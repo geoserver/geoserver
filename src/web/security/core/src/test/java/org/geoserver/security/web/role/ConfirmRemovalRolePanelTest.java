@@ -17,6 +17,7 @@ import org.junit.Test;
 public class ConfirmRemovalRolePanelTest extends AbstractConfirmRemovalPanelTest<GeoServerRole> {
     private static final long serialVersionUID = 1L;
 
+    @Override
     protected void setupPanel(final List<GeoServerRole> roots) {
 
         tester.startPage(
@@ -24,6 +25,7 @@ public class ConfirmRemovalRolePanelTest extends AbstractConfirmRemovalPanelTest
                         new ComponentBuilder() {
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new ConfirmRemovalRolePanel(
                                         id, roots.toArray(new GeoServerRole[roots.size()])) {

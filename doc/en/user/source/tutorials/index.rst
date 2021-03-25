@@ -23,3 +23,5 @@ Tutorials
    tomcat-jndi/tomcat-jndi.rst
    jboss/jboss_tutorial.rst
    metadata/index.rst
+   cloud-foundry/run_cf.rst
+   

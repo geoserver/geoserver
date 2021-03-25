@@ -5,7 +5,8 @@
  */
 package org.geoserver.kml.decorator;
 
-import static org.geoserver.ows.util.ResponseUtils.*;
+import static org.geoserver.ows.util.ResponseUtils.appendPath;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import java.io.IOException;
 import org.geoserver.catalog.Catalog;

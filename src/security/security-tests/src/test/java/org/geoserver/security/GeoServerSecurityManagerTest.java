@@ -5,7 +5,9 @@
  */
 package org.geoserver.security;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.resource.Files;
@@ -35,7 +36,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
         TestingAuthenticationToken auth =
                 new TestingAuthenticationToken(
-                        "admin", "geoserver", (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
+                        "admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
         auth.setAuthenticated(true);
         assertTrue(secMgr.checkAuthenticationForAdminRole(auth));
     }
@@ -46,7 +47,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         // simulate no user.properties file
         GeoServerSecurityManager secMgr = getSecurityManager();
         char[] generatedPW = secMgr.extractMasterPasswordForMigration(null);
-        assertTrue(generatedPW.length == 8);
+        assertEquals(8, generatedPW.length);
         assertTrue(masterPWInfoFileContains(new String(generatedPW)));
         // dumpPWInfoFile();
 
@@ -63,7 +64,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         props.put(noAdminUser, defaultMasterePassword + ",ROLE_WFS");
 
         generatedPW = secMgr.extractMasterPasswordForMigration(props);
-        assertTrue(generatedPW.length == 8);
+        assertEquals(8, generatedPW.length);
         assertTrue(masterPWInfoFileContains(new String(generatedPW)));
         assertFalse(masterPWInfoFileContains(GeoServerUser.ADMIN_USERNAME));
         assertFalse(masterPWInfoFileContains(adminUser));
@@ -73,13 +74,13 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         // valid master password for noadminuser
         props.put(noAdminUser, "validPassword" + ",ROLE_WFS");
         generatedPW = secMgr.extractMasterPasswordForMigration(props);
-        assertTrue(generatedPW.length == 8);
+        assertEquals(8, generatedPW.length);
         assertTrue(masterPWInfoFileContains(new String(generatedPW)));
 
         // password to short  for adminuser
         props.put(adminUser, "abc" + "," + GeoServerRole.ADMIN_ROLE);
         generatedPW = secMgr.extractMasterPasswordForMigration(props);
-        assertTrue(generatedPW.length == 8);
+        assertEquals(8, generatedPW.length);
         assertTrue(masterPWInfoFileContains(new String(generatedPW)));
 
         // valid password for user having admin role
@@ -115,7 +116,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
             TestingAuthenticationToken auth =
                     new TestingAuthenticationToken(
-                            "admin", "geoserver", (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
+                            "admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
             auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -137,7 +138,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
             TestingAuthenticationToken auth =
                     new TestingAuthenticationToken(
-                            "admin", "geoserver", (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
+                            "admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
             auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -160,7 +161,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
             TestingAuthenticationToken auth =
                     new TestingAuthenticationToken(
-                            "admin", "geoserver", (List) Arrays.asList(GeoServerRole.ADMIN_ROLE));
+                            "admin", "geoserver", Arrays.asList(GeoServerRole.ADMIN_ROLE));
             auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -173,14 +174,15 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         }
     }
 
+    @SuppressWarnings("PMD.SystemPrintln")
     void dumpPWInfoFile(File infoFile) throws Exception {
 
-        BufferedReader bf = new BufferedReader(new FileReader(infoFile));
-        String line;
-        while ((line = bf.readLine()) != null) {
-            System.out.println(line);
+        try (BufferedReader bf = new BufferedReader(new FileReader(infoFile))) {
+            String line;
+            while ((line = bf.readLine()) != null) {
+                System.out.println(line);
+            }
         }
-        bf.close();
     }
 
     void dumpPWInfoFile() throws Exception {
@@ -192,15 +194,14 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
 
     boolean masterPWInfoFileContains(File infoFile, String searchString) throws Exception {
 
-        BufferedReader bf = new BufferedReader(new FileReader(infoFile));
-        String line;
-        while ((line = bf.readLine()) != null) {
-            if (line.indexOf(searchString) != -1) {
-                bf.close();
-                return true;
+        try (BufferedReader bf = new BufferedReader(new FileReader(infoFile))) {
+            String line;
+            while ((line = bf.readLine()) != null) {
+                if (line.indexOf(searchString) != -1) {
+                    return true;
+                }
             }
         }
-        bf.close();
         return false;
     }
 
@@ -231,7 +232,7 @@ public class GeoServerSecurityManagerTest extends GeoServerSecurityTestSupport {
         String oldRoleServiceName = config.getRoleServiceName();
 
         try {
-            if (GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+            if (GeoServerEnvironment.allowEnvParametrization()) {
                 System.setProperty("TEST_SYS_PROPERTY", oldRoleServiceName);
 
                 config.setRoleServiceName("${TEST_SYS_PROPERTY}");

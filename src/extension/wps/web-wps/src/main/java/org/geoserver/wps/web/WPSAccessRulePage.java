@@ -31,6 +31,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.GeoServerRoleService;
@@ -59,11 +60,11 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
     private WPSInfo wpsInfo;
     private RadioChoice catalogModeChoice;
 
-    private List<String> availableRoles = new ArrayList<String>();
+    private List<String> availableRoles = new ArrayList<>();
 
     public WPSAccessRulePage() {
         wpsInfo = getGeoServer().getService(WPSInfo.class);
-        Form form = new Form("form", new CompoundPropertyModel(wpsInfo));
+        Form form = new Form<>("form", new CompoundPropertyModel<>(wpsInfo));
 
         processFactories = cloneFactoryInfos(wpsInfo.getProcessGroups());
         ProcessFactoryInfoProvider provider =
@@ -78,7 +79,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         }
 
         TextField<Integer> maxComplexInputSize =
-                new TextField<Integer>("maxComplexInputSize", Integer.class);
+                new TextField<>("maxComplexInputSize", Integer.class);
         maxComplexInputSize.add(RangeValidator.minimum(0));
         form.add(maxComplexInputSize);
 
@@ -100,10 +101,9 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                         if (property.getName().equals("enabled")) {
                             Fragment fragment =
                                     new Fragment(id, "enabledFragment", WPSAccessRulePage.this);
-                            CheckBox enabled =
-                                    new CheckBox(
-                                            "enabled",
-                                            (IModel<Boolean>) property.getModel(itemModel));
+                            @SuppressWarnings("unchecked")
+                            IModel<Boolean> pm = (IModel<Boolean>) property.getModel(itemModel);
+                            CheckBox enabled = new CheckBox("enabled", pm);
                             enabled.setOutputMarkupId(true);
                             fragment.add(enabled);
                             return fragment;
@@ -116,15 +116,16 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                         } else if (property.getName().equals("roles")) {
                             Fragment fragment =
                                     new Fragment(id, "rolesFragment", WPSAccessRulePage.this);
+                            @SuppressWarnings("unchecked")
+                            IModel<String> pm = (IModel<String>) property.getModel(itemModel);
                             TextArea<String> roles =
-                                    new TextArea<String>(
-                                            "roles",
-                                            (IModel<String>) property.getModel(itemModel)) {
-                                        public <C extends Object>
-                                                org.apache.wicket.util.convert.IConverter<C>
-                                                        getConverter(java.lang.Class<C> type) {
+                                    new TextArea<String>("roles", pm) {
+                                        @Override
+                                        @SuppressWarnings("unchecked")
+                                        public <C extends Object> IConverter<C> getConverter(
+                                                java.lang.Class<C> type) {
                                             return new RolesConverter(availableRoles);
-                                        };
+                                        }
                                     };
                             StringBuilder selectedRoles = new StringBuilder();
                             IAutoCompleteRenderer<String> roleRenderer =
@@ -144,8 +145,7 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                                     new Link("link") {
                                         @Override
                                         public void onClick() {
-                                            ProcessGroupInfo pfi =
-                                                    (ProcessGroupInfo) itemModel.getObject();
+                                            ProcessGroupInfo pfi = itemModel.getObject();
                                             setResponsePage(
                                                     new ProcessSelectionPage(
                                                             WPSAccessRulePage.this, pfi));
@@ -177,35 +177,33 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
                     }
                 });
         catalogModeChoice =
-                new RadioChoice(
+                new RadioChoice<>(
                         "processAccessMode",
-                        new PropertyModel<CatalogMode>(wpsInfo, "catalogMode"),
+                        new PropertyModel<>(wpsInfo, "catalogMode"),
                         CATALOG_MODES,
                         new CatalogModeRenderer());
         catalogModeChoice.setSuffix(" ");
         form.add(catalogModeChoice);
 
         SubmitLink submit =
-                new SubmitLink("submit", new StringResourceModel("save", (Component) null, null)) {
+                new SubmitLink("submit", new StringResourceModel("save", null, null)) {
                     @Override
                     public void onSubmit() {
-                        try {
-                            // overwrite the process factories that we did clone to achieve
-                            // isolation
-                            List<ProcessGroupInfo> factories = wpsInfo.getProcessGroups();
-                            factories.clear();
-                            factories.addAll(processFactories);
-                            getGeoServer().save(wpsInfo);
-                            doReturn();
-                        } catch (Exception e) {
-                            error(e);
-                        }
+                        saveProcessFactories(true);
                     }
                 };
         form.add(submit);
-
+        Button apply =
+                new Button("apply") {
+                    @Override
+                    public void onSubmit() {
+                        saveProcessFactories(false);
+                    }
+                };
+        form.add(apply);
         Button cancel =
                 new Button("cancel") {
+                    @Override
                     public void onSubmit() {
                         doReturn();
                     }
@@ -215,8 +213,23 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         add(form);
     }
 
+    private void saveProcessFactories(boolean doReturn) {
+        try {
+            // overwrite the process factories that we did clone to achieve isolation
+            List<ProcessGroupInfo> factories = wpsInfo.getProcessGroups();
+            factories.clear();
+            factories.addAll(processFactories);
+            getGeoServer().save(wpsInfo);
+            if (doReturn) {
+                doReturn();
+            }
+        } catch (Exception e) {
+            error(e);
+        }
+    }
+
     private List<ProcessGroupInfo> cloneFactoryInfos(List<ProcessGroupInfo> processFactories) {
-        List<ProcessGroupInfo> result = new ArrayList<ProcessGroupInfo>();
+        List<ProcessGroupInfo> result = new ArrayList<>();
         for (ProcessGroupInfo pfi : processFactories) {
             result.add(pfi.clone());
         }
@@ -224,14 +237,16 @@ public class WPSAccessRulePage extends AbstractSecurityPage {
         return result;
     }
 
-    class CatalogModeRenderer extends ChoiceRenderer {
+    class CatalogModeRenderer extends ChoiceRenderer<CatalogMode> {
 
-        public Object getDisplayValue(Object object) {
-            return new ParamResourceModel(((CatalogMode) object).name(), getPage()).getObject();
+        @Override
+        public Object getDisplayValue(CatalogMode object) {
+            return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
-        public String getIdValue(Object object, int index) {
-            return ((CatalogMode) object).name();
+        @Override
+        public String getIdValue(CatalogMode object, int index) {
+            return object.name();
         }
     }
 }

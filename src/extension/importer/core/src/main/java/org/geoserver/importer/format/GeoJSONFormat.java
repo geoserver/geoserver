@@ -6,7 +6,6 @@
 package org.geoserver.importer.format;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.io.File;
 import java.io.IOException;
@@ -110,13 +109,10 @@ public class GeoJSONFormat extends VectorFormat {
 
     SimpleFeature sniff(File file) {
         try {
-            FeatureIterator it = new FeatureJSON().streamFeatureCollection(file);
-            try {
+            try (FeatureIterator it = new FeatureJSON().streamFeatureCollection(file)) {
                 if (it.hasNext()) {
                     return (SimpleFeature) it.next();
                 }
-            } finally {
-                it.close();
             }
         } catch (Exception e) {
             LOG.log(Level.FINER, "Error reading file as json", e);
@@ -136,7 +132,7 @@ public class GeoJSONFormat extends VectorFormat {
             throws IOException {
 
         if (data instanceof Directory) {
-            List<ImportTask> tasks = new ArrayList<ImportTask>();
+            List<ImportTask> tasks = new ArrayList<>();
             for (FileData file : ((Directory) data).getFiles()) {
                 tasks.add(task(file, catalog));
             }
@@ -210,13 +206,9 @@ public class GeoJSONFormat extends VectorFormat {
         if (data instanceof Directory) {
             return Iterables.find(
                             ((Directory) data).getFiles(),
-                            new Predicate<FileData>() {
-                                @Override
-                                public boolean apply(FileData input) {
-                                    return FilenameUtils.getBaseName(input.getFile().getName())
-                                            .equals(item.getLayer().getName());
-                                }
-                            })
+                            input ->
+                                    FilenameUtils.getBaseName(input.getFile().getName())
+                                            .equals(item.getLayer().getName()))
                     .getFile();
         } else {
             return maybeFile(data).get();

@@ -97,7 +97,7 @@ public class SVGTest extends WMSTestSupport {
             connection.disconnect();
             return true;
         } catch (Exception e) {
-            System.out.println("Unable to contact http://www.w3.org - " + e.getMessage());
+            LOGGER.warning("Unable to contact http://www.w3.org - " + e.getMessage());
             return false;
         }
     }

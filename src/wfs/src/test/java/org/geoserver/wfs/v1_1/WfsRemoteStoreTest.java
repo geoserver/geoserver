@@ -4,10 +4,10 @@
  */
 package org.geoserver.wfs.v1_1;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 import java.net.URL;
 import org.geoserver.catalog.CascadeDeleteVisitor;
@@ -35,6 +35,7 @@ public class WfsRemoteStoreTest extends WFSTestSupport {
     public MockHttpClient httpClient = new MockHttpClient();
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testAddRemoteWfsLayer20() throws Exception {
 
         // register the http calls the http mock should expect
@@ -60,6 +61,11 @@ public class WfsRemoteStoreTest extends WFSTestSupport {
                 httpClient,
                 "/wfs?PROPERTYNAME=the_geom&FILTER=%3Cogc%3AFilter+xmlns%3Axs%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%22+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3ABBOX%3E%3Cogc%3APropertyName%2F%3E%3Cgml%3AEnvelope+srsDimension%3D%222%22+srsName%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2Fsrs%2Fepsg.xml%234326%22%3E%3Cgml%3AlowerCorner%3E-103.73937+43.47669%3C%2Fgml%3AlowerCorner%3E%3Cgml%3AupperCorner%3E-102.739377+44.47536%3C%2Fgml%3AupperCorner%3E%3C%2Fgml%3AEnvelope%3E%3C%2Fogc%3ABBOX%3E%3C%2Fogc%3AFilter%3E&TYPENAME=topp%3Aroads22&REQUEST=GetFeature&RESULTTYPE=RESULTS&OUTPUTFORMAT=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&SRSNAME=EPSG%3A4326&VERSION=1.1.0&MAXFEATURES=10&SERVICE=WFS",
                 "wfs_response_4326.xml");
+        // for URN OGC 3857
+        registerHttpGetFromResource(
+                httpClient,
+                "/wfs?PROPERTYNAME=the_geom&FILTER=%3Cogc%3AFilter+xmlns%3Axs%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%22+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3ABBOX%3E%3Cogc%3APropertyName%2F%3E%3Cgml%3AEnvelope+srsDimension%3D%222%22+srsName%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2Fsrs%2Fepsg.xml%233857%22%3E%3Cgml%3AlowerCorner%3E-1.15482138436E7+5384812.69673%3C%2Fgml%3AlowerCorner%3E%3Cgml%3AupperCorner%3E-1.14368951321E7+5539302.36519%3C%2Fgml%3AupperCorner%3E%3C%2Fgml%3AEnvelope%3E%3C%2Fogc%3ABBOX%3E%3C%2Fogc%3AFilter%3E&TYPENAME=topp%3Aroads22&REQUEST=GetFeature&RESULTTYPE=RESULTS&OUTPUTFORMAT=text%2Fxml%3B+subtype%3Dgml%2F3.1.1&SRSNAME=EPSG%3A3857&VERSION=1.1.0&MAXFEATURES=10&SERVICE=WFS",
+                "wfs_response_4326.xml");
 
         try {
             // add the remote wfs store using a file capabilities document
@@ -82,6 +88,14 @@ public class WfsRemoteStoreTest extends WFSTestSupport {
             String content = response.getContentAsString();
             assertThat(content, notNullValue());
             // assertThat(content.contains("numberMatched=\"1\" numberReturned=\"1\""), is(true));
+            // assert that EPSG:3857 is matched with urn:ogc:def:crs:EPSG::3857
+            MockHttpServletResponse responseURNOGC =
+                    getAsServletResponse(
+                            "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=gs:topp_roads22&srsName=EPSG:3857&bbox=-11548213.8436,5384812.69673,-11436895.1321,5539302.36519&maxFeatures=10");
+            assertThat(responseURNOGC.getStatus(), is(200));
+            content = responseURNOGC.getContentAsString();
+            assertThat(content, notNullValue());
+
         } finally {
             // let's clean the catalog
             DataStoreInfo dataStoreInfo =
@@ -105,7 +119,9 @@ public class WfsRemoteStoreTest extends WFSTestSupport {
         catalogBuilder.setStore(storeInfo);
         // the following call will trigger a describe feature type call to the remote server
         FeatureTypeInfo featureTypeInfo = catalogBuilder.buildFeatureType(new NameImpl("", name));
-        featureTypeInfo.getMetadata().put(FeatureTypeInfo.OTHER_SRS, "EPSG:4326,EPSG:3857");
+        featureTypeInfo
+                .getMetadata()
+                .put(FeatureTypeInfo.OTHER_SRS, "EPSG:4326,urn:ogc:def:crs:EPSG::3857");
         catalog.add(featureTypeInfo);
         // create the layer info based on the feature type info we just created
         LayerInfo layerInfo = catalogBuilder.buildLayer(featureTypeInfo);

@@ -39,6 +39,7 @@ public class DataDirectoryConverterLocator implements IConverterLocator {
         this.resourceLoader = resourceLoader;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <C> IConverter<C> getConverter(Class<C> type) {
         if (File.class.isAssignableFrom(type)) {
@@ -85,7 +86,7 @@ public class DataDirectoryConverterLocator implements IConverterLocator {
         File data = resourceLoader.getBaseDirectory();
 
         // figure out if the file is a child of the base data directory
-        List<String> path = new ArrayList<String>();
+        List<String> path = new ArrayList<>();
         boolean isChild = false;
         while (file != null) {
             if (file.equals(data)) {
@@ -111,17 +112,20 @@ public class DataDirectoryConverterLocator implements IConverterLocator {
 
     class FileLocator implements IConverter<File> {
 
+        @Override
         public File convertToObject(String value, Locale locale) {
             return toFile(value);
         }
 
+        @Override
         public String convertToString(File value, Locale locale) {
-            return fromFile((File) value);
+            return fromFile(value);
         }
     }
 
     class URLLocator implements IConverter<URL> {
 
+        @Override
         public URL convertToObject(String value, Locale locale) {
             File file = toFile(value);
             if (file != null) {
@@ -135,6 +139,7 @@ public class DataDirectoryConverterLocator implements IConverterLocator {
             return null;
         }
 
+        @Override
         public String convertToString(URL value, Locale locale) {
             String file = value.getFile();
             if (file != null && !"".equals(file)) {
@@ -146,6 +151,7 @@ public class DataDirectoryConverterLocator implements IConverterLocator {
 
     class URILocator implements IConverter<URI> {
 
+        @Override
         public URI convertToObject(String value, Locale locale) {
             File file = toFile(value);
             if (file != null) {
@@ -154,6 +160,7 @@ public class DataDirectoryConverterLocator implements IConverterLocator {
             return null;
         }
 
+        @Override
         public String convertToString(URI value, Locale locale) {
             try {
                 return new URLLocator().convertToString(value.toURL(), locale);

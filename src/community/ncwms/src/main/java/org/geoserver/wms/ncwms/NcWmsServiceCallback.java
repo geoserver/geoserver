@@ -18,6 +18,7 @@ public class NcWmsServiceCallback extends AbstractDispatcherCallback {
         this.service = service;
     }
 
+    @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
         Object req = request.getKvp().get("REQUEST");

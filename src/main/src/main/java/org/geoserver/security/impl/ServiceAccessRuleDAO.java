@@ -5,7 +5,7 @@
  */
 package org.geoserver.security.impl;
 
-import static org.geoserver.security.impl.DataAccessRule.*;
+import static org.geoserver.security.impl.DataAccessRule.ANY;
 
 import java.io.IOException;
 import java.util.Map;
@@ -56,8 +56,9 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
     }
 
     /** Parses the rules contained in the property file */
+    @Override
     protected void loadRules(Properties props) {
-        TreeSet<ServiceAccessRule> result = new TreeSet<ServiceAccessRule>();
+        TreeSet<ServiceAccessRule> result = new TreeSet<>();
         for (Map.Entry<Object, Object> entry : props.entrySet()) {
             String ruleKey = (String) entry.getKey();
             String ruleValue = (String) entry.getValue();
@@ -76,7 +77,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
         }
 
         // make sure to add the "all access alloed" rule if the set if empty
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result.add(new ServiceAccessRule(new ServiceAccessRule()));
         }
 
@@ -121,6 +122,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
     }
 
     /** Turns the rules list into a property bag */
+    @Override
     protected Properties toProperties() {
         Properties props = new Properties();
         for (ServiceAccessRule rule : rules) {
@@ -137,7 +139,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
 
     /** Returns a sorted set of rules associated to the role */
     public SortedSet<ServiceAccessRule> getRulesAssociatedWithRole(String role) {
-        SortedSet<ServiceAccessRule> result = new TreeSet<ServiceAccessRule>();
+        SortedSet<ServiceAccessRule> result = new TreeSet<>();
         for (ServiceAccessRule rule : getRules())
             if (rule.getRoles().contains(role)) result.add(rule);
         return result;

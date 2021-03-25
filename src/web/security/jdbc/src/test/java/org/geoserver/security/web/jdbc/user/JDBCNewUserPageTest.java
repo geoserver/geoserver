@@ -17,16 +17,19 @@ public class JDBCNewUserPageTest extends NewUserPageTest {
         initializeForJDBC();
     }
 
+    @Override
     @Test
     public void testFill() throws Exception {
         doTestFill();
     }
 
+    @Override
     @Test
     public void testFill3() throws Exception {
         doTestFill3();
     }
 
+    @Override
     @Test
     public void testFill2() throws Exception {
         doTestFill2();

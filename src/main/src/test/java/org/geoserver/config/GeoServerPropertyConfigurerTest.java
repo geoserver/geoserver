@@ -5,7 +5,7 @@
  */
 package org.geoserver.config;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -49,11 +49,11 @@ public class GeoServerPropertyConfigurerTest {
         p.put("prop1", "foobar");
         p.put("prop2", "barfoo");
 
-        FileOutputStream out = new FileOutputStream("target/foo.properties");
-        p.store(out, "");
+        try (FileOutputStream out = new FileOutputStream("target/foo.properties")) {
+            p.store(out, "");
 
-        out.flush();
-        out.close();
+            out.flush();
+        }
 
         ctx.refresh();
         Foo f = (Foo) ctx.getBean("myBean");

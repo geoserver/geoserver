@@ -311,6 +311,7 @@ public class CSWRecordDescriptor extends AbstractRecordDescriptor {
                 .extendProperty(buildPropertyName(NAMESPACES, name), FF, NAMESPACES);
     }
 
+    @Override
     public void verifySpatialFilters(Filter filter) {
         filter.accept(new SpatialFilterChecker(getFeatureType()), null);
     }

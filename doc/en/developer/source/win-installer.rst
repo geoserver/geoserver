@@ -6,15 +6,21 @@ However you can create your own installer (using a Windows machine).
 
 .. note:: This step requires a Windows machine.
 
+.. note:: A community provided Powershell script that automates the following steps is available `here <https://github.com/geoserver/geoserver/edit/main/src/release/installer/win/win-installer-builder.ps1>`_.
+
 #. Download and install `NSIS <http://nsis.sourceforge.net/>`_.
 
-#. Install the `NSIS Access Control plugin <http://nsis.sourceforge.net/AccessControl_plug-in>`_.  The simplest way to do this is to download the zip, extract the .DLL files (:file:`AccessControl.dll`) and copy it to the NSIS plugins directory (usually :file:`C:\\Program Files\\NSIS\\Plugins`).
+#. Install the `NSIS Access Control plugin <http://nsis.sourceforge.net/AccessControl_plug-in>`_.  The simplest way to do this is to download the zip, extract the .DLL files (:file:`AccessControl.dll`) and copy it to the NSIS plugins directory (usually :file:`C:\\Program Files\\NSIS\\Plugins\\x86-ansi`).
 
-#. Unzip the binary GeoServer package::
+#. Download and unzip the binary GeoServer package::
 
         unzip geoserver-[VERSION]-bin.zip
 
-#. Copy the files from :file:`src/release/installer/win` to the root of the unpacked archive (the same directory level as the :file:`start.jar`)::
+#. Download and unzip the source GeoServer package::
+
+        unzip geoserver-[VERSION].zip
+
+#. Copy the files :file:`LICENSE.txt`, :file:`src/release/GPL.txt` and the following files from :file:`src/release/installer/win` from the Geoserver source GeoServer package to the root of the unpacked archive (the same directory level as the :file:`start.jar`)::
 
       GeoServerEXE.nsi
       gs.ico

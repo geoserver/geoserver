@@ -23,6 +23,7 @@ public class RequestObjectLogger implements MethodInterceptor {
         logger = org.geotools.util.logging.Logging.getLogger(logPackage);
     }
 
+    @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         if (!logger.isLoggable(Level.INFO)) {
             return invocation.proceed();
@@ -34,10 +35,10 @@ public class RequestObjectLogger implements MethodInterceptor {
             Object requestBean = null;
 
             for (int i = 0; i < invocation.getArguments().length; i++) {
-                Object argument = (Object) invocation.getArguments()[i];
+                Object argument = invocation.getArguments()[i];
 
                 if (isRequestObject(argument)) {
-                    requestBean = (Object) argument;
+                    requestBean = argument;
                     break;
                 }
             }

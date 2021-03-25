@@ -6,6 +6,7 @@
 package org.geoserver.web.wicket;
 
 import java.util.Arrays;
+import java.util.List;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -13,23 +14,23 @@ import org.apache.wicket.markup.html.list.PageableListView;
 
 public class GeoServerPagingNavigatorTestPage extends WebPage {
     public GeoServerPagingNavigatorTestPage() {
-        PageableListView list =
-                new PageableListView(
-                        "list",
-                        Arrays.asList(
-                                new String[] {
-                                    "aardvark",
-                                    "bluebird",
-                                    "crocodile",
-                                    "dromedary camel",
-                                    "elephant",
-                                    "firefox",
-                                    "gorilla",
-                                    "hippo",
-                                    "ibex",
-                                    "jay"
-                                }),
-                        2) {
+        List<String> animals =
+                Arrays.asList(
+                        new String[] {
+                            "aardvark",
+                            "bluebird",
+                            "crocodile",
+                            "dromedary camel",
+                            "elephant",
+                            "firefox",
+                            "gorilla",
+                            "hippo",
+                            "ibex",
+                            "jay"
+                        });
+        PageableListView<String> list =
+                new PageableListView<String>("list", animals, 2) {
+                    @Override
                     protected void populateItem(ListItem item) {
                         item.add(new Label("label", item.getModel()));
                     }

@@ -18,11 +18,13 @@ import org.geotools.xsd.EMFUtils;
  */
 public abstract class SectionsKvpParser extends KvpParser {
 
-    public SectionsKvpParser(Class target) {
+    public SectionsKvpParser(Class<?> target) {
         super("sections", target);
         setService("wcs");
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public Object parse(String value) throws Exception {
         EObject sections = createObject();
         ((Collection) EMFUtils.get(sections, "section"))

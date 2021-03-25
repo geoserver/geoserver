@@ -82,14 +82,17 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
          */
         public static GeometryEncoding SIMPLE =
                 new GeometryEncoding() {
+                    @Override
                     public String getPrefix() {
                         return "georss";
                     }
 
+                    @Override
                     public String getNamespaceURI() {
                         return "http://www.georss.org/georss";
                     }
 
+                    @Override
                     public void encode(Geometry g, GeoRSSTranslatorSupport t) {
                         if (g instanceof Point) {
                             Point p = (Point) g;
@@ -136,14 +139,17 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
          */
         public static GeometryEncoding GML =
                 new GeometryEncoding() {
+                    @Override
                     public String getPrefix() {
                         return "gml";
                     }
 
+                    @Override
                     public String getNamespaceURI() {
                         return "http://www.opengis.net/gml";
                     }
 
+                    @Override
                     public void encode(Geometry g, final GeoRSSTranslatorSupport translator) {
                         try {
                             // get the proper element name
@@ -181,14 +187,17 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
          */
         public static GeometryEncoding LATLONG =
                 new GeometryEncoding() {
+                    @Override
                     public String getPrefix() {
                         return "geo";
                     }
 
+                    @Override
                     public String getNamespaceURI() {
                         return "http://www.w3.org/2003/01/geo/wgs84_pos#";
                     }
 
+                    @Override
                     public void encode(Geometry g, GeoRSSTranslatorSupport t) {
                         // encode the centroid
                         Point p = g.getCentroid();
@@ -232,10 +241,12 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
         }
 
         // overrides to increase visiblity
+        @Override
         public void start(String element) {
             super.start(element);
         }
 
+        @Override
         public void element(String element, String content) {
             super.element(element, content);
         }
@@ -258,8 +269,7 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
 
                 SimpleFeatureCollection features = null;
                 try {
-                    SimpleFeatureSource source;
-                    source = (SimpleFeatureSource) layer.getFeatureSource();
+                    SimpleFeatureSource source = (SimpleFeatureSource) layer.getFeatureSource();
 
                     GeometryDescriptor gd = source.getSchema().getGeometryDescriptor();
                     if (gd == null) {
@@ -311,53 +321,64 @@ public abstract class GeoRSSTransformerBase extends TransformerBase {
             return featureCollections;
         }
 
+        @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
             String string = new String(ch, start, length);
             chars(string);
         }
 
+        @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
             // working around a bug in the GML encoder, it won't properly setup the qName
             end("gml:" + localName);
         }
 
+        @Override
         public void startElement(String uri, String localName, String qName, Attributes atts)
                 throws SAXException {
             start(qName, atts);
         }
 
+        @Override
         public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
             if (getIndentation() > 0) {
                 characters(ch, start, length);
             }
         }
 
+        @Override
         public void endDocument() throws SAXException {
             // nothing to do
         }
 
+        @Override
         public void endPrefixMapping(String prefix) throws SAXException {
             // nothing to do
         }
 
+        @Override
         public void processingInstruction(String target, String data) throws SAXException {
             // nothing do do
         }
 
+        @Override
         public void setDocumentLocator(Locator locator) {
             // nothing do do
         }
 
+        @Override
         public void skippedEntity(String name) throws SAXException {
             // nothing to do
 
         }
 
+        @Override
         public void startDocument() throws SAXException {
             // nothing to do
 
         }
 
+        @Override
         public void startPrefixMapping(String prefix, String uri) throws SAXException {
             // nothing to do
         }

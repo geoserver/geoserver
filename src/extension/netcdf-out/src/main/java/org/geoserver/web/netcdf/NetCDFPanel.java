@@ -70,7 +70,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         shuffle = new CheckBox("shuffle", new PropertyModel(netcdfModel, "shuffle"));
         container.add(shuffle);
         copyAttributes =
-                new CheckBox("copyAttributes", new PropertyModel(netcdfModel, "copyAttributes"));
+                new CheckBox("copyAttributes", new PropertyModel<>(netcdfModel, "copyAttributes"));
         container.add(copyAttributes);
         copyGlobalAttributes =
                 new CheckBox(
@@ -78,12 +78,14 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
                         new PropertyModel(netcdfModel, "copyGlobalAttributes"));
         container.add(copyGlobalAttributes);
         compressionLevel =
-                new TextField<Integer>(
-                        "compressionLevel", new PropertyModel(netcdfModel, "compressionLevel"));
+                new TextField<>(
+                        "compressionLevel", new PropertyModel<>(netcdfModel, "compressionLevel"));
         List<DataPacking> dataPackings = Arrays.asList(DataPacking.values());
         dataPacking =
-                new DropDownChoice<DataPacking>(
-                        "dataPacking", new PropertyModel(netcdfModel, "dataPacking"), dataPackings);
+                new DropDownChoice<>(
+                        "dataPacking",
+                        new PropertyModel<>(netcdfModel, "dataPacking"),
+                        dataPackings);
         dataPacking.setOutputMarkupId(true);
         container.add(dataPacking);
         compressionLevel.add(new RangeValidator(0, 9));
@@ -116,9 +118,8 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
 
                                         @Override
                                         protected void onClick(AjaxRequestTarget target) {
-                                            List<GlobalAttribute> list;
-                                            list =
-                                                    new ArrayList<GlobalAttribute>(
+                                            List<GlobalAttribute> list =
+                                                    new ArrayList<>(
                                                             globalAttributes.getModelObject());
                                             final GlobalAttribute attribute =
                                                     (GlobalAttribute) getDefaultModelObject();
@@ -134,11 +135,10 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
                     };
             globalAttributes.setOutputMarkupId(true);
             container.add(globalAttributes);
-            TextField<String> newValue =
-                    new TextField<String>("newGlobalAttributeValue", Model.of(""));
+            TextField<String> newValue = new TextField<>("newGlobalAttributeValue", Model.of(""));
             newValue.setOutputMarkupId(true);
             container.add(newValue);
-            TextField<String> newKey = new TextField<String>("newGlobalAttributeKey", Model.of(""));
+            TextField<String> newKey = new TextField<>("newGlobalAttributeKey", Model.of(""));
             newKey.setOutputMarkupId(true);
             container.add(newKey);
             GeoServerAjaxFormLink addLink =
@@ -196,9 +196,8 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
 
                                         @Override
                                         protected void onClick(AjaxRequestTarget target) {
-                                            List<VariableAttribute> list;
-                                            list =
-                                                    new ArrayList<VariableAttribute>(
+                                            List<VariableAttribute> list =
+                                                    new ArrayList<>(
                                                             variableAttributes.getModelObject());
                                             VariableAttribute attribute =
                                                     (VariableAttribute) getDefaultModelObject();
@@ -215,11 +214,11 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
             variableAttributes.setOutputMarkupId(true);
             container.add(variableAttributes);
             final TextField<String> newValue =
-                    new TextField<String>("newVariableAttributeValue", Model.of(""));
+                    new TextField<>("newVariableAttributeValue", Model.of(""));
             newValue.setOutputMarkupId(true);
             container.add(newValue);
             final TextField<String> newKey =
-                    new TextField<String>("newVariableAttributeKey", Model.of(""));
+                    new TextField<>("newVariableAttributeKey", Model.of(""));
             newKey.setOutputMarkupId(true);
             container.add(newKey);
             GeoServerAjaxFormLink addLink =
@@ -279,9 +278,8 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
 
                                         @Override
                                         protected void onClick(AjaxRequestTarget target) {
-                                            List<ExtraVariable> list;
-                                            list =
-                                                    new ArrayList<ExtraVariable>(
+                                            List<ExtraVariable> list =
+                                                    new ArrayList<>(
                                                             extraVariables.getModelObject());
                                             final ExtraVariable attribute =
                                                     (ExtraVariable) getDefaultModelObject();
@@ -297,16 +295,14 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
                     };
             extraVariables.setOutputMarkupId(true);
             container.add(extraVariables);
-            TextField<String> newSource =
-                    new TextField<String>("newExtraVariableSource", Model.of(""));
+            TextField<String> newSource = new TextField<>("newExtraVariableSource", Model.of(""));
             newSource.setOutputMarkupId(true);
             container.add(newSource);
-            TextField<String> newOutput =
-                    new TextField<String>("newExtraVariableOutput", Model.of(""));
+            TextField<String> newOutput = new TextField<>("newExtraVariableOutput", Model.of(""));
             newOutput.setOutputMarkupId(true);
             container.add(newOutput);
             TextField<String> newDimensions =
-                    new TextField<String>("newExtraVariableDimensions", Model.of(""));
+                    new TextField<>("newExtraVariableDimensions", Model.of(""));
             newDimensions.setOutputMarkupId(true);
             container.add(newDimensions);
             GeoServerAjaxFormLink addLink =
@@ -396,6 +392,11 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
                     }
                 });
 
+        setConvertedInputGenerics(convertedInput);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setConvertedInputGenerics(NetCDFSettingsContainer convertedInput) {
         setConvertedInput((T) convertedInput);
     }
 

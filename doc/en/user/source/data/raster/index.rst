@@ -27,11 +27,7 @@ Extensions are available at the `GeoServer download page <http://geoserver.org/d
 
    arcgrid
    gdal
-   oraclegeoraster
-   postgisraster
    imagepyramid
-   imagemosaicjdbc
-   customjdbcaccess
 
 GeoServer provides extensive facilities for controlling how rasters are accessed.
 These are covered in the following sections.

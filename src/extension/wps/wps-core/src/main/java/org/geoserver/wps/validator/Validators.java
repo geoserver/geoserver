@@ -21,7 +21,7 @@ public class Validators {
      * the specified filter classes is available
      */
     public static List<Validator> filterOutClasses(
-            Collection<Validator> validators, Class... filteredClasses) {
+            Collection<Validator> validators, Class<?>... filteredClasses) {
         if (validators == null) {
             return null;
         }
@@ -30,7 +30,7 @@ public class Validators {
         for (Validator v : validators) {
             Class<? extends Validator> validatorClass = v.getClass();
             boolean skip = false;
-            for (Class filteredClass : filteredClasses) {
+            for (Class<?> filteredClass : filteredClasses) {
                 if (filteredClass.isAssignableFrom(validatorClass)) {
                     skip = true;
                     break;

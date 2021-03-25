@@ -107,11 +107,20 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
         restoreCatalog.setResourceLoader(gsCatalog.getResourceLoader());
         restoreCatalog.setResourcePool(gsCatalog.getResourcePool());
 
+        syncCatalogs(restoreCatalog, gsCatalog);
+
         for (CatalogListener listener : gsCatalog.getListeners()) {
             restoreCatalog.addListener(listener);
         }
 
         return restoreCatalog;
+    }
+
+    /** Synchronizes catalogs content. */
+    private void syncCatalogs(CatalogImpl restoreCatalog, Catalog gsCatalog) {
+        if (gsCatalog instanceof CatalogImpl) {
+            restoreCatalog.sync((CatalogImpl) gsCatalog);
+        }
     }
 
     @Override

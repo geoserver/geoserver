@@ -70,6 +70,7 @@ public class IdentifierGenerationOptionTypeBinding extends AbstractSimpleBinding
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.IDENTIFIERGENERATIONOPTIONTYPE;
     }
@@ -81,7 +82,8 @@ public class IdentifierGenerationOptionTypeBinding extends AbstractSimpleBinding
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<IdentifierGenerationOptionType> getType() {
         return IdentifierGenerationOptionType.class;
     }
 
@@ -92,6 +94,7 @@ public class IdentifierGenerationOptionTypeBinding extends AbstractSimpleBinding
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(InstanceComponent instance, Object value) throws Exception {
         if ("UseExisting".equals(value)) {
             return IdentifierGenerationOptionType.USE_EXISTING_LITERAL;

@@ -9,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.opengis.wps10.HeaderType;
@@ -145,8 +144,8 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
                 }
                 // add eventual extra headers
                 if (ref.getHeader() != null) {
-                    for (Iterator it = ref.getHeader().iterator(); it.hasNext(); ) {
-                        HeaderType header = (HeaderType) it.next();
+                    for (Object o : ref.getHeader()) {
+                        HeaderType header = (HeaderType) o;
                         method.setRequestHeader(header.getKey(), header.getValue());
                     }
                 }

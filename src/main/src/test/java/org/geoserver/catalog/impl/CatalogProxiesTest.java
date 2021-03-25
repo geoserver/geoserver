@@ -4,7 +4,8 @@
  */
 package org.geoserver.catalog.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -54,6 +55,6 @@ public class CatalogProxiesTest extends GeoServerSystemTestSupport {
         // this would have failed with an exception, also check for stable hash code
         assertEquals(li.hashCode(), li.hashCode());
         // despite the dangling reference, the layer is equal to itself
-        assertTrue(li.equals(li));
+        assertEquals(li, li);
     }
 }

@@ -5,6 +5,7 @@
  */
 package org.geoserver.security.web.jdbc;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.logging.Level;
@@ -44,11 +45,12 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig>
     FeedbackPanel feedbackPanel;
 
     public JDBCConnectionPanel(String id, IModel<T> model) {
-        super(id, new Model());
+        super(id, new Model<>());
 
         add(
                 new AjaxCheckBox("jndi") {
                     @Override
+                    @SuppressWarnings("unchecked")
                     protected void onUpdate(AjaxRequestTarget target) {
                         WebMarkupContainer c =
                                 (WebMarkupContainer)
@@ -73,6 +75,7 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig>
         add(
                 new AjaxSubmitLink("cxTest") {
                     @Override
+                    @SuppressWarnings("unchecked")
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         try {
                             ((ConnectionPanel)
@@ -102,10 +105,10 @@ public class JDBCConnectionPanel<T extends JDBCSecurityServiceConfig>
         return useJNDI ? new JNDIConnectionPanel(id) : new BasicConnectionPanel(id);
     }
 
-    abstract class ConnectionPanel extends FormComponentPanel {
+    abstract class ConnectionPanel extends FormComponentPanel<Serializable> {
 
         public ConnectionPanel(String id) {
-            super(id, new Model());
+            super(id, new Model<>());
         }
 
         public abstract void resetModel();

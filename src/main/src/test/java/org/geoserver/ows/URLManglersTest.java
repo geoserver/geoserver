@@ -5,15 +5,21 @@
  */
 package org.geoserver.ows;
 
-import static org.geoserver.ows.util.ResponseUtils.*;
-import static org.junit.Assert.*;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
+import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.util.Collections;
+import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.URLMangler.URLType;
+import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.SystemTest;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -21,6 +27,26 @@ import org.junit.experimental.categories.Category;
 public class URLManglersTest extends GeoServerSystemTestSupport {
 
     private static final String BASEURL = "http://localhost:8080/geoserver";
+
+    @BeforeClass
+    public static void init() {
+        System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");
+        GeoServerEnvironment.reloadAllowEnvParametrization();
+    }
+
+    @AfterClass
+    public static void finalizing() {
+        System.setProperty("ALLOW_ENV_PARAMETRIZATION", "false");
+        GeoServerEnvironment.reloadAllowEnvParametrization();
+    }
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+        FileUtils.copyFileToDirectory(
+                new File("./src/test/resources/geoserver-environment.properties"),
+                testData.getDataDirectoryRoot());
+    }
 
     @Before
     public void setup() {
@@ -54,5 +80,21 @@ public class URLManglersTest extends GeoServerSystemTestSupport {
 
         String url = buildURL(BASEURL, "test", null, URLType.SERVICE);
         assertEquals("http://geoserver.org/test", url);
+    }
+
+    @Test
+    public void testProxyBaseParametrized() {
+        GeoServerInfo gi = getGeoServer().getGlobal();
+        gi.getSettings().setProxyBaseUrl("${proxy.custom}");
+        getGeoServer().save(gi);
+        String url = buildURL(BASEURL, "test", null, URLType.SERVICE);
+        assertEquals("http://custom.host/test", url);
+
+        // check not-matched placeholders remain intact, like the headers placeholders
+        gi.getSettings()
+                .setProxyBaseUrl("${X-Forwarded-Proto}://${X-Forwarded-Host}/${proxy.custom}");
+        getGeoServer().save(gi);
+        url = buildURL(BASEURL, "test", null, URLType.SERVICE);
+        assertEquals("${X-Forwarded-Proto}://${X-Forwarded-Host}/http://custom.host/test", url);
     }
 }

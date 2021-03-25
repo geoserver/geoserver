@@ -10,13 +10,10 @@ Any other issues can be discussed on the mailing list (http://lists.sourceforge.
 
 INSTALLATION
 
-1. Copy the included gt2-db2 jar to your
+1. Copy the included jar files to your
 GeoServer library directory. In a binary install this is at
 [GEOSERVER_HOME]/server/geoserver/WEB-INF/lib/
 In a war install this is [container]/webapps/geoserver/WEB-INF/lib/
-
-2. Copy db2jcc_license_cu.jar and db2jcc.jar from the DB2 instance installation directory
-$DB2PATH/java to your GeoServer library directory.
 
 3. Restart GeoServer.
 
@@ -26,5 +23,5 @@ For more information http://docs.geoserver.org/latest/en/user/data/database/db2.
 
 COMPATIBILITY
 
-This jar should work with any version of GeoServer based on GeoTools 15.x
-Currently this is anything in 2.9.x
+This jar should work with any version of GeoServer based on GeoTools 15.x and above
+This is GeoServer versions 2.9.x and above.

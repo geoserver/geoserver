@@ -57,7 +57,7 @@ public class GetExecutionsTransformer extends TransformerBase {
 
     static final Logger LOGGER = Logging.getLogger(GetExecutionsTransformer.class);
 
-    private List<ExecutionStatus> executions = new ArrayList<ExecutionStatus>();
+    private List<ExecutionStatus> executions = new ArrayList<>();
 
     WPSInfo wps;
 

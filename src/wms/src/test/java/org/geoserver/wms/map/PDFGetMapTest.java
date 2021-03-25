@@ -7,15 +7,18 @@ package org.geoserver.wms.map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import org.apache.commons.io.IOUtils;
+import javax.xml.namespace.QName;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -30,10 +33,12 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.wms_1_1_1.GetMapIntegrationTest;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -43,7 +48,7 @@ public class PDFGetMapTest extends WMSTestSupport {
     String bbox = "-1.5,-0.5,1.5,1.5";
 
     String layers = getLayerId(MockData.BASIC_POLYGONS);
-
+    String buildings = getLayerId(MockData.BUILDINGS);
     String requestBase =
             "wms?bbox="
                     + bbox
@@ -67,13 +72,27 @@ public class PDFGetMapTest extends WMSTestSupport {
         testData.addStyle("burg-fill", "burg-fill.sld", PDFGetMapTest.class, catalog);
         testData.addStyle("triangle-fill", "triangle-fill.sld", PDFGetMapTest.class, catalog);
         testData.addStyle("hatch-fill", "hatch-fill.sld", PDFGetMapTest.class, catalog);
-
+        testData.addStyle("Population", "Population.sld", GetMapIntegrationTest.class, catalog);
+        testData.addVectorLayer(
+                new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
+                Collections.emptyMap(),
+                "states.properties",
+                GetMapIntegrationTest.class,
+                catalog);
+        File root = testData.getDataDirectoryRoot();
+        File layouts = new File(root, "layouts");
+        if (!layouts.exists()) {
+            boolean res = layouts.mkdir();
+            if (!res) {
+                fail("could not create layouts directory");
+            }
+        }
+        try (InputStream input = this.getClass().getResourceAsStream("testLayout.xml")) {
+            testData.copyTo(input, "layouts/test.xml");
+        }
         // copy over the svg icon
-        File styles = new File(testData.getDataDirectoryRoot(), "styles");
-        File burg = new File(styles, "burg02.svg");
-        try (InputStream is = getClass().getResourceAsStream("burg02.svg");
-                FileOutputStream fos = new FileOutputStream(burg)) {
-            IOUtils.copy(is, fos);
+        try (InputStream is = getClass().getResourceAsStream("burg02.svg")) {
+            testData.copyTo(is, "styles/burg02.svg");
         }
     }
 
@@ -83,6 +102,31 @@ public class PDFGetMapTest extends WMSTestSupport {
         assertEquals("application/pdf", response.getContentType());
         PDTilingPattern tilingPattern = getTilingPattern(response.getContentAsByteArray());
         assertNull(tilingPattern);
+    }
+
+    /*
+     * Test for GEOS-8573: Add WMS Decorations to PDF output
+     */
+    @Test
+    public void testDecoratedMap() throws Exception {
+
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=application/pdf&TRANSPARENT=true&LAYERS=sf:states"
+                                + "&STYLES=Population&FORMAT_OPTIONS=layout:test;fontAntiAliasing:true&"
+                                + "LEGEND_OPTIONS=forceLabels:on;fontAntiAliasing:true&EXCEPTIONS=application/vnd.ogc.se_inimage&"
+                                + "CRS=EPSG:4326&WIDTH=1273&HEIGHT=300&BBOX=24.873046875,-151.7431640625,51.240234375,-39.8583984375");
+
+        if (!"application/pdf".equalsIgnoreCase(response.getContentType())) {
+            LOGGER.info(response.getContentAsString());
+        }
+
+        assertEquals("application/pdf", response.getContentType());
+        byte[] contents = response.getContentAsByteArray();
+
+        String text = getText(contents);
+        assertNotNull(text);
+        assertTrue(text.contains("500 km"));
     }
 
     @Test
@@ -146,11 +190,21 @@ public class PDFGetMapTest extends WMSTestSupport {
         assertNull(tilingPattern);
     }
 
+    String getText(byte[] pdfDocument) throws InvalidPasswordException, IOException {
+        try (PDDocument doc = PDDocument.load(pdfDocument)) {
+            StringWriter writer = new StringWriter();
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.writeText(doc, writer);
+            String contents = writer.getBuffer().toString();
+            return contents;
+        }
+    }
     /**
      * Returns the last tiling pattern found during a render of the PDF document. Can be used to
      * extract one tiling pattern that gets actually used to render shapes (meant to be used against
      * a document that only has a single tiling pattern)
      */
+    @SuppressWarnings("PMD.CloseResource")
     PDTilingPattern getTilingPattern(byte[] pdfDocument)
             throws InvalidPasswordException, IOException {
         // load the document using PDFBOX (iText is no good for parsing tiling patterns, mostly

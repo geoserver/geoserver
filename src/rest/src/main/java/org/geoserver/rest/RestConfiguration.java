@@ -14,7 +14,14 @@ import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.Styles;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.rest.converters.*;
+import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
+import org.geoserver.rest.converters.InputStreamConverter;
+import org.geoserver.rest.converters.StyleReaderConverter;
+import org.geoserver.rest.converters.StyleWriterConverter;
+import org.geoserver.rest.converters.XStreamCatalogListConverter;
+import org.geoserver.rest.converters.XStreamJSONMessageConverter;
+import org.geoserver.rest.converters.XStreamXMLMessageConverter;
 import org.geotools.util.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -72,7 +79,7 @@ public class RestConfiguration extends WebMvcConfigurationSupport {
                 if (!(strategy instanceof ContentNegotiationManager
                         || strategy instanceof DelegatingContentNegotiationStrategy)) {
                     mediaTypes = strategy.resolveMediaTypes(webRequest);
-                    if (mediaTypes.size() > 0) {
+                    if (!mediaTypes.isEmpty()) {
                         return mediaTypes;
                     }
                 }

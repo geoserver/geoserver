@@ -11,7 +11,6 @@ import com.jayway.jsonpath.PathNotFoundException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -47,7 +46,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
         implements GeoServerRoleService {
 
     static final SortedSet<String> emptyStringSet =
-            Collections.unmodifiableSortedSet(new TreeSet<String>());
+            Collections.unmodifiableSortedSet(new TreeSet<>());
 
     static final Map<String, String> emptyMap = Collections.emptyMap();
 
@@ -100,8 +99,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
 
     private String groupAdminGroup;
 
-    protected Set<RoleLoadedListener> listeners =
-            Collections.synchronizedSet(new HashSet<RoleLoadedListener>());
+    protected Set<RoleLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     /** Default Constructor */
     public GeoServerRestRoleService(SecurityNamedServiceConfig config) throws IOException {
@@ -145,6 +143,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
      * @see
      *     org.geoserver.security.GeoServerRoleService#registerRoleLoadedListener(RoleLoadedListener)
      */
+    @Override
     public void registerRoleLoadedListener(RoleLoadedListener listener) {
         listeners.add(listener);
     }
@@ -153,6 +152,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
      * @see
      *     org.geoserver.security.GeoServerRoleService#unregisterRoleLoadedListener(RoleLoadedListener)
      */
+    @Override
     public void unregisterRoleLoadedListener(RoleLoadedListener listener) {
         listeners.remove(listener);
     }
@@ -165,7 +165,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
 
     @Override
     public SortedSet<String> getUserNamesForRole(GeoServerRole role) throws IOException {
-        final SortedSet<String> users = new TreeSet<String>();
+        final SortedSet<String> users = new TreeSet<>();
 
         return Collections.unmodifiableSortedSet(users);
     }
@@ -173,7 +173,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
     @SuppressWarnings("unchecked")
     @Override
     public SortedSet<GeoServerRole> getRolesForUser(String username) throws IOException {
-        final SortedSet<GeoServerRole> roles = new TreeSet<GeoServerRole>();
+        final SortedSet<GeoServerRole> roles = new TreeSet<>();
 
         try {
             return (SortedSet<GeoServerRole>)
@@ -263,7 +263,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
 
     @Override
     public SortedSet<GeoServerRole> getRolesForGroup(String groupname) throws IOException {
-        SortedSet<GeoServerRole> set = new TreeSet<GeoServerRole>();
+        SortedSet<GeoServerRole> set = new TreeSet<>();
         GeoServerRole role = getRoleByName(groupname);
         if (role != null) {
             set.add(role);
@@ -275,7 +275,7 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
     @SuppressWarnings("unchecked")
     @Override
     public SortedSet<GeoServerRole> getRoles() throws IOException {
-        final SortedSet<GeoServerRole> roles = new TreeSet<GeoServerRole>();
+        final SortedSet<GeoServerRole> roles = new TreeSet<>();
 
         try {
             return (SortedSet<GeoServerRole>)
@@ -511,15 +511,12 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                                     "GeoServer REST Role Service CACHE MISS for '"
                                             + restEndPoint
                                             + "'");
-
-                            ClientHttpRequest req = null;
-                            ClientHttpResponse res = null;
                             try {
                                 final URI baseURI = new URI(roleRESTBaseURL);
 
                                 URL url = baseURI.resolve(roleRESTEndpoint).toURL();
 
-                                req =
+                                ClientHttpRequest req =
                                         getRestTemplate()
                                                 .getRequestFactory()
                                                 .createRequest(url.toURI(), HttpMethod.GET);
@@ -527,38 +524,26 @@ public class GeoServerRestRoleService extends AbstractGeoServerSecurityService
                                 if (authApiKey != null) {
                                     req.getHeaders().add("Authorization", "ApiKey " + authApiKey);
                                 }
-                                res = req.execute();
-                                int status = res.getRawStatusCode();
+                                try (ClientHttpResponse res = req.execute()) {
+                                    int status = res.getRawStatusCode();
 
-                                switch (status) {
-                                    case 200:
-                                    case 201:
-                                        try (BufferedReader br =
-                                                new BufferedReader(
-                                                        new InputStreamReader(res.getBody()))) {
-                                            StringBuilder sb = new StringBuilder();
-                                            String line;
-                                            while ((line = br.readLine()) != null) {
-                                                sb.append(line + "\n");
+                                    switch (status) {
+                                        case 200:
+                                        case 201:
+                                            try (BufferedReader br =
+                                                    new BufferedReader(
+                                                            new InputStreamReader(res.getBody()))) {
+                                                StringBuilder sb = new StringBuilder();
+                                                String line;
+                                                while ((line = br.readLine()) != null) {
+                                                    sb.append(line + "\n");
+                                                }
+                                                return sb.toString();
                                             }
-                                            return sb.toString();
-                                        }
-                                }
-                            } catch (MalformedURLException ex) {
-                                Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
-                            } catch (IOException ex) {
-                                Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
-                            } catch (URISyntaxException ex) {
-                                Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
-                            } finally {
-                                if (res != null) {
-                                    try {
-                                        res.close();
-                                    } catch (Exception ex) {
-                                        Logger.getLogger(getClass().getName())
-                                                .log(Level.SEVERE, null, ex);
                                     }
                                 }
+                            } catch (URISyntaxException | IOException ex) {
+                                Logger.getLogger(getClass().getName()).log(Level.FINEST, null, ex);
                             }
 
                             return null;

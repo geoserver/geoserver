@@ -33,17 +33,18 @@ public class LayerAttributePanel extends StyleEditTabPanel {
 
         // Change layer link
         PropertyModel<String> layerNameModel =
-                new PropertyModel<String>(parent.getLayerModel(), "prefixedName");
+                new PropertyModel<>(parent.getLayerModel(), "prefixedName");
         add(
                 new SimpleAjaxLink<String>("changeLayer", layerNameModel) {
                     private static final long serialVersionUID = 7341058018479354596L;
 
+                    @Override
                     public void onClick(AjaxRequestTarget target) {
                         ModalWindow popup = parent.getPopup();
 
                         popup.setInitialHeight(400);
                         popup.setInitialWidth(600);
-                        popup.setTitle(new Model<String>("Choose layer to edit"));
+                        popup.setTitle(new Model<>("Choose layer to edit"));
                         popup.setContent(new LayerChooser(popup.getContentId(), parent));
                         popup.show(target);
                     }

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -39,8 +40,12 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.GeoServerSecurityProvider;
+import org.geoserver.security.GeoServerSecurityManager;
+import org.geoserver.security.config.SecurityFilterConfig;
+import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -119,12 +124,19 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                         }));
 
         // login / logout stuff
-        List<String> securityFilters =
-                getGeoServerApplication()
-                        .getSecurityManager()
-                        .getSecurityConfig()
-                        .getFilterChain()
-                        .filtersFor("/web/**");
+        GeoServerSecurityManager securityManager = getGeoServerApplication().getSecurityManager();
+        SecurityManagerConfig securityConfig = securityManager.getSecurityConfig();
+
+        List<String> securityFiltersNames = securityConfig.getFilterChain().filtersFor("/web/**");
+        List<String> securityFilterClassNames = new ArrayList<>();
+        for (String name : securityFiltersNames) {
+            try {
+                SecurityFilterConfig config = securityManager.loadFilterConfig(name);
+                securityFilterClassNames.add(config.getClassName());
+            } catch (Exception e) {
+                LOGGER.log(Level.FINE, "Could not load security filter config for " + name, e);
+            }
+        }
 
         final Authentication user = GeoServerSession.get().getAuthentication();
         final boolean anonymous = user == null || user instanceof AnonymousAuthenticationToken;
@@ -135,28 +147,16 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         add(
                 new ListView<LoginFormInfo>("loginforms", loginforms) {
+                    @Override
                     public void populateItem(ListItem<LoginFormInfo> item) {
                         LoginFormInfo info = item.getModelObject();
 
                         WebMarkupContainer loginForm =
                                 new WebMarkupContainer("loginform") {
+                                    @Override
                                     protected void onComponentTag(
                                             org.apache.wicket.markup.ComponentTag tag) {
-                                        String path = getRequest().getUrl().getPath();
-                                        StringBuilder loginPath = new StringBuilder();
-                                        if (path.isEmpty()) {
-                                            // home page
-                                            loginPath.append("../" + info.getLoginPath());
-                                        } else {
-                                            // boomarkable page of sorts
-                                            String[] pathElements = path.split("/");
-                                            for (String pathElement : pathElements) {
-                                                if (!pathElement.isEmpty()) {
-                                                    loginPath.append("../");
-                                                }
-                                            }
-                                            loginPath.append(info.getLoginPath());
-                                        }
+                                        String loginPath = getResourcePath(info.getLoginPath());
                                         tag.put("action", loginPath);
                                     };
                                 };
@@ -183,7 +183,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                     new Label(
                                             "link.label",
                                             new StringResourceModel(
-                                                    info.getTitleKey(), (Component) null, null)));
+                                                    info.getTitleKey(), null, null)));
                             image.add(
                                     AttributeModifier.replace(
                                             "alt",
@@ -207,14 +207,8 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                         item.add(loginForm);
 
                         boolean filterInChain = false;
-                        List<GeoServerSecurityProvider> securityProviders =
-                                getGeoServerApplication()
-                                        .getBeansOfType(GeoServerSecurityProvider.class);
-                        for (GeoServerSecurityProvider securityProvider : securityProviders) {
-                            if (securityProvider.getFilterClass() != null
-                                    && securityProvider
-                                            .getFilterClass()
-                                            .equals(info.getFilterClass())) {
+                        for (String filterClassName : securityFilterClassNames) {
+                            if (filterClassName.equals(info.getFilterClass().getName())) {
                                 filterInChain = true;
                                 break;
                             }
@@ -223,94 +217,37 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                     }
                 });
 
-        // logout forms
+        // logout form
         WebMarkupContainer loggedInAsForm = new WebMarkupContainer("loggedinasform");
         loggedInAsForm.add(new Label("loggedInUsername", anonymous ? "Nobody" : user.getName()));
         loggedInAsForm.setVisible(!anonymous);
         add(loggedInAsForm);
 
-        List<LogoutFormInfo> logoutforms =
-                filterByAuth(getGeoServerApplication().getBeansOfType(LogoutFormInfo.class));
-
-        add(
-                new ListView<LogoutFormInfo>("logoutforms", logoutforms) {
-                    public void populateItem(ListItem<LogoutFormInfo> item) {
-                        LogoutFormInfo info = item.getModelObject();
-
-                        WebMarkupContainer logoutForm =
-                                new WebMarkupContainer("logoutform") {
-                                    protected void onComponentTag(
-                                            org.apache.wicket.markup.ComponentTag tag) {
-                                        String path = getRequest().getUrl().getPath();
-                                        StringBuilder logoutPath = new StringBuilder();
-                                        if (path.isEmpty()) {
-                                            // home page
-                                            logoutPath.append("../" + info.getLogoutPath());
-                                        } else {
-                                            // boomarkable page of sorts
-                                            String[] pathElements = path.split("/");
-                                            for (String pathElement : pathElements) {
-                                                if (!pathElement.isEmpty()) {
-                                                    logoutPath.append("../");
-                                                }
-                                            }
-                                            logoutPath.append(info.getLogoutPath());
-                                        }
-                                        tag.put("action", logoutPath);
-                                    };
-                                };
-
-                        Image image;
-                        if (info.getIcon() != null) {
-                            image =
-                                    new Image(
-                                            "link.icon",
-                                            new PackageResourceReference(
-                                                    info.getComponentClass(), info.getIcon()));
-                        } else {
-                            image =
-                                    new Image(
-                                            "link.icon",
-                                            new PackageResourceReference(
-                                                    GeoServerBasePage.class,
-                                                    "img/icons/silk/door-out.png"));
-                        }
-
-                        logoutForm.add(image);
-                        if (info.getTitleKey() != null && !info.getTitleKey().isEmpty()) {
-                            logoutForm.add(
-                                    new Label(
-                                            "link.label",
-                                            new StringResourceModel(
-                                                    info.getTitleKey(), (Component) null, null)));
-                            image.add(
-                                    AttributeModifier.replace(
-                                            "alt",
-                                            new ParamResourceModel(info.getTitleKey(), null)));
-                        } else {
-                            logoutForm.add(new Label("link.label", ""));
-                        }
-
-                        item.add(logoutForm);
-
-                        boolean filterInChain = false;
-                        for (String filterName : securityFilters) {
-                            if (filterName.toLowerCase().contains(info.getName())) {
-                                filterInChain = true;
-                                break;
-                            }
-                        }
-                        logoutForm.setVisible(!anonymous && filterInChain);
+        WebMarkupContainer logoutForm =
+                new WebMarkupContainer("logoutform") {
+                    @Override
+                    protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
+                        String logoutPath = getResourcePath("j_spring_security_logout");
+                        tag.put("action", logoutPath);
                     }
-                });
+                };
+        add(logoutForm);
+
+        Image image =
+                new Image(
+                        "link.icon",
+                        new PackageResourceReference(
+                                GeoServerBasePage.class, "img/icons/silk/door-out.png"));
+
+        logoutForm.add(image);
+        logoutForm.add(new Label("link.label", new StringResourceModel("logout", null, null)));
+        image.add(AttributeModifier.replace("alt", new ParamResourceModel("logout", null)));
+        logoutForm.setVisible(!anonymous);
 
         // home page link
         add(
-                new BookmarkablePageLink("home", GeoServerHomePage.class)
-                        .add(
-                                new Label(
-                                        "label",
-                                        new StringResourceModel("home", (Component) null, null))));
+                new BookmarkablePageLink<>("home", GeoServerHomePage.class)
+                        .add(new Label("label", new StringResourceModel("home", null, null))));
 
         // dev buttons
         DeveloperToolbar devToolbar = new DeveloperToolbar("devButtons");
@@ -319,12 +256,13 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 RuntimeConfigurationType.DEVELOPMENT.equals(
                         getApplication().getConfigurationType()));
 
-        final Map<Category, List<MenuPageInfo>> links =
-                splitByCategory(
-                        filterByAuth(getGeoServerApplication().getBeansOfType(MenuPageInfo.class)));
+        @SuppressWarnings("unchecked")
+        List<MenuPageInfo<GeoServerBasePage>> infos =
+                (List) filterByAuth(getGeoServerApplication().getBeansOfType(MenuPageInfo.class));
+        final Map<Category, List<MenuPageInfo<GeoServerBasePage>>> links = splitByCategory(infos);
 
-        List<MenuPageInfo> standalone =
-                links.containsKey(null) ? links.get(null) : new ArrayList<MenuPageInfo>();
+        List<MenuPageInfo<GeoServerBasePage>> standalone =
+                links.containsKey(null) ? links.get(null) : new ArrayList<>();
         links.remove(null);
 
         List<Category> categories = new ArrayList<>(links.keySet());
@@ -332,17 +270,22 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
 
         add(
                 new ListView<Category>("category", categories) {
+                    @Override
                     public void populateItem(ListItem<Category> item) {
                         Category category = item.getModelObject();
                         item.add(
                                 new Label(
                                         "category.header",
                                         new StringResourceModel(
-                                                category.getNameKey(), (Component) null, null)));
+                                                category.getNameKey(), null, null)));
                         item.add(
-                                new ListView<MenuPageInfo>("category.links", links.get(category)) {
-                                    public void populateItem(ListItem<MenuPageInfo> item) {
-                                        MenuPageInfo info = item.getModelObject();
+                                new ListView<MenuPageInfo<GeoServerBasePage>>(
+                                        "category.links", links.get(category)) {
+                                    @Override
+                                    public void populateItem(
+                                            ListItem<MenuPageInfo<GeoServerBasePage>> item) {
+                                        MenuPageInfo<GeoServerBasePage> info =
+                                                item.getModelObject();
                                         BookmarkablePageLink<Page> link =
                                                 new BookmarkablePageLink<Page>(
                                                         "link", info.getComponentClass()) {
@@ -364,15 +307,13 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                                         "title",
                                                         new StringResourceModel(
                                                                 info.getDescriptionKey(),
-                                                                (Component) null,
+                                                                null,
                                                                 null)));
                                         link.add(
                                                 new Label(
                                                         "link.label",
                                                         new StringResourceModel(
-                                                                info.getTitleKey(),
-                                                                (Component) null,
-                                                                null)));
+                                                                info.getTitleKey(), null, null)));
                                         Image image;
                                         if (info.getIcon() != null) {
                                             image =
@@ -402,21 +343,21 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 });
 
         add(
-                new ListView<MenuPageInfo>("standalone", standalone) {
-                    public void populateItem(ListItem<MenuPageInfo> item) {
-                        MenuPageInfo info = item.getModelObject();
-                        BookmarkablePageLink<Page> link =
+                new ListView<MenuPageInfo<GeoServerBasePage>>("standalone", standalone) {
+                    @Override
+                    public void populateItem(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
+                        MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
+                        BookmarkablePageLink<GeoServerBasePage> link =
                                 new BookmarkablePageLink<>("link", info.getComponentClass());
                         link.add(
                                 AttributeModifier.replace(
                                         "title",
                                         new StringResourceModel(
-                                                info.getDescriptionKey(), (Component) null, null)));
+                                                info.getDescriptionKey(), null, null)));
                         link.add(
                                 new Label(
                                         "link.label",
-                                        new StringResourceModel(
-                                                info.getTitleKey(), (Component) null, null)));
+                                        new StringResourceModel(info.getTitleKey(), null, null)));
                         item.add(link);
                     }
                 });
@@ -467,6 +408,15 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         if (id == null) {
             container.setVisible(false);
         }
+    }
+
+    private String getResourcePath(String path) {
+        HttpServletRequest hr =
+                ((GeoServerApplication) getApplication()).servletRequest(getRequest());
+        String baseURL = ResponseUtils.baseURL(hr);
+        String logoutPath =
+                ResponseUtils.buildURL(baseURL, path, null, URLMangler.URLType.RESOURCE);
+        return logoutPath;
     }
 
     @Override
@@ -576,14 +526,15 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     }
 
     /** Splits up the pages by category, turning the list into a map keyed by category */
-    private Map<Category, List<MenuPageInfo>> splitByCategory(List<MenuPageInfo> pages) {
+    private <T extends GeoServerBasePage> Map<Category, List<MenuPageInfo<T>>> splitByCategory(
+            List<MenuPageInfo<T>> pages) {
         Collections.sort(pages);
-        HashMap<Category, List<MenuPageInfo>> map = new HashMap<Category, List<MenuPageInfo>>();
+        Map<Category, List<MenuPageInfo<T>>> map = new HashMap<>();
 
-        for (MenuPageInfo page : pages) {
+        for (MenuPageInfo<T> page : pages) {
             Category cat = page.getCategory();
 
-            if (!map.containsKey(cat)) map.put(cat, new ArrayList<MenuPageInfo>());
+            if (!map.containsKey(cat)) map.put(cat, new ArrayList<>());
 
             map.get(cat).add(page);
         }
@@ -594,7 +545,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     /** Filters a set of component descriptors based on the current authenticated user. */
     protected <T extends ComponentInfo> List<T> filterByAuth(List<T> list) {
         Authentication user = getSession().getAuthentication();
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         for (T component : list) {
             if (component.getAuthorizer() == null) {
                 continue;
@@ -614,6 +565,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
      *
      * @see IAjaxIndicatorAware#getAjaxIndicatorMarkupId()
      */
+    @Override
     public String getAjaxIndicatorMarkupId() {
         return "ajaxFeedback";
     }

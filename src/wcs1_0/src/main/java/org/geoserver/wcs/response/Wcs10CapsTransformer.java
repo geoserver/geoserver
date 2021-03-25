@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -90,6 +89,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                         geoServer.getGlobal().getResourceErrorHandling());
     }
 
+    @Override
     public Translator createTranslator(ContentHandler handler) {
         return new WCS100CapsTranslator(handler);
     }
@@ -111,6 +111,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
          * @param o The Object to encode.
          * @throws IllegalArgumentException if the Object is not encodeable.
          */
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             if (!(o instanceof GetCapabilitiesType)) {
                 throw new IllegalArgumentException(
@@ -198,7 +199,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 allSections = (section.get("/").equals(section));
             }
             final Set<String> knownSections =
-                    new HashSet<String>(
+                    new HashSet<>(
                             Arrays.asList(
                                     "/",
                                     "/WCS_Capabilities/Service",
@@ -311,8 +312,8 @@ public class Wcs10CapsTransformer extends TransformerBase {
             start("wcs:keywords");
 
             if (kwords != null) {
-                for (Iterator it = kwords.iterator(); it.hasNext(); ) {
-                    element("wcs:keyword", it.next().toString());
+                for (Object kword : kwords) {
+                    element("wcs:keyword", kword.toString());
                 }
             }
 
@@ -372,8 +373,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                 tmp = contact.getAddressType();
 
                 if (StringUtils.isNotBlank(tmp)) {
-                    String addr = "";
-                    addr = contact.getAddress();
+                    String addr = contact.getAddress();
 
                     if (StringUtils.isNotBlank(addr)) {
                         element("wcs:deliveryPoint", tmp + " " + addr);
@@ -562,25 +562,22 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
         /** @param originalArray */
         private String[] orderDoubleArray(String[] originalArray) {
-            List finalArray = Arrays.asList(originalArray);
+            List<String> finalArray = Arrays.asList(originalArray);
 
             Collections.sort(
                     finalArray,
-                    new Comparator<String>() {
+                    (o1, o2) -> {
+                        if (o1.equals(o2)) return 0;
 
-                        public int compare(String o1, String o2) {
-                            if (o1.equals(o2)) return 0;
-
-                            return (Double.parseDouble(o1) > Double.parseDouble(o2) ? 1 : -1);
-                        }
+                        return (Double.parseDouble(o1) > Double.parseDouble(o2) ? 1 : -1);
                     });
 
-            return (String[]) finalArray.toArray(new String[1]);
+            return finalArray.toArray(new String[1]);
         }
 
         /** @param originalArray */
         private String[] orderTimeArray(String[] originalArray) {
-            List finalArray = Arrays.asList(originalArray);
+            List<String> finalArray = Arrays.asList(originalArray);
 
             Collections.sort(
                     finalArray,
@@ -597,6 +594,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                             "yyyy"
                         };
 
+                        @Override
                         public int compare(String o1, String o2) {
                             if (o1.equals(o2)) return 0;
 
@@ -612,14 +610,17 @@ public class Wcs10CapsTransformer extends TransformerBase {
 
                             // special handling for current keyword
                             if (value.equalsIgnoreCase("current")) return null;
-                            for (int i = 0; i < PATTERNS.length; i++) {
+                            for (String pattern : PATTERNS) {
                                 // rebuild formats at each parse, date formats are not thread safe
                                 SimpleDateFormat format =
-                                        new SimpleDateFormat(PATTERNS[i], Locale.CANADA);
+                                        new SimpleDateFormat(pattern, Locale.CANADA);
 
-                                /* We do not use the standard method DateFormat.parse(String), because if the parsing
-                                 * stops before the end of the string, the remaining characters are just ignored and
-                                 * no exception is thrown. So we have to ensure that the whole string is correct for
+                                /* We do not use the standard method DateFormat.parse(String),
+                                because if the parsing
+                                 * stops before the end of the string, the remaining characters
+                                 are just ignored and
+                                 * no exception is thrown. So we have to ensure that the whole
+                                 string is correct for
                                  * the format.
                                  */
                                 ParsePosition pos = new ParsePosition(0);
@@ -633,7 +634,7 @@ public class Wcs10CapsTransformer extends TransformerBase {
                         }
                     });
 
-            return (String[]) finalArray.toArray(new String[1]);
+            return finalArray.toArray(new String[1]);
         }
 
         /** */
@@ -678,12 +679,10 @@ public class Wcs10CapsTransformer extends TransformerBase {
             if (cv.isEnabled()) {
                 start("wcs:CoverageOfferingBrief");
 
-                String tmp;
-
                 for (MetadataLinkInfo mdl : cv.getMetadataLinks())
                     handleMetadataLink(mdl, "simple");
 
-                tmp = cv.getDescription();
+                String tmp = cv.getDescription();
 
                 if (StringUtils.isNotBlank(tmp)) {
                     element("wcs:description", tmp);

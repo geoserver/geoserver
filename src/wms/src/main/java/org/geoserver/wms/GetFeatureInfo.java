@@ -9,20 +9,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
+import org.geoserver.feature.RetypingFeatureCollection;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.featureinfo.FeatureCollectionDecorator;
 import org.geoserver.wms.featureinfo.LayerIdentifier;
-import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
-import org.opengis.filter.Filter;
 
 /**
  * WMS GetFeatureInfo operation
@@ -30,6 +33,7 @@ import org.opengis.filter.Filter;
  * @author Gabriel Roldan
  */
 public class GetFeatureInfo {
+    static final Logger LOGGER = Logging.getLogger(GetFeatureInfo.class);
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public FeatureCollectionType run(final GetFeatureInfoRequest request) throws ServiceException {
@@ -37,10 +41,10 @@ public class GetFeatureInfo {
         try {
             results = execute(request);
         } catch (ServiceException se) {
-            se.printStackTrace();
+            LOGGER.log(Level.FINE, "", se);
             throw se;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.FINE, "", e);
             throw new ServiceException("Internal error occurred", e);
         }
         return buildResults(results);
@@ -61,14 +65,13 @@ public class GetFeatureInfo {
         final List<MapLayerInfo> requestedLayers = request.getQueryLayers();
         FeatureInfoRequestParameters requestParams = new FeatureInfoRequestParameters(request);
 
-        List<FeatureCollection> results = new ArrayList<FeatureCollection>(requestedLayers.size());
+        List<FeatureCollection> results = new ArrayList<>(requestedLayers.size());
 
         int maxFeatures = request.getFeatureCount();
         List<LayerIdentifier> identifiers = GeoServerExtensions.extensions(LayerIdentifier.class);
-        for (int i = 0; i < requestedLayers.size(); i++) {
-            final MapLayerInfo layer = requestedLayers.get(i);
+        for (final MapLayerInfo layer : requestedLayers) {
             try {
-                LayerIdentifier identifier = getLayerIdentifier(layer, identifiers);
+                LayerIdentifier<?> identifier = getLayerIdentifier(layer, identifiers);
                 List<FeatureCollection> identifiedCollections =
                         identifier.identify(requestParams, maxFeatures);
                 if (identifiedCollections != null) {
@@ -157,14 +160,17 @@ public class GetFeatureInfo {
 
     protected FeatureCollection selectProperties(
             FeatureInfoRequestParameters params, FeatureCollection collection) throws IOException {
+        // no general way to reduce attribute names in complex features yet
         String[] names = params.getPropertyNames();
-        if (names != Query.ALL_NAMES) {
-            Query q =
-                    new Query(
-                            collection.getSchema().getName().getLocalPart(), Filter.INCLUDE, names);
-            return DataUtilities.source(collection).getFeatures(q);
-        } else {
-            return collection;
+        if (names != Query.ALL_NAMES && collection instanceof SimpleFeatureCollection) {
+            SimpleFeatureCollection sfc = (SimpleFeatureCollection) collection;
+            SimpleFeatureType source = sfc.getSchema();
+            SimpleFeatureType target = SimpleFeatureTypeBuilder.retype(source, names);
+            if (!target.equals(source)) {
+                return new RetypingFeatureCollection(sfc, target);
+            }
         }
+
+        return collection;
     }
 }

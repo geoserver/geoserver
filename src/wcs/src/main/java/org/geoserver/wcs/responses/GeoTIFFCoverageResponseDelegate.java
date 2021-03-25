@@ -7,7 +7,7 @@ package org.geoserver.wcs.responses;
 
 import com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFLZWCompressor;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.io.IOException;
@@ -84,6 +84,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                 });
     }
 
+    @Override
     public void encode(
             GridCoverage2D sourceCoverage,
             String outputFormat,

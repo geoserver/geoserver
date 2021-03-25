@@ -25,6 +25,7 @@ public class WorkspaceDetachableModel implements IModel<WorkspaceInfo> {
         setObject(workspace);
     }
 
+    @Override
     public WorkspaceInfo getObject() {
         if (workspace == null) {
             workspace =
@@ -33,11 +34,13 @@ public class WorkspaceDetachableModel implements IModel<WorkspaceInfo> {
         return workspace;
     }
 
+    @Override
     public void setObject(WorkspaceInfo object) {
-        this.workspace = (WorkspaceInfo) object;
+        this.workspace = object;
         this.id = workspace != null ? workspace.getId() : null;
     }
 
+    @Override
     public void detach() {
         this.workspace = null;
     }

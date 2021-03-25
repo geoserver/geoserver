@@ -1,43 +1,43 @@
-JDBC Master Slave
-=================
+JDBC Primary/Replica
+====================
 
 If you are using pure JDBC and not using the high performance journal then you are generally relying on your database as your single point of failure and persistence engine. If you do not have really high performance requirements this approach can make a lot of sense as you have a single persistence engine to backup and manage etc.
 
 Startup
 -------
 
-When using just JDBC as the data source you can use a Master Slave approach, running as many brokers as you wish as this diagram shows. On startup one master grabs an exclusive lock in the broker database - all other brokers are slaves and pause waiting for the exclusive lock.
+When using just JDBC as the data source you can use a Primary/Replica approach, running as many brokers as you wish as this diagram shows. On startup one primary grabs an exclusive lock in the broker database - all other brokers are replicas and pause waiting for the exclusive lock.
 
 .. figure:: images/Startup.png
    :align: center
 
 Clients should be using the Failover Transport to connect to the available brokers. e.g. using a URL something like the following
 failover:(tcp://broker1:61616,tcp://broker2:61616,tcp://broker3:61616)
-Only the master broker starts up its transport connectors and so the clients can only connect to the master.
+Only the primary broker starts up its transport connectors and so the clients can only connect to the primary.
 
-Master failure
---------------
+Primary failure
+---------------
 
-If the master looses connection to the database or looses the exclusive lock then it immediately shuts down. If a master shuts down or fails, one of the other slaves will grab the lock and so the topology switches to the following diagram
+If the primary looses connection to the database or looses the exclusive lock then it immediately shuts down. If a primary shuts down or fails, one of the other replicas will grab the lock and so the topology switches to the following diagram
 
 .. figure:: images/MasterFailed.png
    :align: center
 
-One of the other other slaves immediately grabs the exclusive lock on the database to them commences becoming the master, starting all of its transport connectors.
-Clients loose connection to the stopped master and then the failover transport tries to connect to the available brokers - of which the only one available is the new master.
-Master restart
-At any time you can restart other brokers which join the cluster and start as slaves waiting to become a master if the master is shutdown or a failure occurs. So the following topology is created after a restart of an old master...
+One of the other other replicas immediately grabs the exclusive lock on the database to then commences becoming the primary, starting all of its transport connectors.
+Clients lose connection to the stopped primary and then the failover transport tries to connect to the available brokers - of which the only one available is the new primary.
+Primary restart
+At any time you can restart other brokers which join the cluster and start as replicas waiting to become a primary if the primary is shutdown or a failure occurs. So the following topology is created after a restart of an old primary...
 
-Configuring JDBC Master Slave
------------------------------
+Configuring JDBC Primary/Replica
+--------------------------------
 
 
 .. figure:: images/MasterRestarted.png
    :align: center
 
-By default if you use the <jdbcPersistenceAdapter/> to avoid the high performance journal you will be using JDBC Master Slave by default. You just need to run more than one broker and point the client side URIs to them to get master/slave. This works because they both try an acquire an exclusive lock on a shared table in the database and only one will succeed.
+By default if you use the <jdbcPersistenceAdapter/> to avoid the high performance journal you will be using JDBC Primary/Replica by default. You just need to run more than one broker and point the client side URIs to them to get primary/replica. This works because they both try an acquire an exclusive lock on a shared table in the database and only one will succeed.
 
-The following example shows how to configure the ActiveMQ broker in JDBC Master Slave mode
+The following example shows how to configure the ActiveMQ broker in JDBC Primary/Replica mode
 
 
 .. code-block:: xml

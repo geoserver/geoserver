@@ -99,6 +99,7 @@ public class ExecuteResponseBuilder {
         return build(new NullProgressListener());
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics
     public ExecuteResponseType build(ProgressListener listener) {
         ExecuteRequest helper = new ExecuteRequest(request);
 
@@ -168,7 +169,7 @@ public class ExecuteResponseBuilder {
         if ((status != null && status.isAsynchronous())
                 && request.getBaseUrl() != null
                 && status.getExecutionId() != null) {
-            Map<String, String> kvp = new LinkedHashMap<String, String>();
+            Map<String, String> kvp = new LinkedHashMap<>();
             kvp.put("service", "WPS");
             kvp.put("version", "1.0.0");
             kvp.put("request", "GetExecutionStatus");
@@ -187,8 +188,8 @@ public class ExecuteResponseBuilder {
             // inputs
             if (request.getDataInputs() != null && request.getDataInputs().getInput().size() > 0) {
                 response.setDataInputs(f.createDataInputsType1());
-                for (Iterator i = request.getDataInputs().getInput().iterator(); i.hasNext(); ) {
-                    InputType input = (InputType) i.next();
+                for (Object o : request.getDataInputs().getInput()) {
+                    InputType input = (InputType) o;
                     response.getDataInputs().getInput().add(EMFUtils.clone(input, f, true));
                 }
             }
@@ -255,6 +256,7 @@ public class ExecuteResponseBuilder {
         return response;
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics
     OutputDataType encodeOutput(
             String key,
             Parameter<?> outputParam,

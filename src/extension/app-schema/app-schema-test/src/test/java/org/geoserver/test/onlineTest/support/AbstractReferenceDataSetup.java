@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.JDBCTestSetup;
@@ -37,20 +38,26 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
      * A static map which tracks which fixture files can not be found. This prevents continually
      * looking up the file and reporting it not found to the user.
      */
-    protected static Map<String, Boolean> found = new HashMap<String, Boolean>();
+    protected static Map<String, Boolean> found = new HashMap<>();
 
     // The type of database to use.
+    @Override
     public abstract JDBCDataStoreFactory createDataStoreFactory();
 
     // Setup the data.
+    @Override
+    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public abstract void setUp() throws Exception;
 
+    @Override
     protected abstract Properties createExampleFixture();
 
+    @Override
     public void setUpData() throws Exception {
         super.setUpData();
     }
 
+    @Override
     public void initializeDatabase() throws Exception {
         super.initializeDatabase();
     }
@@ -109,7 +116,7 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
                     GSFixtureUtilitiesDelegate.printSkipNotice(fixtureId, fixtureFile);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.ERROR, "", e);
             }
         }
     }
@@ -120,18 +127,16 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
             exFixtureFile.getParentFile().mkdirs();
             exFixtureFile.createNewFile();
 
-            FileOutputStream fout = new FileOutputStream(exFixtureFile);
-
-            exampleFixture.store(
-                    fout,
-                    "This is an example fixture. Update the "
-                            + "values and remove the .example suffix to enable the test");
-            fout.flush();
-            fout.close();
-            System.out.println("Wrote example fixture file to " + exFixtureFile);
+            try (FileOutputStream fout = new FileOutputStream(exFixtureFile)) {
+                exampleFixture.store(
+                        fout,
+                        "This is an example fixture. Update the "
+                                + "values and remove the .example suffix to enable the test");
+                fout.flush();
+            }
+            LOGGER.info("Wrote example fixture file to " + exFixtureFile);
         } catch (IOException ioe) {
-            System.out.println("Unable to write out example fixture " + exFixtureFile);
-            ioe.printStackTrace();
+            LOGGER.log(Level.WARN, "Unable to write out example fixture " + exFixtureFile, ioe);
         }
     }
 

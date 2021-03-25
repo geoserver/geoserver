@@ -56,15 +56,9 @@ public class GeofenceTestUtils {
     public static File emptyFile(String fileName) throws URISyntaxException, IOException {
         if (GeofenceTestUtils.class.getResource("/" + fileName) != null) {
             File file = new File(GeofenceTestUtils.class.getResource("/" + fileName).toURI());
-            FileWriter writer = null;
-            try {
-                writer = new FileWriter(file);
+            try (FileWriter writer = new FileWriter(file)) {
                 writer.write("");
                 return file;
-            } finally {
-                if (writer != null) {
-                    writer.close();
-                }
             }
         }
         return null;

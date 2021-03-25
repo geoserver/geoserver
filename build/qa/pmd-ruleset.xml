@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
@@ -17,90 +17,104 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<ruleset name="Default Maven PMD Plugin Ruleset"
-    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+<ruleset xmlns="http://pmd.sourceforge.net/ruleset/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Default Maven PMD Plugin Ruleset" xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+  <description>
+GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_rulesets.html
+</description>
+  <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP"/>
+  <rule ref="category/java/bestpractices.xml/CheckResultSet"/>
+  <rule ref="category/java/bestpractices.xml/UnusedImports"/>
+  <!--rule ref="category/java/bestpractices.xml/UnusedFormalParameter" /-->
+  <rule ref="category/java/bestpractices.xml/UnusedLocalVariable"/>
+  <rule ref="category/java/bestpractices.xml/UnusedPrivateField"/>
+  <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod"/>
+  <rule ref="category/java/bestpractices.xml/SystemPrintln"/>
+  <rule ref="category/java/bestpractices.xml/ForLoopCanBeForeach" />
+  <rule ref="category/java/bestpractices.xml/UseTryWithResources" />
+  <rule ref="category/java/bestpractices.xml/ReplaceHashtableWithMap" />
+  <rule ref="category/java/bestpractices.xml/ReplaceVectorWithList" />
+  <rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace" />
+  <rule ref="category/java/bestpractices.xml/MissingOverride" />
 
+  <rule ref="category/java/performance.xml/UseArrayListInsteadOfVector" />
+
+  <rule ref="category/java/codestyle.xml/DontImportJavaLang"/>
+  <rule ref="category/java/codestyle.xml/DuplicateImports"/>
+  <rule ref="category/java/codestyle.xml/ExtendsObject"/>
+  <rule ref="category/java/codestyle.xml/ForLoopShouldBeWhileLoop"/>
+  <!--rule ref="category/java/codestyle.xml/TooManyStaticImports" / -->
+  <rule ref="category/java/codestyle.xml/UnnecessaryFullyQualifiedName"/>
+  <!-- rule ref="category/java/codestyle.xml/UnnecessaryModifier" / -->
+  <rule ref="category/java/codestyle.xml/UseDiamondOperator" />
+  <rule ref="category/java/codestyle.xml/UnnecessaryReturn"/>
+  <rule ref="category/java/codestyle.xml/UselessParentheses"/>
+  <rule ref="category/java/codestyle.xml/UselessQualifiedThis"/>
+  <rule ref="category/java/codestyle.xml/UnnecessaryCast" />
+  <rule ref="category/java/codestyle.xml/IdenticalCatchBranches" />
+  <rule ref="category/java/codestyle.xml/UseShortArrayInitializer" />
+  <!-- rule ref="category/java/design.xml/CollapsibleIfStatements" / -->
+  <!-- rule ref="category/java/design.xml/SimplifiedTernary" / -->
+  <!-- rule ref="category/java/design.xml/UselessOverridingMethod" / -->
+  <!--
+  <rule ref="category/java/errorprone.xml/AvoidBranchingStatementAsLastInLoop" />
+-->
+  <rule ref="category/java/errorprone.xml/AvoidDecimalLiteralsInBigDecimalConstructor"/>
+  <rule ref="category/java/errorprone.xml/AvoidMultipleUnaryOperators"/>
+  <rule ref="category/java/errorprone.xml/AvoidUsingOctalValues"/>
+  <rule ref="category/java/errorprone.xml/BrokenNullCheck"/>
+  <rule ref="category/java/errorprone.xml/CheckSkipResult"/>
+  <rule ref="category/java/errorprone.xml/ClassCastExceptionWithToArray"/>
+  <rule ref="category/java/errorprone.xml/DontUseFloatTypeForLoopIndices"/>
+  <!-- rule ref="category/java/errorprone.xml/EmptyCatchBlock" /-->
+  <rule ref="category/java/errorprone.xml/EmptyFinallyBlock"/>
+  <rule ref="category/java/errorprone.xml/EmptyIfStmt"/>
+  <rule ref="category/java/errorprone.xml/EmptyInitializer"/>
+  <rule ref="category/java/errorprone.xml/EmptyStatementBlock"/>
+  <rule ref="category/java/errorprone.xml/EmptyStatementNotInLoop"/>
+  <rule ref="category/java/errorprone.xml/EmptySwitchStatements"/>
+  <rule ref="category/java/errorprone.xml/EmptySynchronizedBlock"/>
+  <rule ref="category/java/errorprone.xml/EmptyTryBlock"/>
+  <rule ref="category/java/errorprone.xml/EmptyWhileStmt"/>
+  <rule ref="category/java/errorprone.xml/ImportFromSamePackage"/>
+  <rule ref="category/java/errorprone.xml/JumbledIncrementer"/>
+  <rule ref="category/java/errorprone.xml/MisplacedNullCheck"/>
+  <rule ref="category/java/errorprone.xml/OverrideBothEqualsAndHashcode"/>
+  <rule ref="category/java/errorprone.xml/ReturnFromFinallyBlock"/>
+  <rule ref="category/java/errorprone.xml/UnconditionalIfStatement"/>
+  <rule ref="category/java/errorprone.xml/UnnecessaryConversionTemporary"/>
+  <rule ref="category/java/errorprone.xml/UnusedNullCheckInEquals"/>
+  <rule ref="category/java/errorprone.xml/UselessOperationOnImmutable"/>
+  <rule ref="category/java/errorprone.xml/CloseResource">
+
+    <properties>
+      <!-- When calling the store to close, PMD wants the full prefix before the call to the method to match, so let's try to use common var names for store ... -->
+        <property name="closeTargets" value="releaseConnection,store.releaseConnection,closeQuietly,closeConnection,closeSafe,store.closeSafe,dataStore.closeSafe,getDataStore().closeSafe,close,closeResultSet,closeStmt,closeFinally,JDBCUtils.close"/>
+	<property name="allowedResourceTypes" value="java.io.ByteArrayOutputStream|java.io.ByteArrayInputStream|java.io.StringWriter|java.io.CharArrayWriter|java.util.stream.Stream|java.util.stream.IntStream|java.util.stream.LongStream|java.util.stream.DoubleStream|java.io.StringReader" />	    
+    </properties>
+  </rule>
+  <rule ref="category/java/multithreading.xml/AvoidThreadGroup"/>
+  <rule ref="category/java/multithreading.xml/DontCallThreadRun"/>
+  <rule ref="category/java/multithreading.xml/DoubleCheckedLocking"/>
+  <rule ref="category/java/performance.xml/BigIntegerInstantiation"/>
+  <rule ref="category/java/performance.xml/BooleanInstantiation"/>
+  <rule ref="category/java/performance.xml/ByteInstantiation"/>
+  <rule ref="category/java/performance.xml/IntegerInstantiation"/>
+  <rule ref="category/java/performance.xml/LongInstantiation"/>
+  <rule ref="category/java/performance.xml/ShortInstantiation"/>
+  <rule ref="category/java/performance.xml/StringInstantiation"/>
+  <rule name="wildcards" language="java" message="No Wildcard Imports" class="net.sourceforge.pmd.lang.rule.XPathRule">
     <description>
-        The default ruleset used by the Maven PMD Plugin, when no other ruleset is specified.
-        It contains the rules of the old (pre PMD 6.0.0) rulesets java-basic, java-empty, java-imports,
-        java-unnecessary, java-unusedcode.
-
-        This ruleset might be used as a starting point for an own customized ruleset [0].
-
-        [0] https://pmd.github.io/latest/pmd_userdocs_understanding_rulesets.html
+      Don't use wildcard imports
     </description>
-
-    <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP" />
-    <rule ref="category/java/bestpractices.xml/CheckResultSet" />
-    <rule ref="category/java/bestpractices.xml/UnusedImports" />
-    <!--rule ref="category/java/bestpractices.xml/UnusedFormalParameter" /-->
-    <rule ref="category/java/bestpractices.xml/UnusedLocalVariable" />
-    <rule ref="category/java/bestpractices.xml/UnusedPrivateField" />
-    <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod" />
-    <rule ref="category/java/bestpractices.xml/SystemPrintln" />
-
-    <rule ref="category/java/codestyle.xml/DontImportJavaLang" />
-    <rule ref="category/java/codestyle.xml/DuplicateImports" />
-    <rule ref="category/java/codestyle.xml/ExtendsObject" />
-    <rule ref="category/java/codestyle.xml/ForLoopShouldBeWhileLoop" />
-    <!--rule ref="category/java/codestyle.xml/TooManyStaticImports" / -->
-    <rule ref="category/java/codestyle.xml/UnnecessaryFullyQualifiedName" />
-    <!-- rule ref="category/java/codestyle.xml/UnnecessaryModifier" / -->
-    <rule ref="category/java/codestyle.xml/UnnecessaryReturn" />
-    <rule ref="category/java/codestyle.xml/UselessParentheses" />
-    <rule ref="category/java/codestyle.xml/UselessQualifiedThis" />
-
-    <!-- rule ref="category/java/design.xml/CollapsibleIfStatements" / -->
-    <!-- rule ref="category/java/design.xml/SimplifiedTernary" / -->
-    <!-- rule ref="category/java/design.xml/UselessOverridingMethod" / -->
-
-    <!--
-    <rule ref="category/java/errorprone.xml/AvoidBranchingStatementAsLastInLoop" />
-    -->
-    <rule ref="category/java/errorprone.xml/AvoidDecimalLiteralsInBigDecimalConstructor" />
-    <rule ref="category/java/errorprone.xml/AvoidMultipleUnaryOperators" />
-    <rule ref="category/java/errorprone.xml/AvoidUsingOctalValues" />
-    <rule ref="category/java/errorprone.xml/BrokenNullCheck" />
-    <rule ref="category/java/errorprone.xml/CheckSkipResult" />
-    <rule ref="category/java/errorprone.xml/ClassCastExceptionWithToArray" />
-    <rule ref="category/java/errorprone.xml/DontUseFloatTypeForLoopIndices" />
-    <!-- rule ref="category/java/errorprone.xml/EmptyCatchBlock" /-->
-    <rule ref="category/java/errorprone.xml/EmptyFinallyBlock" />
-    <rule ref="category/java/errorprone.xml/EmptyIfStmt" />
-    <rule ref="category/java/errorprone.xml/EmptyInitializer" />
-    <rule ref="category/java/errorprone.xml/EmptyStatementBlock" />
-    <rule ref="category/java/errorprone.xml/EmptyStatementNotInLoop" />
-    <rule ref="category/java/errorprone.xml/EmptySwitchStatements" />
-    <rule ref="category/java/errorprone.xml/EmptySynchronizedBlock" />
-    <rule ref="category/java/errorprone.xml/EmptyTryBlock" />
-    <rule ref="category/java/errorprone.xml/EmptyWhileStmt" />
-    <rule ref="category/java/errorprone.xml/ImportFromSamePackage" />
-    <rule ref="category/java/errorprone.xml/JumbledIncrementer" />
-    <rule ref="category/java/errorprone.xml/MisplacedNullCheck" />
-    <rule ref="category/java/errorprone.xml/OverrideBothEqualsAndHashcode" />
-    <rule ref="category/java/errorprone.xml/ReturnFromFinallyBlock" />
-    <rule ref="category/java/errorprone.xml/UnconditionalIfStatement" />
-    <rule ref="category/java/errorprone.xml/UnnecessaryConversionTemporary" />
-    <rule ref="category/java/errorprone.xml/UnusedNullCheckInEquals" />
-    <rule ref="category/java/errorprone.xml/UselessOperationOnImmutable" />
-    <rule ref="category/java/errorprone.xml/CloseResource" >
-        <properties>
-            <!-- When calling the store to close, PMD wants the full prefix before the call to the method to match, so let's try to use common var names for store ... -->
-            <property name="closeTargets" value="releaseConnection,store.releaseConnection,closeQuietly,closeConnection,closeSafe,store.closeSafe,dataStore.closeSafe,getDataStore().closeSafe,close,closeResultSet,closeStmt,closeFinally,JDBCUtils.close"/>
-        </properties>
-    </rule>
-
-    <rule ref="category/java/multithreading.xml/AvoidThreadGroup" />
-    <rule ref="category/java/multithreading.xml/DontCallThreadRun" />
-    <rule ref="category/java/multithreading.xml/DoubleCheckedLocking" />
-    
-    <rule ref="category/java/performance.xml/BigIntegerInstantiation" />
-    <rule ref="category/java/performance.xml/BooleanInstantiation" />
-    <rule ref="category/java/performance.xml/ByteInstantiation" />
-    <rule ref="category/java/performance.xml/IntegerInstantiation" />
-    <rule ref="category/java/performance.xml/LongInstantiation" />
-    <rule ref="category/java/performance.xml/ShortInstantiation" />
-    <rule ref="category/java/performance.xml/StringInstantiation" />
+    <priority>3</priority>
+    <properties>
+      <property name="version" value="2.0"/>
+      <property name="xpath">
+        <value><![CDATA[
+          //ImportDeclaration[@ImportedName=@PackageName]
+          ]]></value>
+      </property>
+    </properties>
+  </rule>
+  <rule ref="category/java/bestpractices.xml/UseCollectionIsEmpty" />
 </ruleset>

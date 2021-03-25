@@ -10,6 +10,7 @@ import javax.xml.namespace.QName;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.WfsFactory;
+import org.eclipse.emf.common.util.EList;
 import org.geoserver.wfs.xml.SqlViewParamsExtractor;
 import org.geotools.util.Converters;
 import org.geotools.xsd.AbstractComplexBinding;
@@ -78,6 +79,7 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.GETFEATURETYPE;
     }
@@ -89,7 +91,8 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<?> getType() {
         return GetFeatureType.class;
     }
 
@@ -100,6 +103,7 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         GetFeatureType getFeature = wfsfactory.createGetFeatureType();
 
@@ -126,7 +130,9 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
         }
 
         // queries
-        getFeature.getQuery().addAll(node.getChildValues(QueryType.class));
+        @SuppressWarnings("unchecked")
+        EList<QueryType> query = getFeature.getQuery();
+        query.addAll(node.getChildValues(QueryType.class));
 
         // viewParams
         SqlViewParamsExtractor.viewParams(getFeature, node);

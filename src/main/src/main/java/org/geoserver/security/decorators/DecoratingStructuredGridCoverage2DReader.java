@@ -41,116 +41,143 @@ public abstract class DecoratingStructuredGridCoverage2DReader
         this.delegate = delegate;
     }
 
+    @Override
     public Format getFormat() {
         return delegate.getFormat();
     }
 
+    @Override
     public Object getSource() {
         return delegate.getSource();
     }
 
+    @Override
     public String[] getMetadataNames() throws IOException {
         return delegate.getMetadataNames();
     }
 
+    @Override
     public GeneralEnvelope getOriginalEnvelope() {
         return delegate.getOriginalEnvelope();
     }
 
+    @Override
     public GeneralEnvelope getOriginalEnvelope(String coverageName) {
         return delegate.getOriginalEnvelope(coverageName);
     }
 
+    @Override
     public CoordinateReferenceSystem getCoordinateReferenceSystem() {
         return delegate.getCoordinateReferenceSystem();
     }
 
+    @Override
     public CoordinateReferenceSystem getCoordinateReferenceSystem(String coverageName) {
         return delegate.getCoordinateReferenceSystem(coverageName);
     }
 
+    @Override
     public GridEnvelope getOriginalGridRange() {
         return delegate.getOriginalGridRange();
     }
 
+    @Override
     public String[] getMetadataNames(String coverageName) throws IOException {
         return delegate.getMetadataNames(coverageName);
     }
 
+    @Override
     public GridEnvelope getOriginalGridRange(String coverageName) {
         return delegate.getOriginalGridRange(coverageName);
     }
 
+    @Override
     public MathTransform getOriginalGridToWorld(PixelInCell pixInCell) {
         return delegate.getOriginalGridToWorld(pixInCell);
     }
 
+    @Override
     public MathTransform getOriginalGridToWorld(String coverageName, PixelInCell pixInCell) {
         return delegate.getOriginalGridToWorld(coverageName, pixInCell);
     }
 
+    @Override
     public GridCoverage2D read(GeneralParameterValue[] parameters)
             throws IllegalArgumentException, IOException {
         return delegate.read(parameters);
     }
 
+    @Override
     public GridCoverage2D read(String coverageName, GeneralParameterValue[] parameters)
             throws IllegalArgumentException, IOException {
         return delegate.read(coverageName, parameters);
     }
 
+    @Override
     public String getMetadataValue(String name) throws IOException {
         return delegate.getMetadataValue(name);
     }
 
+    @Override
     public String getMetadataValue(String coverageName, String name) throws IOException {
         return delegate.getMetadataValue(coverageName, name);
     }
 
+    @Override
     public void dispose() throws IOException {
         delegate.dispose();
     }
 
+    @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters() throws IOException {
         return delegate.getDynamicParameters();
     }
 
+    @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName)
             throws IOException {
         return delegate.getDynamicParameters(coverageName);
     }
 
+    @Override
     public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution)
             throws IOException {
         return delegate.getReadingResolutions(policy, requestedResolution);
     }
 
+    @Override
     public double[] getReadingResolutions(
             String coverageName, OverviewPolicy policy, double[] requestedResolution)
             throws IOException {
         return delegate.getReadingResolutions(coverageName, policy, requestedResolution);
     }
 
+    @Override
     public String[] getGridCoverageNames() throws IOException {
         return delegate.getGridCoverageNames();
     }
 
+    @Override
     public int getGridCoverageCount() throws IOException {
         return delegate.getGridCoverageCount();
     }
 
+    @Override
     public ImageLayout getImageLayout() throws IOException {
         return delegate.getImageLayout();
     }
 
+    @Override
     public ImageLayout getImageLayout(String coverageName) throws IOException {
         return delegate.getImageLayout(coverageName);
     }
 
+    @Override
     public double[][] getResolutionLevels() throws IOException {
         return delegate.getResolutionLevels();
     }
 
+    @Override
     public double[][] getResolutionLevels(String coverageName) throws IOException {
         return delegate.getResolutionLevels(coverageName);
     }

@@ -5,11 +5,14 @@
  */
 package org.geoserver.rest.catalog;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geoserver.data.test.MockData.SF_PREFIX;
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedWriter;
@@ -80,13 +83,13 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
         String xml = "<featureType><name>pdsa</name><store>pds</store></featureType>";
 
-        MockHttpServletResponse response;
         String ws1FetureTypesPath =
                 BASEPATH + "/workspaces/" + ws1 + "/datastores/pds/featuretypes";
         String ws2FeatureTypesPath =
                 BASEPATH + "/workspaces/" + ws2 + "/datastores/pds/featuretypes";
 
-        response = postAsServletResponse(ws1FetureTypesPath, xml, "text/xml");
+        MockHttpServletResponse response =
+                postAsServletResponse(ws1FetureTypesPath, xml, "text/xml");
         assertEquals(201, response.getStatus());
 
         response = postAsServletResponse(ws2FeatureTypesPath, xml, "text/xml");
@@ -321,17 +324,14 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsHTML() throws Exception {
-        Document dom =
-                getAsDOM(
-                        BASEPATH
-                                + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.html");
+        getAsDOM(BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.html");
     }
 
     @Test
     public void testGetAllAsHTML() throws Exception {
         addPropertyDataStore(true);
 
-        String dom = getAsString(BASEPATH + "/workspaces/gs/datastores/pds/featuretypes.xml");
+        getAsString(BASEPATH + "/workspaces/gs/datastores/pds/featuretypes.xml");
 
         // System.out.println(dom);
     }
@@ -563,6 +563,7 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         }
         if (catalog.getResourcePool().getDataStoreCache().containsKey(dataStoreId)) {
             DataAccess dataStore = catalog.getResourcePool().getDataStoreCache().get(dataStoreId);
+            @SuppressWarnings("unchecked")
             List<Name> names = dataStore.getNames();
             assertTrue(names.contains(name));
         }
@@ -593,6 +594,7 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         }
         if (catalog.getResourcePool().getDataStoreCache().containsKey(dataStoreId)) {
             DataAccess dataStore = catalog.getResourcePool().getDataStoreCache().get(dataStoreId);
+            @SuppressWarnings("unchecked")
             List<Name> names = dataStore.getNames();
             assertTrue(names.contains(name));
         }

@@ -5,7 +5,7 @@
  */
 package org.geoserver.csw;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -56,8 +56,7 @@ public class CSWRecordResponseTest extends CSWSimpleTestSupport {
             super(
                     CSWRecordDescriptor.RECORD_TYPE,
                     CSW.NAMESPACE,
-                    new HashSet<String>(
-                            Arrays.asList(new String[] {"application/xml", "text/xml"})),
+                    new HashSet<>(Arrays.asList(new String[] {"application/xml", "text/xml"})),
                     gs);
         }
 
@@ -85,7 +84,7 @@ public class CSWRecordResponseTest extends CSWSimpleTestSupport {
     @Before
     public void setUp() throws Exception {
         // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("csw", CSW.NAMESPACE);
         namespaces.put("dc", DC.NAMESPACE);
         namespaces.put("dct", DCT.NAMESPACE);

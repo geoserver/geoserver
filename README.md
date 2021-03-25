@@ -46,7 +46,7 @@ access to the various mailing list, as well as some indication of the [code of c
 
 ## Contributing
 
-Please read [the contribution guidelines](https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md) before contributing pull requests to the GeoServer project.
+Please read [the contribution guidelines](https://github.com/geoserver/geoserver/blob/main/CONTRIBUTING.md) before contributing pull requests to the GeoServer project.
 
 ## More Information
 

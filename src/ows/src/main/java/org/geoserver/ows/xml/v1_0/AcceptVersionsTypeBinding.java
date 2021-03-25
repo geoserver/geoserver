@@ -5,6 +5,7 @@
  */
 package org.geoserver.ows.xml.v1_0;
 
+import java.util.List;
 import javax.xml.namespace.QName;
 import net.opengis.ows10.AcceptVersionsType;
 import net.opengis.ows10.Ows10Factory;
@@ -39,6 +40,7 @@ public class AcceptVersionsTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return OWS.ACCEPTVERSIONSTYPE;
     }
@@ -50,7 +52,8 @@ public class AcceptVersionsTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<AcceptVersionsType> getType() {
         return AcceptVersionsType.class;
     }
 
@@ -61,9 +64,12 @@ public class AcceptVersionsTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         AcceptVersionsType acceptVersions = owsfactory.createAcceptVersionsType();
-        acceptVersions.getVersion().addAll(node.getChildValues("Version"));
+        @SuppressWarnings("unchecked")
+        List<String> versions = node.getChildValues("Version");
+        acceptVersions.getVersion().addAll(versions);
 
         return acceptVersions;
     }

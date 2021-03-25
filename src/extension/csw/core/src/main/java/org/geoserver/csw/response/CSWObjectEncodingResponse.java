@@ -36,7 +36,7 @@ public class CSWObjectEncodingResponse extends XmlObjectEncodingResponse {
 
     @Override
     protected Map<String, String> getSchemaLocations() {
-        Map<String, String> locations = new HashMap<String, String>();
+        Map<String, String> locations = new HashMap<>();
         locations.put(
                 "http://www.opengis.net/cat/csw/2.0.2",
                 "http://schemas.opengis.net/csw/2.0.2/CSW-discovery.xsd");

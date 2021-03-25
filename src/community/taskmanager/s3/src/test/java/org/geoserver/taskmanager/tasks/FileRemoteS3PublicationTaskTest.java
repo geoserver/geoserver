@@ -19,6 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import org.geoserver.data.CatalogWriter;
+import org.geoserver.data.test.TestData;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
@@ -27,7 +28,7 @@ import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
 import org.geoserver.taskmanager.external.ExternalGS;
 import org.geoserver.taskmanager.external.FileService;
-import org.geoserver.taskmanager.external.impl.S3FileServiceImpl;
+import org.geoserver.taskmanager.external.impl.AWSFileServiceImpl;
 import org.geoserver.taskmanager.schedule.BatchJobService;
 import org.geoserver.taskmanager.util.LookupService;
 import org.geoserver.taskmanager.util.TaskManagerDataUtil;
@@ -36,6 +37,8 @@ import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -45,35 +48,60 @@ import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * To run this test you should have a geoserver running on http://localhost:9090/geoserver.
+ * To run this test you should have a geoserver running on http://localhost:9090/geoserver. This
+ * geoserver must also have be provided with the AWS credentials as below
  *
  * @author Niels Charlier
  */
+@Ignore
 public class FileRemoteS3PublicationTaskTest extends AbstractTaskManagerTest {
 
     private static final Logger LOGGER = Logging.getLogger(FileRemoteS3PublicationTaskTest.class);
 
+    @BeforeClass
+    public static void setCredentials() {
+        System.setProperty("aws.accessKeyId", "AKIAWOARDPAWVUZWJ3U7");
+        System.setProperty("aws.secretKey", "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");
+    }
+
     // configure these constants
-    private static QName REMOTE_COVERAGE = new QName("gs", "mylayer", "gs");
-    private static String REMOTE_COVERAGE_ALIAS = "test";
-    private static String REMOTE_COVERAGE_BUCKET = "source";
-    private static String REMOTE_COVERAGE_FILE_LOCATION = "test/salinity.tif";
+    // private static String REMOTE_COVERAGE_ALIAS = "test";
+    // private static String REMOTE_COVERAGE_BUCKET = "source";
+    // private static String REMOTE_COVERAGE_SUFFIX = "";
+    private static String REMOTE_COVERAGE_ALIAS = "s3";
+    private static String REMOTE_COVERAGE_BUCKET = "taskmanagertest";
+    private static String REMOTE_COVERAGE_SUFFIX = "?useAnon=false";
+
+    // private static String FILE_SERVICE = S3FileServiceImpl.name(REMOTE_COVERAGE_ALIAS,
+    // REMOTE_COVERAGE_BUCKET)
+    private static String FILE_SERVICE = AWSFileServiceImpl.name(REMOTE_COVERAGE_BUCKET);
+
+    private static QName REMOTE_COVERAGE = new QName("gs", "world", "gs");
+    private static String REMOTE_COVERAGE_FILE_LOCATION = "test/world.tiff";
     private static String REMOTE_COVERAGE_URL =
             REMOTE_COVERAGE_ALIAS
                     + "://"
                     + REMOTE_COVERAGE_BUCKET
                     + "/"
-                    + REMOTE_COVERAGE_FILE_LOCATION;
-    private static String REMOTE_COVERAGE_OTHER_BUCKET = "target";
-    private static String REMOTE_COVERAGE_OTHER_FILE_LOCATION_PATTERN = "test/salinity.###.tif";
-    private static String REMOTE_COVERAGE_OTHER_FILE_LOCATION_OLD = "test/salinity.41.tif";
-    private static String REMOTE_COVERAGE_OTHER_FILE_LOCATION = "test/salinity.42.tif";
+                    + REMOTE_COVERAGE_FILE_LOCATION
+                    + REMOTE_COVERAGE_SUFFIX;
+    // private static String REMOTE_COVERAGE_OTHER_BUCKET = "target";
+    // private static String OTHER_FILE_SERVICE = S3FileServiceImpl.name(REMOTE_COVERAGE_ALIAS,
+    // REMOTE_COVERAGE_OTHER_BUCKET)
+    private static String REMOTE_COVERAGE_OTHER_BUCKET = "taskmanagertest2";
+    private static String OTHER_FILE_SERVICE =
+            AWSFileServiceImpl.name(REMOTE_COVERAGE_OTHER_BUCKET);
+
+    private static String REMOTE_COVERAGE_OTHER_FILE_LOCATION_PATTERN = "test/world.###.tiff";
+    private static String REMOTE_COVERAGE_OTHER_FILE_LOCATION_OLD = "test/world.41.tif";
+    private static String REMOTE_COVERAGE_OTHER_FILE_LOCATION = "test/world.42.tiff";
     private static String REMOTE_COVERAGE_OTHER_URL =
             REMOTE_COVERAGE_ALIAS
                     + "://"
                     + REMOTE_COVERAGE_OTHER_BUCKET
                     + "/"
-                    + REMOTE_COVERAGE_OTHER_FILE_LOCATION;
+                    + REMOTE_COVERAGE_OTHER_FILE_LOCATION
+                    + REMOTE_COVERAGE_SUFFIX;
     private static String REMOTE_COVERAGE_TYPE = "S3GeoTiff";
 
     private static final String ATT_LAYER = "layer";
@@ -104,13 +132,18 @@ public class FileRemoteS3PublicationTaskTest extends AbstractTaskManagerTest {
     @Override
     public boolean setupDataDirectory() throws Exception {
         try {
-            FileService fileService =
-                    fileServices.get(
-                            S3FileServiceImpl.name(REMOTE_COVERAGE_ALIAS, REMOTE_COVERAGE_BUCKET));
+            FileService fileService = fileServices.get(FILE_SERVICE);
             Assume.assumeNotNull(fileService);
-            Assume.assumeTrue(
-                    "File exists on s3 service",
-                    fileService.checkFileExists(REMOTE_COVERAGE_FILE_LOCATION));
+
+            // copy file if not exists
+            if (!fileService.checkFileExists(REMOTE_COVERAGE_FILE_LOCATION)) {
+                fileService.create(
+                        REMOTE_COVERAGE_FILE_LOCATION,
+                        TestData.class.getResource("world.tiff").openStream());
+            }
+            // Assume.assumeTrue(
+            //        "File exists on s3 service",
+            //        fileService.checkFileExists(REMOTE_COVERAGE_FILE_LOCATION));
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
             Assume.assumeTrue("S3 service is configured and available", false);
@@ -157,13 +190,15 @@ public class FileRemoteS3PublicationTaskTest extends AbstractTaskManagerTest {
     }
 
     @After
-    public void clearDataFromDatabase() {
+    public void clearDataFromDatabase() throws IOException {
         if (batch != null) {
             dao.delete(batch);
         }
         if (config != null) {
             dao.delete(config);
         }
+        FileService fileService = fileServices.get(FILE_SERVICE);
+        fileService.delete(REMOTE_COVERAGE_FILE_LOCATION);
     }
 
     @Test
@@ -228,19 +263,18 @@ public class FileRemoteS3PublicationTaskTest extends AbstractTaskManagerTest {
             throws SchedulerException, SQLException, IOException {
         FileService otherFileService = null;
         try {
-            FileService fileService =
-                    fileServices.get(
-                            S3FileServiceImpl.name(REMOTE_COVERAGE_ALIAS, REMOTE_COVERAGE_BUCKET));
-            otherFileService =
-                    fileServices.get(
-                            S3FileServiceImpl.name(
-                                    REMOTE_COVERAGE_ALIAS, REMOTE_COVERAGE_OTHER_BUCKET));
+            FileService fileService = fileServices.get(FILE_SERVICE);
+            otherFileService = fileServices.get(OTHER_FILE_SERVICE);
             Assume.assumeNotNull(otherFileService);
-            try (InputStream is = fileService.read(REMOTE_COVERAGE_FILE_LOCATION)) {
-                otherFileService.create(REMOTE_COVERAGE_OTHER_FILE_LOCATION_OLD, is);
+            if (!otherFileService.checkFileExists(REMOTE_COVERAGE_OTHER_FILE_LOCATION_OLD)) {
+                try (InputStream is = fileService.read(REMOTE_COVERAGE_FILE_LOCATION)) {
+                    otherFileService.create(REMOTE_COVERAGE_OTHER_FILE_LOCATION_OLD, is);
+                }
             }
-            try (InputStream is = fileService.read(REMOTE_COVERAGE_FILE_LOCATION)) {
-                otherFileService.create(REMOTE_COVERAGE_OTHER_FILE_LOCATION, is);
+            if (!otherFileService.checkFileExists(REMOTE_COVERAGE_OTHER_FILE_LOCATION)) {
+                try (InputStream is = fileService.read(REMOTE_COVERAGE_FILE_LOCATION)) {
+                    otherFileService.create(REMOTE_COVERAGE_OTHER_FILE_LOCATION, is);
+                }
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
@@ -251,10 +285,7 @@ public class FileRemoteS3PublicationTaskTest extends AbstractTaskManagerTest {
                 config,
                 ATT_LAYER,
                 REMOTE_COVERAGE.getPrefix() + ":" + REMOTE_COVERAGE.getLocalPart());
-        dataUtil.setConfigurationAttribute(
-                config,
-                ATT_FILE_SERVICE,
-                S3FileServiceImpl.name(REMOTE_COVERAGE_ALIAS, REMOTE_COVERAGE_OTHER_BUCKET));
+        dataUtil.setConfigurationAttribute(config, ATT_FILE_SERVICE, OTHER_FILE_SERVICE);
         dataUtil.setConfigurationAttribute(
                 config, ATT_FILE, REMOTE_COVERAGE_OTHER_FILE_LOCATION_PATTERN);
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");

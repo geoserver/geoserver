@@ -60,6 +60,7 @@ public class WCS2GetCoverageRequestBuilder {
      *
      * @return this builder
      */
+    @SuppressWarnings("unchecked") // EMF model without generics
     public WCS2GetCoverageRequestBuilder date(XMLGregorianCalendar date) {
         DimensionSliceType dimensionTrim = Wcs20Factory.eINSTANCE.createDimensionSliceType();
         dimensionTrim.setSlicePoint(date.toXMLFormat());

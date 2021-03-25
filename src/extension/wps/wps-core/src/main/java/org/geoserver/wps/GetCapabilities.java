@@ -50,6 +50,7 @@ public class GetCapabilities {
         this.context = context;
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics
     public WPSCapabilitiesType run(GetCapabilitiesType request) throws WPSException {
         // do the version negotiation dance
         List<String> provided = Collections.singletonList("1.0.0");
@@ -153,17 +154,15 @@ public class GetCapabilities {
         // sort it
         ECollections.sort(
                 po.getProcess(),
-                new Comparator() {
+                (Comparator)
+                        (o1, o2) -> {
+                            ProcessBriefType pb1 = (ProcessBriefType) o1;
+                            ProcessBriefType pb2 = (ProcessBriefType) o2;
 
-                    public int compare(Object o1, Object o2) {
-                        ProcessBriefType pb1 = (ProcessBriefType) o1;
-                        ProcessBriefType pb2 = (ProcessBriefType) o2;
-
-                        final String id1 = pb1.getIdentifier().getValue();
-                        final String id2 = pb2.getIdentifier().getValue();
-                        return id1.compareTo(id2);
-                    }
-                });
+                            final String id1 = pb1.getIdentifier().getValue();
+                            final String id2 = pb2.getIdentifier().getValue();
+                            return id1.compareTo(id2);
+                        });
 
         LanguagesType1 languages = wpsf.createLanguagesType1();
         caps.setLanguages(languages);

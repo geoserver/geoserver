@@ -4,7 +4,10 @@
  */
 package org.geoserver.csw.store.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -48,9 +51,9 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
         // the resolution is 1s instead of 1ms)
         Thread.sleep(1001);
 
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(record, true)));
-        out.println("\nformat.value='img/jpeg'");
-        out.close();
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(record, true)))) {
+            out.println("\nformat.value='img/jpeg'");
+        }
 
         // wait one second, that is exactly what it takes FileWatcher to update
         Thread.sleep(1001);

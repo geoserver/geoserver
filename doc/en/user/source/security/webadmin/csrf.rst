@@ -11,7 +11,7 @@ The GeoServer web admin employs a CSRF (Cross-Site Request Forgery) protection f
   response in a debugger to see this, to the end user it will appear as if the
   form section of the page is just missing.
 
-To white list your proxy with the CSRF filter, you can use the ``GEOSERVER_CSRF_WHITELIST`` property. This property is a comma-separated list of domains, of the form ``<domainname>.<TLD>``, and can contain a subdomains.
+To allow-list your proxy with the CSRF filter, you can use the ``GEOSERVER_CSRF_WHITELIST`` property. This property is a comma-separated list of domains, of the form ``<domainname>.<TLD>``, and can contain a subdomains.
 Alternatively, you can disable the CSRF filter by setting the ``GEOSERVER_CSRF_DISABLED`` property to ``true``.
 
 Each of these properties is set through one of the standard means:

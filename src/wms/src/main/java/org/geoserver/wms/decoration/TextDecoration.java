@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.decoration;
 
+import static org.geoserver.template.TemplateUtils.FM_VERSION;
+
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.StringModel;
 import freemarker.template.Template;
@@ -12,7 +14,14 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -141,7 +150,7 @@ public class TextDecoration implements MapDecoration {
                         "name",
                         new StringReader(messageTemplate),
                         TemplateUtils.getSafeConfiguration());
-        final BeansWrapper bw = new BeansWrapper();
+        final BeansWrapper bw = new BeansWrapper(FM_VERSION);
         return FreeMarkerTemplateUtils.processTemplateIntoString(
                 t,
                 new TemplateHashModel() {

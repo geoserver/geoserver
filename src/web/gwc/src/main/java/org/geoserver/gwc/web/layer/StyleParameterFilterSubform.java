@@ -53,7 +53,7 @@ public class StyleParameterFilterSubform
             if (extra != null) {
                 size++;
             }
-            fakeObject = new ArrayList<String>(size);
+            fakeObject = new ArrayList<>(size);
         }
 
         @Override
@@ -78,9 +78,9 @@ public class StyleParameterFilterSubform
             if (object == null) {
                 realModel.setObject(null);
             } else {
-                Set<String> newObj = new HashSet<String>(object);
+                Set<String> newObj = new HashSet<>(object);
                 newObj.remove(extra);
-                realModel.setObject(new HashSet<String>(object));
+                realModel.setObject(new HashSet<>(object));
             }
         }
     }
@@ -151,7 +151,7 @@ public class StyleParameterFilterSubform
             } else {
                 size = realObj.size();
             }
-            fakeObject = new ArrayList<String>(size);
+            fakeObject = new ArrayList<>(size);
         }
 
         @Override
@@ -179,9 +179,9 @@ public class StyleParameterFilterSubform
             if (object == null || object.contains(nullify)) {
                 realModel.setObject(null);
             } else {
-                Set<String> newObj = new HashSet<String>(object);
+                Set<String> newObj = new HashSet<>(object);
                 newObj.remove(nullify);
-                realModel.setObject(new HashSet<String>(object));
+                realModel.setObject(new HashSet<>(object));
             }
         }
     }
@@ -197,31 +197,26 @@ public class StyleParameterFilterSubform
     public void onInitialize() {
         super.onInitialize();
 
-        final Component defaultValue;
-
         final String allStyles = getLocalizer().getString("allStyles", this);
         final String layerDefault = getLocalizer().getString("layerDefault", this);
 
         final IModel<List<String>> availableStylesModelDefault =
-                new SetAsListModel(
-                        new PropertyModel<Set<String>>(getModel(), "layerStyles"), layerDefault);
+                new SetAsListModel(new PropertyModel<>(getModel(), "layerStyles"), layerDefault);
         final IModel<List<String>> availableStylesModelAllowed =
-                new SetAsListModel(
-                        new PropertyModel<Set<String>>(getModel(), "layerStyles"), allStyles);
+                new SetAsListModel(new PropertyModel<>(getModel(), "layerStyles"), allStyles);
         final IModel<List<String>> selectedStylesModel =
-                new NullableSetAsListModel(
-                        new PropertyModel<Set<String>>(getModel(), "styles"), allStyles);
+                new NullableSetAsListModel(new PropertyModel<>(getModel(), "styles"), allStyles);
         final IModel<String> selectedDefaultModel =
                 new LabelledEmptyStringModel(
-                        new PropertyModel<String>(getModel(), "realDefault"), layerDefault);
+                        new PropertyModel<>(getModel(), "realDefault"), layerDefault);
 
-        defaultValue =
-                new DropDownChoice<String>(
+        final Component defaultValue =
+                new DropDownChoice<>(
                         "defaultValue", selectedDefaultModel, availableStylesModelDefault);
         add(defaultValue);
 
         final CheckBoxMultipleChoice<String> styles =
-                new CheckBoxMultipleChoice<String>(
+                new CheckBoxMultipleChoice<>(
                         "styles", selectedStylesModel, availableStylesModelAllowed);
         styles.setPrefix("<li>");
         styles.setSuffix("</li>");

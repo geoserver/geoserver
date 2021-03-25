@@ -161,6 +161,7 @@ public abstract class ImportTemplatePanel extends Panel {
                 target.add(dropDown);
             }
 
+            @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
             }
@@ -177,6 +178,7 @@ public abstract class ImportTemplatePanel extends Panel {
                 handleUpdate(target);
             }
 
+            @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
             }

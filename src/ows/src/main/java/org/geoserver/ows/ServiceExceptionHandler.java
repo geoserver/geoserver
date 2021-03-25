@@ -40,14 +40,14 @@ public abstract class ServiceExceptionHandler {
             org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
 
     /** The services this handler handles exceptions for. */
-    List /*<Service>*/ services;
+    List<Service> services;
 
     /**
      * Constructs the handler with the list of {@link Service}'s that it handles exceptions for.
      *
      * @param services A list of {@link Service}.
      */
-    public ServiceExceptionHandler(List services) {
+    public ServiceExceptionHandler(List<Service> services) {
         this.services = services;
     }
 
@@ -61,7 +61,7 @@ public abstract class ServiceExceptionHandler {
     }
 
     /** @return The services this handler handles exceptions for. */
-    public List getServices() {
+    public List<Service> getServices() {
         return services;
     }
 

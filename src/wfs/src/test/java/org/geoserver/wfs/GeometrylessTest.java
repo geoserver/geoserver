@@ -6,7 +6,7 @@
 package org.geoserver.wfs;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -23,8 +23,7 @@ public class GeometrylessTest extends WFSTestSupport {
         //        print(doc);
 
         NodeList featureMembers = doc.getElementsByTagName("gml:featureMember");
-        assertFalse(featureMembers.getLength() == 0);
-        NodeList features = doc.getElementsByTagName("cite:Geometryless");
+        assertNotEquals(0, featureMembers.getLength());
         assertEquals(3, featureMembers.getLength());
     }
 
@@ -41,8 +40,7 @@ public class GeometrylessTest extends WFSTestSupport {
         //        print(doc);
 
         NodeList featureMembers = doc.getElementsByTagName("gml:featureMember");
-        assertFalse(featureMembers.getLength() == 0);
-        NodeList features = doc.getElementsByTagName("cite:Geometryless");
+        assertNotEquals(0, featureMembers.getLength());
         assertEquals(3, featureMembers.getLength());
     }
 
@@ -55,7 +53,7 @@ public class GeometrylessTest extends WFSTestSupport {
         //        print(doc);
 
         NodeList featureMembers = doc.getElementsByTagName("gml:featureMembers");
-        assertFalse(featureMembers.getLength() == 0);
+        assertNotEquals(0, featureMembers.getLength());
         NodeList features = doc.getElementsByTagName("cite:Geometryless");
         assertEquals(3, features.getLength());
     }
@@ -72,7 +70,7 @@ public class GeometrylessTest extends WFSTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         NodeList featureMembers = doc.getElementsByTagName("gml:featureMembers");
-        assertFalse(featureMembers.getLength() == 0);
+        assertNotEquals(0, featureMembers.getLength());
         NodeList features = doc.getElementsByTagName("cite:Geometryless");
         assertEquals(3, features.getLength());
     }

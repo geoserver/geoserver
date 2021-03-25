@@ -24,10 +24,12 @@ public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
     List<T> roots;
     List<IModel<String>> problems;
 
+    @SafeVarargs
     public AbstractConfirmRemovalPanel(String id, T... roots) {
         this(id, null, Arrays.asList(roots));
     }
 
+    @SafeVarargs
     public AbstractConfirmRemovalPanel(String id, Model<?> model, T... roots) {
         this(id, model, Arrays.asList(roots));
     }
@@ -53,7 +55,7 @@ public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
         // removed
         WebMarkupContainer rulesRemoved = new WebMarkupContainer("rulesRemoved");
         removed.add(rulesRemoved);
-        if (roots.size() == 0) removed.setVisible(false);
+        if (roots.isEmpty()) removed.setVisible(false);
         else {
             rulesRemoved.add(
                     new ListView<String>("rules", names(roots)) {
@@ -69,7 +71,7 @@ public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
 
         WebMarkupContainer rulesNotRemoved = new WebMarkupContainer("rulesNotRemoved");
         problematic.add(rulesNotRemoved);
-        if (problems.size() == 0) problematic.setVisible(false);
+        if (problems.isEmpty()) problematic.setVisible(false);
         else {
             rulesNotRemoved.add(
                     new ListView<String>("problems", problems(problems)) {
@@ -82,8 +84,8 @@ public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
     }
 
     void setRootObjectsAndProblems(List<T> rootObjects) {
-        roots = new ArrayList<T>();
-        problems = new ArrayList<IModel<String>>();
+        roots = new ArrayList<>();
+        problems = new ArrayList<>();
         for (T obj : rootObjects) {
             IModel<String> model = canRemove(obj);
             if (model == null) roots.add(obj);
@@ -92,7 +94,7 @@ public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
     }
 
     List<String> problems(List<IModel<String>> objects) {
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         for (IModel<String> m : objects) {
             l.add(m.getObject());
         }
@@ -100,7 +102,7 @@ public abstract class AbstractConfirmRemovalPanel<T> extends Panel {
     }
 
     List<String> names(List<T> objects) {
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         for (T obj : objects) {
             l.add(name(obj));
         }

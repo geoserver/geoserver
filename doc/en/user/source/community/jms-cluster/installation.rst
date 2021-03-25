@@ -9,7 +9,7 @@ To install the JMS Cluster modules you simply have to:
 
 * Download the ``geoserver-jms-cluster-<version>.zip`` file from the nightly builds, community section
 * Stop GeoServer
-* Unpack the zip file in ``webapps/geoserver/WEB-lib``
+* Unpack the zip file in ``webapps/geoserver/WEB-INF/lib``
 * Start again GeoServer
 
 : .. warning::

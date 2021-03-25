@@ -6,13 +6,22 @@
 
 package org.geoserver.security.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import org.geoserver.security.*;
+import org.geoserver.security.AbstractSecurityServiceTest;
+import org.geoserver.security.GeoServerRoleService;
+import org.geoserver.security.GeoServerRoleStore;
+import org.geoserver.security.GeoServerUserGroupService;
+import org.geoserver.security.GeoServerUserGroupStore;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
@@ -69,14 +78,13 @@ public abstract class AbstractUserDetailsServiceTest extends AbstractSecuritySer
         theUser = usergroupStore.createUserObject(username, "", true);
         usergroupStore.addUser(theUser);
 
-        GeoServerRole role = null;
-        Set<GeoServerRole> roles = new HashSet<GeoServerRole>();
+        Set<GeoServerRole> roles = new HashSet<>();
 
         // no roles
         checkRoles(username, roles);
 
         // first direct role
-        role = roleStore.createRoleObject("userrole1");
+        GeoServerRole role = roleStore.createRoleObject("userrole1");
         roleStore.addRole(role);
         roleStore.associateRoleToUser(role, username);
         roles.add(role);
@@ -176,17 +184,14 @@ public abstract class AbstractUserDetailsServiceTest extends AbstractSecuritySer
         insertValues(usergroupStore);
 
         String username = "persUser";
-        GeoServerUser theUser = null;
 
-        theUser = usergroupStore.createUserObject(username, "", true);
+        GeoServerUser theUser = usergroupStore.createUserObject(username, "", true);
         theUser.getProperties().put("propertyA", "A");
         theUser.getProperties().put("propertyB", "B");
         theUser.getProperties().put("propertyC", "C");
         usergroupStore.addUser(theUser);
 
-        GeoServerRole role = null;
-
-        role = roleStore.createRoleObject("persrole1");
+        GeoServerRole role = roleStore.createRoleObject("persrole1");
         role.getProperties().put("propertyA", "");
         role.getProperties().put("propertyX", "X");
         roleStore.addRole(role);
@@ -214,9 +219,9 @@ public abstract class AbstractUserDetailsServiceTest extends AbstractSecuritySer
 
                 assertFalse(role.isAnonymous());
                 assertTrue(anonymousRole.isAnonymous());
-                assertFalse(role == anonymousRole);
-                assertFalse(role.equals(anonymousRole));
-                assertTrue(theUser.getUsername().equals(role.getUserName()));
+                assertNotSame(role, anonymousRole);
+                assertNotEquals(role, anonymousRole);
+                assertEquals(theUser.getUsername(), role.getUserName());
                 assertNull(anonymousRole.getUserName());
 
             } else if ("persrole2".equals(role.getAuthority())) {

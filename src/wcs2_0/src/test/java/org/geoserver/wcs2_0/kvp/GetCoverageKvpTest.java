@@ -4,9 +4,9 @@
  */
 package org.geoserver.wcs2_0.kvp;
 
-import static junit.framework.TestCase.assertEquals;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.awt.image.Raster;
 import java.io.ByteArrayInputStream;

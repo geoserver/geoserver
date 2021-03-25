@@ -89,8 +89,7 @@ public class WPSExecutionManager
     private ProcessStatusTracker statusTracker;
 
     /** The currently running processes */
-    private Map<String, ProcessListenerNotifier> localProcesses =
-            new ConcurrentHashMap<String, ProcessListenerNotifier>();
+    private Map<String, ProcessListenerNotifier> localProcesses = new ConcurrentHashMap<>();
 
     /** The timer informing the status tracker of the currently executing processes */
     private Timer heartbeatTimer;

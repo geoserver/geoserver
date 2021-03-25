@@ -5,7 +5,9 @@
  */
 package org.geoserver.test.onlineTest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -25,6 +27,7 @@ import org.geotools.data.complex.config.AppSchemaDataAccessConfigurator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.type.Types;
+import org.geotools.filter.LikeFilterImpl;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -62,7 +65,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
 
         // make sure non-feature types don't appear in FeatureTypeList
 
-        ArrayList<String> featureTypeNames = new ArrayList<String>(7);
+        ArrayList<String> featureTypeNames = new ArrayList<>(7);
         featureTypeNames.add(evaluate("//wfs:FeatureType[1]/wfs:Name", doc));
         featureTypeNames.add(evaluate("//wfs:FeatureType[2]/wfs:Name", doc));
         featureTypeNames.add(evaluate("//wfs:FeatureType[3]/wfs:Name", doc));
@@ -255,7 +258,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
     }
 
     private void checkGU16777549126932776(Document doc) {
-        ArrayList<String> name = new ArrayList<String>();
+        ArrayList<String> name = new ArrayList<>();
         name.add(
                 evaluate(
                         "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.16777549126932776']/gml:name[1]",
@@ -267,7 +270,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         assertTrue(name.contains("Castlemaine Group (Oc)"));
         assertTrue(name.contains("urn:cgi:feature:GSV:GeologicUnit:16777549126932776"));
 
-        ArrayList<String> nameCodespace = new ArrayList<String>();
+        ArrayList<String> nameCodespace = new ArrayList<>();
         nameCodespace.add(
                 evaluate(
                         "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.16777549126932776']/gml:name[1]/@codeSpace",
@@ -317,7 +320,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 doc);
 
         // test eventEnvironment with no regards to its order
-        ArrayList<String> eventEnvironment = new ArrayList<String>();
+        ArrayList<String> eventEnvironment = new ArrayList<>();
         eventEnvironment.add(
                 evaluate(
                         "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.16777549126932776']/gsml:geologicHistory/gsml:GeologicEvent[@gml:id='gsml.geologicevent.16777549126932777']/gsml:eventEnvironment[1]/gsml:CGI_TermValue/gsml:value",
@@ -335,7 +338,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 doc);
 
         // test eventProcess with no regards to its order
-        ArrayList<String> eventProcess = new ArrayList<String>();
+        ArrayList<String> eventProcess = new ArrayList<>();
         eventProcess.add(
                 evaluate(
                         "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.16777549126932776']/gsml:geologicHistory/gsml:GeologicEvent[@gml:id='gsml.geologicevent.16777549126932777']/gsml:eventProcess[1]/gsml:CGI_TermValue/gsml:value",
@@ -439,7 +442,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
 
     private void checkGU16777549126930540(Document doc) {
 
-        ArrayList<String> name = new ArrayList<String>();
+        ArrayList<String> name = new ArrayList<>();
         name.add(
                 evaluate(
                         "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.16777549126930540']/gml:name[1]",
@@ -883,7 +886,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         assertXpathEvaluatesTo("9", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(9, "//gsml:GeologicUnit", doc);
 
-        ArrayList<String> ids = new ArrayList<String>();
+        ArrayList<String> ids = new ArrayList<>();
         for (int i = 1; i <= 9; i++) {
             ids.add(evaluate("(//gsml:GeologicUnit)[" + i + "]/@gml:id", doc));
         }
@@ -1360,7 +1363,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.167775491107838881']/gml:name",
                 doc);
 
-        ArrayList<String> ls = new ArrayList<String>();
+        ArrayList<String> ls = new ArrayList<>();
         ls.add(
                 evaluate(
                         "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.167775491107838881']/gml:name[1]",
@@ -1565,7 +1568,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 "//gsml:ShearDisplacementStructure[@gml:id='gsml.sheardisplacementstructure.46188']/gml:name",
                 doc);
 
-        ArrayList<String> ls = new ArrayList<String>();
+        ArrayList<String> ls = new ArrayList<>();
         ls.add(
                 evaluate(
                         "//gsml:ShearDisplacementStructure[@gml:id='gsml.sheardisplacementstructure.46188']/gml:name[1]",
@@ -1664,7 +1667,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.185911']/gsml:samplingFrame/@xlink:href",
                 doc);
 
-        ArrayList<String> specs = new ArrayList<String>();
+        ArrayList<String> specs = new ArrayList<>();
 
         for (int i = 1; i <= 10; i++) {
             specs.add(
@@ -1954,7 +1957,7 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
             featureSource = null;
         }
         assertNotNull(featureSource);
-        List<Filter> filterList = new ArrayList<Filter>();
+        List<Filter> filterList = new ArrayList<>();
         FilterFactory2 ff =
                 new FilterFactoryImplNamespaceAware(
                         ((MappingFeatureSource) featureSource).getMapping().getNamespaces());
@@ -1971,35 +1974,38 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
 
         FeatureCollection<FeatureType, Feature> filteredResults =
                 featureSource.getFeatures(andFilter);
-        FeatureIterator<Feature> iterator = filteredResults.features();
+        try (FeatureIterator<Feature> iterator = filteredResults.features()) {
 
-        assertTrue(filteredResults instanceof MappingFeatureCollection);
+            assertTrue(filteredResults instanceof MappingFeatureCollection);
 
-        MappingFeatureCollection mfc = ((MappingFeatureCollection) filteredResults);
-        Filter afterSplit = mfc.getQuery().getFilter();
-        // this tests that after the split, only he LikeFilterImpl exist on the query as a pre
-        // filter
-        assertTrue(afterSplit instanceof org.geotools.filter.LikeFilterImpl);
-        // Below ensures that the right filter exist on the query for pre processing on the
-        // database. The LikeFilter with the nested attribute should be post processed as at that
-        // current point in time the property has not been mapped and is unable to be filtered on
-        // the database whereas gsml:purpose is straight forward and can be pre processed on the
-        // database
-        assertTrue(
-                "*ypical*".equals(((org.geotools.filter.LikeFilterImpl) afterSplit).getLiteral()));
-        ArrayList<String> ids = new ArrayList<String>();
-        while (iterator.hasNext()) {
-            ids.add(iterator.next().getIdentifier().toString());
+            MappingFeatureCollection mfc = ((MappingFeatureCollection) filteredResults);
+            Filter afterSplit = mfc.getQuery().getFilter();
+            // this tests that after the split, only he LikeFilterImpl exist on the query as a pre
+            // filter
+            assertTrue(afterSplit instanceof org.geotools.filter.LikeFilterImpl);
+            // Below ensures that the right filter exist on the query for pre processing on the
+            // database. The LikeFilter with the nested attribute should be post processed as at
+            // that
+            // current point in time the property has not been mapped and is unable to be filtered
+            // on
+            // the database whereas gsml:purpose is straight forward and can be pre processed on the
+            // database
+            assertEquals("*ypical*", ((LikeFilterImpl) afterSplit).getLiteral());
+            ArrayList<String> ids = new ArrayList<>();
+            while (iterator.hasNext()) {
+                ids.add(iterator.next().getIdentifier().toString());
+            }
+            assertEquals(3, ids.size());
+            assertTrue(ids.contains("gsml.geologicunit.1677754911513315832"));
+            assertTrue(ids.contains("gsml.geologicunit.16777549126941084"));
+            assertTrue(ids.contains("gsml.geologicunit.16777549126942588"));
         }
-        assertEquals(3, ids.size());
-        assertTrue(ids.contains("gsml.geologicunit.1677754911513315832"));
-        assertTrue(ids.contains("gsml.geologicunit.16777549126941084"));
-        assertTrue(ids.contains("gsml.geologicunit.16777549126942588"));
     }
 
+    @SuppressWarnings("unchecked")
     public FeatureSource<FeatureType, Feature> getFeatureSource(Name feature) throws IOException {
         DataAccess<FeatureType, Feature> mfDataAccess =
                 AppSchemaDataAccessRegistry.getDataAccess(feature);
-        return (FeatureSource) mfDataAccess.getFeatureSource(feature);
+        return mfDataAccess.getFeatureSource(feature);
     }
 }

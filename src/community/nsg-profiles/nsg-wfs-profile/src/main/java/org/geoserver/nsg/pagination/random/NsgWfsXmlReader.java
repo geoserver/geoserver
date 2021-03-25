@@ -11,6 +11,8 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -30,6 +32,7 @@ import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.xml.v2_0.WfsXmlReader;
 import org.geotools.util.Version;
+import org.geotools.util.logging.Logging;
 import org.geotools.wfs.v2_0.WFS;
 import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
@@ -37,7 +40,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 public class NsgWfsXmlReader extends XmlRequestReader implements ExtensionPriority {
-
+    static final Logger LOGGER = Logging.getLogger(NsgWfsXmlReader.class);
     // WFS 2.0 namespaces
     private static SimpleNamespaceContext WFS_20_NAMESPACES;
 
@@ -129,7 +132,7 @@ public class NsgWfsXmlReader extends XmlRequestReader implements ExtensionPriori
         try {
             TransformerFactory.newInstance().newTransformer().transform(xmlSource, outputTarget);
         } catch (TransformerException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", e);
         }
         return outputStream.toByteArray();
     }

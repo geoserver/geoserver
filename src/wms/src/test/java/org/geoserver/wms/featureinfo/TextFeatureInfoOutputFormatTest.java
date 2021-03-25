@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
+import org.eclipse.emf.common.util.EList;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -32,6 +33,7 @@ import org.geoserver.ows.Request;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.util.factory.Hints;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -71,9 +73,9 @@ public class TextFeatureInfoOutputFormatTest extends WMSTestSupport {
         outputFormat = new TextFeatureInfoOutputFormat(getWMS());
 
         Request request = new Request();
-        parameters = new HashMap<String, Object>();
+        parameters = new HashMap<>();
         parameters.put("LAYER", "testLayer");
-        Map<String, String> env = new HashMap<String, String>();
+        Map<String, String> env = new HashMap<>();
         env.put("TEST1", "VALUE1");
         env.put("TEST2", "VALUE2");
         parameters.put("ENV", env);
@@ -84,10 +86,12 @@ public class TextFeatureInfoOutputFormatTest extends WMSTestSupport {
         final FeatureTypeInfo featureType = getFeatureTypeInfo(MockData.NULLS);
 
         fcType = WfsFactory.eINSTANCE.createFeatureCollectionType();
-        fcType.getFeature().add(featureType.getFeatureSource(null, null).getFeatures());
+        @SuppressWarnings("unchecked")
+        EList<FeatureCollection> feature = fcType.getFeature();
+        feature.add(featureType.getFeatureSource(null, null).getFeatures());
 
         // fake layer list
-        List<MapLayerInfo> queryLayers = new ArrayList<MapLayerInfo>();
+        List<MapLayerInfo> queryLayers = new ArrayList<>();
         LayerInfo layerInfo = new LayerInfoImpl();
         layerInfo.setType(PublishedType.VECTOR);
         ResourceInfo resourceInfo = new FeatureTypeInfoImpl(null);
@@ -122,7 +126,9 @@ public class TextFeatureInfoOutputFormatTest extends WMSTestSupport {
             Hints.scanSystemProperties();
             final FeatureTypeInfo featureType = getFeatureTypeInfo(MockData.PRIMITIVEGEOFEATURE);
             fcType = WfsFactory.eINSTANCE.createFeatureCollectionType();
-            fcType.getFeature().add(featureType.getFeatureSource(null, null).getFeatures());
+            @SuppressWarnings("unchecked")
+            EList<FeatureCollection> feature = fcType.getFeature();
+            feature.add(featureType.getFeatureSource(null, null).getFeatures());
 
             getFeatureInfoRequest.setFeatureCount(10);
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -143,7 +149,9 @@ public class TextFeatureInfoOutputFormatTest extends WMSTestSupport {
         try {
             final FeatureTypeInfo featureType = getFeatureTypeInfo(MockData.PRIMITIVEGEOFEATURE);
             fcType = WfsFactory.eINSTANCE.createFeatureCollectionType();
-            fcType.getFeature().add(featureType.getFeatureSource(null, null).getFeatures());
+            @SuppressWarnings("unchecked")
+            EList<FeatureCollection> feature = fcType.getFeature();
+            feature.add(featureType.getFeatureSource(null, null).getFeatures());
 
             getFeatureInfoRequest.setFeatureCount(10);
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();

@@ -61,7 +61,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         @Override
         protected Component nameLink(final String id, final GridSet gridSet) {
             Label label = new Label(id, gridSet.getName());
-            label.add(new AttributeModifier("title", new Model<String>(gridSet.getDescription())));
+            label.add(new AttributeModifier("title", new Model<>(gridSet.getDescription())));
             return label;
         }
 
@@ -80,8 +80,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
                             List<String> selection =
                                     DefaultGridsetsEditor.this.selection.getObject();
                             selection.remove(gridsetName);
-                            List<String> choices =
-                                    new ArrayList<String>(availableGridSets.getChoices());
+                            List<String> choices = new ArrayList<>(availableGridSets.getChoices());
                             choices.add(gridsetName);
                             Collections.sort(choices);
                             availableGridSets.setChoices(choices);
@@ -89,7 +88,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
                             target.add(availableGridSets);
                         }
                     };
-            removeLink.setDefaultModel(new Model<String>(gridSetName));
+            removeLink.setDefaultModel(new Model<>(gridSetName));
 
             return removeLink;
         }
@@ -111,7 +110,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
 
     public DefaultGridsetsEditor(final String id, final IModel<Set<String>> model) {
         super(id, model);
-        selection = new Model<ArrayList<String>>(new ArrayList<String>(model.getObject()));
+        selection = new Model<>(new ArrayList<>(model.getObject()));
 
         GridSetTableProvider provider =
                 new GridSetTableProvider() {
@@ -121,7 +120,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
                     public List<GridSet> getItems() {
                         GridSetBroker gridSetBroker = GWC.get().getGridSetBroker();
                         List<String> list = selection.getObject();
-                        List<GridSet> gridsets = new ArrayList<GridSet>(list.size());
+                        List<GridSet> gridsets = new ArrayList<>(list.size());
                         for (String id : list) {
                             GridSet gridSet = gridSetBroker.get(id);
                             if (gridSet != null) {
@@ -142,7 +141,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
                     @Override
                     protected List<String> load() {
                         List<String> gridSetNames =
-                                new ArrayList<String>(GWC.get().getGridSetBroker().getNames());
+                                new ArrayList<>(GWC.get().getGridSetBroker().getNames());
                         for (String gsId : selection.getObject()) {
                             gridSetNames.remove(gsId);
                         }
@@ -152,8 +151,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
                 };
 
         availableGridSets =
-                new DropDownChoice<String>(
-                        "availableGridsets", new Model<String>(), availableModel);
+                new DropDownChoice<>("availableGridsets", new Model<>(), availableModel);
         availableGridSets.setOutputMarkupId(true);
         add(availableGridSets);
 
@@ -170,8 +168,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
                             return;
                         }
 
-                        List<String> choices =
-                                new ArrayList<String>(availableGridSets.getChoices());
+                        List<String> choices = new ArrayList<>(availableGridSets.getChoices());
                         choices.remove(selectedGridset);
                         availableGridSets.setChoices(choices);
                         availableGridSets.setEnabled(!choices.isEmpty());
@@ -192,7 +189,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
     @Override
     public void convertInput() {
         List<String> defaultGridsetIds = selection.getObject();
-        Set<String> convertedInput = new HashSet<String>();
+        Set<String> convertedInput = new HashSet<>();
         convertedInput.addAll(defaultGridsetIds);
         setConvertedInput(convertedInput);
     }

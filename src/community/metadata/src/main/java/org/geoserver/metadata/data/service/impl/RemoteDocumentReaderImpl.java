@@ -8,16 +8,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.geoserver.metadata.data.service.RemoteDocumentReader;
+import org.geotools.util.logging.Logging;
 import org.springframework.stereotype.Repository;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 @Repository
 public class RemoteDocumentReaderImpl implements RemoteDocumentReader {
+    static final Logger LOGGER = Logging.getLogger(RemoteDocumentReaderImpl.class);
 
     @Override
     public Document readDocument(URL url) throws IOException {
@@ -29,14 +33,11 @@ public class RemoteDocumentReaderImpl implements RemoteDocumentReader {
             Document doc = db.parse(stream);
             doc.getDocumentElement().normalize();
             return doc;
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
+        } catch (MalformedURLException
+                | ParserConfigurationException
+                | SAXException
+                | IllegalStateException e) {
+            LOGGER.log(Level.WARNING, "", e);
         }
         throw new IOException("Could not read metadata from:" + url);
     }

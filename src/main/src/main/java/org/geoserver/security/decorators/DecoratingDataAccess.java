@@ -30,34 +30,42 @@ public abstract class DecoratingDataAccess<T extends FeatureType, F extends Feat
         super(delegate);
     }
 
+    @Override
     public void createSchema(T featureType) throws IOException {
         delegate.createSchema(featureType);
     }
 
+    @Override
     public void dispose() {
         delegate.dispose();
     }
 
+    @Override
     public FeatureSource<T, F> getFeatureSource(Name typeName) throws IOException {
         return delegate.getFeatureSource(typeName);
     }
 
+    @Override
     public ServiceInfo getInfo() {
         return delegate.getInfo();
     }
 
+    @Override
     public List<Name> getNames() throws IOException {
         return delegate.getNames();
     }
 
+    @Override
     public T getSchema(Name name) throws IOException {
         return delegate.getSchema(name);
     }
 
+    @Override
     public void updateSchema(Name typeName, T featureType) throws IOException {
         delegate.updateSchema(typeName, featureType);
     }
 
+    @Override
     public void removeSchema(Name typeName) throws IOException {
         delegate.removeSchema(typeName);
     }

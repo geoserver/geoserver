@@ -57,6 +57,7 @@ public class ResultTypeTypeBinding extends AbstractSimpleBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.RESULTTYPETYPE;
     }
@@ -68,7 +69,8 @@ public class ResultTypeTypeBinding extends AbstractSimpleBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<ResultTypeType> getType() {
         return ResultTypeType.class;
     }
 
@@ -79,6 +81,7 @@ public class ResultTypeTypeBinding extends AbstractSimpleBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(InstanceComponent instance, Object value) throws Exception {
         if ("results".equals(value)) {
             return ResultTypeType.RESULTS_LITERAL;

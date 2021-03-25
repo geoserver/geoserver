@@ -15,12 +15,10 @@ import org.geoserver.catalog.FeatureTypeInfo;
  *
  * @author Andrea Aime - TOPP
  */
-public class FeatureTypeInfoTitleComparator implements Comparator {
+public class FeatureTypeInfoTitleComparator implements Comparator<FeatureTypeInfo> {
 
-    public int compare(Object o1, Object o2) {
-        FeatureTypeInfo ft1 = (FeatureTypeInfo) o1;
-        FeatureTypeInfo ft2 = (FeatureTypeInfo) o2;
-
+    @Override
+    public int compare(FeatureTypeInfo ft1, FeatureTypeInfo ft2) {
         // this will take care of null values as well
         return new CompareToBuilder().append(ft1.getTitle(), ft2.getTitle()).toComparison();
     }

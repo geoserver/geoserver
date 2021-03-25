@@ -4,16 +4,23 @@
  */
 package org.geoserver.importer.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Date;
 import org.geoserver.importer.transform.AttributeComputeTransform;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.Converters;
+import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 
 public class AttributeComputeTransformTest extends TransformTestSupport {
 
+    @Test
     public void testTransformLiteral() throws Exception {
         AttributeComputeTransform tx =
                 new AttributeComputeTransform("theDate", Date.class, "2012-05-03T12:00:00Z");
@@ -38,6 +45,7 @@ public class AttributeComputeTransformTest extends TransformTestSupport {
                 transformed.getAttribute("theDate"));
     }
 
+    @Test
     public void testTransformExpression() throws Exception {
         AttributeComputeTransform tx =
                 new AttributeComputeTransform("flowSquared", Double.class, "flow * flow");
@@ -61,6 +69,7 @@ public class AttributeComputeTransformTest extends TransformTestSupport {
         assertEquals(flow * flow, (Double) transformed.getAttribute("flowSquared"), 0d);
     }
 
+    @Test
     public void testAddExisting() throws Exception {
         AttributeComputeTransform tx = new AttributeComputeTransform("flow", Double.class, "123");
 
@@ -70,13 +79,14 @@ public class AttributeComputeTransformTest extends TransformTestSupport {
 
         // transforming type
         try {
-            SimpleFeatureType transformedType = tx.apply(null, null, riverType);
+            tx.apply(null, null, riverType);
             fail("Should have thrown an exception, flow is already there");
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains("flow"));
         }
     }
 
+    @Test
     public void testJSON() throws Exception {
         doJSONTest(new AttributeComputeTransform("flowSquared", Double.class, "flow * flow"));
         doJSONTest(new AttributeComputeTransform("theDate", Date.class, "2012-05-03T12:00:00Z"));

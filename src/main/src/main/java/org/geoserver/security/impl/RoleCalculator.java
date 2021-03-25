@@ -86,7 +86,7 @@ public class RoleCalculator {
      */
     public SortedSet<GeoServerRole> calculateRoles(GeoServerUser user) throws IOException {
 
-        Set<GeoServerRole> set1 = new HashSet<GeoServerRole>();
+        Set<GeoServerRole> set1 = new HashSet<>();
 
         // alle roles for the user
         set1.addAll(getRoleService().getRolesForUser(user.getUsername()));
@@ -140,7 +140,7 @@ public class RoleCalculator {
     /** Calculate the {@link GeoServerRole} objects for a group including inherited roles */
     public SortedSet<GeoServerRole> calculateRoles(GeoServerUserGroup group) throws IOException {
 
-        SortedSet<GeoServerRole> roles = new TreeSet<GeoServerRole>();
+        SortedSet<GeoServerRole> roles = new TreeSet<>();
         roles.addAll(getRoleService().getRolesForGroup(group.getGroupname()));
         addInheritedRoles(roles);
         return roles;
@@ -148,7 +148,7 @@ public class RoleCalculator {
 
     /** Adds inherited roles to a role set */
     public void addInheritedRoles(Collection<GeoServerRole> coll) throws IOException {
-        Set<GeoServerRole> inherited = new HashSet<GeoServerRole>();
+        Set<GeoServerRole> inherited = new HashSet<>();
         for (GeoServerRole role : coll) addParentRole(role, inherited);
         coll.addAll(inherited);
     }
@@ -159,7 +159,7 @@ public class RoleCalculator {
      */
     public SortedSet<GeoServerRole> personalizeRoles(
             GeoServerUser user, Collection<GeoServerRole> roles) throws IOException {
-        SortedSet<GeoServerRole> set = new TreeSet<GeoServerRole>();
+        SortedSet<GeoServerRole> set = new TreeSet<>();
         for (GeoServerRole role : roles) {
             Properties personalizedProps =
                     getRoleService()

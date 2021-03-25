@@ -4,7 +4,7 @@
  */
 package org.geoserver.web.security;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,7 +36,7 @@ public class AccessDataRuleInfoManagerTest extends GeoServerWicketTestSupport {
     @Test
     public void testWsAccessDataRuleUpdate() throws IOException {
         Set<DataAccessRule> dataRules = ruleInfoMan.getResourceRule(ws.getName(), ws);
-        assertTrue(dataRules.isEmpty() == true);
+        assertEquals(true, dataRules.isEmpty());
         Set<String> availableRoles = ruleInfoMan.getAvailableRoles();
         List<DataAccessRuleInfo> rulesInfo =
                 ruleInfoMan.mapTo(dataRules, availableRoles, ws.getName(), null);
@@ -44,7 +44,7 @@ public class AccessDataRuleInfoManagerTest extends GeoServerWicketTestSupport {
         Set<DataAccessRule> news =
                 ruleInfoMan.mapFrom(rulesInfo, availableRoles, ws.getName(), null, false);
         ruleInfoMan.saveRules(dataRules, news);
-        assertTrue(ruleInfoMan.getResourceRule(ws.getName(), ws).size() == 1);
+        assertEquals(1, ruleInfoMan.getResourceRule(ws.getName(), ws).size());
         cleanRules(ws.getName(), ws);
     }
 
@@ -52,7 +52,7 @@ public class AccessDataRuleInfoManagerTest extends GeoServerWicketTestSupport {
     public void testLayerAccessDataRuleUpdate() throws IOException {
         LayerInfo layerInfo = getCatalog().getLayerByName("BasicPolygons");
         Set<DataAccessRule> dataRules = ruleInfoMan.getResourceRule(ws.getName(), layerInfo);
-        assertTrue(dataRules.isEmpty() == true);
+        assertEquals(true, dataRules.isEmpty());
         Set<String> availableRoles = ruleInfoMan.getAvailableRoles();
         List<DataAccessRuleInfo> rulesInfo =
                 ruleInfoMan.mapTo(dataRules, availableRoles, ws.getName(), layerInfo.getName());
@@ -61,12 +61,12 @@ public class AccessDataRuleInfoManagerTest extends GeoServerWicketTestSupport {
                 ruleInfoMan.mapFrom(
                         rulesInfo, availableRoles, ws.getName(), layerInfo.getName(), false);
         ruleInfoMan.saveRules(dataRules, news);
-        assertTrue(ruleInfoMan.getResourceRule(ws.getName(), layerInfo).size() == 1);
+        assertEquals(1, ruleInfoMan.getResourceRule(ws.getName(), layerInfo).size());
         cleanRules(ws.getName(), layerInfo);
     }
 
     public void cleanRules(String wsName, CatalogInfo info) throws IOException {
         ruleInfoMan.removeAllResourceRules(wsName, info);
-        assertTrue(0 == ruleInfoMan.getResourceRule(wsName, info).size());
+        assertEquals(0, ruleInfoMan.getResourceRule(wsName, info).size());
     }
 }

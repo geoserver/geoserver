@@ -6,9 +6,9 @@ package org.geoserver.wms.web.data;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.FileReader;
@@ -20,7 +20,11 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.event.*;
+import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogListener;
+import org.geoserver.catalog.event.CatalogModifyEvent;
+import org.geoserver.catalog.event.CatalogPostModifyEvent;
+import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -139,6 +143,7 @@ public class StyleEditPageWorkspaceRenameAndEditTest extends GeoServerWicketTest
         FormTester form = tester.newFormTester("styleForm", false);
 
         // Update the workspace (select "sf" from the dropdown)
+        @SuppressWarnings("unchecked")
         DropDownChoice<WorkspaceInfo> typeDropDown =
                 (DropDownChoice<WorkspaceInfo>)
                         tester.getComponentFromLastRenderedPage(

@@ -5,7 +5,11 @@
  */
 package org.geoserver.security.web.user;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.SortedSet;
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
@@ -20,6 +24,7 @@ import org.junit.Test;
 
 public class NewUserPageTest extends AbstractUserPageTest {
 
+    @Override
     protected void initializeTester() {
         AbstractSecurityPage returnPage = initializeForUGServiceNamed(getUserGroupServiceName());
         tester.startPage(
@@ -35,6 +40,7 @@ public class NewUserPageTest extends AbstractUserPageTest {
         clearServices();
     }
 
+    @Override
     protected void doInitialize() throws Exception {
         initializeForXML();
     }

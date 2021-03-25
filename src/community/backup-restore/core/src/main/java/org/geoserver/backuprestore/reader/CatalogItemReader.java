@@ -29,6 +29,7 @@ public class CatalogItemReader<T> extends CatalogReader<T> {
         super(clazz, backupFacade);
     }
 
+    @Override
     protected void initialize(StepExecution stepExecution) {}
 
     @Override

@@ -29,16 +29,18 @@ public class ViewParamsKvpParser extends KvpParser implements ApplicationContext
         super("viewparams", List.class);
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
+    @Override
     public Object parse(String value) throws Exception {
-        List ret = new ArrayList();
-        List parsers = GeoServerExtensions.extensions(KvpParser.class, applicationContext);
+        List<Object> ret = new ArrayList<>();
+        List<KvpParser> parsers =
+                GeoServerExtensions.extensions(KvpParser.class, applicationContext);
         KvpParser formatOptionsParser = null;
-        for (Object o : parsers) {
-            KvpParser parser = (KvpParser) o;
+        for (KvpParser parser : parsers) {
             if (parser.getKey().equalsIgnoreCase("format_options")) {
                 formatOptionsParser = parser;
                 break;

@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
@@ -60,6 +59,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
     }
 
     /** @return The global wfs instance from the application context. */
+    @Override
     protected WCSInfo getWCS() {
         return getGeoServer().getService(WCSInfo.class);
     }
@@ -69,7 +69,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
         super.onSetUp(testData);
 
         // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("wcs", "http://www.opengis.net/wcs/1.1.1");
         namespaces.put("ows", "http://www.opengis.net/ows/1.1");
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
@@ -86,7 +86,7 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
     /** Parses a multipart message from the response */
     protected Multipart getMultipart(MockHttpServletResponse response)
             throws MessagingException, IOException {
-        MimeMessage body = new MimeMessage((Session) null, getBinaryInputStream(response));
+        MimeMessage body = new MimeMessage(null, getBinaryInputStream(response));
         Multipart multipart = (Multipart) body.getContent();
         return multipart;
     }

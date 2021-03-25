@@ -23,7 +23,7 @@ public class Icon extends Panel {
 
     /** Constructs an Icon from a resource reference. */
     public Icon(String id, PackageResourceReference PackageResourceReference) {
-        this(id, new Model<PackageResourceReference>(PackageResourceReference));
+        this(id, new Model<>(PackageResourceReference));
     }
 
     /**
@@ -32,7 +32,7 @@ public class Icon extends Panel {
      */
     public Icon(
             String id, PackageResourceReference PackageResourceReference, IModel<String> title) {
-        this(id, new Model<PackageResourceReference>(PackageResourceReference), title);
+        this(id, new Model<>(PackageResourceReference), title);
     }
 
     /** Constructs an Icon from a model. */

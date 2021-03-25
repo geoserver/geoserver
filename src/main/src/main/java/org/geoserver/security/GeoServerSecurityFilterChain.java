@@ -25,7 +25,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
 
-    List<RequestFilterChain> requestChains = new ArrayList<RequestFilterChain>();
+    List<RequestFilterChain> requestChains = new ArrayList<>();
 
     /*
      * chain patterns
@@ -119,7 +119,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
         DEFAULT.setFilterNames(BASIC_AUTH_FILTER, ANONYMOUS_FILTER);
     }
 
-    private static List<RequestFilterChain> INITIAL = new ArrayList<RequestFilterChain>();
+    private static List<RequestFilterChain> INITIAL = new ArrayList<>();
 
     static {
         INITIAL.add(WEB);
@@ -131,7 +131,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
     }
 
     public GeoServerSecurityFilterChain() {
-        requestChains = new ArrayList<RequestFilterChain>();
+        requestChains = new ArrayList<>();
     }
 
     /** Constructor cloning all collections */
@@ -141,12 +141,12 @@ public class GeoServerSecurityFilterChain implements Serializable {
 
     /** Constructor cloning all collections */
     public GeoServerSecurityFilterChain(GeoServerSecurityFilterChain other) {
-        this.requestChains = new ArrayList<RequestFilterChain>(other.getRequestChains());
+        this.requestChains = new ArrayList<>(other.getRequestChains());
     }
 
     /** Create the initial {@link GeoServerSecurityFilterChain} */
     public static GeoServerSecurityFilterChain createInitialChain() {
-        return new GeoServerSecurityFilterChain(new ArrayList<RequestFilterChain>(INITIAL));
+        return new GeoServerSecurityFilterChain(new ArrayList<>(INITIAL));
     }
 
     public void postConfigure(GeoServerSecurityManager secMgr) {
@@ -197,7 +197,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
     }
 
     public List<RequestFilterChain> getVariableRequestChains() {
-        List<RequestFilterChain> result = new ArrayList<RequestFilterChain>();
+        List<RequestFilterChain> result = new ArrayList<>();
         for (RequestFilterChain chain : getRequestChains())
             if (chain.isConstant() == false) result.add(chain);
         return result;
@@ -291,7 +291,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
      * authentication filters are searched
      */
     public List<String> patternsForFilter(String filterName, boolean includeAll) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (RequestFilterChain requestChain : requestChains) {
             List<String> filterNames =
                     includeAll
@@ -308,10 +308,10 @@ public class GeoServerSecurityFilterChain implements Serializable {
     public List<String> filtersFor(String pattern) {
         RequestFilterChain requestChain = requestChain(pattern);
         if (requestChain == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
-        return new ArrayList(requestChain.getFilterNames());
+        return new ArrayList<>(requestChain.getFilterNames());
     }
 
     public boolean removeForPattern(String pattern) {
@@ -345,7 +345,7 @@ public class GeoServerSecurityFilterChain implements Serializable {
         return requestChain;
     }
 
-    RequestFilterChain requestChain(String pattern) {
+    public RequestFilterChain requestChain(String pattern) {
         for (RequestFilterChain requestChain : requestChains) {
             if (requestChain.getPatterns().contains(pattern)) {
                 return requestChain;

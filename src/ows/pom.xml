@@ -10,7 +10,7 @@
  <parent>
   <groupId>org.geoserver</groupId>
   <artifactId>geoserver</artifactId>
-  <version>2.18-SNAPSHOT</version>
+  <version>2.20-SNAPSHOT</version>
  </parent>
  
  <groupId>org.geoserver</groupId>
@@ -19,6 +19,10 @@
  <name>Open Web Service Module</name>
  
  <dependencies>
+  <dependency>
+   <groupId>org.springframework</groupId>
+   <artifactId>spring-webmvc</artifactId>
+  </dependency>
    <dependency>
     <groupId>org.springframework.security</groupId>
     <artifactId>spring-security-core</artifactId>
@@ -65,10 +69,6 @@
    <groupId>javax.servlet</groupId>
    <artifactId>javax.servlet-api</artifactId>
    <scope>provided</scope>
-  </dependency>
-  <dependency>
-   <groupId>xpp3</groupId>
-   <artifactId>xpp3</artifactId>
   </dependency>
   <dependency>
    <groupId>org.springframework</groupId>

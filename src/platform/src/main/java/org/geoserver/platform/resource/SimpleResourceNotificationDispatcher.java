@@ -22,14 +22,13 @@ import org.geoserver.platform.resource.ResourceNotification.Kind;
  */
 public class SimpleResourceNotificationDispatcher implements ResourceNotificationDispatcher {
 
-    private Map<String, List<ResourceListener>> handlers =
-            new HashMap<String, List<ResourceListener>>();
+    private Map<String, List<ResourceListener>> handlers = new HashMap<>();
 
     @Override
     public synchronized void addListener(String resource, ResourceListener listener) {
         List<ResourceListener> listeners = handlers.get(resource);
         if (listeners == null) {
-            listeners = new ArrayList<ResourceListener>();
+            listeners = new ArrayList<>();
             handlers.put(resource, listeners);
         }
         listeners.add(listener);
@@ -79,7 +78,7 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
 
         // if create, propagate CREATE events to its created parents, which can be found in the
         // events (see {@link createEvents})
-        Set<String> createdParents = new HashSet<String>();
+        Set<String> createdParents = new HashSet<>();
         if (notification.getKind() == Kind.ENTRY_CREATE) {
             for (Event event : notification.events()) {
                 if (!notification.getPath().equals(event.getPath())) {
@@ -107,7 +106,7 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
     private List<Event> relative(List<Event> events, String path) {
         // FileSystemResourceStore sends events with relative paths,
         // so we must do as well
-        List<Event> result = new ArrayList<Event>();
+        List<Event> result = new ArrayList<>();
         for (Event event : events) {
             result.add(new Event(event.getPath().replace(path + "/", ""), event.getKind()));
         }
@@ -131,7 +130,7 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
      * @return List of notification events covering change
      */
     public static List<Event> createEvents(Resource resource, Kind kind) {
-        List<Event> events = new ArrayList<Event>();
+        List<Event> events = new ArrayList<>();
 
         events.add(new ResourceNotification.Event(resource.path(), kind));
 
@@ -166,7 +165,7 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
      * @return List of notification events covering all the modified Resources
      */
     public static List<Event> createRenameEvents(Resource src, Resource dest) {
-        List<Event> events = new ArrayList<Event>();
+        List<Event> events = new ArrayList<>();
 
         events.add(
                 new ResourceNotification.Event(

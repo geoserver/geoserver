@@ -32,6 +32,7 @@ public class PropertyNameTypeBinding extends OGCPropertyNameTypeBinding {
         this.catalog = catalog;
     }
 
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         PropertyName propertyName = (PropertyName) super.parse(instance, node, value);
 
@@ -51,10 +52,9 @@ public class PropertyNameTypeBinding extends OGCPropertyNameTypeBinding {
         }
 
         if (factory instanceof FilterFactory2) {
-            return ((FilterFactory2) factory)
-                    .property(
-                            propertyName.getPropertyName(),
-                            GML3EncodingUtils.copyNamespaceSupport(namespaceSupport));
+            return factory.property(
+                    propertyName.getPropertyName(),
+                    GML3EncodingUtils.copyNamespaceSupport(namespaceSupport));
         }
 
         return propertyName;

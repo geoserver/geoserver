@@ -41,14 +41,14 @@ public class InstanceOfTest {
 
         // Ensure the function name is returned correctly
         assertNotNull(functionNames);
-        assertTrue(functionNames.size() == 1);
+        assertEquals(1, functionNames.size());
         assertEquals(IsInstanceOf.NAME, functionNames.get(0));
 
         // Get the filterFactory
         FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
         // Ensure the function is returned correctly
-        List<Expression> args = new ArrayList<Expression>();
+        List<Expression> args = new ArrayList<>();
         args.add(ff.literal(Object.class));
         Function f = factory.function(IsInstanceOf.NAME.getFunctionName(), args, null);
         assertNotNull(f);

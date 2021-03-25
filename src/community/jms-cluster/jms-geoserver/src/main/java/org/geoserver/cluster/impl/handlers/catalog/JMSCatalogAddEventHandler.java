@@ -32,6 +32,7 @@ public class JMSCatalogAddEventHandler extends JMSCatalogEventHandler {
     private final Catalog catalog;
     private final ToggleSwitch producer;
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public JMSCatalogAddEventHandler(
             Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
         super(xstream, clazz);

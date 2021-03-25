@@ -16,11 +16,14 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
+
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 
@@ -28,7 +31,7 @@ import org.opengis.filter.Filter;
  * @author groldan
  * @author Kevin Smith, OpenGeo
  */
-public class QueryBuilderTest extends TestCase {
+public class QueryBuilderTest {
 
     private JDBCConfigTestSupport testSupport;
 
@@ -36,6 +39,7 @@ public class QueryBuilderTest extends TestCase {
 
     Dialect dialect;
 
+    @Before
     public void setUp() throws Exception {
         dialect = new Dialect();
         dbMappings = new DbMappings(dialect);
@@ -47,10 +51,12 @@ public class QueryBuilderTest extends TestCase {
         dbMappings = testSupport.getDbMappings();
     }
 
+    @After
     public void tearDown() throws Exception {
         testSupport.tearDown();
     }
 
+    @Test
     public void testQueryAll() {
         Filter filter = Predicates.equal("name", "ws1");
         StringBuilder build =
@@ -59,6 +65,7 @@ public class QueryBuilderTest extends TestCase {
                         .build();
     }
 
+    @Test
     public void testSort1() {
         Filter filter = Predicates.acceptAll();
         StringBuilder build =
@@ -68,6 +75,7 @@ public class QueryBuilderTest extends TestCase {
                         .build();
     }
 
+    @Test
     public void testSort2() {
         Filter filter = Predicates.acceptAll();
         StringBuilder build =
@@ -77,6 +85,7 @@ public class QueryBuilderTest extends TestCase {
                         .build();
     }
 
+    @Test
     public void testSort3() {
         Filter filter = Predicates.acceptAll();
         StringBuilder build =
@@ -89,6 +98,7 @@ public class QueryBuilderTest extends TestCase {
                         .build();
     }
 
+    @Test
     public void testSort3WithFilter() {
         Filter filter = Predicates.equal("name", "quux");
         StringBuilder build =

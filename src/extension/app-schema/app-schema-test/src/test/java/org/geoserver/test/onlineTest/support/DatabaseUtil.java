@@ -10,8 +10,9 @@ import java.io.DataInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class provides utility function to split up generated sql files into individual statement to
@@ -39,13 +40,12 @@ public class DatabaseUtil {
 
         StringBuilder contents = new StringBuilder();
 
-        ArrayList<String> statements = new ArrayList<String>();
+        ArrayList<String> statements = new ArrayList<>();
         try {
             // use buffering, reading one line at a time
             // FileReader always assumes default encoding is OK!
-            BufferedReader input =
-                    new BufferedReader(new InputStreamReader(new DataInputStream(inputStream)));
-            try {
+            try (BufferedReader input =
+                    new BufferedReader(new InputStreamReader(new DataInputStream(inputStream)))) {
                 String line = null;
                 PostgisIgnoreOperator pio = new PostgisIgnoreOperator();
                 while ((line = input.readLine()) != null) {
@@ -69,9 +69,6 @@ public class DatabaseUtil {
                 }
 
                 return statements;
-
-            } finally {
-                input.close();
             }
         } catch (Exception e) {
             throw e;
@@ -119,10 +116,10 @@ public class DatabaseUtil {
 
         public final String[] operators = {"$$", "$_$", "'"};
 
-        Hashtable<String, Boolean> open;
+        Map<String, Boolean> open;
 
         PostgisIgnoreOperator() {
-            open = new Hashtable<String, Boolean>();
+            open = new HashMap<>();
             for (String s : operators) {
                 open.put(s, Boolean.FALSE);
             }
@@ -202,13 +199,12 @@ public class DatabaseUtil {
 
         StringBuilder contents = new StringBuilder();
 
-        ArrayList<String> statements = new ArrayList<String>();
+        ArrayList<String> statements = new ArrayList<>();
         try {
             // use buffering, reading one line at a time
             // FileReader always assumes default encoding is OK!
-            BufferedReader input =
-                    new BufferedReader(new InputStreamReader(new DataInputStream(inputStream)));
-            try {
+            try (BufferedReader input =
+                    new BufferedReader(new InputStreamReader(new DataInputStream(inputStream)))) {
                 String line = null, suffix = null; // not declared within while loop
                 boolean start = true;
 
@@ -256,9 +252,6 @@ public class DatabaseUtil {
                 }
 
                 return statements;
-
-            } finally {
-                input.close();
             }
         } catch (Exception e) {
             throw e;

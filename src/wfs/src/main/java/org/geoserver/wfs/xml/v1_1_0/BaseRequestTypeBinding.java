@@ -89,6 +89,7 @@ public class BaseRequestTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.BASEREQUESTTYPE;
     }
@@ -100,7 +101,8 @@ public class BaseRequestTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<BaseRequestType> getType() {
         return BaseRequestType.class;
     }
 
@@ -111,6 +113,7 @@ public class BaseRequestTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         // this binding needs to be executed after the child
         EObject request = (EObject) value;

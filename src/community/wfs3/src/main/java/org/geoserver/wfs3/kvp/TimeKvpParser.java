@@ -23,6 +23,7 @@ public class TimeKvpParser extends KvpParser {
         setService("WFS");
     }
 
+    @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Object parse(String value) throws ParseException {
         Collection times = parser.parse(value);

@@ -6,7 +6,6 @@ package org.geoserver.platform.resource;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -87,12 +86,12 @@ public class FileSystemResourceStoreTest {
     }
 
     private void attemptRenameDir(String oldName, String newName) throws IOException {
-        File toBeRenamed = folder.newFolder(oldName);
+        folder.newFolder(oldName);
         attemptRename(oldName, newName);
     }
 
     private void attemptRenameFile(String oldName, String newName) throws IOException {
-        File toBeRenamed = folder.newFile(oldName);
+        folder.newFile(oldName);
         attemptRename(oldName, newName);
     }
 

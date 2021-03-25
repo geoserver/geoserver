@@ -32,6 +32,8 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.Types;
 import org.geotools.util.factory.Hints;
+import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
@@ -135,7 +137,7 @@ public class GetRecords {
                 // time to run the queries if we are not in hits mode
                 if (resultType == ResultType.RESULTS) {
                     if (resultType != ResultType.HITS) {
-                        List<FeatureCollection> results = new ArrayList<FeatureCollection>();
+                        List<FeatureCollection<FeatureType, Feature>> results = new ArrayList<>();
                         for (int i = 0; i < queries.size() && maxRecords > 0; i++) {
                             WrappedQuery q = queries.get(i);
                             int remaining = counts[i] - offset;
@@ -164,7 +166,7 @@ public class GetRecords {
                         if (results.size() == 1) {
                             records = results.get(0);
                         } else if (results.size() > 1) {
-                            records = new CompositeFeatureCollection(results);
+                            records = new CompositeFeatureCollection<>(results);
                         }
                     }
                 }
@@ -204,7 +206,7 @@ public class GetRecords {
         }
 
         // build one query per type name, forgetting about paging for the time being
-        List<WrappedQuery> result = new ArrayList<WrappedQuery>();
+        List<WrappedQuery> result = new ArrayList<>();
         for (RecordDescriptor outputRd : outputRds) {
             for (QName qName : query.getTypeNames()) {
                 Name typeName = new NameImpl(qName);
@@ -250,7 +252,7 @@ public class GetRecords {
             // turn the QName into PropertyName. We don't do any verification cause the
             // elements in the actual feature could be parts of substitution groups
             // of the elements in the feature's schema
-            List<PropertyName> result = new ArrayList<PropertyName>();
+            List<PropertyName> result = new ArrayList<>();
             for (QName qn : query.getElementName()) {
                 result.add(store.translateProperty(rd, Types.toTypeName(qn)));
             }
@@ -259,7 +261,7 @@ public class GetRecords {
             ElementSetType elementSet = getElementSet(query);
             List<Name> properties = rd.getPropertiesForElementSet(elementSet);
             if (properties != null) {
-                List<PropertyName> result = new ArrayList<PropertyName>();
+                List<PropertyName> result = new ArrayList<>();
                 for (Name pn : properties) {
                     result.add(store.translateProperty(rd, pn));
                 }
@@ -285,7 +287,7 @@ public class GetRecords {
     }
 
     private Set<Name> getSupportedTypes() throws IOException {
-        Set<Name> result = new HashSet<Name>();
+        Set<Name> result = new HashSet<>();
         for (RecordDescriptor rd : store.getRecordDescriptors()) {
             result.add(rd.getFeatureDescriptor().getName());
         }
@@ -323,7 +325,7 @@ public class GetRecords {
             request.setOutputFormat(CSW.NAMESPACE);
         }
 
-        List<RecordDescriptor> list = new ArrayList<RecordDescriptor>();
+        List<RecordDescriptor> list = new ArrayList<>();
         for (RecordDescriptor rd : recordDescriptors) {
             if (outputSchema.equals(rd.getOutputSchema())) {
                 list.add(rd);

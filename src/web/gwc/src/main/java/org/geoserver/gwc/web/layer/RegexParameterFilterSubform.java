@@ -50,16 +50,12 @@ public class RegexParameterFilterSubform
     public RegexParameterFilterSubform(String id, IModel<RegexParameterFilter> model) {
         super(id, model);
 
-        final Component defaultValue;
-
-        defaultValue =
-                new TextField<String>(
-                        "defaultValue", new PropertyModel<String>(model, "defaultValue"));
+        final Component defaultValue =
+                new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
         add(defaultValue);
 
-        final TextField<String> regex;
-
-        regex = new TextField<String>("regex", new PropertyModel<String>(model, "regex"));
+        final TextField<String> regex =
+                new TextField<>("regex", new PropertyModel<>(model, "regex"));
 
         regex.add(REGEXP_VALIDATOR);
 

@@ -27,6 +27,8 @@ The `Open Geospatial Consortium <http://www.opengeospatial.org/>`_ (OGC) Web Fea
 
 **Ignore maximum number of features when calculating hits** - When calculating the total number of hits, ignore the Maximum number of features setting. This can be used to get the count of matching features, even if they would not be made available for download because they exceed the maximum count specified. On very large data sets, this can slow down the response.
 
+**Activate complex to simple features conversion** - Enables the conversion of complex features to simple features, using only SF-0 (simple) attributes for compatible output formats like CSV, KML, SHAPE-ZIP.
+
 Service Levels
 --------------
 
@@ -111,6 +113,8 @@ Selecting the :guilabel:`Use ESRI WKT format for SHAPE-ZIP generated .prj files`
 is not selected, OGC WKT format will be used. If this checkbox is selected, ESRI WKT format will be used.
 
 Note: this requires an ``esri.properties`` file to be provided in the ``user_projections`` subdirectory of the GeoServer data directory. This may be obtained from the GeoTools EPSG extension.
+
+Selecting the :guilabel:`Include WFS request dump file` checkbox specifies if the file 'wfsrequest.txt' will be included in the Shapefile zip output. 'wfsrequest.txt' contains a dump of the full request URL used to get the Shapefile zip output.  If this checkbox is not selected, 'wfsrequest.txt' will not be included in the output. If this checkbox is selected, 'wfsrequest.txt' will be included in the output.
 
 Stored Queries
 --------------

@@ -9,9 +9,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 import org.junit.Test;
 
 public class SLDValidatorTest {
+
+    static final Logger LOGGER = Logging.getLogger(SLDValidatorTest.class);
 
     @Test
     public void testValid() throws Exception {
@@ -39,9 +43,9 @@ public class SLDValidatorTest {
         assertTrue(errors.isEmpty());
     }
 
-    void showErrors(List errors) {
-        for (Exception err : (List<Exception>) errors) {
-            System.out.println(err.getMessage());
+    void showErrors(List<Exception> errors) {
+        for (Exception err : errors) {
+            LOGGER.warning(err.getMessage());
         }
     }
 }

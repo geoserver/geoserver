@@ -71,12 +71,13 @@ public class ModuleStatusPanel extends Panel {
                         item.add(
                                 new Label(
                                         "component",
-                                        new Model(
+                                        new Model<>(
                                                 item.getModelObject().getComponent().orElse(""))));
                         item.add(
                                 new Label(
                                         "version",
-                                        new Model(item.getModelObject().getVersion().orElse(""))));
+                                        new Model<>(
+                                                item.getModelObject().getVersion().orElse(""))));
                         msgLink =
                                 new AjaxLink("msg") {
                                     @Override
@@ -117,9 +118,10 @@ public class ModuleStatusPanel extends Panel {
             Label component =
                     new Label(
                             "component",
-                            new Model(item.getModelObject().getComponent().orElse("")));
+                            new Model<>(item.getModelObject().getComponent().orElse("")));
             Label version =
-                    new Label("version", new Model(item.getModelObject().getVersion().orElse("")));
+                    new Label(
+                            "version", new Model<>(item.getModelObject().getVersion().orElse("")));
             MultiLineLabel msgLabel =
                     new MultiLineLabel("msg", item.getModelObject().getMessage().orElse(""));
 

@@ -73,6 +73,7 @@ public class JasyptPBEPasswordEncoderWrapper extends AbstractGeoserverPasswordEn
         this.useTextEncryptor = Boolean.FALSE;
     }
 
+    @Override
     public String encodePassword(String rawPass, Object salt) {
         this.checkInitialization();
         return this.useTextEncryptor
@@ -80,6 +81,7 @@ public class JasyptPBEPasswordEncoderWrapper extends AbstractGeoserverPasswordEn
                 : this.pbeStringEncryptor.encrypt(rawPass);
     }
 
+    @Override
     public boolean isPasswordValid(String encPass, String rawPass, Object salt) {
         this.checkInitialization();
         String decPassword = null;

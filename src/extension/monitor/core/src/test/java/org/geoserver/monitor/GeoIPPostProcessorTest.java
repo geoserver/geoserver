@@ -30,6 +30,7 @@ public class GeoIPPostProcessorTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     public void testLookup() throws Exception {
         if (geoipLookup == null) {
             return;

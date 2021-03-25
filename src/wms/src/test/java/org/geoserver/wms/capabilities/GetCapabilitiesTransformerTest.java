@@ -19,10 +19,16 @@ import java.util.Set;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
@@ -36,11 +42,13 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.NumberRange;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -50,18 +58,21 @@ import org.xml.sax.helpers.NamespaceSupport;
  * @author Gabriel Roldan
  * @version $Id$
  */
-public class GetCapabilitiesTransformerTest {
+public class GetCapabilitiesTransformerTest extends WMSTestSupport {
 
     private static final class EmptyExtendedCapabilitiesProvider
             implements ExtendedCapabilitiesProvider {
+        @Override
         public String[] getSchemaLocations(String schemaBaseURL) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void registerNamespaces(NamespaceSupport namespaces) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public List<String> getVendorSpecificCapabilitiesRoots(GetCapabilitiesRequest request) {
             return null;
         }
@@ -70,11 +81,13 @@ public class GetCapabilitiesTransformerTest {
          * @see
          *     org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
          */
+        @Override
         public List<String> getVendorSpecificCapabilitiesChildDecls(
                 GetCapabilitiesRequest request) {
             return null;
         }
 
+        @Override
         public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request)
                 throws IOException {}
 
@@ -90,14 +103,17 @@ public class GetCapabilitiesTransformerTest {
 
     private static final class TestExtendedCapabilitiesProvider
             implements ExtendedCapabilitiesProvider {
+        @Override
         public String[] getSchemaLocations(String schemaBaseURL) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void registerNamespaces(NamespaceSupport namespaces) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public List<String> getVendorSpecificCapabilitiesRoots(GetCapabilitiesRequest request) {
             return Collections.singletonList("TestElement?");
         }
@@ -106,11 +122,13 @@ public class GetCapabilitiesTransformerTest {
          * @see
          *     org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()
          */
+        @Override
         public List<String> getVendorSpecificCapabilitiesChildDecls(
                 GetCapabilitiesRequest request) {
             return Collections.singletonList("<!ELEMENT TestSubElement (#PCDATA) >");
         }
 
+        @Override
         public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request)
                 throws IOException {
             tx.start("TestElement");
@@ -128,7 +146,7 @@ public class GetCapabilitiesTransformerTest {
         @Override
         public NumberRange<Double> overrideScaleDenominators(
                 PublishedInfo layer, NumberRange<Double> scaleDenominators) {
-            return new NumberRange<Double>(Double.class, 0d, 1000d);
+            return new NumberRange<>(Double.class, 0d, 1000d);
         }
     }
 
@@ -197,7 +215,7 @@ public class GetCapabilitiesTransformerTest {
         req = new GetCapabilitiesRequest();
         req.setBaseUrl(baseUrl);
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         XPATH = XMLUnit.newXpathEngine();
@@ -205,8 +223,8 @@ public class GetCapabilitiesTransformerTest {
 
     @Test
     public void testHeader() throws Exception {
-        GetCapabilitiesTransformer tr;
-        tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
+        GetCapabilitiesTransformer tr =
+                new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
         StringWriter writer = new StringWriter();
         tr.transform(req, writer);
         String content = writer.getBuffer().toString();
@@ -221,8 +239,8 @@ public class GetCapabilitiesTransformerTest {
 
     @Test
     public void testRootElement() throws Exception {
-        GetCapabilitiesTransformer tr;
-        tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
+        GetCapabilitiesTransformer tr =
+                new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
 
         Document dom = WMSTestSupport.transform(req, tr);
         Element root = dom.getDocumentElement();
@@ -266,8 +284,8 @@ public class GetCapabilitiesTransformerTest {
         wmsInfo.setFees("fees");
         wmsInfo.setAccessConstraints("accessConstraints");
 
-        GetCapabilitiesTransformer tr;
-        tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
+        GetCapabilitiesTransformer tr =
+                new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
         tr.setIndentation(2);
         Document dom = WMSTestSupport.transform(req, tr);
 
@@ -315,8 +333,8 @@ public class GetCapabilitiesTransformerTest {
 
     @Test
     public void testCRSList() throws Exception {
-        GetCapabilitiesTransformer tr;
-        tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
+        GetCapabilitiesTransformer tr =
+                new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
         tr.setIndentation(2);
         Document dom = WMSTestSupport.transform(req, tr);
         final Set<String> supportedCodes = CRS.getSupportedCodes("EPSG");
@@ -331,8 +349,8 @@ public class GetCapabilitiesTransformerTest {
         wmsInfo.getSRS().add("EPSG:3246");
         wmsInfo.getSRS().add("EPSG:23030");
 
-        GetCapabilitiesTransformer tr;
-        tr = new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
+        GetCapabilitiesTransformer tr =
+                new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
         tr.setIndentation(2);
         Document dom = WMSTestSupport.transform(req, tr);
         NodeList limitedCrsCodes =
@@ -344,8 +362,7 @@ public class GetCapabilitiesTransformerTest {
     public void testVendorSpecificCapabilities() throws Exception {
         ExtendedCapabilitiesProvider vendorCapsProvider = new TestExtendedCapabilitiesProvider();
 
-        GetCapabilitiesTransformer tr;
-        tr =
+        GetCapabilitiesTransformer tr =
                 new GetCapabilitiesTransformer(
                         wmsConfig,
                         baseUrl,
@@ -361,8 +378,7 @@ public class GetCapabilitiesTransformerTest {
         ExtendedCapabilitiesProvider emptyCapsProvider = new EmptyExtendedCapabilitiesProvider();
         ExtendedCapabilitiesProvider vendorCapsProvider = new TestExtendedCapabilitiesProvider();
 
-        GetCapabilitiesTransformer tr;
-        tr =
+        GetCapabilitiesTransformer tr =
                 new GetCapabilitiesTransformer(
                         wmsConfig,
                         baseUrl,
@@ -373,8 +389,7 @@ public class GetCapabilitiesTransformerTest {
         checkVendorSpecificCapsProviders(tr);
     }
 
-    private void checkVendorSpecificCapsProviders(GetCapabilitiesTransformer tr)
-            throws Exception, XpathException {
+    private void checkVendorSpecificCapsProviders(GetCapabilitiesTransformer tr) throws Exception {
         Document dom = WMSTestSupport.transform(req, tr);
         assertXpathEvaluatesTo("1", "count(/WMT_MS_Capabilities/Capability/Layer/SRS)", dom);
         assertXpathEvaluatesTo(
@@ -391,5 +406,73 @@ public class GetCapabilitiesTransformerTest {
                         "/WMT_MS_Capabilities/Capability/VendorSpecificCapabilities/TestElement/TestSubElement",
                         dom);
         assertEquals(1, list.getLength());
+    }
+
+    @Test
+    public void testLayerStyleSections() throws Exception {
+        // Given
+        String LAYER_GROUP_NAME = "testLayerGroup";
+
+        StyleInfo styleInfo = this.catalog.getFactory().createStyle();
+        styleInfo.setName("testStyle");
+        styleInfo.setFilename("testStyle.sld");
+        this.catalog.add(styleInfo);
+
+        NamespaceInfo namespaceInfo = this.catalog.getFactory().createNamespace();
+        namespaceInfo.setURI("http://test");
+        namespaceInfo.setPrefix("test");
+        this.catalog.add(namespaceInfo);
+
+        WorkspaceInfo workspaceInfo = this.catalog.getFactory().createWorkspace();
+        workspaceInfo.setName("testDatastore");
+        this.catalog.add(workspaceInfo);
+
+        WMSStoreInfo wmsStoreInfo = this.catalog.getFactory().createWebMapServer();
+        wmsStoreInfo.setName("testDatastore");
+        wmsStoreInfo.setWorkspace(workspaceInfo);
+        this.catalog.add(wmsStoreInfo);
+
+        WMSLayerInfo wmsLayerInfo = this.catalog.getFactory().createWMSLayer();
+        wmsLayerInfo.setName("testDatastore:testLayer");
+        wmsLayerInfo.setStore(wmsStoreInfo);
+        wmsLayerInfo.setNamespace(namespaceInfo);
+        this.catalog.add(wmsLayerInfo);
+
+        LayerInfo layerInfo = this.catalog.getFactory().createLayer();
+        layerInfo.setDefaultStyle(styleInfo);
+        layerInfo.setResource(wmsLayerInfo);
+        this.catalog.add(layerInfo);
+
+        CoordinateReferenceSystem nativeCrs = CRS.decode("EPSG:4326", true);
+        ReferencedEnvelope nativeBounds = new ReferencedEnvelope(-180, 180, -90, 90, nativeCrs);
+
+        LayerGroupInfo layerGroupInfo = this.catalog.getFactory().createLayerGroup();
+        layerGroupInfo.setName(LAYER_GROUP_NAME);
+        layerGroupInfo.setBounds(nativeBounds);
+        layerGroupInfo.setMode(LayerGroupInfo.Mode.NAMED);
+        layerGroupInfo.getLayers().add(layerInfo);
+        this.catalog.add(layerGroupInfo);
+
+        // When
+        GetCapabilitiesTransformer tr =
+                new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
+        Document trDom = WMSTestSupport.transform(req, tr);
+        Element trRoot = trDom.getDocumentElement();
+
+        Capabilities_1_3_0_Transformer tr130 =
+                new Capabilities_1_3_0_Transformer(
+                        wmsConfig,
+                        baseUrl,
+                        wmsConfig.getAllowedMapFormats(),
+                        wmsConfig.getAvailableExtendedCapabilitiesProviders());
+        Document tr130Dom = WMSTestSupport.transform(req, tr130);
+        Element tr130Root = tr130Dom.getDocumentElement();
+
+        // Then
+        assertEquals("WMT_MS_Capabilities", trRoot.getNodeName());
+        assertEquals(1, trDom.getElementsByTagName("Style").getLength());
+
+        assertEquals("WMS_Capabilities", tr130Root.getNodeName());
+        assertEquals(1, tr130Dom.getElementsByTagName("Style").getLength());
     }
 }

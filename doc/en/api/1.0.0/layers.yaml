@@ -15,6 +15,8 @@ paths:
   /layers:
     get:
       operationId: layersGet
+      tags:
+       - "Layers"
       summary: Get a list of layers
       description: Displays a list of all layers on the server. You must use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers.xml" for XML)
       produces:
@@ -60,18 +62,24 @@ paths:
                }
     post:
       operationId: layersPost
+      tags:
+       - "Layers"
       description: Invalid. To create a new layer, instead POST to one of `/workspaces/{workspaceName}/coveragestores/{coveragestoreName}/coverages`, `/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes`, `/workspaces/{workspaceName}/wmsstores/{wmsstoreName}/wmslayers`, or `/workspaces/{workspaceName}/wmtsstores/{wmststoreName}/wmtslayers`
       responses:
         405:
           description: Method not allowed.
     put:
       operationId: layersPut
+      tags:
+       - "Layers"
       description: Invalid. To edit a layer, use PUT on an individual layer instead.
       responses:
         405:
           description: Method not allowed.
     delete:
       operationId: layersDelete
+      tags:
+       - "Layers"
       description: Invalid.
       responses:
         405:
@@ -80,6 +88,8 @@ paths:
   /layers/{layerName}:
     get:
       operationId: layersNameGet
+      tags:
+       - "Layers"
       summary: Retrieve a layer 
       description: Retrieves a single layer definition. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}.xml" for XML).
       produces:
@@ -165,12 +175,16 @@ paths:
               }
     post:
       operationId: layersNamePost
+      tags:
+       - "Layers"
       description: Invalid. To create a new layer, instead POST to one of `/workspaces/{workspaceName}/coveragestores/{coveragestoreName}/coverages`, `/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes`, `/workspaces/{workspaceName}/wmsstores/{wmsstoreName}/wmslayers`, or `/workspaces/{workspaceName}/wmtsstores/{wmststoreName}/wmtslayers`
       responses:
         405:
           description: Method not allowed.
     put:
       operationId: layersNamePut
+      tags:
+       - "Layers"
       summary: Modify a layer.
       description: Modifies an existing layer on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}.xml" for XML).
       parameters:
@@ -194,6 +208,8 @@ paths:
 
     delete:
       operationId: layersNameDelete
+      tags:
+       - "Layers"
       summary: Delete layer
       description: Deletes a layer from the server.
       parameters:
@@ -214,6 +230,8 @@ paths:
   /workspaces/{workspaceName}/layers:
     get:
       operationId: layersWorkspaceGet
+      tags:
+       - "Layers"
       summary: Get a list of layers in a workspace.
       description: Displays a list of all layers in the provided workspace. You must use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers.xml" for XML)
       parameters:
@@ -255,18 +273,24 @@ paths:
                }
     post:
       operationId: layersWorkspacePost
+      tags:
+       - "Layers"
       description: Invalid. To create a new layer, instead POST to one of `/workspaces/{workspaceName}/coveragestores/{coveragestoreName}/coverages`, `/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes`, `/workspaces/{workspaceName}/wmsstores/{wmsstoreName}/wmslayers`, or `/workspaces/{workspaceName}/wmtsstores/{wmststoreName}/wmtslayers`
       responses:
         405:
           description: Method not allowed.
     put:
       operationId: layersWorkspacePut
+      tags:
+       - "Layers"
       description: Invalid. To edit a layer, use PUT on an individual layer instead.
       responses:
         405:
           description: Method not allowed.
     delete:
       operationId: layersWorkspaceDelete
+      tags:
+       - "Layers"
       description: Invalid.
       responses:
         405:
@@ -274,6 +298,8 @@ paths:
   /workspaces/{workspaceName}/layers/{layerName}:
     get:
       operationId: layersNameWorkspaceGet
+      tags:
+       - "Layers"
       summary: Retrieve a layer 
       description: Retrieves a single layer definition. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}.xml" for XML).
       produces:
@@ -364,12 +390,16 @@ paths:
               }
     post:
       operationId: layersNameWorkspacePost
+      tags:
+       - "Layers"
       description: Invalid. To create a new layer, instead POST to one of `/workspaces/{workspaceName}/coveragestores/{coveragestoreName}/coverages`, `/workspaces/{workspaceName}/datastores/{datastoreName}/featuretypes`, `/workspaces/{workspaceName}/wmsstores/{wmsstoreName}/wmslayers`, or `/workspaces/{workspaceName}/wmtsstores/{wmststoreName}/wmtslayers`
       responses:
         405:
           description: Method not allowed.
     put:
       operationId: layersNameWorkspacePut
+      tags:
+       - "Layers"
       summary: Modify a layer.
       description: Modifies an existing layer on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}.xml" for XML).
       parameters:
@@ -397,6 +427,8 @@ paths:
 
     delete:
       operationId: layersNameWorkspaceDelete
+      tags:
+       - "Layers"
       summary: Delete layer
       description: Deletes a layer from the server.
       parameters:

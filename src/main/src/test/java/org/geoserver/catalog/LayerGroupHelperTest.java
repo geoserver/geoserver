@@ -5,8 +5,8 @@
 package org.geoserver.catalog;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
@@ -61,8 +61,6 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
 
     private StyleInfo pointStyle;
 
-    private StyleInfo pondsStyle;
-
     @Override
     protected MockTestData createTestData() throws Exception {
         MockTestData testData = new MockTestData();
@@ -103,7 +101,6 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         lineStyle = getCatalog().getStyleByName("Streams");
         polygonStyle = getCatalog().getStyleByName("Buildings");
         pointStyle = getCatalog().getStyleByName("Bridges");
-        pondsStyle = getCatalog().getStyleByName("Ponds");
 
         lakesLayer = buildLayer(MockData.LAKES);
         neatlineLayer = buildLayer(MockData.MAP_NEATLINE);
@@ -168,12 +165,12 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         myLoop.getStyles().add(null);
         LayerGroupInfo loopClone = buildGroup("myLoop", forestLayer);
         loopClone.getStyles().add(null);
-        assertTrue(myLoop.equals(loopClone));
+        assertEquals(myLoop, loopClone);
 
         // change the LayerGroup
         myLoop.setTitle("new title");
         // now the two groups aren't equal anymore
-        assertFalse(myLoop.equals(loopClone));
+        assertNotEquals(myLoop, loopClone);
 
         // create loop
         myLoop.getLayers().add(loopClone);
@@ -350,7 +347,7 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
 
         // null CRS should get null bounds
         helper.calculateBoundsFromCRS(null);
-        assertEquals(nested.getBounds(), null);
+        assertNull(nested.getBounds());
     }
 
     private ReferencedEnvelope aggregateEnvelopes(LayerInfo... layers) {

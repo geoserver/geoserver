@@ -7,6 +7,7 @@ package org.geoserver.web.admin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -43,6 +44,7 @@ import org.geoserver.web.data.workspace.WorkspaceNewPage;
 import org.geoserver.web.data.workspace.WorkspacePage;
 import org.geotools.data.property.PropertyDataStoreFactory;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupport {
@@ -190,6 +192,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         // the actual web request is finished, so we need to fake another one
         AdminRequest.start(new Object());
 
+        @SuppressWarnings("unchecked")
         DropDownChoice<WorkspaceInfo> wsChoice =
                 (DropDownChoice<WorkspaceInfo>)
                         tester.getComponentFromLastRenderedPage(
@@ -236,7 +239,7 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
     }
 
     @Test
-    public void testLayerGroupAllPage() throws Exception {
+    public void testLayerGroupAllPage() {
         loginAsCite();
 
         tester.startPage(LayerGroupPage.class);
@@ -244,18 +247,19 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
 
         Catalog cat = getCatalog();
 
-        DataView view =
+        @SuppressWarnings("unchecked")
+        DataView<Object> view =
                 (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         AdminRequest.start(new Object());
         assertEquals(cat.getLayerGroups().size(), view.getItemCount());
 
-        for (Iterator<Item> it = view.getItems(); it.hasNext(); ) {
+        for (Iterator<Item<Object>> it = view.getItems(); it.hasNext(); ) { // NOPMD
             String name =
                     it.next()
                             .get("itemProperties:0:component:link:label")
                             .getDefaultModelObjectAsString();
-            assertFalse("sf_local".equals(name));
+            assertNotEquals("sf_local", name);
         }
     }
 
@@ -314,6 +318,8 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         assertTrue(tester.getComponentFromLastRenderedPage("publishedinfo:cancel").isEnabled());
     }
 
+    @Test
+    @Ignore // was not marked as @Test, does not pass
     public void testSqlViewNewPageAsWorkspaceAdmin() throws Exception {
         loginAsCite();
 
@@ -329,9 +335,11 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         RequestCycle cycle = RequestCycle.get();
         RenderPageRequestHandler handler =
                 (RenderPageRequestHandler) cycle.getRequestHandlerScheduledAfterCurrent();
-        assertFalse(UnauthorizedPage.class.equals(handler.getPageClass()));
+        assertNotEquals(UnauthorizedPage.class, handler.getPageClass());
     }
 
+    @Test
+    @Ignore // was not marked as @Test, does not pass
     public void testCreateNewFeatureTypePageAsWorkspaceAdmin() throws Exception {
         loginAsCite();
 
@@ -347,6 +355,11 @@ public abstract class AbstractAdminPrivilegeTest extends GeoServerWicketTestSupp
         RequestCycle cycle = RequestCycle.get();
         RenderPageRequestHandler handler =
                 (RenderPageRequestHandler) cycle.getRequestHandlerScheduledAfterCurrent();
-        assertFalse(UnauthorizedPage.class.equals(handler.getPageClass()));
+        assertNotEquals(UnauthorizedPage.class, handler.getPageClass());
+    }
+
+    @Override
+    protected String getLogConfiguration() {
+        return "/GEOSERVER_DEVELOPER_LOGGING.properties";
     }
 }

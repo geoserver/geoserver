@@ -5,8 +5,10 @@
  */
 package org.geoserver.wms.dimension;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.Calendar;
@@ -25,8 +27,8 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureStore;
 import org.geotools.data.memory.MemoryFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.type.DateUtil;
 import org.geotools.util.Range;
 import org.junit.Before;
@@ -44,6 +46,9 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
     static final QName TIME_WITH_START_END =
             new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
 
+    static final QName TIME_ELEVATION_TRUNCATED =
+            new QName(MockData.SF_URI, "TimeElevationTruncated", MockData.SF_PREFIX);
+
     WMS wms;
 
     @Override
@@ -58,8 +63,15 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         ((SystemTestData) testData)
                 .addVectorLayer(
                         TIME_WITH_START_END,
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         "TimeElevationWithStartEnd.properties",
+                        getClass(),
+                        getCatalog());
+        ((SystemTestData) testData)
+                .addVectorLayer(
+                        TIME_ELEVATION_TRUNCATED,
+                        Collections.emptyMap(),
+                        "TimeElevationTruncated.properties",
                         getClass(),
                         getCatalog());
     }
@@ -78,25 +90,24 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         this.addFeature(fid++, twoDaysAgo, Double.valueOf(0d));
 
         java.util.Date d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue("Default time should be the closest one", d.getTime() == twoDaysAgo.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals("Default time should be the closest one", d.getTime(), twoDaysAgo.getTime());
 
         // Add some features with timestamps in the future:
         Date dayAfterTomorrow = addFeatureWithTimeDayAfterTomorrow(fid++);
         addFeatureWithTimeOneYearFromNow(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue(
-                "Default time should be the closest one",
-                d.getTime() == dayAfterTomorrow.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals(
+                "Default time should be the closest one", d.getTime(), dayAfterTomorrow.getTime());
 
         Date todayMidnight = addFeatureWithTimeTodayMidnight(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue(
-                "Default time should be the closest one", d.getTime() == todayMidnight.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals(
+                "Default time should be the closest one", d.getTime(), todayMidnight.getTime());
     }
 
     @Test
@@ -116,25 +127,24 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         this.addFeature(fid++, twoDaysAgo, Double.valueOf(0d));
 
         java.util.Date d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue("Default time should be the closest one", d.getTime() == twoDaysAgo.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals("Default time should be the closest one", d.getTime(), twoDaysAgo.getTime());
 
         // Add some features with timestamps in the future:
         Date dayAfterTomorrow = addFeatureWithTimeDayAfterTomorrow(fid++);
         addFeatureWithTimeOneYearFromNow(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue(
-                "Default time should be the closest one",
-                d.getTime() == dayAfterTomorrow.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals(
+                "Default time should be the closest one", d.getTime(), dayAfterTomorrow.getTime());
 
         Date todayMidnight = addFeatureWithTimeTodayMidnight(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue(
-                "Default time should be the closest one", d.getTime() == todayMidnight.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals(
+                "Default time should be the closest one", d.getTime(), todayMidnight.getTime());
     }
 
     @Test
@@ -155,22 +165,22 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         this.addFeature(fid++, twoDaysAgo, Double.valueOf(0d));
 
         java.util.Date d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue("Default time should be the smallest one", d.getTime() == smallest.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals("Default time should be the smallest one", d.getTime(), smallest.getTime());
 
         // Add some features with timestamps in the future:
         addFeatureWithTimeDayAfterTomorrow(fid++);
         addFeatureWithTimeOneYearFromNow(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue("Default time should be the smallest one", d.getTime() == smallest.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals("Default time should be the smallest one", d.getTime(), smallest.getTime());
 
         addFeatureWithTimeTodayMidnight(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue("Default time should be the smallest one", d.getTime() == smallest.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals("Default time should be the smallest one", d.getTime(), smallest.getTime());
     }
 
     @Test
@@ -190,24 +200,24 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         this.addFeature(fid++, twoDaysAgo, Double.valueOf(0d));
 
         java.util.Date d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue("Default time should be the biggest one", d.getTime() == twoDaysAgo.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals("Default time should be the biggest one", d.getTime(), twoDaysAgo.getTime());
 
         // Add some features with timestamps in the future:
         addFeatureWithTimeDayAfterTomorrow(fid++);
         Date oneYearFromNow = addFeatureWithTimeOneYearFromNow(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue(
-                "Default time should be the biggest one", d.getTime() == oneYearFromNow.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals(
+                "Default time should be the biggest one", d.getTime(), oneYearFromNow.getTime());
 
         addFeatureWithTimeTodayMidnight(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue(
-                "Default time should be the biggest one", d.getTime() == oneYearFromNow.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals(
+                "Default time should be the biggest one", d.getTime(), oneYearFromNow.getTime());
     }
 
     @Test
@@ -231,22 +241,22 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         this.addFeature(fid++, twoDaysAgo, Double.valueOf(0d));
 
         java.util.Date d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue("Default time should be the fixed one", d.getTime() == fixedTime);
+        assertNotNull("Default time is null", d);
+        assertEquals("Default time should be the fixed one", d.getTime(), fixedTime);
 
         // Add some features with timestamps in the future:
         addFeatureWithTimeDayAfterTomorrow(fid++);
         addFeatureWithTimeOneYearFromNow(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue("Default time should be the fixed one", d.getTime() == fixedTime);
+        assertNotNull("Default time is null", d);
+        assertEquals("Default time should be the fixed one", d.getTime(), fixedTime);
 
         addFeatureWithTimeTodayMidnight(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue("Default time should be the fixed one", d.getTime() == fixedTime);
+        assertNotNull("Default time is null", d);
+        assertEquals("Default time should be the fixed one", d.getTime(), fixedTime);
     }
 
     @Test
@@ -263,7 +273,7 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         // the default should be the range we requested
         java.util.Date curr = new java.util.Date();
         Range d = (Range) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Returns a valid Default range", d != null);
+        assertNotNull("Returns a valid Default range", d);
         // check "now" it's in the same minute... should work for even the slowest build server
         assertDateEquals(curr, (java.util.Date) d.getMaxValue(), MILLIS_IN_MINUTE);
         // the beginning
@@ -295,22 +305,43 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         this.addFeature(fid++, twoDaysAgo, Double.valueOf(0d));
 
         java.util.Date d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue("Default time should be the closest one", d.getTime() == expected.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals("Default time should be the closest one", d.getTime(), expected.getTime());
 
         // Add some features with timestamps in the future:
         addFeatureWithTimeDayAfterTomorrow(fid++);
         addFeatureWithTimeOneYearFromNow(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue("Default time should be the closest one", d.getTime() == expected.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals("Default time should be the closest one", d.getTime(), expected.getTime());
 
         addFeatureWithTimeTodayMidnight(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
-        assertTrue("Default time is null", d != null);
-        assertTrue("Default time should be the closest one", d.getTime() == expected.getTime());
+        assertNotNull("Default time is null", d);
+        assertEquals("Default time should be the closest one", d.getTime(), expected.getTime());
+    }
+
+    /** [GEOS-9482] Test the NPE issue on a truncated dataset and NearestMatch enabled. */
+    @Test
+    public void testNearestOnTruncatedDataset() throws Exception {
+        String preferredTimeStr = "2020-06-01T03:00:00.000Z";
+
+        // Use explicit default value DimensionInfo setup:
+        DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
+        defaultValueSetting.setStrategyType(Strategy.NEAREST);
+        defaultValueSetting.setReferenceValue(preferredTimeStr);
+
+        setupFeatureTimeDimensionOnTruncated(defaultValueSetting);
+
+        BufferedImage image =
+                getAsImage(
+                        MockData.SF_PREFIX
+                                + "/wms??service=WMS&version=1.1.0&request=GetMap&layers=sf:TimeElevationTruncated"
+                                + "&bbox=-180,-90,180,90&width=768&height=330&srs=EPSG:4326&format=image/png",
+                        "image/png");
+        assertNotNull(image);
     }
 
     protected void setupFeatureTimeDimension(DimensionDefaultValueSetting defaultValue) {
@@ -325,10 +356,24 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         getCatalog().save(info);
     }
 
+    protected void setupFeatureTimeDimensionOnTruncated(DimensionDefaultValueSetting defaultValue) {
+        FeatureTypeInfo info =
+                getCatalog().getFeatureTypeByName(TIME_ELEVATION_TRUNCATED.getLocalPart());
+        DimensionInfo di = new DimensionInfoImpl();
+        di.setEnabled(true);
+        di.setAttribute("time");
+        di.setDefaultValue(defaultValue);
+        di.setNearestMatchEnabled(true);
+        di.setAcceptableInterval("PT98M/PT0H");
+        di.setPresentation(DimensionPresentation.DISCRETE_INTERVAL);
+        info.getMetadata().put(ResourceInfo.TIME, di);
+        getCatalog().save(info);
+    }
+
     protected void addFeature(int id, Date time, Double elevation) throws IOException {
         FeatureTypeInfo timeWithStartEnd =
                 getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
-        FeatureStore fs = (FeatureStore) timeWithStartEnd.getFeatureSource(null, null);
+        SimpleFeatureStore fs = (SimpleFeatureStore) timeWithStartEnd.getFeatureSource(null, null);
         SimpleFeatureType type = (SimpleFeatureType) timeWithStartEnd.getFeatureType();
         MemoryFeatureCollection coll = new MemoryFeatureCollection(type);
         StringBuffer content = new StringBuffer();
@@ -341,9 +386,10 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
 
         SimpleFeature f = DataUtilities.createFeature(type, content.toString());
         coll.add(f);
-        org.geotools.data.Transaction tx = fs.getTransaction();
-        fs.addFeatures(coll);
-        tx.commit();
+        try (org.geotools.data.Transaction tx = fs.getTransaction()) {
+            fs.addFeatures(coll);
+            tx.commit();
+        }
     }
 
     private java.sql.Date addFeatureWithTimeTodayMidnight(int fid) throws IOException {

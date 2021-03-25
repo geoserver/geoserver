@@ -55,6 +55,7 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.PROPERTYTYPE;
     }
@@ -66,7 +67,8 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<PropertyType> getType() {
         return PropertyType.class;
     }
 
@@ -77,13 +79,14 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         // TODO: much of this method is duplicated in the 1.1.0 binding, it
         // would be nice if we could sync them up somewhow....
         PropertyType property = wfsfactory.createPropertyType();
 
         // &lt;xsd:element name="Name" type="xsd:QName"&gt;
-        property.setName((QName) node.getChildValue(QName.class));
+        property.setName(node.getChildValue(QName.class));
 
         // &lt;xsd:element minOccurs="0" name="Value"&gt;
         if (node.hasChild("Value")) {
@@ -116,6 +119,7 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
      * This method does nothing, its functionality is implemented by {@link
      * PropertyTypePropertyExtractor}.
      */
+    @Override
     public Object getProperty(Object object, QName name) throws Exception {
         return null;
     }

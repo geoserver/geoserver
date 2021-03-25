@@ -10,6 +10,7 @@ import java.awt.image.RenderedImage;
 import java.util.ArrayList;
 import java.util.List;
 import javax.media.jai.PlanarImage;
+import javax.media.jai.RenderedImageAdapter;
 import javax.media.jai.RenderedImageList;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
@@ -18,10 +19,9 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.image.util.ImageUtilities;
 
 public class RasterCleaner extends AbstractDispatcherCallback {
-    static final ThreadLocal<List<RenderedImage>> images = new ThreadLocal<List<RenderedImage>>();
+    static final ThreadLocal<List<RenderedImage>> images = new ThreadLocal<>();
 
-    static final ThreadLocal<List<GridCoverage2D>> coverages =
-            new ThreadLocal<List<GridCoverage2D>>();
+    static final ThreadLocal<List<GridCoverage2D>> coverages = new ThreadLocal<>();
 
     /** Schedules a RenderedImage for cleanup at the end of the request */
     public static void addImage(RenderedImage image) {
@@ -31,7 +31,7 @@ public class RasterCleaner extends AbstractDispatcherCallback {
 
         List<RenderedImage> list = images.get();
         if (list == null) {
-            list = new ArrayList<RenderedImage>();
+            list = new ArrayList<>();
             images.set(list);
         }
         list.add(image);
@@ -45,7 +45,7 @@ public class RasterCleaner extends AbstractDispatcherCallback {
 
         List<GridCoverage2D> list = coverages.get();
         if (list == null) {
-            list = new ArrayList<GridCoverage2D>();
+            list = new ArrayList<>();
             coverages.set(list);
         }
         list.add(coverage);
@@ -62,6 +62,10 @@ public class RasterCleaner extends AbstractDispatcherCallback {
         if (list != null) {
             images.remove();
             for (RenderedImage image : list) {
+                if (image instanceof RenderedImageAdapter) {
+                    image = ((RenderedImageAdapter) image).getWrappedImage();
+                }
+
                 if (image instanceof RenderedImageTimeDecorator)
                     image = ((RenderedImageTimeDecorator) image).getDelegate();
 

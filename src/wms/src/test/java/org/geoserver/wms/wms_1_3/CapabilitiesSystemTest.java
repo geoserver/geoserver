@@ -69,7 +69,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("wms", "http://www.opengis.net/wms");
@@ -109,6 +109,7 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
         factory.setResourceResolver(
                 new LSResourceResolver() {
 
+                    @Override
                     public LSInput resolveResource(
                             String type,
                             String namespaceURI,
@@ -171,13 +172,12 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
      */
     @Test
     public void testRequestVersionNumberNegotiation() throws Exception {
-        Document dom;
         /*
          * In response to a GetCapabilities request (for which the VERSION parameter is optional)
          * that does not specify a version number, the server shall respond with the highest version
          * it supports.
          */
-        dom = getAsDOM("ows?service=WMS&request=GetCapabilities");
+        Document dom = getAsDOM("ows?service=WMS&request=GetCapabilities");
         assertXpathEvaluatesTo("1.3.0", "/wms:WMS_Capabilities/@version", dom);
 
         /*
@@ -216,9 +216,8 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
      */
     @Test
     public void testRequestOptionalFormatParameter() throws Exception {
-        MockHttpServletResponse response;
         String path = "ows?service=WMS&request=GetCapabilities&version=1.3.0";
-        response = getAsServletResponse(path);
+        MockHttpServletResponse response = getAsServletResponse(path);
         assertEquals("WMS_Capabilities", getAsDOM(path).getDocumentElement().getNodeName());
         assertEquals("text/xml", response.getContentType());
 

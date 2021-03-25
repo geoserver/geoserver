@@ -52,6 +52,7 @@ import org.opengis.filter.expression.Expression;
  */
 public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
+    @Override
     public KmlDecorator getDecorator(
             Class<? extends Feature> featureClass, KmlEncodingContext context) {
         // this decorator makes sense only for WMS
@@ -80,13 +81,13 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
             Style style = pm.createAndAddStyle();
             List<Symbolizer> symbolizers = context.getCurrentSymbolizers();
             SimpleFeature sf = context.getCurrentFeature();
-            if (symbolizers.size() > 0 && sf.getDefaultGeometry() != null) {
+            if (!symbolizers.isEmpty() && sf.getDefaultGeometry() != null) {
                 // sort by point, text, line and polygon
-                Map<Class, List<Symbolizer>> classified = classifySymbolizers(symbolizers);
+                Map<Class<?>, List<Symbolizer>> classified = classifySymbolizers(symbolizers);
 
                 // if no point symbolizers, create a default one
                 List<Symbolizer> points = classified.get(PointSymbolizer.class);
-                if (points.size() == 0) {
+                if (points.isEmpty()) {
                     if (context.isDescriptionEnabled()) {
                         setDefaultIconStyle(style, sf, context);
                     }
@@ -99,7 +100,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
 
                 // handle label styles
                 List<Symbolizer> texts = classified.get(TextSymbolizer.class);
-                if (texts.size() == 0) {
+                if (texts.isEmpty()) {
                     if (context.isDescriptionEnabled()) {
                         setDefaultLabelStyle(style);
                     }
@@ -115,33 +116,33 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 List<Symbolizer> lines = classified.get(LineSymbolizer.class);
                 // the XML schema allows only one line style, follow painter's model
                 // and set the last one
-                if (lines.size() > 0) {
+                if (!lines.isEmpty()) {
                     LineSymbolizer lastLineSymbolizer =
                             (LineSymbolizer) lines.get(lines.size() - 1);
                     setLineStyle(style, sf, lastLineSymbolizer.getStroke());
                 }
 
                 // handle polygon styles
-                boolean forceOutiline = lines.size() == 0;
+                boolean forceOutline = lines.isEmpty();
                 List<Symbolizer> polygons = classified.get(PolygonSymbolizer.class);
-                if (polygons.size() > 0) {
+                if (!polygons.isEmpty()) {
                     // the XML schema allows only one polygon style, follow painter's model
                     // and set the last one
                     PolygonSymbolizer lastPolygonSymbolizer =
                             (PolygonSymbolizer) polygons.get(polygons.size() - 1);
-                    setPolygonStyle(style, sf, lastPolygonSymbolizer, forceOutiline);
+                    setPolygonStyle(style, sf, lastPolygonSymbolizer, forceOutline);
                 }
             }
 
             return feature;
         }
 
-        private Map<Class, List<Symbolizer>> classifySymbolizers(List<Symbolizer> symbolizers) {
-            Map<Class, List<Symbolizer>> result = new HashMap<Class, List<Symbolizer>>();
-            result.put(PointSymbolizer.class, new ArrayList<Symbolizer>());
-            result.put(LineSymbolizer.class, new ArrayList<Symbolizer>());
-            result.put(PolygonSymbolizer.class, new ArrayList<Symbolizer>());
-            result.put(TextSymbolizer.class, new ArrayList<Symbolizer>());
+        private Map<Class<?>, List<Symbolizer>> classifySymbolizers(List<Symbolizer> symbolizers) {
+            Map<Class<?>, List<Symbolizer>> result = new HashMap<>();
+            result.put(PointSymbolizer.class, new ArrayList<>());
+            result.put(LineSymbolizer.class, new ArrayList<>());
+            result.put(PolygonSymbolizer.class, new ArrayList<>());
+            result.put(TextSymbolizer.class, new ArrayList<>());
 
             for (Symbolizer s : symbolizers) {
                 if (s instanceof PointSymbolizer) {
@@ -379,7 +380,7 @@ public class PlacemarkStyleDecoratorFactory implements KmlDecoratorFactory {
                 Color color = null;
                 Expression sc = stroke.getColor();
                 if (sc != null) {
-                    color = (Color) sc.evaluate(feature, Color.class);
+                    color = sc.evaluate(feature, Color.class);
                 }
                 if (color == null) {
                     // Different from BLACK provided by Stroke.DEFAULT.getColor()

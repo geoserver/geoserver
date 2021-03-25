@@ -78,8 +78,8 @@ public class DescribeRecord {
                 // return all the ones we have
                 return getFeatureDescriptors(store.getRecordDescriptors());
             } else {
-                List<AttributeDescriptor> result = new ArrayList<AttributeDescriptor>();
-                Set<String> requested = new HashSet();
+                List<AttributeDescriptor> result = new ArrayList<>();
+                Set<String> requested = new HashSet<>();
                 for (QName name : request.getTypeName()) {
                     requested.add(name.getLocalPart());
                 }
@@ -95,7 +95,7 @@ public class DescribeRecord {
 
                 // we could be left with some extra feature types, the spec says we should not
                 // complain and just return the ones we have (eventually an empty document)
-                if (requested.size() != 0) {
+                if (!requested.isEmpty()) {
                     LOGGER.log(
                             Level.FINE,
                             "Failed to locate feature types " + requested + ", ignoring them");

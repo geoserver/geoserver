@@ -7,7 +7,6 @@ package org.geoserver.wps.web;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.repeater.OddEvenItem;
@@ -44,11 +43,11 @@ public class ProcessSelectionPageTest extends WPSPagesTestSupport {
         buffer.getValidators()
                 .put(
                         "distance",
-                        new NumberRangeValidator(new NumberRange<Double>(Double.class, 0d, 100d)));
+                        new NumberRangeValidator(new NumberRange<>(Double.class, 0d, 100d)));
         buffer.getValidators()
                 .put(
                         "quadrantSegments",
-                        new NumberRangeValidator(new NumberRange<Integer>(Integer.class, 2, 20)));
+                        new NumberRangeValidator(new NumberRange<>(Integer.class, 2, 20)));
         geoGroup.getFilteredProcesses().add(buffer);
 
         // save
@@ -62,21 +61,19 @@ public class ProcessSelectionPageTest extends WPSPagesTestSupport {
         ProcessGroupInfo pgi = getGeoGroup(wps.getProcessGroups());
 
         // start the page
-        WPSAccessRulePage accessRulePage =
-                (WPSAccessRulePage) tester.startPage(new WPSAccessRulePage());
-        ProcessSelectionPage selectionPage =
-                (ProcessSelectionPage)
-                        tester.startPage(new ProcessSelectionPage(accessRulePage, pgi));
+        WPSAccessRulePage accessRulePage = tester.startPage(new WPSAccessRulePage());
+        tester.startPage(new ProcessSelectionPage(accessRulePage, pgi));
 
         // print(selectionPage, true, true);
 
         // grab the table and check its contents
-        DataView datas =
+        @SuppressWarnings("unchecked")
+        DataView<OddEvenItem> datas =
                 (DataView)
                         tester.getComponentFromLastRenderedPage(
                                 "form:selectionTable:listContainer:items");
-        for (Iterator it = datas.getItems(); it.hasNext(); ) {
-            OddEvenItem item = (OddEvenItem) it.next();
+        for (Component c : datas) {
+            OddEvenItem item = (OddEvenItem) c;
             FilteredProcess fp = (FilteredProcess) item.getDefaultModelObject();
 
             Component validatedLabel = item.get("itemProperties:5:component");

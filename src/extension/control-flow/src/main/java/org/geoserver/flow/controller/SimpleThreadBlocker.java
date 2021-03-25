@@ -23,9 +23,10 @@ public class SimpleThreadBlocker implements ThreadBlocker {
     BlockingQueue<Request> queue;
 
     public SimpleThreadBlocker(int queueSize) {
-        queue = new ArrayBlockingQueue<Request>(queueSize, true);
+        queue = new ArrayBlockingQueue<>(queueSize, true);
     }
 
+    @Override
     public void requestComplete(Request request) {
         // only removes requests that actually locked on the queue, when
         // a timeout happens some flow controllers won't have
@@ -38,6 +39,7 @@ public class SimpleThreadBlocker implements ThreadBlocker {
         return queue.size();
     }
 
+    @Override
     public boolean requestIncoming(Request request, long timeout) throws InterruptedException {
         if (timeout > 0) {
             return queue.offer(request, timeout, TimeUnit.MILLISECONDS);

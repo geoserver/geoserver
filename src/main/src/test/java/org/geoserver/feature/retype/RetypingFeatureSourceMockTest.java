@@ -5,7 +5,10 @@
  */
 package org.geoserver.feature.retype;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 
 import org.geotools.data.DataStore;
 import org.geotools.data.Query;

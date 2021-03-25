@@ -39,6 +39,7 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
         catalog = gs.getCatalog();
     }
 
+    @Override
     @SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
     public Request init(Request request) {
         WorkspaceInfo ws = null;
@@ -93,7 +94,7 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
             } else {
                 LOGGER.log(
                         Level.FINE,
-                        "Could not lookup context {0] as a workspace, trying as group",
+                        "Could not lookup context {0} as a workspace, trying as group",
                         first);
                 lg = catalog.getLayerGroupByName((WorkspaceInfo) null, first);
                 if (lg != null) {
@@ -119,28 +120,34 @@ public class LocalWorkspaceCallback implements DispatcherCallback, ExtensionPrio
         return request;
     }
 
+    @Override
     public Operation operationDispatched(Request request, Operation operation) {
         return null;
     }
 
+    @Override
     public Object operationExecuted(Request request, Operation operation, Object result) {
         return null;
     }
 
+    @Override
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         return null;
     }
 
+    @Override
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
         return null;
     }
 
+    @Override
     public void finished(Request request) {
         LocalWorkspace.remove();
         LocalPublished.remove();
     }
 
+    @Override
     public int getPriority() {
         return HIGHEST;
     }

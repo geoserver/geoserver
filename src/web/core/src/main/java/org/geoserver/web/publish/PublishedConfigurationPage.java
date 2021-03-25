@@ -8,7 +8,6 @@ package org.geoserver.web.publish;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -66,7 +65,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
     protected boolean isNew;
 
-    protected TabbedPanel tabbedPanel;
+    protected TabbedPanel<ITab> tabbedPanel;
 
     /**
      * {@link PublishedEditTabPanel} contributions may need to edit something different than the
@@ -94,25 +93,24 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         setupPublished(
                 info instanceof LayerInfo
                         ? (IModel<T>) new LayerModel((LayerInfo) info)
-                        : new Model<T>(info));
+                        : new Model<>(info));
     }
 
     protected void setupPublished(IModel<T> infoModel) {
-        myModel = new CompoundPropertyModel<T>(infoModel);
+        myModel = new CompoundPropertyModel<>(infoModel);
         initComponents();
     }
 
     /** Initialize components including tabpanels via PublishedEditTabPanelInfo extensions */
     @SuppressWarnings("rawtypes")
     private void initComponents() {
-        this.tabPanelCustomModels =
-                new LinkedHashMap<Class<? extends PublishedEditTabPanel<T>>, IModel<?>>();
+        this.tabPanelCustomModels = new LinkedHashMap<>();
 
         add(new Label("publishedinfoname", getPublishedInfo().prefixedName()));
-        Form<T> theForm = new Form<T>("publishedinfo", myModel);
+        Form<T> theForm = new Form<>("publishedinfo", myModel);
         add(theForm);
 
-        List<ITab> tabs = new ArrayList<ITab>();
+        List<ITab> tabs = new ArrayList<>();
 
         // add the "well known" tabs
         tabs.add(
@@ -121,6 +119,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                                 "ResourceConfigurationPage.Data")) {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public Panel getPanel(String panelID) {
                         return createMainTab(panelID).setInputEnabled(inputEnabled);
                     }
@@ -132,6 +131,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                                 "ResourceConfigurationPage.Publishing")) {
                     private static final long serialVersionUID = 1L;
 
+                    @Override
                     public Panel getPanel(String panelID) {
                         return new PublishingEditTabPanel(panelID).setInputEnabled(inputEnabled);
                     }
@@ -154,8 +154,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                 if (titleKey != null) {
                     titleModel = new org.apache.wicket.model.ResourceModel(titleKey);
                 } else {
-                    titleModel =
-                            new Model<String>(tabPanelInfo.getComponentClass().getSimpleName());
+                    titleModel = new Model<>(tabPanelInfo.getComponentClass().getSimpleName());
                 }
 
                 final Class<PublishedEditTabPanel<T>> panelClass = tabPanelInfo.getComponentClass();
@@ -205,7 +204,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         // element
         // will validate and write down into their
         tabbedPanel =
-                new TabbedPanel("tabs", tabs) {
+                new TabbedPanel<ITab>("tabs", tabs) {
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -235,13 +234,11 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     private void sortTabPanels(List<PublishedEditTabPanelInfo> tabPanels) {
         Collections.sort(
                 tabPanels,
-                new Comparator<PublishedEditTabPanelInfo>() {
-                    public int compare(PublishedEditTabPanelInfo o1, PublishedEditTabPanelInfo o2) {
-                        Integer order1 = o1.getOrder() >= 0 ? o1.getOrder() : Integer.MAX_VALUE;
-                        Integer order2 = o2.getOrder() >= 0 ? o2.getOrder() : Integer.MAX_VALUE;
+                (o1, o2) -> {
+                    Integer order1 = o1.getOrder() >= 0 ? o1.getOrder() : Integer.MAX_VALUE;
+                    Integer order2 = o2.getOrder() >= 0 ? o2.getOrder() : Integer.MAX_VALUE;
 
-                        return order1.compareTo(order2);
-                    }
+                    return order1.compareTo(order2);
                 });
     }
 
@@ -254,12 +251,9 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     protected abstract void doSaveInternal() throws IOException;
 
     public void setSelectedTab(Class<? extends PublishedEditTabPanel<?>> selectedTabClass) {
-        int selectedTabIndex;
         // relying on LinkedHashMap here
-        selectedTabIndex =
-                new ArrayList<Class<? extends PublishedEditTabPanel<T>>>(
-                                tabPanelCustomModels.keySet())
-                        .indexOf(selectedTabClass);
+        int selectedTabIndex =
+                new ArrayList<>(tabPanelCustomModels.keySet()).indexOf(selectedTabClass);
         if (selectedTabIndex > -1) {
             // add differential to match index of tabPanelCustomModels with total tabs count
             int diff = (tabbedPanel.getTabs().size() - tabPanelCustomModels.size());
@@ -344,7 +338,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
             onSuccessfulSave(doReturn);
         } catch (Exception e) {
-            LOGGER.log(Level.INFO, "Error saving layer", e);
+            LOGGER.log(Level.SEVERE, "Error saving layer", e);
             error(e.getMessage() == null ? e.toString() : e.getMessage());
         }
     }
@@ -364,8 +358,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     @SuppressWarnings({"rawtypes", "unchecked"})
     private List<PublishedConfigurationPanelInfo<T>> filterPublishedPanels(
             List<PublishedConfigurationPanelInfo> list) {
-        List<PublishedConfigurationPanelInfo<T>> result =
-                new ArrayList<PublishedConfigurationPanelInfo<T>>();
+        List<PublishedConfigurationPanelInfo<T>> result = new ArrayList<>();
         for (PublishedConfigurationPanelInfo info : list) {
             if (info.canHandle(getPublishedInfo())) {
                 result.add((PublishedConfigurationPanelInfo<T>) info);
@@ -376,7 +369,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
 
     /** Returns the {@link PublishedInfo} contained in this page */
     public T getPublishedInfo() {
-        return (T) myModel.getObject();
+        return myModel.getObject();
     }
 
     /** By default brings back the user to LayerPage, subclasses can override this behavior */
@@ -433,15 +426,14 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                         @Override
                         protected void populateItem(
                                 ListItem<PublishedConfigurationPanelInfo<T>> item) {
-                            PublishedConfigurationPanelInfo<T> panelInfo =
-                                    (PublishedConfigurationPanelInfo<T>) item.getModelObject();
+                            PublishedConfigurationPanelInfo<T> panelInfo = item.getModelObject();
                             try {
                                 PublishedConfigurationPanel<T> panel =
                                         panelInfo
                                                 .getComponentClass()
                                                 .getConstructor(String.class, IModel.class)
                                                 .newInstance("content", myModel);
-                                item.add((Component) panel);
+                                item.add(panel);
                             } catch (Exception e) {
                                 throw new WicketRuntimeException(
                                         "Failed to add pluggable layer configuration panels", e);

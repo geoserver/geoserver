@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.geoserver</groupId>
         <artifactId>community</artifactId>
-        <version>2.18-SNAPSHOT</version>
+        <version>2.20-SNAPSHOT</version>
     </parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-monitor-hibernate</artifactId>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>org.hibernatespatial</groupId>
             <artifactId>hibernate-spatial-h2-geodb</artifactId>
-            <version>${hibernate-spatial-h2-version}</version>
+            <version>${hibernate-spatial-version}</version>
         </dependency>
 
         <dependency>

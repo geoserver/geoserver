@@ -59,14 +59,15 @@ class ModificationProxyCloner {
 
     static final Logger LOGGER = Logging.getLogger(ModificationProxyCloner.class);
 
-    static final Map<Class, Class> CATALOGINFO_INTERFACE_CACHE =
-            new ConcurrentHashMap<Class, Class>();
+    static final Map<Class<? extends CatalogInfo>, Class<? extends CatalogInfo>>
+            CATALOGINFO_INTERFACE_CACHE = new ConcurrentHashMap<>();
 
     /**
      * Best effort object cloning utility, tries different lightweight strategies, then falls back
      * on copy by XStream serialization (we use that one as we have a number of hooks to avoid deep
      * copying the catalog, and re-attaching to it, in there)
      */
+    @SuppressWarnings("unchecked") // too many casts to (T)
     static <T> T clone(T source)
             throws InstantiationException, IllegalAccessException, NoSuchMethodException,
                     InvocationTargetException {
@@ -83,9 +84,8 @@ class ModificationProxyCloner {
         // is it a catalog info?
         if (source instanceof CatalogInfo) {
             // mumble... shouldn't we wrap this one in a modification proxy object?
-            return (T)
-                    ModificationProxy.create(
-                            source, getDeepestCatalogInfoInterface((CatalogInfo) source));
+            CatalogInfo cis = (CatalogInfo) source;
+            return (T) ModificationProxy.create(cis, getDeepestCatalogInfoInterface(cis));
         }
 
         // if a known immutable?
@@ -97,7 +97,7 @@ class ModificationProxyCloner {
                 || source instanceof Double
                 || source instanceof BigInteger
                 || source instanceof BigDecimal) {
-            return (T) source;
+            return source;
         }
 
         // to avoid reflective access warnings
@@ -132,7 +132,7 @@ class ModificationProxyCloner {
         }
 
         // does it have a copy constructor?
-        Constructor copyConstructor =
+        Constructor<?> copyConstructor =
                 ConstructorUtils.getAccessibleConstructor(source.getClass(), source.getClass());
         if (copyConstructor != null) {
             try {
@@ -160,44 +160,45 @@ class ModificationProxyCloner {
         byte[] bytes = SerializationUtils.serialize(source);
         try (ObjectInputStream input =
                 new ModProxyObjectInputStream(new ByteArrayInputStream(bytes))) {
-            return (T) input.readObject();
+            @SuppressWarnings("unchecked")
+            T copy = (T) input.readObject();
+            return copy;
         } catch (Exception e) {
             throw new RuntimeException("Error cloning serializable object", e);
         }
     }
 
-    static Class getDeepestCatalogInfoInterface(CatalogInfo object) {
+    static Class<? extends CatalogInfo> getDeepestCatalogInfoInterface(CatalogInfo object) {
         Class<? extends CatalogInfo> sourceClass = object.getClass();
-        Class result = CATALOGINFO_INTERFACE_CACHE.get(sourceClass);
+        Class<? extends CatalogInfo> result = CATALOGINFO_INTERFACE_CACHE.get(sourceClass);
         if (result == null) {
             List<Class<?>> interfaces = ClassUtils.getAllInterfaces(sourceClass);
             // collect only CatalogInfo related interfaces
-            List<Class> cis = new ArrayList<Class>();
-            for (Class clazz : interfaces) {
+            List<Class<? extends CatalogInfo>> cis = new ArrayList<>();
+            for (Class<?> clazz : interfaces) {
                 if (CatalogInfo.class.isAssignableFrom(clazz)) {
-                    cis.add(clazz);
+                    @SuppressWarnings("unchecked")
+                    Class<? extends CatalogInfo> cast = (Class<? extends CatalogInfo>) clazz;
+                    cis.add(cast);
                 }
             }
-            if (cis.size() == 0) {
+            if (cis.isEmpty()) {
                 result = null;
             } else if (cis.size() == 1) {
                 result = cis.get(0);
             } else {
                 Collections.sort(
                         cis,
-                        new Comparator<Class>() {
-
-                            @Override
-                            public int compare(Class c1, Class c2) {
-                                if (c1.isAssignableFrom(c2)) {
-                                    return 1;
-                                } else if (c2.isAssignableFrom(c1)) {
-                                    return -1;
-                                } else {
-                                    return 0;
-                                }
-                            }
-                        });
+                        (Comparator<Class<?>>)
+                                (c1, c2) -> {
+                                    if (c1.isAssignableFrom(c2)) {
+                                        return 1;
+                                    } else if (c2.isAssignableFrom(c1)) {
+                                        return -1;
+                                    } else {
+                                        return 0;
+                                    }
+                                });
 
                 result = cis.get(0);
             }
@@ -223,13 +224,15 @@ class ModificationProxyCloner {
         }
         Collection<T> copy;
         try {
-            copy = source.getClass().getDeclaredConstructor().newInstance();
+            @SuppressWarnings("unchecked")
+            Collection<T> coll = source.getClass().getDeclaredConstructor().newInstance();
+            copy = coll;
         } catch (InstantiationException | NoSuchMethodException | InvocationTargetException e) {
             // we'll just pick something
             if (source instanceof Set) {
-                copy = new HashSet<T>();
+                copy = new HashSet<>();
             } else {
-                copy = new ArrayList<T>();
+                copy = new ArrayList<>();
             }
         }
         if (deepCopy) {
@@ -259,6 +262,7 @@ class ModificationProxyCloner {
             // nothing to copy
             return null;
         }
+        @SuppressWarnings("unchecked")
         Map<K, V> copy = source.getClass().getDeclaredConstructor().newInstance();
         if (deepCopy) {
             for (Map.Entry<K, V> entry : source.entrySet()) {

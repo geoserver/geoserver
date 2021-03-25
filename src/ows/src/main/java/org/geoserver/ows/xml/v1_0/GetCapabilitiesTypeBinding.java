@@ -65,6 +65,7 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return OWS.GETCAPABILITIESTYPE;
     }
@@ -76,7 +77,8 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<GetCapabilitiesType> getType() {
         return GetCapabilitiesType.class;
     }
 
@@ -91,6 +93,7 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexEMFBinding {
      *     <!-- end-user-doc -->
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         GetCapabilitiesType getCapabilities;
 
@@ -100,11 +103,9 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexEMFBinding {
             getCapabilities = owsfactory.createGetCapabilitiesType();
         }
 
-        getCapabilities.setAcceptVersions(
-                (AcceptVersionsType) node.getChildValue(AcceptVersionsType.class));
-        getCapabilities.setSections((SectionsType) node.getChildValue(SectionsType.class));
-        getCapabilities.setAcceptFormats(
-                (AcceptFormatsType) node.getChildValue(AcceptFormatsType.class));
+        getCapabilities.setAcceptVersions(node.getChildValue(AcceptVersionsType.class));
+        getCapabilities.setSections(node.getChildValue(SectionsType.class));
+        getCapabilities.setAcceptFormats(node.getChildValue(AcceptFormatsType.class));
         getCapabilities.setUpdateSequence((String) node.getAttributeValue("updateSequence"));
 
         return getCapabilities;

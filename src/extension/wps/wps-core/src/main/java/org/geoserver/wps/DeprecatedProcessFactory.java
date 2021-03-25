@@ -77,97 +77,44 @@ public class DeprecatedProcessFactory
 
     @Override
     public InternationalString getTitle(Name name) {
-        return doAction(
-                name,
-                new Action<InternationalString>() {
-                    @Override
-                    public InternationalString perform(
-                            ProcessFactory f, Name oldName, Name newName, Object... args) {
-                        return f.getTitle(newName);
-                    }
-                });
+        return doAction(name, (f, oldName, newName, args) -> f.getTitle(newName));
     }
 
     @Override
     public InternationalString getDescription(Name name) {
-        return doAction(
-                name,
-                new Action<InternationalString>() {
-                    @Override
-                    public InternationalString perform(
-                            ProcessFactory f, Name oldName, Name newName, Object... args) {
-                        return f.getDescription(newName);
-                    }
-                });
+        return doAction(name, (f, oldName, newName, args) -> f.getDescription(newName));
     }
 
     @Override
     public String getVersion(Name name) {
-        return doAction(
-                name,
-                new Action<String>() {
-                    @Override
-                    public String perform(
-                            ProcessFactory f, Name oldName, Name newName, Object... args) {
-                        return f.getVersion(newName);
-                    }
-                });
+        return doAction(name, (f, oldName, newName, args) -> f.getVersion(newName));
     }
 
     @Override
     public Map<String, Parameter<?>> getParameterInfo(Name name) {
-        return doAction(
-                name,
-                new Action<Map<String, Parameter<?>>>() {
-                    @Override
-                    public Map<String, Parameter<?>> perform(
-                            ProcessFactory f, Name oldName, Name newName, Object... args) {
-                        return f.getParameterInfo(newName);
-                    }
-                });
+        return doAction(name, (f, oldName, newName, args) -> f.getParameterInfo(newName));
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Map<String, Parameter<?>> getResultInfo(Name name, Map<String, Object> parameters)
             throws IllegalArgumentException {
         return doAction(
                 name,
-                new Action<Map<String, Parameter<?>>>() {
-                    @Override
-                    public Map<String, Parameter<?>> perform(
-                            ProcessFactory f, Name oldName, Name newName, Object... args) {
-                        return f.getResultInfo(newName, (Map<String, Object>) args[0]);
-                    }
-                },
+                (f, oldName, newName, args) ->
+                        f.getResultInfo(newName, (Map<String, Object>) args[0]),
                 parameters);
     }
 
     @Override
     public boolean supportsProgress(Name name) {
-        Boolean b =
-                doAction(
-                        name,
-                        new Action<Boolean>() {
-                            @Override
-                            public Boolean perform(
-                                    ProcessFactory f, Name oldName, Name newName, Object... args) {
-                                return f.supportsProgress(newName);
-                            }
-                        });
+        Boolean b = doAction(name, (f, oldName, newName, args) -> f.supportsProgress(newName));
         return b != null ? b : false;
     }
 
     @Override
     public Process create(Name name) {
-        return doAction(
-                name,
-                new Action<Process>() {
-                    @Override
-                    public Process perform(
-                            ProcessFactory f, Name oldName, Name newName, Object... args) {
-                        return f.create(newName);
-                    }
-                });
+        return doAction(name, (f, oldName, newName, args) -> f.create(newName));
     }
 
     interface Action<T> {
@@ -190,7 +137,7 @@ public class DeprecatedProcessFactory
         if (map == null) {
             synchronized (DeprecatedProcessFactory.class) {
                 if (map == null) {
-                    map = new LinkedHashMap();
+                    map = new LinkedHashMap<>();
 
                     // JTS namespace
                     registerProcessMapping(

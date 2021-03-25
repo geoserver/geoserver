@@ -48,6 +48,7 @@ public class SQLViewNewPage extends SQLViewAbstractPage {
         }
     }
 
+    @Override
     protected void onCancel() {
         doReturn(LayerPage.class);
     }

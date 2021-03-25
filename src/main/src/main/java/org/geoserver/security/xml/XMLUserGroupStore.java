@@ -69,6 +69,7 @@ public class XMLUserGroupStore extends AbstractUserGroupStore {
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupStore#initializeFromServer(org.geoserver.security.GeoserverUserGroupService)
      */
+    @Override
     public void initializeFromService(GeoServerUserGroupService service) throws IOException {
         this.userResource = ((XMLUserGroupService) service).userResource;
         this.validatingXMLSchema = ((XMLUserGroupService) service).isValidatingXMLSchema();

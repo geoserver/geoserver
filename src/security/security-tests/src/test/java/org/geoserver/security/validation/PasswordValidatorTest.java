@@ -5,7 +5,13 @@
  */
 package org.geoserver.security.validation;
 
-import static org.geoserver.security.validation.PasswordPolicyException.*;
+import static org.geoserver.security.validation.PasswordPolicyException.IS_NULL;
+import static org.geoserver.security.validation.PasswordPolicyException.MAX_LENGTH_$1;
+import static org.geoserver.security.validation.PasswordPolicyException.MIN_LENGTH_$1;
+import static org.geoserver.security.validation.PasswordPolicyException.NO_DIGIT;
+import static org.geoserver.security.validation.PasswordPolicyException.NO_LOWERCASE;
+import static org.geoserver.security.validation.PasswordPolicyException.NO_UPPERCASE;
+import static org.geoserver.security.validation.PasswordPolicyException.RESERVED_PREFIX_$1;
 import static org.junit.Assert.assertEquals;
 
 import org.geoserver.security.config.PasswordPolicyConfig;

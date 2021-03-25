@@ -20,21 +20,25 @@ public class RandomColorRamp implements ColorRamp {
 
     private int classNum = 0;
 
-    private List<Color> colors = new ArrayList<Color>();
+    private List<Color> colors = new ArrayList<>();
 
+    @Override
     public int getNumClasses() {
         return classNum;
     }
 
+    @Override
     public List<Color> getRamp() throws Exception {
         if (colors == null) throw new Exception("Class num not setted, color ramp null");
         return colors;
     }
 
+    @Override
     public void revert() {
         Collections.reverse(colors);
     }
 
+    @Override
     public void setNumClasses(int numClass) {
         classNum = numClass;
         try {

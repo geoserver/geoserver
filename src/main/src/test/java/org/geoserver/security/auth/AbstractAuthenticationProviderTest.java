@@ -10,8 +10,17 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
 import java.math.BigInteger;
-import java.security.*;
-import java.security.cert.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.Principal;
+import java.security.PublicKey;
+import java.security.SignatureException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
@@ -19,14 +28,27 @@ import java.util.Map;
 import java.util.Set;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.security.*;
+import org.geoserver.security.AbstractSecurityServiceTest;
+import org.geoserver.security.GeoServerAuthenticationProvider;
+import org.geoserver.security.GeoServerRoleService;
+import org.geoserver.security.GeoServerRoleStore;
+import org.geoserver.security.GeoServerSecurityFilterChain;
+import org.geoserver.security.GeoServerSecurityFilterChainProxy;
+import org.geoserver.security.GeoServerUserGroupService;
+import org.geoserver.security.GeoServerUserGroupStore;
+import org.geoserver.security.HtmlLoginFilterChain;
+import org.geoserver.security.RequestFilterChain;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
 import org.geoserver.security.config.impl.MemoryRoleServiceConfigImpl;
 import org.geoserver.security.config.impl.MemoryUserGroupServiceConfigImpl;
-import org.geoserver.security.impl.*;
+import org.geoserver.security.impl.DigestAuthUtils;
+import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.impl.GeoServerUser;
+import org.geoserver.security.impl.MemoryRoleService;
+import org.geoserver.security.impl.MemoryUserGroupService;
 import org.geoserver.security.password.PasswordValidator;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.Authentication;
@@ -171,15 +193,15 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
         getSecurityManager().saveSecurityConfig(config);
     }
 
-    protected void prepareFilterChain(Class filterChainClass, String pattern, String... filterNames)
-            throws Exception {
+    protected void prepareFilterChain(
+            Class<?> filterChainClass, String pattern, String... filterNames) throws Exception {
         SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
         GeoServerSecurityFilterChain filterChain = config.getFilterChain();
 
         filterChain.removeForPattern(pattern);
 
         Constructor<?> cons = filterChainClass.getConstructor(new Class[] {String[].class});
-        String[] args = new String[] {pattern};
+        String[] args = {pattern};
         RequestFilterChain requestChain =
                 (RequestFilterChain) cons.newInstance(new Object[] {args});
         requestChain = new HtmlLoginFilterChain(pattern);
@@ -202,7 +224,6 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
         chain.setRoleFilterName(roleFilterName);
 
         getSecurityManager().saveSecurityConfig(config);
-        return;
     }
 
     protected void prepareFilterChain(String pattern, String... filterNames) throws Exception {
@@ -341,12 +362,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
 
                     @Override
                     public Principal getSubjectDN() {
-                        return new Principal() {
-                            @Override
-                            public String getName() {
-                                return "cn=" + userName + ",ou=ou1";
-                            }
-                        };
+                        return () -> "cn=" + userName + ",ou=ou1";
                     }
 
                     @Override

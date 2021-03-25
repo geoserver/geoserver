@@ -63,10 +63,10 @@ public class SRSReprojectionTest extends AbstractAppSchemaTestSupport {
     /** Tests re-projection of NonFeatureTypeProxy. */
     @Test
     public void testNonFeatureTypeProxy() {
-        Document doc = null;
-        doc =
+        Document doc =
                 getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=EPSG:4326");
+                        "wfs?request=GetFeature&version=1.1"
+                                + ".0&typename=gsml:MappedFeature&srsName=EPSG:4326");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         assertXpathEvaluatesTo(
                 "value01",
@@ -126,8 +126,8 @@ public class SRSReprojectionTest extends AbstractAppSchemaTestSupport {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer");
         LOGGER.info("WFS GetFeature&typename=ex:geomContainer response:\n" + prettyString(doc));
         // Generate test geometries and its results after re-projection.
-        CoordinateReferenceSystem sourceCRS = (CoordinateReferenceSystem) CRS.decode(EPSG_4283);
-        CoordinateReferenceSystem targetCRS = (CoordinateReferenceSystem) CRS.decode(EPSG_4326);
+        CoordinateReferenceSystem sourceCRS = CRS.decode(EPSG_4283);
+        CoordinateReferenceSystem targetCRS = CRS.decode(EPSG_4326);
         MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
         GeometryFactory factory = new GeometryFactory();
         Polygon srcPolygon =

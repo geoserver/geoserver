@@ -5,9 +5,12 @@
 
 package org.geoserver.template;
 
+import static freemarker.template.Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS;
+
 import freemarker.core.TemplateClassResolver;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import freemarker.template.Version;
 import freemarker.template.utility.ClassUtil;
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,6 +21,9 @@ import java.util.Collection;
  * @author Kevin Smith, Boundless
  */
 public class TemplateUtils {
+    /** Reference feature version for Freemarker templates */
+    public static Version FM_VERSION = Configuration.VERSION_2_3_0;
+
     /** Classes that should not be resolved in Freemarker templates */
     private static final Collection<String> ILLEGAL_FREEMARKER_CLASSES =
             Arrays.asList(
@@ -32,7 +38,7 @@ public class TemplateUtils {
 
     /** Get a Freemarker configuration that is safe against malicious templates */
     public static Configuration getSafeConfiguration() {
-        Configuration config = new Configuration();
+        Configuration config = new Configuration(DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
         config.setNewBuiltinClassResolver(
                 (name, env, template) -> {
                     if (ILLEGAL_FREEMARKER_CLASSES.stream().anyMatch(name::equals)) {

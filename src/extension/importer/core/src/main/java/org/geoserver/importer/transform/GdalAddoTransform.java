@@ -25,7 +25,7 @@ public class GdalAddoTransform extends AbstractCommandLinePreTransform implement
 
     /** Checks if gdaladdo is available */
     public static boolean isAvailable() throws IOException {
-        return new GdalAddoTransform(new ArrayList<String>(), Arrays.asList(2)).checkAvailable();
+        return new GdalAddoTransform(new ArrayList<>(), Arrays.asList(2)).checkAvailable();
     }
 
     private List<Integer> levels;
@@ -33,7 +33,7 @@ public class GdalAddoTransform extends AbstractCommandLinePreTransform implement
     public GdalAddoTransform(List<String> options, List<Integer> levels) {
         super(options);
         this.levels = levels;
-        if (levels == null || levels.size() == 0) {
+        if (levels == null || levels.isEmpty()) {
             throw new ValidationException("Levels is missing, must contain at least one value");
         } else {
             for (Integer level : levels) {

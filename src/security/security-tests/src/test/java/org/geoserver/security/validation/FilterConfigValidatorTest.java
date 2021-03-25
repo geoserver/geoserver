@@ -10,9 +10,25 @@ import static org.junit.Assert.fail;
 
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.config.*;
+import org.geoserver.security.config.DigestAuthenticationFilterConfig;
+import org.geoserver.security.config.ExceptionTranslationFilterConfig;
+import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig;
 import org.geoserver.security.config.J2eeAuthenticationBaseFilterConfig.J2EERoleSource;
-import org.geoserver.security.filter.*;
+import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
+import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
+import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
+import org.geoserver.security.config.RoleFilterConfig;
+import org.geoserver.security.config.SecurityInterceptorFilterConfig;
+import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
+import org.geoserver.security.config.X509CertificateAuthenticationFilterConfig;
+import org.geoserver.security.filter.GeoServerDigestAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerExceptionTranslationFilter;
+import org.geoserver.security.filter.GeoServerJ2eeAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerRequestHeaderAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerRoleFilter;
+import org.geoserver.security.filter.GeoServerSecurityInterceptorFilter;
+import org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationFilter;
+import org.geoserver.security.filter.GeoServerX509CertificateAuthenticationFilter;
 import org.geoserver.security.xml.XMLRoleService;
 import org.geoserver.security.xml.XMLUserGroupService;
 import org.geoserver.test.GeoServerMockTestSupport;
@@ -128,7 +144,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
         config.setClassName(GeoServerX509CertificateAuthenticationFilter.class.getName());
         config.setName("testX509");
 
-        check((J2eeAuthenticationBaseFilterConfig) config);
+        check(config);
     }
 
     @Test
@@ -166,7 +182,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
         config.setClassName(GeoServerJ2eeAuthenticationFilter.class.getName());
         config.setName("testJ2ee");
 
-        check((J2eeAuthenticationBaseFilterConfig) config);
+        check(config);
     }
 
     @Test
@@ -313,6 +329,6 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
         }
 
         config.setPrincipalHeaderAttribute("user");
-        check((PreAuthenticatedUserNameFilterConfig) config);
+        check(config);
     }
 }

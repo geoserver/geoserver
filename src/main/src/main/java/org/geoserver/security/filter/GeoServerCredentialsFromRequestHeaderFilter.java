@@ -141,7 +141,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
         }
 
         UsernamePasswordAuthenticationToken result =
-                new UsernamePasswordAuthenticationToken(us, pw, new ArrayList<GrantedAuthority>());
+                new UsernamePasswordAuthenticationToken(us, pw, new ArrayList<>());
         Authentication auth = null;
         try {
             auth = getSecurityManager().authenticationManager().authenticate(result);
@@ -150,7 +150,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
             return;
         }
         LOGGER.log(Level.FINER, "logged in as {0}", us);
-        Collection<GeoServerRole> roles = new ArrayList<GeoServerRole>();
+        Collection<GeoServerRole> roles = new ArrayList<>();
         for (GrantedAuthority grauth : auth.getAuthorities()) {
             roles.add((GeoServerRole) grauth);
         }
@@ -209,9 +209,7 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
         try {
             MessageDigest md = (MessageDigest) digest.clone();
             digestString = new String(Hex.encode(md.digest(buff.toString().getBytes("utf-8"))));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        } catch (CloneNotSupportedException e) {
+        } catch (UnsupportedEncodingException | CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
         buff = new StringBuffer(username);

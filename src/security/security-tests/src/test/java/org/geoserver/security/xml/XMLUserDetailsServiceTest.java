@@ -6,7 +6,10 @@
 
 package org.geoserver.security.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,6 +61,7 @@ public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
         return service;
     }
 
+    @Override
     public GeoServerRoleService createRoleService(String serviceName) throws Exception {
 
         XMLRoleServiceConfig gaConfig = new XMLRoleServiceConfig();

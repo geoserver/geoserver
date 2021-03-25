@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -322,7 +323,7 @@ public class DynamicColorMapTest extends GeoServerSystemTestSupport {
         try {
             tx.transform(colorMap, System.out);
         } catch (TransformerException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
         }
     }
 

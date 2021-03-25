@@ -27,7 +27,7 @@ public class ApplicationSchemaXSD2 extends ApplicationSchemaXSD1 {
 
     @Override
     protected XSDSchema buildSchema() throws IOException {
-        Set<FeatureTypeInfo> types = new HashSet();
+        Set<FeatureTypeInfo> types = new HashSet<>();
         for (Set<FeatureTypeInfo> fts : featureTypes.values()) {
             types.addAll(fts);
         }

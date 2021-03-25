@@ -22,8 +22,8 @@ import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.web.data.layer.NewLayerPage;
-import org.geotools.data.ows.HTTPClient;
-import org.geotools.data.ows.SimpleHttpClient;
+import org.geotools.http.HTTPClient;
+import org.geotools.http.HTTPClientFinder;
 import org.geotools.ows.ServiceException;
 import org.geotools.ows.wms.WebMapServer;
 import org.geotools.ows.wms.xml.WMSSchema;
@@ -45,7 +45,7 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
                     GeoServerExtensions.bean(GeoServerEnvironment.class);
 
             // AF: Disable Binding if GeoServer Env Parametrization is enabled!
-            if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+            if (gsEnvironment == null || !GeoServerEnvironment.allowEnvParametrization()) {
                 capabilitiesURL.getFormComponent().add(new WMSCapabilitiesURLValidator());
             }
         } catch (IOException e) {
@@ -105,13 +105,13 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
         setResponsePage(layerChooserPage);
     }
 
-    final class WMSCapabilitiesURLValidator implements IValidator {
+    final class WMSCapabilitiesURLValidator implements IValidator<String> {
 
         @Override
-        public void validate(IValidatable validatable) {
-            String url = (String) validatable.getValue();
+        public void validate(IValidatable<String> validatable) {
+            String url = validatable.getValue();
             try {
-                HTTPClient client = new SimpleHttpClient();
+                HTTPClient client = HTTPClientFinder.createClient();
                 usernamePanel.getFormComponent().processInput();
                 String user = usernamePanel.getFormComponent().getInput();
                 password.getFormComponent().processInput();

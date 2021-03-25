@@ -7,18 +7,23 @@ package org.geoserver.catalog.impl;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 
 public abstract class RunnerBase implements Runnable {
 
     private CountDownLatch ready;
     private CountDownLatch done;
     private Exception problem;
+    static final Logger LOGGER = Logging.getLogger(RunnerBase.class);
 
     protected RunnerBase(CountDownLatch ready, CountDownLatch done) {
         this.ready = ready;
         this.done = done;
     }
 
+    @Override
     public void run() {
         boolean readied = false;
         try {
@@ -34,7 +39,7 @@ public abstract class RunnerBase implements Runnable {
                 try {
                     ready.countDown();
                 } catch (Exception e2) {
-                    e2.printStackTrace();
+                    LOGGER.log(Level.WARNING, "", e2);
                 }
             }
             setProblem(e);
@@ -46,9 +51,7 @@ public abstract class RunnerBase implements Runnable {
 
     protected abstract void runInternal() throws Exception;
 
-    protected void doBeforeReady() {
-        ;
-    }
+    protected void doBeforeReady() {}
 
     private synchronized void setProblem(Exception problem) {
         this.problem = problem;

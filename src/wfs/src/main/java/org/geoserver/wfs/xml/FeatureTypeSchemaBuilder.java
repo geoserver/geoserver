@@ -40,6 +40,7 @@ import org.eclipse.xsd.XSDSchemaContent;
 import org.eclipse.xsd.XSDTypeDefinition;
 import org.eclipse.xsd.impl.XSDSchemaImpl;
 import org.eclipse.xsd.util.XSDConstants;
+import org.eclipse.xsd.util.XSDSchemaLocationResolver;
 import org.eclipse.xsd.util.XSDSchemaLocator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -94,7 +95,7 @@ public abstract class FeatureTypeSchemaBuilder {
     GeoServer gs;
 
     /** profiles used for type mapping. */
-    protected List profiles;
+    protected List<Object> profiles;
 
     /** gml schema stuff */
     protected String gmlNamespace;
@@ -112,7 +113,7 @@ public abstract class FeatureTypeSchemaBuilder {
         this.catalog = gs.getCatalog();
         this.resourceLoader = gs.getCatalog().getResourceLoader();
 
-        profiles = new ArrayList();
+        profiles = new ArrayList<>();
         profiles.add(new XSProfile());
     }
 
@@ -169,17 +170,18 @@ public abstract class FeatureTypeSchemaBuilder {
         schema.setElementFormDefault(XSDForm.get(XSDForm.QUALIFIED));
 
         // group the feature types by namespace
-        HashMap ns2featureTypeInfos = new HashMap();
+        Map<String, List<FeatureTypeInfo>> ns2featureTypeInfos = new HashMap<>();
 
-        for (int i = 0; i < featureTypeInfos.length; i++) {
-            String prefix = featureTypeInfos[i].getNamespace().getPrefix();
-            List l = (List) ns2featureTypeInfos.get(prefix);
+        for (FeatureTypeInfo typeInfo : featureTypeInfos) {
+            String prefix = typeInfo.getNamespace().getPrefix();
+            @SuppressWarnings("unchecked")
+            List<FeatureTypeInfo> l = ns2featureTypeInfos.get(prefix);
 
             if (l == null) {
-                l = new ArrayList();
+                l = new ArrayList<>();
             }
 
-            l.add(featureTypeInfos[i]);
+            l.add(typeInfo);
 
             ns2featureTypeInfos.put(prefix, l);
         }
@@ -193,7 +195,7 @@ public abstract class FeatureTypeSchemaBuilder {
             schema.setTargetNamespace(gmlSchema().getTargetNamespace());
         } else if (ns2featureTypeInfos.entrySet().size() == 1) {
             // only 1 namespace, write target namespace out
-            String targetPrefix = (String) ns2featureTypeInfos.keySet().iterator().next();
+            String targetPrefix = ns2featureTypeInfos.keySet().iterator().next();
             String targetNamespace = catalog.getNamespaceByPrefix(targetPrefix).getURI();
             schema.setTargetNamespace(targetNamespace);
             schema.getQNamePrefixToNamespaceMap().put(targetPrefix, targetNamespace);
@@ -213,15 +215,14 @@ public abstract class FeatureTypeSchemaBuilder {
                     // should always be a Map.. set in AppSchemaDataAccessConfigurator
                     // impose iteration order
                     @SuppressWarnings("unchecked")
-                    Map<String, String> schemaURIs =
-                            new TreeMap<String, String>((Map<String, String>) schemaUri);
+                    Map<String, String> schemaURIs = new TreeMap<>((Map<String, String>) schemaUri);
                     // schema is supplied by the user.. just include the top level schema instead of
                     // building the type
                     if (!findTypeInSchema(featureTypeInfos[0], schema, factory)) {
                         // map of namespace to schemaLocation used to prevent duplicate imports
-                        Map<String, String> imports = new HashMap<String, String>();
+                        Map<String, String> imports = new HashMap<>();
                         // set of schemaLocations used to prevent duplicate includes
-                        Set<String> includes = new HashSet<String>();
+                        Set<String> includes = new HashSet<>();
                         for (String namespace : schemaURIs.keySet()) {
                             addReference(
                                     schema,
@@ -250,13 +251,13 @@ public abstract class FeatureTypeSchemaBuilder {
             schema.getQNamePrefixToNamespaceMap().put(gmlPrefix, gmlNamespace);
             // schema.getQNamePrefixToNamespaceMap().put("gml", "http://www.opengis.net/gml");
             // then manually build schema
-            for (int i = 0; i < featureTypeInfos.length; i++) {
+            for (FeatureTypeInfo featureTypeInfo : featureTypeInfos) {
                 try {
-                    buildSchemaContent(featureTypeInfos[i], schema, factory, baseUrl);
+                    buildSchemaContent(featureTypeInfo, schema, factory, baseUrl);
                 } catch (Exception e) {
                     logger.log(
                             Level.WARNING,
-                            "Could not build xml schema for type: " + featureTypeInfos[i].getName(),
+                            "Could not build xml schema for type: " + featureTypeInfo.getName(),
                             e);
                 }
             }
@@ -278,17 +279,18 @@ public abstract class FeatureTypeSchemaBuilder {
             }
 
             // map of namespace to schemaLocation used to prevent duplicate imports
-            Map<String, String> imports = new HashMap<String, String>();
+            Map<String, String> imports = new HashMap<>();
             // set of schemaLocations used to prevent duplicate includes
-            Set<String> includes = new HashSet<String>();
-            for (Iterator i = ns2featureTypeInfos.entrySet().iterator(); i.hasNext(); ) {
-                Map.Entry entry = (Map.Entry) i.next();
+            Set<String> includes = new HashSet<>();
+            for (Map.Entry<String, List<FeatureTypeInfo>> stringListEntry :
+                    ns2featureTypeInfos.entrySet()) {
+                Map.Entry entry = (Map.Entry) stringListEntry;
                 String prefix = (String) entry.getKey();
                 List types = (List) entry.getValue();
 
                 StringBuffer typeNames = new StringBuffer();
-                for (Iterator t = types.iterator(); t.hasNext(); ) {
-                    FeatureTypeInfo info = (FeatureTypeInfo) t.next();
+                for (Object type : types) {
+                    FeatureTypeInfo info = (FeatureTypeInfo) type;
                     FeatureType featureType = info.getFeatureType();
                     Object schemaUri = featureType.getUserData().get("schemaURI");
                     if (schemaUri != null && schemaUri instanceof Map) {
@@ -296,7 +298,7 @@ public abstract class FeatureTypeSchemaBuilder {
                         // impose iteration order
                         @SuppressWarnings("unchecked")
                         Map<String, String> schemaURIs =
-                                new TreeMap<String, String>((Map<String, String>) schemaUri);
+                                new TreeMap<>((Map<String, String>) schemaUri);
                         // schema is supplied by the user.. just import the specified location
                         for (String namespace : schemaURIs.keySet()) {
                             addReference(
@@ -315,8 +317,7 @@ public abstract class FeatureTypeSchemaBuilder {
                     typeNames.setLength(typeNames.length() - 1);
 
                     // schema not found, encode describe feature type URL
-                    Map<String, String> params =
-                            new LinkedHashMap<String, String>(describeFeatureTypeParams);
+                    Map<String, String> params = new LinkedHashMap<>(describeFeatureTypeParams);
                     params.put("typeName", typeNames.toString().trim());
 
                     String schemaLocation = buildURL(baseUrl, "wfs", params, URLType.RESOURCE);
@@ -333,7 +334,7 @@ public abstract class FeatureTypeSchemaBuilder {
                     if (resolveAppSchemaImports) {
                         // actually build the schema out for these types and set it as the resolved
                         // schema for the import
-                        List<FeatureTypeInfo> featureTypes = new ArrayList();
+                        List<FeatureTypeInfo> featureTypes = new ArrayList<>();
                         for (String typeName : typeNames.toString().split(",")) {
                             featureTypes.add(catalog.getFeatureTypeByName(typeName));
                         }
@@ -387,6 +388,7 @@ public abstract class FeatureTypeSchemaBuilder {
                                 .getUserData()
                                 .get(Types.DECLARED_NAMESPACES_MAP);
                 if (!(mapObject instanceof Map)) continue;
+                @SuppressWarnings("unchecked")
                 final Map<String, String> featureTypeNamespaces = (Map<String, String>) mapObject;
                 featureTypeNamespaces
                         .entrySet()
@@ -583,9 +585,7 @@ public abstract class FeatureTypeSchemaBuilder {
         // incorporate application schemas into the wfs schema
         Collection<FeatureTypeInfo> featureTypeInfos = catalog.getFeatureTypes();
 
-        for (Iterator<FeatureTypeInfo> i = featureTypeInfos.iterator(); i.hasNext(); ) {
-            FeatureTypeInfo meta = i.next();
-
+        for (FeatureTypeInfo meta : featureTypeInfos) {
             // don't build schemas for disabled feature types
             if (!meta.enabled()) continue;
 
@@ -599,14 +599,12 @@ public abstract class FeatureTypeSchemaBuilder {
             wfsSchema.getQNamePrefixToNamespaceMap().put(prefix, namespaceURI);
 
             // add the types + elements to the wfs schema
-            for (Iterator<XSDTypeDefinition> t = schema.getTypeDefinitions().iterator();
-                    t.hasNext(); ) {
-                wfsSchema.getTypeDefinitions().add(t.next());
+            for (XSDTypeDefinition xsdTypeDefinition : schema.getTypeDefinitions()) {
+                wfsSchema.getTypeDefinitions().add(xsdTypeDefinition);
             }
 
-            for (Iterator<XSDElementDeclaration> e = schema.getElementDeclarations().iterator();
-                    e.hasNext(); ) {
-                wfsSchema.getElementDeclarations().add(e.next());
+            for (XSDElementDeclaration xsdElementDeclaration : schema.getElementDeclarations()) {
+                wfsSchema.getElementDeclarations().add(xsdElementDeclaration);
             }
 
             // add secondary namespaces from catalog
@@ -621,6 +619,7 @@ public abstract class FeatureTypeSchemaBuilder {
         return wfsSchema;
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics
     boolean findTypeInSchema(FeatureTypeInfo featureTypeMeta, XSDSchema schema, XSDFactory factory)
             throws IOException {
         // look if the schema for the type is already defined
@@ -637,10 +636,12 @@ public abstract class FeatureTypeSchemaBuilder {
             }
 
             // schema file found, parse it and lookup the complex type
-            List resolvers = Schemas.findSchemaLocationResolvers(xmlConfiguration);
-            List locators = new ArrayList();
+            List<XSDSchemaLocationResolver> resolvers =
+                    Schemas.findSchemaLocationResolvers(xmlConfiguration);
+            List<XSDSchemaLocator> locators = new ArrayList<>();
             locators.add(
                     new XSDSchemaLocator() {
+                        @Override
                         public XSDSchema locateSchema(
                                 XSDSchema schema,
                                 String namespaceURI,
@@ -725,10 +726,8 @@ public abstract class FeatureTypeSchemaBuilder {
                     }
 
                     // find the type of the element
-                    List<XSDComplexTypeDefinition> candidates =
-                            new ArrayList<XSDComplexTypeDefinition>();
-                    for (Iterator t = ftSchema.getTypeDefinitions().iterator(); t.hasNext(); ) {
-                        XSDTypeDefinition type = (XSDTypeDefinition) t.next();
+                    List<XSDComplexTypeDefinition> candidates = new ArrayList<>();
+                    for (XSDTypeDefinition type : ftSchema.getTypeDefinitions()) {
                         if (type instanceof XSDComplexTypeDefinition) {
                             XSDTypeDefinition base = type.getBaseType();
                             while (base != null) {
@@ -859,7 +858,7 @@ public abstract class FeatureTypeSchemaBuilder {
                                     (ComplexType) attribute.getType(), schema, factory);
                         }
                     } else {
-                        Class binding = attribute.getType().getBinding();
+                        Class<?> binding = attribute.getType().getBinding();
                         typeName = findTypeName(binding);
                         if (typeName == null) {
                             // Fallback on String
@@ -935,9 +934,8 @@ public abstract class FeatureTypeSchemaBuilder {
         return contains;
     }
 
-    Name findTypeName(Class binding) {
-        for (Iterator p = profiles.iterator(); p.hasNext(); ) {
-            Object profile = p.next();
+    Name findTypeName(Class<?> binding) {
+        for (Object profile : profiles) {
             Name name = null;
             if (profile instanceof TypeMappingProfile) {
                 name = ((TypeMappingProfile) profile).name(binding);
@@ -997,6 +995,7 @@ public abstract class FeatureTypeSchemaBuilder {
             xmlConfiguration = new GMLConfiguration();
         }
 
+        @Override
         protected XSDSchema gmlSchema() {
             if (gml2Schema == null) {
                 XSDSchema result;
@@ -1041,6 +1040,7 @@ public abstract class FeatureTypeSchemaBuilder {
             return new GML3Profile();
         }
 
+        @Override
         protected XSDSchema gmlSchema() {
             if (gml3Schema == null) {
                 gml3Schema = createGml3Schema();
@@ -1057,6 +1057,7 @@ public abstract class FeatureTypeSchemaBuilder {
             }
         }
 
+        @Override
         protected boolean filterAttributeType(AttributeDescriptor attribute) {
             return super.filterAttributeType(attribute)
                     || "metaDataProperty".equals(attribute.getLocalName())
@@ -1099,6 +1100,7 @@ public abstract class FeatureTypeSchemaBuilder {
             return GML.getInstance().getTypeMappingProfile();
         }
 
+        @Override
         protected XSDSchema gmlSchema() {
             if (gml32Schema == null) {
                 synchronized (FeatureTypeSchemaBuilder.class) {
@@ -1148,6 +1150,7 @@ public abstract class FeatureTypeSchemaBuilder {
             }
         }
 
+        @Override
         protected boolean filterAttributeType(AttributeDescriptor attribute) {
             return super.filterAttributeType(attribute)
                     || "descriptionReference".equals(attribute.getLocalName())

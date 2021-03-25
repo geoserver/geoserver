@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import javax.measure.Unit;
-import javax.measure.format.ParserException;
+import javax.measure.format.MeasurementParseException;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.PropertySource;
 import javax.media.jai.PropertySourceImpl;
@@ -55,7 +55,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.datum.PixelInCell;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.util.InternationalString;
-import tec.uom.se.format.SimpleUnitFormat;
+import tech.units.indriya.format.SimpleUnitFormat;
 
 /**
  * A {@link GridCoverage2DReader} wrapper to customize the {@link CoverageDimensionInfo} associated
@@ -236,6 +236,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         if (coverage == null) {
             return coverage;
         }
+        @SuppressWarnings("unchecked")
         final Map<String, Object> properties = coverage.getProperties();
         final SampleDimension[] dims = coverage.getSampleDimensions();
 
@@ -288,8 +289,8 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
 
         // lookup the bands if possible
         if (parameters != null) {
-            for (int i = 0; i < parameters.length; i++) {
-                final ParameterValue param = (ParameterValue) parameters[i];
+            for (GeneralParameterValue parameter : parameters) {
+                final ParameterValue param = (ParameterValue) parameter;
                 if (AbstractGridFormat.BANDS.getName().equals(param.getDescriptor().getName())) {
                     int[] bandIndicesParam = (int[]) param.getValue();
                     return bandIndicesParam;
@@ -305,7 +306,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             List<CoverageDimensionInfo> storedDimensions,
             int[] bandIndexes) {
         GridSampleDimension[] wrappedDims = null;
-        if (storedDimensions != null && storedDimensions.size() > 0) {
+        if (storedDimensions != null && !storedDimensions.isEmpty()) {
             int i = 0;
             wrappedDims = new GridSampleDimension[dims.length];
             for (SampleDimension dim : dims) {
@@ -340,87 +341,106 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         return result;
     }
 
+    @Override
     public Format getFormat() {
         return delegate.getFormat();
     }
 
+    @Override
     public Object getSource() {
         return delegate.getSource();
     }
 
+    @Override
     public String[] getMetadataNames() throws IOException {
         return delegate.getMetadataNames();
     }
 
+    @Override
     public String[] getMetadataNames(String coverageName) throws IOException {
         checkCoverageName(coverageName);
         return delegate.getMetadataNames(coverageName);
     }
 
+    @Override
     public String getMetadataValue(String name) throws IOException {
         return delegate.getMetadataValue(name);
     }
 
+    @Override
     public String getMetadataValue(String coverageName, String name) throws IOException {
         checkCoverageName(coverageName);
         return delegate.getMetadataValue(coverageName, name);
     }
 
+    @Override
     public void dispose() throws IOException {
         delegate.dispose();
     }
 
+    @Override
     public GeneralEnvelope getOriginalEnvelope() {
         return delegate.getOriginalEnvelope();
     }
 
+    @Override
     public GeneralEnvelope getOriginalEnvelope(String coverageName) {
         checkCoverageName(coverageName);
         return delegate.getOriginalEnvelope(coverageName);
     }
 
+    @Override
     public GridEnvelope getOriginalGridRange() {
         return delegate.getOriginalGridRange();
     }
 
+    @Override
     public GridEnvelope getOriginalGridRange(String coverageName) {
         checkCoverageName(coverageName);
         return delegate.getOriginalGridRange(coverageName);
     }
 
+    @Override
     public MathTransform getOriginalGridToWorld(PixelInCell pixInCell) {
         return delegate.getOriginalGridToWorld(pixInCell);
     }
 
+    @Override
     public MathTransform getOriginalGridToWorld(String coverageName, PixelInCell pixInCell) {
         checkCoverageName(coverageName);
         return delegate.getOriginalGridToWorld(coverageName, pixInCell);
     }
 
+    @Override
     public CoordinateReferenceSystem getCoordinateReferenceSystem() {
         return delegate.getCoordinateReferenceSystem();
     }
 
+    @Override
     public CoordinateReferenceSystem getCoordinateReferenceSystem(String coverageName) {
         checkCoverageName(coverageName);
         return delegate.getCoordinateReferenceSystem(coverageName);
     }
 
+    @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters() throws IOException {
         return delegate.getDynamicParameters();
     }
 
+    @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName)
             throws IOException {
         checkCoverageName(coverageName);
         return delegate.getDynamicParameters(coverageName);
     }
 
+    @Override
     public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution)
             throws IOException {
         return delegate.getReadingResolutions(policy, requestedResolution);
     }
 
+    @Override
     public double[] getReadingResolutions(
             String coverageName, OverviewPolicy policy, double[] requestedResolution)
             throws IOException {
@@ -428,27 +448,33 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         return delegate.getReadingResolutions(coverageName, policy, requestedResolution);
     }
 
+    @Override
     public String[] getGridCoverageNames() throws IOException {
         return delegate.getGridCoverageNames();
     }
 
+    @Override
     public int getGridCoverageCount() throws IOException {
         return delegate.getGridCoverageCount();
     }
 
+    @Override
     public ImageLayout getImageLayout() throws IOException {
         return delegate.getImageLayout();
     }
 
+    @Override
     public ImageLayout getImageLayout(String coverageName) throws IOException {
         checkCoverageName(coverageName);
         return delegate.getImageLayout(coverageName);
     }
 
+    @Override
     public double[][] getResolutionLevels() throws IOException {
         return delegate.getResolutionLevels();
     }
 
+    @Override
     public double[][] getResolutionLevels(String coverageName) throws IOException {
         checkCoverageName(coverageName);
         return delegate.getResolutionLevels(coverageName);
@@ -490,8 +516,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             this.wrappedSampleDimensions = sampleDimensions;
             wrappedPropertySource =
                     new PropertySourceImpl(
-                            properties,
-                            coverage instanceof PropertySource ? (PropertySource) coverage : null);
+                            properties, coverage instanceof PropertySource ? coverage : null);
         }
 
         @Override
@@ -541,6 +566,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public <T> T unwrap(Class<T> iface) throws IllegalArgumentException {
             if (gridCoverage instanceof Wrapper) {
                 return ((Wrapper) gridCoverage).unwrap(iface);
@@ -588,7 +614,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                             ? new SimpleInternationalString(name)
                             : sampleDimDescription;
             final List<Category> categories = sampleDim.getCategories();
-            NumberRange configuredRange = info.getRange();
+            NumberRange<? extends Number> configuredRange = info.getRange();
             final String uom = info.getUnit();
             Unit defaultUnit = sampleDim.getUnits();
             Unit unit = defaultUnit;
@@ -596,7 +622,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                 if (uom != null) {
                     unit = SimpleUnitFormat.getInstance().parse(uom);
                 }
-            } catch (ParserException | IllegalArgumentException iae) {
+            } catch (MeasurementParseException | IllegalArgumentException iae) {
                 if (LOGGER.isLoggable(Level.WARNING) && defaultUnit != null) {
                     LOGGER.warning(
                             "Unable to parse the specified unit ("
@@ -610,14 +636,14 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             // custom null values
             final List<Double> nullValues = info.getNullValues();
             double[] configuredNoDataValues;
-            if (nullValues != null && nullValues.size() > 0) {
+            if (nullValues == null || nullValues.isEmpty()) {
+                configuredNoDataValues = sampleDim.getNoDataValues();
+            } else {
                 final int size = nullValues.size();
                 configuredNoDataValues = new double[size];
                 for (int i = 0; i < size; i++) {
                     configuredNoDataValues[i] = nullValues.get(i);
                 }
-            } else {
-                configuredNoDataValues = sampleDim.getNoDataValues();
             }
 
             // Check if the nodata has been configured
@@ -625,7 +651,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                     configuredNoDataValues != null && configuredNoDataValues.length > 0;
             // custom categories
             int numCategories = 0;
-            List<Category> customCategories = new ArrayList<Category>(numCategories);
+            List<Category> customCategories = new ArrayList<>(numCategories);
             if (categories != null && (numCategories = categories.size()) > 0) {
                 Category wrapped = null;
                 for (Category category : categories) {
@@ -667,10 +693,12 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             if (configuredRange != null
                     && !Double.isInfinite(configuredRange.getMinimum())
                     && !Double.isInfinite(configuredRange.getMaximum())) {
+                @SuppressWarnings("rawtypes")
                 Class targetType =
                         categories != null && !categories.isEmpty()
                                 ? categories.get(0).getRange().getElementClass()
                                 : Double.class;
+                @SuppressWarnings("unchecked")
                 final NumberRange<?> dataRange = configuredRange.castTo(targetType);
                 List<NumberRange<?>> dataRanges = new ArrayList<>();
                 dataRanges.add(dataRange);
@@ -697,7 +725,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                     configuredRange,
                     configuredUnit,
                     configuredNoDataValues,
-                    (Category[]) customCategories.toArray(new Category[customCategories.size()]),
+                    customCategories.toArray(new Category[customCategories.size()]),
                     sampleDim);
         }
 

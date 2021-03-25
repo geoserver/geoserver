@@ -5,7 +5,12 @@
  */
 package org.geoserver.web.data.layergroup;
 
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CatalogIntegrationTest;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;

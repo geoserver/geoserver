@@ -18,6 +18,7 @@ public enum StyleType {
         this.name = name;
     }
 
+    @Override
     public String toString() {
         return name;
     }

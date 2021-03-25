@@ -52,6 +52,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
         this.schemaBuilder = schemaBuilder;
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return getOutputFormats().isEmpty() ? null : getOutputFormats().iterator().next();
         // return "text/xml; subtype=gml/3.1.1";
@@ -61,6 +62,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
         return WFS.NAMESPACE;
     }
 
+    @Override
     protected void write(
             FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)
             throws IOException {
@@ -101,7 +103,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     }
 
     public static class V20 extends XmlSchemaEncoder {
-        static Set<String> MIME_TYPES = new LinkedHashSet<String>();
+        static Set<String> MIME_TYPES = new LinkedHashSet<>();
 
         static {
             MIME_TYPES.add("application/gml+xml; version=3.2");

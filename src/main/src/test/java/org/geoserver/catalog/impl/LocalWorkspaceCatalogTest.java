@@ -8,7 +8,9 @@ package org.geoserver.catalog.impl;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +33,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
 
 public class LocalWorkspaceCatalogTest {
 
@@ -152,7 +153,7 @@ public class LocalWorkspaceCatalogTest {
         // return back the first one without a namespace prefix
         expect(cat.getLayerByName("lc")).andReturn(lc1).anyTimes();
 
-        List<LayerInfo> layers = new ArrayList<LayerInfo>(2);
+        List<LayerInfo> layers = new ArrayList<>(2);
         layers.add(l1);
         layers.add(l2);
         layers.add(lc1);
@@ -160,14 +161,8 @@ public class LocalWorkspaceCatalogTest {
         expect(cat.getLayers()).andReturn(layers).anyTimes();
         List<LayerInfo> layers2 = new ArrayList<>(layers);
         layers2.add(null);
-        expect(
-                        cat.list(
-                                LayerInfo.class,
-                                Filter.INCLUDE,
-                                (Integer) null,
-                                (Integer) null,
-                                (SortBy) null))
-                .andReturn(new CloseableIteratorAdapter<LayerInfo>(layers2.iterator()))
+        expect(cat.list(LayerInfo.class, Filter.INCLUDE, null, null, null))
+                .andReturn(new CloseableIteratorAdapter<>(layers2.iterator()))
                 .anyTimes();
         replay(cat);
 

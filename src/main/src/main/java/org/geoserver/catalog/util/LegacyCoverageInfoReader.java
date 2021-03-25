@@ -43,12 +43,9 @@ public class LegacyCoverageInfoReader {
      */
     public void read(File file) throws IOException {
         parentDirectory = file.getParentFile();
-        Reader reader = XmlCharsetDetector.getCharsetAwareReader(new FileInputStream(file));
 
-        try {
+        try (Reader reader = XmlCharsetDetector.getCharsetAwareReader(new FileInputStream(file))) {
             coverage = ReaderUtils.parse(reader);
-        } finally {
-            reader.close();
         }
     }
 
@@ -69,7 +66,7 @@ public class LegacyCoverageInfoReader {
     }
 
     public Map<String, String> metadataLink() {
-        HashMap<String, String> ml = new HashMap<String, String>();
+        HashMap<String, String> ml = new HashMap<>();
         ml.put("about", ReaderUtils.getChildAttribute(coverage, "metadataLink", "about"));
         ml.put(
                 "metadataType",
@@ -81,7 +78,7 @@ public class LegacyCoverageInfoReader {
     public List<String> keywords() {
         String raw = ReaderUtils.getChildText(coverage, "keywords");
         StringTokenizer st = new StringTokenizer(raw, ", ");
-        ArrayList keywords = new ArrayList();
+        List<String> keywords = new ArrayList<>();
         while (st.hasMoreTokens()) {
             keywords.add(st.nextToken());
         }
@@ -97,7 +94,7 @@ public class LegacyCoverageInfoReader {
     public List<String> styles() throws Exception {
         Element styleRoot = ReaderUtils.getChildElement(coverage, "styles");
         if (styleRoot != null) {
-            List<String> styleNames = new ArrayList<String>();
+            List<String> styleNames = new ArrayList<>();
             Element[] styles = ReaderUtils.getChildElements(styleRoot, "style");
             for (Element style : styles) {
                 styleNames.add(style.getTextContent().trim());
@@ -110,7 +107,7 @@ public class LegacyCoverageInfoReader {
 
     public Map<String, Object> envelope() throws Exception {
         Element envelopeElement = ReaderUtils.getChildElement(coverage, "envelope");
-        HashMap<String, Object> e = new HashMap<String, Object>();
+        HashMap<String, Object> e = new HashMap<>();
 
         String nativeCrsWkt = ReaderUtils.getAttribute(envelopeElement, "crs", false);
         nativeCrsWkt = nativeCrsWkt.replaceAll("'", "\"");
@@ -136,7 +133,7 @@ public class LegacyCoverageInfoReader {
             return null;
         }
 
-        HashMap<String, Object> grid = new HashMap<String, Object>();
+        HashMap<String, Object> grid = new HashMap<>();
 
         grid.put(
                 "dimension",
@@ -167,7 +164,7 @@ public class LegacyCoverageInfoReader {
 
         Element geoTransformElement = ReaderUtils.getChildElement(gridElement, "geoTransform");
         if (geoTransformElement != null) {
-            Map<String, Double> geoTransform = new HashMap<String, Double>();
+            Map<String, Double> geoTransform = new HashMap<>();
             String scaleX = ReaderUtils.getChildText(geoTransformElement, "scaleX");
             String scaleY = ReaderUtils.getChildText(geoTransformElement, "scaleY");
             String shearX = ReaderUtils.getChildText(geoTransformElement, "shearX");
@@ -187,15 +184,15 @@ public class LegacyCoverageInfoReader {
         return grid;
     }
 
-    public List<Map> coverageDimensions() throws Exception {
+    public List<Map<String, Object>> coverageDimensions() throws Exception {
         Element[] cdElements = ReaderUtils.getChildElements(coverage, "CoverageDimension");
-        List<Map> cds = new ArrayList<Map>();
-        for (int i = 0; i < cdElements.length; i++) {
-            HashMap cd = new HashMap();
-            cd.put("name", ReaderUtils.getChildText(cdElements[i], "name"));
-            cd.put("description", ReaderUtils.getChildText(cdElements[i], "description"));
+        List<Map<String, Object>> cds = new ArrayList<>();
+        for (Element cdElement : cdElements) {
+            Map<String, Object> cd = new HashMap<>();
+            cd.put("name", ReaderUtils.getChildText(cdElement, "name"));
+            cd.put("description", ReaderUtils.getChildText(cdElement, "description"));
 
-            Element intervalElement = ReaderUtils.getChildElement(cdElements[i], "interval");
+            Element intervalElement = ReaderUtils.getChildElement(cdElement, "interval");
             double min = Double.parseDouble(ReaderUtils.getChildText(intervalElement, "min"));
             double max = Double.parseDouble(ReaderUtils.getChildText(intervalElement, "max"));
 
@@ -247,14 +244,14 @@ public class LegacyCoverageInfoReader {
     public Map<String, Serializable> parameters() {
         Element parameters = ReaderUtils.getChildElement(coverage, "parameters");
         if (parameters == null) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
 
-        HashMap<String, Serializable> map = new HashMap<String, Serializable>();
+        HashMap<String, Serializable> map = new HashMap<>();
         Element[] parameter = ReaderUtils.getChildElements(parameters, "parameter");
-        for (int i = 0; i < parameter.length; i++) {
-            String name = parameter[i].getAttribute("name");
-            String value = parameter[i].getAttribute("value");
+        for (Element element : parameter) {
+            String name = element.getAttribute("name");
+            String value = element.getAttribute("value");
 
             map.put(name, value);
         }

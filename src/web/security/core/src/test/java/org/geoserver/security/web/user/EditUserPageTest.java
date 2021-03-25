@@ -5,7 +5,10 @@
  */
 package org.geoserver.security.web.user;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.SortedSet;
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
@@ -145,6 +148,7 @@ public class EditUserPageTest extends AbstractUserPageTest {
                         gaService.getRoleByName(GeoServerRole.ADMIN_ROLE.getAuthority())));
     }
 
+    @Override
     @Test
     public void testReadOnlyRoleService() throws Exception {
         doTestReadOnlyRoleService();

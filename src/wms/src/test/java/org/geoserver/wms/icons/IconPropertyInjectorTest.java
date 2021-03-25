@@ -5,9 +5,15 @@
  */
 package org.geoserver.wms.icons;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeThat;
+import static org.junit.Assume.assumeTrue;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -69,7 +75,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
         {
             Symbolizer symb = grayCircle();
             Style input = styleFromRules(catchAllRule(symb));
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             properties.put("0.0.0", "");
 
             result = IconPropertyInjector.injectProperties(input, properties);
@@ -88,7 +94,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
         {
             Symbolizer symb = grayCircle();
             Style input = styleFromRules(catchAllRule(symb));
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             // properties.put("0.0.0", "");
 
             result = IconPropertyInjector.injectProperties(input, properties);
@@ -106,7 +112,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
         {
             Symbolizer symb = this.externalGraphic("http://example.com/foo.png", "image/png");
             Style input = styleFromRules(catchAllRule(symb));
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             properties.put("0.0.0", "");
 
             result = IconPropertyInjector.injectProperties(input, properties);
@@ -131,7 +137,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
             Symbolizer symb =
                     this.externalGraphic("http://example.com/${PROV_ABBR}.png", "image/png");
             Style input = styleFromRules(catchAllRule(symb));
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             properties.put("0.0.0", "");
             properties.put("0.0.0.url", "http://example.com/BC.png");
 
@@ -156,7 +162,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
         {
             Symbolizer symb = this.externalGraphic("http://example.com/NF.png", "image/png");
             Style input = styleFromRules(catchAllRule(symb));
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             properties.put("0.0.0", "");
             properties.put("0.0.0.url", "http://example.com/BC.png");
 
@@ -182,7 +188,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
             PointSymbolizer symb = this.externalGraphic("http://example.com/foo.png", "image/png");
             symb.getGraphic().setRotation(filterFactory.property("heading"));
             Style input = styleFromRules(catchAllRule(symb));
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             properties.put("0.0.0", "");
             properties.put("0.0.0.rotation", "45.0");
 
@@ -209,7 +215,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
             PointSymbolizer symb2 = externalGraphic("http://example.com/bar.png", "image/png");
             Style input = styleFromRules(rule(f1, symb1), rule(f2, symb2));
 
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             properties.put("0.0.0", "");
 
             result = IconPropertyInjector.injectProperties(input, properties);
@@ -239,7 +245,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
             PointSymbolizer symb2 = externalGraphic("http://example.com/bar.png", "image/png");
             Style input = styleFromRules(rule(f1, symb1), rule(f2, symb2));
 
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             properties.put("0.1.0", "");
 
             result = IconPropertyInjector.injectProperties(input, properties);
@@ -269,7 +275,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
             PointSymbolizer symb2 = mark("arrow", Color.BLACK, Color.BLUE, 1f, 16);
             Style input = styleFromRules(rule(f1, symb1), rule(f2, symb2));
 
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             properties.put("0.0.0", "");
 
             result = IconPropertyInjector.injectProperties(input, properties);
@@ -295,7 +301,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
             PointSymbolizer symb2 = mark("arrow", Color.BLACK, Color.BLUE, 1f, 16);
             Style input = styleFromRules(rule(f1, symb1), rule(f2, symb2));
 
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             properties.put("0.1.0", "");
 
             result = IconPropertyInjector.injectProperties(input, properties);
@@ -317,7 +323,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
         g.setRotation(ff.literal(45));
         g.setOpacity(ff.literal(0.5));
 
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, String> props = new HashMap<>();
         props.put("0.0.0", "");
 
         style = IconPropertyInjector.injectProperties(style, props);

@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.kml.KmlEncodingContext;
@@ -44,11 +43,11 @@ public class PlacemarkTimeDecoratorFactory implements KmlDecoratorFactory {
      * list of formats which correspond to the default formats in which freemarker outputs dates
      * when a user calls the ?datetime(),?date(),?time() fuctions.
      */
-    List<DateFormat> dtformats = new ArrayList<DateFormat>();
+    List<DateFormat> dtformats = new ArrayList<>();
 
-    List<DateFormat> dformats = new ArrayList<DateFormat>();
+    List<DateFormat> dformats = new ArrayList<>();
 
-    List<DateFormat> tformats = new ArrayList<DateFormat>();
+    List<DateFormat> tformats = new ArrayList<>();
 
     public PlacemarkTimeDecoratorFactory() {
         // add default freemarker ones first since they are likely to be used
@@ -258,14 +257,13 @@ public class PlacemarkTimeDecoratorFactory implements KmlDecoratorFactory {
 
         /** Parses a date as a string into a well-known format. */
         protected Date parseDate(List formats, String date) {
-            for (Iterator f = formats.iterator(); f.hasNext(); ) {
-                SimpleDateFormat format = (SimpleDateFormat) f.next();
+            for (Object o : formats) {
+                SimpleDateFormat format = (SimpleDateFormat) o;
                 Date d = null;
                 try {
                     d = format.parse(date);
                 } catch (ParseException e) {
                     // fine, we have many templates to try against
-                    // e.printStackTrace();
                 }
 
                 if (d != null) {

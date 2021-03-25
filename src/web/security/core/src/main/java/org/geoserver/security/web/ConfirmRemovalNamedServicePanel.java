@@ -19,6 +19,7 @@ public class ConfirmRemovalNamedServicePanel<T extends SecurityNamedServiceConfi
         super(id, roots);
     }
 
+    @SafeVarargs
     public ConfirmRemovalNamedServicePanel(String id, T... roots) {
         this(id, Arrays.asList(roots));
     }

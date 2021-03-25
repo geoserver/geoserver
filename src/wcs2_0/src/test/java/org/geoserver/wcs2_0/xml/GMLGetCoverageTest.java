@@ -4,7 +4,7 @@
  */
 package org.geoserver.wcs2_0.xml;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -13,7 +13,6 @@ import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geoserver.wcs2_0.response.GMLCoverageResponseDelegate;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.w3c.dom.Document;
 
 /**
  * Testing {@link GMLCoverageResponseDelegate}
@@ -30,17 +29,7 @@ public class GMLGetCoverageTest extends WCSTestSupport {
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         assertEquals("application/gml+xml", response.getContentType());
-        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
-        //        print(dom);
-
-        // validate
-        //        checkValidationErrors(dom, WCS20_SCHEMA);
-
-        // check it is good
-        //        assertXpathEvaluatesTo("wcs__BlueMarble",
-        // "//wcs:CoverageDescription//wcs:CoverageId", dom);
-        //        assertXpathEvaluatesTo("3",
-        // "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
-
+        // is it readable xml?
+        dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
     }
 }

@@ -12,11 +12,11 @@ package org.geoserver.platform;
  * @author Andrea Aime - OpenGeo
  */
 public class ClassExclusionFilter implements ExtensionFilter {
-    Class beanClass;
+    Class<?> beanClass;
 
     boolean matchSubclasses;
 
-    public Class getBeanClass() {
+    public Class<?> getBeanClass() {
         return beanClass;
     }
 
@@ -25,7 +25,7 @@ public class ClassExclusionFilter implements ExtensionFilter {
      *
      * @param beanClass bean to be filtered
      */
-    public void setBeanClass(Class beanClass) {
+    public void setBeanClass(Class<?> beanClass) {
         this.beanClass = beanClass;
     }
 
@@ -38,6 +38,7 @@ public class ClassExclusionFilter implements ExtensionFilter {
         this.matchSubclasses = matchSubclasses;
     }
 
+    @Override
     public boolean exclude(String beanId, Object bean) {
         if (this.beanClass != null && bean != null) {
             if (matchSubclasses) return this.beanClass.isAssignableFrom(bean.getClass());

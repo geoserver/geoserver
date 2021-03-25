@@ -6,7 +6,8 @@
 
 package org.geoserver.security.jdbc;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -37,6 +38,7 @@ public abstract class JDBCRoleServiceTest extends AbstractRoleServiceTest {
         }
     }
 
+    @Override
     @Before
     public void init() throws IOException {
         Assume.assumeTrue(getTestData().isTestDataAvailable());
@@ -45,6 +47,7 @@ public abstract class JDBCRoleServiceTest extends AbstractRoleServiceTest {
         store = createStore(service);
     }
 
+    @Override
     public GeoServerRoleService createRoleService(String serviceName) throws Exception {
         return JDBCTestSupport.createRoleService(
                 getFixtureId(), (LiveDbmsDataSecurity) getTestData(), getSecurityManager());

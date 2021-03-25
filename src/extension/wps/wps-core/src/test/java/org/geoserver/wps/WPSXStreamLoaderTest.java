@@ -7,7 +7,11 @@
 package org.geoserver.wps;
 
 import static org.easymock.EasyMock.createMock;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -119,8 +123,7 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         contour.getValidators()
                 .put(
                         "levels",
-                        new NumberRangeValidator(
-                                new NumberRange<Double>(Double.class, -8000d, 8000d)));
+                        new NumberRangeValidator(new NumberRange<>(Double.class, -8000d, 8000d)));
         contour.getValidators().put("levels", new MultiplicityValidator(3));
         rasGroup.getFilteredProcesses().add(contour);
 
@@ -231,11 +234,11 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         WPSInfo wpsInfo = loadFromXml("wps-test-workspace.xml");
         assertNotNull(wpsInfo);
         assertNotNull(wpsInfo.getWorkspace());
-        assertTrue(wpsInfo.getWorkspace().getId().equals("wps-load-test-workspace-id"));
+        assertEquals("wps-load-test-workspace-id", wpsInfo.getWorkspace().getId());
         // if the workspace was correctly retrieved from the catalog it should have the name
         // property available
         try {
-            assertTrue(wpsInfo.getWorkspace().getName().equals("wps-load-test-workspace-name"));
+            assertEquals("wps-load-test-workspace-name", wpsInfo.getWorkspace().getName());
         } catch (NullPointerException exception) {
             // this is a proxy that only know the workspace id
             fail("NULL proxy");

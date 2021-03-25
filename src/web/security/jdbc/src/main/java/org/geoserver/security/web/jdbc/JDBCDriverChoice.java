@@ -29,7 +29,7 @@ public class JDBCDriverChoice extends DropDownChoice<String> {
 
         @Override
         public List<String> getObject() {
-            List<String> driverClassNames = new ArrayList<String>();
+            List<String> driverClassNames = new ArrayList<>();
             Enumeration<Driver> e = DriverManager.getDrivers();
             while (e.hasMoreElements()) {
                 driverClassNames.add(e.nextElement().getClass().getCanonicalName());

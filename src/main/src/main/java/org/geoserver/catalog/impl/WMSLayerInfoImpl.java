@@ -45,9 +45,9 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     protected String forcedRemoteStyle = "";
     protected String preferredFormat = DEFAULT_FORMAT;
 
-    private List<String> selectedRemoteFormats = new ArrayList<String>();
+    private List<String> selectedRemoteFormats = new ArrayList<>();
 
-    private List<String> selectedRemoteStyles = new ArrayList<String>();
+    private List<String> selectedRemoteStyles = new ArrayList<>();
 
     private Double minScale = null;
 
@@ -55,7 +55,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
 
     private boolean metadataBBoxRespected = false;
 
-    private List<StyleInfo> allAvailableRemoteStyles = new ArrayList<StyleInfo>();
+    private List<StyleInfo> allAvailableRemoteStyles = new ArrayList<>();
 
     protected WMSLayerInfoImpl() {}
 
@@ -63,10 +63,12 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         super(catalog);
     }
 
+    @Override
     public Layer getWMSLayer(ProgressListener listener) throws IOException {
         return catalog.getResourcePool().getWMSLayer(this);
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
@@ -136,7 +138,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
                     Level.SEVERE,
                     "Unable to fetch available formats for cascaded layer " + getNativeName());
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
@@ -208,7 +210,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
         // on error default to super
-        return Collections.EMPTY_SET;
+        return Collections.emptySet();
     }
 
     @Override
@@ -236,8 +238,8 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
     public static StyleInfo getStyleInfo(StyleImpl gtWmsStyle) {
 
         StyleInfoImpl styleInfo = new StyleInfoImpl();
-
-        styleInfo.setId(gtWmsStyle.getName());
+        // do not set an id, this is not a persiste object, it could otherwise confuse custom
+        // catalog facades (e..g, JDBCConfig)
         styleInfo.setName(gtWmsStyle.getName());
         // a hint
         styleInfo.getMetadata().put("isRemote", true);
@@ -259,6 +261,7 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         return gtStyle;
     }
 
+    @Override
     public boolean isSelectedRemoteStyles(String name) {
         if (name == null) return false;
         else if (name.isEmpty()) return true;
@@ -266,40 +269,49 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         else return selectedRemoteStyles.contains(name);
     }
 
+    @Override
     public List<String> getSelectedRemoteFormats() {
         return selectedRemoteFormats;
     }
 
+    @Override
     public void setSelectedRemoteFormats(List<String> selectedRemoteFormats) {
         this.selectedRemoteFormats = selectedRemoteFormats;
     }
 
+    @Override
     public List<String> getSelectedRemoteStyles() {
         return selectedRemoteStyles;
     }
 
+    @Override
     public void setSelectedRemoteStyles(List<String> selectedRemoteStyles) {
         this.selectedRemoteStyles = selectedRemoteStyles;
     }
 
+    @Override
     public Double getMinScale() {
         return minScale;
     }
 
+    @Override
     public void setMinScale(Double minScale) {
         this.minScale = minScale;
     }
 
+    @Override
     public Double getMaxScale() {
         return maxScale;
     }
 
+    @Override
     public void setMaxScale(Double maxScale) {
         this.maxScale = maxScale;
     }
 
+    @Override
     public List<StyleInfo> getAllAvailableRemoteStyles() {
-        if (allAvailableRemoteStyles == null) allAvailableRemoteStyles = new ArrayList<StyleInfo>();
+        if (allAvailableRemoteStyles == null) allAvailableRemoteStyles = new ArrayList<>();
         return allAvailableRemoteStyles;
     }
 
@@ -346,10 +358,12 @@ public class WMSLayerInfoImpl extends ResourceInfoImpl implements WMSLayerInfo {
         return true;
     }
 
+    @Override
     public boolean isMetadataBBoxRespected() {
         return metadataBBoxRespected;
     }
 
+    @Override
     public void setMetadataBBoxRespected(boolean metadataBBoxRespected) {
         this.metadataBBoxRespected = metadataBBoxRespected;
     }

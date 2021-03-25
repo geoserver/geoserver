@@ -45,7 +45,7 @@
     <typeMappings>
         <FeatureTypeMapping>
             <sourceDataStore>MappedFeatureDataStore</sourceDataStore>
-            <sourceType>MappedFeature</sourceType>
+            <sourceType>#{MappedFeature}</sourceType>
             <targetElement>gsml:MappedFeature</targetElement>
             <attributeMappings>
                 <AttributeMapping>

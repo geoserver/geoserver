@@ -22,9 +22,9 @@ Windows
    
       pip install sphinx
 
-#. To test for a successful installation, in a command line window, navigate to your GeoServer source checkout, change to the :file:`doc\\en` directory, and run::
+#. To test for a successful installation, in a command line window, navigate to your GeoServer source checkout and run::
   
-      ant user
+      mvn clean -f doc/en install
   
    This should generate HTML pages in the :file:`doc\\en\\target\\user\\html` directory.
 
@@ -35,7 +35,7 @@ Ubuntu
 
 #. Open a terminal and type the following command::
   
-      sudo apt-get install python-dev build-essential
+      sudo apt-get install python-dev build-essential pip
   
    Depending on your system this may trigger the installation of other packages.
 
@@ -43,9 +43,9 @@ Ubuntu
   
       pip install --user sphinx
   
-#. To test for a successful installation, navigate to your GeoServer source checkout, go into the :file:`doc/en` directory and run::
+#. To test for a successful installation, navigate to your GeoServer source checkout and run::
   
-      ant user
+      mvn clean -f doc/en install
   
    This should generate HTML pages in the :file:`doc/en/target/user/html` directory.
    
@@ -83,6 +83,6 @@ Confirm availability with::
 
    sphinx-build 1.8.4
 
-To test for a successful installation, navigate to your GeoServer source checkout, go into the :file:`doc/en` directory and run::
-
-   ant user
+To test for a successful installation, navigate to your GeoServer source checkout and run::
+  
+      mvn clean -f doc/en install

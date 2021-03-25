@@ -171,8 +171,6 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
         Connection con = null;
         PreparedStatement ps = null;
         try {
-            con = datasource.getConnection();
-            if (con.getAutoCommit() == true) con.setAutoCommit(false);
             con = getConnection();
             for (String stmt : getOrderedNamesForCreate()) {
                 ps = getDDLStatement(stmt, con);
@@ -310,7 +308,7 @@ public abstract class AbstractJDBCService extends AbstractGeoServerSecurityServi
      */
     protected Map<String, SQLException> checkSQLStatements(Properties props) throws IOException {
 
-        Map<String, SQLException> reportMap = new HashMap<String, SQLException>();
+        Map<String, SQLException> reportMap = new HashMap<>();
         Connection con = null;
         try {
             con = getConnection();

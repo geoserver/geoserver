@@ -25,12 +25,12 @@ public class CollectionConverter
         super(mapper);
     }
 
-    public CollectionConverter(Mapper mapper, Class type) {
+    public CollectionConverter(Mapper mapper, Class<?> type) {
         super(mapper, type);
     }
 
     @Override
-    public boolean canConvert(Class type) {
+    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
         if (type != null) {
             String typeName = type.getName();
             if (typeName.equals(ARRAY_LIST)
@@ -44,19 +44,19 @@ public class CollectionConverter
 
     @Override
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-        Class requiredType = context.getRequiredType();
+        Class<?> requiredType = context.getRequiredType();
         if (requiredType != null) {
             String typeName = requiredType.getName();
             if (UNMODIFIABLE_LIST.equals(typeName)) {
-                List list = new ArrayList<>();
+                List<Object> list = new ArrayList<>();
                 populateCollection(reader, context, list);
                 return Collections.unmodifiableList(list);
             } else if (UNMODIFIABLE_SET.equals(typeName)) {
-                Set set = new HashSet<>();
+                Set<Object> set = new HashSet<>();
                 populateCollection(reader, context, set);
                 return Collections.unmodifiableSet(set);
             } else if (ARRAY_LIST.equals(typeName)) {
-                List list = new ArrayList<>();
+                List<Object> list = new ArrayList<>();
                 populateCollection(reader, context, list);
                 return Arrays.asList(list.toArray());
             }

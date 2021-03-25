@@ -1,5 +1,6 @@
 package org.geoserver.web.security;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -31,7 +32,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
     @Before
     public void setUpInternal() {
         LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.BUILDINGS));
-        layerModel = new Model<LayerInfo>(layerInfo);
+        layerModel = new Model<>(layerInfo);
     }
 
     @Test
@@ -43,6 +44,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = -5907648151984337786L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new LayerAccessDataRulePanel(id, layerModel, own);
                             }
@@ -64,7 +66,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
         Set<String> roles = manager.getAvailableRoles();
         String wsName = layerModel.getObject().getResource().getStore().getWorkspace().getName();
         String layerName = layerModel.getObject().getName();
-        List<DataAccessRuleInfo> rules = new ArrayList<DataAccessRuleInfo>();
+        List<DataAccessRuleInfo> rules = new ArrayList<>();
         roles.forEach(
                 r -> {
                     DataAccessRuleInfo rule = new DataAccessRuleInfo(r, layerName, wsName);
@@ -72,7 +74,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
                     rules.add(rule);
                 });
         Set<DataAccessRule> newRules = manager.mapFrom(rules, roles, wsName, layerName, false);
-        manager.saveRules(new HashSet<DataAccessRule>(), newRules);
+        manager.saveRules(new HashSet<>(), newRules);
         try {
             ListModel<DataAccessRuleInfo> own = info.createOwnModel(layerModel, false);
             tester.startPage(
@@ -80,6 +82,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
                             new ComponentBuilder() {
                                 private static final long serialVersionUID = -5907648151984337786L;
 
+                                @Override
                                 public Component buildComponent(final String id) {
                                     return new LayerAccessDataRulePanel(id, layerModel, own);
                                 }
@@ -120,6 +123,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
                             new ComponentBuilder() {
                                 private static final long serialVersionUID = -5907648151984337786L;
 
+                                @Override
                                 public Component buildComponent(final String id) {
                                     return new LayerAccessDataRulePanel(id, layerModel, own);
                                 }
@@ -132,7 +136,7 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
                     (LayerAccessDataRulePanel)
                             tester.getComponentFromLastRenderedPage("form:panel");
             panel.save();
-            assertTrue(manager.getResourceRule(wsName, layerModel.getObject()).size() == 1);
+            assertEquals(1, manager.getResourceRule(wsName, layerModel.getObject()).size());
         } finally {
             manager.removeAllResourceRules(wsName, layerModel.getObject());
             assertTrue(manager.getResourceRule(wsName, layerModel.getObject()).isEmpty());

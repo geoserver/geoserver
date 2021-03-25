@@ -7,7 +7,6 @@ package org.geoserver.csw.store.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,25 +21,23 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
-import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.GeoServer;
 import org.geoserver.csw.CSWInfo;
 import org.geoserver.csw.DirectDownloadSettings;
-import org.geoserver.csw.feature.sort.CatalogComparatorFactory;
 import org.geoserver.csw.records.GenericRecordBuilder;
 import org.geoserver.csw.records.RecordBuilder;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
 import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.sort.SortBy;
 
 /**
@@ -50,37 +47,25 @@ import org.opengis.filter.sort.SortBy;
  */
 class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
-    protected static final FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
-
     static final Logger LOGGER = Logging.getLogger(CatalogStoreFeatureIterator.class);
 
     protected RecordBuilder builder;
 
-    protected Iterator<? extends ResourceInfo> layerIt;
+    protected Iterator<? extends PublishedInfo> it;
 
-    protected ResourceInfo nextResource;
-
-    protected Iterator<? extends LayerGroupInfo> layerGroupIt;
-
-    protected LayerGroupInfo nextLayerGroup;
+    protected CatalogInfo next = null;
 
     protected CatalogStoreMapping mapping;
 
     protected CatalogFacade catalogFacade;
 
-    protected Map<String, String> interpolationProperties = new HashMap<String, String>();
-
-    protected int offset;
-
-    protected int count;
+    protected Map<String, String> interpolationProperties = new HashMap<>();
 
     protected SortBy[] sortOrder;
 
     protected Filter filter;
 
     protected int index;
-
-    protected Comparator<Info> comparator;
 
     private RecordDescriptor outputRecordDescriptor;
 
@@ -94,107 +79,46 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
             RecordDescriptor outputRecordDescriptor,
             Map<String, String> interpolationProperties) {
         this.interpolationProperties = interpolationProperties;
-        this.offset = offset;
-        this.count = count;
         this.sortOrder = sortOrder;
         this.filter = filter;
         catalogFacade = catalog.getFacade();
         this.mapping = mapping;
 
-        Filter advertised = ff.equals(ff.property("advertised"), ff.literal(true));
+        it = catalogFacade.list(PublishedInfo.class, filter, offset, count, sortOrder);
 
-        layerIt =
-                catalogFacade.list(
-                        ResourceInfo.class, ff.and(filter, advertised), null, null, sortOrder);
+        nextInternal();
 
-        layerGroupIt = catalogFacade.list(LayerGroupInfo.class, filter, null, null, sortOrder);
-
-        nextLayer();
-        nextLayerGroup();
-
-        comparator =
-                sortOrder == null || sortOrder.length == 0
-                        ? null
-                        : CatalogComparatorFactory.buildComparator(sortOrder);
-        index = 0;
-        while (index < offset && hasNext()) {
-            nextInternal();
-        }
         this.outputRecordDescriptor = outputRecordDescriptor;
         builder = new GenericRecordBuilder(outputRecordDescriptor);
     }
 
     @Override
     public boolean hasNext() {
-        return index < offset + count && (nextResource != null || nextLayerGroup != null);
-    }
-
-    public ResourceInfo nextLayer() {
-        ResourceInfo result = nextResource;
-        String id;
-
-        if (layerIt.hasNext()) {
-            do {
-                nextResource = layerIt.next();
-                id = id(nextResource);
-            } while (id == null && layerIt.hasNext());
-            if (id == null) {
-                nextResource = null;
-            }
-        } else {
-            nextResource = null;
-        }
-
-        return result;
-    }
-
-    public LayerGroupInfo nextLayerGroup() {
-        LayerGroupInfo result = nextLayerGroup;
-        String id;
-
-        if (layerGroupIt.hasNext()) {
-            do {
-                nextLayerGroup = layerGroupIt.next();
-                id = id(nextLayerGroup);
-            } while (id == null && layerGroupIt.hasNext());
-            if (id == null) {
-                nextLayerGroup = null;
-            }
-        } else {
-            nextLayerGroup = null;
-        }
-
-        return result;
+        return next != null;
     }
 
     public CatalogInfo nextInternal() {
-        if (!hasNext()) {
-            throw new NoSuchElementException("No more records to retrieve");
-        }
-        index++;
 
-        if (nextResource == null) {
-            return nextLayerGroup();
-        }
+        CatalogInfo result = next;
 
-        if (nextLayerGroup == null) {
-            return nextLayer();
-        }
-
-        if (comparator == null) {
-            return nextLayer();
-        }
-
-        int c = comparator.compare(nextResource, nextLayerGroup);
-        if (c <= 0) {
-            return nextLayer();
+        if (it.hasNext()) {
+            next = it.next();
+            if (next instanceof LayerInfo) {
+                next = ((LayerInfo) next).getResource();
+            }
         } else {
-            return nextLayerGroup();
+            next = null;
         }
+
+        return result;
     }
 
     @Override
     public Feature next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException("No more records to retrieve");
+        }
+
         CatalogInfo info = nextInternal();
 
         if (info instanceof ResourceInfo) {
@@ -242,15 +166,6 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
             }
         }
         return id;
-    }
-
-    private String id(CatalogInfo resource) {
-        Object val = mapping.getIdentifierElement().getContent().evaluate(resource);
-        if (val != null) {
-            return interpolate(interpolationProperties, val.toString());
-        } else {
-            return null;
-        }
     }
 
     /** Get a {@link FeatureCustomizer} for this info. */
@@ -324,8 +239,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
 
             // move on to the bounding boxes
             if (mapping.isIncludeEnvelope()) {
-                ReferencedEnvelope bbox = null;
-                bbox = resource.getBounds();
+                ReferencedEnvelope bbox = resource.getBounds();
                 if (bbox != null) {
                     builder.addBoundingBox(bbox);
                 }
@@ -354,7 +268,7 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
         Matcher matcher = PROPERTY_INTERPOLATION_PATTERN.matcher(result);
         while (matcher.find()) {
             String propertyName = matcher.group(1);
-            String propertyValue = (String) properties.get(propertyName);
+            String propertyValue = properties.get(propertyName);
             if (propertyValue == null) {
                 throw new RuntimeException(
                         "Interpolation failed for missing property " + propertyName);
@@ -367,8 +281,8 @@ class CatalogStoreFeatureIterator implements Iterator<Feature> {
     }
 
     protected static List<Object> interpolate(Map<String, String> properties, Collection<?> value) {
-        if (((Collection<?>) value).size() > 0) {
-            List<Object> elements = new ArrayList<Object>();
+        if (!value.isEmpty()) {
+            List<Object> elements = new ArrayList<>();
             for (Object element : value) {
                 Object result = null;
                 if (element instanceof Collection<?>) {

@@ -5,7 +5,9 @@
  */
 package org.geoserver.wms.describelayer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,7 +49,7 @@ public class DescribeLayerKvpRequestReaderTest {
         geoServerImpl = new GeoServerImpl();
         geoServerImpl.add(new WMSInfoImpl());
         wms = new WMS(geoServerImpl);
-        params = new HashMap<String, String>();
+        params = new HashMap<>();
     }
 
     @After
@@ -57,7 +59,7 @@ public class DescribeLayerKvpRequestReaderTest {
     }
 
     private DescribeLayerRequest getRequest(Map<String, String> rawKvp) throws Exception {
-        return getRequest(rawKvp, new HashMap<String, Object>(rawKvp));
+        return getRequest(rawKvp, new HashMap<>(rawKvp));
     }
 
     private DescribeLayerRequest getRequest(Map<String, String> rawKvp, Map<String, Object> kvp)
@@ -157,7 +159,7 @@ public class DescribeLayerKvpRequestReaderTest {
         catalog.add(layerInfo2);
 
         params.put("LAYERS", "topp:states,topp:fakeCoverage");
-        Map<String, Object> kvp = new HashMap<String, Object>(params);
+        Map<String, Object> kvp = new HashMap<>(params);
         kvp.put("LAYERS", Arrays.asList(new MapLayerInfo(layerInfo), new MapLayerInfo(layerInfo2)));
         DescribeLayerRequest describeRequest = getRequest(params, kvp);
         assertNotNull(describeRequest);

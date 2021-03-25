@@ -16,13 +16,14 @@ import org.geoserver.ows.XmlObjectEncodingResponse;
  */
 public class WPSObjectEncodingResponse extends XmlObjectEncodingResponse {
 
-    public WPSObjectEncodingResponse(Class binding, String elementName, Class xmlConfiguration) {
+    public WPSObjectEncodingResponse(
+            Class<?> binding, String elementName, Class<?> xmlConfiguration) {
         super(binding, elementName, xmlConfiguration);
     }
 
     @Override
     protected Map<String, String> getSchemaLocations() {
-        Map<String, String> locations = new HashMap<String, String>();
+        Map<String, String> locations = new HashMap<>();
         locations.put(
                 "http://www.opengis.net/wps/1.0.0",
                 "http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd");

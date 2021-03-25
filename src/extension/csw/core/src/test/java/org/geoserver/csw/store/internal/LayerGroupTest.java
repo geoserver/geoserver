@@ -22,10 +22,9 @@ public class LayerGroupTest extends CSWInternalTestSupport {
     private static String NAME_BUILDINGSANDBRIDGES = "Buildings and Bridges";
 
     private String id_forestsandstreams;
-    private String id_buildingsandbridges;
 
     private String addLayerGroup(String name, PublishedInfo... publisheds) {
-        LayerGroupInfo group = (LayerGroupInfo) getCatalog().getFactory().createLayerGroup();
+        LayerGroupInfo group = getCatalog().getFactory().createLayerGroup();
         group.setName(name);
         group.setTitle(name);
         group.getLayers().addAll(Arrays.asList(publisheds));
@@ -42,11 +41,10 @@ public class LayerGroupTest extends CSWInternalTestSupport {
                         getCatalog().getLayerByName("Forests"),
                         getCatalog().getLayerByName("Streams"));
         addKeywordsToLayerGroup(NAME_FORESTSANDSTREAMS);
-        id_buildingsandbridges =
-                addLayerGroup(
-                        NAME_BUILDINGSANDBRIDGES,
-                        getCatalog().getLayerByName("Buildings"),
-                        getCatalog().getLayerByName("Bridges"));
+        addLayerGroup(
+                NAME_BUILDINGSANDBRIDGES,
+                getCatalog().getLayerByName("Buildings"),
+                getCatalog().getLayerByName("Bridges"));
     }
 
     @Test

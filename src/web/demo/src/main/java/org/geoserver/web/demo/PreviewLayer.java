@@ -165,7 +165,7 @@ public class PreviewLayer {
 
     /** Expands the specified name into a list of layer info names */
     private List<MapLayerInfo> expandLayers(Catalog catalog) {
-        List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
+        List<MapLayerInfo> layers = new ArrayList<>();
 
         if (layerInfo != null) {
             layers.add(new MapLayerInfo(layerInfo));
@@ -225,8 +225,22 @@ public class PreviewLayer {
         params.put("width", String.valueOf(request.getWidth()));
         params.put("height", String.valueOf(request.getHeight()));
         params.put("srs", String.valueOf(request.getSRS()));
-
+        params.put(
+                "styles",
+                request.getStyles().size() > 0 ? request.getStyles().get(0).getName() : "");
         return ResponseUtils.buildURL(getBaseURL(), getPath("wms", false), params, URLType.SERVICE);
+    }
+
+    /**
+     * Build the KML reflector request.
+     *
+     * @return the KML reflector link in refresh mode, suitable for Google Earth.
+     */
+    public String getKmlLink() {
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("layers", getName());
+        return ResponseUtils.buildURL(
+                getBaseURL(), getPath("wms/kml", false), params, URLType.SERVICE);
     }
 
     /**
@@ -336,10 +350,9 @@ public class PreviewLayer {
      * @param serviceName "WFS" or "WMS"
      */
     public boolean hasServiceSupport(String serviceName) {
-        LayerInfo linfo = GeoServerApplication.get().getCatalog().getLayerByName(this.getName());
-        if (linfo != null && linfo.getResource() != null && serviceName != null) {
+        if (layerInfo != null && layerInfo.getResource() != null && serviceName != null) {
             List<String> disabledServices =
-                    DisabledServiceResourceFilter.disabledServices(linfo.getResource());
+                    DisabledServiceResourceFilter.disabledServices(layerInfo.getResource());
             return disabledServices.stream().noneMatch(d -> d.equalsIgnoreCase(serviceName));
         }
         // layer group and backward compatibility

@@ -18,4 +18,17 @@
         <property name="titleKey" value="CasAuthFilterPanel.title"/>
         <property name="descriptionKey" value="CasAuthFilterPanel.description"/>
    </bean>
+
+    <!-- login button -->
+    <bean id="casFormLoginButton" class="org.geoserver.web.LoginFormInfo">
+        <property name="id" value="casFormLoginButton" />
+        <property name="titleKey" value="" />
+        <property name="descriptionKey" value="CasAuthFilterPanelInfo.description" />
+        <property name="componentClass" value="org.geoserver.security.web.cas.CasAuthFilterPanel" />
+        <property name="name" value="cas" />
+        <property name="icon" value="cas.png" />
+        <property name="filterClass" value="org.geoserver.security.cas.GeoServerCasAuthenticationFilter" />
+        <property name="loginPath" value="web/j_spring_cas_login" />
+    </bean>
+    
 </beans>

@@ -722,8 +722,7 @@ import java.lang.reflect.Method;
               }
             } 
             catch (InterruptedException exception) {
-              exception.printStackTrace();
-              throw new IOException("InterruptedException while launching browser: " + exception.getMessage());
+              throw new IOException("InterruptedException while launching browser: " + exception.getMessage(), exception);
             }
             break;
           default:

@@ -26,21 +26,23 @@ public class SecuredGridFormat extends DecoratingGridFormat {
         this.policy = policy;
     }
 
+    @Override
     public GridCoverage2DReader getReader(Object source, Hints hints) {
         GridCoverage2DReader reader = delegate.getReader(source, hints);
         if (reader == null) {
             return reader;
         } else {
-            return (GridCoverage2DReader) SecuredObjects.secure(reader, policy);
+            return SecuredObjects.secure(reader, policy);
         }
     }
 
+    @Override
     public GridCoverage2DReader getReader(Object source) {
         GridCoverage2DReader reader = delegate.getReader(source);
         if (reader == null) {
             return reader;
         } else {
-            return (GridCoverage2DReader) SecuredObjects.secure(reader, policy);
+            return SecuredObjects.secure(reader, policy);
         }
     }
 

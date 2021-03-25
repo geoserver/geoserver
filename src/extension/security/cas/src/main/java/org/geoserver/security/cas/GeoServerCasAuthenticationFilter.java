@@ -6,9 +6,17 @@
 
 package org.geoserver.security.cas;
 
+import static org.geoserver.security.cas.CasAuthenticationFilterConfig.CasSpecificRoleSource.CustomAttribute;
+
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -21,6 +29,8 @@ import org.geoserver.security.LogoutFilterChain;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.filter.GeoServerPreAuthenticatedUserNameFilter;
+import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.impl.RoleCalculator;
 import org.jasig.cas.client.configuration.ConfigurationKeys;
 import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 import org.jasig.cas.client.session.SingleSignOutHandler;
@@ -54,6 +64,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
     protected String casLogoutURL;
     protected String urlInCasLogoutPage;
     protected boolean singleSignOut;
+    protected String customAttributeName;
 
     protected ProxyGrantingTicketStorage pgtStorageFilter;
 
@@ -66,6 +77,8 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         super.initializeFromConfig(config);
 
         CasAuthenticationFilterConfig authConfig = (CasAuthenticationFilterConfig) config;
+
+        this.customAttributeName = authConfig.getCustomAttributeName();
 
         ServiceProperties props = new ServiceProperties();
         props.setSendRenew(authConfig.isSendRenew());
@@ -89,12 +102,15 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         casLogoutURL =
                 GeoServerCasConstants.createCasURl(
                         authConfig.getCasServerUrlPrefix(), GeoServerCasConstants.LOGOUT_URI);
-        if (StringUtils.hasLength(authConfig.getUrlInCasLogoutPage()))
+        if (StringUtils.hasLength(authConfig.getUrlInCasLogoutPage())) {
             casLogoutURL +=
                     "?"
                             + GeoServerCasConstants.LOGOUT_URL_PARAM
                             + "="
                             + URLEncoder.encode(authConfig.getUrlInCasLogoutPage(), "utf-8");
+            casLogoutURL +=
+                    "&returnTo=" + URLEncoder.encode("https://localhost:8442/geoserver", "utf-8");
+        }
 
         singleSignOut = authConfig.isSingleSignOut();
         aep = new GeoServerCasAuthenticationEntryPoint(authConfig);
@@ -155,6 +171,7 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
         return serviceUrl;
     }
 
+    @Override
     protected String getPreAuthenticatedPrincipal(HttpServletRequest request) {
 
         String principal = super.getPreAuthenticatedPrincipal(request);
@@ -202,6 +219,10 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
 
         HttpServletRequest httpReq = (HttpServletRequest) req;
         HttpServletResponse httpRes = (HttpServletResponse) res;
+
+        if (httpReq.getRequestURI().endsWith("j_spring_cas_login")) {
+            aep.commence(httpReq, httpRes, null);
+        }
 
         SingleSignOutHandler handler = getHandler();
         // check for sign out request from cas server
@@ -257,5 +278,75 @@ public class GeoServerCasAuthenticationFilter extends GeoServerPreAuthenticatedU
             HttpServletResponse response,
             Authentication authentication) {
         request.setAttribute(GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR, casLogoutURL);
+        request.setAttribute("returnTo", "https://localhost:8442/geoserver");
+    }
+
+    @Override
+    protected Collection<GeoServerRole> getRoles(HttpServletRequest request, String principal)
+            throws IOException {
+        if (CustomAttribute.equals(getRoleSource())) {
+            return getRolesFromCustomAttribute(request);
+        } else {
+            return super.getRoles(request, principal);
+        }
+    }
+
+    private List<GeoServerRole> getRolesFromCustomAttribute(HttpServletRequest request)
+            throws IOException {
+        Assertion assertion = getCachedAssertion(request);
+        if (assertion == null) {
+            LOGGER.fine("Could not find the CAS assertion, returning an empty role list");
+            return Collections.emptyList();
+        }
+        // attributes map could be null, stay on the safe side extracting the custom attribute
+        Object value =
+                Optional.ofNullable(assertion.getPrincipal().getAttributes())
+                        .map(m -> m.get(customAttributeName))
+                        .orElse(null);
+        // the value might be missing, be a list (if repeated), or a string
+        if (value == null) {
+            LOGGER.log(
+                    Level.FINE,
+                    "Could not find any attribute named {0}, returning an empty role list",
+                    customAttributeName);
+            return Collections.emptyList();
+        } else if (value instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Object> list = (List) value;
+            List<GeoServerRole> roles =
+                    list.stream()
+                            .map(v -> new GeoServerRole(String.valueOf(v)))
+                            .collect(Collectors.toList());
+            enrichWithRoleCalculator(roles);
+            return roles;
+        } else if (value instanceof String) {
+            return Arrays.asList(new GeoServerRole((String) value));
+        } else {
+            throw new IllegalArgumentException(
+                    "Unexpected value for custom attribute "
+                            + customAttributeName
+                            + ", was expecting a String or a List, but got: "
+                            + value);
+        }
+    }
+
+    private void enrichWithRoleCalculator(List<GeoServerRole> roles) throws IOException {
+        RoleCalculator calc = new RoleCalculator(getSecurityManager().getActiveRoleService());
+        calc.addInheritedRoles(roles);
+        calc.addMappedSystemRoles(roles);
+    }
+
+    private Assertion getCachedAssertion(HttpServletRequest request) {
+        Object assertionMaybe = request.getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY);
+        if (!(assertionMaybe instanceof Assertion)) {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                assertionMaybe = session.getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY);
+            }
+        }
+
+        if (assertionMaybe instanceof Assertion) return (Assertion) assertionMaybe;
+        // should not get here, but play it safe
+        return getCASAssertion(request);
     }
 }

@@ -33,7 +33,7 @@ import org.geoserver.platform.ServiceException;
 
 public class MonitorCallback implements DispatcherCallback {
 
-    List<RequestObjectHandler> handlers = new ArrayList<RequestObjectHandler>();
+    List<RequestObjectHandler> handlers = new ArrayList<>();
 
     Monitor monitor;
 
@@ -60,19 +60,23 @@ public class MonitorCallback implements DispatcherCallback {
         handlers.add(new org.geoserver.monitor.ows.wcs11.GetCoverageHandler(monitor.getConfig()));
     }
 
+    @Override
     public Request init(Request request) {
         return null;
     }
 
+    @Override
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         return null;
     }
 
+    @Override
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
         return null;
     }
 
+    @Override
     public Operation operationDispatched(Request request, Operation operation) {
         RequestData data = monitor.current();
         if (data == null) {
@@ -101,10 +105,12 @@ public class MonitorCallback implements DispatcherCallback {
         return operation;
     }
 
+    @Override
     public Object operationExecuted(Request request, Operation operation, Object result) {
         return null;
     }
 
+    @Override
     public void finished(Request request) {
         if (request.getError() != null) {
             RequestData data = monitor.current();

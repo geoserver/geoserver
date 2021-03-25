@@ -5,9 +5,18 @@
  */
 package org.geoserver.security.impl;
 
-import static org.easymock.EasyMock.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.isNull;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,15 +24,22 @@ import java.util.LinkedList;
 import java.util.List;
 import org.easymock.Capture;
 import org.easymock.CaptureType;
-import org.easymock.IAnswer;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
-import org.geoserver.security.*;
+import org.geoserver.security.CatalogMode;
+import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.SecureCatalogImpl;
+import org.geoserver.security.VectorAccessLimits;
+import org.geoserver.security.WorkspaceAccessLimits;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,7 +51,7 @@ public class SecureCatalogImplFilterTest {
     static <T> List<T> collectAndClose(CloseableIterator<T> it) throws IOException {
         if (it == null) return null;
         try {
-            LinkedList<T> list = new LinkedList<T>();
+            LinkedList<T> list = new LinkedList<>();
             while (it.hasNext()) {
                 list.add(it.next());
             }
@@ -76,6 +92,7 @@ public class SecureCatalogImplFilterTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // hamcrest varargs method is not marked as @SafeVarArgs
     public void testFeatureTypeList() throws Exception {
         Catalog catalog = createMock(Catalog.class);
 
@@ -87,7 +104,7 @@ public class SecureCatalogImplFilterTest {
 
         final Capture<Filter> filterCapture = Capture.newInstance(CaptureType.LAST);
 
-        final List<FeatureTypeInfo> source = new ArrayList<FeatureTypeInfo>();
+        final List<FeatureTypeInfo> source = new ArrayList<>();
 
         WorkspaceInfo mockWSInfo = createMock(WorkspaceInfo.class);
         expect(manager.getAccessLimits(eq(anonymous), eq(mockWSInfo)))
@@ -114,17 +131,13 @@ public class SecureCatalogImplFilterTest {
                         catalog.list(
                                 eq(FeatureTypeInfo.class),
                                 capture(filterCapture),
-                                (Integer) isNull(),
-                                (Integer) isNull(),
-                                (SortBy) isNull()))
+                                isNull(),
+                                isNull(),
+                                isNull()))
                 .andStubAnswer(
-                        new IAnswer<CloseableIterator<FeatureTypeInfo>>() {
-
-                            @Override
-                            public CloseableIterator<FeatureTypeInfo> answer() throws Throwable {
-                                Filter filter = filterCapture.getValue();
-                                return CloseableIteratorAdapter.filter(source.iterator(), filter);
-                            }
+                        () -> {
+                            Filter filter = filterCapture.getValue();
+                            return CloseableIteratorAdapter.filter(source.iterator(), filter);
                         });
 
         replay(catalog, manager, mockFilter);
@@ -151,7 +164,7 @@ public class SecureCatalogImplFilterTest {
 
         List<FeatureTypeInfo> ftResult =
                 collectAndClose(sc.list(FeatureTypeInfo.class, Predicates.acceptAll()));
-        WorkspaceInfo foo = ftResult.get(0).getStore().getWorkspace();
+        ftResult.get(0).getStore().getWorkspace();
         assertThat(ftResult, contains(matchFT("foo", mockWSInfo), matchFT("baz", mockWSInfo)));
 
         verify(catalog, manager);

@@ -108,7 +108,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                 return;
             }
 
-            Set<String> keys = new TreeSet<String>();
+            Set<String> keys = new TreeSet<>();
             for (ParameterFilter filter : paramFilters) {
                 // TODO Validate
                 final String key = filter.getKey();
@@ -170,7 +170,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
         filters =
                 new ListView<ParameterFilter>(
-                        "parameterFilters", new ArrayList<ParameterFilter>(model.getObject())) {
+                        "parameterFilters", new ArrayList<>(model.getObject())) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -201,27 +201,22 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                                         "class", index % 2 == 0 ? "even" : "odd"));
 
                         // Create form
-                        final Label keyLabel;
-                        keyLabel =
+                        final Label keyLabel =
                                 new Label("key", new PropertyModel<String>(item.getModel(), "key"));
                         item.add(keyLabel);
 
                         final Component subForm =
-                                getSubform(
-                                        "subform",
-                                        new Model<ParameterFilter>(item.getModelObject()));
+                                getSubform("subform", new Model<>(item.getModelObject()));
                         item.add(subForm);
 
-                        final AjaxSubmitLink removeLink;
-
-                        removeLink =
+                        final AjaxSubmitLink removeLink =
                                 new AjaxSubmitLink("removeLink") {
                                     private static final long serialVersionUID = 1L;
 
                                     @Override
                                     protected void onSubmit(
                                             AjaxRequestTarget target, Form<?> form) {
-                                        getList().remove((ParameterFilter) getDefaultModelObject());
+                                        getList().remove(getDefaultModelObject());
                                         target.add(container);
                                     }
                                 };
@@ -244,7 +239,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
 
         table.add(filtersForm);
 
-        List<String> parameterKeys = new ArrayList<String>(GWC.get().getGridSetBroker().getNames());
+        List<String> parameterKeys = new ArrayList<>(GWC.get().getGridSetBroker().getNames());
         for (ParameterFilter filter : model.getObject()) {
             parameterKeys.remove(filter.getKey());
         }
@@ -268,18 +263,17 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
         add(addStyleFilterLink);
 
         // FIXME: make this extensible so new kinds of filter can be supported by
-        ArrayList<Class<? extends ParameterFilter>> filterTypes =
-                new ArrayList<Class<? extends ParameterFilter>>();
+        ArrayList<Class<? extends ParameterFilter>> filterTypes = new ArrayList<>();
         filterTypes.add(StringParameterFilter.class);
         filterTypes.add(FloatParameterFilter.class);
         filterTypes.add(IntegerParameterFilter.class);
         filterTypes.add(RegexParameterFilter.class);
 
         availableFilterTypes =
-                new DropDownChoice<Class<? extends ParameterFilter>>(
+                new DropDownChoice<>(
                         "availableFilterTypes",
-                        new Model<Class<? extends ParameterFilter>>(),
-                        new Model<ArrayList<Class<? extends ParameterFilter>>>(filterTypes),
+                        new Model<>(),
+                        new Model<>(filterTypes),
                         new ChoiceRenderer<Class<? extends ParameterFilter>>() {
 
                             /** serialVersionUID */
@@ -316,7 +310,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
         availableFilterTypes.setOutputMarkupId(true);
         add(availableFilterTypes);
 
-        newFilterKey = new TextField<String>("newFilterKey", Model.of(""));
+        newFilterKey = new TextField<>("newFilterKey", Model.of(""));
         add(newFilterKey);
 
         // TODO update this to eliminate keys that are in use
@@ -400,7 +394,7 @@ class ParameterFilterEditor extends FormComponentPanel<Set<ParameterFilter>> {
                     }
                 });
         List<ParameterFilter> info = filters.getModelObject();
-        HashSet<ParameterFilter> convertedInput = new HashSet<ParameterFilter>(info);
+        HashSet<ParameterFilter> convertedInput = new HashSet<>(info);
         setConvertedInput(convertedInput);
     }
 

@@ -5,7 +5,9 @@
  */
 package org.geoserver.web.admin;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import com.sun.media.jai.mlib.MlibWarpRIF;
 import com.sun.media.jai.opimage.WarpRIF;
@@ -54,8 +56,6 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testSave() {
-        JAIInfo info = (JAIInfo) geoServer.getGlobal().getJAI();
-
         login();
 
         tester.startPage(JAIPage.class);
@@ -70,8 +70,6 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testApply() {
-        JAIInfo info = (JAIInfo) geoServer.getGlobal().getJAI();
-
         login();
 
         tester.startPage(JAIPage.class);
@@ -93,7 +91,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         }
         GeoServer geoServer = getGeoServerApplication().getGeoServer();
         GeoServerInfo global = geoServer.getGlobal();
-        JAIInfo info = (JAIInfo) global.getJAI();
+        JAIInfo info = global.getJAI();
 
         // Ensure that by default Warp acceleration is set to false
         Assert.assertFalse(info.isAllowNativeWarp());
@@ -127,7 +125,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
             jaiext = p.getChoices();
             assertNotNull(jaiext);
             // JAI choices
-            assertTrue(!jaiext.contains("Warp"));
+            assertFalse(jaiext.contains("Warp"));
         } else {
             tester.assertInvisible("form:jaiext");
         }
@@ -139,7 +137,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         // Ensure no exception has been thrown
         tester.assertNoErrorMessage();
 
-        info = (JAIInfo) global.getJAI();
+        info = global.getJAI();
 
         // Check that Warp is enabled
         if (isJAIExtEnabled) {
@@ -172,7 +170,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
             jaiext = p.getChoices();
             assertNotNull(jaiext);
             // JAI choices
-            assertTrue(!jaiext.contains("Warp"));
+            assertFalse(jaiext.contains("Warp"));
         }
         form = tester.newFormTester("form");
         form.setValue("allowNativeWarp", false);
@@ -181,7 +179,7 @@ public class JAIPageTest extends GeoServerWicketTestSupport {
         // Ensure no exception has been thrown
         tester.assertNoErrorMessage();
 
-        info = (JAIInfo) global.getJAI();
+        info = global.getJAI();
 
         // Check that Warp is disabled
         Assert.assertFalse(info.isAllowNativeWarp());

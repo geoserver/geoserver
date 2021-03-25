@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
-import java.util.List;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.geofence.core.model.Rule;
@@ -117,8 +116,8 @@ public class GeofencePersisterSerializationTest {
         rule2.setLayer("layer");
         rule2.setAccess(GrantType.ALLOW);
 
-        Rule[] rules = new Rule[] {rule2};
-        JaxbRuleList ruleList = new JaxbRuleList((List<Rule>) Arrays.asList(rules));
+        Rule[] rules = {rule2};
+        JaxbRuleList ruleList = new JaxbRuleList(Arrays.asList(rules));
 
         persister.save(ruleList, baos);
         baos.flush();

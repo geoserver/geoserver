@@ -169,6 +169,7 @@ public class LayerController extends AbstractCatalogController {
         LOGGER.info("PUT layer " + layerName);
     }
 
+    @Override
     public boolean supports(
             MethodParameter methodParameter,
             Type targetType,
@@ -179,6 +180,7 @@ public class LayerController extends AbstractCatalogController {
     //
     // Configuration and Settings
     //
+    @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         persister.setCallback(
                 new XStreamPersister.Callback() {

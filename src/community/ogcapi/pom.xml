@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.geoserver</groupId>
         <artifactId>community</artifactId>
-        <version>2.18-SNAPSHOT</version>
+        <version>2.20-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -22,11 +22,13 @@
     <modules>
         <module>ogcapi-core</module>
         <module>ogcapi-features</module>
+        <module>ogcapi-maps</module>
         <module>ogcapi-styles</module>
         <module>ogcapi-tiles</module>
         <module>ogcapi-images</module>
         <module>ogcapi-changeset</module>
         <module>ogcapi-tiled-features</module>
+        <module>dggs</module>
     </modules>
     
 </project>

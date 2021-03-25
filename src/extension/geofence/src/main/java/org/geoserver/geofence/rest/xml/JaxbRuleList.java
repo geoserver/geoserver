@@ -25,7 +25,7 @@ public class JaxbRuleList {
     }
 
     public JaxbRuleList(List<Rule> list) {
-        this.list = new ArrayList<JaxbRule>();
+        this.list = new ArrayList<>();
         for (Rule rule : list) {
             this.list.add(new JaxbRule(rule));
         }

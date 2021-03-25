@@ -29,13 +29,13 @@ public class CatalogComparatorFactory {
         if (sortBy.length == 1) {
             return buildComparator(sortBy[0]);
         } else {
-            List<Comparator<Info>> comparators = new ArrayList<Comparator<Info>>();
+            List<Comparator<Info>> comparators = new ArrayList<>();
             for (SortBy curr : sortBy) {
                 Comparator<Info> comparator = buildComparator(curr);
                 comparators.add(comparator);
             }
 
-            return new CompositeComparator<Info>(comparators);
+            return new CompositeComparator<>(comparators);
         }
     }
 
@@ -50,7 +50,7 @@ public class CatalogComparatorFactory {
         } else if (sortBy == SortBy.REVERSE_ORDER) {
             return new InfoComparator(false);
         } else {
-            return new PropertyComparator<Info>(
+            return new PropertyComparator<>(
                     sortBy.getPropertyName(), sortBy.getSortOrder() == SortOrder.ASCENDING);
         }
     }

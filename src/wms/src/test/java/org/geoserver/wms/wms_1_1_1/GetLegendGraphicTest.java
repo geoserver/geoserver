@@ -6,8 +6,8 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
@@ -18,7 +18,11 @@ import java.util.Collections;
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.IOUtils;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LegendInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -47,7 +51,7 @@ public class GetLegendGraphicTest extends WMSTestSupport {
 
         testData.addVectorLayer(
                 new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "states.properties",
                 getClass(),
                 catalog);

@@ -5,6 +5,10 @@
  */
 package org.geoserver.ows.xml.v1_0;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
@@ -14,6 +18,7 @@ import net.opengis.ows10.ExceptionReportType;
 import net.opengis.ows10.ExceptionType;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.test.XMLTestSupport;
+import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -31,6 +36,7 @@ public class ExceptionReportBindingTest extends XMLTestSupport {
         return builder.parse(new ByteArrayInputStream(xml.getBytes()));
     }
 
+    @Test
     public void testParseServiceException() throws Exception {
         String xml =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -52,7 +58,7 @@ public class ExceptionReportBindingTest extends XMLTestSupport {
 
         assertEquals("1.0.0", er.getVersion());
         assertEquals(1, er.getException().size());
-        ExceptionType ex = (ExceptionType) er.getException().get(0);
+        ExceptionType ex = er.getException().get(0);
         assertEquals("InvalidParameterValue", ex.getExceptionCode());
         assertEquals("service", ex.getLocator());
         assertEquals(1, ex.getExceptionText().size());

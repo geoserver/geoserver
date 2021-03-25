@@ -5,7 +5,9 @@
  */
 package org.geoserver.security.decorators;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -17,15 +19,18 @@ import org.geotools.data.FeatureSource;
 import org.geotools.feature.NameImpl;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 
-public class ReadOnlyDataAccessTest extends SecureObjectsTest {
+public class ReadOnlyDataAccessTest<T extends FeatureType, F extends Feature>
+        extends SecureObjectsTest {
 
-    private DataAccess da;
+    private DataAccess<T, F> da;
 
     private NameImpl name;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         FeatureSource fs = createNiceMock(FeatureSource.class);
         replay(fs);
@@ -39,7 +44,7 @@ public class ReadOnlyDataAccessTest extends SecureObjectsTest {
 
     @Test
     public void testDontChallenge() throws Exception {
-        ReadOnlyDataAccess ro = new ReadOnlyDataAccess(da, WrapperPolicy.hide(null));
+        ReadOnlyDataAccess<T, F> ro = new ReadOnlyDataAccess<>(da, WrapperPolicy.hide(null));
         SecuredFeatureSource fs = (SecuredFeatureSource) ro.getFeatureSource(name);
         assertTrue(fs.policy.isHide());
 
@@ -59,7 +64,8 @@ public class ReadOnlyDataAccessTest extends SecureObjectsTest {
 
     @Test
     public void testChallenge() throws Exception {
-        ReadOnlyDataAccess ro = new ReadOnlyDataAccess(da, WrapperPolicy.readOnlyChallenge(null));
+        ReadOnlyDataAccess<T, F> ro =
+                new ReadOnlyDataAccess<>(da, WrapperPolicy.readOnlyChallenge(null));
         SecuredFeatureSource fs = (SecuredFeatureSource) ro.getFeatureSource(name);
         assertTrue(fs.policy.isReadOnlyChallenge());
 

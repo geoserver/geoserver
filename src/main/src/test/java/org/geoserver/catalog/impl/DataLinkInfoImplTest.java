@@ -5,13 +5,11 @@
  */
 package org.geoserver.catalog.impl;
 
-import org.junit.Rule;
+import org.junit.Assert;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 /** @author Marcus Sen, British Geological Survey */
 public class DataLinkInfoImplTest {
-    @Rule public ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testSetAbsoluteHttp() {
@@ -38,9 +36,8 @@ public class DataLinkInfoImplTest {
     public void testSetAbsoluteTelnet() {
         DataLinkInfoImpl info = new DataLinkInfoImpl();
 
-        thrown.expect(IllegalArgumentException.class);
-
-        info.setContent("telnet:example.com");
+        Assert.assertThrows(
+                IllegalArgumentException.class, () -> info.setContent("telnet:example.com"));
     }
 
     @Test
@@ -75,17 +72,16 @@ public class DataLinkInfoImplTest {
     public void testSetNotAURL() {
         DataLinkInfoImpl info = new DataLinkInfoImpl();
 
-        thrown.expect(IllegalArgumentException.class);
-
-        info.setContent("::^%/[*] FOO ::");
+        Assert.assertThrows(
+                IllegalArgumentException.class, () -> info.setContent("::^%/[*] FOO ::"));
     }
 
     @Test
     public void testNotAURLButStartsOK() {
         DataLinkInfoImpl info = new DataLinkInfoImpl();
 
-        thrown.expect(IllegalArgumentException.class);
-
-        info.setContent("https://example.com/::^%/[*] FOO ::");
+        Assert.assertThrows(
+                IllegalArgumentException.class,
+                () -> info.setContent("https://example.com/::^%/[*] FOO ::"));
     }
 }

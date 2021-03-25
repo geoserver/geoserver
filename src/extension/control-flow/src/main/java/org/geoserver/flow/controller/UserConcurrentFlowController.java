@@ -31,7 +31,7 @@ public class UserConcurrentFlowController extends QueueController {
      * Thread local holding the current request queue id TODO: consider having a user map in {@link
      * Request} instead
      */
-    static ThreadLocal<String> QUEUE_ID = new ThreadLocal<String>();
+    static ThreadLocal<String> QUEUE_ID = new ThreadLocal<>();
 
     CookieKeyGenerator keyGenerator = new CookieKeyGenerator();
 
@@ -77,6 +77,7 @@ public class UserConcurrentFlowController extends QueueController {
         }
     }
 
+    @Override
     public boolean requestIncoming(Request request, long timeout) {
         boolean retval = true;
         long now = System.currentTimeMillis();
@@ -85,8 +86,7 @@ public class UserConcurrentFlowController extends QueueController {
         QUEUE_ID.set(queueId);
 
         // see if we have that queue already, otherwise generate it
-        TimedBlockingQueue queue = null;
-        queue = queues.get(queueId);
+        TimedBlockingQueue queue = queues.get(queueId);
         if (queue == null) {
             queue = new TimedBlockingQueue(queueSize, true);
             queues.put(queueId, queue);

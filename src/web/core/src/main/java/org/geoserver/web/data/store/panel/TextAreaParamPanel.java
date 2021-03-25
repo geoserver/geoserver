@@ -19,7 +19,7 @@ import org.apache.wicket.validation.IValidator;
  * @author Andrea Aime
  */
 @SuppressWarnings("serial")
-public class TextAreaParamPanel extends Panel implements ParamPanel {
+public class TextAreaParamPanel extends Panel implements ParamPanel<String> {
 
     private TextArea<String> textArea;
 
@@ -27,12 +27,13 @@ public class TextAreaParamPanel extends Panel implements ParamPanel {
      * @param validators any extra validator that should be added to the input field, or {@code
      *     null}
      */
+    @SafeVarargs
     public TextAreaParamPanel(
             final String id,
-            final IModel paramValue,
-            final IModel paramLabelModel,
+            final IModel<String> paramValue,
+            final IModel<String> paramLabelModel,
             final boolean required,
-            IValidator... validators) {
+            IValidator<String>... validators) {
         // make the value of the text field the model of this panel, for easy value retrieval
         super(id, paramValue);
 
@@ -42,14 +43,14 @@ public class TextAreaParamPanel extends Panel implements ParamPanel {
         add(label);
 
         // the text field, with a decorator for validations
-        textArea = new TextArea("paramValue", paramValue);
+        textArea = new TextArea<>("paramValue", paramValue);
         textArea.setRequired(required);
         // set the label to be the paramLabelModel otherwise a validation error would look like
         // "Parameter 'paramValue' is required"
         textArea.setLabel(paramLabelModel);
 
         if (validators != null) {
-            for (IValidator validator : validators) {
+            for (IValidator<String> validator : validators) {
                 textArea.add(validator);
             }
         }
@@ -59,7 +60,8 @@ public class TextAreaParamPanel extends Panel implements ParamPanel {
     }
 
     /** The text field stored inside the panel. */
-    public FormComponent getFormComponent() {
+    @Override
+    public FormComponent<String> getFormComponent() {
         return textArea;
     }
 }

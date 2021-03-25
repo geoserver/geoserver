@@ -84,6 +84,7 @@ public class GetGmlObjectTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.GETGMLOBJECTTYPE;
     }
@@ -95,7 +96,8 @@ public class GetGmlObjectTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<GetGmlObjectType> getType() {
         return GetGmlObjectType.class;
     }
 
@@ -106,12 +108,13 @@ public class GetGmlObjectTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
 
         GetGmlObjectType getGmlObject = wfsfactory.createGetGmlObjectType();
 
         // &lt;xsd:element ref="ogc:GmlObjectId"/&gt;
-        getGmlObject.setGmlObjectId((GmlObjectId) node.getChildValue(GmlObjectId.class));
+        getGmlObject.setGmlObjectId(node.getChildValue(GmlObjectId.class));
 
         // &lt;xsd:attribute default="GML3" name="outputFormat"
         //    type="xsd:string" use="optional"/&gt;

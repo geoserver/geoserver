@@ -11,6 +11,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.geoserver.rest.catalog.HttpTestUtils.hasHeader;
 import static org.geoserver.rest.catalog.HttpTestUtils.hasStatus;
 import static org.geoserver.rest.catalog.HttpTestUtils.istream;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -21,7 +22,10 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import junit.framework.AssertionFailedError;
@@ -365,8 +369,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsHTML() throws Exception {
-        Document dom =
-                getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/wmslayers/states.html");
+        getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/wmslayers/states.html");
         // print(dom);
     }
 
@@ -390,7 +393,6 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
                         + ".html";
         // Exception path
         String exception = "No such cascaded wms: " + ws + "," + wl;
-        String exception2 = "No such cascaded wms layer: " + ws + "," + wms + "," + wl;
 
         // CASE 1: No wmsstore set
 

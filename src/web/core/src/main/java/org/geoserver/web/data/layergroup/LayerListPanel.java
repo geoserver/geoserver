@@ -47,12 +47,12 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
 
     private static final long serialVersionUID = 3638205114048153057L;
 
-    static Property<LayerInfo> NAME = new BeanProperty<LayerInfo>("name", "name");
+    static Property<LayerInfo> NAME = new BeanProperty<>("name", "name");
 
-    static Property<LayerInfo> STORE = new BeanProperty<LayerInfo>("store", "resource.store.name");
+    static Property<LayerInfo> STORE = new BeanProperty<>("store", "resource.store.name");
 
     static Property<LayerInfo> WORKSPACE =
-            new BeanProperty<LayerInfo>("workspace", "resource.store.workspace.name");
+            new BeanProperty<>("workspace", "resource.store.workspace.name");
 
     public LayerListPanel(String id, final WorkspaceInfo workspace) {
         this(
@@ -62,6 +62,7 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
                     private static final long serialVersionUID = 426375054014475107L;
 
                     @Override
+                    @SuppressWarnings("PMD.UseTryWithResources") // iterator needs to be tested
                     public Iterator<LayerInfo> iterator(final long first, final long count) {
                         Iterator<LayerInfo> iterator = filteredItems((int) first, (int) count);
                         if (iterator instanceof CloseableIterator) {
@@ -141,7 +142,7 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
 
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
-                    LayerInfo layer = (LayerInfo) itemModel.getObject();
+                    LayerInfo layer = itemModel.getObject();
                     handleLayer(layer, target);
                 }
             };

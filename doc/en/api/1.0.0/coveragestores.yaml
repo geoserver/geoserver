@@ -15,6 +15,8 @@ paths:
   /workspaces/{workspace}/coveragestores:
     get:
       operationId: getCoverageStores
+      tags:
+        - "CoverageStores"
       summary: Get a list of all coverage stores in {workspace}
       description: Displays a list of all styles on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/coveragestores.xml" for XML). Defaults to HTML representation.
       produces:
@@ -25,7 +27,7 @@ paths:
         - name: workspace
           in: path
           required: true
-          description: The name of the worskpace containing the coverage stores.
+          description: The name of the workspace containing the coverage stores.
           type: string
       responses:
         200:
@@ -66,13 +68,15 @@ paths:
 
     post:
       operationId: postCoverageStores
+      tags:
+        - "CoverageStores"
       summary: Add a new coverage store
       description: Adds a new coverage store entry to the server.
       parameters:
         - name: workspace
           in: path
           required: true
-          description: The name of the worskpace containing the coverage stores.
+          description: The name of the workspace containing the coverage stores.
           type: string
         - $ref: "#/parameters/CoverageStorePost"
       consumes:
@@ -92,6 +96,8 @@ paths:
 
     put:
       operationId: putCoverageStores
+      tags:
+        - "CoverageStores"
       description: Invalid. Use POST for adding a new coverage store, or PUT on /coveragestores/{store} to edit/upload an existing coverage store.
       responses:
         401:
@@ -101,6 +107,8 @@ paths:
 
     delete:
       operationId: deleteCoverageStores
+      tags:
+        - "CoverageStores"
       description: Invalid. Use /coverage/{style} instead.
       responses:
         401:
@@ -110,6 +118,8 @@ paths:
   /workspaces/{workspace}/coveragestores/{store}:
     get:
       operationId: getCoverageStore
+      tags:
+        - "CoverageStores"
       summary: Get a coverage store named {store} in the {workspace} workspace
       description: Displays a representation of the coverage store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/{store}.xml" for XML). Defaults to HTML representation.
       produces:
@@ -120,7 +130,7 @@ paths:
         - name: workspace
           in: path
           required: true
-          description: The name of the worskpace containing the coverage stores.
+          description: The name of the workspace containing the coverage stores.
           type: string
         - name: store
           in: path
@@ -130,7 +140,7 @@ paths:
         - name: quietOnNotFound
           in: query
           required: false
-          description: When set to true, avoids to log an Exception when the coverage store is not present. Note that 404 status code will be returned anyway.
+          description: When set to true, avoids logging an Exception when the coverage store is not present. Note that 404 status code will be returned anyway.
           type: boolean
       responses:
         200:
@@ -177,6 +187,8 @@ paths:
 
     post:
       operationId: postCoverageStore
+      tags:
+        - "CoverageStores"
       description: Invalid. Use POST on /workspaces/{workspace}/coveragestores for adding a new coverage store, or PUT on /workspaces/{workspace}/coveragestores/{store} to edit/upload an existing coverage store.
       responses:
         401:
@@ -186,13 +198,15 @@ paths:
 
     put:
       operationId: putCoverageStore
+      tags:
+        - "CoverageStores"
       summary: Modify a single coverage store.
       description: Modifies a single coverage store. Use the "Accept:" header to specify format or append an extension to the endpoint (example "{store}.xml" for XML).
       parameters:
         - name: workspace
           in: path
           required: true
-          description: The name of the worskpace containing the coverage stores.
+          description: The name of the workspace containing the coverage stores.
           type: string
         - name: store
           in: path
@@ -211,13 +225,15 @@ paths:
           
     delete:
       operationId: deleteCoverageStore
+      tags:
+        - "CoverageStores"
       summary: Delete coverage store
       description: Deletes a coverage store
       parameters:
         - name: workspace
           in: path
           required: true
-          description: The name of the worskpace containing the coverage stores.
+          description: The name of the workspace containing the coverage stores.
           type: string
         - name: store
           in: path
@@ -247,6 +263,8 @@ paths:
   /workspaces/{workspace}/coveragestores/{store}/{method}.{format}:
     get:
       operationId: getCoverageStoreUpload
+      tags:
+        - "CoverageStores"
       description: Invalid, only used for uploads
       responses:
         401:
@@ -256,12 +274,14 @@ paths:
 
     post:
       operationId: postCoverageStoreUpload
+      tags:
+        - "CoverageStores"
       description: Used to harvest new granules in a writable structured grid coverage reader (e.g., image mosaic). Attempting to harvest a file into any other reader will result in a HTTP 405, method not allowed. Multiple granules can be uploaded by wrapping them in a ZIP file. 
       parameters:
         - name: workspace
           in: path
           required: true
-          description: The name of the worskpace containing the coverage stores.
+          description: The name of the workspace containing the coverage stores.
           type: string
         - name: store
           in: path
@@ -271,10 +291,11 @@ paths:
         - name: method
           in: path
           required: true
-          description: The upload method. Can be "url", "file", "external". 
+          description: The upload method. Can be "url", "file", "external", "remote". 
                        "file" uploads a file from a local source. The body of the request is the file itself.
-                       "url" uploads a file from an remote source. The body of the request is a URL pointing to the file to upload. This URL must be visible from the server.
+                       "url" uploads a file from a remote source. The body of the request is a URL pointing to the file to upload. This URL must be visible from the server.
                        "external" uses an existing file on the server. The body of the request is the absolute path to the existing file.
+                       "remote" uses a direct reference to a remote url, i.e. a file on a cloud storage. No data copy will occur. The body of the request is a URL pointing to the remote dataset.
           type: string
         - name: format
           in: path
@@ -284,7 +305,7 @@ paths:
         - name: filename
           in: query
           required: false
-          description: The filename parameter specifies the target file name for a file that needs to harvested as part of a mosaic. This is important to avoid clashes and to make sure the right dimension values are available in the name for multidimensional mosaics to work. Only used if method="file".
+          description: The filename parameter specifies the target file name for a file that needs to be harvested as part of a mosaic. This is important to avoid clashes and to make sure the right dimension values are available in the name for multidimensional mosaics to work. Only used if method="file".
           type: string
         - name: updateBBox
           in: query
@@ -299,13 +320,15 @@ paths:
 
     put:
       operationId: putCoverageStoreUpload
+      tags:
+        - "CoverageStores"
       summary: Creates or overwrites the files for a coverage store
       description: Creates or modified a single coverage store by uploading its raster data files. Multi-file stores like mosaic can be created by uploading a zip file and setting the content type to "application/zip"
       parameters:
         - name: workspace
           in: path
           required: true
-          description: The name of the worskpace containing the coverage stores.
+          description: The name of the workspace containing the coverage stores.
           type: string
         - name: store
           in: path
@@ -315,10 +338,11 @@ paths:
         - name: method
           in: path
           required: true
-          description: The upload method. Can be "url", "file", "external". 
+          description: The upload method. Can be "url", "file", "external", "remote". 
                        "file" uploads a file from a local source. The body of the request is the file itself.
-                       "url" uploads a file from an remote source. The body of the request is a URL pointing to the file to upload. This URL must be visible from the server.
+                       "url" uploads a file from a remote source. The body of the request is a URL pointing to the file to upload. This URL must be visible from the server.
                        "external" uses an existing file on the server. The body of the request is the absolute path to the existing file.
+                       "remote" uses a direct reference to a remote url, i.e. a file on a cloud storage. No data copy will occur. The body of the request is a URL pointing to the remote dataset.
           type: string
         - name: format
           in: path
@@ -343,7 +367,7 @@ paths:
         - name: filename
           in: query
           required: false
-          description: The filename parameter specifies the target file name for a file that needs to harvested as part of a mosaic. This is important to avoid clashes and to make sure the right dimension values are available in the name for multidimensional mosaics to work. Only used if method="file".
+          description: The filename parameter specifies the target file name for a file that needs to be harvested as part of a mosaic. This is important to avoid clashes and to make sure the right dimension values are available in the name for multidimensional mosaics to work. Only used if method="file".
           type: string
       responses:
         200:
@@ -353,6 +377,8 @@ paths:
           
     delete:
       operationId: deleteCoverageStoreUpload
+      tags:
+        - "CoverageStores"
       description: Invalid, only used for uploads
       responses:
         401:

@@ -40,27 +40,27 @@ public class NestedKvpParser extends KvpParser {
      * @param key The key to bind to.
      * @param binding The class of each token in the value.
      */
-    public NestedKvpParser(String key, Class binding) {
+    public NestedKvpParser(String key, Class<?> binding) {
         super(key, binding);
     }
 
     /** Tokenizes the value and delegates to {@link #parseToken(String)} to parse each token. */
+    @Override
     public Object parse(String value) throws Exception {
-        List tokenSets = KvpUtils.readNested(value);
+        List<List<String>> nestedTokens = KvpUtils.readNested(value);
+        List<Object> result = new ArrayList<>();
 
-        for (int i = 0; i < tokenSets.size(); i++) {
-            List tokens = (List) tokenSets.get(i);
-            List parsed = new ArrayList(tokens.size());
+        for (List<String> tokens : nestedTokens) {
+            List<Object> parsed = new ArrayList<>(tokens.size());
 
-            for (int j = 0; j < tokens.size(); j++) {
-                String token = (String) tokens.get(j);
+            for (String token : tokens) {
                 parsed.add(parseToken(token));
             }
 
-            tokenSets.set(i, parseTokenSet(parsed));
+            result.add(parseTokenSet(parsed));
         }
 
-        return parse(tokenSets);
+        return parse(result);
     }
 
     /**
@@ -85,7 +85,7 @@ public class NestedKvpParser extends KvpParser {
      * @param tokenSet The parsed tokens, each value is an instance of {@link #getBinding()}.
      * @return The final object.
      */
-    protected Object parseTokenSet(List tokenSet) throws Exception {
+    protected Object parseTokenSet(List<Object> tokenSet) throws Exception {
         return tokenSet;
     }
 

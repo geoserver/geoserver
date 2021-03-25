@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -102,10 +101,8 @@ public class WPSRequestBuilderPanel extends Panel {
         this.execute = executeRequest;
 
         final DropDownChoice<String> processChoice =
-                new Select2DropDownChoice<String>(
-                        "process",
-                        new PropertyModel<String>(execute, "processName"),
-                        buildProcessList());
+                new Select2DropDownChoice<>(
+                        "process", new PropertyModel<>(execute, "processName"), buildProcessList());
         add(processChoice);
 
         descriptionContainer = new WebMarkupContainer("descriptionContainer");
@@ -158,7 +155,7 @@ public class WPSRequestBuilderPanel extends Panel {
                                             "paramValue", "literal", WPSRequestBuilderPanel.this);
                             FormComponent literal = new TextField("literalValue", property);
                             literal.setRequired(p.minOccurs > 0);
-                            literal.setLabel(new Model<String>(p.key));
+                            literal.setLabel(new Model<>(p.key));
                             f.add(literal);
                             item.add(f);
                         }
@@ -177,8 +174,7 @@ public class WPSRequestBuilderPanel extends Panel {
                     protected void populateItem(ListItem item) {
                         OutputParameter pv = (OutputParameter) item.getModelObject();
                         Parameter p = pv.getParameter();
-                        item.add(
-                                new CheckBox("include", new PropertyModel<Boolean>(pv, "include")));
+                        item.add(new CheckBox("include", new PropertyModel<>(pv, "include")));
                         item.add(new Label("param", buildParamSpec(p)));
                         item.add(
                                 new Label(
@@ -206,25 +202,19 @@ public class WPSRequestBuilderPanel extends Panel {
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(
-                new ModalWindow.PageCreator() {
-
-                    public Page createPage() {
-                        DemoRequest request = new DemoRequest(null);
-                        HttpServletRequest http =
-                                (HttpServletRequest)
-                                        WPSRequestBuilderPanel.this
-                                                .getRequest()
-                                                .getContainerRequest();
-                        String url =
-                                ResponseUtils.buildURL(
-                                        ResponseUtils.baseURL(http),
-                                        "ows",
-                                        Collections.singletonMap("strict", "true"),
-                                        URLType.SERVICE);
-                        request.setRequestUrl(url);
-                        request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                        return new DemoRequestResponse(new Model<DemoRequest>(request));
-                    }
+                () -> {
+                    DemoRequest request = new DemoRequest(null);
+                    HttpServletRequest http =
+                            (HttpServletRequest) getRequest().getContainerRequest();
+                    String url =
+                            ResponseUtils.buildURL(
+                                    ResponseUtils.baseURL(http),
+                                    "ows",
+                                    Collections.singletonMap("strict", "true"),
+                                    URLType.SERVICE);
+                    request.setRequestUrl(url);
+                    request.setRequestBody((String) responseWindow.getDefaultModelObject());
+                    return new DemoRequestResponse(new Model<>(request));
                 });
 
         // the describe process link
@@ -236,7 +226,7 @@ public class WPSRequestBuilderPanel extends Panel {
                         processChoice.processInput();
                         if (execute.processName != null) {
                             responseWindow.setDefaultModel(
-                                    new Model<String>(getDescribeXML(execute.processName)));
+                                    new Model<>(getDescribeXML(execute.processName)));
                             responseWindow.show(target);
                         }
                     }
@@ -355,7 +345,7 @@ public class WPSRequestBuilderPanel extends Panel {
 
     protected List<InputParameterValues> buildInputParameters(ProcessFactory pf, Name processName) {
         Map<String, Parameter<?>> params = pf.getParameterInfo(processName);
-        List<InputParameterValues> result = new ArrayList<InputParameterValues>();
+        List<InputParameterValues> result = new ArrayList<>();
         for (String key : params.keySet()) {
             result.add(new InputParameterValues(processName, key));
         }
@@ -365,7 +355,7 @@ public class WPSRequestBuilderPanel extends Panel {
 
     protected List<OutputParameter> buildOutputParameters(ProcessFactory pf, Name processName) {
         Map<String, Parameter<?>> params = pf.getResultInfo(processName, null);
-        List<OutputParameter> result = new ArrayList<OutputParameter>();
+        List<OutputParameter> result = new ArrayList<>();
         for (String key : params.keySet()) {
             result.add(new OutputParameter(processName, key));
         }
@@ -375,7 +365,7 @@ public class WPSRequestBuilderPanel extends Panel {
 
     /** Builds a list of process ids */
     List<String> buildProcessList() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
         for (ProcessFactory pf : GeoServerProcessors.getProcessFactories()) {
             for (Name name : pf.getNames()) {

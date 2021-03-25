@@ -22,8 +22,8 @@ import org.opengis.style.Description;
  */
 public abstract class SymbolizerFilteringVisitor extends DuplicatingStyleVisitor {
 
+    @Override
     public void visit(Rule rule) {
-        Rule copy = null;
 
         Filter filterCopy = null;
 
@@ -33,18 +33,18 @@ public abstract class SymbolizerFilteringVisitor extends DuplicatingStyleVisitor
         }
 
         // modified to deal with null copies that should be skipped
-        List<Symbolizer> symArray = new ArrayList<Symbolizer>();
+        List<Symbolizer> symArray = new ArrayList<>();
         for (Symbolizer sym : rule.symbolizers()) {
             Symbolizer symcopy = copy(sym);
             if (symcopy != null) symArray.add(symcopy);
         }
-        Symbolizer[] symsCopy = (Symbolizer[]) symArray.toArray(new Symbolizer[symArray.size()]);
+        Symbolizer[] symsCopy = symArray.toArray(new Symbolizer[symArray.size()]);
 
         Graphic legendCopy = copy((Graphic) rule.getLegend());
         Description descCopy = rule.getDescription();
         descCopy = copy(descCopy);
 
-        copy =
+        Rule copy =
                 new StyleFactoryImpl()
                         .createRule(
                                 symsCopy,

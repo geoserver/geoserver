@@ -95,10 +95,12 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
             this.delegate = delegate;
         }
 
+        @Override
         public boolean canHandle(Operation operation) {
             return delegate.canHandle(operation);
         }
 
+        @Override
         public String getMimeType(Object value, Operation operation) throws ServiceException {
             return delegate.getMimeType(value, operation);
         }
@@ -107,6 +109,7 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
          * See if we have to add cache control headers. Won't alter them if the response already set
          * them.
          */
+        @Override
         public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
             String[][] headers = delegate.getHeaders(value, operation);
             if (headers == null) {
@@ -114,6 +117,7 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
                 return new String[][] {{HttpHeaders.CACHE_CONTROL, "max-age=0, must-revalidate"}};
             } else {
                 // will add only if not already there
+                @SuppressWarnings("unchecked")
                 Map<String, String> map = (Map) ArrayUtils.toMap(headers);
                 map.putIfAbsent(HttpHeaders.CACHE_CONTROL, "max-age=0, must-revalidate");
                 headers = new String[map.size()][2];
@@ -128,19 +132,23 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
             return headers;
         }
 
+        @Override
         public void write(Object value, OutputStream output, Operation operation)
                 throws IOException, ServiceException {
             delegate.write(value, output, operation);
         }
 
+        @Override
         public String getPreferredDisposition(Object value, Operation operation) {
             return delegate.getPreferredDisposition(value, operation);
         }
 
+        @Override
         public String getAttachmentFileName(Object value, Operation operation) {
             return delegate.getAttachmentFileName(value, operation);
         }
 
+        @Override
         public String getCharset(Operation operation) {
             return delegate.getCharset(operation);
         }

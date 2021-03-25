@@ -28,6 +28,7 @@ public class WCS20GetCapabilitiesRequestReader extends EMFKvpRequestReader {
         super(GetCapabilitiesType.class, Wcs20Factory.eINSTANCE);
     }
 
+    @Override
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
 
         if (rawKvp.containsKey("acceptVersions")) {

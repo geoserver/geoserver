@@ -7,6 +7,7 @@ package org.geoserver.rest.service;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONException;
@@ -203,14 +204,11 @@ public class LocalWMTSSettingsControllerTest extends CatalogRESTTestSupport {
                         .getStatus());
         boolean thrown = false;
         try {
-            JSON json =
-                    getAsJSON(
-                            RestBaseController.ROOT_PATH
-                                    + "/services/wmts/workspaces/sf/settings.json");
+            getAsJSON(RestBaseController.ROOT_PATH + "/services/wmts/workspaces/sf/settings.json");
         } catch (JSONException e) {
             thrown = true;
         }
-        assertEquals(true, thrown);
+        assertTrue(thrown);
     }
 
     private void removeLocalWorkspace() {

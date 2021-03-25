@@ -205,6 +205,7 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
         // no op, we actually want to handle multiple filters
     }
 
+    @Override
     protected void handleBBOX(Map kvp, EObject eObject) throws Exception {
         // set filter from bbox
         Filter bboxFilter = bboxFilter(kvp.get("bbox"));

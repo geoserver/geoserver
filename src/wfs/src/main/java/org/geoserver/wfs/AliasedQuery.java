@@ -83,6 +83,7 @@ class AliasedQuery extends Query {
             this.aliases = aliases;
         }
 
+        @Override
         public Object visit(Beyond filter, Object extraData) {
             Expression geometry1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression geometry2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
@@ -92,24 +93,28 @@ class AliasedQuery extends Query {
                     .beyond(geometry1, geometry2, distance, units, filter.getMatchAction());
         }
 
+        @Override
         public Object visit(Contains filter, Object extraData) {
             Expression geometry1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression geometry2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
             return getFactory(extraData).contains(geometry1, geometry2, filter.getMatchAction());
         }
 
+        @Override
         public Object visit(Crosses filter, Object extraData) {
             Expression geometry1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression geometry2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
             return getFactory(extraData).crosses(geometry1, geometry2, filter.getMatchAction());
         }
 
+        @Override
         public Object visit(Disjoint filter, Object extraData) {
             Expression geometry1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression geometry2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
             return getFactory(extraData).disjoint(geometry1, geometry2, filter.getMatchAction());
         }
 
+        @Override
         public Object visit(DWithin filter, Object extraData) {
             Expression geometry1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression geometry2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
@@ -119,12 +124,14 @@ class AliasedQuery extends Query {
                     .dwithin(geometry1, geometry2, distance, units, filter.getMatchAction());
         }
 
+        @Override
         public Object visit(Equals filter, Object extraData) {
             Expression geometry1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression geometry2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
             return getFactory(extraData).equal(geometry1, geometry2, filter.getMatchAction());
         }
 
+        @Override
         public Object visit(Intersects filter, Object extraData) {
             Expression geometry1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression geometry2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
@@ -141,24 +148,28 @@ class AliasedQuery extends Query {
             }
         }
 
+        @Override
         public Object visit(Overlaps filter, Object extraData) {
             Expression geometry1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression geometry2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
             return getFactory(extraData).overlaps(geometry1, geometry2, filter.getMatchAction());
         }
 
+        @Override
         public Object visit(Touches filter, Object extraData) {
             Expression geometry1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression geometry2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
             return getFactory(extraData).touches(geometry1, geometry2, filter.getMatchAction());
         }
 
+        @Override
         public Object visit(Within filter, Object extraData) {
             Expression geometry1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression geometry2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
             return getFactory(extraData).within(geometry1, geometry2, filter.getMatchAction());
         }
 
+        @Override
         public Object visit(PropertyIsEqualTo filter, Object extraData) {
             Expression expr1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression expr2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
@@ -166,6 +177,7 @@ class AliasedQuery extends Query {
             return getFactory(extraData).equal(expr1, expr2, matchCase, filter.getMatchAction());
         }
 
+        @Override
         public Object visit(PropertyIsNotEqualTo filter, Object extraData) {
             Expression expr1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression expr2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
@@ -173,6 +185,7 @@ class AliasedQuery extends Query {
             return getFactory(extraData).notEqual(expr1, expr2, matchCase, filter.getMatchAction());
         }
 
+        @Override
         public Object visit(PropertyIsGreaterThan filter, Object extraData) {
             Expression expr1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression expr2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
@@ -180,6 +193,7 @@ class AliasedQuery extends Query {
                     .greater(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
         }
 
+        @Override
         public Object visit(PropertyIsGreaterThanOrEqualTo filter, Object extraData) {
             Expression expr1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression expr2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
@@ -187,6 +201,7 @@ class AliasedQuery extends Query {
                     .greaterOrEqual(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
         }
 
+        @Override
         public Object visit(PropertyIsLessThan filter, Object extraData) {
             Expression expr1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression expr2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
@@ -194,6 +209,7 @@ class AliasedQuery extends Query {
                     .less(expr1, expr2, filter.isMatchingCase(), filter.getMatchAction());
         }
 
+        @Override
         public Object visit(PropertyIsLessThanOrEqualTo filter, Object extraData) {
             Expression expr1 = visitBinaryChild(filter.getExpression1(), extraData, 0);
             Expression expr2 = visitBinaryChild(filter.getExpression2(), extraData, 1);
@@ -289,7 +305,7 @@ class AliasedQuery extends Query {
 
     private Map<String, String> buildRenameMap(
             List<String> originalAliases, List<String> newAliases) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         for (int i = 0; i < originalAliases.size(); i++) {
             String a1 = originalAliases.get(i);
             String a2 = newAliases.get(i);
@@ -334,6 +350,11 @@ class AliasedQuery extends Query {
     @Override
     public List<String> getPropertyNames() {
         return propertyNames;
+    }
+
+    @Override
+    public void setPropertyNames(List<String> names) {
+        this.propertyNames = names;
     }
 
     @Override

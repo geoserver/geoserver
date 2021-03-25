@@ -9,8 +9,8 @@ import static org.geoserver.web.GeoServerWicketTestSupport.initResourceSettings;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import org.apache.wicket.Component;
-import org.apache.wicket.model.Model;
+import java.util.List;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
 import org.geoserver.catalog.Keyword;
@@ -23,23 +23,20 @@ import org.junit.Test;
 public class KeywordsEditorTest {
 
     WicketTester tester;
-    ArrayList<KeywordInfo> keywords;
+    List<KeywordInfo> keywords;
 
     @Before
     public void setUp() throws Exception {
         tester = new WicketTester();
         initResourceSettings(tester);
-        keywords = new ArrayList<KeywordInfo>();
+        keywords = new ArrayList<>();
         keywords.add(new Keyword("one"));
         keywords.add(new Keyword("two"));
         keywords.add(new Keyword("three"));
         tester.startPage(
                 new FormTestPage(
-                        new ComponentBuilder() {
-                            public Component buildComponent(String id) {
-                                return new KeywordsEditor(id, new Model(keywords));
-                            }
-                        }));
+                        (ComponentBuilder)
+                                id -> new KeywordsEditor(id, new ListModel<>(keywords))));
     }
 
     @Test

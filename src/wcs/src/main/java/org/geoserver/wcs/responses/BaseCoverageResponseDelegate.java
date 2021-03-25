@@ -57,9 +57,9 @@ public abstract class BaseCoverageResponseDelegate implements CoverageResponseDe
         if (mimeTypes.isEmpty()) {
             throw new IllegalArgumentException("Empty list of mimeTypes provided");
         }
-        this.mimeTypes = new CaseInsensitiveMap(new HashMap<String, String>(mimeTypes));
-        this.outputFormats = new ArrayList<String>(outputFormats);
-        this.fileExtensions = new CaseInsensitiveMap(fileExtensions);
+        this.mimeTypes = new CaseInsensitiveMap<>(new HashMap<>(mimeTypes));
+        this.outputFormats = new ArrayList<>(outputFormats);
+        this.fileExtensions = new CaseInsensitiveMap<>(fileExtensions);
         this.geoserver = geoserver;
     }
 
@@ -95,7 +95,7 @@ public abstract class BaseCoverageResponseDelegate implements CoverageResponseDe
 
     @Override
     public List<String> getOutputFormats() {
-        return new ArrayList<String>(outputFormats);
+        return new ArrayList<>(outputFormats);
     }
 
     /** Default implementation, implementers should override. */
@@ -108,6 +108,7 @@ public abstract class BaseCoverageResponseDelegate implements CoverageResponseDe
      * Provides a fallback, a value that looks like a GMLCOV conformance class. Delegates that can
      * be actually associated to an official conformance class should override this method
      */
+    @Override
     public String getConformanceClass(String format) {
         return "http://www.opengis.net/spec/WCS_coverage-encoding-x" + getMimeType(format);
     }

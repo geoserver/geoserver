@@ -8,12 +8,22 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.GeoServerSLDVisitor;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
-import org.geotools.styling.*;
+import org.geotools.styling.FeatureTypeConstraint;
+import org.geotools.styling.NamedLayer;
+import org.geotools.styling.NamedStyle;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayer;
+import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.styling.UserLayer;
 import org.opengis.filter.Filter;
 
 /**
@@ -79,11 +89,11 @@ public class ProcessStandaloneSLDVisitor extends GeoServerSLDVisitor {
         currLayer = null;
         final FeatureTypeConstraint[] featureConstraints = ul.getLayerFeatureConstraints();
         if (request.getFilter() == null) {
-            request.setFilter(new ArrayList());
+            request.setFilter(new ArrayList<>());
         }
-        for (int i = 0; i < featureConstraints.length; i++) {
+        for (FeatureTypeConstraint featureConstraint : featureConstraints) {
             // grab the filter
-            Filter filter = featureConstraints[i].getFilter();
+            Filter filter = featureConstraint.getFilter();
             if (filter == null) {
                 filter = Filter.INCLUDE;
             }
@@ -98,8 +108,7 @@ public class ProcessStandaloneSLDVisitor extends GeoServerSLDVisitor {
 
     @Override
     public StyleInfo visitNamedStyleInternal(NamedStyle namedStyle) {
-        StyleInfo s;
-        s = catalog.getStyleByName(namedStyle.getName());
+        StyleInfo s = catalog.getStyleByName(namedStyle.getName());
         if (s == null) {
             String failMessage = "couldn't find style named '" + namedStyle.getName() + "'";
             if (currLayer.getType() == MapLayerInfo.TYPE_RASTER) {

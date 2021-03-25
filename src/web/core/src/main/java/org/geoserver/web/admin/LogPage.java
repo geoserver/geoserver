@@ -103,12 +103,13 @@ public class LogPage extends GeoServerSecuredPage {
                     }
                 });
 
+        @SuppressWarnings("PMD.UseDiamondOperator") // java 8 compiler cannot infer type
         NumberTextField<Integer> lines =
-                new NumberTextField<Integer>("lines", new PropertyModel<Integer>(this, "lines"));
+                new NumberTextField<Integer>("lines", new PropertyModel<>(this, "lines"));
         lines.add(RangeValidator.minimum(1));
         form.add(lines);
 
-        TextArea<String> logs = new TextArea<String>("logs", new GSLogsModel());
+        TextArea<String> logs = new TextArea<>("logs", new GSLogsModel());
         logs.setOutputMarkupId(true);
         logs.setMarkupId("logs");
         add(logs);
@@ -121,6 +122,7 @@ public class LogPage extends GeoServerSecuredPage {
                         @SuppressWarnings("PMD.CloseResource") // wrapped and returned
                         IResourceStream stream =
                                 new FileResourceStream(logFile) {
+                                    @Override
                                     public String getContentType() {
                                         return "text/plain";
                                     }
@@ -142,7 +144,7 @@ public class LogPage extends GeoServerSecuredPage {
             BufferedReader br = null;
             try {
                 // load the logs line by line, keep only the last 1000 lines
-                LinkedList<String> lineList = new LinkedList<String>();
+                LinkedList<String> lineList = new LinkedList<>();
 
                 if (!logFile.exists()) {
                     return "";

@@ -23,7 +23,7 @@ import org.geoserver.wms.describelayer.XMLDescribeLayerResponse;
 public class DescribeLayerRequest extends WMSRequest {
 
     /** Holds the FeatureTypes parsed from the request's <code>LAYERS</code> parameter. */
-    private List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>(2);
+    private List<MapLayerInfo> layers = new ArrayList<>(2);
 
     /**
      * Holds the GetMap part of the GetFeatureInfo request, which is meant to provide enough context
@@ -71,7 +71,7 @@ public class DescribeLayerRequest extends WMSRequest {
     }
 
     public List<MapLayerInfo> getLayers() {
-        return new ArrayList<MapLayerInfo>(layers);
+        return new ArrayList<>(layers);
     }
 
     public void setLayers(List<MapLayerInfo> layers) {
@@ -88,11 +88,12 @@ public class DescribeLayerRequest extends WMSRequest {
         this.outputFormat = outputFormat;
     }
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer("DescribeLayerRequest[layers=");
 
         for (Iterator<MapLayerInfo> it = layers.iterator(); it.hasNext(); ) {
-            sb.append(((MapLayerInfo) it.next()).getName());
+            sb.append(it.next().getName());
 
             if (it.hasNext()) {
                 sb.append(',');

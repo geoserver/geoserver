@@ -6,6 +6,11 @@
  -->
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
+    <bean class="org.geoserver.platform.ModuleStatusImpl">
+        <constructor-arg index="0" value="gs-csw-core"/>
+        <constructor-arg index="1" value="GeoServer Catalog Service for the Web (CSW) 2.0.2 Core Service"/>
+    </bean>
+
     <bean id="cswServiceLoader" class="org.geoserver.csw.CSWXStreamLoader">
         <constructor-arg ref="resourceLoader"/>
     </bean>
@@ -100,8 +105,7 @@
     </bean>
 
     <!-- XML Configuration -->
-    <bean id="cswXmlConfiguration-2.0.2"
-        class="org.geoserver.csw.xml.CSWConfiguration" >
+    <bean id="cswXmlConfiguration-2.0.2" class="org.geotools.csw.CSWConfiguration" >
     </bean>
 
     <!-- XML Readers -->
@@ -156,7 +160,7 @@
       <constructor-arg index="0" ref="gsInternalCatalogStore"/>
       <constructor-arg index="1" value="net.opengis.cat.csw20.CapabilitiesType"/>
       <constructor-arg index="2" value="Capabilities"/>
-      <constructor-arg index="3" value="org.geoserver.csw.xml.CSWConfiguration"/> 
+      <constructor-arg index="3" value="org.geotools.csw.CSWConfiguration"/> 
     </bean>
     
     <bean id="cswDublinCoreResponse-2.0.2" class="org.geoserver.csw.response.CSWRecordsResponse">

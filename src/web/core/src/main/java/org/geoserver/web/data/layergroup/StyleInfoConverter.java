@@ -22,6 +22,6 @@ public class StyleInfoConverter implements IConverter<StyleInfo> {
     @Override
     public String convertToString(StyleInfo obj, Locale locale) {
         if (obj == null) return "";
-        else return ((StyleInfo) obj).getName();
+        else return obj.getName();
     }
 }

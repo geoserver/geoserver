@@ -6,7 +6,7 @@
 
 package org.geoserver.security.impl;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 
 import java.io.IOException;
 import org.geoserver.security.GeoServerUserGroupService;
@@ -45,14 +45,15 @@ public class MemoryUserGroupServiceTest extends AbstractUserGroupServiceTest {
         return config;
     }
 
+    @Override
     @Test
     public void testInsert() throws Exception {
         super.testInsert();
         for (GeoServerUser user : store.getUsers()) {
-            assertTrue(user.getClass() == MemoryGeoserverUser.class);
+            assertSame(user.getClass(), MemoryGeoserverUser.class);
         }
         for (GeoServerUserGroup group : store.getUserGroups()) {
-            assertTrue(group.getClass() == MemoryGeoserverUserGroup.class);
+            assertSame(group.getClass(), MemoryGeoserverUserGroup.class);
         }
     }
 }

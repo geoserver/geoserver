@@ -23,10 +23,10 @@ public class PanelPaste extends Panel {
         super(id);
 
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
-        add(new TextField<String>("source", new Model<String>(source)).setOutputMarkupId(true));
+        add(new TextField<>("source", new Model<>(source)).setOutputMarkupId(true));
         add(new WebMarkupContainer("labelMove").setVisible(!isCopy));
         add(new WebMarkupContainer("labelCopy").setVisible(isCopy));
-        add(new TextField<String>("directory", new Model<String>(directory)));
+        add(new TextField<>("directory", new Model<>(directory)));
     }
 
     public String getDirectory() {

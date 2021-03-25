@@ -52,14 +52,14 @@ public abstract class ActivityChartBasePanel extends Panel {
         add(chartImage = new NonCachingImage("chart", resource));
         chartImage.setOutputMarkupId(true);
 
-        Form<?> form = new Form<Void>("form");
+        Form<?> form = new Form<>("form");
         add(form);
 
         from = new Date(range[0].getTime());
         to = new Date(range[1].getTime());
 
         form.add(
-                new DateTimeField("from", new PropertyModel<Date>(this, "from")) {
+                new DateTimeField("from", new PropertyModel<>(this, "from")) {
                     private static final long serialVersionUID = -6541833048507323265L;
 
                     @Override
@@ -68,7 +68,7 @@ public abstract class ActivityChartBasePanel extends Panel {
                     }
                 });
         form.add(
-                new DateTimeField("to", new PropertyModel<Date>(this, "to")) {
+                new DateTimeField("to", new PropertyModel<>(this, "to")) {
                     private static final long serialVersionUID = 1306927761884039503L;
 
                     @Override
@@ -87,7 +87,7 @@ public abstract class ActivityChartBasePanel extends Panel {
                                 ((GeoServerApplication) getApplication())
                                         .getBeanOfType(Monitor.class);
 
-                        Date[] range = new Date[] {from, to};
+                        Date[] range = {from, to};
 
                         chartImage.setImageResource(queryAndRenderChart(monitor, range));
                         target.add(chartImage);
@@ -153,8 +153,9 @@ public abstract class ActivityChartBasePanel extends Panel {
 
     class DataGatherer implements RequestDataVisitor {
 
-        HashMap<RegularTimePeriod, Integer> data = new HashMap<RegularTimePeriod, Integer>();
+        HashMap<RegularTimePeriod, Integer> data = new HashMap<>();
 
+        @Override
         public void visit(RequestData r, Object... aggregates) {
             RegularTimePeriod period = getTimePeriod(r.getStartTime());
             Integer count = data.get(period);

@@ -4,7 +4,7 @@ TextSymbolizer
 ==============
 
 A **TextSymbolizer** styles features as **text labels**. 
-Text labels are positioned eoither at points or along linear paths
+Text labels are positioned either at points or along linear paths
 derived from the geometry being labelled.
 
 Labelling is a complex operation, and effective labelling

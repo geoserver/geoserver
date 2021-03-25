@@ -1,0 +1,32 @@
+{
+	"styles": 
+	{
+		"style": 
+		[
+			{
+				"name": "generic",
+				"href": "http:\/\/localhost:8080\/rest\/styles\/generic.json"
+			},
+
+			{
+				"name": "line",
+				"href": "http:\/\/localhost:8080\/rest\/styles\/line.json"
+			},
+
+			{
+				"name": "point",
+				"href": "http:\/\/localhost:8080\/rest\/styles\/point.json"
+			},
+
+			{
+				"name": "polygon",
+				"href": "http:\/\/localhost:8080\/rest\/styles\/polygon.json"
+			},
+
+			{
+				"name": "raster",
+				"href": "http:\/\/localhost:8080\/rest\/styles\/raster.json"
+			}
+		]
+	}
+}

@@ -80,11 +80,11 @@ public class InputLimitsTest extends WPSTestSupport {
         buffer.getValidators()
                 .put(
                         "distance",
-                        new NumberRangeValidator(new NumberRange<Double>(Double.class, 0d, 100d)));
+                        new NumberRangeValidator(new NumberRange<>(Double.class, 0d, 100d)));
         buffer.getValidators()
                 .put(
                         "quadrantSegments",
-                        new NumberRangeValidator(new NumberRange<Integer>(Integer.class, 2, 20)));
+                        new NumberRangeValidator(new NumberRange<>(Integer.class, 2, 20)));
         geoGroup.getFilteredProcesses().add(buffer);
 
         // simplify process distance
@@ -94,8 +94,7 @@ public class InputLimitsTest extends WPSTestSupport {
         simplify.getValidators()
                 .put(
                         "distance",
-                        new NumberRangeValidator(
-                                new NumberRange<Double>(Double.class, null, 100d)));
+                        new NumberRangeValidator(new NumberRange<>(Double.class, null, 100d)));
         geoGroup.getFilteredProcesses().add(simplify);
 
         // densify process
@@ -105,7 +104,7 @@ public class InputLimitsTest extends WPSTestSupport {
         densify.getValidators()
                 .put(
                         "distance",
-                        new NumberRangeValidator(new NumberRange<Double>(Double.class, 0d, null)));
+                        new NumberRangeValidator(new NumberRange<>(Double.class, 0d, null)));
         geoGroup.getFilteredProcesses().add(densify);
 
         // for the contour process
@@ -120,8 +119,7 @@ public class InputLimitsTest extends WPSTestSupport {
         contour.getValidators()
                 .put(
                         "levels",
-                        new NumberRangeValidator(
-                                new NumberRange<Double>(Double.class, -8000d, 8000d)));
+                        new NumberRangeValidator(new NumberRange<>(Double.class, -8000d, 8000d)));
         contour.getValidators().put("levels", new MultiplicityValidator(3));
         rasterGroup.getFilteredProcesses().add(contour);
 

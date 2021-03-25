@@ -52,6 +52,7 @@ public abstract class Insert extends TransactionElement {
                     == IdentifierGenerationOptionType.USE_EXISTING_LITERAL;
         }
 
+        @SuppressWarnings("unchecked")
         public static InsertElementType unadapt(Insert insert) {
             if (insert instanceof WFS11) {
                 return (InsertElementType) insert.getAdaptee();

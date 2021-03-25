@@ -28,9 +28,9 @@ class LazyInputMap extends AbstractMap<String, Object> {
 
     private static ProgressListener DEFAULT_LISTENER = new NullProgressListener();
 
-    Map<String, InputProvider> providers = new LinkedHashMap<String, InputProvider>();
+    Map<String, InputProvider> providers = new LinkedHashMap<>();
 
-    Map<String, Object> values = new HashMap<String, Object>();
+    Map<String, Object> values = new HashMap<>();
 
     boolean parsed = false;
 
@@ -40,6 +40,7 @@ class LazyInputMap extends AbstractMap<String, Object> {
         this.providers = providers;
     }
 
+    @Override
     public Object get(Object key) {
         // make sure we just kill the process is a dismiss happened
         if (listener.isCanceled()) {
@@ -101,7 +102,7 @@ class LazyInputMap extends AbstractMap<String, Object> {
 
     @Override
     public Set<Entry<String, Object>> entrySet() {
-        Set<Entry<String, Object>> result = new HashSet<Map.Entry<String, Object>>();
+        Set<Entry<String, Object>> result = new HashSet<>();
         for (String key : providers.keySet()) {
             result.add(new DeferredEntry(key));
         }

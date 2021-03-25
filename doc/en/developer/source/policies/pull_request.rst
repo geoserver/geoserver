@@ -9,21 +9,21 @@ This document is a guide designed to help contributors in successfully submittin
 
 .. note:: 
 
-   We ask that all fixes applied to master first, and then back ported to the stable and maintenance branches. 
+   We ask that all fixes applied to the main development branch first, and then back ported to the stable and maintenance branches.
    
    We require the following for fixes submitted via pull requests:
 
-   1. Required: Prepare your fix for the master branch
+   1. Required: Prepare your fix for the the main development branch branch
    2. Required: Check the following (and comment in your pull request, or jira issue):
       
-      * Investigate if the issue impact any of the other active branches (master / stable / maintenance)
-      * Investigate whether the fix can be backported to the applicable active branches (master / stable / maintenance)
+      * Investigate if the issue impact any of the other active branches (the main development branch / stable / maintenance)
+      * Investigate whether the fix can be backported to the applicable active branches (the main development branch / stable / maintenance)
       
    3. Recommended: Actual backport to stable and maintenance is optional but highly recommended.
 
    We require the following for new features submitted via pull request or patch:
    
-   1. Required: Prepare your feature for the master branch.
+   1. Required: Prepare your feature for the the main development branch branch.
    2. Optional: If the new feature is suitable for backport you may ask on the developer list after a 1 month.
 
 GitHub pull requests
@@ -37,7 +37,7 @@ Assuming that ``origin`` points to your github repo the the patch workflow then 
 
 #. Make the change.::
 
-     git checkout -b my_bugfix master
+     git checkout -b my_bugfix main
      git add .
      git commit-m "fixed bug xyz"
 
@@ -63,7 +63,7 @@ The following guidelines are meant to ensure that contirbutions submitted via pu
 Clean Build
 ^^^^^^^^^^^
 
-In general developers will only accept pull requests that apply cleanly against the latest versions of the stable and master branches. Therefore before you generate a patch it is important that you update your checkout to the latest for the branch you are working on.
+In general developers will only accept pull requests that apply cleanly against the latest versions of the stable and the main development branch branches. Therefore before you generate a patch it is important that you update your checkout to the latest for the branch you are working on.
 
 Ensure your IDE/editor is properly configured
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -25,6 +25,7 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
     public static final String ITEMS_PATH = "table:listContainer:items";
     public static final String FIRST_COLUM_PATH = "itemProperties:0:component:link";
 
+    @Override
     @Before
     public void setUp() throws Exception {
         login();
@@ -71,7 +72,7 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
         MarkupContainer listView = (MarkupContainer) tester.getLastRenderedPage().get(ITEMS_PATH);
 
         @SuppressWarnings("unchecked")
-        Iterator<Component> it = (Iterator<Component>) listView.iterator();
+        Iterator<Component> it = listView.iterator();
 
         while (it.hasNext()) {
             Component container = it.next();
@@ -101,7 +102,7 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
     }
 
     protected void doRemove(String pathForLink) throws Exception {
-        Page testPage = tester.startPage(listPage(null));
+        tester.startPage(listPage(null));
 
         String selectAllPath = "table:listContainer:selectAllContainer:selectAll";
         tester.assertComponent(selectAllPath, CheckBox.class);

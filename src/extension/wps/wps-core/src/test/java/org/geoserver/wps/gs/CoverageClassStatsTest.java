@@ -29,8 +29,7 @@ public class CoverageClassStatsTest extends WPSTestSupport {
         // add extra data used by this test
         // addWcs11Coverages(testData);
 
-        Map<SystemTestData.LayerProperty, Object> props =
-                new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<SystemTestData.LayerProperty, Object> props = new HashMap<>();
         props.put(SystemTestData.LayerProperty.SRS, 26713);
 
         testData.addRasterLayer(DEM, "sfdem.tiff", ".tiff", props, getClass(), getCatalog());

@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.net.URL;
 import java.util.HashSet;
-import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
@@ -64,19 +63,14 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
         FormTestPage page =
                 new FormTestPage(
-                        new ComponentBuilder() {
-
-                            public Component buildComponent(String id) {
-                                return new WMSLayerConfig(id, new Model(layer));
-                            }
-                        });
+                        (ComponentBuilder) id -> new WMSLayerConfig(id, new Model<>(layer)));
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertComponent("form", Form.class);
         tester.assertComponent("form:panel:styles:defaultStyle", DropDownChoice.class);
 
         // check selecting something else works
-        StyleInfo target = ((List<StyleInfo>) new StylesModel().getObject()).get(0);
+        StyleInfo target = new StylesModel().getObject().get(0);
         FormTester ft = tester.newFormTester("form");
         ft.select("panel:styles:defaultStyle", 0);
         ft.submit();
@@ -90,12 +84,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         layer.setResource(getCatalog().getFactory().createFeatureType());
         FormTestPage page =
                 new FormTestPage(
-                        new ComponentBuilder() {
-
-                            public Component buildComponent(String id) {
-                                return new WMSLayerConfig(id, new Model(layer));
-                            }
-                        });
+                        (ComponentBuilder) id -> new WMSLayerConfig(id, new Model<>(layer)));
         Component layerConfig = page.get("form:panel:styles:defaultStyle");
 
         tester.startPage(page);
@@ -129,12 +118,7 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
         FormTestPage page =
                 new FormTestPage(
-                        new ComponentBuilder() {
-
-                            public Component buildComponent(String id) {
-                                return new WMSLayerConfig(id, new Model(layer));
-                            }
-                        });
+                        (ComponentBuilder) id -> new WMSLayerConfig(id, new Model<>(layer)));
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);
         tester.debugComponentTrees();
@@ -150,24 +134,16 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         AttributeModifier mod = (AttributeModifier) img.getBehaviors().get(0);
         assertTrue(mod.toString().contains("wms?REQUEST=GetLegendGraphic"));
         assertTrue(mod.toString().contains("style=cite:Ponds"));
-        String ft = layer.getResource().getNamespace().getPrefix() + ":" + layer.getName();
-        assertTrue(mod.toString().contains("layer=" + ft));
         assertFalse(cascadedControlsVisible(tester));
     }
 
     @Test
     public void testInterpolationDropDown() {
         final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
-        final Model<LayerInfo> layerModel = new Model<LayerInfo>(layer);
+        final Model<LayerInfo> layerModel = new Model<>(layer);
 
         FormTestPage page =
-                new FormTestPage(
-                        new ComponentBuilder() {
-
-                            public Component buildComponent(String id) {
-                                return new WMSLayerConfig(id, layerModel);
-                            }
-                        });
+                new FormTestPage((ComponentBuilder) id -> new WMSLayerConfig(id, layerModel));
 
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);
@@ -215,16 +191,10 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         LayerInfo gsLayer = cb.buildLayer(wmsLayer);
         getCatalog().add(gsLayer);
 
-        final Model<LayerInfo> layerModel = new Model<LayerInfo>(gsLayer);
+        final Model<LayerInfo> layerModel = new Model<>(gsLayer);
 
         FormTestPage page =
-                new FormTestPage(
-                        new ComponentBuilder() {
-
-                            public Component buildComponent(String id) {
-                                return new WMSLayerConfig(id, layerModel);
-                            }
-                        });
+                new FormTestPage((ComponentBuilder) id -> new WMSLayerConfig(id, layerModel));
 
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);
@@ -234,15 +204,15 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                 "form:panel:remotestyles:remoteStylesDropDown", wmsLayer.getForcedRemoteStyle());
         tester.assertModelValue(
                 "form:panel:remotestyles:extraRemoteStyles",
-                new HashSet<String>(wmsLayer.remoteStyles()));
+                new HashSet<>(wmsLayer.remoteStyles()));
         // make sure remote styles on are not duplicated when loaded on page
-        assertTrue(wmsLayer.remoteStyles().size() == remoteStyleCount);
+        assertEquals(wmsLayer.remoteStyles().size(), remoteStyleCount);
         // asserting Remote Style UI fields
         tester.assertModelValue(
                 "form:panel:remoteformats:remoteFormatsDropDown", wmsLayer.getPreferredFormat());
         tester.assertModelValue(
                 "form:panel:remoteformats:remoteFormatsPalette",
-                new HashSet<String>(wmsLayer.availableFormats()));
+                new HashSet<>(wmsLayer.availableFormats()));
         tester.assertVisible("form:panel:metaDataCheckBoxContainer");
 
         // min max scale UI fields
@@ -354,16 +324,10 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         LayerInfo gsLayer = cb.buildLayer(legacyWmsLayerInfo);
         getCatalog().add(gsLayer);
 
-        final Model<LayerInfo> layerModel = new Model<LayerInfo>(gsLayer);
+        final Model<LayerInfo> layerModel = new Model<>(gsLayer);
 
         FormTestPage page =
-                new FormTestPage(
-                        new ComponentBuilder() {
-
-                            public Component buildComponent(String id) {
-                                return new WMSLayerConfig(id, layerModel);
-                            }
-                        });
+                new FormTestPage((ComponentBuilder) id -> new WMSLayerConfig(id, layerModel));
 
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);
@@ -379,10 +343,12 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
                 "form:panel:remoteformats:remoteFormatsDropDown", wmsLayer.getPreferredFormat());
 
         // NOW assert if drop down are showing the defaults as selected on GUI
+        @SuppressWarnings("unchecked")
         DropDownChoice<String> remotStyles =
                 (DropDownChoice<String>)
                         tester.getComponentFromLastRenderedPage(
                                 "form:panel:remotestyles:remoteStylesDropDown");
+        @SuppressWarnings("unchecked")
         DropDownChoice<String> remoteformats =
                 (DropDownChoice<String>)
                         tester.getComponentFromLastRenderedPage(
@@ -391,10 +357,12 @@ public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
         assertFalse(remoteformats.getChoicesModel().getObject().isEmpty());
         assertFalse(remotStyles.getChoicesModel().getObject().isEmpty());
 
+        @SuppressWarnings("unchecked")
         Palette<String> remoteFormatsPalette =
                 (Palette<String>)
                         tester.getComponentFromLastRenderedPage(
                                 "form:panel:remoteformats:remoteFormatsPalette");
+        @SuppressWarnings("unchecked")
         Palette<String> extraRemoteStyles =
                 (Palette<String>)
                         tester.getComponentFromLastRenderedPage(

@@ -67,10 +67,10 @@ public class IntegerParameterFilterSubform
                         return null;
                     } else {
                         String[] strings = StringUtils.split(value, "\r\n");
-                        List<Integer> floats = new ArrayList<Integer>(strings.length);
+                        List<Integer> floats = new ArrayList<>(strings.length);
 
                         for (String s : strings) {
-                            floats.add((Integer) INTEGER.convertToObject(s, locale));
+                            floats.add(INTEGER.convertToObject(s, locale));
                         }
                         return floats;
                     }
@@ -94,17 +94,12 @@ public class IntegerParameterFilterSubform
     public IntegerParameterFilterSubform(String id, IModel<IntegerParameterFilter> model) {
         super(id, model);
 
-        final Component defaultValue;
-
-        defaultValue =
-                new TextField<String>(
-                        "defaultValue", new PropertyModel<String>(model, "defaultValue"));
+        final Component defaultValue =
+                new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
         add(defaultValue);
 
-        final TextArea<List<Integer>> values;
-        values =
-                new TextArea<List<Integer>>(
-                        "values", new PropertyModel<List<Integer>>(model, "values")) {
+        final TextArea<List<Integer>> values =
+                new TextArea<List<Integer>>("values", new PropertyModel<>(model, "values")) {
                     private static final long serialVersionUID = 1397063859210766872L;
 
                     @SuppressWarnings("unchecked")
@@ -119,10 +114,8 @@ public class IntegerParameterFilterSubform
         values.setConvertEmptyInputStringToNull(false);
         add(values);
 
-        final Component threshold;
-        threshold =
-                new TextField<Integer>(
-                        "threshold", new PropertyModel<Integer>(model, "threshold")) {
+        final Component threshold =
+                new TextField<Integer>("threshold", new PropertyModel<>(model, "threshold")) {
                     private static final long serialVersionUID = -3975284862791672686L;
 
                     @SuppressWarnings("unchecked")

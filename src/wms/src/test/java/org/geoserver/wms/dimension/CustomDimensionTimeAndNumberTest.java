@@ -81,7 +81,7 @@ public class CustomDimensionTimeAndNumberTest extends WMSTestSupport {
                 new MapLayerInfo(getCatalog().getLayerByName(WATTEMP_TIME.getLocalPart()));
         final GridCoverage2DReader reader = (GridCoverage2DReader) mapLayerInfo.getCoverageReader();
         GetMapRequest req = new GetMapRequest();
-        req.setRawKvp(new HashMap<String, String>());
+        req.setRawKvp(new HashMap<>());
         req.getRawKvp()
                 .put(
                         "DIM_" + CustomFormat.CUSTOM_DIMENSION_NAME,
@@ -104,7 +104,7 @@ public class CustomDimensionTimeAndNumberTest extends WMSTestSupport {
                 new MapLayerInfo(getCatalog().getLayerByName(WATTEMP_DEPTH.getLocalPart()));
         final GridCoverage2DReader reader = (GridCoverage2DReader) mapLayerInfo.getCoverageReader();
         GetMapRequest req = new GetMapRequest();
-        req.setRawKvp(new HashMap<String, String>());
+        req.setRawKvp(new HashMap<>());
         req.getRawKvp().put("DIM_" + CustomFormat.CUSTOM_DIMENSION_NAME, "10/50");
 
         GeneralParameterValue[] readParam =
@@ -113,7 +113,7 @@ public class CustomDimensionTimeAndNumberTest extends WMSTestSupport {
         @SuppressWarnings("unchecked")
         ParameterValue<List<NumberRange>> val =
                 (ParameterValue<List<NumberRange>>) readParam[readParam.length - 1];
-        assertEquals(new NumberRange<Double>(Double.class, 10d, 50d), val.getValue().get(0));
+        assertEquals(new NumberRange<>(Double.class, 10d, 50d), val.getValue().get(0));
     }
 
     @Test
@@ -122,7 +122,7 @@ public class CustomDimensionTimeAndNumberTest extends WMSTestSupport {
                 new MapLayerInfo(getCatalog().getLayerByName(WATTEMP_DEPTH.getLocalPart()));
         final GridCoverage2DReader reader = (GridCoverage2DReader) mapLayerInfo.getCoverageReader();
         GetMapRequest req = new GetMapRequest();
-        req.setRawKvp(new HashMap<String, String>());
+        req.setRawKvp(new HashMap<>());
         req.getRawKvp().put("DIM_" + CustomFormat.CUSTOM_DIMENSION_NAME, "10,50");
 
         GeneralParameterValue[] readParam =
@@ -131,7 +131,7 @@ public class CustomDimensionTimeAndNumberTest extends WMSTestSupport {
         @SuppressWarnings("unchecked")
         ParameterValue<List<Double>> val =
                 (ParameterValue<List<Double>>) readParam[readParam.length - 1];
-        assertEquals(10, (Double) val.getValue().get(0), 1E-6);
-        assertEquals(50, (Double) val.getValue().get(1), 1E-6);
+        assertEquals(10, val.getValue().get(0), 1E-6);
+        assertEquals(50, val.getValue().get(1), 1E-6);
     }
 }

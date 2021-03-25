@@ -20,6 +20,7 @@ public class ParameterizedBackupTest extends BackupRestoreTestSupport {
 
     protected static Backup backupFacade;
 
+    @Override
     @Before
     public void beforeTest() throws InterruptedException {
         backupFacade = (Backup) applicationContext.getBean("backupFacade");
@@ -65,8 +66,8 @@ public class ParameterizedBackupTest extends BackupRestoreTestSupport {
                     || backupExecution.getStatus() == BatchStatus.UNKNOWN) {
 
                 for (Throwable exception : backupExecution.getAllFailureExceptions()) {
-                    LOGGER.log(Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
-                    exception.printStackTrace();
+                    LOGGER.log(
+                            Level.WARNING, "ERROR: " + exception.getLocalizedMessage(), exception);
                 }
                 break;
             }

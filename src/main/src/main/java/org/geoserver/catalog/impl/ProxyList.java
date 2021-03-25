@@ -15,27 +15,29 @@ import java.util.List;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
-public abstract class ProxyList extends AbstractList {
+public abstract class ProxyList<T> extends AbstractList<T> {
 
-    protected List proxyList;
-    protected Class proxyInterface;
+    protected List<T> proxyList;
+    protected Class<T> proxyInterface;
 
-    public ProxyList(List proxyList, Class proxyInterface) {
+    public ProxyList(List<T> proxyList, Class<T> proxyInterface) {
         this.proxyList = proxyList;
         this.proxyInterface = proxyInterface;
     }
 
-    public Object get(int index) {
-        Object proxyObject = proxyList.get(index);
+    @Override
+    public T get(int index) {
+        T proxyObject = proxyList.get(index);
         return createProxy(proxyObject, proxyInterface);
     }
 
     @Override
-    public Object set(int index, Object element) {
+    public T set(int index, T element) {
         throw new IllegalArgumentException(
                 "Object is not a proxy, or not a proxy of the correct type");
     }
 
+    @Override
     public int size() {
         return proxyList.size();
     }

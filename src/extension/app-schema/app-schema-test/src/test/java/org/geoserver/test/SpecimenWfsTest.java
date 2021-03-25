@@ -6,7 +6,7 @@
 
 package org.geoserver.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.geotools.wfs.v2_0.WFS;
 import org.junit.Test;
@@ -57,7 +57,6 @@ public class SpecimenWfsTest extends AbstractAppSchemaTestSupport {
         Document doc = getAsDOM(path);
         LOGGER.info("Response for " + path + " :" + newline + prettyString(doc));
         assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberReturned", doc);
-        assertXpathEvaluatesTo("unknown", "/wfs:FeatureCollection/@numberMatched", doc);
         assertXpathCount(2, "//spec:SF_Specimen", doc);
         assertXpathEvaluatesTo("First", "//spec:SF_Specimen[@gml:id='specimen.1']/gml:name", doc);
         assertXpathEvaluatesTo("2.7", "//spec:SF_Specimen[@gml:id='specimen.1']/spec:size", doc);

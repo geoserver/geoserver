@@ -34,6 +34,7 @@ public class UTFGridMap extends RawMap {
         this.image = image;
     }
 
+    @Override
     public void writeTo(java.io.OutputStream out) throws java.io.IOException {
         UTFGridEntries entries = getEntries();
 
@@ -48,7 +49,7 @@ public class UTFGridMap extends RawMap {
         } else {
             pw.println("  \"\",");
             for (Iterator<UTFGridEntry> it = encodedEntries.iterator(); it.hasNext(); ) {
-                UTFGridEntry entry = (UTFGridEntry) it.next();
+                UTFGridEntry entry = it.next();
                 pw.print("  \"");
                 pw.print(entry.getKey());
                 if (it.hasNext()) {
@@ -61,7 +62,7 @@ public class UTFGridMap extends RawMap {
         pw.println("],");
         pw.println("\"data\": {");
         for (Iterator<UTFGridEntry> it = encodedEntries.iterator(); it.hasNext(); ) {
-            UTFGridEntry entry = (UTFGridEntry) it.next();
+            UTFGridEntry entry = it.next();
             pw.print("  \"");
             pw.print(entry.getKey());
             pw.print("\" : ");
@@ -118,7 +119,7 @@ public class UTFGridMap extends RawMap {
     private List<UTFGridEntry> writeGrid(
             PrintWriter pw, RenderedImage image, UTFGridEntries entries) {
         Map<Integer, UTFGridEntry> keyToFeature = entries.getEntryMap();
-        List<UTFGridEntry> result = new ArrayList<UTFGridEntry>();
+        List<UTFGridEntry> result = new ArrayList<>();
 
         int key = 1;
         Raster data = getData(image);
@@ -128,8 +129,8 @@ public class UTFGridMap extends RawMap {
         for (int r = 0; r < height; r++) {
             data.getDataElements(0, r, width, 1, pixels);
             pw.print("\"");
-            for (int i = 0; i < pixels.length; i++) {
-                int pixel = pixels[i] & 0xFFFFFF;
+            for (int j : pixels) {
+                int pixel = j & 0xFFFFFF;
                 if (pixel == 0) {
                     pw.print(" ");
                 } else {
@@ -138,8 +139,10 @@ public class UTFGridMap extends RawMap {
                         throw new RuntimeException(
                                 "Could not find entry for pixel value "
                                         + pixel
-                                        + ". This normally means there is some color altering option at work "
-                                        + "that the UTFGrid code failed to remove, like opacity, blending and the like");
+                                        + ". This normally means there is some color altering "
+                                        + "option at work "
+                                        + "that the UTFGrid code failed to remove, like opacity, "
+                                        + "blending and the like");
                     }
                     int entryKey = entry.getKey();
                     if (entryKey == -1) {

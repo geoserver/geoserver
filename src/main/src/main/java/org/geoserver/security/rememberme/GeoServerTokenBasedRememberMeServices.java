@@ -50,6 +50,7 @@ public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeS
     }
 
     /** A proper {@link GeoServerWebAuthenticationDetails} object must be present */
+    @Override
     protected String retrieveUserName(Authentication authentication) {
         if (authentication.getDetails() instanceof GeoServerWebAuthenticationDetails) {
             String userGroupServiceName =
@@ -79,11 +80,11 @@ public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeS
         if (user instanceof RememberMeUserDetails)
             user = ((RememberMeUserDetails) user).getWrappedObject();
 
-        Collection<GrantedAuthority> roles = new HashSet<GrantedAuthority>();
+        Collection<GrantedAuthority> roles = new HashSet<>();
         if (user.getAuthorities().contains(GeoServerRole.AUTHENTICATED_ROLE)) {
             roles.addAll(user.getAuthorities());
         } else {
-            roles = new HashSet<GrantedAuthority>();
+            roles = new HashSet<>();
             roles.addAll(user.getAuthorities());
             roles.add(GeoServerRole.AUTHENTICATED_ROLE);
         }

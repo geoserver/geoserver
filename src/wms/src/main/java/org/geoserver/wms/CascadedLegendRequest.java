@@ -21,9 +21,9 @@ import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.catalog.impl.WMSLayerInfoImpl;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.legendgraphic.JSONLegendGraphicBuilder;
-import org.geotools.data.ows.HTTPClient;
-import org.geotools.data.ows.HTTPResponse;
 import org.geotools.data.ows.Response;
+import org.geotools.http.HTTPClient;
+import org.geotools.http.HTTPResponse;
 import org.geotools.ows.ServiceException;
 import org.geotools.ows.wms.request.AbstractGetLegendGraphicRequest;
 import org.geotools.ows.wms.response.GetLegendGraphicResponse;
@@ -115,10 +115,12 @@ public final class CascadedLegendRequest extends LegendRequest {
             setProperty(VERSION, version);
         }
 
+        @Override
         protected void initVersion() {
             setProperty(VERSION, "1.3.0");
         }
 
+        @Override
         public Response createResponse(HTTPResponse httpResponse)
                 throws ServiceException, IOException {
             return new GetLegendGraphicResponse(httpResponse);

@@ -5,19 +5,35 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import static org.junit.Assert.*;
+import static org.geoserver.data.test.MockData.TASMANIA_DEM;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
-import org.geoserver.catalog.*;
+import org.eclipse.emf.common.util.EList;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -31,6 +47,7 @@ import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.wms_1_1_1.GetFeatureInfoTest;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.NameImpl;
 import org.geotools.util.NumberRange;
 import org.geotools.util.factory.Hints;
 import org.junit.Test;
@@ -41,13 +58,44 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
     public static final QName TEMPORAL_DATA =
             new QName(CiteTestData.CITE_URI, "TemporalData", CiteTestData.CITE_PREFIX);
 
+    public static final String LABEL_IN_FEATURE_INFO_STYLE_DEM = "labelInFeatureInfoTazDem";
+    public static final String LABEL_CUSTOM_NAME_STYLE_DEM = "labelCustomNameTazDem";
+    public static final String LABEL_IN_FEATURE_INFO_DEM_REPLACE =
+            "labelInFeatureInfoTazDemReplace";
+    public static final String LABEL_IN_FEATURE_INFO_DEM_NONE = "labelInFeatureInfoTazDemNone";
+    public static final String LABEL_IN_FEATURE_INFO_DEM_VALUES =
+            "labelInFeatureInfoTazDemColorMapValues";
+    public static final String LABEL_IN_FEATURE_INFO_MULTIPLE_SYMBOLIZERS =
+            "labelInFeatureInfoTazDemMultipleSymbolizers";
+    public static final String LABEL_IN_FEATURE_INFO_STYLE_BM = "labelInFeatureInfoTazBm";
+    public static final String LABEL_IN_FEATURE_INFO_STYLE_MULTIPLE_SYMBLOZERS2 =
+            "labelInFeatureInfoTazBmMultipleSymbolizers";
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addVectorLayer(
                 TEMPORAL_DATA,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "TemporalData.properties",
+                SystemTestData.class,
+                getCatalog());
+        testData.addStyle(LABEL_IN_FEATURE_INFO_STYLE_DEM, getClass(), getCatalog());
+        testData.addStyle(LABEL_CUSTOM_NAME_STYLE_DEM, getClass(), getCatalog());
+        testData.addStyle(LABEL_IN_FEATURE_INFO_DEM_REPLACE, getClass(), getCatalog());
+        testData.addStyle(LABEL_IN_FEATURE_INFO_DEM_NONE, getClass(), getCatalog());
+        testData.addStyle(LABEL_IN_FEATURE_INFO_DEM_VALUES, getClass(), getCatalog());
+        testData.addStyle(LABEL_IN_FEATURE_INFO_MULTIPLE_SYMBOLIZERS, getClass(), getCatalog());
+        testData.addStyle(LABEL_IN_FEATURE_INFO_STYLE_BM, getClass(), getCatalog());
+        testData.addStyle(
+                LABEL_IN_FEATURE_INFO_STYLE_MULTIPLE_SYMBLOZERS2, getClass(), getCatalog());
+        Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
+        propertyMap.put(SystemTestData.LayerProperty.STYLE, "raster");
+        testData.addRasterLayer(
+                TASMANIA_DEM,
+                "tazdem.tiff",
+                "tiff",
+                propertyMap,
                 SystemTestData.class,
                 getCatalog());
     }
@@ -75,7 +123,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertEquals(JSONType.jsonp, response.getContentType());
 
         // Check if the character encoding is the one expected
-        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+        assertEquals("UTF-8", response.getCharacterEncoding());
 
         // Content
         String result = response.getContentAsString();
@@ -121,7 +169,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertEquals(JSONType.jsonp, response.getContentType());
 
         // Check if the character encoding is the one expected
-        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+        assertEquals("UTF-8", response.getCharacterEncoding());
 
         // Content
         String result = response.getContentAsString();
@@ -163,7 +211,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertEquals(JSONType.json, response.getContentType());
 
         // Check if the character encoding is the one expected
-        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+        assertEquals("UTF-8", response.getCharacterEncoding());
 
         // Content
         String result = response.getContentAsString();
@@ -198,7 +246,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertEquals(JSONType.json, response.getContentType());
 
         // Check if the character encoding is the one expected
-        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+        assertEquals("UTF-8", response.getCharacterEncoding());
 
         // Content
         String result = response.getContentAsString();
@@ -238,10 +286,10 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         JSONArray coords =
                 geom.getJSONArray("coordinates").getJSONArray(0).getJSONArray(0).getJSONArray(0);
         assertTrue(
-                new NumberRange<Double>(Double.class, 500525d, 500575d)
+                new NumberRange<>(Double.class, 500525d, 500575d)
                         .contains((Number) coords.getDouble(0)));
         assertTrue(
-                new NumberRange<Double>(Double.class, 500025d, 500050d)
+                new NumberRange<>(Double.class, 500025d, 500050d)
                         .contains((Number) coords.getDouble(1)));
     }
 
@@ -305,7 +353,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
             assertEquals(JSONType.json, response.getContentType());
 
             // Check if the character encoding is the one expected
-            assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+            assertEquals("UTF-8", response.getCharacterEncoding());
 
             // Content
             String result = response.getContentAsString();
@@ -351,7 +399,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
             assertEquals(JSONType.json, response.getContentType());
 
             // Check if the character encoding is the one expected
-            assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+            assertEquals("UTF-8", response.getCharacterEncoding());
 
             // Content
             String result = response.getContentAsString();
@@ -408,15 +456,14 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         queryLayers.add(mapLayerInfo);
         GetFeatureInfoRequest getFeatureInfoRequest = new GetFeatureInfoRequest();
         getFeatureInfoRequest.setQueryLayers(queryLayers);
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("LAYER", mapLayerInfo.getName());
         Request request = new Request();
         request.setKvp(parameters);
         Dispatcher.REQUEST.set(request);
         FeatureCollection fc = ft.getFeatureSource(null, null).getFeatures();
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
-        fct.getFeature().add(fc);
+        FeatureCollectionType fct = getFeatureCollectionType(fc);
         geoJsonResp.write(fct, getFeatureInfoRequest, outStream);
         String result = new String(outStream.toByteArray());
         JSONObject response = JSONObject.fromObject(result);
@@ -439,6 +486,13 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         fileHeader.delete();
         fileContent.delete();
         fileFooter.delete();
+    }
+
+    @SuppressWarnings("unchecked")
+    private FeatureCollectionType getFeatureCollectionType(FeatureCollection fc) {
+        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        fct.getFeature().add(fc);
+        return fct;
     }
 
     /** Test json output with two layers having both template * */
@@ -486,7 +540,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         }
         GetFeatureInfoRequest getFeatureInfoRequest = new GetFeatureInfoRequest();
         getFeatureInfoRequest.setQueryLayers(queryLayers);
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("LAYER", lgInfo.getName());
         Request request = new Request();
         request.setKvp(parameters);
@@ -495,7 +549,9 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
         for (LayerInfo l : layers) {
             FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(l.getName());
-            fct.getFeature().add(fti.getFeatureSource(null, null).getFeatures());
+            @SuppressWarnings("unchecked")
+            EList<FeatureCollection> feature = fct.getFeature();
+            feature.add(fti.getFeatureSource(null, null).getFeatures());
         }
         geoJsonResp.write(fct, getFeatureInfoRequest, outStream);
         String result = new String(outStream.toByteArray());
@@ -570,7 +626,7 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         }
         GetFeatureInfoRequest getFeatureInfoRequest = new GetFeatureInfoRequest();
         getFeatureInfoRequest.setQueryLayers(queryLayers);
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("LAYER", lgInfo.getName());
         Request request = new Request();
         request.setKvp(parameters);
@@ -579,7 +635,9 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
         for (LayerInfo l : layers) {
             FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(l.getName());
-            fct.getFeature().add(fti.getFeatureSource(null, null).getFeatures());
+            @SuppressWarnings("unchecked")
+            EList<FeatureCollection> feature = fct.getFeature();
+            feature.add(fti.getFeatureSource(null, null).getFeatures());
         }
         geoJsonResp.write(fct, getFeatureInfoRequest, outStream);
         String result = new String(outStream.toByteArray());
@@ -654,15 +712,14 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         queryLayers.add(mapLayerInfo);
         GetFeatureInfoRequest getFeatureInfoRequest = new GetFeatureInfoRequest();
         getFeatureInfoRequest.setQueryLayers(queryLayers);
-        Map<String, Object> parameters = new HashMap<String, Object>();
+        Map<String, Object> parameters = new HashMap<>();
         parameters.put("LAYER", mapLayerInfo.getName());
         Request request = new Request();
         request.setKvp(parameters);
         Dispatcher.REQUEST.set(request);
         FeatureCollection fc = ft.getFeatureSource(null, null).getFeatures();
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        FeatureCollectionType fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
-        fct.getFeature().add(fc);
+        FeatureCollectionType fct = getFeatureCollectionType(fc);
         geoJsonResp.write(fct, getFeatureInfoRequest, outStream);
         String result = new String(outStream.toByteArray());
         JSONObject response = JSONObject.fromObject(result);
@@ -681,5 +738,311 @@ public class GetFeatureInfoJSONTest extends GetFeatureInfoTest {
         assertNull(response.get("footer"));
         fileFooter.delete();
         fileContent.delete();
+    }
+
+    @Test
+    public void testLabelInFeatureInfoColorMapRamp() throws Exception {
+        // tests that with vendorOption <VendorOption name="labelInFeatureInfo">add</VendorOption>
+        // in the RasterSymbolizer the matched ColorMapEntry label is added to the getFeatureInfo
+        // response
+        Catalog cat = getCatalog();
+        LayerInfo tazDem =
+                cat.getLayerByName(
+                        new NameImpl(
+                                MockData.TASMANIA_DEM.getPrefix(),
+                                MockData.TASMANIA_DEM.getLocalPart()));
+        StyleInfo style = cat.getStyleByName(LABEL_IN_FEATURE_INFO_STYLE_DEM);
+        tazDem.getStyles().add(style);
+        cat.save(tazDem);
+        String layerId = getLayerId(MockData.TASMANIA_DEM);
+        String request =
+                "wms?version=1.1.1"
+                        + "&styles="
+                        + LABEL_IN_FEATURE_INFO_STYLE_DEM
+                        + "&format=jpeg"
+                        + "&request=GetFeatureInfo&layers="
+                        + layerId
+                        + "&query_layers="
+                        + layerId
+                        + "&X=50&Y=50"
+                        + "&SRS=EPSG:4326"
+                        + "&WIDTH=101&HEIGHT=101"
+                        + "&BBOX=144.9566345277708,-42.23886111751199,145.23403931292705,-41.96145633235574"
+                        + "&info_format="
+                        + JSONType.json;
+        JSONObject json = (JSONObject) getAsJSON(request);
+        JSONObject properties =
+                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        assertTrue(properties.has("Label_GRAY_INDEX"));
+        assertEquals(55537, properties.getInt("GRAY_INDEX"));
+        assertEquals("55537", properties.getString("Label_GRAY_INDEX"));
+    }
+
+    @Test
+    public void testLabelInFeatureInfoWitCustomAttributeName() throws Exception {
+        // tests that with vendor options
+        // <VendorOption name="labelInFeatureInfo">add</VendorOption>
+        // <VendorOption name="labelAttributeName">custom name</VendorOption>
+        // the matching ColorMap entry label is added to the output format with
+        // custom attribute name
+        Catalog cat = getCatalog();
+        LayerInfo tazDem =
+                cat.getLayerByName(
+                        new NameImpl(
+                                MockData.TASMANIA_DEM.getPrefix(),
+                                MockData.TASMANIA_DEM.getLocalPart()));
+        StyleInfo style = cat.getStyleByName(LABEL_CUSTOM_NAME_STYLE_DEM);
+        tazDem.getStyles().add(style);
+        cat.save(tazDem);
+        String layerId = getLayerId(MockData.TASMANIA_DEM);
+        String request =
+                "wms?version=1.1.1"
+                        + "&styles="
+                        + LABEL_CUSTOM_NAME_STYLE_DEM
+                        + "&format=jpeg"
+                        + "&request=GetFeatureInfo&layers="
+                        + layerId
+                        + "&query_layers="
+                        + layerId
+                        + "&X=50&Y=50"
+                        + "&SRS=EPSG:4326"
+                        + "&WIDTH=101&HEIGHT=101"
+                        + "&BBOX=144.9566345277708,-42.23886111751199,145.23403931292705,-41.96145633235574"
+                        + "&info_format="
+                        + JSONType.json;
+        JSONObject json = (JSONObject) getAsJSON(request);
+        JSONObject properties =
+                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        assertEquals(55537, properties.getInt("GRAY_INDEX"));
+        assertEquals("55537", properties.getString("custom name"));
+    }
+
+    @Test
+    public void testLabelInFeatureInfoReplaceWithColorMapIntervals() throws Exception {
+        // Tests that with a vendor option <VendorOption
+        // name="labelInFeatureInfo">replace</VendorOption>
+        // the label of the matching ColorMapEntry in a ColorMap of type intervals is replacing
+        // the pixel value
+        Catalog cat = getCatalog();
+        LayerInfo tazDem =
+                cat.getLayerByName(
+                        new NameImpl(
+                                MockData.TASMANIA_DEM.getPrefix(),
+                                MockData.TASMANIA_DEM.getLocalPart()));
+        StyleInfo style = cat.getStyleByName(LABEL_IN_FEATURE_INFO_DEM_REPLACE);
+        tazDem.getStyles().add(style);
+        cat.save(tazDem);
+        String layerId = getLayerId(MockData.TASMANIA_DEM);
+        String request =
+                "wms?version=1.1.1"
+                        + "&styles="
+                        + LABEL_IN_FEATURE_INFO_DEM_REPLACE
+                        + "&format=jpeg"
+                        + "&request=GetFeatureInfo&layers="
+                        + layerId
+                        + "&query_layers="
+                        + layerId
+                        + "&X=50&Y=50"
+                        + "&SRS=EPSG:4326"
+                        + "&WIDTH=101&HEIGHT=101"
+                        + "&BBOX=145.41806031949818,-42.16195682063699,145.69546510465443,-41.88455203548074"
+                        + "&info_format="
+                        + JSONType.json;
+        JSONObject json = (JSONObject) getAsJSON(request);
+        JSONObject properties =
+                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        // we have replace size should be one
+        assertEquals(1, properties.size());
+        assertEquals(">= 308.142116 AND < 752.166285", properties.getString("Label_GRAY_INDEX"));
+    }
+
+    @Test
+    public void testLabelInFeatureInfoNone() throws Exception {
+        // Tests that with a vendor option <VendorOption
+        // name="labelInFeatureInfo">none</VendorOption>
+        // no ColorMapEntry label is added to the GetFeatureInfo output
+        Catalog cat = getCatalog();
+        LayerInfo tazDem =
+                cat.getLayerByName(
+                        new NameImpl(
+                                MockData.TASMANIA_DEM.getPrefix(),
+                                MockData.TASMANIA_DEM.getLocalPart()));
+        StyleInfo style = cat.getStyleByName(LABEL_IN_FEATURE_INFO_DEM_NONE);
+        tazDem.getStyles().add(style);
+        cat.save(tazDem);
+        String layerId = getLayerId(MockData.TASMANIA_DEM);
+        String request =
+                "wms?version=1.1.1"
+                        + "&styles="
+                        + LABEL_IN_FEATURE_INFO_DEM_NONE
+                        + "&format=jpeg"
+                        + "&request=GetFeatureInfo&layers="
+                        + layerId
+                        + "&query_layers="
+                        + layerId
+                        + "&X=50&Y=50"
+                        + "&SRS=EPSG:4326"
+                        + "&WIDTH=101&HEIGHT=101"
+                        + "&BBOX=145.41806031949818,-42.16195682063699,145.69546510465443,-41.88455203548074"
+                        + "&info_format="
+                        + JSONType.json;
+        JSONObject json = (JSONObject) getAsJSON(request);
+        JSONObject properties =
+                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        assertFalse(properties.has("Label_GRAY_INDEX"));
+        assertTrue(properties.has("GRAY_INDEX"));
+    }
+
+    @Test
+    public void testLabelInFeatureInfoReplaceWithValuesColorMap() throws Exception {
+        // Tests vendor option <VendorOption name="labelInFeatureInfo">replace</VendorOption>
+        // with a ColorMap of type values
+        Catalog cat = getCatalog();
+        LayerInfo tazDem =
+                cat.getLayerByName(
+                        new NameImpl(
+                                MockData.TASMANIA_DEM.getPrefix(),
+                                MockData.TASMANIA_DEM.getLocalPart()));
+        StyleInfo style = cat.getStyleByName(LABEL_IN_FEATURE_INFO_DEM_VALUES);
+        tazDem.getStyles().add(style);
+        cat.save(tazDem);
+        String layerId = getLayerId(MockData.TASMANIA_DEM);
+        String request =
+                "wms?version=1.1.1"
+                        + "&styles="
+                        + LABEL_IN_FEATURE_INFO_DEM_VALUES
+                        + "&format=jpeg"
+                        + "&request=GetFeatureInfo&layers="
+                        + layerId
+                        + "&query_layers="
+                        + layerId
+                        + "&X=50&Y=50"
+                        + "&SRS=EPSG:4326"
+                        + "&WIDTH=101&HEIGHT=101"
+                        + "&BBOX=145.11703491210938,-42.28939821012318,145.39443969726562,-42.01199342496693"
+                        + "&info_format="
+                        + JSONType.json;
+        JSONObject json = (JSONObject) getAsJSON(request);
+        JSONObject properties =
+                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        // we have replace size should be 1
+        assertEquals(1, properties.size());
+        assertEquals("value is 1", properties.getString("Label_GRAY_INDEX"));
+    }
+
+    @Test
+    public void testLabelInFeatureInfoMultipleSymbolizers() throws Exception {
+        // Tests the labelInFeatureInfo functionality with two Raster Symbolizer in the same rule
+        // having respectively the following VendorOptions
+        // <VendorOption name="labelAttributeName">first symbolizer</VendorOption>
+        // <VendorOption name="labelInFeatureInfo">replace</VendorOption>
+        //
+        // <VendorOption name="labelInFeatureInfo">replace</VendorOption>
+        Catalog cat = getCatalog();
+        LayerInfo tazDem =
+                cat.getLayerByName(
+                        new NameImpl(
+                                MockData.TASMANIA_DEM.getPrefix(),
+                                MockData.TASMANIA_DEM.getLocalPart()));
+        StyleInfo style = cat.getStyleByName(LABEL_IN_FEATURE_INFO_MULTIPLE_SYMBOLIZERS);
+        tazDem.getStyles().add(style);
+        cat.save(tazDem);
+        String layerId = getLayerId(MockData.TASMANIA_DEM);
+        String request =
+                "wms?version=1.1.1"
+                        + "&styles="
+                        + LABEL_IN_FEATURE_INFO_MULTIPLE_SYMBOLIZERS
+                        + "&format=jpeg"
+                        + "&request=GetFeatureInfo&layers="
+                        + layerId
+                        + "&query_layers="
+                        + layerId
+                        + "&X=50&Y=50"
+                        + "&SRS=EPSG:4326"
+                        + "&WIDTH=101&HEIGHT=101"
+                        + "&BBOX=145.11703491210938,-42.28939821012318,145.39443969726562,-42.01199342496693"
+                        + "&info_format="
+                        + JSONType.json;
+        JSONObject json = (JSONObject) getAsJSON(request);
+        JSONObject properties =
+                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        // we have replace size should be 2
+        assertEquals(2, properties.size());
+        assertEquals(">= 1 AND < 124.811736", properties.getString("first symbolizer"));
+        assertEquals("value is 1", properties.getString("Label_GRAY_INDEX"));
+    }
+
+    @Test
+    public void testLabelInFeatureInfoMultiBandColorMapRamp() throws Exception {
+        // Test that with a MultiBand raster the vendor options  <VendorOption
+        // name="labelInFeatureInfo">add</VendorOption>
+        // add the label only for the band being used in the rule
+        Catalog cat = getCatalog();
+        LayerInfo tazDem =
+                cat.getLayerByName(
+                        new NameImpl(
+                                MockData.TASMANIA_BM.getPrefix(),
+                                MockData.TASMANIA_BM.getLocalPart()));
+        StyleInfo style = cat.getStyleByName(LABEL_IN_FEATURE_INFO_STYLE_BM);
+        tazDem.getStyles().add(style);
+        cat.save(tazDem);
+        String layerId = getLayerId(MockData.TASMANIA_BM);
+        String request =
+                "wms?version=1.1.1"
+                        + "&styles="
+                        + LABEL_IN_FEATURE_INFO_STYLE_BM
+                        + "&format=jpeg"
+                        + "&request=GetFeatureInfo&layers="
+                        + layerId
+                        + "&query_layers="
+                        + layerId
+                        + "&X=50&Y=50"
+                        + "&SRS=EPSG:4326&WIDTH=101&HEIGHT=101"
+                        + "&BBOX=147.22476194612682,-44.045562744140625,147.50216673128307,-43.768157958984375"
+                        + "&info_format="
+                        + JSONType.json;
+        JSONObject json = (JSONObject) getAsJSON(request);
+        JSONObject properties =
+                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        assertTrue(properties.has("Label_RED_BAND"));
+        assertEquals(26, properties.getInt("RED_BAND"));
+        assertEquals("21", properties.getString("Label_RED_BAND"));
+    }
+
+    @Test
+    public void testLabelInFeatureInfoMultiBandMultipleSymbolizers() throws Exception {
+        // Tests the labelInFeatureInfo functionality with a MultiBand raster and a style
+        // with two Raster Symbolizer in two different
+        // FeatureTypeStyle having both a vendor option
+        // <VendorOption name="labelInFeatureInfo">add</VendorOption>
+        Catalog cat = getCatalog();
+        LayerInfo tazDem =
+                cat.getLayerByName(
+                        new NameImpl(
+                                MockData.TASMANIA_BM.getPrefix(),
+                                MockData.TASMANIA_BM.getLocalPart()));
+        StyleInfo style = cat.getStyleByName(LABEL_IN_FEATURE_INFO_STYLE_MULTIPLE_SYMBLOZERS2);
+        tazDem.getStyles().add(style);
+        cat.save(tazDem);
+        String layerId = getLayerId(MockData.TASMANIA_BM);
+        String request =
+                "wms?version=1.1.1"
+                        + "&styles="
+                        + LABEL_IN_FEATURE_INFO_STYLE_MULTIPLE_SYMBLOZERS2
+                        + "&format=jpeg"
+                        + "&request=GetFeatureInfo&layers="
+                        + layerId
+                        + "&query_layers="
+                        + layerId
+                        + "&X=50&Y=50"
+                        + "&SRS=EPSG:4326&WIDTH=101&HEIGHT=101"
+                        + "&BBOX=147.14566041715443,-44.49600223917514,147.42306520231068,-44.21859745401889"
+                        + "&info_format="
+                        + JSONType.json;
+        JSONObject json = (JSONObject) getAsJSON(request);
+        JSONObject properties =
+                json.getJSONArray("features").getJSONObject(0).getJSONObject("properties");
+        assertEquals("13", properties.getString("Label1_RED_BAND"));
+        assertEquals("value is 13", properties.getString("Label2_RED_BAND"));
     }
 }

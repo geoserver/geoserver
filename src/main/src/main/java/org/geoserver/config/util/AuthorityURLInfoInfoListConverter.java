@@ -35,10 +35,9 @@ public class AuthorityURLInfoInfoListConverter {
     public static List<AuthorityURLInfo> fromString(String str) throws IllegalArgumentException {
 
         try {
-            final JSONArray array;
-            array = JSONArray.fromObject(str);
+            final JSONArray array = JSONArray.fromObject(str);
             final int size = array.size();
-            List<AuthorityURLInfo> list = new ArrayList<AuthorityURLInfo>(size);
+            List<AuthorityURLInfo> list = new ArrayList<>(size);
             JSONObject jsonAuth;
             for (int i = 0; i < size; i++) {
                 jsonAuth = array.getJSONObject(i);

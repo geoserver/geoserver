@@ -100,8 +100,7 @@ class CustomDimensionFilterConverter {
                     continue;
                 }
                 final String endAttributeName = entry.getValue().getKey().getEndAttribute();
-                final String rawValue =
-                        entry.getValue().getRight() != null ? entry.getValue().getRight() : null;
+                final String rawValue = entry.getValue().getRight();
                 // convert values
                 final List<Object> convertedValues =
                         convertValues(
@@ -121,6 +120,7 @@ class CustomDimensionFilterConverter {
 
     private List<Object> convertValues(
             String rawValue, Class<?> binding, Supplier<Object> defaultSupplier) {
+
         if (StringUtils.isBlank(rawValue)) {
             return Arrays.asList(defaultSupplier.get());
         } else {
@@ -249,9 +249,10 @@ class CustomDimensionFilterConverter {
                                 .stream()
                                 .map(v -> Converters.convert(v, binding))
                                 .collect(Collectors.toList());
-                final Range<? extends Comparable> range =
-                        new Range<>(
-                                (Class<Comparable>) binding,
+                @SuppressWarnings("unchecked")
+                final Range range =
+                        new Range(
+                                binding,
                                 (Comparable) rangeValues.get(0),
                                 (Comparable) rangeValues.get(1));
                 return Arrays.asList(range);
@@ -275,6 +276,7 @@ class CustomDimensionFilterConverter {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public List<Object> convert(List<String> rawValues, Class<?> binding) {
             // remove blank values
             rawValues = cleanBlankValues(rawValues);
@@ -330,9 +332,10 @@ class CustomDimensionFilterConverter {
                                 .stream()
                                 .map(v -> Converters.convert(v, binding))
                                 .collect(Collectors.toList());
-                final Range<? extends Comparable> range =
-                        new Range<>(
-                                (Class<Comparable>) binding,
+                @SuppressWarnings("unchecked")
+                final Range range =
+                        new Range(
+                                binding,
                                 (Comparable) rangeValues.get(0),
                                 (Comparable) rangeValues.get(1));
                 return Arrays.asList(range);

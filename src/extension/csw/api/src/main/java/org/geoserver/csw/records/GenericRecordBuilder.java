@@ -48,9 +48,9 @@ public class GenericRecordBuilder implements RecordBuilder {
     private static final Pattern PATTERN_ATT_WITH_INDEX = Pattern.compile("([^\\[]*)\\[(.*)\\]");
 
     protected ComplexFeatureBuilder fb;
-    protected List<ReferencedEnvelope> boxes = new ArrayList<ReferencedEnvelope>();
+    protected List<ReferencedEnvelope> boxes = new ArrayList<>();
     protected RecordDescriptor recordDescriptor;
-    protected Map<Name, Name> substitutionMap = new HashMap<Name, Name>();
+    protected Map<Name, Name> substitutionMap = new HashMap<>();
 
     /**
      * A tree structure is built initially before the feature is built, so that all data for the
@@ -59,6 +59,7 @@ public class GenericRecordBuilder implements RecordBuilder {
     protected abstract static class TreeNode {
         AttributeDescriptor descriptor = null;
 
+        @Override
         public abstract TreeNode clone();
 
         public boolean cleanUp() {
@@ -76,7 +77,7 @@ public class GenericRecordBuilder implements RecordBuilder {
             TreeLeaf leaf = new TreeLeaf();
             leaf.value = value;
             if (userData != null) {
-                leaf.userData = new HashMap<Object, Object>();
+                leaf.userData = new HashMap<>();
                 leaf.userData.putAll(userData);
             }
             leaf.descriptor = descriptor;
@@ -85,13 +86,13 @@ public class GenericRecordBuilder implements RecordBuilder {
     }
 
     protected static class TreeBranch extends TreeNode {
-        public Map<String, List<TreeNode>> children = new HashMap<String, List<TreeNode>>();
+        public Map<String, List<TreeNode>> children = new HashMap<>();
 
         @Override
         public TreeBranch clone() {
             TreeBranch branch = new TreeBranch();
             for (Map.Entry<String, List<TreeNode>> pair : children.entrySet()) {
-                List<TreeNode> list = new ArrayList<TreeNode>();
+                List<TreeNode> list = new ArrayList<>();
                 for (TreeNode node : pair.getValue()) {
                     list.add(node.clone());
                 }
@@ -134,9 +135,8 @@ public class GenericRecordBuilder implements RecordBuilder {
             List<AttributeDescriptor> substitutionGroup =
                     (List<AttributeDescriptor>) descriptor.getUserData().get("substitutionGroup");
             if (substitutionGroup != null) {
-                for (Iterator<AttributeDescriptor> it = substitutionGroup.iterator();
-                        it.hasNext(); ) {
-                    substitutionMap.put(it.next().getName(), descriptor.getName());
+                for (AttributeDescriptor attributeDescriptor : substitutionGroup) {
+                    substitutionMap.put(attributeDescriptor.getName(), descriptor.getName());
                 }
             }
             substitutionMap.put(descriptor.getName(), descriptor.getName());
@@ -168,26 +168,13 @@ public class GenericRecordBuilder implements RecordBuilder {
         List<TreeNode> treenodes = branch.children.get(path[index]);
 
         if (treenodes == null) {
-            treenodes = new ArrayList<TreeNode>();
+            treenodes = new ArrayList<>();
             branch.children.put(path[index], treenodes);
         }
 
         if (index == path.length - 1) {
             if (descriptor.getType() instanceof ComplexType) {
-                if (treenodes.isEmpty()) {
-                    for (int i = 0; i < value.size(); i++) {
-                        TreeNode child = new TreeBranch();
-                        child.descriptor = descriptor;
-                        treenodes.add(child);
-                    }
-                } else if (treenodes.size() == 1) {
-                    for (int i = 1; i < value.size(); i++) {
-                        treenodes.add(treenodes.get(0).clone());
-                    }
-                } else if (value.size() != 1 && treenodes.size() != value.size()) {
-                    throw new IllegalArgumentException(
-                            "Error in mapping: Number of values not matching.");
-                }
+                fillTreeNodes(value, descriptor, (List<TreeNode>) treenodes);
                 // wrap simple content in complex attribute
                 AttributeType simpleType =
                         new AttributeTypeImpl(
@@ -205,7 +192,7 @@ public class GenericRecordBuilder implements RecordBuilder {
                                 1,
                                 1,
                                 true,
-                                (Object) null);
+                                null);
                 for (int i = 0; i < Math.max(value.size(), treenodes.size()); i++) {
                     Object item = value.size() == 1 ? value.get(0) : value.get(i);
                     if (item != null) {
@@ -242,9 +229,9 @@ public class GenericRecordBuilder implements RecordBuilder {
                     child.descriptor = descriptor;
                     treenodes.add(child);
                 }
-                for (int i = 0; i < treenodes.size(); i++) {
+                for (TreeNode treenode : treenodes) {
                     createAttribute(
-                            (TreeBranch) treenodes.get(i),
+                            (TreeBranch) treenode,
                             index + 1,
                             (ComplexType) descriptor.getType(),
                             path,
@@ -253,20 +240,7 @@ public class GenericRecordBuilder implements RecordBuilder {
                             splitIndex);
                 }
             } else {
-                if (treenodes.isEmpty()) {
-                    for (int i = 0; i < value.size(); i++) {
-                        TreeNode child = new TreeBranch();
-                        child.descriptor = descriptor;
-                        treenodes.add(child);
-                    }
-                } else if (treenodes.size() == 1) {
-                    for (int i = 1; i < value.size(); i++) {
-                        treenodes.add(treenodes.get(0).clone());
-                    }
-                } else if (value.size() != 1 && treenodes.size() != value.size()) {
-                    throw new IllegalArgumentException(
-                            "Error in mapping: Number of values not matching.");
-                }
+                fillTreeNodes(value, descriptor, treenodes);
 
                 for (int i = 0; i < Math.max(value.size(), treenodes.size()); i++) {
                     Object item = value.size() == 1 ? value.get(0) : value.get(i);
@@ -284,6 +258,24 @@ public class GenericRecordBuilder implements RecordBuilder {
                     }
                 }
             }
+        }
+    }
+
+    @SuppressWarnings("PMD.ForLoopCanBeForeach")
+    private void fillTreeNodes(
+            List<Object> value, AttributeDescriptor descriptor, List<TreeNode> treenodes) {
+        if (treenodes.isEmpty()) {
+            for (int i = 0; i < value.size(); i++) {
+                TreeNode child = new TreeBranch();
+                child.descriptor = descriptor;
+                treenodes.add(child);
+            }
+        } else if (treenodes.size() == 1) {
+            for (int i = 1; i < value.size(); i++) {
+                treenodes.add(treenodes.get(0).clone());
+            }
+        } else if (value.size() != 1 && treenodes.size() != value.size()) {
+            throw new IllegalArgumentException("Error in mapping: Number of values not matching.");
         }
     }
 
@@ -322,8 +314,9 @@ public class GenericRecordBuilder implements RecordBuilder {
      * @param name path of property with dots
      * @param values the value(s) to be inserted
      */
+    @Override
     public void addElement(String name, Object... values) {
-        addElement(name, Arrays.asList((Object[]) values), null, new int[0]);
+        addElement(name, Arrays.asList(values), null, new int[0]);
     }
 
     /**
@@ -332,8 +325,9 @@ public class GenericRecordBuilder implements RecordBuilder {
      * @param name path of property with dots
      * @param values the value(s) to be inserted
      */
+    @Override
     public void addElement(String name, int[] splitIndex, Object... values) {
-        addElement(name, Arrays.asList((Object[]) values), null, splitIndex);
+        addElement(name, Arrays.asList(values), null, splitIndex);
     }
 
     /**
@@ -341,6 +335,7 @@ public class GenericRecordBuilder implements RecordBuilder {
      *
      * @param env the bbox
      */
+    @Override
     public void addBoundingBox(ReferencedEnvelope env) {
         boxes.add(env);
     }
@@ -351,6 +346,7 @@ public class GenericRecordBuilder implements RecordBuilder {
      * @param id record id
      * @return the Feature
      */
+    @Override
     public Feature build(String id) {
         // gather all the bounding boxes in a single geometry
         Geometry geom = null;
@@ -378,12 +374,10 @@ public class GenericRecordBuilder implements RecordBuilder {
 
         if (recordDescriptor.getBoundingBoxPropertyName() != null) {
             Map<Object, Object> userData =
-                    Collections.singletonMap(
-                            (Object) ORIGINAL_BBOXES,
-                            (Object) new ArrayList<ReferencedEnvelope>(boxes));
+                    Collections.singletonMap(ORIGINAL_BBOXES, new ArrayList<>(boxes));
             addElement(
                     recordDescriptor.getBoundingBoxPropertyName(),
-                    Collections.singletonList((Object) geom),
+                    Collections.singletonList(geom),
                     userData,
                     new int[0]);
         }
@@ -425,7 +419,7 @@ public class GenericRecordBuilder implements RecordBuilder {
         } else if (node instanceof TreeBranch) {
 
             ab.setDescriptor(node.descriptor);
-            List<Attribute> list = new ArrayList<Attribute>();
+            List<Attribute> list = new ArrayList<>();
             for (List<TreeNode> nodes : ((TreeBranch) node).children.values()) {
                 for (TreeNode child : nodes) {
                     list.add(buildNode(child));

@@ -46,7 +46,7 @@ class OutputParameter implements Serializable {
     }
 
     public List<String> getSupportedMime() {
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         for (ProcessParameterIO ppio : getProcessParameterIO()) {
             ComplexPPIO cp = (ComplexPPIO) ppio;
             results.add(cp.getMimeType());
@@ -56,7 +56,7 @@ class OutputParameter implements Serializable {
 
     public boolean isComplex() {
         List<ProcessParameterIO> ppios = getProcessParameterIO();
-        return ppios.size() > 0 && ppios.get(0) instanceof ComplexPPIO;
+        return !ppios.isEmpty() && ppios.get(0) instanceof ComplexPPIO;
     }
 
     List<ProcessParameterIO> getProcessParameterIO() {

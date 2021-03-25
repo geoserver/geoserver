@@ -333,7 +333,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
     @SuppressWarnings("rawtypes")
     void encodeKMLLink(Folder container, Layer layer, String name, int drawOrder, Envelope box) {
         // copy the format options
-        CaseInsensitiveMap fo = new CaseInsensitiveMap(new HashMap());
+        CaseInsensitiveMap<String, Object> fo = new CaseInsensitiveMap<>(new HashMap<>());
         fo.putAll(mapContent.getRequest().getFormatOptions());
 
         // we want to pass through format options except for superoverlay, we need to
@@ -508,13 +508,13 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
 
         // check there is no extra filtering applied to the layer
         List<Filter> filters = request.getFilter();
-        if (filters != null && filters.size() > 0 && filters.get(layerIndex) != Filter.INCLUDE) {
+        if (filters != null && !filters.isEmpty() && filters.get(layerIndex) != Filter.INCLUDE) {
             return false;
         }
 
         // no extra sorts
         List<List<SortBy>> sortBy = request.getSortBy();
-        if (sortBy != null && sortBy.size() > 0) {
+        if (sortBy != null && !sortBy.isEmpty()) {
             return false;
         }
 

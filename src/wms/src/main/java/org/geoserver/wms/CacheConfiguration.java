@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Objects;
  *
  * @author maurobartolomeoli@gmail.com
  */
-public class CacheConfiguration implements Cloneable {
+public class CacheConfiguration implements Cloneable, Serializable {
 
     private boolean enabled;
     private int maxEntries = 1000;
@@ -77,6 +78,7 @@ public class CacheConfiguration implements Cloneable {
         return Objects.hash(enabled, maxEntries, maxEntrySize);
     }
 
+    @Override
     public Object clone() {
         return new CacheConfiguration(enabled, maxEntries, maxEntrySize);
     }

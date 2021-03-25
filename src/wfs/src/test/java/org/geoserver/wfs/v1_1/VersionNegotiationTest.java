@@ -13,7 +13,6 @@ import net.opengis.wfs.GetCapabilitiesType;
 import net.opengis.wfs.WfsFactory;
 import org.geoserver.wfs.CapabilitiesTransformer;
 import org.geoserver.wfs.GetCapabilities;
-import org.geoserver.wfs.WFSExtendedCapabilitiesProvider;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.request.GetCapabilitiesRequest;
 import org.geotools.xml.transform.TransformerBase;
@@ -30,11 +29,7 @@ public class VersionNegotiationTest extends WFSTestSupport {
 
     @Before
     public void initialise() {
-        getCaps =
-                new GetCapabilities(
-                        getWFS(),
-                        getCatalog(),
-                        Collections.<WFSExtendedCapabilitiesProvider>emptyList());
+        getCaps = new GetCapabilities(getWFS(), getCatalog(), Collections.emptyList());
 
         factory = WfsFactory.eINSTANCE;
         owsFactory = Ows10Factory.eINSTANCE;

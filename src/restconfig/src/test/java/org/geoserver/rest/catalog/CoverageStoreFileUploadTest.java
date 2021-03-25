@@ -5,21 +5,30 @@
  */
 package org.geoserver.rest.catalog;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.CoverageView;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.resource.Files;
@@ -389,7 +398,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             request.setContent(bytes);
             request.addHeader("Content-type", "application/zip");
             // Get The response
-            MockHttpServletResponse response = dispatch(request);
+            dispatch(request);
             // Get the Mosaic Reader
             reader2 =
                     (StructuredGridCoverage2DReader)
@@ -512,7 +521,6 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
     private StructuredGridCoverage2DReader uploadGeotiffAndCheck(
             CoverageStoreInfo storeInfo, byte[] bytes, String filename) throws Exception {
-        StructuredGridCoverage2DReader reader2;
         // Create the POST request
         MockHttpServletRequest request =
                 createRequest(
@@ -526,7 +534,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         // Get The response
         assertEquals(202, dispatch(request).getStatus());
         // Get the Mosaic Reader
-        reader2 =
+        StructuredGridCoverage2DReader reader2 =
                 (StructuredGridCoverage2DReader)
                         storeInfo.getGridCoverageReader(null, GeoTools.getDefaultHints());
         // Test if all the TIME DOMAINS are present
@@ -560,9 +568,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
             CatalogBuilder builder, CoverageStoreInfo storeInfo, GridCoverage2DReader reader)
             throws Exception {
         // coverage read params
-        final Map customParameters = new HashMap();
-
-        CoverageInfo cinfo = builder.buildCoverage(reader, customParameters);
+        CoverageInfo cinfo = builder.buildCoverage(reader, new HashMap<>());
 
         // get the coverage name
         String name = reader.getGridCoverageNames()[0];
@@ -575,7 +581,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
 
     @Test
     public void testDefaultBehaviourUpdateBBoxPOST() throws Exception {
-        setUpBBoxTest("bboxtest");
+        setUpBBoxTest("bboxtest", "test_bbox_raster1.zip");
         byte[] bytes = null;
         CoverageStoreInfo storeInfo = getCatalog().getCoverageStoreByName("bboxtest");
         assertNotNull(storeInfo);
@@ -609,7 +615,7 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
     @Test
     public void testUpdateBBoxTrueParameterPOST() throws Exception {
 
-        setUpBBoxTest("bboxtest2");
+        setUpBBoxTest("bboxtest2", "test_bbox_raster1.zip");
         byte[] bytes = null;
         // check the coverage is actually there
         CoverageStoreInfo storeInfo = getCatalog().getCoverageStoreByName("bboxtest2");
@@ -644,9 +650,79 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         }
     }
 
-    private void setUpBBoxTest(String storeName) throws Exception {
+    @Test
+    public void testUpdateBBoxTrueOnCoverageView() throws Exception {
+        setUpBBoxTest("coverageview", "test_bbox_coverageview.zip");
+        byte[] bytes = null;
+        // check the coverage is actually there
+        Catalog cat = getCatalog();
+        CoverageStoreInfo storeInfo = getCatalog().getCoverageStoreByName("coverageview");
+        assertNotNull(storeInfo);
+
+        final CoverageView coverageView = buildCoverageView();
+        final CatalogBuilder builder = new CatalogBuilder(cat);
+        builder.setStore(storeInfo);
+
+        final CoverageInfo coverageInfo =
+                coverageView.createCoverageInfo("coverageView", storeInfo, builder);
+        coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
+        coverageInfo.getDimensions().get(0).setName("rasterA");
+        coverageInfo.getDimensions().get(1).setName("rasterB");
+        cat.add(coverageInfo);
+        CoverageInfo ci = getCatalog().getCoverageByName("coverageView");
+        assertNotNull(ci);
+        assertEquals(storeInfo, ci.getStore());
+
+        // Harvesting
+        URL zipHarvest = getClass().getResource("test_bbox_singlegranule.zip");
+
+        try (InputStream is = zipHarvest.openStream()) {
+            bytes = IOUtils.toByteArray(is);
+        }
+        // Create the POST request
+        MockHttpServletRequest request =
+                createRequest(
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/gs/coveragestores/coverageview/file.imagemosaic");
+        request.setMethod("POST");
+        request.setParameter("updateBBox", "true");
+        request.setContentType("application/zip");
+        request.setContent(bytes);
+        request.addHeader("Content-type", "application/zip");
+        dispatch(request);
+        testBBoxLayerConfiguration(
+                storeInfo, (current, old) -> assertEquals(current, old), catalog);
+        CoverageInfo coverage = getCatalog().getResourceByName("coverageview", CoverageInfo.class);
+        if (coverage != null) {
+            removeStore(
+                    coverage.getStore().getWorkspace().getName(), coverage.getStore().getName());
+        }
+    }
+
+    private CoverageView buildCoverageView() {
+        final CoverageView.CoverageBand aBand =
+                new CoverageView.CoverageBand(
+                        Arrays.asList(new CoverageView.InputCoverageBand("rasterA", "0")),
+                        "rasterA",
+                        0,
+                        CoverageView.CompositionType.BAND_SELECT);
+        final CoverageView.CoverageBand bBand =
+                new CoverageView.CoverageBand(
+                        Arrays.asList(new CoverageView.InputCoverageBand("rasterB", "0")),
+                        "rasterB",
+                        1,
+                        CoverageView.CompositionType.BAND_SELECT);
+
+        final CoverageView coverageView =
+                new CoverageView("coverageView", Arrays.asList(aBand, bBand));
+        coverageView.setEnvelopeCompositionType(CoverageView.EnvelopeCompositionType.UNION);
+        coverageView.setSelectedResolution(null);
+        return coverageView;
+    }
+
+    private void setUpBBoxTest(String storeName, String fileName) throws Exception {
         // Upload of the Mosaic via REST
-        URL zip = getClass().getResource("test_bbox_raster1.zip");
+        URL zip = getClass().getResource(fileName);
         byte[] bytes = getBytes(zip);
 
         MockHttpServletResponse response =

@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.web.data;
 
+import static org.geoserver.template.TemplateUtils.FM_VERSION;
+
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
@@ -67,7 +69,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     static {
         templates = TemplateUtils.getSafeConfiguration();
         templates.setClassForTemplateLoading(OpenLayersPreviewPanel.class, "");
-        templates.setObjectWrapper(new DefaultObjectWrapper());
+        templates.setObjectWrapper(new DefaultObjectWrapper(FM_VERSION));
     }
 
     final Random rand = new Random();
@@ -82,17 +84,18 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
 
         // Change layer link
         PropertyModel<String> layerNameModel =
-                new PropertyModel<String>(parent.getLayerModel(), "prefixedName");
+                new PropertyModel<>(parent.getLayerModel(), "prefixedName");
         add(
                 new SimpleAjaxLink<String>("change.layer", layerNameModel) {
                     private static final long serialVersionUID = 7341058018479354596L;
 
+                    @Override
                     public void onClick(AjaxRequestTarget target) {
                         ModalWindow popup = parent.getPopup();
 
                         popup.setInitialHeight(400);
                         popup.setInitialWidth(600);
-                        popup.setTitle(new Model<String>("Choose layer to preview"));
+                        popup.setTitle(new Model<>("Choose layer to preview"));
                         popup.setContent(new LayerChooser(popup.getContentId(), parent));
                         popup.show(target);
                     }
@@ -102,9 +105,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         setOutputMarkupId(true);
 
         CheckBox previewStyleGroup =
-                new CheckBox(
-                        "previewStyleGroup",
-                        new PropertyModel<Boolean>(this, "isPreviewStyleGroup"));
+                new CheckBox("previewStyleGroup", new PropertyModel<>(this, "isPreviewStyleGroup"));
 
         previewStyleGroup.add(
                 new AjaxFormComponentUpdatingBehavior("click") {
@@ -141,29 +142,25 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
                             OpenLayersPreviewPanel.class.getResourceAsStream(
                                     "style-editor-legend.xml"),
                             "UTF-8");
-            OutputStream os = legend.out();
-            try {
+            try (OutputStream os = legend.out()) {
                 IOUtils.write(legendLayout, os, "UTF-8");
-            } finally {
-                os.close();
             }
         }
     }
 
+    @Override
     public void renderHead(IHeaderResponse header) {
         super.renderHead(header);
         try {
             renderHeaderCss(header);
             renderHeaderScript(header);
-        } catch (IOException e) {
-            throw new WicketRuntimeException(e);
-        } catch (TemplateException e) {
+        } catch (IOException | TemplateException e) {
             throw new WicketRuntimeException(e);
         }
     }
 
     private void renderHeaderCss(IHeaderResponse header) throws IOException, TemplateException {
-        Map<String, Object> context = new HashMap<String, Object>();
+        Map<String, Object> context = new HashMap<>();
         context.put("id", olPreview.getMarkupId());
         Template template = templates.getTemplate("ol-style.ftl");
         StringWriter css = new java.io.StringWriter();
@@ -172,7 +169,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     }
 
     private void renderHeaderScript(IHeaderResponse header) throws IOException, TemplateException {
-        Map<String, Object> context = new HashMap<String, Object>();
+        Map<String, Object> context = new HashMap<>();
         ReferencedEnvelope bbox =
                 getStylePage().getLayerInfo().getResource().getLatLonBoundingBox();
         WorkspaceInfo workspace = getStylePage().getStyleInfo().getWorkspace();
@@ -254,7 +251,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     }
 
     public String getUpdateCommand() throws IOException, TemplateException {
-        Map<String, Object> context = new HashMap<String, Object>();
+        Map<String, Object> context = new HashMap<>();
         context.put("id", olPreview.getMarkupId());
         context.put("cachebuster", rand.nextInt());
 

@@ -4,11 +4,11 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import java.util.Locale;
 import org.apache.wicket.Component;
@@ -125,6 +125,7 @@ public class RegexParameterFilterSubformTest extends GeoServerWicketTestSupport 
                             /** serialVersionUID */
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new RegexParameterFilterSubform(id, model);
                             }

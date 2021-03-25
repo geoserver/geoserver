@@ -8,11 +8,19 @@ package org.geoserver.gwc;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.ImmutableList;
@@ -556,11 +564,10 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                     filters,
                     contains(
                             allOf(
-                                    Matchers.<ParameterFilter>hasProperty("key", is("STYLES")),
+                                    Matchers.hasProperty("key", is("STYLES")),
                                     isA(
-                                            (Class<ParameterFilter>)
-                                                    StyleParameterFilter.class.asSubclass(
-                                                            ParameterFilter.class)))));
+                                            StyleParameterFilter.class.asSubclass(
+                                                    ParameterFilter.class)))));
         }
         {
             final String xml =
@@ -585,12 +592,10 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
                     not(
                             contains(
                                     allOf(
-                                            Matchers.<ParameterFilter>hasProperty(
-                                                    "key", is("STYLES")),
+                                            Matchers.hasProperty("key", is("STYLES")),
                                             isA(
-                                                    (Class<ParameterFilter>)
-                                                            StyleParameterFilter.class.asSubclass(
-                                                                    ParameterFilter.class))))));
+                                                    StyleParameterFilter.class.asSubclass(
+                                                            ParameterFilter.class))))));
         }
     }
 
@@ -598,7 +603,6 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     public void testGetSeedHtml() throws Exception {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/seed/" + layerName;
-        final String id = getCatalog().getLayerByName(layerName).getId();
 
         MockHttpServletResponse sr = getAsServletResponse(url);
         assertEquals(200, sr.getStatus());
@@ -609,7 +613,6 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     public void testPostSeedHtmlForm() throws Exception {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/seed/" + layerName;
-        final String id = getCatalog().getLayerByName(layerName).getId();
 
         final String formData =
                 "threadCount=01&type=seed&gridSetId=EPSG%3A4326&tileFormat=image%2Fpng&zoomStart=00&zoomStop=12&minX=&minY=&maxX=&maxY=";
@@ -634,7 +637,6 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     public void testGetSeedJson() throws Exception {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/seed/" + layerName + ".json";
-        final String id = getCatalog().getLayerByName(layerName).getId();
 
         MockHttpServletResponse sr = getAsServletResponse(url);
         assertEquals(200, sr.getStatus());
@@ -647,7 +649,6 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     public void testPostSeedXml() throws Exception {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/seed/" + layerName + ".xml";
-        final String id = getCatalog().getLayerByName(layerName).getId();
 
         final String xml =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -672,7 +673,6 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     public void testPostSeedJson() throws Exception {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/seed/" + layerName + ".json";
-        final String id = getCatalog().getLayerByName(layerName).getId();
 
         final String json =
                 "{ \"seedRequest\": {\n"

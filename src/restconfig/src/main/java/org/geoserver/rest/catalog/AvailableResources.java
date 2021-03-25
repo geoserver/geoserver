@@ -43,50 +43,62 @@ public class AvailableResources extends AbstractCollection<String> {
         return delegate.size();
     }
 
+    @Override
     public void forEach(Consumer<? super String> action) {
         delegate.forEach(action);
     }
 
+    @Override
     public boolean isEmpty() {
         return delegate.isEmpty();
     }
 
+    @Override
     public boolean contains(Object o) {
         return delegate.contains(o);
     }
 
+    @Override
     public Object[] toArray() {
         return delegate.toArray();
     }
 
+    @Override
     public <T> T[] toArray(T[] a) {
         return delegate.toArray(a);
     }
 
+    @Override
     public boolean containsAll(Collection<?> c) {
         return delegate.containsAll(c);
     }
 
+    @Override
     public void clear() {
         delegate.clear();
     }
 
+    @Override
     public boolean equals(Object o) {
         return delegate.equals(o);
     }
 
+    @Override
     public int hashCode() {
         return delegate.hashCode();
     }
 
+    @Override
     public Spliterator<String> spliterator() {
         return delegate.spliterator();
     }
 
+    @Override
     public Stream<String> stream() {
         return delegate.stream();
     }
 
+    @Override
     public Stream<String> parallelStream() {
         return delegate.parallelStream();
     }

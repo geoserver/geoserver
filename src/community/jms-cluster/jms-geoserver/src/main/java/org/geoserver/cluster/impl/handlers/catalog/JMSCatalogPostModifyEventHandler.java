@@ -28,6 +28,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
     private final Catalog catalog;
     private final ToggleSwitch producer;
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public JMSCatalogPostModifyEventHandler(
             Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
         super(xstream, clazz);

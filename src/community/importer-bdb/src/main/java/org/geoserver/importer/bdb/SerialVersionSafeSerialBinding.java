@@ -10,9 +10,13 @@ import com.sleepycat.bind.serial.SerialBase;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.util.FastOutputStream;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 
 /** @author Ian Schneider <ischneider@opengeo.org> */
 public class SerialVersionSafeSerialBinding<T> extends SerialBase implements EntryBinding<T> {
+    static final Logger LOGGER = Logging.getLogger(SerialVersionSafeSerialBinding.class);
 
     @Override
     public T entryToObject(DatabaseEntry entry) {
@@ -48,11 +52,12 @@ public class SerialVersionSafeSerialBinding<T> extends SerialBase implements Ent
             super(in);
         }
 
+        @Override
         protected ObjectStreamClass readClassDescriptor()
                 throws IOException, ClassNotFoundException {
             ObjectStreamClass resultClassDescriptor =
                     super.readClassDescriptor(); // initially streams descriptor
-            Class localClass =
+            Class<?> localClass =
                     Class.forName(
                             resultClassDescriptor
                                     .getName()); // the class in the local JVM that this descriptor
@@ -70,7 +75,7 @@ public class SerialVersionSafeSerialBinding<T> extends SerialBase implements Ent
                     s.append("local serialVersionUID = ").append(localSUID);
                     s.append(" stream serialVersionUID = ").append(streamSUID);
                     Exception e = new InvalidClassException(s.toString());
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "", e);
                     resultClassDescriptor =
                             localClassDescriptor; // Use local class descriptor for deserialization
                 }

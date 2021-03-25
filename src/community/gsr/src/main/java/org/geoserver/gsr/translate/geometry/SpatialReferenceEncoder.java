@@ -106,16 +106,4 @@ public class SpatialReferenceEncoder {
         throw new IllegalArgumentException(
                 "Could not determine coordinate reference system from spatial reference: " + sr);
     }
-
-    private static CoordinateReferenceSystem interpret(String wkid) throws FactoryException {
-        String withEPSGPrefix;
-        try {
-            Integer asInteger = Integer.valueOf(wkid);
-            withEPSGPrefix = "EPSG:" + asInteger;
-        } catch (NumberFormatException e) {
-            withEPSGPrefix = "EPSG:" + wkid;
-        }
-
-        return CRS.decode(withEPSGPrefix);
-    }
 }

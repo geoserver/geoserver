@@ -23,10 +23,12 @@ public class WCSXStreamLoader extends XStreamServiceLoader<WCSInfo> {
         super(resourceLoader, "wcs");
     }
 
+    @Override
     public Class<WCSInfo> getServiceClass() {
         return WCSInfo.class;
     }
 
+    @Override
     protected WCSInfo createServiceFromScratch(GeoServer gs) {
 
         WCSInfoImpl wcs = new WCSInfoImpl();
@@ -50,7 +52,7 @@ public class WCSXStreamLoader extends XStreamServiceLoader<WCSInfo> {
     protected WCSInfo initialize(WCSInfo service) {
         super.initialize(service);
         if (service.getExceptionFormats() == null) {
-            ((WCSInfoImpl) service).setExceptionFormats(new ArrayList<String>());
+            ((WCSInfoImpl) service).setExceptionFormats(new ArrayList<>());
         }
         if (service.getVersions().isEmpty()) {
             service.getVersions().add(new Version("1.0.0"));
@@ -61,7 +63,7 @@ public class WCSXStreamLoader extends XStreamServiceLoader<WCSInfo> {
             service.getVersions().add(v201);
         }
         if (service.getSRS() == null) {
-            ((WCSInfoImpl) service).setSRS(new ArrayList<String>());
+            ((WCSInfoImpl) service).setSRS(new ArrayList<>());
         }
         return service;
     }

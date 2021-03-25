@@ -5,18 +5,17 @@
  */
 package org.geoserver.config.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.thoughtworks.xstream.XStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -173,6 +173,7 @@ public class XStreamPersisterTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.CloseResource")
     public void testGobalContactDefault() throws Exception {
         GeoServerInfo g1 = factory.createGlobal();
         ContactInfo contact = factory.createContact();
@@ -204,6 +205,7 @@ public class XStreamPersisterTest {
             this.foo = foo;
         }
 
+        @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof MyServiceInfo)) {
                 return false;
@@ -221,6 +223,11 @@ public class XStreamPersisterTest {
             }
 
             return super.equals(other);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), foo);
         }
     }
 
@@ -1106,12 +1113,13 @@ public class XStreamPersisterTest {
 
         assertEquals("EPSG:4901", c.toString(crs));
         // definition with odd UOM that won't be matched to the EPSG one
-        assertFalse(
-                "EPSG:4901"
-                        .equals(
-                                c.toString(
-                                        CRS.parseWKT(
-                                                "GEOGCS[\"GCS_ATF_Paris\",DATUM[\"D_ATF\",SPHEROID[\"Plessis_1817\",6376523.0,308.64]],PRIMEM[\"Paris\",2.337229166666667],UNIT[\"Grad\",0.01570796326794897]]"))));
+        assertNotEquals(
+                "EPSG:4901",
+                c.toString(
+                        CRS.parseWKT(
+                                "GEOGCS[\"GCS_ATF_Paris\",DATUM[\"D_ATF\",SPHEROID[\"Plessis_1817\","
+                                        + "6376523.0,308.64]],PRIMEM[\"Paris\",2.337229166666667],"
+                                        + "UNIT[\"Grad\",0.01570796326794897]]")));
     }
 
     @Test
@@ -1137,14 +1145,10 @@ public class XStreamPersisterTest {
 
     @Test
     public void testMultimapConverter() throws Exception {
-        XStreamPersisterFactory factory = new XStreamPersisterFactory();
-        XStreamPersister xmlPersister = factory.createXMLPersister();
-        XStream xs = xmlPersister.getXStream();
-
         Multimap<String, Object> mmap = ArrayListMultimap.create();
         mmap.put("one", "abc");
         mmap.put("one", Integer.valueOf(2));
-        mmap.put("two", new NumberRange<Integer>(Integer.class, 10, 20));
+        mmap.put("two", new NumberRange<>(Integer.class, 10, 20));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         persister.save(mmap, out);
@@ -1166,16 +1170,12 @@ public class XStreamPersisterTest {
 
         XStreamPersisterFactory factory = new XStreamPersisterFactory();
         factory.addInitializer(
-                new XStreamPersisterInitializer() {
-
-                    @Override
-                    public void init(XStreamPersister persister) {
-                        persister.getXStream().alias("sweetBanana", SweetBanana.class);
-                        persister
-                                .getXStream()
-                                .aliasAttribute(SweetBanana.class, "scientificName", "name");
-                        persister.registerBreifMapComplexType("sweetBanana", SweetBanana.class);
-                    }
+                persister -> {
+                    persister.getXStream().alias("sweetBanana", SweetBanana.class);
+                    persister
+                            .getXStream()
+                            .aliasAttribute(SweetBanana.class, "scientificName", "name");
+                    persister.registerBreifMapComplexType("sweetBanana", SweetBanana.class);
                 });
         XStreamPersister persister = factory.createXMLPersister();
 
@@ -1232,7 +1232,7 @@ public class XStreamPersisterTest {
                         "v-component_of_current_surface@0",
                         1,
                         CompositionType.BAND_SELECT);
-        final List<CoverageBand> coverageBands = new ArrayList<CoverageBand>(2);
+        final List<CoverageBand> coverageBands = new ArrayList<>(2);
         coverageBands.add(outputBand_u);
         coverageBands.add(outputBand_v);
         CoverageView coverageView = new CoverageView("regional_currents", coverageBands);
@@ -1311,6 +1311,7 @@ public class XStreamPersisterTest {
      * provided on an different order than the marshaling one
      */
     @Test
+    @SuppressWarnings("PMD.CloseResource")
     public void testGridGeometry2DConverterUnmarshalling() throws Exception {
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();

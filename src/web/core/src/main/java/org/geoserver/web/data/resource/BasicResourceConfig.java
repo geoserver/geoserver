@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -31,6 +32,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.CRSPanel;
 import org.geoserver.web.wicket.EnvelopePanel;
@@ -49,6 +52,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
     private static final long serialVersionUID = -552158739086379566L;
 
+    public static final String URN_OGC_PREFIX = "urn:ogc:def:crs:EPSG::";
+    public static final String EPSG_PREFIX = "EPSG:";
+
     DropDownChoice<ProjectionPolicy> projectionPolicy;
 
     CRSPanel declaredCRS;
@@ -56,7 +62,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     public BasicResourceConfig(String id, IModel<ResourceInfo> model) {
         super(id, model);
 
-        TextField<String> name = new TextField<String>("name");
+        add(new Label("storeName", model.getObject().getStore().getName()));
+        add(new Label("nativeName", model.getObject().getNativeName()));
+        TextField<String> name = new TextField<>("name");
         name.setRequired(true);
         add(name);
         add(new CheckBox("enabled"));
@@ -71,12 +79,12 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         add(new MetadataLinkEditor("metadataLinks", model));
         add(new DataLinkEditor("dataLinks", model));
 
-        final Form<ResourceInfo> refForm = new Form<ResourceInfo>("referencingForm");
+        final Form<ResourceInfo> refForm = new Form<>("referencingForm");
         add(refForm);
 
         // native bbox
         PropertyModel<ReferencedEnvelope> nativeBBoxModel =
-                new PropertyModel<ReferencedEnvelope>(model, "nativeBoundingBox");
+                new PropertyModel<>(model, "nativeBoundingBox");
         final EnvelopePanel nativeBBox = new EnvelopePanel("nativeBoundingBox", nativeBBoxModel);
         nativeBBox.setOutputMarkupId(true);
         refForm.add(nativeBBox);
@@ -85,8 +93,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         // lat/lon bbox
         final EnvelopePanel latLonPanel =
                 new EnvelopePanel(
-                        "latLonBoundingBox",
-                        new PropertyModel<ReferencedEnvelope>(model, "latLonBoundingBox"));
+                        "latLonBoundingBox", new PropertyModel<>(model, "latLonBoundingBox"));
         latLonPanel.setOutputMarkupId(true);
         latLonPanel.setRequired(true);
         refForm.add(latLonPanel);
@@ -95,16 +102,13 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         // for resources coming from WMS and WFS Datastore
         // then check if it has more than one SRS, then add FIND SRS button in Native SRS
         // which will allow user to set other SRS as Native SRS
-        List<String> otherSRS = getOtherSRSFromWFSOrWMS(model.getObject());
+        List<String> otherSRS = getOtherSRS(model.getObject());
         CRSPanel nativeCRS;
         if (otherSRS.isEmpty()) {
             // normal behavior for resoureces not belonging to WFS and WMS Store
             // or if WMS and WFS Store features dont have multiple SRS advertised
             // native srs , declared srs, and srs handling dropdown
-            nativeCRS =
-                    new CRSPanel(
-                            "nativeSRS",
-                            new PropertyModel<CoordinateReferenceSystem>(model, "nativeCRS"));
+            nativeCRS = new CRSPanel("nativeSRS", new PropertyModel<>(model, "nativeCRS"));
             nativeCRS.setReadOnly(true);
         } else {
             // or resoureces belonging to WFS and WMS Store
@@ -117,8 +121,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         refForm.add(nativeBoundsLink);
         refForm.add(nativeCRS);
         declaredCRS =
-                new CRSPanel(
-                        "declaredSRS", new SRSToCRSModel(new PropertyModel<String>(model, "sRS")));
+                new CRSPanel("declaredSRS", new SRSToCRSModel(new PropertyModel<>(model, "sRS")));
         declaredCRS.setRequired(true);
         refForm.add(declaredCRS);
 
@@ -126,13 +129,13 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         refForm.add(computeBoundsFromSRS(refForm, nativeBBox));
 
         projectionPolicy =
-                new DropDownChoice<ProjectionPolicy>(
+                new DropDownChoice<>(
                         "srsHandling",
-                        new PropertyModel<ProjectionPolicy>(model, "projectionPolicy"),
+                        new PropertyModel<>(model, "projectionPolicy"),
                         Arrays.asList(ProjectionPolicy.values()),
                         new ProjectionPolicyRenderer());
-        ResourceInfo ri = (ResourceInfo) model.getObject();
-        if (((ResourceInfo) model.getObject()).getCRS() == null) {
+        ResourceInfo ri = model.getObject();
+        if (model.getObject().getCRS() == null) {
             // no native, the only meaningful policy is to force
             ri.setProjectionPolicy(ProjectionPolicy.FORCE_DECLARED);
         }
@@ -164,6 +167,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 target.add(nativeBBox);
             }
 
+            @Override
             public boolean getDefaultFormProcessing() {
                 // disable the default processing or the link won't trigger
                 // when any validation fails
@@ -216,7 +220,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 form.process(null);
                 form.visitFormComponents(new FeedbackMessageCleaner<>(FeedbackMessage.UNDEFINED));
 
-                ReferencedEnvelope nativeBounds = (ReferencedEnvelope) nativeBBox.getModelObject();
+                ReferencedEnvelope nativeBounds = nativeBBox.getModelObject();
                 try {
                     // if the native bounds are not around compute them
                     if (nativeBounds == null) {
@@ -253,11 +257,13 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
 
         private static final long serialVersionUID = -6593748590058977418L;
 
+        @Override
         public Object getDisplayValue(ProjectionPolicy object) {
             return new StringResourceModel(object.name(), BasicResourceConfig.this, null)
                     .getString();
         }
 
+        @Override
         public String getIdValue(ProjectionPolicy object, int index) {
             return object.name();
         }
@@ -301,18 +307,19 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                     new FormComponent[] {nativeCRS, declaredCRS, projectionPolicy};
         }
 
+        @Override
         public FormComponent<?>[] getDependentFormComponents() {
             return dependentFormComponents;
         }
 
+        @Override
         public void validate(final Form<?> form) {
-            CoordinateReferenceSystem nativeCrs;
-            CoordinateReferenceSystem declaredCrs;
-            ProjectionPolicy policy;
 
-            nativeCrs = (CoordinateReferenceSystem) nativeCRS.getConvertedInput();
-            declaredCrs = (CoordinateReferenceSystem) declaredCRS.getConvertedInput();
-            policy = (ProjectionPolicy) projectionPolicy.getConvertedInput();
+            CoordinateReferenceSystem nativeCrs =
+                    (CoordinateReferenceSystem) nativeCRS.getConvertedInput();
+            CoordinateReferenceSystem declaredCrs =
+                    (CoordinateReferenceSystem) declaredCRS.getConvertedInput();
+            ProjectionPolicy policy = (ProjectionPolicy) projectionPolicy.getConvertedInput();
             if (policy == ProjectionPolicy.REPROJECT_TO_DECLARED) {
                 final boolean lenient = true;
                 try {
@@ -320,8 +327,8 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
                 } catch (FactoryException e) {
                     String msgKey = "BasicResourceConfig.noTransformFromNativeToDeclaredCRS";
                     String errMsg = e.getMessage();
-                    String message = (String) new ResourceModel(msgKey).getObject();
-                    form.error(message, Collections.singletonMap("error", (Object) errMsg));
+                    String message = new ResourceModel(msgKey).getObject();
+                    form.error(message, Collections.singletonMap("error", errMsg));
                 }
             }
         }
@@ -330,7 +337,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
     public boolean addOtherSRS(ResourceInfo resourceInfo) {
 
         // first check if its WFS-NG or WMSStore
-        List<String> otherSRS = getOtherSRSFromWFSOrWMS(resourceInfo);
+        List<String> otherSRS = getOtherSRS(resourceInfo);
 
         if (otherSRS != null) {
             if (!otherSRS.isEmpty()) {
@@ -360,11 +367,19 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         return "";
     }
 
-    private List<String> getOtherSRSFromWFSOrWMS(ResourceInfo resourceInfo) {
+    /**
+     * Returns a list of alternative SRS for resources that support multiple ones, e.g., WMS, WFS,
+     * WMTS cascaded layers
+     */
+    private List<String> getOtherSRS(ResourceInfo resourceInfo) {
         // first check if its WFS-NG
-        List<String> otherSRS = DataStoreUtils.getOtherSRSFromWfsNg(resourceInfo);
-        // second check if its wms
-        if (otherSRS.isEmpty()) otherSRS = DataStoreUtils.getOtherSRSFromWMSStore(resourceInfo);
+        List<String> otherSRS = Collections.emptyList();
+        if (resourceInfo instanceof FeatureTypeInfo)
+            otherSRS = DataStoreUtils.getOtherSRSFromWfsNg((FeatureTypeInfo) resourceInfo);
+        else if (resourceInfo instanceof WMSLayerInfo)
+            otherSRS = DataStoreUtils.getOtherSRSFromWMSStore((WMSLayerInfo) resourceInfo);
+        else if (resourceInfo instanceof WMTSLayerInfo)
+            otherSRS = DataStoreUtils.getOtherSRSFromWMTSStore((WMTSLayerInfo) resourceInfo);
 
         return otherSRS;
     }
@@ -385,8 +400,9 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         CRSPanel nativeCRS =
                 new CRSPanel(
                         "nativeSRS",
-                        new PropertyModel<CoordinateReferenceSystem>(model, "nativeCRS"),
-                        otherSRS) {
+                        new PropertyModel<>(model, "nativeCRS"),
+                        otherSRS,
+                        !otherSRS.isEmpty()) {
 
                     /** serialVersionUID */
                     private static final long serialVersionUID = -7725670382699858126L;

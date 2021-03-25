@@ -9,7 +9,6 @@ package org.geoserver.security.cas;
 import java.net.MalformedURLException;
 import java.net.URL;
 import org.geoserver.security.GeoServerSecurityManager;
-import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.validation.FilterConfigException;
 import org.geoserver.security.validation.FilterConfigValidator;
@@ -48,7 +47,7 @@ public class CasFilterConfigValidator extends FilterConfigValidator {
                         CasFilterConfigException.CAS_URL_IN_LOGOUT_PAGE_MALFORMED);
             }
         }
-        super.validateFilterConfig((PreAuthenticatedUserNameFilterConfig) casConfig);
+        super.validateFilterConfig(casConfig);
 
         if (StringUtils.hasLength(casConfig.getCasServerUrlPrefix()) == false)
             throw createFilterException(CasFilterConfigException.CAS_SERVER_URL_REQUIRED);
@@ -71,6 +70,7 @@ public class CasFilterConfigValidator extends FilterConfigValidator {
         }
     }
 
+    @Override
     protected CasFilterConfigException createFilterException(String errorid, Object... args) {
         return new CasFilterConfigException(errorid, args);
     }

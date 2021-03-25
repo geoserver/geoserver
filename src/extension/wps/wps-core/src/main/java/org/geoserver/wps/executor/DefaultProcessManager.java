@@ -31,8 +31,7 @@ import org.springframework.context.event.ContextClosedEvent;
 public class DefaultProcessManager
         implements ProcessManager, ExtensionPriority, ApplicationListener<ApplicationEvent> {
 
-    ConcurrentHashMap<String, Future<Map<String, Object>>> executions =
-            new ConcurrentHashMap<String, Future<Map<String, Object>>>();
+    ConcurrentHashMap<String, Future<Map<String, Object>>> executions = new ConcurrentHashMap<>();
 
     ThreadPoolExecutor synchService;
 
@@ -55,7 +54,7 @@ public class DefaultProcessManager
                             maxAsynchronousProcesses,
                             0L,
                             TimeUnit.MILLISECONDS,
-                            new LinkedBlockingQueue<Runnable>());
+                            new LinkedBlockingQueue<>());
         } else {
             // JDK 11 checks the relation between core and max pool size on each set,
             // need to lower core pool size before changing max
@@ -76,7 +75,7 @@ public class DefaultProcessManager
                             maxSynchronousProcesses,
                             0L,
                             TimeUnit.MILLISECONDS,
-                            new LinkedBlockingQueue<Runnable>());
+                            new LinkedBlockingQueue<>());
         } else {
             // JDK 11 checks the relation between core and max pool size on each set,
             // need to lower core pool size before changing max
@@ -219,9 +218,8 @@ public class DefaultProcessManager
                 }
 
                 // execute the process
-                Map<String, Object> result = null;
                 Process p = pf.create(processName);
-                result = p.execute(inputs, listener);
+                Map<String, Object> result = p.execute(inputs, listener);
                 return result;
             } finally {
                 // clean up the thread locals

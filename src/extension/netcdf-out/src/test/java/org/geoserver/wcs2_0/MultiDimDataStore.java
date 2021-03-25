@@ -27,8 +27,8 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.filter.visitor.DefaultFilterVisitor;
 import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.geometry.jts.spatialschema.geometry.JTSUtils;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Envelope;
@@ -258,11 +258,12 @@ public class MultiDimDataStore extends ContentDataStore {
                                     Geometry polygon =
                                             ((Geometry)
                                                     ((Literal) filter.getExpression2()).getValue());
-                                    org.opengis.geometry.Geometry polygon2 =
-                                            JTSUtils.jtsToGo1(
+
+                                    ReferencedEnvelope bounds =
+                                            JTS.bounds(
                                                     polygon,
                                                     envelope.getCoordinateReferenceSystem());
-                                    envelope.setBounds(new Envelope2D(polygon2.getEnvelope()));
+                                    envelope.setBounds(bounds);
                                     return super.visit(filter, data);
                                 }
 
@@ -385,8 +386,7 @@ public class MultiDimDataStore extends ContentDataStore {
                     }
 
                 } catch (Exception e) {
-
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "", e);
                     throw new RuntimeException(e);
                 }
             }
@@ -396,10 +396,12 @@ public class MultiDimDataStore extends ContentDataStore {
                 return FEATURE_TYPE;
             }
 
+            @Override
             public ContentDataStore getDataStore() {
                 return MultiDimDataStore.this;
             }
 
+            @Override
             public String toString() {
                 return "AbstractDataStore.AbstractFeatureSource(" + TYPENAME + ")";
             }

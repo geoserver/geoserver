@@ -4,6 +4,7 @@
  */
 package org.geoserver.web.resources;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -19,14 +20,17 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.treeview.TreeNode;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -37,6 +41,8 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
     protected final String PATH_DIR = "temp/dir";
     protected final String PATH_RES = "temp/dir/something";
     protected final String PATH_RES2 = "temp/dir/somethingelse";
+    protected final String DIR_FORBIDDEN_CHARS = "the:~dir";
+    protected final String FILE_FORBIDDEN_CHARS = "the:~file.txt";
     protected final String DATA = "foobar";
     protected final String DATA2 = "barfoo";
 
@@ -50,12 +56,20 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         resourceBrowser = new PageResourceBrowser();
 
-        try (OutputStream os = resourceBrowser.store().get(PATH_RES).out()) {
+        ResourceStore store = resourceBrowser.store();
+        try (OutputStream os = store.get(PATH_RES).out()) {
             os.write(DATA.getBytes());
         }
 
-        try (OutputStream os = resourceBrowser.store().get(PATH_RES2).out()) {
+        try (OutputStream os = store.get(PATH_RES2).out()) {
             os.write(DATA.getBytes());
+        }
+
+        if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
+            store.get(DIR_FORBIDDEN_CHARS).dir();
+            try (OutputStream os = store.get(FILE_FORBIDDEN_CHARS).out()) {
+                os.write(DATA.getBytes());
+            }
         }
 
         tester.startPage(resourceBrowser);
@@ -73,9 +87,9 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // select dir
         tester.assertComponent(
-                "treeview:rootView:/:children:temp:children:temp/dir", Component.class);
+                "treeview:rootView:/:children:/temp:children:/temp/dir", Component.class);
         tester.executeAjaxEvent(
-                "treeview:rootView:/:children:temp:children:temp/dir:label:selectableLabel",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:label:selectableLabel",
                 "click");
         assertTrue(tester.getComponentFromLastRenderedPage("cut").isEnabled());
         assertFalse(tester.getComponentFromLastRenderedPage("paste").isEnabled());
@@ -98,9 +112,9 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
         assertFalse(Resources.exists(resourceBrowser.store().get(PATH_RES)));
         assertTrue(Resources.exists(resourceBrowser.store().get("/temp/new_dir")));
         assertTrue(Resources.exists(resourceBrowser.store().get("/temp/new_dir/dir/something")));
-        tester.assertContainsNot("treeview:rootView:/:children:temp:children:temp/dir");
+        tester.assertContainsNot("treeview:rootView:/:children:/temp:children:/temp/dir");
         tester.assertComponent(
-                "treeview:rootView:/:children:temp:children:temp/new_dir", Component.class);
+                "treeview:rootView:/:children:/temp:children:/temp/new_dir", Component.class);
 
         // is selected
         assertEquals(
@@ -120,18 +134,18 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // select dir
         tester.executeAjaxEvent(
-                "treeview:rootView:/:children:temp:children:temp/dir:label:selectableLabel",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:label:selectableLabel",
                 "click");
         assertFalse(tester.getComponentFromLastRenderedPage("copy").isEnabled());
         assertFalse(tester.getComponentFromLastRenderedPage("paste").isEnabled());
 
         // select two resources
         tester.executeAjaxEvent(
-                "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/something:selectableLabel",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:children:/temp/dir/something:selectableLabel",
                 "click");
         tester.getRequest().addParameter("ctrl", "true");
         tester.executeAjaxEvent(
-                "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/somethingelse:selectableLabel",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:children:/temp/dir/somethingelse:selectableLabel",
                 "click");
         assertTrue(tester.getComponentFromLastRenderedPage("copy").isEnabled());
         assertFalse(tester.getComponentFromLastRenderedPage("paste").isEnabled());
@@ -143,7 +157,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // select dir
         tester.executeAjaxEvent(
-                "treeview:rootView:/:children:temp:children:temp/dir:label:selectableLabel",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:label:selectableLabel",
                 "click");
         assertTrue(tester.getComponentFromLastRenderedPage("paste").isEnabled());
 
@@ -155,10 +169,10 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
         assertNull(tester.getComponentFromLastRenderedPage("dialog:dialog:content:form:userPanel"));
 
         tester.assertComponent(
-                "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/something.1",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:children:/temp/dir/something.1",
                 Component.class);
         tester.assertComponent(
-                "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/somethingelse.1",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:children:/temp/dir/somethingelse.1",
                 Component.class);
 
         Resource copiedResource = resourceBrowser.store().get("temp/dir/something.1");
@@ -186,7 +200,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
     protected boolean assertContainsPaths(Collection<TreeNode<Resource>> nodes, String... paths) {
         assertEquals(paths.length, nodes.size());
-        Set<String> pathset = new HashSet<String>(Arrays.asList(paths));
+        Set<String> pathset = new HashSet<>(Arrays.asList(paths));
         for (TreeNode<Resource> node : nodes) {
             assertTrue(pathset.remove(node.getObject().path()));
         }
@@ -201,11 +215,11 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // select resource
         tester.executeAjaxEvent(
-                "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/something:selectableLabel",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:children:/temp/dir/something:selectableLabel",
                 "click");
         tester.getRequest().addParameter("ctrl", "true");
         tester.executeAjaxEvent(
-                "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/somethingelse:selectableLabel",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:children:/temp/dir/somethingelse:selectableLabel",
                 "click");
         assertTrue(tester.getComponentFromLastRenderedPage("delete").isEnabled());
 
@@ -219,7 +233,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
         assertFalse(Resources.exists(resourceBrowser.store().get(PATH_RES)));
         assertFalse(Resources.exists(resourceBrowser.store().get(PATH_RES2)));
         tester.assertContainsNot(
-                "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/something");
+                "treeview:rootView:/:children:/temp:children:/temp/dir:children:/temp/dir/something");
     }
 
     @Test
@@ -228,7 +242,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // select resource
         tester.executeAjaxEvent(
-                "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/something:selectableLabel",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:children:/temp/dir/something:selectableLabel",
                 "click");
         assertTrue(tester.getComponentFromLastRenderedPage("rename").isEnabled());
 
@@ -242,9 +256,9 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         assertFalse(Resources.exists(resourceBrowser.store().get(PATH_RES)));
         tester.assertContainsNot(
-                "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/something");
+                "treeview:rootView:/:children:/temp:children:/temp/dir:children:/temp/dir/something");
         tester.assertComponent(
-                "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/anotherthing",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:children:/temp/dir/anotherthing",
                 Component.class);
 
         Resource renamedResource = resourceBrowser.store().get("temp/dir/anotherthing");
@@ -268,14 +282,14 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // select resource
         tester.executeAjaxEvent(
-                "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/something:selectableLabel",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:children:/temp/dir/something:selectableLabel",
                 "click");
         assertTrue(tester.getComponentFromLastRenderedPage("download").isEnabled());
 
         // rename resource
         tester.clickLink("download");
 
-        assertTrue(Arrays.equals(DATA.getBytes(), tester.getLastResponse().getBinaryContent()));
+        assertArrayEquals(DATA.getBytes(), tester.getLastResponse().getBinaryContent());
     }
 
     @Test
@@ -284,7 +298,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // select resource
         tester.executeAjaxEvent(
-                "treeview:rootView:/:children:temp:children:temp/dir:label:selectableLabel",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:label:selectableLabel",
                 "click");
         assertTrue(tester.getComponentFromLastRenderedPage("upload").isEnabled());
 
@@ -306,7 +320,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
         assertNull(tester.getComponentFromLastRenderedPage("dialog:dialog:content:form:userPanel"));
 
         tester.assertComponent(
-                "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/anewthing",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:children:/temp/dir/anewthing",
                 Component.class);
 
         Resource uploadedResource = resourceBrowser.store().get("temp/dir/anewthing");
@@ -330,7 +344,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // select resource
         tester.executeAjaxEvent(
-                "treeview:rootView:/:children:temp:children:temp/dir:label:selectableLabel",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:label:selectableLabel",
                 "click");
         assertTrue(tester.getComponentFromLastRenderedPage("new").isEnabled());
 
@@ -344,7 +358,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
         assertNull(tester.getComponentFromLastRenderedPage("dialog:dialog:content:form:userPanel"));
 
         tester.assertComponent(
-                "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/anewthing",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:children:/temp/dir/anewthing",
                 Component.class);
 
         Resource newResource = resourceBrowser.store().get("temp/dir/anewthing");
@@ -369,7 +383,7 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
 
         // select resource
         tester.executeAjaxEvent(
-                "treeview:rootView:/:children:temp:children:temp/dir:children:temp/dir/something:selectableLabel",
+                "treeview:rootView:/:children:/temp:children:/temp/dir:children:/temp/dir/something:selectableLabel",
                 "click");
         assertTrue(tester.getComponentFromLastRenderedPage("edit").isEnabled());
 
@@ -386,5 +400,30 @@ public class PageResourceBrowserTest extends GeoServerWicketTestSupport {
             assertEquals(
                     DATA2 + System.lineSeparator(), IOUtils.toString(is, StandardCharsets.UTF_8));
         }
+    }
+
+    @Test
+    public void testForbiddenChars() throws Exception {
+        // the resources with invalid chars are created only on linux and OSX
+        Assume.assumeTrue(SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX);
+
+        // getting here is already a win, means it did not blow up unlike reported on
+        // https://osgeo-org.atlassian.net/browse/GEOS-9545
+
+        // go check the resources are there, the file
+        Component file =
+                tester.getComponentFromLastRenderedPage(
+                        "treeview:rootView:/:children:dGhlOn5maWxlLnR4dA==");
+        Resource fileResouce = ((ResourceNode) file.getDefaultModelObject()).getObject();
+        assertEquals(FILE_FORBIDDEN_CHARS, fileResouce.path());
+        assertEquals(Resource.Type.RESOURCE, fileResouce.getType());
+
+        // and the directory
+        Component dir =
+                tester.getComponentFromLastRenderedPage(
+                        "treeview:rootView:/:children:dGhlOn5kaXI=");
+        Resource dirResouce = ((ResourceNode) dir.getDefaultModelObject()).getObject();
+        assertEquals(DIR_FORBIDDEN_CHARS, dirResouce.path());
+        assertEquals(Resource.Type.DIRECTORY, dirResouce.getType());
     }
 }

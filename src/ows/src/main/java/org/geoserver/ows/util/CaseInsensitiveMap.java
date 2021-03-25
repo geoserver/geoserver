@@ -9,83 +9,102 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import org.checkerframework.checker.units.qual.K;
 
 /**
  * Map decorator which makes String keys case-insensitive.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
-public class CaseInsensitiveMap implements Map {
-    Map delegate = new TreeMap();
+// Implementation note, the "K extends String" bit is weird, but fixing String would have meant
+// to have a single parameter map, I've found it to be even more strange to go and declare
+// CaseInsensitiveMap<Object> in the user code
+public class CaseInsensitiveMap<K extends String, V> implements Map<K, V> {
+    Map<K, V> delegate = new TreeMap<>();
 
-    public CaseInsensitiveMap(Map delegate) {
+    public CaseInsensitiveMap(Map<K, V> delegate) {
         putAll(delegate);
     }
 
+    @Override
     public void clear() {
         delegate.clear();
     }
 
+    @Override
     public boolean containsKey(Object key) {
         return delegate.containsKey(upper(key));
     }
 
+    @Override
     public boolean containsValue(Object value) {
         return delegate.containsValue(value);
     }
 
-    public Set entrySet() {
+    @Override
+    public Set<Map.Entry<K, V>> entrySet() {
         return delegate.entrySet();
     }
 
+    @Override
     public boolean equals(Object o) {
         return delegate.equals(o);
     }
 
-    public Object get(Object key) {
+    @Override
+    public V get(Object key) {
         return delegate.get(upper(key));
     }
 
+    @Override
     public int hashCode() {
         return delegate.hashCode();
     }
 
+    @Override
     public boolean isEmpty() {
         return delegate.isEmpty();
     }
 
-    public Set keySet() {
+    @Override
+    public Set<K> keySet() {
         return delegate.keySet();
     }
 
-    public Object put(Object key, Object value) {
+    @Override
+    public V put(K key, V value) {
         return delegate.put(upper(key), value);
     }
 
-    public void putAll(Map t) {
+    @Override
+    public void putAll(Map<? extends K, ? extends V> t) {
         // make sure to upcase all keys
-        for (Object entry : t.entrySet()) {
-            Object key = ((Entry) entry).getKey();
-            Object value = ((Entry) entry).getValue();
+        for (Entry<? extends K, ? extends V> entry : t.entrySet()) {
+            K key = entry.getKey();
+            V value = entry.getValue();
             put(key, value);
         }
     }
 
-    public Object remove(Object key) {
+    @Override
+    public V remove(Object key) {
         return delegate.remove(upper(key));
     }
 
+    @Override
     public int size() {
         return delegate.size();
     }
 
-    public Collection values() {
+    @Override
+    public Collection<V> values() {
         return delegate.values();
     }
 
-    Object upper(Object key) {
+    @SuppressWarnings("unchecked")
+    <T> T upper(T key) {
         if ((key != null) && key instanceof String) {
-            return ((String) key).toUpperCase();
+            return (T) ((String) key).toUpperCase();
         }
 
         return key;
@@ -101,10 +120,10 @@ public class CaseInsensitiveMap implements Map {
      *
      * <p>If the instance is already a case insensitive map it is returned as is.
      */
-    public static Map wrap(Map other) {
+    public static <V> Map<String, V> wrap(Map<String, V> other) {
         if (other instanceof CaseInsensitiveMap) {
             return other;
         }
-        return new CaseInsensitiveMap(other);
+        return new CaseInsensitiveMap<>(other);
     }
 }

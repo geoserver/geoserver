@@ -5,7 +5,8 @@
  */
 package org.geoserver.wfs;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,8 +46,8 @@ public class ReprojectionTest extends WFSTestSupport {
         getGeoServer().save(wfs);
 
         dataDirectory.addVectorLayer(
-                NULL_GEOMETRIES, Collections.EMPTY_MAP, getClass(), getCatalog());
-        Map<LayerProperty, Object> extra = new HashMap<LayerProperty, Object>();
+                NULL_GEOMETRIES, Collections.emptyMap(), getClass(), getCatalog());
+        Map<LayerProperty, Object> extra = new HashMap<>();
         extra.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.REPROJECT_TO_DECLARED);
         extra.put(LayerProperty.SRS, 900913);
         dataDirectory.addVectorLayer(GOOGLE, extra, getClass(), getCatalog());
@@ -211,7 +212,6 @@ public class ReprojectionTest extends WFSTestSupport {
 
     @Test
     public void testGetFeatureWithProjectedBoxGet() throws Exception {
-        Document dom;
         double[] cr = getTransformedPolygonsLayerBBox();
 
         String q =
@@ -227,7 +227,7 @@ public class ReprojectionTest extends WFSTestSupport {
                         + cr[3]
                         + ","
                         + TARGET_CRS_CODE;
-        dom = getAsDOM(q);
+        Document dom = getAsDOM(q);
 
         assertEquals(
                 1,
@@ -240,7 +240,6 @@ public class ReprojectionTest extends WFSTestSupport {
 
     @Test
     public void testGetFeatureWithProjectedBoxPost() throws Exception {
-        Document dom;
         double[] cr = getTransformedPolygonsLayerBBox();
 
         String xml =
@@ -288,7 +287,7 @@ public class ReprojectionTest extends WFSTestSupport {
                         + "</wfs:Query> "
                         + "</wfs:GetFeature>";
 
-        dom = postAsDOM("wfs", xml);
+        Document dom = postAsDOM("wfs", xml);
 
         assertEquals(
                 1,
@@ -302,7 +301,6 @@ public class ReprojectionTest extends WFSTestSupport {
     /** See GEOT-3760 */
     @Test
     public void testGetFeatureWithProjectedBoxIntersectsPost() throws Exception {
-        Document dom;
         double[] cr = getTransformedPolygonsLayerBBox();
 
         String xml =
@@ -350,7 +348,7 @@ public class ReprojectionTest extends WFSTestSupport {
                         + "</wfs:Query> "
                         + "</wfs:GetFeature>";
 
-        dom = postAsDOM("wfs", xml);
+        Document dom = postAsDOM("wfs", xml);
 
         assertEquals(
                 1,
@@ -374,11 +372,10 @@ public class ReprojectionTest extends WFSTestSupport {
                         .getNodeValue();
         String lc = coordinates.split(" ")[0];
         String uc = coordinates.split(" ")[1];
-        double[] c =
-                new double[] {
-                    Double.parseDouble(lc.split(",")[0]), Double.parseDouble(lc.split(",")[1]),
-                    Double.parseDouble(uc.split(",")[0]), Double.parseDouble(uc.split(",")[1])
-                };
+        double[] c = {
+            Double.parseDouble(lc.split(",")[0]), Double.parseDouble(lc.split(",")[1]),
+            Double.parseDouble(uc.split(",")[0]), Double.parseDouble(uc.split(",")[1])
+        };
         double[] cr = new double[4];
         tx.transform(c, 0, cr, 0, 2);
         return cr;

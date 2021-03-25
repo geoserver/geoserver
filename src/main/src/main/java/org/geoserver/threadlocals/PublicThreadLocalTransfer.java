@@ -21,7 +21,7 @@ public class PublicThreadLocalTransfer implements ThreadLocalTransfer {
 
     String key;
 
-    public PublicThreadLocalTransfer(Class theClass, String threadLocalField)
+    public PublicThreadLocalTransfer(Class<?> theClass, String threadLocalField)
             throws SecurityException, NoSuchFieldException {
         this.field = theClass.getDeclaredField(threadLocalField);
         if (field == null) {

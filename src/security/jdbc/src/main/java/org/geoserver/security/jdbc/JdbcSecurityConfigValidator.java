@@ -6,7 +6,15 @@
 
 package org.geoserver.security.jdbc;
 
-import static org.geoserver.security.jdbc.JDBCSecurityConfigException.*;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DDL_FILE_INVALID;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DDL_FILE_REQUIRED;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DML_FILE_INVALID;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DML_FILE_REQUIRED;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DRIVER_CLASSNAME_REQUIRED;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DRIVER_CLASS_NOT_FOUND_$1;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.JDBCURL_REQUIRED;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.JNDINAME_REQUIRED;
+import static org.geoserver.security.jdbc.JDBCSecurityConfigException.USERNAME_REQUIRED;
 
 import java.io.File;
 import org.geoserver.security.GeoServerSecurityManager;

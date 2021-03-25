@@ -36,48 +36,45 @@ public class CasFormAuthenticationHelper extends CasAuthenticationHelper {
         this.password = password;
     }
 
+    @Override
     public boolean ssoLogin() throws IOException {
         URL loginUrl = createURLFromCasURI("/login");
         HttpURLConnection conn = (HttpURLConnection) loginUrl.openConnection();
         String responseString = readResponse(conn);
-        String loginTicket = extractFormParameter(responseString, "\"lt\"");
-        if (loginTicket == null)
-            throw new IOException(" No login ticket for: " + loginUrl.toString());
         String execution = extractFormParameter(responseString, "\"execution\"");
         if (execution == null)
             throw new IOException(" No hidden execution field for: " + loginUrl.toString());
 
-        List<HttpCookie> cookies = getCookies(conn);
-        HttpCookie sessionCookie = getCookieNamed(cookies, "JSESSIONID");
-        String sessionCookieSend = sessionCookie.toString();
-
-        Map<String, String> paramMap = new HashMap<String, String>();
+        Map<String, String> paramMap = new HashMap<>();
         paramMap.put("username", username);
         paramMap.put("password", password);
-        paramMap.put("lt", loginTicket);
         paramMap.put("_eventId", "submit");
-        paramMap.put("submit", "LOGIN");
         paramMap.put("execution", execution);
+        paramMap.put("geolocation", "");
 
         conn = (HttpURLConnection) loginUrl.openConnection();
 
         conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        conn.setRequestProperty("charset", "utf-8");
         conn.setDoOutput(true);
         conn.setDoInput(true);
-        conn.setRequestProperty("Cookie", sessionCookieSend);
+        // conn.setRequestProperty("Cookie", sessionCookieSend);
 
         writeParamsForPostAndSend(conn, paramMap);
+        if (conn.getResponseCode() == 401) return false;
 
-        cookies = getCookies(conn);
+        List<HttpCookie> cookies = getCookies(conn);
         readResponse(conn);
 
         extractCASCookies(cookies, conn);
 
-        return ticketGrantingCookie != null && ticketGrantingCookie.getValue().startsWith("TGT-");
+        return ticketGrantingCookie != null;
     }
 
     protected String extractFormParameter(String formLoginHtml, String searchString) {
         int index = formLoginHtml.indexOf(searchString);
+        if (index == -1) return null;
         index += searchString.length();
         index = formLoginHtml.indexOf("\"", index);
         int index2 = formLoginHtml.indexOf("\"", index + 1);

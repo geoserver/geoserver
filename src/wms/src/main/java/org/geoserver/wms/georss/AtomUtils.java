@@ -86,7 +86,7 @@ public final class AtomUtils {
             String nsUri = feature.getType().getName().getNamespaceURI();
             String nsPrefix = wms.getNameSpacePrefix(nsUri);
 
-            HashMap<String, String> params = new HashMap<String, String>();
+            HashMap<String, String> params = new HashMap<>();
             params.put("format", "application/atom+xml");
             params.put("layers", nsPrefix + ":" + feature.getType().getTypeName());
             params.put("featureid", feature.getID());

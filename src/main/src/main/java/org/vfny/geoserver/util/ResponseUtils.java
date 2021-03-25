@@ -53,7 +53,7 @@ public final class ResponseUtils {
                     if (uri.getQuery() != null && !"".equals(uri.getQuery())) {
                         Map<String, Object> parsed =
                                 KvpUtils.parseQueryString("?" + uri.getQuery());
-                        kvp = new HashMap<String, String>();
+                        kvp = new HashMap<>();
                         for (Entry<String, Object> entry : parsed.entrySet()) {
                             kvp.put(entry.getKey(), (String) entry.getValue());
                         }
@@ -98,7 +98,7 @@ public final class ResponseUtils {
         return validate(xml, schemaURL, skipTargetNamespaceException, null);
     }
 
-    public static List validate(
+    public static List<SAXException> validate(
             InputSource xml,
             URL schemaURL,
             boolean skipTargetNamespaceException,
@@ -114,11 +114,12 @@ public final class ResponseUtils {
         return validate(source, schemaURL, skipTargetNamespaceException, entityResolver);
     }
 
-    public static List validate(Source xml, URL schemaURL, boolean skipTargetNamespaceException) {
+    public static List<SAXException> validate(
+            Source xml, URL schemaURL, boolean skipTargetNamespaceException) {
         return validate(xml, schemaURL, skipTargetNamespaceException, null);
     }
 
-    public static List validate(
+    public static List<SAXException> validate(
             Source xml,
             URL schemaURL,
             boolean skipTargetNamespaceException,
@@ -137,9 +138,7 @@ public final class ResponseUtils {
             v.setErrorHandler(handler);
             v.validate(xml);
             return handler.errors;
-        } catch (SAXException e) {
-            return exception(e);
-        } catch (IOException e) {
+        } catch (SAXException | IOException e) {
             return exception(e);
         }
     }
@@ -147,7 +146,7 @@ public final class ResponseUtils {
     // errors in the document will be put in "errors".
     // if errors.size() ==0  then there were no errors.
     private static class Handler extends DefaultHandler {
-        public ArrayList errors = new ArrayList();
+        public List<SAXException> errors = new ArrayList<>();
 
         boolean skipTargetNamespaceException;
 
@@ -158,6 +157,7 @@ public final class ResponseUtils {
             this.entityResolver = entityResolver;
         }
 
+        @Override
         public void error(SAXParseException exception) throws SAXException {
             if (skipTargetNamespaceException
                     && exception
@@ -170,10 +170,12 @@ public final class ResponseUtils {
             errors.add(exception);
         }
 
+        @Override
         public void fatalError(SAXParseException exception) throws SAXException {
             errors.add(exception);
         }
 
+        @Override
         public void warning(SAXParseException exception) throws SAXException {
             // do nothing
         }
@@ -189,7 +191,7 @@ public final class ResponseUtils {
         }
     }
 
-    static List exception(Exception e) {
+    static List<SAXException> exception(Exception e) {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Validation error", e);
         }

@@ -43,6 +43,8 @@ import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 
 /** Support class to find the nearest match to a given dimension value */
+@SuppressWarnings("unchecked") // uses Range in a raw way, not sure it can be generified, must
+// work for Numbers and Dates at the same time
 public abstract class NearestMatchFinder {
 
     /**
@@ -59,7 +61,7 @@ public abstract class NearestMatchFinder {
     public static NearestMatchFinder get(
             ResourceInfo info, DimensionInfo dimensionInfo, String dimensionName)
             throws IOException {
-        Class dataType = getDataTypeFromDimension(info, dimensionName);
+        Class<?> dataType = getDataTypeFromDimension(info, dimensionName);
         try {
             AcceptableRange acceptableRange =
                     AcceptableRange.getAcceptableRange(
@@ -117,7 +119,7 @@ public abstract class NearestMatchFinder {
                                                 + "in grid coverage reader"));
     }
 
-    private static Class getDataTypeFromDimension(ResourceInfo info, String dimensionName) {
+    private static Class<?> getDataTypeFromDimension(ResourceInfo info, String dimensionName) {
         if (dimensionName.equalsIgnoreCase(ResourceInfo.TIME)) {
             return Date.class;
         } else if (dimensionName.equalsIgnoreCase(ResourceInfo.ELEVATION)) {
@@ -141,13 +143,13 @@ public abstract class NearestMatchFinder {
     PropertyName attribute;
     PropertyName endAttribute;
     AcceptableRange acceptableRange;
-    Class dataType;
+    Class<?> dataType;
 
     public NearestMatchFinder(
             String startAttribute,
             String endAttribute,
             AcceptableRange acceptableRange,
-            Class dataType) {
+            Class<?> dataType) {
         this.attribute = FF.property(startAttribute);
         this.endAttribute = endAttribute == null ? null : FF.property(endAttribute);
         this.acceptableRange = acceptableRange;
@@ -166,6 +168,7 @@ public abstract class NearestMatchFinder {
      *     HTTP warning head)
      */
     public Object getNearest(Object value) throws IOException {
+        if (value == null) return null;
         // simple point vs point comparison?
         if (endAttribute == null
                 && (!(value instanceof Range)
@@ -376,7 +379,7 @@ public abstract class NearestMatchFinder {
                 String attribute,
                 String endAttribute,
                 AcceptableRange acceptableRange,
-                Class dataType)
+                Class<?> dataType)
                 throws IOException {
             super(attribute, endAttribute, acceptableRange, dataType);
             this.featureSource = ftInfo.getFeatureSource(null, null);
@@ -399,7 +402,7 @@ public abstract class NearestMatchFinder {
                 String startAttribute,
                 String endAttribute,
                 AcceptableRange acceptableRange,
-                Class dataType) {
+                Class<?> dataType) {
             super(startAttribute, endAttribute, acceptableRange, dataType);
             this.reader = reader;
         }
@@ -423,7 +426,7 @@ public abstract class NearestMatchFinder {
                 GridCoverage2DReader reader,
                 AcceptableRange acceptableRange,
                 String dimensionName,
-                Class dataType) {
+                Class<?> dataType) {
             super(null, null, acceptableRange, dataType);
             this.reader = reader;
             this.dimensionName = dimensionName;

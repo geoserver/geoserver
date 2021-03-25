@@ -6,11 +6,10 @@
 package org.geoserver.web.wicket.browser;
 
 import static org.geoserver.web.GeoServerWicketTestSupport.initResourceSettings;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.Model;
@@ -51,20 +50,16 @@ public class FileDataViewTest {
 
         tester.startPage(
                 new FormTestPage(
-                        new ComponentBuilder() {
+                        (ComponentBuilder)
+                                id ->
+                                        new FileDataView(id, fileProvider) {
 
-                            public Component buildComponent(String id) {
-
-                                return new FileDataView(id, fileProvider) {
-
-                                    @Override
-                                    protected void linkNameClicked(
-                                            File file, AjaxRequestTarget target) {
-                                        lastClicked = file;
-                                    }
-                                };
-                            }
-                        }));
+                                            @Override
+                                            protected void linkNameClicked(
+                                                    File file, AjaxRequestTarget target) {
+                                                lastClicked = file;
+                                            }
+                                        }));
 
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, true);
     }
@@ -94,7 +89,7 @@ public class FileDataViewTest {
 
     @Test
     public void testFilter() throws Exception {
-        fileProvider.setFileFilter(new Model(new ExtensionFileFilter(".txt")));
+        fileProvider.setFileFilter(new Model<>(new ExtensionFileFilter(".txt")));
         tester.startPage(tester.getLastRenderedPage());
         tester.assertLabel("form:panel:fileTable:fileContent:files:3:nameLink:name", "one.txt");
         assertEquals(

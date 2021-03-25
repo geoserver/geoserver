@@ -35,7 +35,7 @@ public enum WMSErrorCode {
             throw new IllegalArgumentException("Odd number of version/code mappings");
         }
 
-        codes = new HashMap();
+        codes = new HashMap<>();
         for (int i = 0; i < mappings.length - 1; i += 2) {
             codes.put(new Version(mappings[i]), mappings[i + 1]);
         }

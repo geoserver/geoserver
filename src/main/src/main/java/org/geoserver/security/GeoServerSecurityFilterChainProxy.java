@@ -38,7 +38,7 @@ public class GeoServerSecurityFilterChainProxy
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
-    static ThreadLocal<HttpServletRequest> REQUEST = new ThreadLocal<HttpServletRequest>();
+    static ThreadLocal<HttpServletRequest> REQUEST = new ThreadLocal<>();
 
     /**
      * Request header attribute indicating if the request was running through a Geoserver security
@@ -150,6 +150,7 @@ public class GeoServerSecurityFilterChainProxy
         createFilterChain();
     }
 
+    @Override
     public void afterPropertiesSet() {
         createFilterChain();
     };
@@ -175,7 +176,7 @@ public class GeoServerSecurityFilterChainProxy
         List<SecurityFilterChain> filterChains = new ArrayList<>();
         for (RequestFilterChain chain : filterChain.getRequestChains()) {
             RequestMatcher matcher = matcherForChain(chain);
-            List<Filter> filters = new ArrayList<Filter>();
+            List<Filter> filters = new ArrayList<>();
             for (String filterName : chain.getCompiledFilterNames()) {
                 try {
                     Filter filter = lookupFilter(filterName);
@@ -223,7 +224,7 @@ public class GeoServerSecurityFilterChainProxy
         if (tmp == null) return new GeoServerRequestMatcher(methods, (RequestMatcher[]) null);
 
         // resolve multiple patterns separated by a comma
-        List<String> patterns = new ArrayList<String>();
+        List<String> patterns = new ArrayList<>();
         for (String pattern : tmp) {
             String[] array = pattern.split(",");
             for (String singlePattern : array) patterns.add(singlePattern);

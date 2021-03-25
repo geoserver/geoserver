@@ -17,7 +17,7 @@ public class CompositeFilter extends Filter {
     }
 
     protected CompositeFilter(Filter... filters) {
-        this(new ArrayList(Arrays.asList(filters)));
+        this(new ArrayList<>(Arrays.asList(filters)));
     }
 
     public List<Filter> getFilters() {

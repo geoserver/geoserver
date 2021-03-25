@@ -47,8 +47,8 @@ public class DuplicateTypeTest extends AbstractAppSchemaTestSupport {
         String request = "GetFeature&version=1.1.0&typename=gsml:MappedFeature";
         Document doc = getAsDOM("wfs?request=" + request);
         LOGGER.info("WFS " + request + " response:\n" + prettyString(doc));
-        assertXpathEvaluatesTo("4", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(4, "//gsml:MappedFeature", doc);
+        assertXpathEvaluatesTo("5", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+        assertXpathCount(5, "//gsml:MappedFeature", doc);
         // test that targetAttributeNode works when mapping gsml:positionalAccuracy to
         // gsml:CGI_NumericValue
         assertXpathEvaluatesTo(

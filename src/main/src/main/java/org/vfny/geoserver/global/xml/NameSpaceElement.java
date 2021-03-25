@@ -137,7 +137,7 @@ public abstract class NameSpaceElement {
      *
      * @return Class instance of the Class object which would best represent this element.
      */
-    public abstract Class getJavaClass();
+    public abstract Class<?> getJavaClass();
 
     /**
      * This is a bit of a hack, so that GeoServer can generate with the best (default) xml mappings
@@ -154,6 +154,7 @@ public abstract class NameSpaceElement {
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return getQualifiedTypeDefName(prefix);
     }

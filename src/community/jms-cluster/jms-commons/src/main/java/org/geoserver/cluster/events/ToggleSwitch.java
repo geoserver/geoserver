@@ -49,6 +49,7 @@ public class ToggleSwitch implements ApplicationContextAware {
         return status;
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext ctx) {
         this.ctx = ctx;
     }

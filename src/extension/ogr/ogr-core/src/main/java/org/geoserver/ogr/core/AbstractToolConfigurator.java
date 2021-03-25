@@ -18,7 +18,6 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.ResourceListener;
-import org.geoserver.platform.resource.ResourceNotification;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
@@ -41,12 +40,7 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
     protected Resource configFile;
 
     // ConfigurationPoller
-    protected ResourceListener listener =
-            new ResourceListener() {
-                public void changed(ResourceNotification notify) {
-                    loadConfiguration();
-                }
-            };
+    protected ResourceListener listener = notify -> loadConfiguration();
 
     /** @param formatConverter the format converter tool */
     public AbstractToolConfigurator(
@@ -72,12 +66,9 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
         ToolConfiguration configuration = getDefaultConfiguration();
         try {
             if (configFile.getType() == Type.RESOURCE) {
-                InputStream in = configFile.in();
-                try {
+                try (InputStream in = configFile.in()) {
                     XStream xstream = buildXStream();
                     configuration = (ToolConfiguration) xstream.fromXML(in);
-                } finally {
-                    in.close();
                 }
             }
         } catch (Exception e) {
@@ -108,7 +99,7 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
         Set<String> supported = wrapper.getSupportedFormats();
         of.setExecutable(configuration.getExecutable());
         of.setEnvironment(configuration.getEnvironment());
-        List<Format> toBeAdded = new ArrayList<Format>();
+        List<Format> toBeAdded = new ArrayList<>();
         for (Format format : configuration.getFormats()) {
             if (supported.contains(format.getToolFormat())) {
                 toBeAdded.add(format);
@@ -151,6 +142,7 @@ public abstract class AbstractToolConfigurator implements ApplicationListener<Co
     }
 
     /** Kill all threads on web app context shutdown to avoid permgen leaks */
+    @Override
     public void onApplicationEvent(ContextClosedEvent event) {
         if (configFile != null) {
             configFile.removeListener(listener);

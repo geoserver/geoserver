@@ -49,7 +49,7 @@ public class ReaderDimensionAccessorTest {
         @Override
         public String[] getMetadataNames() {
             Set<String> keys = metadata.keySet();
-            return (String[]) keys.toArray(new String[keys.size()]);
+            return keys.toArray(new String[keys.size()]);
         }
 
         @Override
@@ -138,7 +138,7 @@ public class ReaderDimensionAccessorTest {
         ReaderDimensionsAccessor accessor = new ReaderDimensionsAccessor(reader);
         List<Object> converted = accessor.convertDimensionValue("MYDIM", Arrays.asList("10/20"));
         assertEquals(1, converted.size());
-        NumberRange<Double> expected = new NumberRange<Double>(Double.class, 10d, 20d);
+        NumberRange<Double> expected = new NumberRange<>(Double.class, 10d, 20d);
         assertEquals(expected, converted.get(0));
     }
 
@@ -150,7 +150,7 @@ public class ReaderDimensionAccessorTest {
         ReaderDimensionsAccessor accessor = new ReaderDimensionsAccessor(reader);
         List<Object> converted = accessor.convertDimensionValue("MYDIM", Arrays.asList("75/100"));
         assertEquals(1, converted.size());
-        NumberRange<Double> expected = new NumberRange<Double>(Double.class, 75d, 100d);
+        NumberRange<Double> expected = new NumberRange<>(Double.class, 75d, 100d);
         assertEquals(expected, converted.get(0));
     }
 }

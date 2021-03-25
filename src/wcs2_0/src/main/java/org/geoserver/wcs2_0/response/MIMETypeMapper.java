@@ -47,10 +47,9 @@ public class MIMETypeMapper implements ApplicationContextAware {
 
     private Logger LOGGER = Logging.getLogger(MIMETypeMapper.class);
 
-    private final SoftValueHashMap<String, String> mimeTypeCache =
-            new SoftValueHashMap<String, String>(100);
+    private final SoftValueHashMap<String, String> mimeTypeCache = new SoftValueHashMap<>(100);
 
-    private final Set<String> outputMimeTypes = new HashSet<String>();
+    private final Set<String> outputMimeTypes = new HashSet<>();
 
     private List<CoverageMimeTypeMapper> mappers;
 
@@ -123,18 +122,23 @@ public class MIMETypeMapper implements ApplicationContextAware {
     public class MimeTypeCacheClearingListener extends CatalogVisitorAdapter
             implements CatalogListener {
 
+        @Override
         public void handleAddEvent(CatalogAddEvent event) {}
 
+        @Override
         public void handleModifyEvent(CatalogModifyEvent event) {}
 
+        @Override
         public void handlePostModifyEvent(CatalogPostModifyEvent event) {
             event.getSource().accept(this);
         }
 
+        @Override
         public void handleRemoveEvent(CatalogRemoveEvent event) {
             event.getSource().accept(this);
         }
 
+        @Override
         public void reloaded() {
             outputMimeTypes.clear();
         }

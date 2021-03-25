@@ -61,19 +61,17 @@ public class GeofencePage extends GeoServerSecuredPage {
         final IModel<GeoFenceConfiguration> configModel = getGeoFenceConfigModel();
         final IModel<CacheConfiguration> cacheModel = getCacheConfigModel();
         Form<IModel<GeoFenceConfiguration>> form =
-                new Form<IModel<GeoFenceConfiguration>>(
+                new Form<>(
                         "form",
                         new CompoundPropertyModel<IModel<GeoFenceConfiguration>>(configModel));
         form.setOutputMarkupId(true);
         add(form);
         form.add(
-                new TextField<String>(
-                                "instanceName",
-                                new PropertyModel<String>(configModel, "instanceName"))
+                new TextField<>("instanceName", new PropertyModel<>(configModel, "instanceName"))
                         .setRequired(true));
         // .setVisible(!config.isInternal());
         form.add(
-                new TextField<String>(
+                new TextField<>(
                                 "servicesUrl",
                                 new ExtPropertyModel<String>(configModel, "servicesUrl")
                                         .setReadOnly(config.isInternal()))
@@ -129,20 +127,19 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.add(
                 new CheckBox(
                         "allowRemoteAndInlineLayers",
-                        new PropertyModel<Boolean>(configModel, "allowRemoteAndInlineLayers")));
+                        new PropertyModel<>(configModel, "allowRemoteAndInlineLayers")));
         form.add(
                 new CheckBox(
                         "grantWriteToWorkspacesToAuthenticatedUsers",
-                        new PropertyModel<Boolean>(
+                        new PropertyModel<>(
                                 configModel, "grantWriteToWorkspacesToAuthenticatedUsers")));
         form.add(
                 new CheckBox(
-                        "useRolesToFilter",
-                        new PropertyModel<Boolean>(configModel, "useRolesToFilter")));
+                        "useRolesToFilter", new PropertyModel<>(configModel, "useRolesToFilter")));
 
         form.add(
-                new TextField<String>(
-                        "acceptedRoles", new PropertyModel<String>(configModel, "acceptedRoles")));
+                new TextField<>(
+                        "acceptedRoles", new PropertyModel<>(configModel, "acceptedRoles")));
 
         Button submit =
                 new Button("submit") {
@@ -175,19 +172,15 @@ public class GeofencePage extends GeoServerSecuredPage {
         form.add(cancel);
 
         form.add(
-                new TextField<Long>("cacheSize", new PropertyModel<Long>(cacheModel, "size"))
+                new TextField<>("cacheSize", new PropertyModel<>(cacheModel, "size"))
                         .setRequired(true));
 
         form.add(
-                new TextField<Long>(
-                                "cacheRefresh",
-                                new PropertyModel<Long>(cacheModel, "refreshMilliSec"))
+                new TextField<>("cacheRefresh", new PropertyModel<>(cacheModel, "refreshMilliSec"))
                         .setRequired(true));
 
         form.add(
-                new TextField<Long>(
-                                "cacheExpire",
-                                new PropertyModel<Long>(cacheModel, "expireMilliSec"))
+                new TextField<>("cacheExpire", new PropertyModel<>(cacheModel, "expireMilliSec"))
                         .setRequired(true));
 
         CachedRuleReader cacheRuleReader = GeoServerExtensions.bean(CachedRuleReader.class);
@@ -228,9 +221,9 @@ public class GeofencePage extends GeoServerSecuredPage {
                 }.setDefaultFormProcessing(false));
     }
 
-    private final Map<String, Object> statsValues = new HashMap<String, Object>();
+    private final Map<String, Object> statsValues = new HashMap<>();
 
-    private final Set<Label> statsLabels = new HashSet<Label>();
+    private final Set<Label> statsLabels = new HashSet<>();
 
     private static final String KEY_RULE_SIZE = "rule.size";
 
@@ -307,11 +300,11 @@ public class GeofencePage extends GeoServerSecuredPage {
 
     /** Creates a new wicket model from the configuration object. */
     private IModel<GeoFenceConfiguration> getGeoFenceConfigModel() {
-        return new Model<GeoFenceConfiguration>(config);
+        return new Model<>(config);
     }
 
     /** Creates a new wicket model from the configuration object. */
     private IModel<CacheConfiguration> getCacheConfigModel() {
-        return new Model<CacheConfiguration>(cacheParams);
+        return new Model<>(cacheParams);
     }
 }

@@ -88,7 +88,7 @@ public abstract class GridSetListTablePanel extends GeoServerTablePanel<GridSet>
     protected CheckBox selectOneCheckbox(Item<GridSet> item) {
         CheckBox cb = super.selectOneCheckbox(item);
 
-        GridSet gs = (GridSet) item.getModelObject();
+        GridSet gs = item.getModelObject();
 
         String name = gs.getName();
         final boolean internal = GWC.get().isInternalGridSet(name);
@@ -106,7 +106,7 @@ public abstract class GridSetListTablePanel extends GeoServerTablePanel<GridSet>
      */
     @Override
     public List<GridSet> getSelection() {
-        List<GridSet> selection = new ArrayList<GridSet>(super.getSelection());
+        List<GridSet> selection = new ArrayList<>(super.getSelection());
         for (Iterator<GridSet> it = selection.iterator(); it.hasNext(); ) {
             GridSet g = it.next();
             if (GWC.get().isInternalGridSet(g.getName())) {

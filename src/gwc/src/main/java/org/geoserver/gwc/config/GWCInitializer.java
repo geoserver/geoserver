@@ -88,6 +88,7 @@ public class GWCInitializer implements GeoServerReinitializer {
     }
 
     /** @see org.geoserver.config.GeoServerInitializer#initialize(org.geoserver.config.GeoServer) */
+    @Override
     public void initialize(final GeoServer geoServer) throws Exception {
         LOGGER.info(
                 "Initializing GeoServer specific GWC configuration from "
@@ -142,7 +143,7 @@ public class GWCInitializer implements GeoServerReinitializer {
             if (LOGGER.isLoggable(Level.FINEST)) {
                 LOGGER.finest("Setting default CacheConfiguration");
             }
-            Map<String, CacheConfiguration> map = new HashMap<String, CacheConfiguration>();
+            Map<String, CacheConfiguration> map = new HashMap<>();
             map.put(GuavaCacheProvider.class.toString(), new CacheConfiguration());
             gwcConfig.setCacheConfigurations(map);
             configPersister.save(gwcConfig);
@@ -183,8 +184,7 @@ public class GWCInitializer implements GeoServerReinitializer {
                 continue;
             }
             try {
-                GeoServerTileLayerInfo tileLayerInfo;
-                tileLayerInfo = LegacyTileLayerInfoLoader.load(layer);
+                GeoServerTileLayerInfo tileLayerInfo = LegacyTileLayerInfoLoader.load(layer);
                 if (tileLayerInfo != null) {
                     tileLayerCatalog.save(tileLayerInfo);
                     MetadataMap metadata = layer.getMetadata();
@@ -203,8 +203,7 @@ public class GWCInitializer implements GeoServerReinitializer {
 
         for (LayerGroupInfo layer : rawCatalog.getLayerGroups()) {
             try {
-                GeoServerTileLayerInfo tileLayerInfo;
-                tileLayerInfo = LegacyTileLayerInfoLoader.load(layer);
+                GeoServerTileLayerInfo tileLayerInfo = LegacyTileLayerInfoLoader.load(layer);
                 if (tileLayerInfo != null) {
                     tileLayerCatalog.save(tileLayerInfo);
                     MetadataMap metadata = layer.getMetadata();
@@ -233,8 +232,8 @@ public class GWCInitializer implements GeoServerReinitializer {
                 continue;
             }
             try {
-                GeoServerTileLayerInfo tileLayerInfo;
-                tileLayerInfo = TileLayerInfoUtil.loadOrCreate(layer, defaultSettings);
+                GeoServerTileLayerInfo tileLayerInfo =
+                        TileLayerInfoUtil.loadOrCreate(layer, defaultSettings);
                 tileLayerCatalog.save(tileLayerInfo);
                 MetadataMap metadata = layer.getMetadata();
                 if (metadata.containsKey(LegacyTileLayerInfoLoader.CONFIG_KEY_ENABLED)) {
@@ -253,8 +252,8 @@ public class GWCInitializer implements GeoServerReinitializer {
 
         for (LayerGroupInfo layer : rawCatalog.getLayerGroups()) {
             try {
-                GeoServerTileLayerInfo tileLayerInfo;
-                tileLayerInfo = TileLayerInfoUtil.loadOrCreate(layer, defaultSettings);
+                GeoServerTileLayerInfo tileLayerInfo =
+                        TileLayerInfoUtil.loadOrCreate(layer, defaultSettings);
                 tileLayerCatalog.save(tileLayerInfo);
 
                 MetadataMap metadata = layer.getMetadata();

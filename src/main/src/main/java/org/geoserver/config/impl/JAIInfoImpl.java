@@ -54,61 +54,73 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
     JAIEXTInfo jaiext = new JAIEXTInfoImpl();
 
     /** @uml.property name="allowInterpolation" */
+    @Override
     public boolean getAllowInterpolation() {
         return allowInterpolation;
     }
 
     /** @uml.property name="allowInterpolation" */
+    @Override
     public void setAllowInterpolation(boolean allowInterpolation) {
         this.allowInterpolation = allowInterpolation;
     }
 
     /** @uml.property name="recycling" */
+    @Override
     public boolean isRecycling() {
         return recycling;
     }
 
     /** @uml.property name="recycling" */
+    @Override
     public void setRecycling(boolean recycling) {
         this.recycling = recycling;
     }
 
     /** @uml.property name="tilePriority" */
+    @Override
     public int getTilePriority() {
         return tilePriority;
     }
 
     /** @uml.property name="tilePriority" */
+    @Override
     public void setTilePriority(int tilePriority) {
         this.tilePriority = tilePriority;
     }
 
     /** @uml.property name="tileThreads" */
+    @Override
     public int getTileThreads() {
         return tileThreads;
     }
 
     /** @uml.property name="tileThreads" */
+    @Override
     public void setTileThreads(int tileThreads) {
         this.tileThreads = tileThreads;
     }
 
     /** @uml.property name="memoryCapacity" */
+    @Override
     public double getMemoryCapacity() {
         return memoryCapacity;
     }
 
     /** @uml.property name="memoryCapacity" */
+    @Override
     public void setMemoryCapacity(double memoryCapacity) {
         this.memoryCapacity = memoryCapacity;
     }
 
     /** @uml.property name="memoryThreshold" */
+    @Override
     public double getMemoryThreshold() {
         return memoryThreshold;
     }
 
     /** @uml.property name="memoryThreshold" */
+    @Override
     public void setMemoryThreshold(double memoryThreshold) {
         this.memoryThreshold = memoryThreshold;
     }
@@ -121,10 +133,12 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         this.pngAcceleration = pngAcceleration;
     }
 
+    @Override
     public boolean isJpegAcceleration() {
         return jpegAcceleration;
     }
 
+    @Override
     public void setJpegAcceleration(boolean jpegAcceleration) {
         this.jpegAcceleration = jpegAcceleration;
     }
@@ -137,10 +151,12 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         return imageIOCache;
     }
 
+    @Override
     public JAI getJAI() {
         return JAI.getDefaultInstance();
     }
 
+    @Override
     public void setJAI(JAI jai) {
         // do nothing. REVISIT: we're using the singleton JAI instance and guess there's no way to
         // get a non singleton one, so does this method make sense at all? In any case, this class
@@ -148,10 +164,12 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         // directly and avoid NPE's
     }
 
+    @Override
     public TileCache getTileCache() {
         return getJAI().getTileCache();
     }
 
+    @Override
     public void setTileCache(TileCache tileCache) {
         // do nothing. REVISIT: we're using the singleton JAI instance and guess there's no way to
         // get a non singleton one, so does this method make sense at all? In any case, this class
@@ -159,18 +177,22 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         // directly and avoid NPE's
     }
 
+    @Override
     public boolean isAllowNativeMosaic() {
         return allowNativeMosaic;
     }
 
+    @Override
     public void setAllowNativeMosaic(boolean allowNativeMosaic) {
         this.allowNativeMosaic = allowNativeMosaic;
     }
 
+    @Override
     public boolean isAllowNativeWarp() {
         return allowNativeWarp;
     }
 
+    @Override
     public void setAllowNativeWarp(boolean allowNativeWarp) {
         this.allowNativeWarp = allowNativeWarp;
     }
@@ -184,8 +206,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         result = prime * result + (allowNativeWarp ? 1231 : 1237);
         result = prime * result + (imageIOCache ? 1231 : 1237);
         result = prime * result + (jpegAcceleration ? 1231 : 1237);
-        long temp;
-        temp = Double.doubleToLongBits(memoryCapacity);
+        long temp = Double.doubleToLongBits(memoryCapacity);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(memoryThreshold);
         result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -221,6 +242,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         return true;
     }
 
+    @Override
     public JAIInfoImpl clone() {
         try {
             return (JAIInfoImpl) super.clone();
@@ -229,6 +251,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         }
     }
 
+    @Override
     public PngEncoderType getPngEncoderType() {
         if (pngEncoderType == null) {
             return PngEncoderType.PNGJ;
@@ -237,10 +260,12 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         }
     }
 
+    @Override
     public void setPngEncoderType(PngEncoderType pngEncoderType) {
         this.pngEncoderType = pngEncoderType;
     }
 
+    @Override
     public JAIEXTInfo getJAIEXTInfo() {
         if (jaiext == null) {
             jaiext = new JAIEXTInfoImpl();
@@ -248,6 +273,7 @@ public class JAIInfoImpl implements Serializable, JAIInfo {
         return jaiext;
     }
 
+    @Override
     public void setJAIEXTInfo(JAIEXTInfo jaiext) {
         this.jaiext = jaiext;
     }

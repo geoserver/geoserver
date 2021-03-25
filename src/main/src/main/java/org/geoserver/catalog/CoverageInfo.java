@@ -29,6 +29,7 @@ public interface CoverageInfo extends ResourceInfo {
      *
      * <p>
      */
+    @Override
     CoverageStoreInfo getStore();
 
     /**

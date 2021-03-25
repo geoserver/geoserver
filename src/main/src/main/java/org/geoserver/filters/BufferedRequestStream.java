@@ -25,6 +25,7 @@ public class BufferedRequestStream extends ServletInputStream {
         myInputStream.reset();
     }
 
+    @Override
     public int readLine(byte[] b, int off, int len) throws IOException {
         int read;
         int index = off;
@@ -41,10 +42,12 @@ public class BufferedRequestStream extends ServletInputStream {
         return index - off;
     }
 
+    @Override
     public int read() throws IOException {
         return myInputStream.read();
     }
 
+    @Override
     public int available() throws IOException {
         return myInputStream.available();
     }

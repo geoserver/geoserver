@@ -7,7 +7,6 @@ package org.geoserver.wcs.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.List;
 import javax.xml.transform.TransformerException;
 import net.opengis.wcs11.GetCapabilitiesType;
@@ -28,6 +27,7 @@ public class GetCapabilitiesResponse extends Response {
     }
 
     /** Makes sure this triggers only */
+    @Override
     public boolean canHandle(Operation operation) {
         // is this a wcs 1.1.1 or 1.1.0 one?
         return "GetCapabilities".equalsIgnoreCase(operation.getId())
@@ -36,6 +36,7 @@ public class GetCapabilitiesResponse extends Response {
                         || operation.getService().getVersion().toString().equals("1.1.1"));
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) {
         GetCapabilitiesType request =
                 OwsUtils.parameter(operation.getParameters(), GetCapabilitiesType.class);
@@ -44,8 +45,8 @@ public class GetCapabilitiesResponse extends Response {
             // look for an accepted format
             List formats = request.getAcceptFormats().getOutputFormat();
 
-            for (Iterator f = formats.iterator(); f.hasNext(); ) {
-                String format = (String) f.next();
+            for (Object o : formats) {
+                String format = (String) o;
 
                 if (format.endsWith("/xml")) {
                     return format;
@@ -57,6 +58,7 @@ public class GetCapabilitiesResponse extends Response {
         return "text/xml";
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         TransformerBase tx = (TransformerBase) value;
 

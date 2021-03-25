@@ -6,6 +6,7 @@
 package org.geoserver.wcs.web;
 
 import java.util.Arrays;
+import java.util.List;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -37,35 +38,37 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
         super(service);
     }
 
+    @Override
     protected Class<WCSInfo> getServiceClass() {
         return WCSInfo.class;
     }
 
+    @Override
     protected void build(IModel info, Form form) {
         // overview policy
         form.add(
-                new DropDownChoice(
+                new DropDownChoice<>(
                         "overviewPolicy",
                         Arrays.asList(OverviewPolicy.values()),
                         new OverviewPolicyRenderer()));
         form.add(new CheckBox("subsamplingEnabled"));
 
         // limited srs list
-        TextArea srsList =
+        TextArea<List<String>> srsList =
                 new SRSListTextArea(
-                        "srs", LiveCollectionModel.list(new PropertyModel(info, "sRS")));
+                        "srs", LiveCollectionModel.list(new PropertyModel<>(info, "sRS")));
         form.add(srsList);
 
         // resource limits
-        TextField maxInputMemory = new TextField("maxInputMemory");
+        TextField<Integer> maxInputMemory = new TextField<>("maxInputMemory");
         maxInputMemory.add(RangeValidator.minimum(0l));
         form.add(maxInputMemory);
-        TextField maxOutputMemory = new TextField("maxOutputMemory");
+        TextField<Integer> maxOutputMemory = new TextField<>("maxOutputMemory");
         maxOutputMemory.add(RangeValidator.minimum(0l));
         form.add(maxOutputMemory);
         // max dimension values
         TextField<Integer> maxRequestedDimensionValues =
-                new TextField<Integer>("maxRequestedDimensionValues");
+                new TextField<>("maxRequestedDimensionValues");
         maxRequestedDimensionValues.add(RangeValidator.minimum(0));
         form.add(maxRequestedDimensionValues);
 
@@ -73,20 +76,21 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
         form.add(new CheckBox("latLon"));
     }
 
+    @Override
     protected String getServiceName() {
         return "WCS";
     }
 
-    private class OverviewPolicyRenderer extends ChoiceRenderer {
+    private class OverviewPolicyRenderer extends ChoiceRenderer<OverviewPolicy> {
 
-        public Object getDisplayValue(Object object) {
-            return new StringResourceModel(
-                            ((OverviewPolicy) object).name(), WCSAdminPage.this, null)
-                    .getString();
+        @Override
+        public Object getDisplayValue(OverviewPolicy object) {
+            return new StringResourceModel(object.name(), WCSAdminPage.this, null).getString();
         }
 
-        public String getIdValue(Object object, int index) {
-            return ((OverviewPolicy) object).name();
+        @Override
+        public String getIdValue(OverviewPolicy object, int index) {
+            return object.name();
         }
     }
 }

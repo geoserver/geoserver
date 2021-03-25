@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import org.geoserver.web.data.resource.BasicResourceConfig;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.ReferencingFactoryFinder;
 import org.geotools.util.factory.Hints;
@@ -74,10 +74,10 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
                     // description = CRS.getAuthorityFactory(true).getDescriptionText("EPSG:" +
                     // code)
                     // .toString(getLocale()).toUpperCase();
-                    desc =
-                            CRS.getAuthorityFactory(true)
-                                    .getDescriptionText("EPSG:" + code)
-                                    .toString();
+                    String epsgcode = code;
+                    if (!epsgcode.startsWith(BasicResourceConfig.URN_OGC_PREFIX))
+                        epsgcode = "EPSG:" + epsgcode;
+                    desc = CRS.getAuthorityFactory(true).getDescriptionText(epsgcode).toString();
                 } catch (Exception e) {
                     // no problem
                 }
@@ -99,6 +99,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
             return 17 * code.hashCode();
         }
 
+        @Override
         public int compareTo(SRS o) {
             return code.compareTo(o.code);
         }
@@ -130,18 +131,14 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
 
                 @Override
                 public Comparator<SRS> getComparator() {
-                    return new Comparator<SRS>() {
-
-                        public int compare(SRS o1, SRS o2) {
-                            return String.CASE_INSENSITIVE_ORDER.compare(
+                    return (o1, o2) ->
+                            String.CASE_INSENSITIVE_ORDER.compare(
                                     o1.getDescription(), o2.getDescription());
-                        }
-                    };
                 }
             };
 
     private static final ArrayList<Property<SRS>> PROPERTIES =
-            new ArrayList<Property<SRS>>(Arrays.asList(CODE, DESCRIPTION));
+            new ArrayList<>(Arrays.asList(CODE, DESCRIPTION));
 
     private volatile List<SRS> items;
 
@@ -149,9 +146,15 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
 
     // a constructor to pass custom list of SRS list
     public SRSProvider(List<String> srsList) {
-        int index = "EPSG:".length();
-        List<SRS> otherSRS =
-                srsList.stream().map(s -> new SRS(s.substring(index))).collect(Collectors.toList());
+        List<SRS> otherSRS = new ArrayList<>();
+        for (String srs : srsList) {
+
+            if (srs.startsWith(BasicResourceConfig.EPSG_PREFIX))
+                srs = srs.substring(BasicResourceConfig.EPSG_PREFIX.length());
+
+            otherSRS.add(new SRS(srs));
+        }
+
         this.items = otherSRS;
     }
 
@@ -183,7 +186,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
         }
 
         // make a set with each code
-        Set<SRS> idSet = new HashSet<SRS>();
+        Set<SRS> idSet = new HashSet<>();
         for (String code : codes) {
             // make sure we're using just the non prefix part
             String id = code.substring(code.indexOf(':') + 1);
@@ -194,7 +197,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
             }
         }
 
-        List<SRS> srsList = new ArrayList<SRS>(idSet);
+        List<SRS> srsList = new ArrayList<>(idSet);
         Collections.sort(srsList, new CodeComparator()); // sort to get them in order
         return srsList;
     }
@@ -207,6 +210,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
      */
     private static class CodeComparator implements Comparator<SRS> {
 
+        @Override
         public int compare(SRS srs1, SRS srs2) {
             String s1 = srs1.getCode();
             String s2 = srs2.getCode();

@@ -45,9 +45,9 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
     public void setUpInternal() throws Exception {
         // Creatign models
         LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.TASMANIA_DEM));
-        layerModel = new Model<LayerInfo>(layerInfo);
+        layerModel = new Model<>(layerInfo);
         ResourceInfo resource = layerInfo.getResource();
-        resourceModel = new Model<CoverageInfo>((CoverageInfo) resource);
+        resourceModel = new Model<>((CoverageInfo) resource);
         // Add Element to MetadataMap
         MetadataMap metadata = resource.getMetadata();
         if (!metadata.containsKey(NetCDFSettingsContainer.NETCDFOUT_KEY)) {
@@ -64,6 +64,7 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = -6705646666953650890L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new NetCDFOutTabPanel(id, layerModel, resourceModel);
                             }
@@ -121,6 +122,7 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
         // Ensure the Compression Component value is correct
         tester.assertComponent(
                 "form:panel:netcdfeditor:container:compressionLevel", TextField.class);
+        @SuppressWarnings("unchecked")
         TextField<Integer> compressionLevel =
                 (TextField<Integer>)
                         tester.getComponentFromLastRenderedPage(
@@ -130,15 +132,14 @@ public class NetCDFOutTabPanelTest extends GeoServerWicketTestSupport {
         // Ensure the DataPacking Component value is correct
         tester.assertComponent(
                 "form:panel:netcdfeditor:container:dataPacking", DropDownChoice.class);
+        @SuppressWarnings("unchecked")
         DropDownChoice<DataPacking> dataPacking =
                 (DropDownChoice<DataPacking>)
                         tester.getComponentFromLastRenderedPage(
                                 "form:panel:netcdfeditor:container:dataPacking");
         assertEquals(dataPacking.getModelObject(), container.getDataPacking());
 
-        FormTester formTester;
-
-        formTester = tester.newFormTester("form");
+        FormTester formTester = tester.newFormTester("form");
         formTester.setValue("panel:netcdfeditor:container:standardName", "test-name");
         formTester.setValue("panel:netcdfeditor:container:uom", "test-uom");
         formTester.submit();

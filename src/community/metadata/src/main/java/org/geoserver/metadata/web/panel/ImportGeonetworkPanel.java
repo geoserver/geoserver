@@ -119,6 +119,7 @@ public abstract class ImportGeonetworkPanel extends Panel {
                 target.add(getFeedbackPanel());
             }
 
+            @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
             }

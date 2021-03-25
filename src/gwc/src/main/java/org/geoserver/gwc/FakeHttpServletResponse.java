@@ -31,6 +31,7 @@ public class FakeHttpServletResponse implements HttpServletResponse {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(20480);
 
+        @Override
         public void write(int b) throws IOException {
             outputStream.write(b);
         }
@@ -44,7 +45,7 @@ public class FakeHttpServletResponse implements HttpServletResponse {
 
     private String contentType;
 
-    private HashMap<String, String> headers = new HashMap<String, String>();
+    private HashMap<String, String> headers = new HashMap<>();
 
     private List<Cookie> cookies;
 
@@ -59,77 +60,94 @@ public class FakeHttpServletResponse implements HttpServletResponse {
     }
 
     /** @see javax.servlet.http.HttpServletResponse#addCookie(javax.servlet.http.Cookie) */
+    @Override
     public void addCookie(Cookie cookie) {
         if (cookies == null) {
-            cookies = new ArrayList<Cookie>(2);
+            cookies = new ArrayList<>(2);
         }
         cookies.add(cookie);
     }
 
+    @Override
     public void addDateHeader(String arg0, long arg1) {
         log.finer("Added date header: " + arg0 + " : " + arg1);
         headers.put(arg0, Long.toString(arg1));
     }
 
+    @Override
     public void addHeader(String arg0, String arg1) {
         log.finer("Added string header: " + arg0 + " : " + arg1);
         headers.put(arg0, arg1);
     }
 
+    @Override
     public void addIntHeader(String arg0, int arg1) {
         log.finer("Added integer header: " + arg0 + " : " + arg1);
         headers.put(arg0, Integer.toString(arg1));
     }
 
+    @Override
     public boolean containsHeader(String arg0) {
         return headers.containsKey(arg0);
     }
 
+    @Override
     public String encodeRedirectURL(String arg0) {
         throw new ServletDebugException();
     }
 
+    @Override
     public String encodeRedirectUrl(String arg0) {
         throw new ServletDebugException();
     }
 
+    @Override
     public String encodeURL(String arg0) {
         throw new ServletDebugException();
     }
 
+    @Override
     public String encodeUrl(String arg0) {
         throw new ServletDebugException();
     }
 
+    @Override
     public void sendError(int arg0) throws IOException {
         responseCode = arg0;
     }
 
+    @Override
     public void sendError(int arg0, String arg1) throws IOException {
         responseCode = arg0;
     }
 
+    @Override
     public void sendRedirect(String arg0) throws IOException {
         throw new ServletDebugException();
     }
 
+    @Override
     public void setDateHeader(String arg0, long arg1) {
         throw new ServletDebugException();
     }
 
     /** @see javax.servlet.http.HttpServletResponse#setHeader(java.lang.String, java.lang.String) */
+    @Override
     public void setHeader(String arg0, String arg1) {
         addHeader(arg0, arg1);
     }
 
+    @Override
     public void setIntHeader(String arg0, int arg1) {
         throw new ServletDebugException();
     }
 
+    @Override
     public void setStatus(int arg0) {
         throw new ServletDebugException();
     }
 
+    @Override
     public void setStatus(int arg0, String arg1) {
         throw new ServletDebugException();
     }
@@ -156,65 +174,80 @@ public class FakeHttpServletResponse implements HttpServletResponse {
         return headers.keySet();
     }
 
+    @Override
     public void flushBuffer() throws IOException {
         throw new ServletDebugException();
     }
 
+    @Override
     public int getBufferSize() {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getCharacterEncoding() {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getContentType() {
         return this.contentType;
     }
 
+    @Override
     public Locale getLocale() {
         throw new ServletDebugException();
     }
 
+    @Override
     public ServletOutputStream getOutputStream() throws IOException {
         log.finer("Returning output stream");
         return this.fos;
     }
 
+    @Override
     public PrintWriter getWriter() throws IOException {
         throw new ServletDebugException();
     }
 
+    @Override
     public boolean isCommitted() {
         throw new ServletDebugException();
     }
 
+    @Override
     public void reset() {
         throw new ServletDebugException();
     }
 
+    @Override
     public void resetBuffer() {
         throw new ServletDebugException();
     }
 
+    @Override
     public void setBufferSize(int arg0) {
         throw new ServletDebugException();
     }
 
+    @Override
     public void setCharacterEncoding(String arg0) {
         // throw new ServletDebugException();
 
     }
 
+    @Override
     public void setContentLength(int arg0) {
         throw new ServletDebugException();
     }
 
+    @Override
     public void setContentType(String arg0) {
         log.finer("Content type set to " + arg0);
         this.contentType = arg0;
     }
 
+    @Override
     public void setLocale(Locale arg0) {
         throw new ServletDebugException();
     }

@@ -6,7 +6,9 @@
 
 package org.geoserver.security.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -141,9 +143,8 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
 
             // obtain a lock
             store1.addUser(user);
-            boolean fail;
             String failMessage = "Concurrent lock not allowed";
-            fail = true;
+            boolean fail = true;
             try {
                 store2.clear();
             } catch (IOException ex) {
@@ -269,8 +270,8 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
             // modifiy store1
             store1.addGroup(group);
             store1.store();
-            assertTrue(service1.getUserGroups().size() == 1);
-            assertTrue(service1.getGroupCount() == 1);
+            assertEquals(1, service1.getUserGroups().size());
+            assertEquals(1, service1.getGroupCount());
 
             // increment lastmodified adding a second manually, the test is too fast
             xmlFile.setLastModified(xmlFile.lastModified() + 2000);
@@ -282,8 +283,8 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
             }
 
             // here comes the magic !!!
-            assertTrue(service2.getUserGroups().size() == 1);
-            assertTrue(service2.getGroupCount() == 1);
+            assertEquals(1, service2.getUserGroups().size());
+            assertEquals(1, service2.getGroupCount());
         } finally {
             xmlFile.delete();
         }

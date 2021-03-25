@@ -5,7 +5,10 @@
  */
 package org.geoserver.ows.kvp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -88,7 +91,7 @@ public class NamespaceKvpParserTest {
     @SuppressWarnings("unchecked")
     private List<String> getPrefixes(NamespaceSupport ctx) {
         Enumeration<String> prefixes = ctx.getPrefixes();
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         while (prefixes.hasMoreElements()) {
             l.add(prefixes.nextElement());
         }

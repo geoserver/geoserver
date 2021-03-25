@@ -56,6 +56,7 @@ public abstract class FilterKvpParser extends KvpParser {
      */
     protected abstract Configuration getParserConfiguration();
 
+    @Override
     public Object parse(String value) throws Exception {
         // create the parser
         final Configuration configuration = getParserConfiguration();
@@ -63,13 +64,12 @@ public abstract class FilterKvpParser extends KvpParser {
         parser.setEntityResolver(entityResolverProvider.getEntityResolver());
 
         // seperate the individual filter strings
-        List unparsed = KvpUtils.readFlat(value, KvpUtils.OUTER_DELIMETER);
-        List filters = new ArrayList();
+        List<String> unparsed = KvpUtils.readFlat(value, KvpUtils.OUTER_DELIMETER);
+        List<Filter> filters = new ArrayList<>();
 
-        Iterator i = unparsed.listIterator();
-
+        Iterator<String> i = unparsed.listIterator();
         while (i.hasNext()) {
-            String string = (String) i.next();
+            String string = i.next();
             if ("".equals(string.trim())) {
                 filters.add(Filter.INCLUDE);
             } else {

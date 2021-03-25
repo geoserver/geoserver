@@ -37,9 +37,10 @@ public class BestGuessRegionatingStrategy implements RegionatingStrategy {
         this.gs = gs;
     }
 
+    @Override
     public Filter getFilter(WMSMapContent context, Layer layer) {
         SimpleFeatureType type = ((SimpleFeatureSource) layer.getFeatureSource()).getSchema();
-        Class geomtype = type.getGeometryDescriptor().getType().getBinding();
+        Class<?> geomtype = type.getGeometryDescriptor().getType().getBinding();
 
         if (Point.class.isAssignableFrom(geomtype))
             return new RandomRegionatingStrategy(gs).getFilter(context, layer);
@@ -47,6 +48,7 @@ public class BestGuessRegionatingStrategy implements RegionatingStrategy {
         return new GeometryRegionatingStrategy(gs).getFilter(context, layer);
     }
 
+    @Override
     public void clearCache(FeatureTypeInfo cfg) {
         new GeometryRegionatingStrategy(gs).clearCache(cfg);
     }

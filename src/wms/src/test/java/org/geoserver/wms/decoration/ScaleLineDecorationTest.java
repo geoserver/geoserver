@@ -24,7 +24,7 @@ public class ScaleLineDecorationTest extends DecorationTestSupport {
         assertPixel(bi, 180, 160, Color.WHITE);
 
         // setup for transparent background
-        Map<String, String> options = new HashMap<String, String>();
+        Map<String, String> options = new HashMap<>();
         options.put("transparent", "true");
         d.loadOptions(options);
 
@@ -39,7 +39,7 @@ public class ScaleLineDecorationTest extends DecorationTestSupport {
         ScaleLineDecoration d = new ScaleLineDecoration();
 
         // setup for metric
-        Map<String, String> options = new HashMap<String, String>();
+        Map<String, String> options = new HashMap<>();
         options.put("measurement-system", "metric");
         d.loadOptions(options);
         BufferedImage bi = paintOnImage(d);

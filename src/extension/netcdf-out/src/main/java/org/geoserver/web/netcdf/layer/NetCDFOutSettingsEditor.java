@@ -33,7 +33,7 @@ import org.geotools.coverage.io.netcdf.cf.Entry;
 import org.geotools.coverage.io.netcdf.cf.NetCDFCFParser;
 import si.uom.NonSI;
 import si.uom.SI;
-import tec.uom.se.format.SimpleUnitFormat;
+import tech.units.indriya.format.SimpleUnitFormat;
 
 /**
  * Extension of the {@link NetCDFPanel} adding support for setting the Layer name and Unit of
@@ -48,7 +48,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
     private static final List<Unit<?>> UNITS;
 
     static {
-        UNITS = new ArrayList<Unit<?>>();
+        UNITS = new ArrayList<>();
         UNITS.addAll(SI_INSTANCE.getUnits());
         UNITS.addAll(NON_SI_INSTANCE.getUnits());
     }
@@ -67,11 +67,11 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
         super(id, netcdfModel);
         // Add panel for Standard name definition
         standardName =
-                new TextField<String>("standardName", new PropertyModel(netcdfModel, "layerName"));
+                new TextField<>("standardName", new PropertyModel<>(netcdfModel, "layerName"));
         // Add panel for UOM definition
         uom =
                 new AutoCompleteTextField<String>(
-                        "uom", new PropertyModel(netcdfModel, "layerUOM")) {
+                        "uom", new PropertyModel<>(netcdfModel, "layerUOM")) {
 
                     @Override
                     protected Iterator<String> getChoices(String input) {
@@ -80,13 +80,13 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
                             return emptyList.iterator();
                         }
 
-                        List<String> unitNames = new ArrayList<String>();
+                        List<String> unitNames = new ArrayList<>();
                         UnitFormat format = SimpleUnitFormat.getInstance();
                         for (Unit<?> unit : UNITS) {
                             unitNames.add(format.format(unit));
                         }
 
-                        List<String> choices = new ArrayList<String>();
+                        List<String> choices = new ArrayList<>();
                         for (String name : unitNames) {
                             if (name.toLowerCase().startsWith(input.toLowerCase())) {
                                 choices.add(name);
@@ -101,7 +101,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
         if ((startUOM == null || startUOM.isEmpty()) && cinfo != null) {
             // Add the new value from the CoverageBand Details
             List<CoverageDimensionInfo> infos = cinfo.getObject().getDimensions();
-            if (infos != null && infos.size() > 0) {
+            if (infos != null && !infos.isEmpty()) {
                 CoverageDimensionInfo info = infos.get(0);
                 uom.setModelObject(info.getUnit());
             }
@@ -112,7 +112,7 @@ public class NetCDFOutSettingsEditor extends NetCDFPanel<NetCDFLayerSettingsCont
 
         // Getting the available standard names
         NetCDFParserBean bean = GeoServerExtensions.bean(NetCDFParserBean.class);
-        Set<String> names = new TreeSet<String>();
+        Set<String> names = new TreeSet<>();
         if (bean != null && bean.getParser() != null) {
             NetCDFCFParser parser = bean.getParser();
             names.addAll(parser.getEntryIds());

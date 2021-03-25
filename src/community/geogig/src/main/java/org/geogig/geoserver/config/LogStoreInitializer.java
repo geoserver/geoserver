@@ -63,7 +63,7 @@ class LogStoreInitializer {
             try {
                 ((SingleConnectionDataSource) dataSource).conn.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
             }
         }
     }

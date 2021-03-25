@@ -24,8 +24,7 @@ public class ValidationTest extends AbstractAppSchemaTestSupport {
     /** Test that when minOccur=0 the validation should let it pass */
     @Test
     public void testAttributeMinOccur0() {
-        Document doc = null;
-        doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit");
         LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
         assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.gu.1']/gml:name", doc);
         assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='gsml.geologicunit.gu.2']/gml:name", doc);
@@ -94,8 +93,7 @@ public class ValidationTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testSimpleContentInteger() {
-        Document doc = null;
-        doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=er:Commodity");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=er:Commodity");
         LOGGER.info("WFS GetFeature&typename=er:Commodity response:\n" + prettyString(doc));
         assertXpathCount(1, "//er:Commodity[@gml:id='er.commodity.gu.1']/gml:name", doc);
         assertXpathCount(1, "//er:Commodity[@gml:id='er.commodity.gu.1']/er:commodityRank", doc);

@@ -25,7 +25,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public class BoundingBoxPPIO extends ProcessParameterIO {
 
-    public BoundingBoxPPIO(Class type) {
+    public BoundingBoxPPIO(Class<?> type) {
         super(type, type);
     }
 
@@ -44,6 +44,7 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
         }
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics...
     private Object toTargetType(BoundingBoxType bbox) throws Exception {
         CoordinateReferenceSystem crs = null;
         if (bbox.getCrs() != null) {
@@ -71,7 +72,7 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
     }
 
     double[] ordinates(List<Double> corner) {
-        Double[] objects = (Double[]) corner.toArray(new Double[corner.size()]);
+        Double[] objects = corner.toArray(new Double[corner.size()]);
         double[] result = new double[objects.length];
         for (int i = 0; i < result.length; i++) {
             result[i] = objects[i];

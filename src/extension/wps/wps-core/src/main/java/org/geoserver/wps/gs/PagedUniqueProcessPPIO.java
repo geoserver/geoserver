@@ -44,6 +44,7 @@ public class PagedUniqueProcessPPIO extends CDataPPIO {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void encode(Object value, OutputStream os) throws Exception {
         PagedUniqueProcess.Results result = (PagedUniqueProcess.Results) value;
         JSONObject obj = new JSONObject();

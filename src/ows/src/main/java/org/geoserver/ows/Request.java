@@ -35,10 +35,10 @@ public class Request {
     protected boolean soap;
 
     /** Kvp parameters, only non-null if get = true */
-    protected Map kvp;
+    protected Map<String, Object> kvp;
 
     /** raw kvp parameters, unparsed */
-    protected Map rawKvp;
+    protected Map<String, Object> rawKvp;
 
     /** buffered input stream, only non-null if get = false */
     protected BufferedReader input;
@@ -47,6 +47,9 @@ public class Request {
     protected String service;
     /** OWS request (ie operation) combined with service and version */
     protected String request;
+
+    /** XML root element name as parsed from a POST request with an xml request body */
+    protected String postRequestElementName;
 
     /** OWS protocol version (combined with service and request) */
     protected String version;
@@ -140,12 +143,12 @@ public class Request {
     }
 
     /** The parsed key value pair map */
-    public Map getKvp() {
+    public Map<String, Object> getKvp() {
         return kvp;
     }
 
     /** The raw, un-parsed key value pair map */
-    public Map getRawKvp() {
+    public Map<String, Object> getRawKvp() {
         return rawKvp;
     }
 
@@ -200,6 +203,7 @@ public class Request {
         return error;
     }
 
+    @Override
     public String toString() {
         return getService() + " " + getVersion() + " " + getRequest();
     }
@@ -248,7 +252,7 @@ public class Request {
      *
      * @param kvp Parsed kvp values.
      */
-    public void setKvp(Map kvp) {
+    public void setKvp(Map<String, Object> kvp) {
         this.kvp = kvp;
     }
 
@@ -257,7 +261,7 @@ public class Request {
      *
      * @param kvp Parsed kvp values.
      */
-    public void setOrAppendKvp(Map kvp) {
+    public void setOrAppendKvp(Map<String, Object> kvp) {
         if (this.kvp == null) {
             setKvp(kvp);
         } else {
@@ -270,7 +274,7 @@ public class Request {
      *
      * @param rawKvp key value pair map override
      */
-    public void setRawKvp(Map rawKvp) {
+    public void setRawKvp(Map<String, Object> rawKvp) {
         this.rawKvp = rawKvp;
     }
 
@@ -299,6 +303,24 @@ public class Request {
      */
     public void setRequest(String request) {
         this.request = request;
+    }
+
+    /**
+     * The xml root element name (e.g. {@code GetMap}, {@code GetFeature}, {@code
+     * StyledLayerDescriptor}. etc.), as pre-parsed during a Dispatcher POST request initialization,
+     * since it may differ from the final {@link #getRequest() request name}
+     */
+    String getPostRequestElementName() {
+        return postRequestElementName;
+    }
+
+    /**
+     * The xml root element name (e.g. {@code GetMap}, {@code GetFeature}, {@code
+     * StyledLayerDescriptor}. etc.), as pre-parsed during a Dispatcher POST request initialization,
+     * since it may differ from the final {@link #getRequest() request name}
+     */
+    void setPostRequestElementName(String rootXmlElementName) {
+        this.postRequestElementName = rootXmlElementName;
     }
 
     /**

@@ -10,7 +10,6 @@ import java.awt.image.SampleModel;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -89,8 +88,7 @@ public class WCSUtils {
             final Interpolation interpolation)
             throws WcsException {
 
-        final ParameterValueGroup param =
-                (ParameterValueGroup) PROCESSOR.getOperation("Resample").getParameters();
+        final ParameterValueGroup param = PROCESSOR.getOperation("Resample").getParameters();
         param.parameter("Source").setValue(coverage);
         param.parameter("CoordinateReferenceSystem").setValue(targetCRS);
         param.parameter("GridGeometry").setValue(gridGeometry);
@@ -152,7 +150,7 @@ public class WCSUtils {
                 new GridGeometry2D(
                         targetRange, gg.getGridToCRS(), gg.getCoordinateReferenceSystem2D());
 
-        List<GridCoverage2D> sources = new ArrayList<GridCoverage2D>(2);
+        List<GridCoverage2D> sources = new ArrayList<>(2);
         sources.add(coverage);
 
         // perform the mosaic
@@ -185,8 +183,7 @@ public class WCSUtils {
         // ///////////////////////////////////////////////////////////////////
         if (interpolation != null) {
             /* Operations.DEFAULT.interpolate(coverage, interpolation) */
-            final ParameterValueGroup param =
-                    (ParameterValueGroup) PROCESSOR.getOperation("Interpolate").getParameters();
+            final ParameterValueGroup param = PROCESSOR.getOperation("Interpolate").getParameters();
             param.parameter("Source").setValue(coverage);
             param.parameter("Type").setValue(interpolation);
 
@@ -221,16 +218,16 @@ public class WCSUtils {
         //
         // ///////////////////////////////////////////////////////////////////
         final int numDimensions = coverage.getNumSampleDimensions();
-        final Map dims = new HashMap();
-        final ArrayList selectedBands = new ArrayList();
+        final Map<String, Integer> dims = new HashMap<>();
+        final List<Integer> selectedBands = new ArrayList<>();
 
         for (int d = 0; d < numDimensions; d++) {
             dims.put("band" + (d + 1), Integer.valueOf(d));
         }
 
         if ((params != null) && !params.isEmpty()) {
-            for (Iterator p = params.keySet().iterator(); p.hasNext(); ) {
-                final String param = (String) p.next();
+            for (Object o : params.keySet()) {
+                final String param = (String) o;
 
                 if (param.equalsIgnoreCase("BAND")) {
                     try {
@@ -251,15 +248,15 @@ public class WCSUtils {
                         } else {
                             final String[] bands = values.split(",");
 
-                            for (int v = 0; v < bands.length; v++) {
-                                final String key = param.toLowerCase() + bands[v];
+                            for (String band : bands) {
+                                final String key = param.toLowerCase() + band;
 
                                 if (dims.containsKey(key)) {
                                     selectedBands.add(dims.get(key));
                                 }
                             }
 
-                            if (selectedBands.size() == 0) {
+                            if (selectedBands.isEmpty()) {
                                 throw new Exception("WRONG PARAM VALUES.");
                             }
                         }
@@ -276,7 +273,7 @@ public class WCSUtils {
         final int[] bands = new int[length];
 
         for (int b = 0; b < length; b++) {
-            bands[b] = ((Integer) selectedBands.get(b)).intValue();
+            bands[b] = selectedBands.get(b).intValue();
         }
 
         return bandSelect(coverage, bands);
@@ -288,8 +285,7 @@ public class WCSUtils {
         if ((bands != null) && (bands.length > 0)) {
             /* Operations.DEFAULT.selectSampleDimension(coverage, bands) */
             final ParameterValueGroup param =
-                    (ParameterValueGroup)
-                            PROCESSOR.getOperation("SelectSampleDimension").getParameters();
+                    PROCESSOR.getOperation("SelectSampleDimension").getParameters();
             param.parameter("Source").setValue(coverage);
             param.parameter("SampleDimensions").setValue(bands);
             // param.parameter("VisibleSampleDimension").setValue(bands);
@@ -543,7 +539,7 @@ public class WCSUtils {
             filter = request.getKvp().get("CQL_FILTER");
             if (filter instanceof List) {
                 List list = (List) filter;
-                if (list.size() > 0) {
+                if (!list.isEmpty()) {
                     filter = list.get(0);
                 }
             }

@@ -7,6 +7,7 @@ package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
@@ -15,7 +16,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -23,7 +23,14 @@ import java.util.List;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogIntegrationTest;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.Keyword;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -246,14 +253,19 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
         assertThat(keywordsObject.containsKey("string"), is(true));
         JSONArray keywords = keywordsObject.getJSONArray("string");
         assertThat(keywords.size(), is(2));
-        // created a list of keywords so we can check is content with hamcrest
-        List<Object> keywordsList = new ArrayList<>();
-        keywordsList.addAll(keywords);
         assertThat(
-                keywordsList,
+                toList(keywords),
                 containsInAnyOrder(
                         "keyword1\\@language=en\\;\\@vocabulary=vocabulary1\\;",
                         "keyword2\\@language=pt\\;\\@vocabulary=vocabulary2\\;"));
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<Object> toList(JSONArray keywords) {
+        // created a list of keywords so we can check is content with hamcrest
+        List<Object> keywordsList = new ArrayList<>();
+        keywordsList.addAll(keywords);
+        return keywordsList;
     }
 
     @Test

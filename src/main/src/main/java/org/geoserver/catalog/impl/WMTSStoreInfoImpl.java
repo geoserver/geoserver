@@ -38,10 +38,12 @@ public class WMTSStoreInfoImpl extends StoreInfoImpl implements WMTSStoreInfo {
         super(catalog);
     }
 
+    @Override
     public String getCapabilitiesURL() {
         return capabilitiesURL;
     }
 
+    @Override
     public void setCapabilitiesURL(String capabilitiesURL) {
         this.capabilitiesURL = capabilitiesURL;
     }
@@ -96,30 +98,36 @@ public class WMTSStoreInfoImpl extends StoreInfoImpl implements WMTSStoreInfo {
         this.connectTimeout = timeoutSeconds;
     }
 
+    @Override
     public String getHeaderName() {
         return headerName;
     }
 
+    @Override
     public void setHeaderName(String headerName) {
         this.headerName = headerName;
     }
 
+    @Override
     public String getHeaderValue() {
         return headerValue;
     }
 
+    @Override
     public void setHeaderValue(String headerValue) {
         this.headerValue = headerValue;
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
 
+    @Override
     public WebMapTileServer getWebMapTileServer(ProgressListener listener) throws IOException {
         Catalog catalog2 = getCatalog();
         ResourcePool resourcePool = catalog2.getResourcePool();
-        WebMapTileServer webMapTileServer = resourcePool.getWebMapTileServer((WMTSStoreInfo) this);
+        WebMapTileServer webMapTileServer = resourcePool.getWebMapTileServer(this);
         return webMapTileServer;
     }
 

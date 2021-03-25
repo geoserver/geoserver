@@ -7,11 +7,11 @@ package org.geoserver.gwc.layer;
 
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
 import static org.geoserver.gwc.layer.TileLayerInfoUtil.loadOrCreate;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 import java.beans.Introspector;
 import java.io.File;
@@ -128,9 +128,8 @@ public class GeoServerTileLayerInfoSerializableTest {
 
     @Test
     public void testMarshallingGridSubsets() throws Exception {
-        List<XMLGridSubset> subsets = new ArrayList<XMLGridSubset>();
-        XMLGridSubset subset;
-        subset = new XMLGridSubset();
+        List<XMLGridSubset> subsets = new ArrayList<>();
+        XMLGridSubset subset = new XMLGridSubset();
         subset.setGridSetName("EPSG:4326");
         subset.setZoomStart(1);
         subset.setZoomStop(10);

@@ -39,6 +39,7 @@ public class DescribeFeatureTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.DESCRIBEFEATURETYPE;
     }
@@ -50,7 +51,8 @@ public class DescribeFeatureTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<?> getType() {
         return null;
     }
 
@@ -61,6 +63,7 @@ public class DescribeFeatureTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         // TODO: implement
         return null;

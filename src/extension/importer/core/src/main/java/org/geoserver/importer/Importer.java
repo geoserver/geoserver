@@ -15,7 +15,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -134,8 +133,7 @@ public class Importer implements DisposableBean, ApplicationListener {
 
     JobQueue synchronousJobs = new JobQueue();
 
-    ConcurrentHashMap<Long, ImportTask> currentlyProcessing =
-            new ConcurrentHashMap<Long, ImportTask>();
+    ConcurrentHashMap<Long, ImportTask> currentlyProcessing = new ConcurrentHashMap<>();
 
     ImporterInfo configuration;
 
@@ -304,15 +302,12 @@ public class Importer implements DisposableBean, ApplicationListener {
             return contextStore.iterator("updated");
         } catch (UnsupportedOperationException e) {
             // fallback
-            TreeSet sorted =
-                    new TreeSet<ImportContext>(
-                            new Comparator<ImportContext>() {
-                                @Override
-                                public int compare(ImportContext o1, ImportContext o2) {
-                                    Date d1 = o1.getUpdated();
-                                    Date d2 = o2.getUpdated();
-                                    return -1 * d1.compareTo(d2);
-                                }
+            TreeSet<ImportContext> sorted =
+                    new TreeSet<>(
+                            (o1, o2) -> {
+                                Date d1 = o1.getUpdated();
+                                Date d2 = o2.getUpdated();
+                                return -1 * d1.compareTo(d2);
                             });
             Iterators.addAll(sorted, contextStore.iterator());
             return sorted.iterator();
@@ -524,7 +519,7 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     List<ImportTask> initForDirectory(ImportContext context, Directory data) throws IOException {
-        List<ImportTask> tasks = new ArrayList<ImportTask>();
+        List<ImportTask> tasks = new ArrayList<>();
 
         // flatten out the directory into itself and all sub directories and process in order
         for (Directory dir : data.flatten()) {
@@ -532,12 +527,12 @@ public class Importer implements DisposableBean, ApplicationListener {
             if (dir.getFiles().isEmpty()) continue;
 
             // group the contents of the directory by format
-            Map<DataFormat, List<FileData>> map = new HashMap<DataFormat, List<FileData>>();
+            Map<DataFormat, List<FileData>> map = new HashMap<>();
             for (FileData f : dir.getFiles()) {
                 DataFormat format = f.getFormat();
                 List<FileData> files = map.get(format);
                 if (files == null) {
-                    files = new ArrayList<FileData>();
+                    files = new ArrayList<>();
                     map.put(format, files);
                 }
                 files.add(f);
@@ -553,7 +548,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             if (targetStore == null) {
 
                 // create a task for each "format" if that format can handle a directory
-                for (DataFormat format : new ArrayList<DataFormat>(map.keySet())) {
+                for (DataFormat format : new ArrayList<>(map.keySet())) {
                     if (format != null && format.canRead(dir)) {
                         List<FileData> files = map.get(format);
                         if (files.size() == 1) {
@@ -613,7 +608,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             ImportData data, DataFormat format, ImportContext context, boolean skipNoFormat)
             throws IOException {
 
-        List<ImportTask> tasks = new ArrayList<ImportTask>();
+        List<ImportTask> tasks = new ArrayList<>();
 
         boolean direct = false;
 
@@ -944,7 +939,6 @@ public class Importer implements DisposableBean, ApplicationListener {
                     try {
                         directory.archive(getArchiveFile(context));
                     } catch (Exception ioe) {
-                        ioe.printStackTrace();
                         // this is not a critical operation, so don't make the whole thing fail
                         LOGGER.log(Level.WARNING, "Error archiving", ioe);
                     }
@@ -1045,10 +1039,12 @@ public class Importer implements DisposableBean, ApplicationListener {
         protected abstract T callInternal(ProgressMonitor monitor) throws Exception;
     }
 
+    @SuppressWarnings("unchecked")
     public Task<ImportContext> getTask(Long job) {
         return (Task<ImportContext>) asynchronousJobs.getTask(job);
     }
 
+    @SuppressWarnings("unchecked")
     public List<Task<ImportContext>> getTasks() {
         return (List) asynchronousJobs.getTasks();
     }
@@ -1451,6 +1447,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         }
     }
 
+    @SuppressWarnings("unchecked") // vague about feature types
     private Throwable copyFromFeatureSource(
             ImportData data,
             ImportTask task,
@@ -1471,21 +1468,19 @@ public class Importer implements DisposableBean, ApplicationListener {
             LOGGER.fine("begining import - highlevel api");
 
             FeatureSource fs = format.getFeatureSource(data, task);
-            FeatureCollection fc = fs.getFeatures();
 
             FeatureStore featureStore =
                     (FeatureStore) dataStoreDestination.getFeatureSource(uniquifiedFeatureTypeName);
             featureStore.setTransaction(transaction);
 
-            fc =
-                    new ImportTransformFeatureCollection(
-                            fc,
+            FeatureCollection fc =
+                    new ImportTransformFeatureCollection<>(
+                            fs.getFeatures(),
                             featureDataConverter,
                             featureStore.getSchema(),
                             tx,
                             task,
                             dataStoreDestination);
-
             featureStore.addFeatures(fc);
 
         } catch (Throwable e) {
@@ -1774,6 +1769,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         }
     }
 
+    @Override
     public void destroy() throws Exception {
         asynchronousJobs.shutdown();
         contextStore.destroy();

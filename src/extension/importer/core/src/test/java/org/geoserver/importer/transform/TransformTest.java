@@ -71,7 +71,7 @@ public class TransformTest {
         SimpleFeature f =
                 transformType(
                         new ReprojectTransform(crs),
-                        (SimpleFeatureType) type,
+                        type,
                         new GeometryFactory().createPoint(new Coordinate(1d, 1d)));
         Point p = (Point) f.getAttribute("geom");
         assertEquals(111319.49079327357, p.getX(), 0d);
@@ -110,7 +110,7 @@ public class TransformTest {
     private SimpleFeatureType buildType(Object[] args) {
         sftb.setName("ft");
         for (int i = 0; i < args.length; i += 3) {
-            sftb.add((String) args[i], (Class) args[i + 1]);
+            sftb.add((String) args[i], (Class<?>) args[i + 1]);
         }
         return sftb.buildFeatureType();
     }

@@ -34,21 +34,27 @@ import org.opengis.filter.FilterFactory;
 public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
 
     public GetFeatureKvpRequestReader(
-            Class requestBean, GeoServer geoServer, FilterFactory filterFactory) {
+            Class<?> requestBean, GeoServer geoServer, FilterFactory filterFactory) {
         this(requestBean, WfsFactory.eINSTANCE, geoServer, filterFactory);
     }
 
     public GetFeatureKvpRequestReader(
-            Class requestBean, EFactory factory, GeoServer geoServer, FilterFactory filterFactory) {
+            Class<?> requestBean,
+            EFactory factory,
+            GeoServer geoServer,
+            FilterFactory filterFactory) {
         super(requestBean, factory, geoServer, filterFactory);
     }
 
+    @Override
     protected WFSInfo getWFS() {
         return geoServer.getService(WFSInfo.class);
     }
 
     /** Performs additional GetFeature/GetFeatureWithLock kvp parsing requirements */
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    @Override
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         // hack but startIndex conflicts with WMS startIndex... which parses to different type, so
         // we just parse manually
         if (rawKvp.containsKey("startIndex")) {
@@ -82,14 +88,18 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
 
         // aliases
         if (kvp.containsKey("aliases")) {
-            querySet(eObject, "aliases", (List) kvp.get("aliases"));
+            @SuppressWarnings("unchecked")
+            List<Object> aliases = (List) kvp.get("aliases");
+            querySet(eObject, "aliases", aliases);
         }
 
         // propertyName
         if (kvp.containsKey("propertyName")) {
-            List<String> propertyNames = new ArrayList<String>();
+            List<String> propertyNames = new ArrayList<>();
             if (kvp.get("propertyName") != null && kvp.get("propertyName") instanceof List) {
-                propertyNames = (List) kvp.get("propertyName");
+                @SuppressWarnings("unchecked")
+                List<String> cast = (List) kvp.get("propertyName");
+                propertyNames = cast;
             } else if (kvp.get("propertyName") != null
                     && kvp.get("propertyName") instanceof String) {
                 propertyNames.addAll(KvpUtils.readFlat((String) kvp.get("propertyName")));
@@ -99,7 +109,9 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
 
         // sortBy
         if (kvp.containsKey("sortBy")) {
-            querySet(eObject, "sortBy", (List) kvp.get("sortBy"));
+            @SuppressWarnings("unchecked")
+            List<Object> sortBy = (List) kvp.get("sortBy");
+            querySet(eObject, "sortBy", sortBy);
         }
 
         // srsName
@@ -117,25 +129,28 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
 
         GetFeatureRequest req = GetFeatureRequest.adapt(request);
         if (kvp.containsKey("format_options")) {
-            req.getFormatOptions().putAll((Map) kvp.get("format_options"));
+            @SuppressWarnings("unchecked")
+            Map<String, Object> fo = (Map) kvp.get("format_options");
+            req.getFormatOptions().putAll(fo);
         }
 
         // sql view params
         if (kvp.containsKey("viewParams")) {
 
             if (req.getViewParams() == null) {
-                req.setViewParams(new ArrayList<Map<String, String>>());
+                req.setViewParams(new ArrayList<>());
             }
 
             // fan out over all layers if necessary
+            @SuppressWarnings("unchecked")
             List<Map<String, String>> viewParams =
                     (List<Map<String, String>>) kvp.get("viewParams");
-            if (viewParams.size() > 0) {
+            if (!viewParams.isEmpty()) {
                 int layerCount = req.getQueries().size();
 
                 // if we have just one replicate over all layers
                 if (viewParams.size() == 1 && layerCount > 1) {
-                    List<Map<String, String>> replacement = new ArrayList<Map<String, String>>();
+                    List<Map<String, String>> replacement = new ArrayList<>();
                     for (int i = 0; i < layerCount; i++) {
                         replacement.add(viewParams.get(0));
                     }
@@ -156,7 +171,9 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         return request;
     }
 
-    protected void querySet(EObject request, String property, List values) throws WFSException {
+    @Override
+    protected <T> void querySet(EObject request, String property, List<T> values)
+            throws WFSException {
         // no values specified, do nothing
         if (values == null) {
             return;
@@ -174,7 +191,7 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
             }
         }
 
-        List query = req.getAdaptedQueries();
+        List<Object> query = req.getAdaptedQueries();
 
         int m = values.size();
         int n = query.size();
@@ -211,7 +228,7 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         }
         if (m < n) {
             // fill the rest with nulls
-            List newValues = new ArrayList<>();
+            List<T> newValues = new ArrayList<>();
             newValues.addAll(values);
             for (int i = 0; i < n - m; i++) {
                 newValues.add(null);
@@ -222,7 +239,9 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         EMFUtils.set(query, property, values);
     }
 
-    protected void buildStoredQueries(EObject request, List<URI> storedQueryIds, Map kvp) {
+    @Override
+    protected void buildStoredQueries(
+            EObject request, List<URI> storedQueryIds, Map<String, Object> kvp) {
         GetFeatureRequest req = GetFeatureRequest.adapt(request);
 
         if (!(req instanceof GetFeatureRequest.WFS20)) {

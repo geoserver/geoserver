@@ -15,7 +15,6 @@ import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.arcgrid.ArcGridFormat;
 import org.geotools.parameter.Parameter;
-import org.opengis.parameter.GeneralParameterValue;
 
 /**
  * Decodes/encodes a GeoTIFF file
@@ -54,10 +53,8 @@ public class ArcGridPPIO extends CDataPPIO {
     @Override
     public void encode(Object value, OutputStream os) throws IOException {
         Parameter<Boolean> forceSquareCells =
-                new Parameter<Boolean>(ArcGridFormat.FORCE_CELLSIZE, Boolean.TRUE);
-        new ArcGridFormat()
-                .getWriter(os)
-                .write((GridCoverage2D) value, new GeneralParameterValue[] {forceSquareCells});
+                new Parameter<>(ArcGridFormat.FORCE_CELLSIZE, Boolean.TRUE);
+        new ArcGridFormat().getWriter(os).write((GridCoverage2D) value, forceSquareCells);
     }
 
     @Override

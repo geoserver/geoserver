@@ -10,7 +10,11 @@ import it.geosolutions.jaiext.lookup.LookupTableFactory;
 import it.geosolutions.jaiext.range.Range;
 import it.geosolutions.jaiext.vectorbin.ROIGeometry;
 import it.geosolutions.rendered.viewer.RenderedImageBrowser;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Transparency;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
@@ -28,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.Interpolation;
 import javax.media.jai.InterpolationBicubic2;
@@ -42,13 +46,11 @@ import javax.media.jai.ROIShape;
 import javax.media.jai.operator.ConstantDescriptor;
 import javax.media.jai.operator.MosaicDescriptor;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wms.DefaultWebMapService;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.MapProducerCapabilities;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
@@ -56,11 +58,7 @@ import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSPartialMapException;
 import org.geoserver.wms.WMSServiceExceptionHandler;
-import org.geoserver.wms.WatermarkInfo;
-import org.geoserver.wms.decoration.MapDecoration;
 import org.geoserver.wms.decoration.MapDecorationLayout;
-import org.geoserver.wms.decoration.MetatiledMapDecorationLayout;
-import org.geoserver.wms.decoration.WatermarkDecoration;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
@@ -89,7 +87,6 @@ import org.geotools.renderer.lite.gridcoverage2d.ChannelSelectionUpdateStyleVisi
 import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.styling.RasterSymbolizer;
 import org.geotools.styling.Style;
-import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.Format;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -165,6 +162,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private static final String DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION =
             "disableDatelineWrappingHeuristic";
 
+    /**
+     * Decorations Only option, which allows to get an empty request map output, but keeps visible
+     * associated decorations
+     */
+    public static final String DECORATIONS_ONLY_FORMAT_OPTION = "decorationsOnly";
+
     /** Disable Gutter key */
     public static final String DISABLE_GUTTER_KEY = "wms.raster.disableGutter";
 
@@ -195,14 +198,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         return arr;
     }
 
-    /** A logger for this class. */
-    public static final Logger LOGGER = Logging.getLogger(RenderedImageMapOutputFormat.class);
-
     /** Which format to encode the image in if one is not supplied */
     private static final String DEFAULT_MAP_FORMAT = "image/png";
-
-    /** WMS Service configuration * */
-    protected final WMS wms;
 
     private boolean palleteSupported = true;
 
@@ -212,8 +209,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private String extension = null;
 
     /** The known producer capabilities */
-    private final Map<String, MapProducerCapabilities> capabilities =
-            new HashMap<String, MapProducerCapabilities>();
+    private final Map<String, MapProducerCapabilities> capabilities = new HashMap<>();
 
     /** */
     public RenderedImageMapOutputFormat(WMS wms) {
@@ -263,6 +259,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         this.extension = extension;
     }
 
+    @Override
     public MapProducerCapabilities getCapabilities(String format) {
         return capabilities.get(format);
     }
@@ -272,6 +269,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
+    @Override
     public final RenderedImageMap produceMap(WMSMapContent mapContent) throws ServiceException {
         return produceMap(mapContent, false);
     }
@@ -292,6 +290,16 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         // extra antialias setting
         final GetMapRequest request = mapContent.getRequest();
+
+        // check if vendoroption decorationsonly is true, so we will generate an empty map with only
+        // decorations applied
+        String decorationsOnly =
+                (String) request.getFormatOptions().get(DECORATIONS_ONLY_FORMAT_OPTION);
+        boolean emptyMap = false;
+        if (decorationsOnly != null && decorationsOnly.toLowerCase().equals("true")) {
+            emptyMap = true;
+        }
+
         String antialias = (String) request.getFormatOptions().get("antialias");
         if (antialias != null) antialias = antialias.toUpperCase();
 
@@ -304,8 +312,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         } else if (AA_NONE.equals(antialias)) {
             PaletteExtractor pe = new PaletteExtractor(transparent ? null : bgColor);
             List<Layer> layers = mapContent.layers();
-            for (int i = 0; i < layers.size(); i++) {
-                pe.visit(layers.get(i).getStyle());
+            for (Layer layer : layers) {
+                pe.visit(layer.getStyle());
                 if (!pe.canComputePalette()) break;
             }
             if (pe.canComputePalette()) potentialPalette = pe.getPalette();
@@ -350,7 +358,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 && mapContent.layers().size() == 1
                 && mapContent.getAngle() == 0.0
                 && (layout == null || layout.isEmpty())) {
-            List<GridCoverage2D> renderedCoverages = new ArrayList<GridCoverage2D>(2);
+            List<GridCoverage2D> renderedCoverages = new ArrayList<>(2);
             try {
                 Interpolation interpolation = null;
                 if (request.getInterpolations() != null && request.getInterpolations().size() > 0) {
@@ -377,7 +385,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         boolean useAlpha = transparent || MetatileMapOutputFormat.isRequestTiled(request, this);
         final RenderedImage preparedImage =
                 prepareImage(paintArea.width, paintArea.height, palette, useAlpha);
-        final Map<RenderingHints.Key, Object> hintsMap = new HashMap<RenderingHints.Key, Object>();
+        final Map<RenderingHints.Key, Object> hintsMap = new HashMap<>();
 
         final Graphics2D graphic = getGraphics(transparent, bgColor, preparedImage, hintsMap);
 
@@ -440,7 +448,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         renderer.setJava2DHints(hints);
 
         // setup the renderer hints
-        Map<Object, Object> rendererParams = new HashMap<Object, Object>();
+        Map<Object, Object> rendererParams = new HashMap<>();
         rendererParams.put("optimizedDataLoadingEnabled", Boolean.TRUE);
         rendererParams.put("renderingBuffer", Integer.valueOf(mapContent.getBuffer()));
         rendererParams.put("maxFiltersToSendToDatastore", DefaultWebMapService.getMaxFilterRules());
@@ -521,9 +529,9 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             // raster image. Both are better served with the
             // placemarks.
             List<Layer> layers = mapContent.layers();
-            for (int i = 0; i < layers.size(); i++) {
-                if (layers.get(i) instanceof StyleLayer) {
-                    StyleLayer layer = (StyleLayer) layers.get(i);
+            for (Layer value : layers) {
+                if (value instanceof StyleLayer) {
+                    StyleLayer layer = (StyleLayer) value;
                     Style style = layer.getStyle();
                     style.accept(dupVisitor);
                     Style copy = (Style) dupVisitor.getCopy();
@@ -571,8 +579,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         // Add a render listener that ignores well known rendering exceptions and reports back non
         // ignorable ones
-        final RenderExceptionStrategy nonIgnorableExceptionListener;
-        nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
+        final RenderExceptionStrategy nonIgnorableExceptionListener =
+                new RenderExceptionStrategy(renderer);
         renderer.addRenderListener(nonIgnorableExceptionListener);
         RenderTimeStatistics statistics = null;
         if (!request.getRequest().equalsIgnoreCase("GETFEATUREINFO")) {
@@ -599,11 +607,15 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         timeout.start();
         try {
             // finally render the image;
-            renderer.paint(
-                    graphic,
-                    paintArea,
-                    mapContent.getRenderingArea(),
-                    mapContent.getRenderingTransform());
+            if (!emptyMap) {
+                renderer.paint(
+                        graphic,
+                        paintArea,
+                        mapContent.getRenderingArea(),
+                        mapContent.getRenderingTransform());
+            } else {
+                LOGGER.fine("we only want to get the layout, if it's not null");
+            }
 
             // apply watermarking
             if (layout != null) {
@@ -624,7 +636,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                         new ServiceException(
                                 "More than "
                                         + maxErrors
-                                        + " rendering errors occurred, bailing out.",
+                                        + " rendering errors occurred, bailing out. Layers: "
+                                        + buildMapLayerNameList(mapContent),
                                 errorChecker.getLastException(),
                                 "internalError");
             }
@@ -635,14 +648,18 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                                 "This request used more time than allowed and has been forcefully stopped. "
                                         + "Max rendering time is "
                                         + (maxRenderingTime / 1000.0)
-                                        + "s");
+                                        + "s. Layers: "
+                                        + buildMapLayerNameList(mapContent));
             }
             // check if a non ignorable error occurred
             if (nonIgnorableExceptionListener.exceptionOccurred()) {
                 Exception renderError = nonIgnorableExceptionListener.getException();
                 serviceException =
                         new ServiceException(
-                                "Rendering process failed", renderError, "internalError");
+                                "Rendering process failed. Layers: "
+                                        + buildMapLayerNameList(mapContent),
+                                renderError,
+                                "internalError");
             }
 
             // If there were no exceptions, return the map
@@ -668,6 +685,14 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             }
         }
         throw serviceException;
+    }
+
+    /** Helper method to build a comma separated list of layer names in the map. * */
+    private String buildMapLayerNameList(WMSMapContent mapContent) {
+        List<MapLayerInfo> layers = mapContent.getRequest().getLayers();
+        return layers == null
+                ? ""
+                : layers.stream().map(MapLayerInfo::getName).collect(Collectors.joining(", "));
     }
 
     /**
@@ -718,105 +743,6 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             map.setContentDispositionHeader(mapContent, "." + extension, false);
         }
         return map;
-    }
-
-    protected MapDecorationLayout findDecorationLayout(GetMapRequest request, final boolean tiled) {
-        String layoutName = null;
-        if (request.getFormatOptions() != null) {
-            layoutName = (String) request.getFormatOptions().get("layout");
-        }
-
-        MapDecorationLayout layout = null;
-        if (layoutName != null && !layoutName.trim().isEmpty()) {
-            try {
-                GeoServerResourceLoader loader = wms.getCatalog().getResourceLoader();
-                Resource layouts = loader.get("layouts");
-                if (layouts.getType() == Type.DIRECTORY) {
-                    Resource layoutConfig = layouts.get(layoutName + ".xml");
-
-                    if (layoutConfig.getType() == Type.RESOURCE) {
-                        layout = MapDecorationLayout.fromFile(layoutConfig, tiled);
-                    } else {
-                        LOGGER.log(Level.WARNING, "Unknown layout requested: " + layoutName);
-                    }
-                } else {
-                    LOGGER.log(Level.WARNING, "No layouts directory defined");
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "Unable to load layout: " + layoutName, e);
-            }
-
-            if (layout == null) {
-                throw new ServiceException("Could not find decoration layout named: " + layoutName);
-            }
-        }
-
-        if (layout == null) {
-            layout = tiled ? new MetatiledMapDecorationLayout() : new MapDecorationLayout();
-        }
-
-        MapDecorationLayout.Block watermark = getWatermark(wms.getServiceInfo());
-        if (watermark != null) {
-            layout.addBlock(watermark);
-        }
-
-        return layout;
-    }
-
-    public static MapDecorationLayout.Block getWatermark(WMSInfo wms) {
-        WatermarkInfo watermark = (wms == null ? null : wms.getWatermark());
-        if (watermark != null && watermark.isEnabled()) {
-            Map<String, String> options = new HashMap<String, String>();
-            options.put("url", watermark.getURL());
-            options.put("opacity", Float.toString((255f - watermark.getTransparency()) / 2.55f));
-
-            MapDecoration d = new WatermarkDecoration();
-            try {
-                d.loadOptions(options);
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Couldn't construct watermark from configuration", e);
-                throw new ServiceException(e);
-            }
-
-            MapDecorationLayout.Block.Position p = null;
-
-            switch (watermark.getPosition()) {
-                case TOP_LEFT:
-                    p = MapDecorationLayout.Block.Position.UL;
-                    break;
-                case TOP_CENTER:
-                    p = MapDecorationLayout.Block.Position.UC;
-                    break;
-                case TOP_RIGHT:
-                    p = MapDecorationLayout.Block.Position.UR;
-                    break;
-                case MID_LEFT:
-                    p = MapDecorationLayout.Block.Position.CL;
-                    break;
-                case MID_CENTER:
-                    p = MapDecorationLayout.Block.Position.CC;
-                    break;
-                case MID_RIGHT:
-                    p = MapDecorationLayout.Block.Position.CR;
-                    break;
-                case BOT_LEFT:
-                    p = MapDecorationLayout.Block.Position.LL;
-                    break;
-                case BOT_CENTER:
-                    p = MapDecorationLayout.Block.Position.LC;
-                    break;
-                case BOT_RIGHT:
-                    p = MapDecorationLayout.Block.Position.LR;
-                    break;
-                default:
-                    throw new ServiceException(
-                            "Unknown WatermarkInfo.Position value.  Something is seriously wrong.");
-            }
-
-            return new MapDecorationLayout.Block(d, p, null, new Point(0, 0));
-        }
-
-        return null;
     }
 
     /**
@@ -1705,13 +1631,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     private static final RenderedImage createBkgImage(
             float width, float height, Color bgColor, RenderingHints renderingHints) {
         // prepare bands for constant image if needed
-        final Number[] bands =
-                new Byte[] {
-                    (byte) bgColor.getRed(),
-                    (byte) bgColor.getGreen(),
-                    (byte) bgColor.getBlue(),
-                    (byte) bgColor.getAlpha()
-                };
+        final Byte[] bands = {
+            (byte) bgColor.getRed(),
+            (byte) bgColor.getGreen(),
+            (byte) bgColor.getBlue(),
+            (byte) bgColor.getAlpha()
+        };
         return ConstantDescriptor.create(width, height, bands, renderingHints);
     }
 
@@ -1731,12 +1656,11 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         final GridCoverage2DReader reader = context.reader;
         final Object params = context.params;
 
-        GridCoverage2D coverage;
         GeneralParameterValue[] readParams =
                 getReadParameters(
                         params, envelope, requestedRasterArea, interpolation, bgColor, bandIndices);
 
-        coverage = reader.read(readParams);
+        GridCoverage2D coverage = reader.read(readParams);
         context.params = readParams;
         return coverage;
     }
@@ -1831,7 +1755,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                     || !foundBandIndices) {
                 // add the correct read geometry to the supplied
                 // params since we did not find anything
-                List<GeneralParameterValue> paramList = new ArrayList<GeneralParameterValue>();
+                List<GeneralParameterValue> paramList = new ArrayList<>();
                 paramList.addAll(Arrays.asList(readParams));
                 if (!foundGG && readGG != null) {
                     paramList.add(readGG);

@@ -33,7 +33,7 @@ public class RuleRolesFormComponent extends RolePaletteFormComponent {
 
         boolean anyRolesEnabled = ANY_ROLE.equals(roleNamesModel.getObject());
         add(
-                new AjaxCheckBox("anyRole", new Model(anyRolesEnabled)) {
+                new AjaxCheckBox("anyRole", new Model<>(anyRolesEnabled)) {
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         palette.setEnabled(!getModelObject());
@@ -87,7 +87,7 @@ public class RuleRolesFormComponent extends RolePaletteFormComponent {
     //    }
     //
     public Set<GeoServerRole> getRolesForStoring() {
-        Set<GeoServerRole> result = new HashSet<GeoServerRole>();
+        Set<GeoServerRole> result = new HashSet<>();
         if (isHasAnyRole()) {
             result.add(GeoServerRole.ANY_ROLE);
         } else {
@@ -97,7 +97,7 @@ public class RuleRolesFormComponent extends RolePaletteFormComponent {
     }
 
     public Set<String> getRolesNamesForStoring() {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (GeoServerRole role : getRolesForStoring()) {
             result.add(role.getAuthority());
         }
@@ -115,8 +115,7 @@ public class RuleRolesFormComponent extends RolePaletteFormComponent {
         @Override
         protected List<GeoServerRole> load() {
 
-            Map<String, GeoServerRole> roleMap;
-            roleMap = new HashMap<String, GeoServerRole>();
+            Map<String, GeoServerRole> roleMap = new HashMap<>();
             try {
                 for (GeoServerRole role :
                         GeoServerApplication.get().getSecurityManager().getRolesForAccessControl())
@@ -125,7 +124,7 @@ public class RuleRolesFormComponent extends RolePaletteFormComponent {
                 throw new RuntimeException(e);
             }
 
-            List<GeoServerRole> roles = new ArrayList<GeoServerRole>();
+            List<GeoServerRole> roles = new ArrayList<>();
             for (String roleName : roleNamesModel.getObject()) {
                 GeoServerRole role = roleMap.get(roleName);
                 if (role != null) roles.add(role);

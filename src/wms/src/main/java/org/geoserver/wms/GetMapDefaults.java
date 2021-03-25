@@ -16,7 +16,6 @@ import org.geotools.styling.Style;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** Can be used to fill in defaults for incomplete GetMap requests */
@@ -42,7 +41,7 @@ public class GetMapDefaults {
             // this
             // into the GetMapKvpRequestReader
             if ((getMap.getLayers() != null) && (getMap.getLayers().size() > 0)) {
-                ArrayList<Style> styles = new ArrayList<Style>(getMap.getLayers().size());
+                ArrayList<Style> styles = new ArrayList<>(getMap.getLayers().size());
 
                 for (int i = 0; i < getMap.getLayers().size(); i++) {
                     styles.add(getMap.getLayers().get(i).getDefaultStyle());
@@ -122,8 +121,7 @@ public class GetMapDefaults {
             specifiedBbox = false;
 
             // Get the bounding box from the layers
-            for (int i = 0; i < layers.size(); i++) {
-                MapLayerInfo layerInfo = layers.get(i);
+            for (MapLayerInfo layerInfo : layers) {
                 ReferencedEnvelope curbbox;
                 try {
                     curbbox = layerInfo.getLatLongBoundingBox();
@@ -265,10 +263,8 @@ public class GetMapDefaults {
 
         try {
             getMap.setCrs(CRS.decode(srs));
-        } catch (NoSuchAuthorityCodeException e) {
-            e.printStackTrace();
         } catch (FactoryException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
         }
     }
 

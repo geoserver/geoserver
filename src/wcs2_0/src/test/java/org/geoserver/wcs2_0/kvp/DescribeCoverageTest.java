@@ -161,7 +161,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
     public void testCustomNullValue() throws Exception {
         CoverageInfo ciRain = getCatalog().getCoverageByName(getLayerId(RAIN));
         CoverageDimensionImpl dimension = (CoverageDimensionImpl) ciRain.getDimensions().get(0);
-        List<Double> nullValues = new ArrayList<Double>();
+        List<Double> nullValues = new ArrayList<>();
         nullValues.add(-999.9);
         dimension.setNullValues(nullValues);
         getCatalog().save(ciRain);

@@ -7,7 +7,10 @@ package org.geoserver.wfs.v1_1;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -215,13 +218,12 @@ public class DescribeFeatureTypeTest extends WFSTestSupport {
             String path =
                     "ows?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName="
                             + typeName.getLocalPart();
-            Document doc;
 
             // first, non cite compliant mode should find the type even if namespace is not
             // specified
             service.setCiteCompliant(false);
             geoServer.save(service);
-            doc = getAsDOM(path);
+            Document doc = getAsDOM(path);
             // print(doc);
             assertEquals("xsd:schema", doc.getDocumentElement().getNodeName());
 

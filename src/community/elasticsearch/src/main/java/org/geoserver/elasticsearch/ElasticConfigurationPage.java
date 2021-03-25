@@ -129,6 +129,7 @@ abstract class ElasticConfigurationPage extends Panel {
 
         elastic_form.add(
                 new AjaxButton("es_save") {
+                    @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         onSave(target);
                     }
@@ -305,10 +306,28 @@ abstract class ElasticConfigurationPage extends Panel {
                                 return new Fragment(id, "empty", ElasticConfigurationPage.this);
                             }
                         } else if (property == ElasticAttributeProvider.DATE_FORMAT) {
-                            if (att.getDateFormat() != null) {
+                            List<String> validFormats = null;
+                            if (att.getValidDateFormats() == null) {
+                                if (att.getDateFormat() != null) {
+                                    validFormats = new ArrayList<String>();
+                                    validFormats.add(att.getDateFormat());
+                                    att.setValidDateFormats(validFormats);
+                                }
+                            } else {
+                                validFormats = att.getValidDateFormats();
+                            }
+                            if (validFormats != null) {
                                 Fragment f =
                                         new Fragment(id, "label", ElasticConfigurationPage.this);
-                                f.add(new Label("label", String.valueOf(att.getDateFormat())));
+                                String format = "";
+                                for (int i = 0; i < validFormats.size(); i++) {
+                                    if (i != validFormats.size()) {
+                                        format = format + validFormats.get(i) + " || ";
+                                    } else {
+                                        format = format + validFormats.get(i);
+                                    }
+                                }
+                                f.add(new Label("label", format));
                                 return f;
                             } else {
                                 return new Fragment(id, "empty", ElasticConfigurationPage.this);
@@ -380,10 +399,12 @@ abstract class ElasticConfigurationPage extends Panel {
      */
     private static class GeometryTypeRenderer implements IChoiceRenderer<Object> {
 
+        @Override
         public Object getDisplayValue(Object object) {
             return ((Class<?>) object).getSimpleName();
         }
 
+        @Override
         public String getIdValue(Object object, int index) {
             return (String) getDisplayValue(object);
         }

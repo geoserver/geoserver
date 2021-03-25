@@ -61,7 +61,7 @@ public abstract class WFSTestSupport extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
 
         // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("wfs", "http://www.opengis.net/wfs");
         namespaces.put("ows", "http://www.opengis.net/ows");
         namespaces.put("ogc", "http://www.opengis.net/ogc");

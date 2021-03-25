@@ -45,7 +45,7 @@ public class PasswordParamPanelTest {
                         (ComponentBuilder)
                                 id ->
                                         new PasswordParamPanel(
-                                                id, pwModel, new Model("label"), true));
+                                                id, pwModel, new Model<>("label"), true));
         tester.startPage(testPage);
 
         // check the password is not visible in source

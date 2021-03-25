@@ -80,6 +80,7 @@ public class PNGMapResponse extends RenderedImageMapResponse {
      *
      * @see RasterMapOutputFormat#formatImageOutputStream(RenderedImage, OutputStream)
      */
+    @Override
     public void formatImageOutputStream(
             RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
             throws ServiceException, IOException {

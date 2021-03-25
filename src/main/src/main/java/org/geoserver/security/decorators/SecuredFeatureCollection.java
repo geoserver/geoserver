@@ -5,12 +5,9 @@
  */
 package org.geoserver.security.decorators;
 
-import static org.geoserver.security.SecurityUtils.*;
-
 import java.util.logging.Logger;
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.collection.DecoratingFeatureCollection;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Feature;
@@ -40,19 +37,21 @@ public class SecuredFeatureCollection<T extends FeatureType, F extends Feature>
 
     @Override
     public org.geotools.feature.FeatureIterator<F> features() {
-        return (FeatureIterator) SecuredObjects.secure(delegate.features(), policy);
+        return SecuredObjects.secure(delegate.features(), policy);
     }
 
+    @Override
     public FeatureCollection<T, F> sort(SortBy order) {
         // attributes should have been shaved already
         final FeatureCollection<T, F> fc = delegate.sort(order);
         if (fc == null) return null;
-        else return (FeatureCollection) SecuredObjects.secure(fc, policy);
+        else return SecuredObjects.secure(fc, policy);
     }
 
+    @Override
     public FeatureCollection<T, F> subCollection(Filter filter) {
         final FeatureCollection<T, F> fc = delegate.subCollection(filter);
         if (fc == null) return null;
-        else return (FeatureCollection) SecuredObjects.secure(fc, policy);
+        else return SecuredObjects.secure(fc, policy);
     }
 }

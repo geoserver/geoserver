@@ -19,7 +19,7 @@ import org.geotools.coverage.grid.GridEnvelope2D;
  * @author Justin Deoliveira, OpenGeo
  * @author Andrea Aime, OpenGeo
  */
-public class GridPanel extends FormComponentPanel {
+public class GridPanel extends FormComponentPanel<GridEnvelope2D> {
 
     Integer minX, minY, maxX, maxY;
 
@@ -30,10 +30,10 @@ public class GridPanel extends FormComponentPanel {
     }
 
     public GridPanel(String id, GridEnvelope2D e) {
-        this(id, new Model(e));
+        this(id, new Model<>(e));
     }
 
-    public GridPanel(String id, IModel model) {
+    public GridPanel(String id, IModel<GridEnvelope2D> model) {
         super(id, model);
 
         initComponents();
@@ -42,10 +42,10 @@ public class GridPanel extends FormComponentPanel {
     void initComponents() {
         updateFields();
 
-        add(new TextField("minX", new PropertyModel(this, "minX")));
-        add(new TextField("minY", new PropertyModel(this, "minY")));
-        add(new TextField("maxX", new PropertyModel(this, "maxX")));
-        add(new TextField("maxY", new PropertyModel(this, "maxY")));
+        add(new TextField<>("minX", new PropertyModel<>(this, "minX")));
+        add(new TextField<>("minY", new PropertyModel<>(this, "minY")));
+        add(new TextField<>("maxX", new PropertyModel<>(this, "maxX")));
+        add(new TextField<>("maxY", new PropertyModel<>(this, "maxY")));
     }
 
     @Override
@@ -55,7 +55,7 @@ public class GridPanel extends FormComponentPanel {
     }
 
     private void updateFields() {
-        GridEnvelope2D e = (GridEnvelope2D) getModelObject();
+        GridEnvelope2D e = getModelObject();
         if (e != null) {
             this.minX = (int) e.getMinX();
             this.minY = (int) e.getMinY();

@@ -66,8 +66,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
         table.setOutputMarkupId(true);
         container.add(table);
         authorityURLs =
-                new ListView<AuthorityURLInfo>(
-                        "authorities", new ArrayList<AuthorityURLInfo>(list.getObject())) {
+                new ListView<AuthorityURLInfo>("authorities", new ArrayList<>(list.getObject())) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -79,11 +78,9 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
                                         "class", item.getIndex() % 2 == 0 ? "even" : "odd"));
 
                         // Authority name
-                        TextField<String> authName;
-                        authName =
-                                new TextField<String>(
-                                        "authName",
-                                        new PropertyModel<String>(item.getModel(), "name"));
+                        TextField<String> authName =
+                                new TextField<>(
+                                        "authName", new PropertyModel<>(item.getModel(), "name"));
                         authName.setRequired(true);
 
                         FormComponentFeedbackBorder authNameBorder =
@@ -92,11 +89,10 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
                         authNameBorder.add(authName);
 
                         // Authority URL
-                        TextField<String> authURL;
-                        authURL =
-                                new TextField<String>(
+                        TextField<String> authURL =
+                                new TextField<>(
                                         "authorityURL",
-                                        new PropertyModel<String>(item.getModel(), "href"));
+                                        new PropertyModel<>(item.getModel(), "href"));
                         authURL.setRequired(true);
                         authURL.add(new UrlValidator());
                         FormComponentFeedbackBorder urlBorder =
@@ -106,16 +102,14 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
 
                         // remove link
                         AjaxLink<Integer> link =
-                                new AjaxLink<Integer>(
-                                        "removeLink", new Model<Integer>(item.getIndex())) {
+                                new AjaxLink<Integer>("removeLink", new Model<>(item.getIndex())) {
 
                                     private static final long serialVersionUID = 1L;
 
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
                                         List<AuthorityURLInfo> list =
-                                                new ArrayList<AuthorityURLInfo>(
-                                                        authorityURLs.getModelObject());
+                                                new ArrayList<>(authorityURLs.getModelObject());
                                         int index = getModelObject();
                                         list.remove(index);
                                         authorityURLs.setModelObject(list);
@@ -156,7 +150,7 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
 
     private void updateLinksVisibility() {
         List<AuthorityURLInfo> list = authorityURLs.getModelObject();
-        boolean anyLink = list.size() > 0;
+        boolean anyLink = !list.isEmpty();
         table.setVisible(anyLink);
         noMetadata.setVisible(!anyLink);
     }
@@ -164,8 +158,8 @@ public class AuthorityURLListEditor extends FormComponentPanel<List<AuthorityURL
     @Override
     public void convertInput() {
         List<AuthorityURLInfo> info = authorityURLs.getModelObject();
-        if (info == null || info.size() == 0) {
-            setConvertedInput(new ArrayList<AuthorityURLInfo>(2));
+        if (info == null || info.isEmpty()) {
+            setConvertedInput(new ArrayList<>(2));
             return;
         }
 

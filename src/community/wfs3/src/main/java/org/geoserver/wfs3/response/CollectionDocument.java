@@ -130,6 +130,7 @@ public class CollectionDocument extends AbstractDocument {
         this.extent = extent;
     }
 
+    @Override
     @JacksonXmlProperty(namespace = Link.ATOM_NS, localName = "link")
     @JacksonXmlElementWrapper(useWrapping = false)
     public List<Link> getLinks() {

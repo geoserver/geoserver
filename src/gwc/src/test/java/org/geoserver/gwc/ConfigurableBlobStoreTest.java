@@ -5,13 +5,14 @@
  */
 package org.geoserver.gwc;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,7 +100,9 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         // Delete the created directory
         blobStore.destroy();
         if (directory.exists()) {
-            FileUtils.deleteDirectory(directory);
+            // use deleteQuietly, because it could get concurrent with the GWC own cleanup threads,
+            // and end up trying to remove a sub-directory that's already gone
+            FileUtils.deleteQuietly(directory);
         }
     }
 
@@ -119,7 +122,7 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         // Put a TileObject
         Resource bytes = new ByteArrayResource("1 2 3 4 5 6 test".getBytes());
         long[] xyz = {1L, 2L, 3L};
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("a", "x");
         parameters.put("b", "ø");
         TileObject to =
@@ -137,9 +140,10 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         assertEquals(to.getBlobFormat(), to2.getBlobFormat());
 
         // Check if the resources are equals
-        InputStream is = to.getBlob().getInputStream();
-        InputStream is2 = to2.getBlob().getInputStream();
-        checkInputStreams(is, is2);
+        try (InputStream is = to.getBlob().getInputStream();
+                InputStream is2 = to2.getBlob().getInputStream()) {
+            checkInputStreams(is, is2);
+        }
 
         // Ensure Cache contains the result
         TileObject to3 = cache.getTileObj(to);
@@ -147,9 +151,10 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         assertEquals(to.getBlobFormat(), to3.getBlobFormat());
 
         // Check if the resources are equals
-        is = to.getBlob().getInputStream();
-        InputStream is3 = to3.getBlob().getInputStream();
-        checkInputStreams(is, is3);
+        try (InputStream is = to.getBlob().getInputStream();
+                InputStream is3 = to3.getBlob().getInputStream()) {
+            checkInputStreams(is, is3);
+        }
 
         // Ensure that NullBlobStore does not contain anything
         assertFalse(((MemoryBlobStore) delegate).getStore().get(to));
@@ -168,7 +173,7 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         // Put a TileObject
         Resource bytes = new ByteArrayResource("1 2 3 4 5 6 test".getBytes());
         long[] xyz = {1L, 2L, 3L};
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("a", "x");
         parameters.put("b", "ø");
         TileObject to =
@@ -186,18 +191,20 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         assertEquals(to.getBlobFormat(), to2.getBlobFormat());
 
         // Check if the resources are equals
-        InputStream is = to.getBlob().getInputStream();
-        InputStream is2 = to2.getBlob().getInputStream();
-        checkInputStreams(is, is2);
+        try (InputStream is = to.getBlob().getInputStream();
+                InputStream is2 = to2.getBlob().getInputStream()) {
+            checkInputStreams(is, is2);
+        }
 
         // Ensure Cache contains the result
         TileObject to3 = cache.getTileObj(to);
         assertNotNull(to3);
         assertEquals(to.getBlobFormat(), to3.getBlobFormat());
 
-        is = to.getBlob().getInputStream();
-        InputStream is3 = to3.getBlob().getInputStream();
-        checkInputStreams(is, is3);
+        try (InputStream is = to.getBlob().getInputStream();
+                InputStream is3 = to3.getBlob().getInputStream()) {
+            checkInputStreams(is, is3);
+        }
 
         // check the layer is known
         assertThat(blobStore.layerExists(LAYER_NAME), equalTo(true));
@@ -221,7 +228,7 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
 
         assertTrue(blobStore.getDelegate() instanceof FileBlobStore);
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("a", "x");
         parameters.put("b", "ø");
 
@@ -240,9 +247,10 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
         blobStore.get(to2);
 
         // Check if the resources are equals
-        InputStream is = to2.getBlob().getInputStream();
-        InputStream is2 = bytes.getInputStream();
-        checkInputStreams(is, is2);
+        try (InputStream is = to2.getBlob().getInputStream();
+                InputStream is2 = bytes.getInputStream()) {
+            checkInputStreams(is, is2);
+        }
 
         // Remove TileObject
         TileObject to3 =
@@ -266,7 +274,7 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
 
         assertTrue(blobStore.getDelegate() instanceof FileBlobStore);
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("a", "x");
         parameters.put("b", "ø");
 
@@ -298,7 +306,7 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
 
         assertTrue(blobStore.getDelegate() instanceof FileBlobStore);
 
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put("a", "x");
         parameters.put("b", "ø");
 
@@ -367,13 +375,13 @@ public class ConfigurableBlobStoreTest extends GeoServerSystemTestSupport {
                 is.close();
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                assertTrue(false);
+                fail();
             }
             try {
                 is2.close();
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                assertTrue(false);
+                fail();
             }
         }
     }

@@ -5,6 +5,7 @@
 package org.geoserver.catalog;
 
 import static java.util.Optional.ofNullable;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -81,7 +82,7 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
 
     private void setUpNonGeometryLayer(SystemTestData testData) throws IOException {
         // Loading a vector layer with location given as latitude and longitude and no geometry
-        Map<LayerProperty, Object> props = new HashMap<LayerProperty, Object>();
+        Map<LayerProperty, Object> props = new HashMap<>();
         testData.addVectorLayer(
                 LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME,
                 props,
@@ -92,7 +93,7 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
 
     private void setReprojectedUpNonGeometryLayer(SystemTestData testData) throws IOException {
         // Loading a vector layer with location given as latitude and longitude and no geometry
-        Map<LayerProperty, Object> props = new HashMap<LayerProperty, Object>();
+        Map<LayerProperty, Object> props = new HashMap<>();
         // declaring a different CRS to test re-projection
         props.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.REPROJECT_TO_DECLARED);
         props.put(LayerProperty.SRS, 900913);
@@ -116,20 +117,14 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
 
         // assert that feature type is returned with a point geometry
         assertTrue(ft1.getUserData().containsKey(TestRetypeFeatureTypeCallback.RETYPED));
-        assertTrue(ft1.getGeometryDescriptor().getType().getBinding().equals(Point.class));
+        assertEquals(ft1.getGeometryDescriptor().getType().getBinding(), Point.class);
 
         FeatureSource retyped = pool.getFeatureSource(info, null);
         // assert FeatureSource is nicely wrapped inside Geoserver wrapper
         assertTrue(retyped instanceof GeoServerFeatureSource);
         // assert FeatureSource has Geometry type set to Point
-        assertTrue(
-                retyped.getSchema()
-                        .getGeometryDescriptor()
-                        .getType()
-                        .getBinding()
-                        .equals(Point.class));
-        AttributeDescriptor geomAttibute =
-                (AttributeDescriptor) retyped.getSchema().getGeometryDescriptor().getDefaultValue();
+        assertEquals(
+                retyped.getSchema().getGeometryDescriptor().getType().getBinding(), Point.class);
         // Finally assert that each features has a valid geometry
         try (FeatureIterator iterator = retyped.getFeatures().features()) {
             while (iterator.hasNext()) {
@@ -171,7 +166,7 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
                         .getFeatureTypeByName(
                                 LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME.getNamespaceURI(),
                                 LONG_LAT_NO_GEOM_ON_THE_FLY_QNAME.getLocalPart());
-        FeatureType ft1 = pool.getFeatureType(info);
+        pool.getFeatureType(info);
         // setting a feature type level CQL to allow only ONE feature
         info.setCqlFilter("data = 'd1'");
         getCatalog().save(info);
@@ -180,7 +175,7 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
 
         try {
             int count = retyped.getFeatures().size();
-            assertTrue(count == 1);
+            assertEquals(1, count);
         } finally {
             // reset
             info.setCqlFilter(null);
@@ -230,19 +225,19 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
         }
 
         @Override
-        public FeatureSource wrapFeatureSource(
-                FeatureTypeInfo featureTypeInfo, FeatureSource featureSource) {
+        @SuppressWarnings("unchecked")
+        public <T extends FeatureType, U extends Feature> FeatureSource<T, U> wrapFeatureSource(
+                FeatureTypeInfo featureTypeInfo, FeatureSource<T, U> featureSource) {
             TestRetypedSource wrapped =
                     new TestRetypedSource(featureTypeInfo, (SimpleFeatureSource) featureSource);
 
-            return wrapped;
+            return (FeatureSource<T, U>) wrapped;
         }
     }
 
     public static class TestRetypedSource extends DecoratingSimpleFeatureSource {
 
         private final FeatureTypeInfo featureTypeInfo;
-        private SimpleFeatureType cachedFeatureType;
         SimpleFeatureSource delegate;
 
         RetypeHelper converter = new RetypeHelper();
@@ -448,7 +443,7 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
                     // else use the passed fields of this query
                     // but make sure geom field is replaced with Long and Lat fields
                     List<String> existingProperties =
-                            new LinkedList<String>(Arrays.asList(query.getPropertyNames()));
+                            new LinkedList<>(Arrays.asList(query.getPropertyNames()));
                     // remove geom column
                     existingProperties.remove(TestRetypeFeatureTypeCallback.RETYPED_GEOM_COLUMN);
                     // make sure longitude field is present

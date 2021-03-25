@@ -27,9 +27,11 @@ public class DescribeCoverageKvpRequestReader extends EMFKvpRequestReader {
         super(DescribeCoverageType.class, Wcs111Factory.eINSTANCE);
 
         // JD: we set a filter because the WCS 1.1 scheme people are crazy
-        filter = new HashSet(Arrays.asList("service", "version", "identifiers"));
+        filter = new HashSet<>(Arrays.asList("service", "version", "identifiers"));
     }
 
+    @Override
+    @SuppressWarnings("unchecked") // EMF model without generics
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
         // let super do its thing
         request = super.read(request, kvp, rawKvp);
@@ -39,7 +41,7 @@ public class DescribeCoverageKvpRequestReader extends EMFKvpRequestReader {
         // we need at least one coverage
         final String identifiersValue = (String) rawKvp.get("identifiers");
         final List identifiers = KvpUtils.readFlat(identifiersValue);
-        if (identifiers == null || identifiers.size() == 0) {
+        if (identifiers == null || identifiers.isEmpty()) {
             throw new WcsException(
                     "Required paramer, identifiers, missing",
                     WcsExceptionCode.MissingParameterValue,

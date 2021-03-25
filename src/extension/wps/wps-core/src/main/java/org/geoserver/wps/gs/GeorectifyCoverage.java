@@ -6,7 +6,8 @@
 package org.geoserver.wps.gs;
 
 import com.google.common.base.Splitter;
-import java.awt.*;
+import java.awt.RenderingHints;
+import java.awt.Transparency;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.IndexColorModel;
@@ -157,7 +158,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
             throws IOException {
 
         GeoTiffReader reader = null;
-        List<File> removeFiles = new ArrayList<File>();
+        List<File> removeFiles = new ArrayList<>();
         String location = null;
         try {
             File tempFolder = config.getTempFolder();
@@ -300,7 +301,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
             reader = new GeoTiffReader(warpedFile);
             GridCoverage2D cov = addLocationProperty(reader.read(null), warpedFile);
 
-            Map<String, Object> result = new HashMap<String, Object>();
+            Map<String, Object> result = new HashMap<>();
             result.put("result", cov);
             result.put("path", warpedFile.getAbsolutePath());
             return result;
@@ -319,8 +320,9 @@ public class GeorectifyCoverage implements GeoServerProcess {
         }
     }
 
+    @SuppressWarnings("unchecked")
     GridCoverage2D addLocationProperty(GridCoverage2D coverage, File warpedFile) {
-        Map properties = new HashMap();
+        Map<String, Object> properties = new HashMap<>();
         properties.put(GridCoverage2DReader.FILE_SOURCE_PROPERTY, warpedFile.getAbsolutePath());
         properties.putAll(coverage.getProperties());
 
@@ -432,7 +434,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
             final List<String> warpingParameters) {
         return new ArrayList<String>() {
             {
-                if (targetEnvelope != null && targetEnvelope.size() > 0) {
+                if (targetEnvelope != null && !targetEnvelope.isEmpty()) {
                     add("-te");
                     addAll(targetEnvelope);
                 }
@@ -641,7 +643,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
         // if(!gcpMatcher.matches()) {
         // throw new WPSException("Invalid GCP syntax:" + gcps);
         // }
-        List<String> gcpCommand = new ArrayList<String>();
+        List<String> gcpCommand = new ArrayList<>();
         int gcpPoints = 0;
         // Setting up gcp command arguments
         while (gcpMatcher.find()) {

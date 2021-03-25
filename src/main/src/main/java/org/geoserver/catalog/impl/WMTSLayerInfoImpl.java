@@ -21,10 +21,12 @@ public class WMTSLayerInfoImpl extends ResourceInfoImpl implements WMTSLayerInfo
         super(catalog);
     }
 
+    @Override
     public WMTSLayer getWMTSLayer(ProgressListener listener) throws IOException {
         return catalog.getResourcePool().getWMTSLayer(this);
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }

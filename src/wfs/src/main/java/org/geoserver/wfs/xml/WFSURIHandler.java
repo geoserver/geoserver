@@ -56,9 +56,9 @@ public class WFSURIHandler extends URIHandlerImpl {
         DISABLED = Boolean.getBoolean(WFSURIHandler.class.getName() + ".disabled");
     }
 
-    static final List<InetAddress> ADDRESSES = new ArrayList<InetAddress>();
+    static final List<InetAddress> ADDRESSES = new ArrayList<>();
 
-    static final Set<String> ADDITIONAL_HOSTNAMES = new HashSet<String>();
+    static final Set<String> ADDITIONAL_HOSTNAMES = new HashSet<>();
 
     public static void addToParser(GeoServer geoServer, Parser parser) {
         parser.getURIHandlers().add(0, new WFSURIHandler(geoServer));
@@ -173,7 +173,7 @@ public class WFSURIHandler extends URIHandlerImpl {
         return false;
     }
 
-    private KvpMap parseQueryString(String q) {
+    private KvpMap<String, Object> parseQueryString(String q) {
         return KvpUtils.normalize(KvpUtils.parseQueryString("?" + q));
     }
 
@@ -224,7 +224,7 @@ public class WFSURIHandler extends URIHandlerImpl {
     public InputStream createInputStream(URI uri, Map<?, ?> options) throws IOException {
         Catalog catalog = geoServer.getCatalog();
         try {
-            KvpMap kv = parseQueryString(uri.query());
+            KvpMap<String, Object> kv = parseQueryString(uri.query());
 
             // dispatch the correct describe feature type reader
             WFSInfo.Version ver = WFSInfo.Version.negotiate((String) kv.get("VERSION"));
@@ -244,7 +244,7 @@ public class WFSURIHandler extends URIHandlerImpl {
             }
 
             // parse the key value pairs
-            KvpMap parsed = new KvpMap(kv);
+            KvpMap<String, Object> parsed = new KvpMap<>(kv);
             KvpUtils.parse(parsed);
 
             // create/read the request object

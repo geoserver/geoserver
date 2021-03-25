@@ -20,6 +20,7 @@ public class GeoToolsConverterAdapter implements IConverter<Object> {
         myTarget = target;
     }
 
+    @Override
     public Object convertToObject(String str, Locale locale) {
         try {
             return myConverter.convert(str, myTarget);
@@ -28,6 +29,7 @@ public class GeoToolsConverterAdapter implements IConverter<Object> {
         }
     }
 
+    @Override
     public String convertToString(Object o, Locale locale) {
         try {
             return myConverter.convert(o, String.class);

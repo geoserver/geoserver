@@ -7,7 +7,6 @@ package org.geoserver.web.wicket;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -60,9 +59,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     public static final String FILTER_PARAM = "filter";
 
     /** METADATA MAP inside user session that remembers the filters user input inside the form */
-    private static final String FILTER_INPUTS = "userInput";
+    public static final String FILTER_INPUTS = "userInput";
 
-    private static final String SORT_INPUTS = "userSort";
+    public static final String SORT_INPUTS = "userSort";
 
     // filter form components
     TextField<String> filter;
@@ -133,7 +132,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             previousInput = null;
         }
 
-        SortParam previousSort = loadPreviousSort();
+        SortParam<Object> previousSort = loadPreviousSort();
 
         if (previousSort != null && keepFilter) dataProvider.setSort(previousSort);
         else if (!keepFilter) {
@@ -155,7 +154,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         filterForm.setOutputMarkupId(true);
         add(filterForm);
         filter =
-                new TextField<String>("filter", new Model<String>()) {
+                new TextField<String>("filter", new Model<>()) {
                     private static final long serialVersionUID = -1252520208030081584L;
 
                     @Override
@@ -202,7 +201,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
                     @Override
                     protected Item<T> newItem(String id, int index, IModel<T> model) {
-                        OddEvenItem<T> item = new OddEvenItem<T>(id, index, model);
+                        OddEvenItem<T> item = new OddEvenItem<>(id, index, model);
                         item.setOutputMarkupId(true);
                         return item;
                     }
@@ -250,7 +249,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
 
             @Override
             protected void populateItem(ListItem<Property<T>> item) {
-                Property<T> property = (Property<T>) item.getModelObject();
+                Property<T> property = item.getModelObject();
 
                 // build a sortable link if the property is sortable, a label otherwise
                 IModel<String> titleModel = getPropertyTitle(property);
@@ -271,11 +270,11 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             final GeoServerDataProvider<T> dataProvider, Item<T> item, final IModel<T> itemModel) {
         // make sure we don't serialize the list, but get it fresh from the dataProvider,
         // to avoid serialization issues seen in GEOS-8273
-        IModel propertyList =
-                new LoadableDetachableModel() {
+        IModel<List<Property<T>>> propertyList =
+                new LoadableDetachableModel<List<Property<T>>>() {
 
                     @Override
-                    protected Object load() {
+                    protected List<Property<T>> load() {
                         return dataProvider.getVisibleProperties();
                     }
                 };
@@ -376,10 +375,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     /** Returns the items that have been selected by the user */
     @SuppressWarnings("unchecked")
     public List<T> getSelection() {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         int i = 0;
-        for (Iterator<Component> it = dataView.iterator(); it.hasNext(); ) {
-            Component item = it.next();
+        for (Component item : dataView) {
             if (selection[i]) {
                 result.add((T) item.getDefaultModelObject());
             }
@@ -389,7 +387,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     }
 
     CheckBox selectAllCheckbox() {
-        CheckBox sa = new CheckBox("selectAll", new PropertyModel<Boolean>(this, "selectAllValue"));
+        CheckBox sa = new CheckBox("selectAll", new PropertyModel<>(this, "selectAllValue"));
         sa.setOutputMarkupId(true);
         sa.add(
                 new AjaxFormComponentUpdatingBehavior("click") {
@@ -459,9 +457,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
     /** Selects a single item by object. */
     public void selectObject(T object) {
         int i = 0;
-        for (Iterator<Component> it = dataView.iterator(); it.hasNext(); ) {
+        for (Component component : dataView) {
             @SuppressWarnings("unchecked")
-            Item<T> item = (Item<T>) it.next();
+            Item<T> item = (Item<T>) component;
             if (object.equals(item.getModelObject())) {
                 selection[i] = true;
                 return;
@@ -568,10 +566,10 @@ public abstract class GeoServerTablePanel<T> extends Panel {
                 @SuppressWarnings("unchecked")
                 Property<T> property = (Property<T>) getModelObject();
                 if (currSort == null || !property.getName().equals(currSort.getProperty())) {
-                    dataProvider.setSort(new SortParam<Object>(property.getName(), true));
+                    dataProvider.setSort(new SortParam<>(property.getName(), true));
                 } else {
                     dataProvider.setSort(
-                            new SortParam<Object>(property.getName(), !currSort.isAscending()));
+                            new SortParam<>(property.getName(), !currSort.isAscending()));
                 }
                 setSelection(false);
                 target.add(listContainer);
@@ -769,14 +767,17 @@ public abstract class GeoServerTablePanel<T> extends Panel {
             validateSelectionIndex(index);
         }
 
+        @Override
         public Boolean getObject() {
             return selection[index];
         }
 
+        @Override
         public void setObject(Boolean object) {
             selection[index] = object.booleanValue();
         }
 
+        @Override
         public void detach() {
             // nothing to do
         }
@@ -842,7 +843,9 @@ public abstract class GeoServerTablePanel<T> extends Panel {
         if (filters == null) return null;
         else if (filters.get(dataProvider.getClass().getName(), SortParam.class) == null)
             return null;
-        return filters.get(dataProvider.getClass().getName(), SortParam.class);
+        @SuppressWarnings("unchecked")
+        SortParam<Object> result = filters.get(dataProvider.getClass().getName(), SortParam.class);
+        return result;
     }
 
     private void clearFilterFromSession() {

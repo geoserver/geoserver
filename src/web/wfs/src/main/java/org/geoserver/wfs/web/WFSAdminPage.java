@@ -60,10 +60,12 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
         super(service);
     }
 
+    @Override
     protected Class<WFSInfo> getServiceClass() {
         return WFSInfo.class;
     }
 
+    @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void build(final IModel info, Form form) {
         // max features
@@ -71,6 +73,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
         form.add(new TextField<Integer>("maxNumberOfFeaturesForPreview"));
         form.add(new CheckBox("featureBounding"));
         form.add(new CheckBox("hitsIgnoreMaxFeatures"));
+        form.add(new CheckBox("simpleConversionEnabled"));
 
         // service level
         RadioGroup sl = new RadioGroup("serviceLevel");
@@ -81,6 +84,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
 
         IModel gml2Model =
                 new LoadableDetachableModel() {
+                    @Override
                     public Object load() {
                         return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_10);
                     }
@@ -88,6 +92,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
 
         IModel gml3Model =
                 new LoadableDetachableModel() {
+                    @Override
                     public Object load() {
                         return ((WFSInfo) info.getObject()).getGML().get(WFSInfo.Version.V_11);
                     }
@@ -125,7 +130,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
                 new MapModel(metadataModel, ShapeZipOutputFormat.SHAPE_ZIP_DEFAULT_PRJ_IS_ESRI);
         CheckBox defaultPrjFormat = new CheckBox("shapeZipPrjFormat", prjFormatModel);
         form.add(defaultPrjFormat);
-
+        form.add(new CheckBox("includeWFSRequestDumpFile"));
         try {
             // This is a temporary meassure until we fully implement ESRI WKT support in GeoTools.
             // See discussion in GEOS-4503
@@ -171,19 +176,19 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
 
     static class GMLPanel extends Panel {
 
-        public GMLPanel(String id, IModel gmlModel, String... mimeTypes) {
-            super(id, new CompoundPropertyModel(gmlModel));
+        public GMLPanel(String id, IModel<GMLInfo> gmlModel, String... mimeTypes) {
+            super(id, new CompoundPropertyModel<>(gmlModel));
 
             // srsNameStyle
             List<GMLInfo.SrsNameStyle> choices = Arrays.asList(SrsNameStyle.values());
-            DropDownChoice srsNameStyle =
-                    new DropDownChoice("srsNameStyle", choices, new EnumChoiceRenderer());
+            DropDownChoice<GMLInfo.SrsNameStyle> srsNameStyle =
+                    new DropDownChoice<>("srsNameStyle", choices, new EnumChoiceRenderer<>());
             add(srsNameStyle);
 
             add(new CheckBox("overrideGMLAttributes"));
 
             // GML MIME type overriding section
-            GMLInfo gmlInfo = (GMLInfo) gmlModel.getObject();
+            GMLInfo gmlInfo = gmlModel.getObject();
             boolean mimesTypesProvided = mimeTypes.length != 0;
             boolean activated = gmlInfo.getMimeTypeToForce().isPresent();
             // add MIME type drop down choice
@@ -245,6 +250,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
         }
     }
 
+    @Override
     protected String getServiceName() {
         return "WFS";
     }

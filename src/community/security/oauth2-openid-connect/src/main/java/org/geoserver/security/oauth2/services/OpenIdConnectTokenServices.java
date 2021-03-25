@@ -11,14 +11,13 @@ import org.geoserver.security.oauth2.GeoServerAccessTokenConverter;
 import org.geoserver.security.oauth2.GeoServerOAuthRemoteTokenServices;
 import org.geoserver.security.oauth2.GeoServerUserAuthenticationConverter;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /** Remote Token Services for OpenId token details. */
@@ -28,15 +27,22 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
         super(new GeoServerAccessTokenConverter());
     }
 
-    protected Map<String, Object> postForMap(
-            String path, MultiValueMap<String, String> formData, HttpHeaders headers) {
-        if (headers.getContentType() == null) {
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        }
-        ParameterizedTypeReference<Map<String, Object>> map =
-                new ParameterizedTypeReference<Map<String, Object>>() {};
+    /**
+     * According to the spec, the token can be verified issuing a GET request, and putting the token
+     * in the Authorization header. See
+     * https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
+     */
+    @Override
+    protected Map<String, Object> checkToken(String accessToken) {
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", getAuthorizationHeader(accessToken));
         return restTemplate
-                .exchange(path, HttpMethod.GET, new HttpEntity<>(formData, headers), map)
+                .exchange(
+                        checkTokenEndpointUrl,
+                        HttpMethod.GET,
+                        new HttpEntity<>(formData, headers),
+                        Map.class)
                 .getBody();
     }
 

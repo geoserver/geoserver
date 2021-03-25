@@ -8,13 +8,29 @@ package org.geoserver.wms.capabilities;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DimensionDefaultValueSetting;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.util.ReaderDimensionsAccessor;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.ISO8601Formatter;
@@ -132,9 +148,9 @@ abstract class DimensionHelper {
             String metadata;
             String units = customDim.getValue().getUnits();
             String unitSymbol = customDim.getValue().getUnitSymbol();
-            final Optional<Class> dataTypeOpt = getDataType(values);
+            final Optional<Class<?>> dataTypeOpt = getDataType(values);
             if (dataTypeOpt.isPresent()) {
-                final Class<Object> type = dataTypeOpt.get();
+                final Class<?> type = dataTypeOpt.get();
                 if (Date.class.isAssignableFrom(type)) {
                     metadata = getTemporalDomainRepresentation(customDim.getValue(), values);
                 } else if (Number.class.isAssignableFrom(type)) {
@@ -159,7 +175,7 @@ abstract class DimensionHelper {
         }
     }
 
-    Optional<Class> getDataType(Set<Object> values) {
+    Optional<Class<?>> getDataType(Set<Object> values) {
         return values.stream().filter(x -> x != null).findFirst().map(Object::getClass);
     }
 
@@ -186,7 +202,7 @@ abstract class DimensionHelper {
         try {
             // do we have time?
             WMTSLayerInfo wli = (WMTSLayerInfo) layerInfo.getResource();
-            WMTSLayer wl = (WMTSLayer) wli.getWMTSLayer(null);
+            WMTSLayer wl = wli.getWMTSLayer(null);
             for (String dimName : wl.getDimensions().keySet()) {
                 if (TIME.equalsIgnoreCase(dimName)) {
                     Dimension timeDimension = wl.getDimension(dimName);
@@ -224,7 +240,7 @@ abstract class DimensionHelper {
 
         DimensionInfo timeInfo = null;
         DimensionInfo elevInfo = null;
-        Map<String, DimensionInfo> customDimensions = new HashMap<String, DimensionInfo>();
+        Map<String, DimensionInfo> customDimensions = new HashMap<>();
         GridCoverage2DReader reader = null;
 
         for (Map.Entry<String, Serializable> e : cvInfo.getMetadata().entrySet()) {
@@ -619,7 +635,8 @@ abstract class DimensionHelper {
     }
 
     /** Builds a single Z range from the domain, be it made of Number or NumberRange objects */
-    private NumberRange<Double> getMinMaxZInterval(TreeSet<? extends Object> values) {
+    @SuppressWarnings("unchecked")
+    private NumberRange<? extends Number> getMinMaxZInterval(TreeSet<? extends Object> values) {
         Object minValue = values.first();
         Object maxValue = values.last();
         Number min, max;

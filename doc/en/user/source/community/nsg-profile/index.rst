@@ -66,7 +66,7 @@ The GetFeature requests representations associated with an index result type is 
 
 The default location, relative to the GeoServer data directory, is nsg-profie/resultSets.
 
-The GetFeature request to resultSetID mapping is stored by default in an H2 DB in nsg-profie/resultSets folder; for details on database configuration see `GeoTools JDBCDataStore syntax <http://docs.geotools.org/stable/userguide/library/jdbc/datastore.html>`_
+The GetFeature request to resultSetID mapping is stored by default in an H2 DB in nsg-profie/resultSets folder; for details on database configuration see :geotools:`GeoTools JDBCDataStore syntax <library/jdbc/datastore.html>`.
 
 The configuration properties are the follows:
 

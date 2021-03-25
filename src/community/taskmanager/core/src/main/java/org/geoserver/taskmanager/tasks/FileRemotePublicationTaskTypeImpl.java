@@ -14,7 +14,6 @@ import it.geosolutions.geoserver.rest.encoder.coverage.GSCoverageEncoder;
 import it.geosolutions.geoserver.rest.encoder.feature.GSFeatureTypeEncoder;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -26,6 +25,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -53,6 +53,7 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
     private static final String REMOTE_DIR = "uploaded-stores/store_";
     private static final SimpleDateFormat TIME_FMT = new SimpleDateFormat("yyMMddhhmmssMs");
 
+    @Override
     @PostConstruct
     public void initParamInfo() {
         super.initParamInfo();
@@ -69,16 +70,14 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                         .dependsOn(autoVersioned));
     }
 
-    private static String remotePath(Date date, StoreInfo store, URI uri)
-            throws MalformedURLException {
+    private static String newLocationKey(StoreInfo store) {
         return REMOTE_DIR
                 + store.getWorkspace().getName()
                 + "_"
                 + store.getName()
                 + "_"
-                + TIME_FMT.format(date)
-                + "/"
-                + FilenameUtils.getName(uri.toURL().getPath());
+                + TIME_FMT.format(new Date())
+                + "/";
     }
 
     @Override
@@ -141,16 +140,24 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
         }
         boolean upload = isUpload(uri);
         List<Resource> processedResources = null;
+        String locationKey = null;
         if (upload) {
+            if (!isSimpleUpload() || store.getType() == null) {
+                locationKey = newLocationKey(store);
+            }
             Resource resource;
             if (uri.getScheme().toLowerCase().equals("resource")) {
                 resource = Resources.fromURL(uri.toString());
             } else {
                 resource = Resources.fromPath(uri.toURL().getPath());
             }
-            processedResources = process(resource, extGS, ctx);
+            processedResources = process(resource, locationKey, extGS, restManager, ctx);
+            if (locationKey == null && processedResources.size() > 1) {
+                // can't simple upload anyway
+                locationKey = newLocationKey(store);
+            }
         }
-        if (upload && processedResources.size() == 1 && store.getType() != null) {
+        if (upload && locationKey == null) { // simple upload
             return restManager
                     .getPublisher()
                     .createStore(
@@ -165,17 +172,10 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
         } else {
             String targetUri;
             if (upload) {
-                Date now = new Date();
                 for (Resource processedResource : processedResources) {
-                    String path = remotePath(now, store, processedResource.file().toURI());
-                    try (InputStream is = processedResource.in()) {
-                        if (!restManager.getResourceManager().upload(path, is)) {
-                            throw new TaskException("Failed to upload store file " + uri);
-                        }
-                    }
+                    upload(restManager, locationKey, processedResource);
                 }
-                targetUri =
-                        "file:" + remotePath(now, store, processedResources.get(0).file().toURI());
+                targetUri = "file:" + locationKey + "/" + processedResources.get(0).name();
             } else {
                 targetUri = uri.toString();
             }
@@ -207,6 +207,7 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
     @Override
     protected void postProcess(
             StoreType storeType,
+            ResourceInfo resource,
             GSResourceEncoder re,
             TaskContext ctx,
             TaskRunnable<GSResourceEncoder> update)
@@ -293,7 +294,26 @@ public class FileRemotePublicationTaskTypeImpl extends AbstractRemotePublication
                 || uri.getScheme().toLowerCase().equals("resource");
     }
 
-    protected List<Resource> process(Resource res, ExternalGS extGS, TaskContext ctx)
+    protected boolean isSimpleUpload() {
+        return true;
+    }
+
+    protected void upload(GeoServerRESTManager restManager, String locationKey, Resource resource)
+            throws TaskException, IOException {
+        String path = locationKey + resource.name();
+        try (InputStream is = resource.in()) {
+            if (!restManager.getResourceManager().upload(path, is)) {
+                throw new TaskException("Failed to upload store file " + resource.name());
+            }
+        }
+    }
+
+    protected List<Resource> process(
+            Resource res,
+            String locationKey,
+            ExternalGS extGS,
+            GeoServerRESTManager restManager,
+            TaskContext ctx)
             throws TaskException {
         // hook for subclasses
         return Collections.singletonList(res);

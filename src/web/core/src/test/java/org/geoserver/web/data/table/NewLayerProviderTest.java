@@ -5,7 +5,9 @@
  */
 package org.geoserver.web.data.table;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import org.geoserver.catalog.Catalog;
@@ -69,7 +71,7 @@ public class NewLayerProviderTest extends GeoServerWicketTestSupport {
         StoreInfo cite = catalog.getStoreByName(MockData.CITE_PREFIX, StoreInfo.class);
 
         List<FeatureTypeInfo> resources = catalog.getResourcesByStore(cite, FeatureTypeInfo.class);
-        assertTrue(resources.size() > 0);
+        assertFalse(resources.isEmpty());
 
         final int numberOfPublishedResources = resources.size();
 

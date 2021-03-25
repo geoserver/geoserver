@@ -4,8 +4,8 @@
  */
 package org.geoserver.gwc.web.wmts;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.gwc.wmts.WMTSInfo;

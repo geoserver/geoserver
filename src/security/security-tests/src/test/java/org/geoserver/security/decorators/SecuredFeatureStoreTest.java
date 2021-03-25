@@ -4,16 +4,21 @@
  */
 package org.geoserver.security.decorators;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 import org.geoserver.security.CatalogMode;
 import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.impl.SecureObjectsTest;
-import org.geotools.data.FeatureStore;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.NameImpl;
 import org.junit.Test;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 
@@ -22,9 +27,9 @@ public class SecuredFeatureStoreTest extends SecureObjectsTest {
     @Test
     public void testUpdateTwiceComplex() throws Exception {
         // build up the mock
-        FeatureStore fs = createMock(FeatureStore.class);
-        Name[] names = new Name[] {new NameImpl("foo")};
-        Object[] values = new Object[] {"abc"};
+        SimpleFeatureStore fs = createMock(SimpleFeatureStore.class);
+        Name[] names = {new NameImpl("foo")};
+        Object[] values = {"abc"};
         Filter filter = Filter.INCLUDE;
         fs.modifyFeatures(eq(names), eq(values), eq(filter));
         expectLastCall().once();
@@ -33,7 +38,8 @@ public class SecuredFeatureStoreTest extends SecureObjectsTest {
         VectorAccessLimits limits =
                 new VectorAccessLimits(
                         CatalogMode.HIDE, null, Filter.INCLUDE, null, Filter.INCLUDE);
-        SecuredFeatureStore store = new SecuredFeatureStore(fs, WrapperPolicy.readWrite(limits));
+        SecuredFeatureStore<SimpleFeatureType, SimpleFeature> store =
+                new SecuredFeatureStore<>(fs, WrapperPolicy.readWrite(limits));
         store.modifyFeatures(names, values, filter);
         verify(fs);
     }
@@ -42,8 +48,8 @@ public class SecuredFeatureStoreTest extends SecureObjectsTest {
     public void testUpdateTwiceSimple() throws Exception {
         // build up the mock
         SimpleFeatureStore fs = createMock(SimpleFeatureStore.class);
-        String[] names = new String[] {"foo"};
-        Object[] values = new Object[] {"abc"};
+        String[] names = {"foo"};
+        Object[] values = {"abc"};
         Filter filter = Filter.INCLUDE;
         fs.modifyFeatures(eq(names), eq(values), eq(filter));
         expectLastCall().once();

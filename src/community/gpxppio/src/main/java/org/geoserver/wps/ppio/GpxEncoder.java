@@ -42,11 +42,11 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class GpxEncoder {
     boolean writeExtendedData = false;
 
-    Map<String, Class> trkAttributes = new HashMap<String, Class>();
+    Map<String, Class<?>> trkAttributes = new HashMap<>();
 
-    Map<String, Class> wptAttributes = new HashMap<String, Class>();
+    Map<String, Class<?>> wptAttributes = new HashMap<>();
 
-    Map<String, Class> rteAttributes = new HashMap<String, Class>();
+    Map<String, Class<?>> rteAttributes = new HashMap<>();
 
     String creator = "GeoServer";
 

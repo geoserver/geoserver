@@ -25,6 +25,7 @@ public class JDBCCollectionFeatureStore extends AbstractMappingStore {
         super(openSearchAccess, collectionFeatureType);
     }
 
+    @Override
     protected SimpleFeatureSource getDelegateCollectionSource() throws IOException {
         return openSearchAccess
                 .getDelegateStore()

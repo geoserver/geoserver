@@ -14,16 +14,18 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
 
     String openSearchAccessStoreId;
 
-    int maximumRecords = OSEOInfo.DEFAULT_MAXIMUM_RECORDS;
+    int maximumRecords = DEFAULT_MAXIMUM_RECORDS;
 
-    int recordsPerPage = OSEOInfo.DEFAULT_RECORDS_PER_PAGE;
+    int recordsPerPage = DEFAULT_RECORDS_PER_PAGE;
 
     List<ProductClass> productClasses = new ArrayList<>(ProductClass.DEFAULT_PRODUCT_CLASSES);
 
+    @Override
     public int getRecordsPerPage() {
-        return recordsPerPage == 0 ? OSEOInfo.DEFAULT_RECORDS_PER_PAGE : recordsPerPage;
+        return recordsPerPage == 0 ? DEFAULT_RECORDS_PER_PAGE : recordsPerPage;
     }
 
+    @Override
     public void setRecordsPerPage(int defaultRecords) {
         this.recordsPerPage = defaultRecords;
     }
@@ -37,14 +39,17 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
         return productClasses;
     }
 
+    @Override
     public int getMaximumRecordsPerPage() {
         return maximumRecords;
     }
 
+    @Override
     public void setMaximumRecordsPerPage(int maximumRecords) {
         this.maximumRecords = maximumRecords;
     }
 
+    @Override
     public String getOpenSearchAccessStoreId() {
         return openSearchAccessStoreId;
     }

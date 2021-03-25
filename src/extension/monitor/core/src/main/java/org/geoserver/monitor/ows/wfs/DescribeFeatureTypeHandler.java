@@ -26,7 +26,7 @@ public class DescribeFeatureTypeHandler extends WFSRequestObjectHandler {
             return null;
         }
 
-        List<String> layers = new ArrayList<String>();
+        List<String> layers = new ArrayList<>();
         for (Object o : typeNames) {
             layers.add(toString(o));
         }

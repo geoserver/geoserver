@@ -6,7 +6,9 @@
 package org.geoserver.rest.catalog;
 
 import static org.geoserver.rest.RestBaseController.ROOT_PATH;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +20,14 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class TemplateControllerTest extends CatalogRESTTestSupport {
 
+    @Override
     public void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
 
         testData.setUpDefaultRasterLayers();
     }
 
+    @Override
     @Before
     public void login() throws Exception {
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");

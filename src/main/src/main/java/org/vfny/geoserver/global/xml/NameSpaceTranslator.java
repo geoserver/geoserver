@@ -57,12 +57,12 @@ public abstract class NameSpaceTranslator {
      * @param type Class the class to attempt to find related elements for.
      * @return Set a set of associated NameSpaceElements
      */
-    public Set getAssociatedTypes(Class type) {
+    public Set<NameSpaceElement> getAssociatedTypes(Class<?> type) {
         if (type == null) {
             return null;
         }
 
-        HashSet r = new HashSet();
+        Set<NameSpaceElement> r = new HashSet<>();
         Set elems = getElements();
         Iterator i = elems.iterator();
 
@@ -70,7 +70,7 @@ public abstract class NameSpaceTranslator {
             NameSpaceElement nse = (NameSpaceElement) i.next();
 
             if (nse != null) {
-                Class cls = nse.getJavaClass();
+                Class<?> cls = nse.getJavaClass();
 
                 if ((cls != null) && cls.isAssignableFrom(type) && !cls.equals(Object.class)) {
                     r.add(nse);
@@ -95,7 +95,7 @@ public abstract class NameSpaceTranslator {
             return null;
         }
 
-        HashSet r = new HashSet();
+        Set<NameSpaceElement> r = new HashSet<>();
         Set elems = getElements();
         Iterator i = elems.iterator();
 
@@ -218,12 +218,12 @@ public abstract class NameSpaceTranslator {
      * @param type Class the class of elements to get
      * @return Set
      */
-    public Set getElements(Class type) {
+    public Set getElements(Class<?> type) {
         if (type == null) {
             return null;
         }
 
-        HashSet r = new HashSet();
+        Set<NameSpaceElement> r = new HashSet<>();
         Set elems = getElements();
         Iterator i = elems.iterator();
 
@@ -283,11 +283,11 @@ public abstract class NameSpaceTranslator {
      * NamespaceElements, so that each class only has one that returns true for isDefault(). Sorry
      * for the hackiness, I need to get a release out.
      */
-    public NameSpaceElement getDefaultElement(Class type) {
+    public NameSpaceElement getDefaultElement(Class<?> type) {
         Set posibilities = getElements(type);
 
         // System.out.println("getting default for type: " + type + " = " + posibilities);
-        if (posibilities.size() == 0) {
+        if (posibilities.isEmpty()) {
             return null;
         }
 
@@ -312,14 +312,14 @@ public abstract class NameSpaceTranslator {
      * @param name The name of the element definition
      * @return NameSpaceElement
      */
-    public NameSpaceElement getElement(Class type, String name) {
+    public NameSpaceElement getElement(Class<?> type, String name) {
         if (type == null) {
             return null;
         }
 
         Set posibilities = getElements(type);
 
-        if (posibilities.size() == 0) {
+        if (posibilities.isEmpty()) {
             return null;
         }
 

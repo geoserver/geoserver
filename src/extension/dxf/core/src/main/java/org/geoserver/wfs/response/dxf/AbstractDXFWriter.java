@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.wfs.response.dxf.util.JulianDate;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
@@ -63,10 +64,10 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     // array of cyclically used colors (specified as autocad color indexes)
     // each color is assigned to a layer until there are elements
     // available, then they are reused again
-    protected int[] colors = new int[] {7, 1, 2, 3, 4, 5, 6, 8, 9};
+    protected int[] colors = {7, 1, 2, 3, 4, 5, 6, 8, 9};
 
     // array of cyclically used line types
-    protected LineType[] lineTypes = new LineType[] {new LineType("CONTINUOUS", "Solid line")};
+    protected LineType[] lineTypes = {new LineType("CONTINUOUS", "Solid line")};
 
     // current layer color (index in the colors array)
     private int colorPos = 0;
@@ -83,7 +84,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     // assigned names (id -> name), used to reference layers
     // in different steps of the dxf writing
-    private Map<String, String> cachedNames = new HashMap<String, String>();
+    private Map<String, String> cachedNames = new HashMap<>();
 
     // cached global envelope
     private ReferencedEnvelope e = null;
@@ -92,12 +93,14 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     // each type of object needs a separate handle space, to
     // avoid conflicts, so we mantain a set of counters
     // for different kink of objects
-    Map<String, Integer> handles = new HashMap<String, Integer>();
+    Map<String, Integer> handles = new HashMap<>();
 
     /** Create a new instance of the writer, using the given underlying writer. */
+    @Override
     public abstract DXFWriter newInstance(Writer writer);
 
     /** Verifies if the writer supports the request dxf version. */
+    @Override
     public boolean supportsVersion(String version) {
         if (version == null) return true;
         return false;
@@ -144,13 +147,14 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
 
     /** Performs the actual writing. Override it in the actual implementation class. */
-    public abstract void write(List featureList, String version) throws IOException;
+    @Override
+    public abstract void write(List<SimpleFeatureCollection> featureList, String version)
+            throws IOException;
 
     /** Extracts and cache the global ReferenceEnvelope for the given feature list. */
-    protected ReferencedEnvelope getEnvelope(List featureList) {
+    protected ReferencedEnvelope getEnvelope(List<SimpleFeatureCollection> featureList) {
         if (e == null) {
-            for (int i = 0; i < featureList.size(); i++) {
-                FeatureCollection collection = (FeatureCollection) featureList.get(i);
+            for (FeatureCollection collection : featureList) {
                 if (e == null) {
                     e = collection.getBounds();
                 } else {
@@ -409,6 +413,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
 
     /** Configure an option (usually got as a format option). */
+    @Override
     public void setOption(String optionName, Object optionValue) {
         if (optionName.equalsIgnoreCase("geometryasblock")) {
             setGeometryAsBlock(((Boolean) optionValue).booleanValue());

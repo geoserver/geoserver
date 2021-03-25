@@ -42,7 +42,9 @@ import java.util.TreeMap;
  */
 public class TreeMapConverter extends MapConverter {
 
+    @SuppressWarnings("unchecked")
     private static final class NullComparator extends Mapper.Null implements Comparator {
+        @Override
         public int compare(Object o1, Object o2) {
             Comparable c1 = (Comparable) o1;
             return c1.compareTo(o2);
@@ -55,6 +57,7 @@ public class TreeMapConverter extends MapConverter {
         super(mapper, TreeMap.class);
     }
 
+    @Override
     public void marshal(
             Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
         SortedMap sortedMap = (SortedMap) source;
@@ -77,6 +80,8 @@ public class TreeMapConverter extends MapConverter {
         }
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
         TreeMap result = null;
         final Comparator comparator = unmarshalComparator(mapper(), reader, context, result);
@@ -96,7 +101,7 @@ public class TreeMapConverter extends MapConverter {
         if (reader.hasMoreChildren()) {
             reader.moveDown();
             if (reader.getNodeName().equals("comparator")) {
-                Class comparatorClass = HierarchicalStreams.readClassType(reader, mapper);
+                Class<?> comparatorClass = HierarchicalStreams.readClassType(reader, mapper);
                 comparator = (Comparator) context.convertAnother(result, comparatorClass);
             } else if (reader.getNodeName().equals("no-comparator")) { // pre 1.4 format
                 comparator = null;

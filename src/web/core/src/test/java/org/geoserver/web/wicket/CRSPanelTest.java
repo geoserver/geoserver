@@ -5,7 +5,10 @@
  */
 package org.geoserver.web.wicket;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -85,7 +88,8 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
         tester.startPage(new CRSPanelTestPage(crs));
 
-        TextField srs = (TextField) tester.getComponentFromLastRenderedPage("form:crs:srs");
+        @SuppressWarnings("unchecked")
+        TextField<String> srs = (TextField) tester.getComponentFromLastRenderedPage("form:crs:srs");
         srs.setModelObject("EPSG:3005");
 
         FormTester ft = tester.newFormTester("form", false);
@@ -140,7 +144,8 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         Foo foo = new Foo(DefaultGeographicCRS.WGS84);
         tester.startPage(new CRSPanelTestPage(foo));
 
-        TextField srs = (TextField) tester.getComponentFromLastRenderedPage("form:crs:srs");
+        @SuppressWarnings("unchecked")
+        TextField<String> srs = (TextField) tester.getComponentFromLastRenderedPage("form:crs:srs");
         srs.setModelObject("EPSG:3005");
 
         FormTester ft = tester.newFormTester("form");
@@ -152,7 +157,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
     @Test
     public void testPropertyUnchanged() throws Exception {
         Foo foo = new Foo(DefaultGeographicCRS.WGS84);
-        tester.startPage(new CRSPanelTestPage(new PropertyModel(foo, "crs")));
+        tester.startPage(new CRSPanelTestPage(new PropertyModel<>(foo, "crs")));
 
         tester.assertComponent("form", Form.class);
         tester.assertComponent("form:crs", CRSPanel.class);
@@ -166,9 +171,10 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
     @Test
     public void testPropertyChanged() throws Exception {
         Foo foo = new Foo(DefaultGeographicCRS.WGS84);
-        tester.startPage(new CRSPanelTestPage(new PropertyModel(foo, "crs")));
+        tester.startPage(new CRSPanelTestPage(new PropertyModel<>(foo, "crs")));
 
-        TextField srs = (TextField) tester.getComponentFromLastRenderedPage("form:crs:srs");
+        @SuppressWarnings("unchecked")
+        TextField<String> srs = (TextField) tester.getComponentFromLastRenderedPage("form:crs:srs");
         srs.setModelObject("EPSG:3005");
 
         FormTester ft = tester.newFormTester("form");

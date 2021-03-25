@@ -5,8 +5,8 @@
 package org.geoserver.wms.legendgraphic;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +54,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
                 "scaleDependent", "scaleDependent.sld", GetLegendGraphicTest.class, catalog);
         testData.addVectorLayer(
                 SF_STATES,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "states.properties",
                 GetMapIntegrationTest.class,
                 catalog);
@@ -443,7 +443,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
                         + ":true"
                         + "&CQL_FILTER=PERSONS < 2000000";
 
-        Map rawKvp = (Map) caseInsensitiveKvp(KvpUtils.parseQueryString(requestURL));
+        Map<String, Object> rawKvp = caseInsensitiveKvp(KvpUtils.parseQueryString(requestURL));
         Map kvp = parseKvp(rawKvp);
         GetLegendGraphicKvpReader reader = new GetLegendGraphicKvpReader(getWMS());
         GetLegendGraphicRequest request = reader.read(reader.createRequest(), kvp, rawKvp);
@@ -453,6 +453,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
         final Style style = legend.getStyle();
         DuplicatingStyleVisitor matchFirstCloner =
                 new DuplicatingStyleVisitor() {
+                    @Override
                     public void visit(FeatureTypeStyle fts) {
                         super.visit(fts);
                         FeatureTypeStyle copy = (FeatureTypeStyle) pages.peek();
@@ -528,7 +529,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
                 "TheRule (0)");
     }
 
-    public void testScaleDependent(String bboxSpecification, String expectedLabel)
+    protected void testScaleDependent(String bboxSpecification, String expectedLabel)
             throws Exception {
         // around 4k
         String requestURL =
@@ -543,7 +544,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
                         + ":true"
                         + "&srcwidht=768&srcheight=300";
 
-        Map rawKvp = (Map) caseInsensitiveKvp(KvpUtils.parseQueryString(requestURL));
+        Map<String, Object> rawKvp = caseInsensitiveKvp(KvpUtils.parseQueryString(requestURL));
         Map kvp = parseKvp(rawKvp);
         GetLegendGraphicKvpReader reader = new GetLegendGraphicKvpReader(getWMS());
         GetLegendGraphicRequest request = reader.read(reader.createRequest(), kvp, rawKvp);
@@ -572,7 +573,7 @@ public class FeatureCountLegendGraphicTest extends WMSTestSupport {
     }
 
     private GetLegendGraphicRequest runGetLegendGraphics(String requestURL) throws Exception {
-        Map rawKvp = (Map) caseInsensitiveKvp(KvpUtils.parseQueryString(requestURL));
+        Map<String, Object> rawKvp = caseInsensitiveKvp(KvpUtils.parseQueryString(requestURL));
         Map kvp = parseKvp(rawKvp);
         GetLegendGraphicKvpReader reader = new GetLegendGraphicKvpReader(getWMS());
         GetLegendGraphicRequest request = reader.read(reader.createRequest(), kvp, rawKvp);

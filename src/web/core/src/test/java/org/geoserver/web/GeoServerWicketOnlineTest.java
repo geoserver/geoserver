@@ -9,7 +9,7 @@ import java.util.List;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.security.impl.ServiceAccessRule;
-import org.geotools.data.Base64;
+import org.geotools.util.Base64;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,7 +34,6 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
     public void testCannotAddAccessRuleIterative() throws IOException {
         assumeTrue(isOnline());
         List<ServiceAccessRule> initialRules = getServiceAccessRules();
-        HttpURLConnection connection;
 
         String jsessionid = login("admin", "geoserver");
         try {
@@ -63,7 +62,6 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
     public void testCannotAddAccessRuleProgramatic() throws IOException {
         assumeTrue(isOnline());
         List<ServiceAccessRule> initialRules = getServiceAccessRules();
-        HttpURLConnection connection;
 
         String jsessionid = login("admin", "geoserver");
         try {
@@ -88,7 +86,7 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
                         "web/wicket/bookmarkable/org.geoserver.security.web.service.NewServiceAccessRulePage",
                         jsessionid,
                         null);
-        String response = IOUtils.toString(connection.getInputStream(), "UTF-8");
+        IOUtils.toString(connection.getInputStream(), "UTF-8");
         // Fetch index from response URL after redirects are handled
         int i = Integer.parseInt(connection.getURL().getQuery());
         connection.disconnect();
@@ -97,16 +95,14 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
 
     private void addServiceAccessRuleWicket(String jsessionid, int i, boolean setReferer)
             throws IOException {
-        HttpURLConnection connection;
-        String response;
-
         // Post service selection
         // NOTE: This is required, as wicket checks the model content against the form content
         // we post later on
         String body = "service=4";
-        connection =
+        HttpURLConnection connection =
                 preparePost(
-                        "web/wicket/bookmarkable/org.geoserver.security.web.service.NewServiceAccessRulePage?"
+                        "web/wicket/bookmarkable/org.geoserver.security.web.service"
+                                + ".NewServiceAccessRulePage?"
                                 + i
                                 + "-1.IBehaviorListener.0-form-service",
                         body.length(),
@@ -127,7 +123,7 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
         }
         connection = doPost(connection, body);
         if (connection.getResponseCode() < 400) {
-            response = IOUtils.toString(connection.getInputStream(), "UTF-8");
+            IOUtils.toString(connection.getInputStream(), "UTF-8");
         }
         connection.disconnect();
 
@@ -158,7 +154,7 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
         connection.setRequestProperty("Wicket-FocusedElementId", "id3c");
         connection = doPost(connection, body);
         if (connection.getResponseCode() < 400) {
-            response = IOUtils.toString(connection.getInputStream(), "UTF-8");
+            IOUtils.toString(connection.getInputStream(), "UTF-8");
         }
         connection.disconnect();
 
@@ -182,7 +178,7 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
         }
         connection = doPost(connection, body);
         if (connection.getResponseCode() < 400) {
-            response = IOUtils.toString(connection.getInputStream(), "UTF-8");
+            IOUtils.toString(connection.getInputStream(), "UTF-8");
         }
         connection.disconnect();
     }

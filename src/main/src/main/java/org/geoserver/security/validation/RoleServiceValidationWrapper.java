@@ -112,7 +112,7 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator
 
         GeoServerSecurityManager secMgr = getSecurityManager();
 
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
         for (ServiceAccessRule rule :
                 secMgr.getServiceAccessRuleDAO().getRulesAssociatedWithRole(role.getAuthority()))
             keys.add(rule.getKey());
@@ -120,7 +120,7 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator
                 secMgr.getDataAccessRuleDAO().getRulesAssociatedWithRole(role.getAuthority()))
             keys.add(rule.getKey());
 
-        if (keys.size() > 0) {
+        if (!keys.isEmpty()) {
             String ruleString = StringUtils.collectionToCommaDelimitedString(keys);
             throw createSecurityException(ROLE_IN_USE_$2, role.getAuthority(), ruleString);
         }
@@ -201,102 +201,125 @@ public class RoleServiceValidationWrapper extends AbstractSecurityValidator
 
     // start wrapper methods
 
+    @Override
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         service.initializeFromConfig(config);
     }
 
+    @Override
     public boolean canCreateStore() {
         return service.canCreateStore();
     }
 
+    @Override
     public GeoServerRoleStore createStore() throws IOException {
         return service.createStore();
     }
 
+    @Override
     public String getName() {
         return service.getName();
     }
 
+    @Override
     public void setName(String name) {
         service.setName(name);
     }
 
+    @Override
     public void setSecurityManager(GeoServerSecurityManager securityManager) {
         service.setSecurityManager(securityManager);
     }
 
+    @Override
     public void registerRoleLoadedListener(RoleLoadedListener listener) {
         service.registerRoleLoadedListener(listener);
     }
 
+    @Override
     public GeoServerSecurityManager getSecurityManager() {
         return service.getSecurityManager();
     }
 
+    @Override
     public void unregisterRoleLoadedListener(RoleLoadedListener listener) {
         service.unregisterRoleLoadedListener(listener);
     }
 
+    @Override
     public SortedSet<String> getGroupNamesForRole(GeoServerRole role) throws IOException {
         checkExistingRoleName(role.getAuthority());
         return service.getGroupNamesForRole(role);
     }
 
+    @Override
     public SortedSet<String> getUserNamesForRole(GeoServerRole role) throws IOException {
         checkExistingRoleName(role.getAuthority());
         return service.getUserNamesForRole(role);
     }
 
+    @Override
     public SortedSet<GeoServerRole> getRolesForUser(String username) throws IOException {
         checkValidUserName(username);
         return service.getRolesForUser(username);
     }
 
+    @Override
     public SortedSet<GeoServerRole> getRolesForGroup(String groupname) throws IOException {
         checkValidGroupName(groupname);
         return service.getRolesForGroup(groupname);
     }
 
+    @Override
     public SortedSet<GeoServerRole> getRoles() throws IOException {
         return service.getRoles();
     }
 
+    @Override
     public Map<String, String> getParentMappings() throws IOException {
         return service.getParentMappings();
     }
 
+    @Override
     public GeoServerRole createRoleObject(String role) throws IOException {
         checkRoleName(role);
         return service.createRoleObject(role);
     }
 
+    @Override
     public GeoServerRole getParentRole(GeoServerRole role) throws IOException {
         checkExistingRoleName(role.getAuthority());
         return service.getParentRole(role);
     }
 
+    @Override
     public GeoServerRole getRoleByName(String role) throws IOException {
         return service.getRoleByName(role);
     }
 
+    @Override
     public void load() throws IOException {
         service.load();
     }
 
+    @Override
     public Properties personalizeRoleParams(
             String roleName, Properties roleParams, String userName, Properties userProps)
             throws IOException {
         return service.personalizeRoleParams(roleName, roleParams, userName, userProps);
     }
 
+    @Override
     public GeoServerRole getAdminRole() {
         return service.getAdminRole();
     }
 
+    @Override
     public GeoServerRole getGroupAdminRole() {
         return service.getGroupAdminRole();
     }
 
+    @Override
     public int getRoleCount() throws IOException {
         return service.getRoleCount();
     }

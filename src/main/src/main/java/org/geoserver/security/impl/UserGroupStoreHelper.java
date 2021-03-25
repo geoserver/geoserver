@@ -21,21 +21,18 @@ import org.springframework.util.StringUtils;
  */
 public class UserGroupStoreHelper {
 
-    public TreeMap<String, GeoServerUser> userMap = new TreeMap<String, GeoServerUser>();
-    public TreeMap<String, GeoServerUserGroup> groupMap = new TreeMap<String, GeoServerUserGroup>();
-    public TreeMap<GeoServerUserGroup, SortedSet<GeoServerUser>> group_userMap =
-            new TreeMap<GeoServerUserGroup, SortedSet<GeoServerUser>>();
-    public TreeMap<GeoServerUser, SortedSet<GeoServerUserGroup>> user_groupMap =
-            new TreeMap<GeoServerUser, SortedSet<GeoServerUserGroup>>();
-    public TreeMap<String, SortedSet<GeoServerUser>> propertyMap =
-            new TreeMap<String, SortedSet<GeoServerUser>>();
+    public TreeMap<String, GeoServerUser> userMap = new TreeMap<>();
+    public TreeMap<String, GeoServerUserGroup> groupMap = new TreeMap<>();
+    public TreeMap<GeoServerUserGroup, SortedSet<GeoServerUser>> group_userMap = new TreeMap<>();
+    public TreeMap<GeoServerUser, SortedSet<GeoServerUserGroup>> user_groupMap = new TreeMap<>();
+    public TreeMap<String, SortedSet<GeoServerUser>> propertyMap = new TreeMap<>();
 
     protected SortedSet<GeoServerUser> emptyUsers;
     protected SortedSet<GeoServerUserGroup> emptyGroups;
 
     public UserGroupStoreHelper() {
-        emptyUsers = Collections.unmodifiableSortedSet(new TreeSet<GeoServerUser>());
-        emptyGroups = Collections.unmodifiableSortedSet(new TreeSet<GeoServerUserGroup>());
+        emptyUsers = Collections.unmodifiableSortedSet(new TreeSet<>());
+        emptyGroups = Collections.unmodifiableSortedSet(new TreeSet<>());
     }
 
     public GeoServerUser getUserByUsername(String username) throws IOException {
@@ -48,14 +45,14 @@ public class UserGroupStoreHelper {
 
     public SortedSet<GeoServerUser> getUsers() throws IOException {
 
-        SortedSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
+        SortedSet<GeoServerUser> users = new TreeSet<>();
         users.addAll(userMap.values());
         return Collections.unmodifiableSortedSet(users);
     }
 
     public SortedSet<GeoServerUserGroup> getUserGroups() throws IOException {
 
-        SortedSet<GeoServerUserGroup> groups = new TreeSet<GeoServerUserGroup>();
+        SortedSet<GeoServerUserGroup> groups = new TreeSet<>();
         groups.addAll(groupMap.values());
         return Collections.unmodifiableSortedSet(groups);
     }
@@ -109,7 +106,7 @@ public class UserGroupStoreHelper {
         if (StringUtils.hasLength(propname) == false) return emptyUsers;
 
         SortedSet<GeoServerUser> users = getUsersHavingProperty(propname);
-        SortedSet<GeoServerUser> result = new TreeSet<GeoServerUser>();
+        SortedSet<GeoServerUser> result = new TreeSet<>();
         result.addAll(userMap.values());
         result.removeAll(users);
         return Collections.unmodifiableSortedSet(result);
@@ -127,7 +124,7 @@ public class UserGroupStoreHelper {
 
         if (StringUtils.hasLength(propvalue) == false) return emptyUsers;
 
-        SortedSet<GeoServerUser> result = new TreeSet<GeoServerUser>();
+        SortedSet<GeoServerUser> result = new TreeSet<>();
         for (GeoServerUser user : getUsersHavingProperty(propname)) {
             if (propvalue.equals(user.getProperties().getProperty(propname))) result.add(user);
         }

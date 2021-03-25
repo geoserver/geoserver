@@ -16,7 +16,6 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,7 +49,12 @@ import org.opengis.referencing.cs.CoordinateSystem;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({
+    "rawtypes",
+    "unchecked",
+    "PMD.JUnit4TestShouldUseBeforeAnnotation",
+    "PMD.JUnit4TestShouldUseAfterAnnotation"
+})
 public class MockData implements TestData {
     // Extra configuration keys for vector data
     /**
@@ -197,80 +201,74 @@ public class MockData implements TestData {
     public static QName GEOMETRYLESS = new QName(CITE_URI, "Geometryless", CITE_PREFIX);
 
     /** List of all cite types names */
-    public static QName[] TYPENAMES =
-            new QName[] {
-                // WMS 1.1.1
-                BASIC_POLYGONS,
-                BRIDGES,
-                BUILDINGS,
-                DIVIDED_ROUTES,
-                FORESTS,
-                LAKES,
-                MAP_NEATLINE,
-                NAMED_PLACES,
-                PONDS,
-                ROAD_SEGMENTS,
-                STREAMS, // WFS 1.0
-                DELETES,
-                FIFTEEN,
-                INSERTS,
-                LOCKS,
-                NULLS,
-                OTHER,
-                SEVEN,
-                UPDATES,
-                LINES,
-                MLINES,
-                MPOINTS,
-                MPOLYGONS,
-                POINTS,
-                POLYGONS, // WFS 1.1
-                PRIMITIVEGEOFEATURE,
-                AGGREGATEGEOFEATURE,
-                GENERICENTITY,
-                GEOMETRYLESS /* ENTIT\u00C9G\u00C9N\u00C9RIQUE */
-            };
+    public static QName[] TYPENAMES = {
+        // WMS 1.1.1
+        BASIC_POLYGONS,
+        BRIDGES,
+        BUILDINGS,
+        DIVIDED_ROUTES,
+        FORESTS,
+        LAKES,
+        MAP_NEATLINE,
+        NAMED_PLACES,
+        PONDS,
+        ROAD_SEGMENTS,
+        STREAMS, // WFS 1.0
+        DELETES,
+        FIFTEEN,
+        INSERTS,
+        LOCKS,
+        NULLS,
+        OTHER,
+        SEVEN,
+        UPDATES,
+        LINES,
+        MLINES,
+        MPOINTS,
+        MPOLYGONS,
+        POINTS,
+        POLYGONS, // WFS 1.1
+        PRIMITIVEGEOFEATURE,
+        AGGREGATEGEOFEATURE,
+        GENERICENTITY,
+        GEOMETRYLESS /* ENTIT\u00C9G\u00C9N\u00C9RIQUE */
+    };
 
     /** List of wms type names. */
-    public static QName[] WMS_TYPENAMES =
-            new QName[] {
-                BASIC_POLYGONS,
-                BRIDGES,
-                BUILDINGS,
-                DIVIDED_ROUTES,
-                FORESTS,
-                LAKES,
-                MAP_NEATLINE,
-                NAMED_PLACES,
-                PONDS,
-                ROAD_SEGMENTS,
-                STREAMS
-            };
+    public static QName[] WMS_TYPENAMES = {
+        BASIC_POLYGONS,
+        BRIDGES,
+        BUILDINGS,
+        DIVIDED_ROUTES,
+        FORESTS,
+        LAKES,
+        MAP_NEATLINE,
+        NAMED_PLACES,
+        PONDS,
+        ROAD_SEGMENTS,
+        STREAMS
+    };
 
     /** List of wfs 1.0 type names. */
-    public static QName[] WFS10_TYPENAMES =
-            new QName[] {
-                DELETES, FIFTEEN, INSERTS, LOCKS, NULLS, OTHER, SEVEN, UPDATES, LINES, MLINES,
-                MPOINTS, MPOLYGONS, POINTS, POLYGONS
-            };
+    public static QName[] WFS10_TYPENAMES = {
+        DELETES, FIFTEEN, INSERTS, LOCKS, NULLS, OTHER, SEVEN, UPDATES, LINES, MLINES, MPOINTS,
+        MPOLYGONS, POINTS, POLYGONS
+    };
 
     /** List of wfs 1.1 type names. */
-    public static QName[] WFS11_TYPENAMES =
-            new QName[] {
-                PRIMITIVEGEOFEATURE,
-                AGGREGATEGEOFEATURE,
-                GENERICENTITY /* ENTIT\u00C9G\u00C9N\u00C9RIQUE */
-            };
+    public static QName[] WFS11_TYPENAMES = {
+        PRIMITIVEGEOFEATURE, AGGREGATEGEOFEATURE, GENERICENTITY /* ENTIT\u00C9G\u00C9N\u00C9RIQUE */
+    };
 
     /** map of qname to srs */
-    public static HashMap<QName, Integer> SRS = new HashMap<QName, Integer>();
+    public static HashMap<QName, Integer> SRS = new HashMap<>();
 
     static {
-        for (int i = 0; i < WFS10_TYPENAMES.length; i++) {
-            SRS.put(WFS10_TYPENAMES[i], 32615);
+        for (QName wfs10Typename : WFS10_TYPENAMES) {
+            SRS.put(wfs10Typename, 32615);
         }
-        for (int i = 0; i < WFS11_TYPENAMES.length; i++) {
-            SRS.put(WFS11_TYPENAMES[i], 4326);
+        for (QName wfs11Typename : WFS11_TYPENAMES) {
+            SRS.put(wfs11Typename, 4326);
         }
     }
 
@@ -358,16 +356,19 @@ public class MockData implements TestData {
         layerStyles.put("Default", "Default.sld");
     }
 
+    @Override
     public void setUp() throws IOException {
         setUpCatalog();
         copyTo(MockData.class.getResourceAsStream("services.xml"), "services.xml");
     }
 
+    @Override
     public boolean isTestDataAvailable() {
         return true;
     }
 
     /** @return The root of the data directory. */
+    @Override
     public File getDataDirectoryRoot() {
         return data;
     }
@@ -428,8 +429,7 @@ public class MockData implements TestData {
      * they do come from
      */
     public void addWellKnownTypes(QName[] names) throws IOException {
-        for (int i = 0; i < names.length; i++) {
-            QName name = names[i];
+        for (QName name : names) {
             addWellKnownType(name, null);
         }
     }
@@ -506,9 +506,10 @@ public class MockData implements TestData {
      */
     public void addStyle(String styleId, URL style) throws IOException {
         layerStyles.put(styleId, styleId + ".sld");
-        InputStream styleContents = style.openStream();
-        File to = new File(styles, styleId + ".sld");
-        IOUtils.copy(styleContents, to);
+        try (InputStream styleContents = style.openStream()) {
+            File to = new File(styles, styleId + ".sld");
+            IOUtils.copy(styleContents, to);
+        }
     }
 
     /**
@@ -523,7 +524,7 @@ public class MockData implements TestData {
      */
     public void addPropertiesType(QName name, URL properties, Map extraParams) throws IOException {
         // sanitize input params
-        if (extraParams == null) extraParams = Collections.EMPTY_MAP;
+        if (extraParams == null) extraParams = Collections.emptyMap();
 
         // setup the type directory if needed
         File directory = new File(data, name.getPrefix());
@@ -535,10 +536,12 @@ public class MockData implements TestData {
         File f = new File(directory, name.getLocalPart() + ".properties");
 
         // copy over the contents
-        InputStream propertiesContents;
-        if (properties == null) propertiesContents = new ByteArrayInputStream("-=".getBytes());
-        else propertiesContents = properties.openStream();
-        IOUtils.copy(propertiesContents, f);
+        try (InputStream propertiesContents =
+                properties == null
+                        ? new ByteArrayInputStream("-=".getBytes())
+                        : properties.openStream()) {
+            IOUtils.copy(propertiesContents, f);
+        }
 
         // write the info file
         info(name, extraParams);
@@ -625,7 +628,7 @@ public class MockData implements TestData {
         coverageInfo(name, coverage, styleName);
 
         // setup the meta information to be written in the catalog
-        AbstractGridFormat format = (AbstractGridFormat) GridFormatFinder.findFormat(coverage);
+        AbstractGridFormat format = GridFormatFinder.findFormat(coverage);
         namespaces.put(name.getPrefix(), name.getNamespaceURI());
         coverageStoresNamespaces.put(name.getLocalPart(), name.getPrefix());
         Map params = new HashMap();
@@ -663,23 +666,12 @@ public class MockData implements TestData {
         writer.write(new File(data, "catalog.xml"));
     }
 
-    void properties(QName name) throws IOException {
-        // copy over the properties file
-        InputStream from = MockData.class.getResourceAsStream(name.getLocalPart() + ".properties");
-
-        File directory = new File(data, name.getPrefix());
-        directory.mkdir();
-
-        File to = new File(directory, name.getLocalPart() + ".properties");
-        IOUtils.copy(from, to);
-    }
-
     void info(QName name, Map<String, Object> extraParams) throws IOException {
         String type = name.getLocalPart();
         String prefix = name.getPrefix();
 
         // prepare extra params default
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put(KEY_STYLE, "Default");
         params.put(KEY_ALIAS, null);
 
@@ -699,63 +691,63 @@ public class MockData implements TestData {
         info.delete();
         info.createNewFile();
 
-        FileWriter writer = new FileWriter(info);
-        writer.write("<featureType datastore=\"" + prefix + "\">");
-        writer.write("<name>" + type + "</name>");
-        if (params.get(KEY_ALIAS) != null)
-            writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
-        writer.write("<SRS>" + params.get(KEY_SRS_NUMBER) + "</SRS>");
-        // this mock type may have wrong SRS compared to the actual one in the property files...
-        // let's configure SRS handling not to alter the original one, and have 4326 used only
-        // for capabilities
-        int srsHandling = 2;
-        Object handling = params.get(KEY_SRS_HANDLINGS);
-        if (handling != null) {
-            if (handling instanceof ProjectionPolicy) {
-                srsHandling = ((ProjectionPolicy) params.get(KEY_SRS_HANDLINGS)).getCode();
-            } else if (handling instanceof Number) {
-                srsHandling = ((Number) params.get(KEY_SRS_HANDLINGS)).intValue();
+        try (FileWriter writer = new FileWriter(info)) {
+            writer.write("<featureType datastore=\"" + prefix + "\">");
+            writer.write("<name>" + type + "</name>");
+            if (params.get(KEY_ALIAS) != null)
+                writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
+            writer.write("<SRS>" + params.get(KEY_SRS_NUMBER) + "</SRS>");
+            // this mock type may have wrong SRS compared to the actual one in the property files...
+            // let's configure SRS handling not to alter the original one, and have 4326 used only
+            // for capabilities
+            int srsHandling = 2;
+            Object handling = params.get(KEY_SRS_HANDLINGS);
+            if (handling != null) {
+                if (handling instanceof ProjectionPolicy) {
+                    srsHandling = ((ProjectionPolicy) params.get(KEY_SRS_HANDLINGS)).getCode();
+                } else if (handling instanceof Number) {
+                    srsHandling = ((Number) params.get(KEY_SRS_HANDLINGS)).intValue();
+                }
             }
-        }
-        writer.write("<SRSHandling>" + srsHandling + "</SRSHandling>");
-        writer.write("<title>" + type + "</title>");
-        writer.write("<abstract>abstract about " + type + "</abstract>");
-        writer.write("<numDecimals value=\"8\"/>");
-        writer.write("<keywords>" + type + "</keywords>");
-        Envelope llEnvelope = (Envelope) params.get(KEY_LL_ENVELOPE);
-        if (llEnvelope == null) llEnvelope = DEFAULT_ENVELOPE;
-        writer.write(
-                "<latLonBoundingBox dynamic=\"false\" minx=\""
-                        + llEnvelope.getMinX()
-                        + "\" miny=\""
-                        + llEnvelope.getMinY()
-                        + "\" maxx=\""
-                        + llEnvelope.getMaxX()
-                        + "\" maxy=\""
-                        + llEnvelope.getMaxY()
-                        + "\"/>");
-
-        Envelope nativeEnvelope = (Envelope) params.get(KEY_NATIVE_ENVELOPE);
-        if (nativeEnvelope != null)
+            writer.write("<SRSHandling>" + srsHandling + "</SRSHandling>");
+            writer.write("<title>" + type + "</title>");
+            writer.write("<abstract>abstract about " + type + "</abstract>");
+            writer.write("<numDecimals value=\"8\"/>");
+            writer.write("<keywords>" + type + "</keywords>");
+            Envelope llEnvelope = (Envelope) params.get(KEY_LL_ENVELOPE);
+            if (llEnvelope == null) llEnvelope = DEFAULT_ENVELOPE;
             writer.write(
-                    "<nativeBBox dynamic=\"false\" minx=\""
-                            + nativeEnvelope.getMinX()
+                    "<latLonBoundingBox dynamic=\"false\" minx=\""
+                            + llEnvelope.getMinX()
                             + "\" miny=\""
-                            + nativeEnvelope.getMinY()
+                            + llEnvelope.getMinY()
                             + "\" maxx=\""
-                            + nativeEnvelope.getMaxX()
+                            + llEnvelope.getMaxX()
                             + "\" maxy=\""
-                            + nativeEnvelope.getMaxY()
+                            + llEnvelope.getMaxY()
                             + "\"/>");
 
-        String style = (String) params.get(KEY_STYLE);
-        if (style == null) style = "Default";
-        writer.write("<styles default=\"" + style + "\"/>");
+            Envelope nativeEnvelope = (Envelope) params.get(KEY_NATIVE_ENVELOPE);
+            if (nativeEnvelope != null)
+                writer.write(
+                        "<nativeBBox dynamic=\"false\" minx=\""
+                                + nativeEnvelope.getMinX()
+                                + "\" miny=\""
+                                + nativeEnvelope.getMinY()
+                                + "\" maxx=\""
+                                + nativeEnvelope.getMaxX()
+                                + "\" maxy=\""
+                                + nativeEnvelope.getMaxY()
+                                + "\"/>");
 
-        writer.write("</featureType>");
+            String style = (String) params.get(KEY_STYLE);
+            if (style == null) style = "Default";
+            writer.write("<styles default=\"" + style + "\"/>");
 
-        writer.flush();
-        writer.close();
+            writer.write("</featureType>");
+
+            writer.flush();
+        }
     }
 
     void coverageInfo(QName name, File coverageFile, String styleName) throws Exception {
@@ -780,7 +772,7 @@ public class MockData implements TestData {
                                 : GridFormatFinder.findFormat(coverageFile));
         GridCoverage2DReader reader;
         try {
-            reader = (GridCoverage2DReader) format.getReader(coverageFile);
+            reader = format.getReader(coverageFile);
         } catch (Exception e) {
             String message =
                     "Exception while trying to read "
@@ -798,141 +790,141 @@ public class MockData implements TestData {
                             + format.getName());
         }
         // basic info
-        FileWriter writer = new FileWriter(info);
-        writer.write("<coverage format=\"" + coverage + "\">\n");
-        writer.write("<name>" + coverage + "</name>\n");
-        writer.write("<label>" + coverage + "</label>\n");
-        writer.write("<description>" + coverage + " description</description>\n");
-        writer.write(
-                "<metadataLink about = \"http://www.remotesensing.org:16080/websites/geotiff/geotiff.html\" metadataType = \"other\" />");
-        writer.write("<keywords>WCS," + coverage + " </keywords>\n");
-        if (styleName == null) styleName = "raster";
-        writer.write("<styles default=\"" + styleName + "\"/>\n");
+        try (FileWriter writer = new FileWriter(info)) {
+            writer.write("<coverage format=\"" + coverage + "\">\n");
+            writer.write("<name>" + coverage + "</name>\n");
+            writer.write("<label>" + coverage + "</label>\n");
+            writer.write("<description>" + coverage + " description</description>\n");
+            writer.write(
+                    "<metadataLink about = \"http://www.remotesensing.org:16080/websites/geotiff/geotiff.html\" metadataType = \"other\" />");
+            writer.write("<keywords>WCS," + coverage + " </keywords>\n");
+            if (styleName == null) styleName = "raster";
+            writer.write("<styles default=\"" + styleName + "\"/>\n");
 
-        // envelope
-        CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
-        GeneralEnvelope envelope = reader.getOriginalEnvelope();
-        GeneralEnvelope wgs84envelope = CoverageStoreUtils.getWGS84LonLatEnvelope(envelope);
-        final String nativeCrsName = CRS.lookupIdentifier(crs, false);
-        writer.write(
-                "<envelope crs=\""
-                        + crs.toString().replaceAll("\"", "'")
-                        + "\" srsName=\""
-                        + nativeCrsName
-                        + "\">\n");
-        writer.write(
-                "<pos>"
-                        + wgs84envelope.getMinimum(0)
-                        + " "
-                        + wgs84envelope.getMinimum(1)
-                        + "</pos>\n");
-        writer.write(
-                "<pos>"
-                        + wgs84envelope.getMaximum(0)
-                        + " "
-                        + wgs84envelope.getMaximum(1)
-                        + "</pos>\n");
-        writer.write("</envelope>\n");
+            // envelope
+            CoordinateReferenceSystem crs = reader.getCoordinateReferenceSystem();
+            GeneralEnvelope envelope = reader.getOriginalEnvelope();
+            GeneralEnvelope wgs84envelope = CoverageStoreUtils.getWGS84LonLatEnvelope(envelope);
+            final String nativeCrsName = CRS.lookupIdentifier(crs, false);
+            writer.write(
+                    "<envelope crs=\""
+                            + crs.toString().replaceAll("\"", "'")
+                            + "\" srsName=\""
+                            + nativeCrsName
+                            + "\">\n");
+            writer.write(
+                    "<pos>"
+                            + wgs84envelope.getMinimum(0)
+                            + " "
+                            + wgs84envelope.getMinimum(1)
+                            + "</pos>\n");
+            writer.write(
+                    "<pos>"
+                            + wgs84envelope.getMaximum(0)
+                            + " "
+                            + wgs84envelope.getMaximum(1)
+                            + "</pos>\n");
+            writer.write("</envelope>\n");
 
-        /**
-         * Now reading a fake small GridCoverage just to retrieve meta information: - calculating a
-         * new envelope which is 1/20 of the original one - reading the GridCoverage subset
-         */
-        final ParameterValueGroup readParams = reader.getFormat().getReadParameters();
-        final Map parameters = CoverageUtils.getParametersKVP(readParams);
-        double[] minCP = envelope.getLowerCorner().getCoordinate();
-        double[] maxCP =
-                new double[] {
-                    minCP[0] + (envelope.getSpan(0) / 20.0), minCP[1] + (envelope.getSpan(1) / 20.0)
-                };
-        final GeneralEnvelope subEnvelope = new GeneralEnvelope(minCP, maxCP);
-        subEnvelope.setCoordinateReferenceSystem(reader.getCoordinateReferenceSystem());
+            /**
+             * Now reading a fake small GridCoverage just to retrieve meta information: -
+             * calculating a new envelope which is 1/20 of the original one - reading the
+             * GridCoverage subset
+             */
+            final ParameterValueGroup readParams = reader.getFormat().getReadParameters();
+            final Map parameters = CoverageUtils.getParametersKVP(readParams);
+            double[] minCP = envelope.getLowerCorner().getCoordinate();
+            double[] maxCP = {
+                minCP[0] + (envelope.getSpan(0) / 20.0), minCP[1] + (envelope.getSpan(1) / 20.0)
+            };
+            final GeneralEnvelope subEnvelope = new GeneralEnvelope(minCP, maxCP);
+            subEnvelope.setCoordinateReferenceSystem(reader.getCoordinateReferenceSystem());
 
-        parameters.put(
-                AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
-                new GridGeometry2D(reader.getOriginalGridRange(), subEnvelope));
-        GridCoverage2D gc =
-                (GridCoverage2D)
-                        reader.read(CoverageUtils.getParameters(readParams, parameters, true));
+            parameters.put(
+                    AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
+                    new GridGeometry2D(reader.getOriginalGridRange(), subEnvelope));
+            GridCoverage2D gc =
+                    reader.read(CoverageUtils.getParameters(readParams, parameters, true));
 
-        // grid geometry
-        final GridGeometry geometry = gc.getGridGeometry();
-        final int dimensions = geometry.getGridRange().getDimension();
-        String lower = "";
-        String upper = "";
-        for (int i = 0; i < dimensions; i++) {
-            lower = lower + geometry.getGridRange().getLow(i) + " ";
-            upper = upper + geometry.getGridRange().getHigh(i) + " ";
-        }
-        writer.write("<grid dimension = \"" + dimensions + "\">\n");
-        writer.write("<low>" + lower + "</low>\n");
-        writer.write("<high>" + upper + "</high>\n");
-        final CoordinateSystem cs = crs.getCoordinateSystem();
-        for (int i = 0; i < cs.getDimension(); i++) {
-            writer.write("<axisName>" + cs.getAxis(i).getName().getCode() + "</axisName>\n");
-        }
-        if (geometry.getGridToCRS() instanceof AffineTransform) {
-            AffineTransform aTX = (AffineTransform) geometry.getGridToCRS();
-            writer.write("<geoTransform>");
-            writer.write("<scaleX>" + aTX.getScaleX() + "</scaleX>\n");
-            writer.write("<scaleY>" + aTX.getScaleY() + "</scaleY>\n");
-            writer.write("<shearX>" + aTX.getShearX() + "</shearX>\n");
-            writer.write("<shearY>" + aTX.getShearY() + "</shearY>\n");
-            writer.write("<translateX>" + aTX.getTranslateX() + "</translateX>\n");
-            writer.write("<translateY>" + aTX.getTranslateY() + "</translateY>\n");
-            writer.write("</geoTransform>\n");
-        }
-        writer.write("</grid>\n");
+            // grid geometry
+            final GridGeometry geometry = gc.getGridGeometry();
+            final int dimensions = geometry.getGridRange().getDimension();
+            String lower = "";
+            String upper = "";
+            for (int i = 0; i < dimensions; i++) {
+                lower = lower + geometry.getGridRange().getLow(i) + " ";
+                upper = upper + geometry.getGridRange().getHigh(i) + " ";
+            }
+            writer.write("<grid dimension = \"" + dimensions + "\">\n");
+            writer.write("<low>" + lower + "</low>\n");
+            writer.write("<high>" + upper + "</high>\n");
+            final CoordinateSystem cs = crs.getCoordinateSystem();
+            for (int i = 0; i < cs.getDimension(); i++) {
+                writer.write("<axisName>" + cs.getAxis(i).getName().getCode() + "</axisName>\n");
+            }
+            if (geometry.getGridToCRS() instanceof AffineTransform) {
+                AffineTransform aTX = (AffineTransform) geometry.getGridToCRS();
+                writer.write("<geoTransform>");
+                writer.write("<scaleX>" + aTX.getScaleX() + "</scaleX>\n");
+                writer.write("<scaleY>" + aTX.getScaleY() + "</scaleY>\n");
+                writer.write("<shearX>" + aTX.getShearX() + "</shearX>\n");
+                writer.write("<shearY>" + aTX.getShearY() + "</shearY>\n");
+                writer.write("<translateX>" + aTX.getTranslateX() + "</translateX>\n");
+                writer.write("<translateY>" + aTX.getTranslateY() + "</translateY>\n");
+                writer.write("</geoTransform>\n");
+            }
+            writer.write("</grid>\n");
 
-        // coverage dimensions
-        final GridSampleDimension[] sd = gc.getSampleDimensions();
-        for (int i = 0; i < sd.length; i++) {
-            writer.write("<CoverageDimension>\n");
-            writer.write("<name>" + sd[i].getDescription().toString() + "</name>\n");
-            writer.write("<interval>\n");
-            writer.write("<min>" + sd[i].getMinimumValue() + "</min>\n");
-            writer.write("<max>" + sd[i].getMaximumValue() + "</max>\n");
-            writer.write("</interval>\n");
-            final List<Category> categories = sd[i].getCategories();
-            if (categories != null && categories.size() >= 1) {
-                writer.write("<nullValues>\n");
-                for (Iterator<Category> it = sd[i].getCategories().iterator(); it.hasNext(); ) {
-                    Category cat = (Category) it.next();
-                    if ((cat != null) && cat.getName().toString().equalsIgnoreCase("no data")) {
-                        double min = cat.getRange().getMinimum();
-                        double max = cat.getRange().getMaximum();
-                        writer.write("<value>" + min + "</value>\n");
-                        if (min != max) writer.write("<value>" + max + "</value>\n");
+            // coverage dimensions
+            final GridSampleDimension[] sd = gc.getSampleDimensions();
+            for (GridSampleDimension gridSampleDimension : sd) {
+                writer.write("<CoverageDimension>\n");
+                writer.write(
+                        "<name>" + gridSampleDimension.getDescription().toString() + "</name>\n");
+                writer.write("<interval>\n");
+                writer.write("<min>" + gridSampleDimension.getMinimumValue() + "</min>\n");
+                writer.write("<max>" + gridSampleDimension.getMaximumValue() + "</max>\n");
+                writer.write("</interval>\n");
+                final List<Category> categories = gridSampleDimension.getCategories();
+                if (categories != null && !categories.isEmpty()) {
+                    writer.write("<nullValues>\n");
+                    for (Category cat : gridSampleDimension.getCategories()) {
+                        if ((cat != null) && cat.getName().toString().equalsIgnoreCase("no data")) {
+                            double min = cat.getRange().getMinimum();
+                            double max = cat.getRange().getMaximum();
+                            writer.write("<value>" + min + "</value>\n");
+                            if (min != max) writer.write("<value>" + max + "</value>\n");
+                        }
                     }
-                }
-                writer.write("</nullValues>\n");
-            } else writer.write("<nullValues/>\n");
-            writer.write("</CoverageDimension>\n");
+                    writer.write("</nullValues>\n");
+                } else writer.write("<nullValues/>\n");
+                writer.write("</CoverageDimension>\n");
+            }
+
+            // supported crs
+            writer.write("<supportedCRSs>\n");
+            writer.write("<requestCRSs>" + nativeCrsName + "</requestCRSs>\n");
+            writer.write("<responseCRSs>" + nativeCrsName + "</responseCRSs>\n");
+            writer.write("</supportedCRSs>\n");
+
+            // supported formats
+            writer.write("<supportedFormats nativeFormat = \"" + format.getName() + "\">\n");
+            writer.write("<formats>ARCGRID,ARCGRID-GZIP,GEOTIFF,PNG,GIF,TIFF</formats>\n");
+            writer.write("</supportedFormats>\n");
+
+            // supported interpolations
+            writer.write("<supportedInterpolations default = \"nearest neighbor\">\n");
+            writer.write("<interpolationMethods>nearest neighbor</interpolationMethods>\n");
+            writer.write("</supportedInterpolations>\n");
+
+            // the end
+            writer.write("</coverage>\n");
+            writer.flush();
         }
-
-        // supported crs
-        writer.write("<supportedCRSs>\n");
-        writer.write("<requestCRSs>" + nativeCrsName + "</requestCRSs>\n");
-        writer.write("<responseCRSs>" + nativeCrsName + "</responseCRSs>\n");
-        writer.write("</supportedCRSs>\n");
-
-        // supported formats
-        writer.write("<supportedFormats nativeFormat = \"" + format.getName() + "\">\n");
-        writer.write("<formats>ARCGRID,ARCGRID-GZIP,GEOTIFF,PNG,GIF,TIFF</formats>\n");
-        writer.write("</supportedFormats>\n");
-
-        // supported interpolations
-        writer.write("<supportedInterpolations default = \"nearest neighbor\">\n");
-        writer.write("<interpolationMethods>nearest neighbor</interpolationMethods>\n");
-        writer.write("</supportedInterpolations>\n");
-
-        // the end
-        writer.write("</coverage>\n");
-        writer.flush();
-        writer.close();
     }
 
     /** Kills the data directory, deleting all the files. */
+    @Override
     public void tearDown() throws IOException {
         //        IOUtils.delete(templates);
         //        IOUtils.delete(validation);

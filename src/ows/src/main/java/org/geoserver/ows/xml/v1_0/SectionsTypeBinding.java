@@ -5,6 +5,7 @@
  */
 package org.geoserver.ows.xml.v1_0;
 
+import java.util.List;
 import javax.xml.namespace.QName;
 import net.opengis.ows10.Ows10Factory;
 import net.opengis.ows10.SectionsType;
@@ -41,6 +42,7 @@ public class SectionsTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return OWS.SECTIONSTYPE;
     }
@@ -52,7 +54,8 @@ public class SectionsTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<SectionsType> getType() {
         return SectionsType.class;
     }
 
@@ -63,9 +66,12 @@ public class SectionsTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         SectionsType sections = owsfactory.createSectionsType();
-        sections.getSection().addAll(node.getChildValues("Section"));
+        @SuppressWarnings("unchecked")
+        List<String> sectionValues = node.getChildValues("Section");
+        sections.getSection().addAll(sectionValues);
 
         return sections;
     }

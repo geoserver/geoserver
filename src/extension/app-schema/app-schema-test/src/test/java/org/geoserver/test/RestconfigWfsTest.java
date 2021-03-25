@@ -181,9 +181,9 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
      */
     @Test
     public void testRestconfig() throws Exception {
-        MockHttpServletResponse response;
         // create workspace
-        response = postAsServletResponse("/rest/workspaces", WORKSPACE, "text/xml");
+        MockHttpServletResponse response =
+                postAsServletResponse("/rest/workspaces", WORKSPACE, "text/xml");
         assertEquals(201, response.getStatus());
         WorkspaceInfo ws = getCatalog().getWorkspaceByName("gsml");
         assertNotNull(ws);
@@ -234,7 +234,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         if (onlineTestId != null) {
             // if test if running in online mode, need to use db params
             onlineTestId = onlineTestId.trim().toLowerCase();
-            Map<String, File> propertyFiles = new HashMap<String, File>();
+            Map<String, File> propertyFiles = new HashMap<>();
             propertyFiles.put(propertiesFile.getName(), dir);
             AbstractReferenceDataSetup setup;
             if (onlineTestId.equals("oracle")) {
@@ -292,7 +292,7 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
     /** Assert that there are count occurrences of xpath. */
     private void assertXpathCount(int count, String xpath, Document document) throws Exception {
         XpathEngine xpathEngine = XMLUnit.newXpathEngine();
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("wfs", "http://www.opengis.net/wfs");
         namespaces.put("gsml", "urn:cgi:xmlns:CGI:GeoSciML:2.0");
         xpathEngine.setNamespaceContext(new SimpleNamespaceContext(namespaces));

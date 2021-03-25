@@ -13,7 +13,6 @@ import static org.junit.Assert.fail;
 
 import java.io.StringReader;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import net.opengis.ows10.GetCapabilitiesType;
 import org.custommonkey.xmlunit.NamespaceContext;
@@ -26,7 +25,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.csw.kvp.GetCapabilitiesKvpRequestReader;
 import org.geoserver.csw.xml.v2_0_2.CSWXmlReader;
 import org.geoserver.ows.xml.v1_0.OWS;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.csw.CSWConfiguration;
@@ -42,7 +40,7 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
     static XpathEngine xpath = XMLUnit.newXpathEngine();
 
     static {
-        Map<String, String> prefixMap = new HashMap<String, String>();
+        Map<String, String> prefixMap = new HashMap<>();
         prefixMap.put("ows", OWS.NAMESPACE);
         prefixMap.put("ogc", OGC.NAMESPACE);
         prefixMap.put("gml", "http://www.opengis.net/gml");
@@ -54,7 +52,7 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
 
     @Test
     public void testKVPReader() throws Exception {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "CSW");
         raw.put("request", "GetCapabilities");
         raw.put("acceptVersions", "2.0.2,2.0.0,0.7.2");
@@ -97,7 +95,7 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
                         EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetCapabilitiesType caps =
                 (GetCapabilitiesType)
-                        reader.read(null, getResourceAsReader("GetCapabilities.xml"), (Map) null);
+                        reader.read(null, getResourceAsReader("GetCapabilities.xml"), null);
         assertReturnedCapabilitiesComplete(caps);
     }
 
@@ -113,13 +111,13 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
                             "2.0.2",
                             new CSWConfiguration(),
                             EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
-            reader.read(null, new StringReader(capRequest), (Map) null);
+            reader.read(null, new StringReader(capRequest), null);
             fail("the parsing should have failed, the document is invalid");
         } catch (ServiceException e) {
             // it is a validation exception right?
             assertTrue(e.getCause() instanceof SAXParseException);
             SAXParseException cause = (SAXParseException) e.getCause();
-            System.out.println(cause.getMessage());
+            LOGGER.info(cause.getMessage());
             // JDK8 and JDK11 return slightly different message
             assertTrue(cause.getMessage().matches(".*ows.?:foo.*"));
         }
@@ -191,8 +189,6 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
 
     @Test
     public void testVirtualService() throws Exception {
-        List<CSWInfo> infos = GeoServerExtensions.extensions(CSWInfo.class);
-
         Catalog catalog = getCatalog();
         GeoServer geoServer = getGeoServer();
 
@@ -239,9 +235,9 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
         // this one is mandatory, cannot be skipped
         assertEquals("1", xpath.evaluate("count(//ogc:Filter_Capabilities)", dom));
 
-        assertTrue(
-                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength()
-                        == 0);
+        assertEquals(
+                0,
+                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength());
         assertEquals("0", xpath.evaluate("count(//ows:Operation)", dom));
     }
 

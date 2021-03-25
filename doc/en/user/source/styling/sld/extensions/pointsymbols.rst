@@ -286,7 +286,98 @@ For example:
       </Graphic>
     </PointSymbolizer>
 
-In this example an SVG graphic is being used, so the size is specified explicitly. 
+In this example an SVG graphic is being used, so the size is specified explicitly.
+
+SVG Parameters
+~~~~~~~~~~~~~~
+
+GeoServer can handle SVG images in which parts of the SVG-attributes are 
+named parameters, as outlined the `SVG Parameters 1.0 specification <https://www.w3.org/TR/SVGParamPrimer/>`__. This capability is also supported by `QGIS <http://qgis.org>`__.
+
+SVG Prameters are represented in a file like: `poi_peak.svg <https://github.com/qgis/QGIS/blob/master/images/svg/symbol/poi_peak.svg>`__ as:
+
+.. code-block:: xml
+
+   <svg enable-background="new 0 0 580 580" height="580" viewBox="0 0 580 580" width="580" xmlns="http://www.w3.org/2000/svg">
+   <path d="m290.565 67.281l-255.498 442.534-1.087 1.885 511.229.393 2.18.002z" fill="param(fill)" 
+    fill-opacity="param(fill-opacity)" stroke="param(outline)" stroke-opacity="param(outline-opacity)" stroke-width="param(outline-width)"/>
+   </svg>
+
+The 'param'-constructs mean that you can define the parameters: `fill`, `fill-opacity`, `outline`, `outline-opacity` and `outline-width` as part of an SVG URL reference, where a refence to this image with red fill would be: ``poi_peak.svg?fill=#FF0000``.
+
+Note: When editng :file:`SVG` files (e.g. in Inkscape) save using 'simple svg' format.
+
+Default behaviour:
+
+* OnlineResource `href` URI without any parameters.
+
+  .. code-block:: xml
+
+     <se:OnlineResource xlink:href="poi_peak.svg" xlink:type="simple"/>
+
+*  Displays :file:`poi_peak.svg` with the default black `fill`. 
+
+   .. figure::  images/peak_black.png
+      
+      SVG image with default black fill
+
+Using `#ff000` red parameter:
+
+* OnlineResource `href` URI with parameter:
+
+  .. code-block:: xml
+
+     <se:OnlineResource xlink:href="poi_peak.svg?fill=#ff0000" xlink:type="simple"/>
+
+* Displays :file:`poi_peak.svg` with supplied red `fill`.
+
+  .. figure:: images/peak_redfill.png
+     
+     SVG image with fill provided by parameter
+
+To define several parameters, the query-parameters should be url-encoded.
+
+* A green peak with 25% opacity: `?fill=#00ff00&opacity=0.25`, requires encoding both the '#' ( ``%23`` ) and the '&' ( ``&amp;`` ) signs:
+
+  .. code-block:: xml
+
+     <se:OnlineResource xlink:href="poi_peak.svg?fill=%2300ff00&amp;opacity=0.25" xlink:type="simple"/>
+
+* Displayed with white fill, red outlined peaks:
+
+  .. figure:: images/peak_green25opacity.png
+     
+     SVG image with fill and outline provided by parameters
+
+Parameters names are defined by the SVG file:
+
+* The parameter 'stroke' above is called 'outline' in the origional :file:`svg` file:
+  
+  .. code-block:: xml
+  
+     stroke="param(outline)"
+  
+* OnlineResource `href` URI referencing parameters `fill`, `outline` and `outline-width`:
+   
+  .. code-block:: xml
+
+     <se:OnlineResource xlink:href="poi_peak.svg?fill=%23ffffff&amp;outline=%23ff0000&amp;outline-width=5" xlink:type="simple"/>
+
+* Displayed as:
+
+  .. figure:: images/peak_whitered.png
+     
+     SVG image with fill
+
+The use of SVG paramters can be combinded with dynamic symbolizers (covered below) to supply SVG parameter values based on feature attribute data and expressions.
+
+* OnlineResource `href` URI referencing SVG Parameter with dynamic CQL expression:
+   
+  .. code-block:: xml
+
+     <se:OnlineResource xlink:href="poi_peak.svg?fill=${COLOR}" xlink:type="simple"/>
+
+* Display depends on the feature attribute `COLOR`.
 
 Bulk WKT Shapes
 ~~~~~~~~~~~~~~~

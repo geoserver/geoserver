@@ -27,6 +27,7 @@ public class SortByKvpParser extends FlatKvpParser {
     }
 
     /** Parses a token of the form 'Field1 {A|D}' into an instnace of {@link SortBy}. */
+    @Override
     protected Object parseToken(String token) throws Exception {
         SortOrder order = SortOrder.ASCENDING;
         int idx = token.lastIndexOf(":");
@@ -45,7 +46,8 @@ public class SortByKvpParser extends FlatKvpParser {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected Object parse(List values) throws Exception {
-        return (SortBy[]) values.toArray(new SortBy[values.size()]);
+        return values.toArray(new SortBy[values.size()]);
     }
 }

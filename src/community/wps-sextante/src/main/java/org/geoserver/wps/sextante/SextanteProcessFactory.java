@@ -19,7 +19,6 @@ import static org.geoserver.wps.sextante.SextanteProcessFactoryConstants.PARAMET
 import static org.geoserver.wps.sextante.SextanteProcessFactoryConstants.PARENT_PARAMETER_NAME;
 import static org.geoserver.wps.sextante.SextanteProcessFactoryConstants.SHAPE_TYPE;
 
-import org.locationtech.jts.geom.Envelope;
 import es.unex.sextante.additionalInfo.AdditionalInfo;
 import es.unex.sextante.additionalInfo.AdditionalInfoBoolean;
 import es.unex.sextante.additionalInfo.AdditionalInfoFixedTable;
@@ -68,6 +67,7 @@ import org.geotools.process.ProcessFactory;
 import org.geotools.text.Text;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.type.Name;
 import org.opengis.util.InternationalString;
 
@@ -278,10 +278,7 @@ public class SextanteProcessFactory implements ProcessFactory {
         return paramInfo;
     }
 
-    /**
-     * Map Sextante common types into GeoTools common types
-     *
-     */
+    /** Map Sextante common types into GeoTools common types */
     protected Class mapToGeoTools(Class parameterClass) {
         if (IVectorLayer.class.isAssignableFrom(parameterClass)) {
             return FeatureCollection.class;
@@ -408,6 +405,6 @@ public class SextanteProcessFactory implements ProcessFactory {
     }
 
     public Map<Key, ?> getImplementationHints() {
-        return Collections.EMPTY_MAP;
+        return Collections.emptyMap();
     }
 }

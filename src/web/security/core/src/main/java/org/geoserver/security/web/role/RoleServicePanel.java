@@ -33,7 +33,7 @@ public class RoleServicePanel<T extends SecurityRoleServiceConfig>
 
     @Override
     public List<ITab> createTabs(final IModel<T> model) {
-        List<ITab> tabs = new ArrayList<ITab>();
+        List<ITab> tabs = new ArrayList<>();
         tabs.add(
                 new AbstractTab(new StringResourceModel("roles", this, null)) {
                     @Override
@@ -49,6 +49,7 @@ public class RoleServicePanel<T extends SecurityRoleServiceConfig>
         getSecurityManager().saveRoleService(config);
     }
 
+    @Override
     public void doLoad(T config) throws Exception {
         getSecurityManager().loadRoleService(config.getName());
     };

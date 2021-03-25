@@ -12,7 +12,6 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.web.wicket.DecimalTextField;
-import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.NumberRange;
 
 /**
@@ -33,11 +32,11 @@ public class RangePanel extends FormComponentPanel<NumberRange> {
         initComponents();
     }
 
-    public RangePanel(String id, ReferencedEnvelope e) {
-        this(id, new Model(e));
+    public RangePanel(String id, NumberRange e) {
+        this(id, new Model<>(e));
     }
 
-    public RangePanel(String id, IModel model) {
+    public RangePanel(String id, IModel<NumberRange> model) {
         super(id, model);
 
         initComponents();
@@ -49,8 +48,8 @@ public class RangePanel extends FormComponentPanel<NumberRange> {
         add(minLabel = new Label("minLabel", new ResourceModel("min")));
         add(maxLabel = new Label("maxLabel", new ResourceModel("max")));
 
-        add(minInput = new DecimalTextField("min", new PropertyModel(this, "min")));
-        add(maxInput = new DecimalTextField("max", new PropertyModel(this, "max")));
+        add(minInput = new DecimalTextField("min", new PropertyModel<>(this, "min")));
+        add(maxInput = new DecimalTextField("max", new PropertyModel<>(this, "max")));
     }
 
     @Override

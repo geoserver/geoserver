@@ -196,6 +196,7 @@ public class UCSReader extends Reader {
      *     </code> range) -AK
      * @exception IOException when I/O error occurs
      */
+    @Override
     public int read() throws IOException {
         // If we got something in the char buffer, let's use it.
         if (0 != fCharCount) {
@@ -283,6 +284,7 @@ public class UCSReader extends Reader {
      *     no supplementary Unicode code points among read chars.
      * @exception IOException If an I/O error occurs
      */
+    @Override
     public int read(char[] ch, int offset, int length) throws IOException {
         /*
          * The behavior of this method is _intended_ to be like this:
@@ -547,6 +549,7 @@ public class UCSReader extends Reader {
      * @return The number of characters actually skipped
      * @exception IOException If an I/O error occurs
      */
+    @Override
     public long skip(long n) throws IOException {
         /*
          * charWidth will represent the number of bits to move
@@ -574,11 +577,13 @@ public class UCSReader extends Reader {
      *     that returning false does not guarantee that the next read will block.
      * @exception IOException If an I/O error occurs
      */
+    @Override
     public boolean ready() throws IOException {
         return false;
     } // ready()
 
     /** Tell whether this stream supports the mark() operation. */
+    @Override
     public boolean markSupported() {
         return fInputStream.markSupported();
     } // markSupported()
@@ -595,6 +600,7 @@ public class UCSReader extends Reader {
      * @exception IOException If the stream does not support <code>mark</code>, or if some other I/O
      *     error occurs
      */
+    @Override
     public void mark(int readAheadLimit) throws IOException {
         fInputStream.mark(readAheadLimit);
     } // mark(int)
@@ -609,6 +615,7 @@ public class UCSReader extends Reader {
      * @exception IOException If the stream has not been marked, or if the mark has been
      *     invalidated, or if the stream does not support reset(), or if some other I/O error occurs
      */
+    @Override
     public void reset() throws IOException {
         fInputStream.reset();
     } // reset()
@@ -620,6 +627,7 @@ public class UCSReader extends Reader {
      *
      * @exception IOException If an I/O error occurs
      */
+    @Override
     public void close() throws IOException {
         fInputStream.close();
         fInputStream = null;

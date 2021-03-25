@@ -81,9 +81,9 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                                             InputLimit>>
                             getProperties() {
                         List<Property<InputLimit>> result = new ArrayList<>();
-                        result.add(new BeanProperty<InputLimit>("name", "name"));
-                        result.add(new PropertyPlaceholder("type"));
-                        result.add(new BeanProperty<InputLimit>("editor", "validator"));
+                        result.add(new BeanProperty<>("name", "name"));
+                        result.add(new PropertyPlaceholder<>("type"));
+                        result.add(new BeanProperty<>("editor", "validator"));
                         return result;
                     }
 
@@ -101,7 +101,7 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                             String id,
                             IModel<InputLimit> itemModel,
                             Property<InputLimit> property) {
-                        InputLimit limit = (InputLimit) itemModel.getObject();
+                        InputLimit limit = itemModel.getObject();
                         String propertyName = property.getName();
                         if (propertyName.equals("type")) {
                             String type;
@@ -118,27 +118,28 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                             WPSInputValidator validator = limit.getValidator();
                             if (validator instanceof MaxSizeValidator) {
                                 Fragment f = new Fragment(id, "textEditor", ProcessLimitsPage.this);
-                                PropertyModel maxSizeModel =
-                                        new PropertyModel(itemModel, "validator.maxSizeMB");
+                                PropertyModel<Integer> maxSizeModel =
+                                        new PropertyModel<>(itemModel, "validator.maxSizeMB");
                                 TextField<Integer> text =
-                                        new TextField<Integer>("text", maxSizeModel, Integer.class);
+                                        new TextField<>("text", maxSizeModel, Integer.class);
                                 f.add(text);
                                 return f;
                             } else if (validator instanceof MultiplicityValidator) {
                                 Fragment f = new Fragment(id, "textEditor", ProcessLimitsPage.this);
-                                PropertyModel maxMultiplicityModel =
-                                        new PropertyModel(itemModel, "validator.maxInstances");
+                                PropertyModel<Integer> maxMultiplicityModel =
+                                        new PropertyModel<>(itemModel, "validator.maxInstances");
                                 TextField<Integer> text =
-                                        new TextField<Integer>(
+                                        new TextField<>(
                                                 "text", maxMultiplicityModel, Integer.class);
                                 f.add(text);
                                 return f;
                             } else if (validator instanceof NumberRangeValidator) {
                                 Fragment f =
                                         new Fragment(id, "rangeEditor", ProcessLimitsPage.this);
-                                PropertyModel rangeModel =
-                                        new PropertyModel(itemModel, "validator.range");
-                                RangePanel rangeEditor = new RangePanel("range", rangeModel);
+                                RangePanel rangeEditor =
+                                        new RangePanel(
+                                                "range",
+                                                new PropertyModel<>(itemModel, "validator.range"));
                                 f.add(rangeEditor);
                                 return f;
                             }
@@ -210,7 +211,7 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                     validators != null ? validators.get(name) : null;
 
             // add the existing validators and collect their types
-            Set<Class> validatorTypes = new HashSet<>();
+            Set<Class<?>> validatorTypes = new HashSet<>();
             if (paramValidators != null) {
                 for (WPSInputValidator validator : paramValidators) {
                     validatorTypes.add(validator.getClass());
@@ -248,6 +249,7 @@ public class ProcessLimitsPage extends GeoServerSecuredPage {
                 || PRIMITIVE_NUMBERS.contains(param.getType());
     }
 
+    @Override
     protected String getTitle() {
         return new ParamResourceModel("title", this, process.getName().getURI()).getString();
     }

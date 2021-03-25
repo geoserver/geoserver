@@ -16,6 +16,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
@@ -23,7 +24,13 @@ import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
 import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.SubmitLink;
+import org.apache.wicket.markup.html.form.TextArea;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -31,9 +38,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.AttributeTypeInfo;
+import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -45,6 +55,7 @@ import org.geoserver.geofence.core.model.enums.AccessType;
 import org.geoserver.geofence.core.model.enums.CatalogMode;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.core.model.enums.LayerType;
+import org.geoserver.geofence.core.model.enums.SpatialFilterType;
 import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
@@ -65,7 +76,9 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
+import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 import org.springframework.dao.DuplicateKeyException;
 
@@ -94,9 +107,11 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
         CatalogMode catalogMode;
 
-        Set<String> allowedStyles = new HashSet<String>();
+        SpatialFilterType spatialFilterType;
 
-        List<LayerAttribute> attributes = new ArrayList<LayerAttribute>();
+        Set<String> allowedStyles = new HashSet<>();
+
+        List<LayerAttribute> attributes = new ArrayList<>();
     }
 
     private class RuleFormData implements Serializable {
@@ -106,6 +121,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         ShortRule rule;
 
         String allowedArea;
+
+        SpatialFilterType spatialFilterType;
 
         CatalogMode catalogMode;
 
@@ -129,11 +146,13 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         if (ruleLimits != null) {
             ruleFormData.allowedArea = getAllowedAreaAsString(ruleLimits.getAllowedArea());
             ruleFormData.catalogMode = ruleLimits.getCatalogMode();
+            ruleFormData.spatialFilterType = ruleLimits.getSpatialFilterType();
         }
         final LayerDetails layerDetails = rules.getDetails(rule.getId());
         if (layerDetails != null) {
             ruleFormData.layerDetailsCheck = true;
             ruleFormData.layerDetails.allowedArea = getAllowedAreaAsString(layerDetails.getArea());
+            ruleFormData.layerDetails.spatialFilterType = layerDetails.getSpatialFilterType();
             ruleFormData.layerDetails.catalogMode = layerDetails.getCatalogMode();
             ruleFormData.layerDetails.cqlFilterRead = layerDetails.getCqlFilterRead();
             ruleFormData.layerDetails.cqlFilterWrite = layerDetails.getCqlFilterWrite();
@@ -143,10 +162,10 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             ruleFormData.layerDetails.attributes.addAll(layerDetails.getAttributes());
         }
 
-        ruleFormModel = new CompoundPropertyModel<RuleFormData>(ruleFormData);
+        ruleFormModel = new CompoundPropertyModel<>(ruleFormData);
 
         // build the form
-        form = new Form<RuleFormData>("form", ruleFormModel);
+        form = new Form<>("form", ruleFormModel);
         add(form);
 
         List<AbstractTab> tabs = new ArrayList<>();
@@ -154,6 +173,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                 new AbstractTab(new ResourceModel("general")) {
                     private static final long serialVersionUID = 446471321863431295L;
 
+                    @Override
                     public Panel getPanel(String panelId) {
                         return new GeneralPanel(panelId);
                     }
@@ -162,6 +182,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                 new AbstractTab(new ResourceModel("details")) {
                     private static final long serialVersionUID = 446471321863431295L;
 
+                    @Override
                     public Panel getPanel(String panelId) {
                         return new LayerDetailsPanel(panelId);
                     }
@@ -199,6 +220,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                 rules.save(
                                         ruleFormData.rule.getId(),
                                         parseAllowedArea(ruleFormData.allowedArea),
+                                        ruleFormData.spatialFilterType,
                                         ruleFormData.catalogMode);
                             }
                             if (ruleFormData.layerDetailsCheck) {
@@ -206,11 +228,12 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                 layerDetails.setArea(
                                         parseAllowedArea(ruleFormData.layerDetails.allowedArea));
                                 layerDetails.setAttributes(
-                                        new HashSet<LayerAttribute>(
-                                                ruleFormData.layerDetails.attributes));
+                                        new HashSet<>(ruleFormData.layerDetails.attributes));
                                 layerDetails.setAllowedStyles(
                                         ruleFormData.layerDetails.allowedStyles);
                                 layerDetails.setCatalogMode(ruleFormData.layerDetails.catalogMode);
+                                layerDetails.setSpatialFilterType(
+                                        ruleFormData.layerDetails.spatialFilterType);
                                 layerDetails.setCqlFilterRead(
                                         ruleFormData.layerDetails.cqlFilterRead);
                                 layerDetails.setCqlFilterWrite(
@@ -220,7 +243,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                 layerDetails.setType((ruleFormData.layerDetails.layerType));
                                 rules.save(ruleFormData.rule.getId(), layerDetails);
                             } else {
-                                rules.save(ruleFormData.rule.getId(), (LayerDetails) null);
+                                rules.save(ruleFormData.rule.getId(), null);
                             }
                             doReturn(GeofenceServerPage.class);
                         } catch (DuplicateKeyException e) {
@@ -284,18 +307,18 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     /** Returns a sorted list of workspace names */
     protected List<String> getWorkspaceNames() {
 
-        SortedSet<String> resultSet = new TreeSet<String>();
+        SortedSet<String> resultSet = new TreeSet<>();
         for (WorkspaceInfo ws : getCatalog().getFacade().getWorkspaces()) {
             resultSet.add(ws.getName());
         }
-        return new ArrayList<String>(resultSet);
+        return new ArrayList<>(resultSet);
     }
 
     /**
      * Returns a sorted list of layer names in the specified workspace (or * if the workspace is *)
      */
     protected List<String> getLayerNames(String workspaceName) {
-        List<String> resultSet = new ArrayList<String>();
+        List<String> resultSet = new ArrayList<>();
         if (workspaceName != null) {
             FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
@@ -317,13 +340,39 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         return resultSet;
     }
 
+    /**
+     * Returns a sorted list of layer names in the specified workspace (or * if the workspace is *)
+     */
+    protected List<String> getLayerGroupNames(String workspaceName) {
+        List<String> resultSet = new ArrayList<>();
+        FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+        CatalogFacade facade = getCatalog().getFacade();
+        SortBy sort = ff.sort("name", SortOrder.ASCENDING);
+        Filter wsFilter;
+        if (workspaceName != null) wsFilter = Predicates.equal("workspace.name", workspaceName);
+        else wsFilter = Predicates.isNull("workspace");
+        try (CloseableIterator<LayerGroupInfo> it =
+                facade.list(LayerGroupInfo.class, wsFilter, null, null, sort)) {
+            it.forEachRemaining(lg -> resultSet.add(lg.getName()));
+        }
+
+        return resultSet;
+    }
+
+    List<String> getLayersAndLayerGroups(String workspace) {
+        List<String> layers = getLayerNames(workspace);
+        List<String> layerGroups = getLayerGroupNames(workspace);
+        layers.addAll(layerGroups);
+        return layers;
+    }
+
     /** Returns a sorted list of workspace names */
     protected List<String> getServiceNames() {
-        SortedSet<String> resultSet = new TreeSet<String>();
+        SortedSet<String> resultSet = new TreeSet<>();
         for (Service ows : GeoServerExtensions.extensions(Service.class)) {
             resultSet.add(ows.getId().toUpperCase());
         }
-        return new ArrayList<String>(resultSet);
+        return new ArrayList<>(resultSet);
     }
 
     /**
@@ -331,7 +380,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
      * *)
      */
     protected List<String> getOperationNames(String serviceName) {
-        SortedSet<String> resultSet = new TreeSet<String>();
+        SortedSet<String> resultSet = new TreeSet<>();
         boolean flag = true;
         if (serviceName != null) {
             for (Service ows : GeoServerExtensions.extensions(Service.class)) {
@@ -341,11 +390,11 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                 }
             }
         }
-        return new ArrayList<String>(resultSet);
+        return new ArrayList<>(resultSet);
     }
 
     protected List<String> getRoleNames() {
-        SortedSet<String> resultSet = new TreeSet<String>();
+        SortedSet<String> resultSet = new TreeSet<>();
         try {
             for (GeoServerRole role : securityManager().getRolesForAccessControl()) {
                 resultSet.add(role.getAuthority());
@@ -353,11 +402,11 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
         }
-        return new ArrayList<String>(resultSet);
+        return new ArrayList<>(resultSet);
     }
 
     protected List<String> getUserNames(String roleName) {
-        SortedSet<String> resultSet = new TreeSet<String>();
+        SortedSet<String> resultSet = new TreeSet<>();
 
         GeoServerSecurityManager securityManager = securityManager();
         try {
@@ -381,7 +430,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
         }
 
-        return new ArrayList<String>(resultSet);
+        return new ArrayList<>(resultSet);
     }
 
     protected GeoServerSecurityManager securityManager() {
@@ -404,9 +453,13 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
         protected DropDownChoice<CatalogMode> catalogModeChoice;
 
+        protected DropDownChoice<SpatialFilterType> spatialFilterTypeChoice;
+
         protected TextArea<String> allowedArea;
 
         protected Label allowedAreaLabel;
+
+        protected Label spatialFilterTypeLabel;
 
         protected Label catalogModeChoiceLabel;
 
@@ -414,6 +467,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             super(id);
 
             add(new TextField<>("priority", ruleFormModel.bind("rule.priority")).setRequired(true));
+
             add(
                     roleChoice =
                             new DropDownChoice<>(
@@ -488,7 +542,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                         @Override
                         protected void onUpdate(AjaxRequestTarget target) {
                             layerChoice.setChoices(
-                                    getLayerNames(workspaceChoice.getConvertedInput()));
+                                    getLayersAndLayerGroups(workspaceChoice.getConvertedInput()));
                             form.getModelObject().rule.setLayer(null);
                             layerChoice.modelChanged();
                             target.add(layerChoice);
@@ -501,7 +555,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                             new DropDownChoice<>(
                                     "layer",
                                     ruleFormModel.bind("rule.layer"),
-                                    getLayerNames(ruleFormModel.getObject().rule.getWorkspace())));
+                                    getLayersAndLayerGroups(
+                                            ruleFormModel.getObject().rule.getWorkspace())));
             layerChoice.setOutputMarkupId(true);
             layerChoice.setNullValid(true);
             layerChoice.add(
@@ -517,11 +572,16 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                             && layerChoice.getConvertedInput() != null;
 
                             ruleFormModel.getObject().layerDetails.attributes.clear();
+                            boolean isRaster = false;
                             if (layerChoice.getConvertedInput() != null) {
-                                LayerInfo li =
+                                PublishedInfo info =
                                         getCatalog()
-                                                .getLayerByName(layerChoice.getConvertedInput());
-                                switch (li.getType()) {
+                                                .get(
+                                                        PublishedInfo.class,
+                                                        Predicates.equal(
+                                                                "name",
+                                                                layerChoice.getConvertedInput()));
+                                switch (info.getType()) {
                                     case VECTOR:
                                     case REMOTE:
                                         ruleFormModel.getObject().layerDetails.layerType =
@@ -531,16 +591,28 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                     case WMS:
                                     case WMTS:
                                         ruleFormModel.getObject().layerDetails.layerType =
-                                                LayerType.VECTOR;
+                                                LayerType.RASTER;
+                                        isRaster = true;
                                         break;
                                     case GROUP:
                                         ruleFormModel.getObject().layerDetails.layerType =
                                                 LayerType.LAYERGROUP;
                                         break;
                                 }
+                                ResourceInfo resource =
+                                        info instanceof LayerInfo
+                                                ? ((LayerInfo) info).getResource()
+                                                : null;
+                                if (isRaster) {
+                                    spatialFilterTypeChoice.setModelObject(SpatialFilterType.CLIP);
+                                    spatialFilterTypeChoice.setEnabled(false);
+                                } else {
+                                    spatialFilterTypeChoice.setEnabled(true);
+                                }
+                                target.add(spatialFilterTypeLabel, spatialFilterTypeChoice);
 
-                                if (li.getResource() instanceof FeatureTypeInfo) {
-                                    FeatureTypeInfo fti = (FeatureTypeInfo) li.getResource();
+                                if (resource instanceof FeatureTypeInfo) {
+                                    FeatureTypeInfo fti = (FeatureTypeInfo) resource;
                                     try {
                                         for (AttributeTypeInfo ati : fti.attributes()) {
                                             ruleFormModel
@@ -564,6 +636,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                         }
                     });
 
+            add(new TextField<String>("addressRange", ruleFormModel.bind("rule.addressRange")));
+
             add(
                     grantTypeChoice =
                             new DropDownChoice<>(
@@ -584,11 +658,15 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                     grantTypeChoice.getConvertedInput().equals(GrantType.LIMIT);
                             allowedAreaLabel.setVisible(isLimit);
                             allowedArea.setVisible(isLimit);
+                            spatialFilterTypeLabel.setVisible(isLimit);
+                            spatialFilterTypeChoice.setVisible(isLimit);
                             catalogModeChoice.setVisible(isLimit);
                             catalogModeChoiceLabel.setVisible(isLimit);
 
                             target.add(allowedAreaLabel);
                             target.add(allowedArea);
+                            target.add(spatialFilterTypeLabel);
+                            target.add(spatialFilterTypeChoice);
                             target.add(catalogModeChoice);
                             target.add(catalogModeChoiceLabel);
 
@@ -603,23 +681,42 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                         }
                     });
 
+            boolean isLimit =
+                    form.getModelObject().rule.getAccess() != null
+                            && form.getModelObject().rule.getAccess().equals(GrantType.LIMIT);
+
             add(
                     allowedAreaLabel =
                             new Label(
                                     "allowedAreaLabel",
                                     new ResourceModel("allowedArea", "Allow area")));
-            allowedAreaLabel.setVisible(
-                    form.getModelObject().rule.getAccess() != null
-                            && form.getModelObject().rule.getAccess().equals(GrantType.LIMIT));
+            allowedAreaLabel.setVisible(isLimit);
             allowedAreaLabel.setOutputMarkupId(true);
             allowedAreaLabel.setOutputMarkupPlaceholderTag(true);
 
             add(allowedArea = new TextArea<>("allowedArea", ruleFormModel.bind("allowedArea")));
-            allowedArea.setVisible(
-                    form.getModelObject().rule.getAccess() != null
-                            && form.getModelObject().rule.getAccess().equals(GrantType.LIMIT));
+            allowedArea.setVisible(isLimit);
             allowedArea.setOutputMarkupId(true);
             allowedArea.setOutputMarkupPlaceholderTag(true);
+
+            spatialFilterTypeLabel =
+                    new Label(
+                            "spatialFilterTypeLabel",
+                            new ResourceModel("spatialFilterType", "Spatial Filter Type"));
+            spatialFilterTypeLabel.setVisible(isLimit);
+            spatialFilterTypeLabel.setOutputMarkupId(true);
+            spatialFilterTypeLabel.setOutputMarkupPlaceholderTag(true);
+            spatialFilterTypeChoice =
+                    new DropDownChoice<>(
+                            "spatialFilterType",
+                            ruleFormModel.bind("spatialFilterType"),
+                            Arrays.asList(SpatialFilterType.values()),
+                            new SpatialFilterTypeRendered());
+            spatialFilterTypeChoice.setVisible(isLimit);
+            spatialFilterTypeChoice.setOutputMarkupId(true);
+            spatialFilterTypeChoice.setOutputMarkupPlaceholderTag(true);
+            add(spatialFilterTypeLabel);
+            add(spatialFilterTypeChoice);
 
             add(
                     catalogModeChoiceLabel =
@@ -687,7 +784,31 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                             ruleFormModel.bind("layerDetails.layerType"),
                             Arrays.asList(LayerType.values()),
                             new LayerTypeRenderer());
-            layerType.setEnabled(false);
+            boolean isNullType = ruleFormModel.getObject().layerDetails.layerType == null;
+            layerType.setEnabled(isNullType);
+            layerType.add(
+                    new AjaxFormComponentUpdatingBehavior("onchange") {
+                        @Override
+                        protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                            boolean enableFiltersAndStyles =
+                                    !layerType.getValue().equals(LayerType.LAYERGROUP.name());
+                            Component readFilter = container.get("cqlFilterRead");
+                            readFilter.setEnabled(enableFiltersAndStyles);
+                            Component writeFilter = container.get("cqlFilterWrite");
+                            writeFilter.setEnabled(enableFiltersAndStyles);
+                            Component defaultStyles = container.get("defaultStyle");
+                            defaultStyles.setEnabled(enableFiltersAndStyles);
+                            Component allowedStyles = container.get("allowedStyles");
+                            ajaxRequestTarget.add(
+                                    readFilter, writeFilter, defaultStyles, allowedStyles);
+                            boolean isRaster = layerType.getValue().equals(LayerType.RASTER.name());
+                            Component spatialFilterType = container.get("spatialFilterType");
+                            Component spatialFilterTypeLabel =
+                                    container.get("spatialFilterTypeLabel");
+                            spatialFilterType.setVisible(!isRaster);
+                            spatialFilterTypeLabel.setVisible(!isRaster);
+                        }
+                    });
             container.add(layerType);
 
             DropDownChoice<String> defaultStyle =
@@ -701,8 +822,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                     new Palette<String>(
                             "allowedStyles",
                             ruleFormModel.bind("layerDetails.allowedStyles"),
-                            new Model<ArrayList<String>>(getStyles()),
-                            new SimpleChoiceRenderer<String>(),
+                            new Model<>(getStyles()),
+                            new SimpleChoiceRenderer<>(),
                             10,
                             false) {
 
@@ -726,20 +847,52 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                     };
             container.add(allowedStyles);
             allowedStyles.add(new DefaultTheme());
-
+            boolean isLayerGroup =
+                    !isNullType
+                            ? ruleFormModel
+                                    .getObject()
+                                    .layerDetails
+                                    .layerType
+                                    .equals(LayerType.LAYERGROUP)
+                            : false;
             TextArea<String> cqlFilterRead =
                     new TextArea<>(
                             "cqlFilterRead", ruleFormModel.bind("layerDetails.cqlFilterRead"));
+            cqlFilterRead.setOutputMarkupId(true);
+            cqlFilterRead.setEnabled(!isLayerGroup);
             container.add(cqlFilterRead);
 
             TextArea<String> cqlFilterWrite =
                     new TextArea<>(
                             "cqlFilterWrite", ruleFormModel.bind("layerDetails.cqlFilterWrite"));
+            cqlFilterWrite.setOutputMarkupId(true);
+            cqlFilterWrite.setEnabled(!isLayerGroup);
             container.add(cqlFilterWrite);
-
             TextArea<String> allowedArea =
                     new TextArea<>("allowedArea", ruleFormModel.bind("layerDetails.allowedArea"));
             container.add(allowedArea);
+
+            DropDownChoice<SpatialFilterType> spatialFilterTypeChoice =
+                    new DropDownChoice<>(
+                            "spatialFilterType",
+                            ruleFormModel.bind("layerDetails.spatialFilterType"),
+                            Arrays.asList(SpatialFilterType.values()),
+                            new SpatialFilterTypeRendered());
+            boolean isRaster =
+                    !isNullType
+                            ? ruleFormModel
+                                    .getObject()
+                                    .layerDetails
+                                    .layerType
+                                    .equals(LayerType.RASTER)
+                            : false;
+            if (isRaster) {
+                spatialFilterTypeChoice.setModelObject(SpatialFilterType.CLIP);
+                spatialFilterTypeChoice.setEnabled(false);
+            } else {
+                spatialFilterTypeChoice.setEnabled(true);
+            }
+            container.add(spatialFilterTypeChoice);
 
             container.add(
                     new DropDownChoice<>(
@@ -771,7 +924,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                         IModel<LayerAttribute> itemModel,
                                         Property<LayerAttribute> property) {
                                     if (LayerAttributeModel.ACCESS.equals(property)) {
-                                        return new DropDownChoiceWrapperPanel<AccessType>(
+                                        return new DropDownChoiceWrapperPanel<>(
                                                 id,
                                                 (IModel<AccessType>) property.getModel(itemModel),
                                                 Arrays.asList(AccessType.values()),
@@ -792,7 +945,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     }
 
     private ArrayList<String> getStyles() {
-        ArrayList<String> styleNames = new ArrayList<String>();
+        ArrayList<String> styleNames = new ArrayList<>();
         for (StyleInfo si : getCatalog().getStyles()) {
             styleNames.add(si.getName());
         }
@@ -803,10 +956,12 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     protected class LayerTypeRenderer extends ChoiceRenderer<LayerType> {
         private static final long serialVersionUID = -7478943956804313995L;
 
+        @Override
         public Object getDisplayValue(LayerType object) {
-            return (String) new ParamResourceModel(object.name(), getPage()).getObject();
+            return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
+        @Override
         public String getIdValue(LayerType object, int index) {
             return object.name();
         }
@@ -816,10 +971,12 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     protected class GrantTypeRenderer extends ChoiceRenderer<GrantType> {
         private static final long serialVersionUID = -7478943956804313995L;
 
+        @Override
         public Object getDisplayValue(GrantType object) {
-            return (String) new ParamResourceModel(object.name(), getPage()).getObject();
+            return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
+        @Override
         public String getIdValue(GrantType object, int index) {
             return object.name();
         }
@@ -829,11 +986,27 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     protected class AccessTypeRenderer extends ChoiceRenderer<AccessType> {
         private static final long serialVersionUID = -7478943956804313995L;
 
+        @Override
         public Object getDisplayValue(AccessType object) {
+            return new ParamResourceModel(object.name(), getPage()).getObject();
+        }
+
+        @Override
+        public String getIdValue(AccessType object, int index) {
+            return object.name();
+        }
+    }
+
+    /** Makes sure we see translated text, by the raw name is used for the model */
+    protected class SpatialFilterTypeRendered extends ChoiceRenderer<SpatialFilterType> {
+        private static final long serialVersionUID = -7478943956804313995L;
+
+        @Override
+        public Object getDisplayValue(SpatialFilterType object) {
             return (String) new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
-        public String getIdValue(AccessType object, int index) {
+        public String getIdValue(CatalogMode object, int index) {
             return object.name();
         }
     }
@@ -842,10 +1015,12 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     protected class CatalogModeRenderer extends ChoiceRenderer<CatalogMode> {
         private static final long serialVersionUID = -7478943956804313995L;
 
+        @Override
         public Object getDisplayValue(CatalogMode object) {
-            return (String) new ParamResourceModel(object.name(), getPage()).getObject();
+            return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
+        @Override
         public String getIdValue(CatalogMode object, int index) {
             return object.name();
         }
@@ -855,10 +1030,12 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
     protected class CaseConversionRenderer extends ChoiceRenderer<String> {
         private static final long serialVersionUID = 4238195087731806209L;
 
+        @Override
         public Object getDisplayValue(String object) {
             return object;
         }
 
+        @Override
         public String getIdValue(String object, int index) {
             return object.toUpperCase();
         }
@@ -871,7 +1048,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         public DropDownChoiceWrapperPanel(
                 String id, IModel<T> model, List<? extends T> list, ChoiceRenderer<T> renderer) {
             super(id, model);
-            add(new DropDownChoice<T>("innerComponent", model, list, renderer).setRequired(true));
+            add(new DropDownChoice<>("innerComponent", model, list, renderer).setRequired(true));
         }
     }
 }

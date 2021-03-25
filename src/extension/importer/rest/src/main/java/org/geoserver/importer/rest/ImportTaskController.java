@@ -41,6 +41,7 @@ import org.geoserver.importer.Importer;
 import org.geoserver.importer.ValidationException;
 import org.geoserver.importer.rest.converters.ImportJSONReader;
 import org.geoserver.importer.rest.converters.ImportJSONWriter;
+import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.rest.PutIgnoringExtensionContentNegotiationStrategy;
 import org.geoserver.rest.RequestInfo;
@@ -432,7 +433,7 @@ public class ImportTaskController extends ImportBaseController {
             updateLayer(orig, task.getLayer(), importer, converter);
         }
 
-        TransformChain chain = task.getTransform();
+        TransformChain<? extends ImportTransform> chain = task.getTransform();
         if (chain != null) {
             orig.setTransform(chain);
             change = true;
@@ -521,10 +522,10 @@ public class ImportTaskController extends ImportBaseController {
         // why these are null in the first place is a different question
         LayerInfoImpl impl = (LayerInfoImpl) orig.getLayer();
         if (impl.getAuthorityURLs() == null) {
-            impl.setAuthorityURLs(new ArrayList(1));
+            impl.setAuthorityURLs(new ArrayList<>(1));
         }
         if (impl.getIdentifiers() == null) {
-            impl.setIdentifiers(new ArrayList(1));
+            impl.setIdentifiers(new ArrayList<>(1));
         }
         // @endhack
         cb.updateLayer(orig.getLayer(), l);

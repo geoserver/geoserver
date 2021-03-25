@@ -27,7 +27,7 @@ public class GWCServiceLinksTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(GeoServerHomePage.class);
 
         Page lastPage = tester.getLastRenderedPage();
-        final List<String> services = new ArrayList<String>();
+        final List<String> services = new ArrayList<>();
         lastPage.visitChildren(
                 ExternalLink.class,
                 (component, visit) -> {

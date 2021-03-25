@@ -27,15 +27,15 @@
         </Parameter>
         <Parameter>
           <name>schema_store</name>
-          <value>{schemaStore}</value>
+          <value>file:///tmp/geoserver04/</value>
         </Parameter>
         <Parameter>
           <name>data_store_type</name>
           <value>complex</value>
         </Parameter>
         <Parameter>
-          <name>objs_id_schema</name>
-          <value>58e5889ce4b02461ad5af080,58e5889ce4b02461ad5af081</value>
+          <name>max_objs_schema</name>
+          <value>-1</value>
         </Parameter>
       </parameters>
     </DataStore>
@@ -50,7 +50,7 @@
   <typeMappings>
     <FeatureTypeMapping>
       <sourceDataStore>data_source</sourceDataStore>
-      <sourceType>{collectionName}</sourceType>
+      <sourceType>stations</sourceType>
       <targetElement>st:StationFeature</targetElement>
       <attributeMappings>
         <AttributeMapping>
@@ -110,11 +110,29 @@
             <OCQL>jsonSelect('nullableField')</OCQL>
           </sourceExpression>
         </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:groupAttribute</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('groupAttribute')</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:groupAttribute2</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('groupAttribute2')</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st:numericAttribute</targetAttribute>
+          <sourceExpression>
+            <OCQL>jsonSelect('numericValue')</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
       </attributeMappings>
     </FeatureTypeMapping>
     <FeatureTypeMapping>
       <sourceDataStore>data_source</sourceDataStore>
-      <sourceType>{collectionName}</sourceType>
+      <sourceType>stations</sourceType>
       <targetElement>st:Measurement</targetElement>
       <attributeMappings>
         <AttributeMapping>
@@ -154,7 +172,7 @@
     </FeatureTypeMapping>
     <FeatureTypeMapping>
       <sourceDataStore>data_source</sourceDataStore>
-      <sourceType>{collectionName}</sourceType>
+      <sourceType>stations</sourceType>
       <targetElement>st:Value</targetElement>
       <attributeMappings>
         <AttributeMapping>

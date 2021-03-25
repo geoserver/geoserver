@@ -10,8 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.factory.epsg.CoordinateOperationFactoryUsingWKT;
@@ -47,9 +45,6 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
         System.setProperty(JAVA_IO_TMPDIR, new File("./target").getCanonicalPath());
 
         super.onSetUp(testData);
-
-        GeoServerResourceLoader loader1 = getResourceLoader();
-        GeoServerResourceLoader loader2 = GeoServerExtensions.bean(GeoServerResourceLoader.class);
 
         // setup the grid file, the definitions and the tx overrides
         new File(testData.getDataDirectoryRoot(), "user_projections").mkdir();
@@ -122,8 +117,8 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
 
         assertTrue(mt.toWKT().contains("NADCON"));
 
-        double[] src = new double[] {-169.625, 56.575};
-        double[] expected = new double[] {-169.62744, 56.576034};
+        double[] src = {-169.625, 56.575};
+        double[] expected = {-169.62744, 56.576034};
         double[] p = new double[2];
         mt.transform(src, 0, p, 0, 1);
         assertEquals(expected[0], p[0], 1e-6);

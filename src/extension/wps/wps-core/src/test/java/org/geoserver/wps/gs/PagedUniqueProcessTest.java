@@ -6,6 +6,7 @@
 package org.geoserver.wps.gs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Ordering;
 import java.util.Arrays;
@@ -23,8 +24,6 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.visitor.UniqueVisitor;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 public class PagedUniqueProcessTest extends WPSTestSupport {
@@ -44,7 +43,7 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         Catalog catalog = getCatalog();
         testData.addVectorLayer(
                 new QName(MockData.SF_URI, "states", MockData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "states.properties",
                 PagedUniqueProcessTest.class,
                 catalog);
@@ -150,17 +149,13 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         // mock optimized store behaviour to always
         // use hasLimits
         Mockito.doAnswer(
-                        new Answer() {
-                            @Override
-                            public Object answer(InvocationOnMock invocation) throws Throwable {
-                                UniqueVisitor visitor =
-                                        (UniqueVisitor) invocation.getArguments()[0];
-                                if (visitor.hasLimits()) {
-                                    counter.incrementAndGet();
-                                }
-                                visitor.setValue(Arrays.asList("a", "b", "c", "d"));
-                                return null;
+                        invocation -> {
+                            UniqueVisitor visitor = (UniqueVisitor) invocation.getArguments()[0];
+                            if (visitor.hasLimits()) {
+                                counter.incrementAndGet();
                             }
+                            visitor.setValue(Arrays.asList("a", "b", "c", "d"));
+                            return null;
                         })
                 .when(features)
                 .accepts(Mockito.any(UniqueVisitor.class), Mockito.any());
@@ -185,6 +180,7 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testAllParameters() throws Exception {
         String xml = buildInputXml(FIELD_NAME, "*a*", 1, 2, "DESC");
         String jsonString = string(post(root(), xml));
@@ -193,9 +189,9 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         int size = json.getInt("size");
         assertEquals(3, size);
         assertEquals(2, values.size());
-        assertEquals(true, Ordering.natural().reverse().isOrdered(values));
-        for (int count = 0; count < values.size(); count++) {
-            assertEquals(true, ((String) values.get(count)).matches(".*(?i:a)?.*"));
+        assertTrue(Ordering.natural().reverse().isOrdered(values));
+        for (Object value : values) {
+            assertTrue(((String) value).matches(".*(?i:a)?.*"));
         }
     }
 
@@ -207,8 +203,8 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         JSONArray values = json.getJSONArray("values");
         int size = json.getInt("size");
         assertEquals(size, values.size());
-        for (int count = 0; count < values.size(); count++) {
-            assertEquals(true, ((String) values.get(count)).matches("^(?i:d).*"));
+        for (Object value : values) {
+            assertTrue(((String) value).matches("^(?i:d).*"));
         }
     }
 
@@ -220,8 +216,8 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         JSONArray values = json.getJSONArray("values");
         int size = json.getInt("size");
         assertEquals(size, values.size());
-        for (int count = 0; count < values.size(); count++) {
-            assertEquals(true, ((String) values.get(count)).matches(".*(?i:a)?.*"));
+        for (Object value : values) {
+            assertTrue(((String) value).matches(".*(?i:a)?.*"));
         }
     }
 
@@ -233,8 +229,8 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         JSONArray values = json.getJSONArray("values");
         int size = json.getInt("size");
         assertEquals(size, values.size());
-        for (int count = 0; count < values.size(); count++) {
-            assertEquals(true, ((String) values.get(count)).matches(".*(?i:a)$"));
+        for (Object value : values) {
+            assertTrue(((String) value).matches(".*(?i:a)$"));
         }
     }
 
@@ -253,6 +249,7 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testAscOrder() throws Exception {
         String xml = buildInputXml(FIELD_NAME, null, null, null, "ASC");
         String jsonString = string(post(root(), xml));
@@ -260,10 +257,11 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         JSONArray values = json.getJSONArray("values");
         int size = json.getInt("size");
         assertEquals(TOTAL_DISTINCT, size);
-        assertEquals(true, Ordering.natural().isOrdered(values));
+        assertTrue(Ordering.natural().isOrdered(values));
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testDescOrder() throws Exception {
         String xml = buildInputXml(FIELD_NAME, null, null, null, "DESC");
         String jsonString = string(post(root(), xml));
@@ -271,7 +269,7 @@ public class PagedUniqueProcessTest extends WPSTestSupport {
         JSONArray values = json.getJSONArray("values");
         int size = json.getInt("size");
         assertEquals(TOTAL_DISTINCT, size);
-        assertEquals(true, Ordering.natural().reverse().isOrdered(values));
+        assertTrue(Ordering.natural().reverse().isOrdered(values));
     }
 
     private String buildInputXml(

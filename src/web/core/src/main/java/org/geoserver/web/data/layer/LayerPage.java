@@ -5,7 +5,14 @@
  */
 package org.geoserver.web.data.layer;
 
-import static org.geoserver.web.data.layer.LayerProvider.*;
+import static org.geoserver.web.data.layer.LayerProvider.CREATED_TIMESTAMP;
+import static org.geoserver.web.data.layer.LayerProvider.ENABLED;
+import static org.geoserver.web.data.layer.LayerProvider.MODIFIED_TIMESTAMP;
+import static org.geoserver.web.data.layer.LayerProvider.NAME;
+import static org.geoserver.web.data.layer.LayerProvider.SRS;
+import static org.geoserver.web.data.layer.LayerProvider.STORE;
+import static org.geoserver.web.data.layer.LayerProvider.TITLE;
+import static org.geoserver.web.data.layer.LayerProvider.TYPE;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
@@ -106,7 +113,9 @@ public class LayerPage extends GeoServerSecuredPage {
 
     private Component titleLink(String id, IModel<LayerInfo> itemModel) {
 
+        @SuppressWarnings("unchecked")
         IModel<String> layerNameModel = (IModel<String>) NAME.getModel(itemModel);
+        @SuppressWarnings("unchecked")
         IModel<String> layerTitleModel = (IModel<String>) TITLE.getModel(itemModel);
         String layerTitle = layerTitleModel.getObject();
         String layerName = layerNameModel.getObject();

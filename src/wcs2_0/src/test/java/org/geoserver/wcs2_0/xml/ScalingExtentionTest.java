@@ -4,9 +4,9 @@
  */
 package org.geoserver.wcs2_0.xml;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;
@@ -93,11 +93,11 @@ public class ScalingExtentionTest extends WCSTestSupport {
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
         if ("application/xml".equals(response.getContentType())) {
-            System.out.println("Error message: " + response.getContentAsString());
+            LOGGER.warning("Error message: " + response.getContentAsString());
             Runtime runtime = Runtime.getRuntime();
-            System.out.println("Max memory: " + runtime.maxMemory());
-            System.out.println("Free memory: " + runtime.freeMemory());
-            System.out.println("Total memory: " + runtime.totalMemory());
+            LOGGER.warning("Max memory: " + runtime.maxMemory());
+            LOGGER.warning("Free memory: " + runtime.freeMemory());
+            LOGGER.warning("Total memory: " + runtime.totalMemory());
         }
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);

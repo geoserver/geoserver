@@ -39,7 +39,7 @@ public class JDBCGeoServerLoaderTest {
                         expect(appContext.getBeanNamesForType(XStreamServiceLoader.class))
                                 .andReturn(new String[] {"wmsLoader"})
                                 .anyTimes();
-                        expect(appContext.getBeanNamesForType((Class) anyObject()))
+                        expect(appContext.getBeanNamesForType((Class<?>) anyObject()))
                                 .andReturn(new String[] {})
                                 .anyTimes();
                         expect(appContext.getBean("wmsLoader"))

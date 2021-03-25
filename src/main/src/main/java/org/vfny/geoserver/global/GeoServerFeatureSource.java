@@ -5,6 +5,7 @@
  */
 package org.vfny.geoserver.global;
 
+import java.awt.RenderingHints;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -163,6 +164,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * @since 1.7
      * @see FeatureSource#getName()
      */
+    @Override
     public Name getName() {
         return getSchema().getName();
     }
@@ -247,7 +249,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         String[] propNames = null;
 
         if (query.retrieveAllProperties()) {
-            List<String> props = new ArrayList();
+            List<String> props = new ArrayList<>();
 
             for (int i = 0; i < schema.getAttributeCount(); i++) {
                 AttributeDescriptor att = schema.getDescriptor(i);
@@ -264,21 +266,19 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
             propNames = props.toArray(new String[props.size()]);
         } else {
             String[] queriedAtts = query.getPropertyNames();
-            int queriedAttCount = queriedAtts.length;
-            List allowedAtts = new LinkedList();
-
-            for (int i = 0; i < queriedAttCount; i++) {
-                if (schema.getDescriptor(queriedAtts[i]) != null) {
-                    allowedAtts.add(queriedAtts[i]);
+            List<String> allowedAtts = new LinkedList<>();
+            for (String queriedAtt : queriedAtts) {
+                if (schema.getDescriptor(queriedAtt) != null) {
+                    allowedAtts.add(queriedAtt);
                 } else {
                     LOGGER.info(
                             "queried a not allowed property: "
-                                    + queriedAtts[i]
+                                    + queriedAtt
                                     + ". Ommitting it from query");
                 }
             }
 
-            propNames = (String[]) allowedAtts.toArray(new String[allowedAtts.size()]);
+            propNames = allowedAtts.toArray(new String[allowedAtts.size()]);
         }
 
         return propNames;
@@ -322,6 +322,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * @see org.geotools.data.FeatureSource#getDataStore()
      */
+    @Override
     public DataStore getDataStore() {
         return (DataStore) source.getDataStore();
     }
@@ -333,6 +334,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * @see org.geotools.data.FeatureSource#addFeatureListener(org.geotools.data.FeatureListener)
      */
+    @Override
     public void addFeatureListener(FeatureListener listener) {
         source.addFeatureListener(listener);
     }
@@ -344,6 +346,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * @see org.geotools.data.FeatureSource#removeFeatureListener(org.geotools.data.FeatureListener)
      */
+    @Override
     public void removeFeatureListener(FeatureListener listener) {
         source.removeFeatureListener(listener);
     }
@@ -355,6 +358,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * @see org.geotools.data.FeatureSource#getFeatures(org.geotools.data.Query)
      */
+    @Override
     public SimpleFeatureCollection getFeatures(Query query) throws IOException {
         // check for a sort in the query, if the underlying store does not do sorting
         // then we need to apply it after the fact
@@ -582,10 +586,12 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         return newQuery;
     }
 
+    @Override
     public SimpleFeatureCollection getFeatures(Filter filter) throws IOException {
         return getFeatures(new Query(schema.getTypeName(), filter));
     }
 
+    @Override
     public SimpleFeatureCollection getFeatures() throws IOException {
         return getFeatures(Query.ALL);
     }
@@ -597,6 +603,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      *
      * @see org.geotools.data.FeatureSource#getSchema()
      */
+    @Override
     public SimpleFeatureType getSchema() {
         return schema;
     }
@@ -609,6 +616,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * @return Extent of this FeatureSource, or <code>null</code> if no optimizations exist.
      * @throws IOException If bounds of definitionQuery
      */
+    @Override
     public ReferencedEnvelope getBounds() throws IOException {
         // since CRS is at most forced, we don't need to change this code
         if (definitionQuery == Filter.INCLUDE) {
@@ -633,6 +641,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * @return Extend of Query or <code>null</code> if no optimization is available
      * @throws IOException If a problem is encountered with source
      */
+    @Override
     public ReferencedEnvelope getBounds(Query query) throws IOException {
         // since CRS is at most forced, we don't need to change this code
         try {
@@ -656,6 +665,7 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
      * @param query User's query.
      * @return Number of Features for Query, or -1 if no optimization is available.
      */
+    @Override
     public int getCount(Query query) {
         try {
             query = makeDefinitionQuery(query, schema);
@@ -670,14 +680,17 @@ public class GeoServerFeatureSource implements SimpleFeatureSource {
         }
     }
 
-    public Set getSupportedHints() {
+    @Override
+    public Set<RenderingHints.Key> getSupportedHints() {
         return source.getSupportedHints();
     }
 
+    @Override
     public ResourceInfo getInfo() {
         return source.getInfo();
     }
 
+    @Override
     public QueryCapabilities getQueryCapabilities() {
         // we can do both sorting and offset locally if necessary
         return new QueryCapabilitiesDecorator(source.getQueryCapabilities()) {

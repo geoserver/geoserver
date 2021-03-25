@@ -1,0 +1,618 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: GeoServer Catalog Model
+  description: GeoServer Catalog Model Objects
+
+paths:
+  /fake:
+    description: fake operation entry point to pass validation, otherwise codegen will comply there's no paths element
+    get:
+      operationId: fakeOp
+      responses:
+        200:
+          description: nothing really
+   
+components:
+  schemas:
+    NamespaceInfo:
+      type: object
+      description: The namespace URI of the resource. Example would be an application
+        schema namespace URI.
+      properties:
+        prefix:
+          type: string
+          description: The name of the namespace.
+        uri:
+          type: string
+          description: URL to the namespace.
+        isolated:
+          type: boolean
+          description: Isolated workspaces content is only visible and queryable in the context of a virtual service bound to the isolated workspace.
+          
+    WorkspaceInfo:
+      title: Workspace
+      type: object
+      properties:
+        name:
+          type: string
+          description: name of the workspace
+        isolated:
+          type: boolean
+          description: Isolated workspaces content is only visible and queryable in the context of a virtual service bound to the isolated workspace.
+
+    DataStoreInfo:
+      title: datastore
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of data store
+        description:
+          type: string
+          description: Description of data store
+        enabled:
+          type: boolean
+          default: true
+          description: Whether or not the data store is enabled
+        connectionParameters:
+          $ref: "#/components/schemas/ConnectionParameters"
+        workspace:
+          $ref: "#/components/schemas/WorkspaceInfo"
+
+    ConnectionParameters:
+      type: object
+      additionalProperties:
+        type: string
+
+    CoverageStoreInfo:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+          description: Name of the coverage store
+        description:
+          type: string
+          description: Description of the coverage store
+        type:
+          type: string
+          description: Type of coverage store
+          enum:
+           - ArcGrid
+           - GeoTIFF
+           - ImageMosaic
+           - WorldImage
+        enabled:
+          type: boolean
+          description: Whether the store is enabled, or not
+        url:
+          type: string
+          description: Location of the raster data source (often, but not necessarily, a file). Can be relative to the data directory.
+        workspace:
+          $ref: "#/components/schemas/WorkspaceInfo"
+
+    CoverageInfo:
+      allOf: #note: Not using inheritance on purpose, there seems not to be a need so far, and would rather avoid the nasty discriminator
+      - $ref: "#/components/schemas/ResourceInfo"
+      - type: object
+        properties:
+          store:
+            $ref: "#/components/schemas/CoverageStoreInfo"
+          nativeCoverageName:
+            description: the native coverage name (used to pick up a specific coverage from within a reader)
+            type: string
+          nativeFormat:
+            description: The native format name of the coverage
+            type: string
+          supportedFormats:
+            type: array
+            description: The supported formats for the coverage
+            items:
+              type: string
+          requestSRS:
+            type: array
+            description: The collection of identifiers of the crs's the coverage supports in a request.
+            items:
+              type: string
+          responseSRS:
+            description: The collection of identifiers of the crs's the coverage supports in a response.
+            type: array
+            items:
+              type: string
+          defaultInterpolationMethod:
+            type: string
+            description: Default resampling (interpolation) method that will be used for this coverage.
+          interpolationMethods:
+            type: array
+            description: available interporlations methods for this coverage
+            items:
+              type: string
+          parameters:
+            type: object
+            additionalProperties:
+              type: object
+          dimensions:
+            description: raster dimensions
+            type: array
+            items:
+              $ref: "#/components/schemas/CoverageDimensionInfo"
+          #TODO: grid
+          
+    CoverageDimensionInfo:
+      type: object
+      description: A coverage dimension.
+      properties:
+        id:
+          type: string
+          description: Id of the dimension
+        name:
+          type: string
+          description: name of the dimension
+        description:
+          type: string
+          description: description of the raster dimension
+        range:
+          $ref: "#/components/schemas/NumberRange"
+        nullValues:
+          type: array
+          items:
+            type: number
+            format: double
+        unit:
+          type: string
+          description: the unit name for this dimension, or null if unknown
+        #dimensionType: TODO, add property of type SampleDimensionType?
+    
+    NumberRange:
+      type: object
+      description: a range of numbers
+      properties:
+        min:
+          type: number
+          format: double
+          description: min range value
+        max:
+          type: number
+          format: double
+          description: max range value
+    
+    KeywordInfo:
+      type: object
+      description: The namespace URI of the resource. Example would be an application
+        schema namespace URI.
+      required:
+        - value
+      properties:
+        value:
+          type: string
+          description: The keyword value.
+        language:
+          type: string
+          description: The language of the keyword, null if no language.
+        vocabulary:
+          type: string
+          description: The vocabulary of the keyword, null if no vocabulary.
+
+    DataLinkInfo:
+        type: object
+        description: Wraps a collection of data links for the resource.
+        properties:
+          about:
+            type: string
+          type:
+            type: string
+          content:
+            type: string
+
+    MetadataLinkInfo:
+      type: object
+      description: A metadata link.
+      properties:
+        id:
+          type: string
+          description: Metadata identifier
+        about:
+          type: string
+        content:
+          type: string
+        metadataType:
+          type: string
+          
+    EnvelopeInfo:
+      type: object
+      properties:
+        minx:
+          type: number
+          format: double
+          nullable: false          
+          description: The min x coordinate
+        maxx:
+          type: number
+          format: double          
+          nullable: false          
+          description: The max x coordinate
+        miny:
+          type: number
+          format: double          
+          nullable: false          
+          description: The min y coordinate
+        maxy:
+          type: number
+          format: double          
+          nullable: false          
+          description: The max y coordinate
+        crs:
+          type: string
+          description: The coordinate reference system object of the bounding box.
+    
+    MetadataMap:
+      type: object
+      additionalProperties:
+        type: string
+    
+    ProjectionPolicy:
+      type: string
+      enum:
+        - FORCE_DECLARED
+        - REPROJECT_TO_DECLARED
+        - NONE
+
+    ResourceInfo:
+      type: object
+      required:
+        - nativeName
+      properties:
+        name:
+          type: string
+          description: The name of the resource. This name corresponds to the "published"
+            name of the resource.
+        nativeName:
+          type: string
+          description: The native name of the resource. This name corresponds to the
+            physical resource that feature type is derived from -- a shapefile
+            name, a database table, etc...
+        namespace:
+          $ref: "#/components/schemas/NamespaceInfo"
+        title:
+          type: string
+          description: The title of the resource.
+        abstract:
+          type: string
+          description: the abstract for the resource.
+        description:
+          type: string
+          description: A description of the resource. This is usually something that is to be displayed in a user interface.
+        enabled:
+          type: boolean
+          description: A flag indicating if the resource is enabled or not.
+        alias:
+          description: A set of aliases or alternative names that the resource is also known by.
+          type: array
+          items:
+            type: string
+        dataLinks:
+          description: A collection of data links for the resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/DataLinkInfo"
+        disabledServices:
+          description: a list of disabled services names for this resource (e.g. [WMS, WCS])
+          type: array
+          items:
+            type: string
+        keywords:
+          description: A collection of keywords associated with the resource.
+          type: array
+          items:
+            $ref: "#/components/schemas/KeywordInfo"
+        latLonBoundingBox:
+          $ref: "#/components/schemas/EnvelopeInfo"
+        nativeBoundingBox:
+          $ref: "#/components/schemas/EnvelopeInfo"
+#        metadata:
+#          $ref: "#/components/schemas/MetadataMap"
+        metadatalinks:
+          type: array
+          items:
+            $ref: "#/components/schemas/MetadataLinkInfo"
+        nativeCRS:
+          type: string
+          description: The native coordinate reference system object of the resource, in WKT format
+        srs:
+          type: string
+          description: Returns the identifier of coordinate reference system of the resource.
+        projectionPolicy:
+          $ref: "#/components/schemas/ProjectionPolicy"
+        advertised:
+          type: boolean
+          description: true if the resource existence should be advertised (true by default, unless otherwise set)
+        serviceConfiguration:
+          type: boolean
+          description: true if the resource will configure services access, false otherwise
+
+    AttributeTypeInfo:
+      type: object
+      description: An attribute exposed by a FeatureTypeInfo.
+      properties:
+        name:
+          type: string
+          description: Name of the attribute.
+        minOccurs:
+          type: integer
+          description: Minimum number of occurrences of the attribute.
+        maxOccurs:
+          type: integer
+          description: Maximum number of occurrences of the attribute.
+        nillable:
+          type: boolean
+          description: Flag indicating if null is an acceptable value for the attribute.
+        binding:
+          type: string
+          description: The java class that values of this attribute are bound to.
+        length:
+          type: integer
+          description: Returns the length of this attribute. It's usually non null only for string and numeric types
+            
+    FeatureTypeInfo:
+      allOf: #note: Not using inheritance on purpose, there seems not to be a need so far, and would rather avoid the nasty discriminator
+      - $ref: "#/components/schemas/ResourceInfo"
+      - type: object
+        properties:
+          store:
+            $ref: "#/components/schemas/DataStoreInfo"
+          cqlFilter:
+            type: string
+            description: The ECQL string used as default feature type filter
+          maxFeatures:
+            type: integer
+            description: A cap on the number of features that a query against this type can return.
+          numDecimals:
+            type: integer
+            format: int32
+            description: The number of decimal places to use when encoding floating point numbers from data of this feature type.
+          padWithZeros:
+            type: boolean
+          forcedDecimal:
+            type: boolean
+          responseSRS:
+            description: The srs codes that the WFS service will advertise in the capabilities
+              document for this feature type (overriding the global WFS settings).
+            type: array
+            items:
+              type: string
+          overridingServiceSRS:
+            type: boolean
+            description: True if this feature type info is overriding the WFS global SRS list
+          skipNumberMatched:
+            type: boolean
+            description: True if this feature type info is overriding the counting of numberMatched.
+          circularArcPresent:
+            type: boolean
+          encodeMeasures:
+            type: boolean
+          linearizationTolerance:
+            type: number
+            description: Tolerance used to linearize this feature type, as an absolute value
+              expressed in the geometries own CRS
+          attributes:
+            description: The attributes that the feature type exposes.
+            type: array
+            items:
+              $ref: "#/components/schemas/AttributeTypeInfo"
+
+    StyleInfo:
+      title: Style
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: false
+          description: Name of the style. This value is unique among all styles and can be used to identify the style.
+        workspace:
+          $ref: "#/components/schemas/WorkspaceInfo"
+        format:
+          type: string
+          enum: [sld, mbstyle]
+          description: 'The styling language/format for the style, for example: "sld"'
+        formatVersion:
+          $ref: "#/components/schemas/Version"
+        languageVersion:
+          $ref: "#/components/schemas/Version"
+          #deprecated: true
+          #description: deprecated, StyleInfo defines formatVersion but the XStream encoder encodes languageVersion as that's how the internal StyleInfo member variable is called
+        filename:
+          type: string
+          nullable: false
+          description: name of the file the style originates from.
+        legend:
+          $ref: "#/components/schemas/LegendInfo"
+#        metadata:
+#          $ref: "#/components/schemas/MetadataMap"
+
+    Version:
+      type: object
+      properties:
+        version:
+          type: string
+          
+    AuthorityURLInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Authory name, describing the industry, national or international origanization responsible for data product standard.
+        href:
+          type: string
+          description: URL to authority organization
+
+    LayerIdentifierInfo:
+      type: object
+      properties:
+        authority:
+          type: string
+          description: Authority cited, for details see authorityURLs
+        identifier:
+          type: string
+          description: Work citied, often a data standard provided by
+          
+    LegendInfo:
+      type: object
+      description: A legend for a layer
+      properties:
+        width:
+          type: integer
+          format: int32
+          description: Width of the legend 
+        height:
+          type: integer
+          format: int32
+          description: Height of the legend
+        format:
+          type: string
+          description: Format of the legend. 
+        onlineResource:
+          type: string
+          description: Online resource of the legend.
+
+    AttributionInfo:
+      type: object
+      description: WMS attribution information to be drawn on each map
+      properties:
+        title:
+          type: string
+          description: Human-readable text describing the data provider
+        href:
+          type: string
+          description: URL to data provider
+        logoURL:
+          type: string
+          description: Data provider logo
+        logoWidth:
+          type: integer
+          description: Data provider logo width
+        logoHeight:
+          type: integer
+          description: Data provider logo height
+        logoType:
+          type: string
+          description: Format of data provider logo, example "image/png"
+            
+    PublishedType:
+      type: string
+      enum:
+        - VECTOR
+        - RASTER
+        - REMOTE
+        - WMS
+        - GROUP
+        - WMTS
+          
+    PublishedInfo:
+      type: object
+      discriminator:
+        propertyName: type
+        mapping:
+          VECTOR: "#/components/schemas/LayerInfo"
+          RASTER: "#/components/schemas/LayerInfo"
+          REMOTE: "#/components/schemas/LayerInfo"
+          WMS: "#/components/schemas/LayerInfo"
+          WMTS: "#/components/schemas/LayerInfo"
+          GROUP: "#/components/schemas/LayerGroupInfo"
+      properties:
+        type:
+          $ref: "#/components/schemas/PublishedType"
+        name:
+          type: string
+        title:
+          type: string
+        abstract:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/MetadataMap"
+        authorityURLs:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuthorityURLInfo"
+        identifiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/LayerIdentifierInfo"
+        attribution:
+          $ref: "#/components/schemas/AttributionInfo"
+
+    WMSInterpolation:
+      type: string
+      enum:
+        - Nearest
+        - Bilinear
+        - Bicubic
+    
+    LayerInfo:
+      allOf:
+        - $ref: "#/components/schemas/PublishedInfo"
+        - type: object
+          properties:
+            path:
+              type: string
+            defaultStyle:
+              $ref: "#/components/schemas/StyleInfo"
+            styles:
+              type: array
+              items:
+                $ref: "#/components/schemas/StyleInfo"
+            resource:
+              $ref: "#/components/schemas/ResourceInfo"
+            legend:
+              $ref: "#/components/schemas/LegendInfo"
+            enabled:
+              type: boolean
+            queryable:
+              type: boolean
+            opaque:
+              type: boolean
+            advertised:
+              type: boolean
+              default: true
+            defaultWMSInterpolationMethod:
+              $ref: "#/components/schemas/WMSInterpolation"
+              
+    LayerGroupInfo:
+      allOf:
+        - $ref: "#/components/schemas/PublishedInfo"
+        - type: object
+          properties:
+            mode:
+              type: string
+              enum:
+                - SINGLE
+                - OPAQUE_CONTAINER
+                - NAMED
+                - CONTAINER
+                - EO
+            gueryDisabled:
+              type: boolean
+            keywords:
+              $ref: "#/components/schemas/KeywordInfo"
+            workspace:
+              $ref: "#/components/schemas/WorkspaceInfo"
+            rootLayer:
+              $ref: "#/components/schemas/LayerInfo"
+            rootLayerStyle:
+              $ref: "#/components/schemas/StyleInfo"
+            layers:
+              type: array
+              items:
+                $ref: "#/components/schemas/PublishedInfo"
+            styles:
+              type: array
+              items:
+                $ref: "#/components/schemas/StyleInfo"
+            bounds:
+              $ref: "#/components/schemas/EnvelopeInfo"
+            metadatalinks:
+              type: array
+              items:
+                $ref: "#/components/schemas/MetadataLinkInfo"

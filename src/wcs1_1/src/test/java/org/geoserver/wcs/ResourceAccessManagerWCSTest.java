@@ -46,6 +46,7 @@ import org.vfny.geoserver.wcs.WcsException;
  */
 public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
 
+    @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
         springContextLocations.add("classpath:/org/geoserver/wcs/ResourceAccessManagerContext.xml");

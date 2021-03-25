@@ -5,11 +5,17 @@
  */
 package org.geoserver.security.validation;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.net.URL;
-import org.geoserver.security.password.*;
+import org.geoserver.security.password.MasterPasswordChangeRequest;
+import org.geoserver.security.password.MasterPasswordProviderException;
+import org.geoserver.security.password.URLMasterPasswordProvider;
 import org.geoserver.security.password.URLMasterPasswordProvider.URLMasterPasswordProviderValidator;
+import org.geoserver.security.password.URLMasterPasswordProviderConfig;
+import org.geoserver.security.password.URLMasterPasswordProviderException;
 import org.geoserver.test.GeoServerMockTestSupport;
 import org.junit.Before;
 import org.junit.Test;

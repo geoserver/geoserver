@@ -35,9 +35,17 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         this.catalog = catalog;
     }
 
+    @Override
     public void visit(Catalog catalog) {}
 
+    @Override
     public void visit(WorkspaceInfo workspace) {
+        // remove layer groups contained in this workspace. Do this first to speed up
+        // visit(LayerInfo) looking for related groups
+        for (LayerGroupInfo group : catalog.getLayerGroupsByWorkspace(workspace)) {
+            group.accept(this);
+        }
+
         // remove owned stores
         for (StoreInfo s : catalog.getStoresByWorkspace(workspace, StoreInfo.class)) {
             s.accept(this);
@@ -54,16 +62,12 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
             style.accept(this);
         }
 
-        // remove layer groups contained in this workspace
-        for (LayerGroupInfo group : catalog.getLayerGroupsByWorkspace(workspace)) {
-            group.accept(this);
-        }
-
         catalog.remove(workspace);
     }
 
-    public void visit(NamespaceInfo workspace) {
-        catalog.remove(workspace);
+    @Override
+    public void visit(NamespaceInfo namespace) {
+        catalog.remove(namespace);
     }
 
     void visitStore(StoreInfo store) {
@@ -84,14 +88,17 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         catalog.remove(store);
     }
 
+    @Override
     public void visit(DataStoreInfo dataStore) {
         visitStore(dataStore);
     }
 
+    @Override
     public void visit(CoverageStoreInfo coverageStore) {
         visitStore(coverageStore);
     }
 
+    @Override
     public void visit(WMSStoreInfo wmsStore) {
         visitStore(wmsStore);
     }
@@ -101,16 +108,19 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         visitStore(store);
     }
 
+    @Override
     public void visit(FeatureTypeInfo featureType) {
         // when the resource/layer split is done, delete all layers linked to the resource
         catalog.remove(featureType);
     }
 
+    @Override
     public void visit(CoverageInfo coverage) {
         // when the resource/layer split is done, delete all layers linked to the resource
         catalog.remove(coverage);
     }
 
+    @Override
     public void visit(LayerInfo layer) {
         // first update the groups, remove the layer, and if no
         // other layers remained, remove the group as well
@@ -229,6 +239,7 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         }
     }
 
+    @Override
     public void visit(StyleInfo style) {
         // find the layers having this style as primary or secondary
         Filter anyStyle = Predicates.equal("styles.id", style.getId(), MatchAction.ANY);
@@ -258,6 +269,7 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         catalog.remove(style);
     }
 
+    @Override
     public void visit(LayerGroupInfo layerGroupToRemove) {
         // remove layerGroupToRemove references from other groups
         Filter associatedTo =
@@ -305,6 +317,7 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
         return -1;
     }
 
+    @Override
     public void visit(WMSLayerInfo wmsLayer) {
         catalog.remove(wmsLayer);
     }

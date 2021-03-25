@@ -45,7 +45,7 @@ public class LayerInfoImpl implements LayerInfo {
 
     protected StyleInfo defaultStyle;
 
-    protected Set<StyleInfo> styles = new HashSet<StyleInfo>();
+    protected Set<StyleInfo> styles = new HashSet<>();
 
     protected ResourceInfo resource;
 
@@ -77,7 +77,7 @@ public class LayerInfoImpl implements LayerInfo {
      *
      * @since 2.1.3
      */
-    protected List<AuthorityURLInfo> authorityURLs = new ArrayList<AuthorityURLInfo>(1);
+    protected List<AuthorityURLInfo> authorityURLs = new ArrayList<>(1);
 
     /**
      * This property is transient in 2.1.x series and stored under the metadata map with key
@@ -85,7 +85,7 @@ public class LayerInfoImpl implements LayerInfo {
      *
      * @since 2.1.3
      */
-    protected List<LayerIdentifierInfo> identifiers = new ArrayList<LayerIdentifierInfo>(1);
+    protected List<LayerIdentifierInfo> identifiers = new ArrayList<>(1);
 
     protected WMSInterpolation defaultWMSInterpolationMethod;
 
@@ -161,7 +161,7 @@ public class LayerInfoImpl implements LayerInfo {
             else if (LOGGER.isLoggable(Level.FINE))
                 LOGGER.fine(
                         "No Default Style found on cascaded WMS Resource"
-                                + ((WMSLayerInfo) getResource()).getName());
+                                + getResource().getName());
         }
 
         return defaultStyle;
@@ -172,6 +172,7 @@ public class LayerInfoImpl implements LayerInfo {
         this.defaultStyle = defaultStyle;
     }
 
+    @Override
     public Set<StyleInfo> getStyles() {
         if (getResource() instanceof WMSLayerInfo) {
             Set<StyleInfo> remoteStyles = ((WMSLayerInfo) getResource()).getStyles();
@@ -181,7 +182,7 @@ public class LayerInfoImpl implements LayerInfo {
             else if (LOGGER.isLoggable(Level.FINE))
                 LOGGER.fine(
                         "No Default Styles found on cascaded WMS Resource"
-                                + ((WMSLayerInfo) getResource()).getName());
+                                + getResource().getName());
         }
 
         return styles;

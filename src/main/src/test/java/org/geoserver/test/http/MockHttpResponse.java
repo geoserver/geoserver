@@ -12,7 +12,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.IOUtils;
-import org.geotools.data.ows.HTTPResponse;
+import org.geotools.http.HTTPResponse;
 
 /**
  * Helper class to mock HTTP responses
@@ -41,7 +41,7 @@ public class MockHttpResponse implements HTTPResponse {
     public MockHttpResponse(byte[] response, String contentType, String... headers) {
         this.response = response;
         this.contentType = contentType;
-        this.headers = new HashMap<String, String>();
+        this.headers = new HashMap<>();
 
         if (headers != null) {
             if (headers.length % 2 != 0) {
@@ -58,18 +58,22 @@ public class MockHttpResponse implements HTTPResponse {
         }
     }
 
+    @Override
     public void dispose() {
         // nothing to do
     }
 
+    @Override
     public String getContentType() {
         return this.contentType;
     }
 
+    @Override
     public String getResponseHeader(String headerName) {
         return headers.get(headerName);
     }
 
+    @Override
     public InputStream getResponseStream() throws IOException {
         return new ByteArrayInputStream(response);
     }

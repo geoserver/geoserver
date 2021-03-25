@@ -15,8 +15,6 @@ import java.util.logging.Logger;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -61,7 +59,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
 
     ModalWindow reloadWarningDialog;
 
-    ListView attributes;
+    ListView<AttributeTypeInfo> attributes;
 
     private Fragment attributePanel;
 
@@ -71,8 +69,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
         CheckBox circularArcs = new CheckBox("circularArcPresent");
         add(circularArcs);
 
-        TextField<Measure> tolerance =
-                new TextField<Measure>("linearizationTolerance", Measure.class);
+        TextField<Measure> tolerance = new TextField<>("linearizationTolerance", Measure.class);
         add(tolerance);
 
         attributePanel = new Fragment("attributePanel", "attributePanelFragment", this);
@@ -86,7 +83,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
 
         // just use the direct attributes, this is not editable atm
         attributes =
-                new ListView("attributes", new AttributeListModel()) {
+                new ListView<AttributeTypeInfo>("attributes", new AttributeListModel()) {
                     @Override
                     protected void populateItem(ListItem item) {
 
@@ -134,7 +131,7 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
                 };
         attributePanel.add(attributes);
 
-        TextArea<String> cqlFilter = new TextArea<String>("cqlFilter");
+        TextArea<String> cqlFilter = new TextArea<>("cqlFilter");
         cqlFilter.add(new CqlFilterValidator(model));
         add(cqlFilter);
 
@@ -166,16 +163,12 @@ public class FeatureResourceConfigurationPanel extends ResourceConfigurationPane
 
         add(reloadWarningDialog = new ModalWindow("reloadWarningDialog"));
         reloadWarningDialog.setPageCreator(
-                new ModalWindow.PageCreator() {
-                    public Page createPage() {
-                        return new ReloadWarningDialog(
-                                new StringResourceModel(
-                                        "featureTypeReloadWarning",
-                                        FeatureResourceConfigurationPanel.this,
-                                        null));
-                    }
-                });
-        reloadWarningDialog.setTitle(new StringResourceModel("warning", (Component) null, null));
+                (ModalWindow.PageCreator)
+                        () ->
+                                new ReloadWarningDialog(
+                                        new StringResourceModel(
+                                                "featureTypeReloadWarning", this, null)));
+        reloadWarningDialog.setTitle(new StringResourceModel("warning", null, null));
         reloadWarningDialog.setInitialHeight(100);
         reloadWarningDialog.setInitialHeight(200);
 

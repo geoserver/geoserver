@@ -580,9 +580,6 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
-        JDBCDataStore store = (JDBCDataStore) rootMapping.getSource().getDataStore();
-        NestedFilterToSQL nestedFilterToSQL = createNestedFilterEncoder(rootMapping);
-
         FilterFactoryImplNamespaceAware ff = new FilterFactoryImplNamespaceAware();
         ff.setNamepaceContext(rootMapping.getNamespaces());
 
@@ -597,7 +594,6 @@ public class SimpleAttributeFeatureChainWfsTest extends AbstractAppSchemaTestSup
         AppSchemaDataAccessRegistry.getAppSchemaProperties()
                 .setProperty("app-schema.orUnionReplace", "false");
         try {
-            FeatureTypeInfo ftInfo1 = getCatalog().getFeatureTypeByName("gsml", "MappedFeature");
             FeatureSource fs1 = ftInfo.getFeatureSource(new NullProgressListener(), null);
             assertContainsFeatures(fs1.getFeatures(combined), "mf2", "mf3");
         } finally {

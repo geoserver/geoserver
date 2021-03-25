@@ -5,6 +5,7 @@
 package org.geoserver.security.oauth2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -140,8 +141,18 @@ public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
 
         urlMangler.mangleURL(baseURL, path, kvp, URLType.SERVICE);
 
-        assertTrue(kvp.containsKey("access_token"));
-        assertTrue("12345".equals(kvp.get("access_token")));
+        assertFalse(kvp.containsKey("access_token"));
+
+        try {
+            System.setProperty(OAuth2AccessTokenURLMangler.ALLOW_OAUTH2_URL_MANGLER, "true");
+
+            urlMangler.mangleURL(baseURL, path, kvp, URLType.SERVICE);
+
+            assertTrue(kvp.containsKey("access_token"));
+            assertTrue("12345".equals(kvp.get("access_token")));
+        } finally {
+            System.clearProperty(OAuth2AccessTokenURLMangler.ALLOW_OAUTH2_URL_MANGLER);
+        }
     }
 
     @Test
@@ -167,6 +178,7 @@ public class OAuth2RestTemplateTest extends AbstractOAuth2RestTemplateTest {
             this.accessToken = accessToken;
         }
 
+        @Override
         protected Map<String, Object> postForMap(
                 String path, MultiValueMap<String, String> formData, HttpHeaders headers) {
 

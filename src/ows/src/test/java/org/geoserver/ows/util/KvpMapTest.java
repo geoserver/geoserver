@@ -12,7 +12,7 @@ public class KvpMapTest {
 
     @Test
     public void testCaseInsensitive() {
-        KvpMap map = new KvpMap();
+        KvpMap<String, String> map = new KvpMap<>();
         map.put("foo", "bar");
 
         assertEquals("bar", map.get("FOO"));

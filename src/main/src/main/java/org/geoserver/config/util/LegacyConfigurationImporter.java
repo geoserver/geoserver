@@ -179,6 +179,7 @@ public class LegacyConfigurationImporter {
         return value != null ? value : def;
     }
 
+    @SuppressWarnings("unchecked")
     protected <T extends Object> T get(Map map, String key, Class<T> clazz, T def) {
         Object o = map.get(key);
         if (o == null) {

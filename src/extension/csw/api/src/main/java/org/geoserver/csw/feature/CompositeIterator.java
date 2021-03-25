@@ -58,6 +58,7 @@ public class CompositeIterator implements Iterator<Feature>, Closeable {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void close() {
         current.close();
         collections.clear();

@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class WicketEnvironmentVariableCallback implements WicketCallback {
 
+    @Override
     public void onBeginRequest() {
         // inject the current user in it
         Map<String, Object> envVars = null;
@@ -23,7 +24,7 @@ public class WicketEnvironmentVariableCallback implements WicketCallback {
         if (auth != null && !(auth instanceof AnonymousAuthenticationToken)) {
             String name = auth.getName();
             if (envVars == null) {
-                envVars = new HashMap<String, Object>();
+                envVars = new HashMap<>();
             }
             envVars.put("GSUSER", name);
         }
@@ -34,10 +35,12 @@ public class WicketEnvironmentVariableCallback implements WicketCallback {
         }
     }
 
+    @Override
     public void onAfterTargetsDetached() {
         // nothing to do
     }
 
+    @Override
     public void onEndRequest() {
         // clean up when we're done
         EnvFunction.clearLocalValues();

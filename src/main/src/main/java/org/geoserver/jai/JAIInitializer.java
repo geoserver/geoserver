@@ -28,12 +28,14 @@ import org.geotools.image.jai.Registry;
  */
 public class JAIInitializer implements GeoServerInitializer {
 
+    @Override
     public void initialize(GeoServer geoServer) throws Exception {
         initJAI(geoServer.getGlobal().getJAI());
 
         geoServer.addListener(
                 new ConfigurationListenerAdapter() {
 
+                    @Override
                     public void handleGlobalChange(
                             GeoServerInfo global,
                             List<String> propertyNames,
@@ -71,7 +73,7 @@ public class JAIInitializer implements GeoServerInitializer {
                     }
                 }
                 if (jaiExtOperations != null && !jaiExtOperations.isEmpty()) {
-                    Set<String> newJai = new TreeSet<String>(jaiExtOperations);
+                    Set<String> newJai = new TreeSet<>(jaiExtOperations);
                     if (jaiOperations != null && !jaiOperations.isEmpty()) {
                         newJai.removeAll(jaiOperations);
                     }

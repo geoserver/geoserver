@@ -134,9 +134,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
                 if (doReturn) {
                     doReturn(StorePage.class);
                 }
-            } catch (IOException e) {
-                confirmSaveOnConnectionFailure(info, requestTarget, e);
-            } catch (RuntimeException e) {
+            } catch (IOException | RuntimeException e) {
                 confirmSaveOnConnectionFailure(info, requestTarget, e);
             }
         } else {
@@ -200,8 +198,8 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
             final String prefix = info.getWorkspace().getName();
             final NamespaceInfo namespace = catalog.getNamespaceByPrefix(prefix);
 
-            List<CoverageInfo> alreadyConfigured;
-            alreadyConfigured = catalog.getResourcesByStore(info, CoverageInfo.class);
+            List<CoverageInfo> alreadyConfigured =
+                    catalog.getResourcesByStore(info, CoverageInfo.class);
 
             for (CoverageInfo coverage : alreadyConfigured) {
                 coverage.setNamespace(namespace);

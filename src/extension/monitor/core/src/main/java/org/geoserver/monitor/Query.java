@@ -68,7 +68,7 @@ public class Query implements Serializable {
         }
     }
 
-    List<String> properties = new ArrayList();
+    List<String> properties = new ArrayList<>();
 
     String sortBy;
     SortOrder sortOrder;
@@ -81,8 +81,8 @@ public class Query implements Serializable {
 
     Filter filter;
 
-    List<String> aggregates = new ArrayList();
-    List<String> groupBy = new ArrayList();
+    List<String> aggregates = new ArrayList<>();
+    List<String> groupBy = new ArrayList<>();
 
     public Query properties(String... props) {
         for (String p : props) {

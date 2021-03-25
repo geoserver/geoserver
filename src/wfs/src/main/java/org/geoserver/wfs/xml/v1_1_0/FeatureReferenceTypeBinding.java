@@ -45,6 +45,7 @@ public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
             new QName("http://cite.opengeospatial.org/gmlsf", "FeatureReferenceType");
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return FeatureReferenceType;
     }
@@ -56,7 +57,8 @@ public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<Association> getType() {
         return Association.class;
     }
 
@@ -67,12 +69,14 @@ public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
 
         // TODO: implement and remove call to super
         return super.parse(instance, node, value);
     }
 
+    @Override
     public Object getProperty(Object object, QName name) throws Exception {
         Association association = (Association) object;
 
@@ -88,7 +92,7 @@ public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
         return null;
     }
 
-    public List getProperties(Object object) throws Exception {
+    public List<Object[]> getProperties(Object object) throws Exception {
         Association association = (Association) object;
 
         if (association.getValue() != null) {
@@ -101,7 +105,7 @@ public class FeatureReferenceTypeBinding extends AbstractComplexBinding {
                 Name typeName = feature.getType().getName();
                 QName name = new QName(typeName.getNamespaceURI(), typeName.getLocalPart());
 
-                List properties = new ArrayList();
+                List<Object[]> properties = new ArrayList<>();
 
                 // return a comment which is hte xlink href
                 properties.add(new Object[] {Encoder.COMMENT, "#" + feature.getID()});

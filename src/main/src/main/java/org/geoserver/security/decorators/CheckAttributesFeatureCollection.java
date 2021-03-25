@@ -34,7 +34,7 @@ class CheckAttributesFeatureCollection extends DecoratingSimpleFeatureCollection
             Collection<String> writableAttributes,
             Response response) {
         super(delegate);
-        this.writableAttributes = new HashSet<String>(writableAttributes);
+        this.writableAttributes = new HashSet<>(writableAttributes);
         this.response = response;
     }
 
@@ -52,14 +52,17 @@ class CheckAttributesFeatureCollection extends DecoratingSimpleFeatureCollection
             this.delegate = delegate;
         }
 
+        @Override
         public void close() {
             delegate.close();
         }
 
+        @Override
         public boolean hasNext() {
             return delegate.hasNext();
         }
 
+        @Override
         public SimpleFeature next() throws NoSuchElementException {
             final SimpleFeature next = delegate.next();
 

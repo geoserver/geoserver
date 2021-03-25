@@ -47,36 +47,35 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
 
     /** Behaviour for disabled button */
     private static final ClassAppender DISABLED_BEHAVIOR =
-            new ClassAppender(new Model<String>("disabled"));
+            new ClassAppender(new Model<>("disabled"));
 
     /**
      * The extension that are recognised as simple text resources (and can be edited with simple
      * text editor).
      */
-    private static final String[] TEXTUAL_EXTENSIONS =
-            new String[] {
-                "txt",
-                "properties",
-                "info",
-                "xml",
-                "sld",
-                "rst",
-                "log",
-                "asc",
-                "cfg",
-                "css",
-                "ftl",
-                "htm",
-                "html",
-                "js",
-                "xsd",
-                "prj",
-                "meta",
-                "pgw",
-                "pal",
-                "tfw",
-                "url"
-            };
+    private static final String[] TEXTUAL_EXTENSIONS = {
+        "txt",
+        "properties",
+        "info",
+        "xml",
+        "sld",
+        "rst",
+        "log",
+        "asc",
+        "cfg",
+        "css",
+        "ftl",
+        "htm",
+        "html",
+        "js",
+        "xsd",
+        "prj",
+        "meta",
+        "pgw",
+        "pal",
+        "tfw",
+        "url"
+    };
 
     /** The expanded states model. */
     protected final ResourceExpandedStates expandedStates = new ResourceExpandedStates();
@@ -90,7 +89,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
         rootNode.getExpanded().setObject(true);
 
         // create tree view and clip board
-        final TreeView<Resource> treeView = new TreeView<Resource>("treeview", rootNode);
+        final TreeView<Resource> treeView = new TreeView<>("treeview", rootNode);
         clipBoard = new ClipBoard(treeView);
 
         // used for all pop-up dialogs.
@@ -336,12 +335,11 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                     public void onClick(AjaxRequestTarget target) {
                         dialog.setInitialHeight(240);
 
-                        final List<Resource> sources = new ArrayList<Resource>();
+                        final List<Resource> sources = new ArrayList<>();
                         for (TreeNode<Resource> node : clipBoard.getItems()) {
                             sources.add(node.getObject());
                         }
-                        final List<TreeNode<Resource>> newSelected =
-                                new ArrayList<TreeNode<Resource>>();
+                        final List<TreeNode<Resource>> newSelected = new ArrayList<>();
 
                         dialog.showOkCancel(
                                 target,
@@ -596,7 +594,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                     public void onClick(AjaxRequestTarget target) {
                         dialog.setInitialHeight(100);
 
-                        final List<Resource> toBeDeleted = new ArrayList<Resource>();
+                        final List<Resource> toBeDeleted = new ArrayList<>();
                         for (TreeNode<Resource> selectedNode : treeView.getSelectedNodes()) {
                             toBeDeleted.add(selectedNode.getObject());
                         }

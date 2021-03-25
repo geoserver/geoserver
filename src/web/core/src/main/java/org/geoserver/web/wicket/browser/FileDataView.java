@@ -33,6 +33,7 @@ public abstract class FileDataView extends Panel {
     private static final IConverter<File> FILE_NAME_CONVERTER =
             new StringConverter() {
 
+                @Override
                 public String convertToString(File file, Locale locale) {
                     if (file.isDirectory()) {
                         return file.getName() + "/";
@@ -45,6 +46,7 @@ public abstract class FileDataView extends Panel {
     private static final IConverter<File> FILE_LASTMODIFIED_CONVERTER =
             new StringConverter() {
 
+                @Override
                 public String convertToString(File file, Locale locale) {
                     long lastModified = file.lastModified();
                     if (lastModified == 0L) return null;
@@ -61,8 +63,9 @@ public abstract class FileDataView extends Panel {
                 private static final double MBYTE = KBYTE * 1024;
                 private static final double GBYTE = MBYTE * 1024;
 
+                @Override
                 public String convertToString(File value, Locale locale) {
-                    File file = (File) value;
+                    File file = value;
 
                     if (!file.isFile()) return "";
 
@@ -115,7 +118,7 @@ public abstract class FileDataView extends Panel {
 
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
-                                        linkNameClicked((File) item.getModelObject(), target);
+                                        linkNameClicked(item.getModelObject(), target);
                                     }
                                 };
                         link.add(
@@ -162,17 +165,18 @@ public abstract class FileDataView extends Panel {
         fileContent.add(fileTable);
 
         table.add(fileContent);
-        table.add(new OrderByBorder<String>("nameHeader", FileProvider.NAME, fileProvider));
+        table.add(new OrderByBorder<>("nameHeader", FileProvider.NAME, fileProvider));
         table.add(
-                new OrderByBorder<String>(
+                new OrderByBorder<>(
                         "lastModifiedHeader", FileProvider.LAST_MODIFIED, fileProvider));
-        table.add(new OrderByBorder<String>("sizeHeader", FileProvider.SIZE, fileProvider));
+        table.add(new OrderByBorder<>("sizeHeader", FileProvider.SIZE, fileProvider));
     }
 
     protected abstract void linkNameClicked(File file, AjaxRequestTarget target);
 
     private abstract static class StringConverter implements IConverter<File> {
 
+        @Override
         public File convertToObject(String value, Locale locale) {
             throw new UnsupportedOperationException("This converter works only for strings");
         }

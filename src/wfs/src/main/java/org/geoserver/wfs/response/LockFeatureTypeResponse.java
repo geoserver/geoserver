@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
-import java.util.Iterator;
 import java.util.List;
 import net.opengis.wfs.LockFeatureResponseType;
 import net.opengis.wfs.LockFeatureType;
@@ -39,10 +38,12 @@ public class LockFeatureTypeResponse extends WFSResponse {
         this.configuration = configuration;
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return "text/xml";
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
         WFSInfo wfs = getInfo();
@@ -91,10 +92,10 @@ public class LockFeatureTypeResponse extends WFSResponse {
         if ((featuresLocked != null) && !featuresLocked.isEmpty()) {
             writer.write(indent + "<FeaturesLocked>" + "\n");
 
-            for (Iterator i = featuresLocked.iterator(); i.hasNext(); ) {
+            for (Object o : featuresLocked) {
                 writer.write(indent + indent);
 
-                FeatureId featureId = (FeatureId) i.next();
+                FeatureId featureId = (FeatureId) o;
                 writer.write("<ogc:FeatureId fid=\"" + featureId + "\"/>" + "\n");
             }
 
@@ -104,10 +105,10 @@ public class LockFeatureTypeResponse extends WFSResponse {
         if ((featuresNotLocked != null) && !featuresNotLocked.isEmpty()) {
             writer.write("<FeaturesNotLocked>" + "\n");
 
-            for (Iterator i = featuresNotLocked.iterator(); i.hasNext(); ) {
+            for (Object o : featuresNotLocked) {
                 writer.write(indent + indent);
 
-                FeatureId featureId = (FeatureId) i.next();
+                FeatureId featureId = (FeatureId) o;
                 writer.write("<ogc:FeatureId fid=\"" + featureId + "\"/>" + "\n");
             }
 

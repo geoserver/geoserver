@@ -17,19 +17,22 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import javax.media.jai.Interpolation;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.EnumerationUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.cache.CacheResponseStatus;
 import org.apache.http.client.cache.HttpCacheContext;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.HttpClientConnectionManager;
@@ -81,6 +84,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
 import org.opengis.filter.expression.PropertyName;
+import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.DisposableBean;
@@ -94,7 +98,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     private static Map<String, Integer> interpolationMethods;
 
     static {
-        interpolationMethods = new HashMap<String, Integer>();
+        interpolationMethods = new HashMap<>();
         interpolationMethods.put("NEAREST NEIGHBOR", Interpolation.INTERP_NEAREST);
         interpolationMethods.put("BILINEAR", Interpolation.INTERP_BILINEAR);
         interpolationMethods.put("BICUBIC", Interpolation.INTERP_BICUBIC);
@@ -125,12 +129,18 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
     public GetMapKvpRequestReader(WMS wms) {
         this(wms, null);
+        this.wms = wms;
     }
 
     public GetMapKvpRequestReader(WMS wms, HttpClientConnectionManager manager) {
         super(GetMapRequest.class);
+        this.wms = wms;
         // configure the http client used to fetch remote styles
-        RequestConfig requestConfig = RequestConfig.DEFAULT;
+        Builder builder = RequestConfig.copy(RequestConfig.DEFAULT);
+        int timeoutMillis = getTimeoutMillis();
+        builder.setConnectTimeout(timeoutMillis);
+        builder.setSocketTimeout(timeoutMillis);
+        RequestConfig requestConfig = builder.build();
 
         wms.getGeoServer()
                 .addListener(
@@ -155,13 +165,16 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                                 }
                             }
                         });
-        this.wms = wms;
         this.entityResolverProvider = new EntityResolverProvider(wms.getGeoServer());
         createHttpClient(
                 wms,
                 manager,
                 requestConfig,
                 (CacheConfiguration) wms.getRemoteResourcesCacheConfiguration().clone());
+    }
+
+    private int getTimeoutMillis() {
+        return wms.getServiceInfo().getRemoteStyleTimeout();
     }
 
     private synchronized void createHttpClient(
@@ -220,8 +233,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         if (httpRequest != null) {
             request.setRequestCharset(httpRequest.getCharacterEncoding());
             request.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()));
-            List<String> headerNames =
-                    (List<String>) EnumerationUtils.toList(httpRequest.getHeaderNames());
+            List<String> headerNames = EnumerationUtils.toList(httpRequest.getHeaderNames());
             for (String headerName : headerNames) {
                 request.putHttpRequestHeader(headerName, httpRequest.getHeader(headerName));
             }
@@ -236,18 +248,32 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         return false;
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "PMD.ForLoopCanBeForeach"})
     @Override
-    public GetMapRequest read(Object request, Map kvp, Map rawKvp) throws Exception {
+    public GetMapRequest read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         GetMapRequest getMap = (GetMapRequest) super.read(request, kvp, rawKvp);
         // set the raw params used to create the request
-        getMap.setRawKvp(rawKvp);
+        getMap.setRawKvp(KvpUtils.toStringKVP(rawKvp));
+
+        boolean citeCompliant = wms.getServiceInfo().isCiteCompliant();
 
         // wms 1.3, srs changed to crs
         if (kvp.containsKey("crs")) {
             getMap.setSRS((String) kvp.get("crs"));
+        } else if (citeCompliant && WMS.VERSION_1_3_0.equals(WMS.version(getMap.getVersion()))) {
+            throw new ServiceException("GetMap CRS parameter is mandatory in WMS 1.3");
         }
         // do some additional checks
+
+        if (citeCompliant && rawKvp != null && rawKvp.containsKey("transparent")) {
+            String trans = (String) rawKvp.get("transparent");
+
+            if (!trans.equalsIgnoreCase("false") && !trans.equalsIgnoreCase("true")) {
+                throw new Exception(
+                        "Invalid value of GetMap TRANSPARENT parameter, choose between true or false");
+            }
+        }
 
         // srs
         String epsgCode = getMap.getSRS();
@@ -282,24 +308,38 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             throw new ServiceException("REMOTE_OWS_URL specified, but REMOTE_OWS_TYPE is missing");
         }
 
-        final List<Object> requestedLayerInfos = new ArrayList<Object>();
+        final List<Object> requestedLayerInfos = new ArrayList<>();
         // layers
         String layerParam = (String) rawKvp.get("LAYERS");
         if (layerParam != null) {
             List<String> layerNames = KvpUtils.readFlat(layerParam);
             requestedLayerInfos.addAll(parseLayers(layerNames, remoteOwsUrl, remoteOwsType));
+        } else if (citeCompliant && getMap.getSldBody() == null && getMap.getSld() == null) {
+            // The SLD extensions to WMS allow a request not to have layers, as long as a full SLD
+            // is specified either using &sld or &sld_body. The error must not be thrown in these
+            // conditions (which are probably not what INSPIRE had in mind, but nonetheless a OGC
+            // specification.
+            throw new ServiceException(
+                    "GetMap LAYERS parameter is mandatory if SLD nor SLD_BODY are not specified");
         }
 
         // raw styles parameter
         String stylesParam = (String) kvp.get("STYLES");
-        List<String> styleNameList = new ArrayList<String>();
+        List<String> styleNameList = new ArrayList<>();
         if (stylesParam != null) {
             styleNameList.addAll(KvpUtils.readFlat(stylesParam));
+        } else if (citeCompliant && getMap.getSldBody() == null && getMap.getSld() == null) {
+            // The SLD extensions to WMS allow a request not to have styles, as long as a full SLD
+            // is specified either using &sld or &sld_body. The error must not be thrown in these
+            // conditions (which are probably not what INSPIRE had in mind, but nonetheless a OGC
+            // specification.
+            throw new ServiceException(
+                    "GetMap STYLES parameter is mandatory if SLD nor SLD_BODY are not specified");
         }
 
         // raw interpolations parameter
         String interpolationParam = (String) kvp.get("INTERPOLATIONS");
-        List<String> interpolationList = new ArrayList<String>();
+        List<String> interpolationList = new ArrayList<>();
         if (interpolationParam != null) {
             interpolationList.addAll(KvpUtils.readFlat(interpolationParam));
         }
@@ -307,11 +347,11 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         // raw filter and cql_filter parameters
         List<Filter> rawFilters =
                 ((getMap.getFilter() != null)
-                        ? new ArrayList<Filter>(getMap.getFilter())
+                        ? new ArrayList<>(getMap.getFilter())
                         : Collections.emptyList());
         List<Filter> cqlFilters =
                 ((getMap.getCQLFilter() != null)
-                        ? new ArrayList<Filter>(getMap.getCQLFilter())
+                        ? new ArrayList<>(getMap.getCQLFilter())
                         : Collections.emptyList());
         List<List<SortBy>> rawSortBy =
                 Optional.ofNullable(getMap.getSortBy()).orElse(Collections.emptyList());
@@ -354,7 +394,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
         getMap.setLayers(newLayers);
 
-        if (interpolationList.size() > 0) {
+        if (!interpolationList.isEmpty()) {
             getMap.setInterpolations(parseInterpolations(requestedLayerInfos, interpolationList));
         }
 
@@ -376,9 +416,9 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
             if (getMap.getValidateSchema().booleanValue()) {
                 try (StringReader reader = new StringReader(getMap.getSldBody())) {
-                    List errors = validateStyle(reader, getMap);
+                    List<Exception> errors = validateStyle(reader, getMap);
 
-                    if (errors.size() != 0) {
+                    if (!errors.isEmpty()) {
                         throw new ServiceException(
                                 SLDValidator.getErrorMessage(
                                         new StringReader(getMap.getSldBody()), errors));
@@ -418,8 +458,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             if (input != null) {
                 try (InputStreamReader reader = new InputStreamReader(input)) {
                     if (getMap.getValidateSchema().booleanValue()) {
-                        List errors = validateStyle(input, getMap);
-                        if ((errors != null) && (errors.size() != 0)) {
+                        List<Exception> errors = validateStyle(input, getMap);
+                        if ((errors != null) && (!errors.isEmpty())) {
                             throw new ServiceException(SLDValidator.getErrorMessage(input, errors));
                         }
                     }
@@ -457,24 +497,24 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             }
 
             // ok, parse the styles parameter in isolation
-            if (styleNameList.size() > 0) {
+            if (!styleNameList.isEmpty()) {
                 List<Style> parseStyles = parseStyles(styleNameList, requestedLayerInfos);
                 getMap.setStyles(parseStyles);
             }
 
             // first, expand base layers and default styles
-            if (isParseStyle() && requestedLayerInfos.size() > 0) {
+            if (isParseStyle() && !requestedLayerInfos.isEmpty()) {
                 List<Style> oldStyles =
                         getMap.getStyles() != null
-                                ? new ArrayList(getMap.getStyles())
-                                : new ArrayList();
-                List<Style> newStyles = new ArrayList<Style>();
+                                ? new ArrayList<>(getMap.getStyles())
+                                : new ArrayList<>();
+                List<Style> newStyles = new ArrayList<>();
                 List<Filter> newFilters = filters == null ? null : new ArrayList<>();
                 List<List<SortBy>> newSortBy = sortBy == null ? null : new ArrayList<>();
 
                 for (int i = 0; i < requestedLayerInfos.size(); i++) {
                     Object o = requestedLayerInfos.get(i);
-                    Style style = oldStyles.isEmpty() ? null : (Style) oldStyles.get(i);
+                    Style style = oldStyles.isEmpty() ? null : oldStyles.get(i);
 
                     if (o instanceof LayerGroupInfo) {
                         LayerGroupInfo groupInfo = (LayerGroupInfo) o;
@@ -502,7 +542,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                         }
 
                     } else if (o instanceof LayerInfo) {
-                        style = oldStyles.size() > 0 ? oldStyles.get(i) : null;
+                        style = oldStyles.isEmpty() ? null : oldStyles.get(i);
                         if (style != null) {
                             newStyles.add(style);
                         } else {
@@ -517,7 +557,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                             newSortBy.add(getSortBy(sortBy, i));
                         }
                     } else if (o instanceof MapLayerInfo) {
-                        style = oldStyles.size() > 0 ? oldStyles.get(i) : null;
+                        style = oldStyles.isEmpty() ? null : oldStyles.get(i);
                         if (style != null) {
                             newStyles.add(style);
                         } else {
@@ -541,7 +581,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
             // then proceed with standard processing
             List<MapLayerInfo> layers = getMap.getLayers();
-            if (isParseStyle() && (layers != null) && (layers.size() > 0)) {
+            if (isParseStyle() && (layers != null) && (!layers.isEmpty())) {
                 final List styles = getMap.getStyles();
 
                 if (layers.size() != styles.size()) {
@@ -554,7 +594,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 }
 
                 for (int i = 0; i < styles.size(); i++) {
-                    Style currStyle = (Style) getMap.getStyles().get(i);
+                    Style currStyle = getMap.getStyles().get(i);
                     if (currStyle == null)
                         throw new ServiceException(
                                 "Could not find a style for layer "
@@ -598,12 +638,12 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
         // check the view params
         List<Map<String, String>> viewParams = getMap.getViewParams();
-        if (viewParams != null && viewParams.size() > 0) {
+        if (viewParams != null && !viewParams.isEmpty()) {
             int layerCount = getMap.getLayers().size();
 
             // if we have just one replicate over all layers
             if (viewParams.size() == 1 && layerCount > 1) {
-                List<Map<String, String>> replacement = new ArrayList<Map<String, String>>();
+                List<Map<String, String>> replacement = new ArrayList<>();
                 for (int i = 0; i < layerCount; i++) {
                     replacement.add(viewParams.get(0));
                 }
@@ -683,7 +723,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         CloseableHttpResponse response = null;
         try {
             HttpGet httpget = new HttpGet(styleUrl.toExternalForm());
-            response = httpClient.execute(httpget, cacheContext);
+            response = executeRequest(cacheContext, httpget);
 
             if (cacheContext != null) {
                 CacheResponseStatus responseStatus = cacheContext.getCacheResponseStatus();
@@ -737,9 +777,27 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
     }
 
+    /** Executes the HTTP request with the max request time settings. */
+    private CloseableHttpResponse executeRequest(HttpCacheContext cacheContext, HttpGet httpget)
+            throws IOException, ClientProtocolException {
+        // get the max request time from WMS settings
+        int hardTimeout = wms.getServiceInfo().getRemoteStyleMaxRequestTime();
+        TimerTask task =
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (httpget != null) {
+                            httpget.abort();
+                        }
+                    }
+                };
+        new Timer(true).schedule(task, hardTimeout);
+        return httpClient.execute(httpget, cacheContext);
+    }
+
     private List<Interpolation> parseInterpolations(
             List<Object> requestedLayers, List<String> interpolationList) {
-        List<Interpolation> interpolations = new ArrayList<Interpolation>();
+        List<Interpolation> interpolations = new ArrayList<>();
         for (int i = 0; i < requestedLayers.size(); i++) {
             // null interpolation means:
             // use the default WMS one
@@ -814,7 +872,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             GetMapRequest getMap, List<Filter> rawFilters, List<Filter> cqlFilters) {
         List<Filter> filters = rawFilters;
         List featureId =
-                (getMap.getFeatureId() != null) ? getMap.getFeatureId() : Collections.EMPTY_LIST;
+                (getMap.getFeatureId() != null) ? getMap.getFeatureId() : Collections.emptyList();
 
         if (!featureId.isEmpty()) {
             if (!filters.isEmpty()) {
@@ -826,11 +884,11 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                                 + featureId);
             }
 
-            Set ids = new HashSet();
-            for (Iterator i = featureId.iterator(); i.hasNext(); ) {
-                ids.add(filterFactory.featureId((String) i.next()));
+            Set<FeatureId> ids = new HashSet<>();
+            for (Object o : featureId) {
+                ids.add(filterFactory.featureId((String) o));
             }
-            filters = Collections.singletonList((Filter) filterFactory.id(ids));
+            filters = Collections.singletonList(filterFactory.id(ids));
         }
 
         if (!cqlFilters.isEmpty()) {
@@ -849,14 +907,14 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
 
         // return null in case we found no filters
-        if (filters.size() == 0) {
+        if (filters.isEmpty()) {
             filters = null;
         }
         return filters;
     }
 
     /** validates an style document. */
-    private List validateStyle(Object input, GetMapRequest getMap) {
+    private List<Exception> validateStyle(Object input, GetMapRequest getMap) {
         try {
             String language = getStyleFormat(getMap);
             EntityResolver entityResolver = entityResolverProvider.getEntityResolver();
@@ -891,9 +949,9 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             final GetMapRequest request,
             final List<?> requestedLayers,
             final StyledLayerDescriptor sld,
-            final List styleNames)
+            final List<String> styleNames)
             throws ServiceException, IOException {
-        if (requestedLayers.size() == 0) {
+        if (requestedLayers.isEmpty()) {
             sld.accept(new ProcessStandaloneSLDVisitor(wms, request));
         } else {
             processLibrarySld(request, sld, requestedLayers, styleNames);
@@ -938,14 +996,14 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             throw new ServiceException("SLD document contains no layers");
         }
 
-        final List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
-        final List<Style> styles = new ArrayList<Style>();
+        final List<MapLayerInfo> layers = new ArrayList<>();
+        final List<Style> styles = new ArrayList<>();
 
         MapLayerInfo currLayer = null;
         String styleName = null;
 
         for (int i = 0; i < requestedLayers.size(); i++) {
-            if (styleNames != null && styleNames.size() > 0) {
+            if (styleNames != null && !styleNames.isEmpty()) {
                 styleName = styleNames.get(i);
             }
             Object o = requestedLayers.get(i);
@@ -1015,23 +1073,21 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             return;
         }
 
-        final int length = layerStyles.length;
         Style s;
-
-        for (int t = 0; t < length; t++) {
-            if (layerStyles[t] instanceof NamedStyle) {
+        for (Style layerStyle : layerStyles) {
+            if (layerStyle instanceof NamedStyle) {
                 layers.add(currLayer);
-                s = findStyle(wms, request, (layerStyles[t]).getName());
+                s = findStyle(wms, request, layerStyle.getName());
 
                 if (s == null) {
                     throw new ServiceException(
-                            "couldn't find style named '" + (layerStyles[t]).getName() + "'");
+                            "couldn't find style named '" + layerStyle.getName() + "'");
                 }
 
                 styles.add(s);
             } else {
                 layers.add(currLayer);
-                styles.add(layerStyles[t]);
+                styles.add(layerStyle);
             }
         }
     }
@@ -1079,8 +1135,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         String layerName = layer.getName();
         StyledLayer sl;
 
-        for (int i = 0; i < styledLayers.length; i++) {
-            sl = styledLayers[i];
+        for (StyledLayer value : styledLayers) {
+            sl = value;
 
             if (layerName.equals(sl.getName())) {
                 if (sl instanceof UserLayer) {
@@ -1121,8 +1177,8 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         // the first style that matches the type name
         // TODO: would be nice to have a switch to turn this off since it's out of the spec
         if (style == null && laxStyleMatchAllowed) {
-            for (int i = 0; i < styledLayers.length; i++) {
-                sl = styledLayers[i];
+            for (StyledLayer styledLayer : styledLayers) {
+                sl = styledLayer;
 
                 if (layerName.equals(sl.getName())) {
                     if (sl instanceof UserLayer) {
@@ -1238,17 +1294,17 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
      * registered {@link LayerInfo} or a remoteOWS one, or {@link LayerGroupInfo} objects for a
      * requested layer name that refers to a layer group.
      */
-    protected List<?> parseLayers(
+    protected List<Object> parseLayers(
             final List<String> requestedLayerNames,
             final URL remoteOwsUrl,
             final String remoteOwsType)
             throws Exception {
 
-        List<Object> layersOrGroups = new ArrayList<Object>();
+        List<Object> layersOrGroups = new ArrayList<>();
 
         // Grab remote OWS data store if needed
         DataStore remoteWFS = null;
-        final List<String> remoteTypeNames = new ArrayList<String>();
+        final List<String> remoteTypeNames = new ArrayList<>();
         if ("WFS".equals(remoteOwsType) && remoteOwsUrl != null) {
             remoteWFS = connectRemoteWFS(remoteOwsUrl);
             remoteTypeNames.addAll(Arrays.asList(remoteWFS.getTypeNames()));
@@ -1264,8 +1320,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         for (String layerName : requestedLayerNames) {
             // search into the remote WFS if there is any
             if (remoteTypeNames.contains(layerName)) {
-                SimpleFeatureSource remoteSource;
-                remoteSource = remoteWFS.getFeatureSource(layerName);
+                SimpleFeatureSource remoteSource = remoteWFS.getFeatureSource(layerName);
                 if (remoteSource != null) {
                     layersOrGroups.add(new MapLayerInfo(remoteSource));
                     continue;
@@ -1331,7 +1386,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         // }
         // }
 
-        if (layersOrGroups.size() == 0) {
+        if (layersOrGroups.isEmpty()) {
             throw new ServiceException("No LAYERS has been requested", getClass().getName());
         }
         return layersOrGroups;
@@ -1340,7 +1395,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
     private static DataStore connectRemoteWFS(URL remoteOwsUrl) throws ServiceException {
         try {
             WFSDataStoreFactory factory = new WFSDataStoreFactory();
-            Map params = new HashMap(factory.getImplementationHints());
+            Map<String, Object> params = new HashMap<>();
             params.put(
                     WFSDataStoreFactory.URL.key,
                     remoteOwsUrl + "&request=GetCapabilities&service=WFS");
@@ -1406,7 +1461,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
     protected List<Style> parseStyles(List<String> styleNames, List<Object> requestedLayerInfos)
             throws Exception {
-        List<Style> styles = new ArrayList<Style>();
+        List<Style> styles = new ArrayList<>();
         for (int i = 0; i < styleNames.size(); i++) {
             String styleName = styleNames.get(i);
             if ("".equals(styleName)) {

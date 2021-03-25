@@ -6,7 +6,7 @@
 package org.geoserver.wms.capabilities;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -22,7 +22,11 @@ import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LegendInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.impl.ContactInfoImpl;
@@ -124,7 +128,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         testData.addStyle("squares", "squares.sld", GetFeatureInfoTest.class, catalog);
         testData.addVectorLayer(
                 SQUARES,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "squares.properties",
                 GetCapabilitiesLegendURLTest.class,
                 catalog);
@@ -135,7 +139,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
                 "Population.sld",
                 GetCapabilitiesLegendURLTest.class,
                 catalog);
-        Map<LayerProperty, Object> properties = new HashMap<LayerProperty, Object>();
+        Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, "states");
         LocalWorkspace.set(workspaceInfo);
         testData.addVectorLayer(
@@ -147,7 +151,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         LocalWorkspace.set(null);
 
         testData.addStyle("temperature", "temperature.sld", WMSTestSupport.class, catalog);
-        properties = new HashMap<LayerProperty, Object>();
+        properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, "temperature");
         testData.addRasterLayer(
                 WORLD, "world.tiff", null, properties, SystemTestData.class, catalog);
@@ -183,7 +187,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
                         getClass().getResourceAsStream("/legendURL/Bridges.png"),
                         LegendSampleImpl.LEGEND_SAMPLES_FOLDER + "/Bridges.png");
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("wms", "http://www.opengis.net/wms");
         namespaces.put("ows", "http://www.opengis.net/ows");
@@ -192,6 +196,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
     }
 
     /** Accessor for global catalog instance from the test application context. */
+    @Override
     protected Catalog getCatalog() {
         return (Catalog) applicationContext.getBean("catalog");
     }
@@ -226,7 +231,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         removeFileOrFolder(samplesFolder);
         TransformerBase tr = createTransformer();
         tr.setIndentation(2);
-        Document dom = WMSTestSupport.transform(req, tr);
+        WMSTestSupport.transform(req, tr);
 
         assertTrue(samplesFolder.exists());
     }
@@ -264,9 +269,9 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals(1, legendURLs.getLength());
         Element legendURL = (Element) legendURLs.item(0);
         assertTrue(legendURL.hasAttribute("width"));
-        assertFalse("20".equals(legendURL.getAttribute("width")));
+        assertNotEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
-        assertFalse("20".equals(legendURL.getAttribute("height")));
+        assertNotEquals("20", legendURL.getAttribute("height"));
 
         File sampleFile = getSampleFile("squares");
         assertTrue(sampleFile.exists());
@@ -282,9 +287,9 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals(1, legendURLs.getLength());
         Element legendURL = (Element) legendURLs.item(0);
         assertTrue(legendURL.hasAttribute("width"));
-        assertFalse("20".equals(legendURL.getAttribute("width")));
+        assertNotEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
-        assertFalse("20".equals(legendURL.getAttribute("height")));
+        assertNotEquals("20", legendURL.getAttribute("height"));
 
         File sampleFile = getSampleFile("temperature");
         assertTrue(sampleFile.exists());
@@ -316,9 +321,9 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals(1, legendURLs.getLength());
         Element legendURL = (Element) legendURLs.item(0);
         assertTrue(legendURL.hasAttribute("width"));
-        assertFalse("20".equals(legendURL.getAttribute("width")));
+        assertNotEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
-        assertFalse("20".equals(legendURL.getAttribute("height")));
+        assertNotEquals("20", legendURL.getAttribute("height"));
 
         File sampleFile = getSampleFile("cite_states");
         assertTrue(sampleFile.exists());
@@ -350,7 +355,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
         assertEquals("20", legendURL.getAttribute("height"));
-        assertFalse(getSampleFile("Bridges").length() == lastLength);
+        assertNotEquals(getSampleFile("Bridges").length(), lastLength);
         sldResource.file().setLastModified(previousTime);
     }
 
@@ -370,9 +375,9 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
 
         catalog.firePostModified(
                 catalog.getStyleByName("Bridges"),
-                new ArrayList<String>(),
-                new ArrayList(),
-                new ArrayList());
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>());
 
         TransformerBase tr = createTransformer();
         tr.setIndentation(2);
@@ -385,7 +390,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertEquals("20", legendURL.getAttribute("width"));
         assertTrue(legendURL.hasAttribute("height"));
         assertEquals("20", legendURL.getAttribute("height"));
-        assertFalse(getSampleFile("Bridges").length() == lastLength);
+        assertNotEquals(getSampleFile("Bridges").length(), lastLength);
         sldResource.file().setLastModified(previousTime);
     }
 
@@ -403,8 +408,54 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         Element onlineResource = (Element) onlineResources.item(0);
         String href = onlineResource.getAttribute("xlink:href");
         assertNotNull(href);
+
         assertTrue(href.contains("width=20"));
         assertTrue(href.contains("height=20"));
+    }
+
+    /**
+     * Tests that width and height in legend online resources are consistent with the ones specified
+     * in legendURL when dealing with static legends.
+     */
+    @Test
+    public void testWidthHeightInHrefConsistentWithLegendURLForStaticLegends() throws Exception {
+        LayerInfo li = getCatalog().getLayerByName("cite:Bridges");
+        StyleInfo styleInfo = li.getDefaultStyle();
+        LegendInfo legend = new LegendInfoImpl();
+        legend.setOnlineResource(
+                getClass().getResource("/legendURL/Bridges.png").toURI().toString());
+        legend.setHeight(10);
+        legend.setFormat("image/png;charset=utf-8");
+        legend.setWidth(50);
+        styleInfo.setLegend(legend);
+        catalog.save(styleInfo);
+        try {
+            TransformerBase tr = createTransformer();
+            tr.setIndentation(2);
+            Document dom = WMSTestSupport.transform(req, tr);
+            NodeList legendURLS = XPATH.getMatchingNodes(getLegendURLXPath("cite:Bridges"), dom);
+            assertEquals(1, legendURLS.getLength());
+            Element legendURL = (Element) legendURLS.item(0);
+            assertTrue(legendURL.hasAttribute("width"));
+            assertTrue(legendURL.hasAttribute("height"));
+            String legendURLWidth = legendURL.getAttribute("width");
+            String legendURLHeight = legendURL.getAttribute("height");
+            assertNotEquals("20", legendURLWidth);
+            assertNotEquals("20", legendURLHeight);
+            NodeList onlineResources =
+                    XPATH.getMatchingNodes(getOnlineResourceXPath("cite:Bridges"), dom);
+            assertEquals(1, onlineResources.getLength());
+            Element onlineResource = (Element) onlineResources.item(0);
+            String href = onlineResource.getAttribute("xlink:href");
+            assertNotNull(href);
+            assertTrue(href.contains("width=" + legendURLWidth));
+            assertTrue(href.contains("height=" + legendURLHeight));
+        } finally {
+            if (styleInfo != null) {
+                styleInfo.setLegend(null);
+                catalog.save(styleInfo);
+            }
+        }
     }
 
     private String getLegendURLXPath(String layerName) {
@@ -461,8 +512,8 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         } else {
 
             String[] list = file.list();
-            for (int i = 0; i < list.length; i++) {
-                removeFileOrFolder(new File(file.getAbsolutePath() + File.separator + list[i]));
+            for (String s : list) {
+                removeFileOrFolder(new File(file.getAbsolutePath() + File.separator + s));
             }
 
             file.delete();

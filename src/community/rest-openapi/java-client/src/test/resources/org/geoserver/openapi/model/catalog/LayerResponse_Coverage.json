@@ -1,0 +1,20 @@
+{
+	"layer": {
+		"name": "PublishedName",
+		"type": "RASTER",
+		"defaultStyle": {
+			"name": "raster",
+			"href": "http:\/\/localhost:8080\/geoserver\/rest\/styles\/raster.json"
+		},
+		"resource": {
+			"@class": "coverage",
+			"name": "testWs:PublishedName",
+			"href": "http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/testWs\/coveragestores\/sfdem\/coverages\/PublishedName.json"
+		},
+		"attribution": {
+			"logoWidth": 0,
+			"logoHeight": 0
+		},
+		"dateCreated": "2020-03-23 16:55:29.904 UTC"
+	}
+}

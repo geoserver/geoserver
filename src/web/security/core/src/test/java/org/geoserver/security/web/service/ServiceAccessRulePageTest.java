@@ -19,14 +19,17 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 
 public class ServiceAccessRulePageTest extends AbstractListPageTest<ServiceAccessRule> {
 
+    @Override
     protected Page listPage(PageParameters params) {
         return new ServiceAccessRulePage();
     }
 
+    @Override
     protected Page newPage(Object... params) {
         return new NewServiceAccessRulePage();
     }
 
+    @Override
     protected Page editPage(Object... params) {
         if (params.length == 0) {
             return new EditServiceAccessRulePage(new ServiceAccessRule());

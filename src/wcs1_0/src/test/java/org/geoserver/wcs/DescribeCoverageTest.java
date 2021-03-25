@@ -5,8 +5,12 @@
  */
 package org.geoserver.wcs;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
-import static org.geoserver.data.test.MockData.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.geoserver.data.test.MockData.ROTATED_CAD;
+import static org.geoserver.data.test.MockData.TASMANIA_BM;
+import static org.geoserver.data.test.MockData.TASMANIA_DEM;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -103,7 +107,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
 
     @Test
     public void testDescribeUnknownCoverageXml() throws Exception {
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         String request =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
                         + //
@@ -194,7 +198,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
 
     @Test
     public void testDescribeDemCoverageXml() throws Exception {
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         String request =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
                         + //
@@ -251,8 +255,8 @@ public class DescribeCoverageTest extends WCSTestSupport {
             offsets[i] = Double.parseDouble(offsetStrsHigh[i - 2]);
         }
         assertTrue(offsets[0] > 0);
-        assertEquals(0.0, offsets[1]);
-        assertEquals(0.0, offsets[2]);
+        assertEquals(0.0, offsets[1], 0.001);
+        assertEquals(0.0, offsets[2], 0.001);
         assertTrue(offsets[3] < 0);
         // check there is one axis (this one is a dem, just one band)
         assertEquals(1, dom.getElementsByTagName("wcs:AxisDescription").getLength());
@@ -348,8 +352,8 @@ public class DescribeCoverageTest extends WCSTestSupport {
             offsets[i] = Double.parseDouble(offsetStrsHigh[i - 2]);
         }
         assertTrue(offsets[0] > 0);
-        assertEquals(0.0, offsets[1]);
-        assertEquals(0.0, offsets[2]);
+        assertEquals(0.0, offsets[1], 0.001);
+        assertEquals(0.0, offsets[2], 0.001);
         assertTrue(offsets[3] < 0);
 
         // check there is one axis (this one is a dem, just one band)

@@ -31,6 +31,7 @@ class PropertyComparator<T> implements Comparator<T> {
         this.ascending = ascending;
     }
 
+    @Override
     public int compare(T f1, T f2) {
         int result = compareAscending(f1, f2);
         if (ascending) {
@@ -40,6 +41,7 @@ class PropertyComparator<T> implements Comparator<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private int compareAscending(T f1, T f2) {
         Object a1 = propertyName.evaluate(f1);
         Comparable o1, o2;

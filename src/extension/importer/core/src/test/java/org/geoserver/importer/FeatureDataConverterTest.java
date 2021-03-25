@@ -7,7 +7,6 @@ package org.geoserver.importer;
 
 import static org.junit.Assert.assertEquals;
 
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
@@ -59,7 +58,7 @@ public class FeatureDataConverterTest {
 
         ImportTask task = new ImportTask();
         LayerInfo layer = new LayerInfoImpl();
-        ResourceInfo resource = new FeatureTypeInfoImpl((Catalog) null);
+        ResourceInfo resource = new FeatureTypeInfoImpl(null);
         layer.setResource(resource);
         layer.setName("goodname");
         task.setLayer(layer);

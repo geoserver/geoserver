@@ -53,6 +53,7 @@ public class DataAccessLimits extends AccessLimits {
     }
 
     /** The catalog mode for this layer */
+    @Override
     public CatalogMode getMode() {
         return mode;
     }

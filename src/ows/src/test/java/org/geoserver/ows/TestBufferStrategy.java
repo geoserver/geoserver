@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Andrea Aime - GeoSolutions
  */
 public class TestBufferStrategy implements ServiceStrategy, OutputStrategyFactory {
+    @Override
     public String getId() {
         return "BUFFER";
     }
@@ -27,6 +28,7 @@ public class TestBufferStrategy implements ServiceStrategy, OutputStrategyFactor
      * @param response Response being processed.
      * @return A ByteArrayOutputStream for writeTo opperation.
      */
+    @Override
     public DispatcherOutputStream getDestination(HttpServletResponse response) throws IOException {
         buffer = new ByteArrayOutputStream(1024 * 1024);
 
@@ -38,13 +40,15 @@ public class TestBufferStrategy implements ServiceStrategy, OutputStrategyFactor
      *
      * @throws IOException If the response outputt stream is unavailable.
      */
+    @Override
     public void flush(HttpServletResponse response) throws IOException {
         if ((buffer == null) || (response == null)) {
             return; // should we throw an Exception here
         }
 
-        OutputStream out = response.getOutputStream();
-        buffer.writeTo(out);
+        try (OutputStream out = response.getOutputStream()) {
+            buffer.writeTo(out);
+        }
 
         buffer = null;
     }
@@ -54,10 +58,12 @@ public class TestBufferStrategy implements ServiceStrategy, OutputStrategyFactor
      *
      * @see org.geoserver.ows.ServiceStrategy#abort()
      */
+    @Override
     public void abort() {
         buffer = null;
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return new TestBufferStrategy();
     }

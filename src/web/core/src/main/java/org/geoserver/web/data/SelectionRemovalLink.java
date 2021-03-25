@@ -42,7 +42,7 @@ public class SelectionRemovalLink extends AjaxLink<Void> {
     public void onClick(AjaxRequestTarget target) {
         // see if the user selected anything
         final List<? extends CatalogInfo> selection = catalogObjects.getSelection();
-        if (selection.size() == 0) return;
+        if (selection.isEmpty()) return;
 
         dialog.setTitle(new ParamResourceModel("confirmRemoval", this));
 
@@ -51,6 +51,7 @@ public class SelectionRemovalLink extends AjaxLink<Void> {
         dialog.showOkCancel(
                 target,
                 new GeoServerDialog.DialogDelegate() {
+                    @Override
                     protected Component getContents(String id) {
                         // show a confirmation panel for all the objects we have to remove
                         return new ConfirmRemovalPanel(id, selection) {
@@ -61,6 +62,7 @@ public class SelectionRemovalLink extends AjaxLink<Void> {
                         };
                     }
 
+                    @Override
                     protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
                         // cascade delete the whole selection
                         Catalog catalog = GeoServerApplication.get().getCatalog();

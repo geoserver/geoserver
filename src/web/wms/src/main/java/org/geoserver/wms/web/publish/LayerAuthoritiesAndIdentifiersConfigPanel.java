@@ -21,8 +21,7 @@ public class LayerAuthoritiesAndIdentifiersConfigPanel
         super(id, layerGroupModel);
 
         // authority URLs and identifiers for this layer
-        LayerAuthoritiesAndIdentifiersPanel authAndIds;
-        authAndIds =
+        LayerAuthoritiesAndIdentifiersPanel authAndIds =
                 new LayerAuthoritiesAndIdentifiersPanel(
                         "authoritiesAndIds", false, layerGroupModel);
         add(authAndIds);

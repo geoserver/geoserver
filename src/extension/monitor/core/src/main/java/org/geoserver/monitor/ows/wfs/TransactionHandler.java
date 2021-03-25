@@ -72,7 +72,7 @@ public class TransactionHandler extends WFSRequestObjectHandler {
             return null;
         }
 
-        List<String> layers = new ArrayList<String>();
+        List<String> layers = new ArrayList<>();
         ListIterator<Object> i = elements.valueListIterator();
         while (i.hasNext()) {
             Object e = i.next();
@@ -85,7 +85,7 @@ public class TransactionHandler extends WFSRequestObjectHandler {
                 // this is most likely an insert, determine layers from feature collection
                 if (isInsert(e)) {
                     List<Feature> features = (List<Feature>) EMFUtils.get((EObject) e, "feature");
-                    Set<String> set = new LinkedHashSet<String>();
+                    Set<String> set = new LinkedHashSet<>();
                     for (Feature f : features) {
                         if (f instanceof SimpleFeature) {
                             set.add(((SimpleFeature) f).getType().getTypeName());
@@ -135,7 +135,9 @@ public class TransactionHandler extends WFSRequestObjectHandler {
             }
 
             // go through all the features and aggregate the bounding boxes
-            for (Feature f : (List<Feature>) OwsUtils.get(element, "feature")) {
+            @SuppressWarnings("unchecked")
+            List<Feature> feature = (List<Feature>) OwsUtils.get(element, "feature");
+            for (Feature f : feature) {
                 BoundingBox fbbox = f.getBounds();
                 if (fbbox == null) {
                     continue;

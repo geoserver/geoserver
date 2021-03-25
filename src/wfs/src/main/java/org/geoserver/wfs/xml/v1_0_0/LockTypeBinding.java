@@ -52,6 +52,7 @@ public class LockTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.LOCKTYPE;
     }
@@ -63,7 +64,8 @@ public class LockTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<LockType> getType() {
         return LockType.class;
     }
 
@@ -74,12 +76,13 @@ public class LockTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         LockType lock = wfsfactory.createLockType();
 
         // &lt;xsd:element maxOccurs="1" minOccurs="0" ref="ogc:Filter"/&gt;
         if (node.hasChild(Filter.class)) {
-            lock.setFilter((Filter) node.getChildValue(Filter.class));
+            lock.setFilter(node.getChildValue(Filter.class));
         }
 
         // &lt;xsd:attribute name="handle" type="xsd:string" use="optional"/&gt;

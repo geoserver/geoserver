@@ -39,7 +39,7 @@ public class ServicePersisterTest extends GeoServerSystemTestSupport {
         GeoServer geoServer = getGeoServer();
         geoServer.addListener(
                 new ServicePersister(
-                        (List) Arrays.asList(new ServiceLoader(getResourceLoader())), geoServer));
+                        Arrays.asList(new ServiceLoader(getResourceLoader())), geoServer));
     }
 
     @Override
@@ -137,14 +137,14 @@ public class ServicePersisterTest extends GeoServerSystemTestSupport {
         assertEquals(0, geoServer.getServices().size());
     }
 
-    public static class ServiceLoader extends XStreamServiceLoader {
+    public static class ServiceLoader extends XStreamServiceLoader<ServiceInfo> {
 
         public ServiceLoader(GeoServerResourceLoader resourceLoader) {
             super(resourceLoader, "service");
         }
 
         @Override
-        public Class getServiceClass() {
+        public Class<ServiceInfo> getServiceClass() {
             return ServiceInfo.class;
         }
 

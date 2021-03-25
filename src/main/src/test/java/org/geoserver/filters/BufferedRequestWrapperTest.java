@@ -8,6 +8,7 @@ package org.geoserver.filters;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Map;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -19,62 +20,59 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
 
     @Test
     public void testGetInputStream() throws Exception {
-        for (int i = 0; i < testStrings.length; i++) {
-            doInputStreamTest(testStrings[i]);
+        for (String testString : testStrings) {
+            doInputStreamTest(testString);
         }
     }
 
     @Test
     public void testGetReader() throws Exception {
-        for (int i = 0; i < testStrings.length; i++) {
-            doGetReaderTest(testStrings[i]);
+        for (String testString : testStrings) {
+            doGetReaderTest(testString);
         }
     }
 
+    @SuppressWarnings("PMD.EmptyWhileStmt")
     public void doInputStreamTest(String testString) throws Exception {
         HttpServletRequest req = makeRequest(testString, null);
 
         BufferedRequestWrapper wrapper =
                 new BufferedRequestWrapper(
                         req, WebUtils.DEFAULT_CHARACTER_ENCODING, testString.getBytes());
-        ServletInputStream sis = req.getInputStream();
         byte b[] = new byte[32];
-        int amountRead;
-
-        while ((sis.readLine(b, 0, 32)) > 0) {
+        try (ServletInputStream sis = req.getInputStream()) {
             /* clear out the request body */
+            while ((sis.readLine(b, 0, 32)) > 0) ;
         }
 
-        sis = wrapper.getInputStream();
-        StringBuffer buff = new StringBuffer();
+        try (ServletInputStream sis = wrapper.getInputStream()) {
+            StringBuffer buff = new StringBuffer();
+            int amountRead;
+            while ((amountRead = sis.readLine(b, 0, 32)) != 0) {
+                buff.append(new String(b, 0, amountRead));
+            }
 
-        while ((amountRead = sis.readLine(b, 0, 32)) != 0) {
-            buff.append(new String(b, 0, amountRead));
+            assertEquals(buff.toString(), testString);
         }
-
-        assertEquals(buff.toString(), testString);
     }
 
     public void doGetReaderTest(String testString) throws Exception {
         HttpServletRequest req = makeRequest(testString, null);
 
-        BufferedReader br = req.getReader();
-        while ((br.readLine()) != null) {
-            /* clear out the body */
-        }
+        clearOutBody(req);
 
         BufferedRequestWrapper wrapper =
                 new BufferedRequestWrapper(
                         req, WebUtils.DEFAULT_CHARACTER_ENCODING, testString.getBytes());
         StringBuffer buff = new StringBuffer();
         int c;
-        br = wrapper.getReader();
+        try (BufferedReader br = wrapper.getReader()) {
+            while ((c = br.read()) != -1) {
+                buff.append((char) c);
+            }
 
-        while ((c = br.read()) != -1) {
-            buff.append((char) c);
+            assertEquals(buff.toString(), testString);
         }
-
-        assertEquals(buff.toString(), testString);
     }
 
     @Test
@@ -83,10 +81,7 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         String queryString = "c=3&d=4";
         HttpServletRequest req = makeRequest(body, queryString);
 
-        BufferedReader br = req.getReader();
-        while ((br.readLine()) != null) {
-            /* clear out the body */
-        }
+        clearOutBody(req);
 
         BufferedRequestWrapper wrapper = new BufferedRequestWrapper(req, "UTF-8", body.getBytes());
         Map params = wrapper.getParameterMap();
@@ -97,6 +92,14 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         assertEquals("4", ((String[]) params.get("d"))[0]);
     }
 
+    @SuppressWarnings("PMD.EmptyWhileStmt")
+    private void clearOutBody(HttpServletRequest req) throws IOException {
+        try (BufferedReader br = req.getReader()) {
+            /* clear out the body */
+            while ((br.readLine()) != null) ;
+        }
+    }
+
     @Test
     public void testNoContentType() throws Exception {
         String body = "a=1&b=2";
@@ -104,11 +107,7 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         MockHttpServletRequest req = makeRequest(body, queryString);
         // reset the content type
         req.setContentType(null);
-
-        BufferedReader br = req.getReader();
-        while ((br.readLine()) != null) {
-            /* clear out the body */
-        }
+        clearOutBody(req);
 
         // should not NPE like it did
         BufferedRequestWrapper wrapper = new BufferedRequestWrapper(req, "UTF-8", body.getBytes());
@@ -122,10 +121,7 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         // reset the content type
         req.setContentType(null);
 
-        BufferedReader br = req.getReader();
-        while ((br.readLine()) != null) {
-            /* clear out the body */
-        }
+        clearOutBody(req);
 
         // should not NPE like it did
         BufferedRequestWrapper wrapper = new BufferedRequestWrapper(req, "UTF-8", "".getBytes());

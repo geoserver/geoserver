@@ -34,7 +34,7 @@ public class PipeliningTaskQueue<K> implements Runnable {
     ExecutorService tasks;
 
     public PipeliningTaskQueue() {
-        pipelines = new ConcurrentHashMap();
+        pipelines = new ConcurrentHashMap<>();
         tasks = Executors.newCachedThreadPool();
     }
 
@@ -64,7 +64,7 @@ public class PipeliningTaskQueue<K> implements Runnable {
             synchronized (this) {
                 pipeline = pipelines.get(key);
                 if (pipeline == null) {
-                    pipeline = new ConcurrentLinkedQueue();
+                    pipeline = new ConcurrentLinkedQueue<>();
                     Queue<Pipelineable<K>> other = pipelines.putIfAbsent(key, pipeline);
                     if (other != null) pipeline = other;
                 }
@@ -74,7 +74,7 @@ public class PipeliningTaskQueue<K> implements Runnable {
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest("Queuing task into pipeline " + key);
         }
-        pipeline.add(new Pipelineable<K>(key, task));
+        pipeline.add(new Pipelineable<>(key, task));
     }
 
     public void clear(K key) {
@@ -86,6 +86,7 @@ public class PipeliningTaskQueue<K> implements Runnable {
         tasks.shutdown();
     }
 
+    @Override
     public void run() {
 
         for (Queue<Pipelineable<K>> pipeline : pipelines.values()) {

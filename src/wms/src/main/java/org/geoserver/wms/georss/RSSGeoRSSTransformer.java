@@ -6,7 +6,6 @@
 package org.geoserver.wms.georss;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import org.geoserver.wms.WMS;
@@ -33,6 +32,7 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
         this.wms = wms;
     }
 
+    @Override
     public Translator createTranslator(ContentHandler handler) {
         return new RSSGeoRSSTranslator(wms, handler);
     }
@@ -47,6 +47,7 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
             nsSupport.declarePrefix("atom", "http://www.w3.org/2005/Atom");
         }
 
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             WMSMapContent map = (WMSMapContent) o;
 
@@ -81,12 +82,10 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
 
         void encodeItems(WMSMapContent map) throws IOException {
             List featureCollections = loadFeatureCollections(map);
-            for (Iterator f = featureCollections.iterator(); f.hasNext(); ) {
-                SimpleFeatureCollection features = (SimpleFeatureCollection) f.next();
-                FeatureIterator<SimpleFeature> iterator = null;
+            for (Object featureCollection : featureCollections) {
+                SimpleFeatureCollection features = (SimpleFeatureCollection) featureCollection;
 
-                try {
-                    iterator = features.features();
+                try (FeatureIterator<SimpleFeature> iterator = features.features()) {
 
                     while (iterator.hasNext()) {
                         SimpleFeature feature = iterator.next();
@@ -96,10 +95,6 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
                             LOGGER.warning("Encoding failed for feature: " + feature.getID());
                             LOGGER.log(Level.FINE, "", e);
                         }
-                    }
-                } finally {
-                    if (iterator != null) {
-                        iterator.close();
                     }
                 }
             }

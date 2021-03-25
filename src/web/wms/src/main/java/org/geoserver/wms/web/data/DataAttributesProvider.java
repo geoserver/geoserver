@@ -27,7 +27,7 @@ class DataAttributesProvider extends GeoServerDataProvider<DataAttribute> {
     private final List<DataAttribute> attributes;
 
     public DataAttributesProvider(Feature sample) {
-        this.attributes = new ArrayList<DataAttribute>();
+        this.attributes = new ArrayList<>();
         for (PropertyDescriptor pd : sample.getType().getDescriptors()) {
             Name name = pd.getName();
             Object value = sample.getProperty(name).getValue();
@@ -43,13 +43,13 @@ class DataAttributesProvider extends GeoServerDataProvider<DataAttribute> {
 
     @Override
     public List<Property<DataAttribute>> getProperties() {
-        List<Property<DataAttribute>> props = new ArrayList<Property<DataAttribute>>();
-        props.add(new BeanProperty<DataAttribute>("name", "name"));
-        props.add(new BeanProperty<DataAttribute>("type", "type"));
-        props.add(new BeanProperty<DataAttribute>("sample", "sample"));
-        props.add(new BeanProperty<DataAttribute>("min", "min"));
-        props.add(new BeanProperty<DataAttribute>("max", "max"));
-        props.add(new PropertyPlaceholder<DataAttribute>(COMPUTE_STATS));
+        List<Property<DataAttribute>> props = new ArrayList<>();
+        props.add(new BeanProperty<>("name", "name"));
+        props.add(new BeanProperty<>("type", "type"));
+        props.add(new BeanProperty<>("sample", "sample"));
+        props.add(new BeanProperty<>("min", "min"));
+        props.add(new BeanProperty<>("max", "max"));
+        props.add(new PropertyPlaceholder<>(COMPUTE_STATS));
 
         return props;
     }

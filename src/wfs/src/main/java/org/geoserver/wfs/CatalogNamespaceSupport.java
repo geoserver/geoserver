@@ -13,6 +13,7 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** NamespaceContext based on GeoServer catalog. */
+@SuppressWarnings("unchecked") // due to Java 8 and Java 11 differences in interface
 public class CatalogNamespaceSupport extends NamespaceSupport {
 
     Catalog catalog;

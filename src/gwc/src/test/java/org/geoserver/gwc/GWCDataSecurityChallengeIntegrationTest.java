@@ -5,9 +5,9 @@
  */
 package org.geoserver.gwc;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -57,11 +57,10 @@ public class GWCDataSecurityChallengeIntegrationTest extends WMSTestSupport {
                         + getLayerId(MockData.LAKES)
                         + "&srs=EPSG:4326"
                         + "&width=256&height=256&styles=&bbox=-180.0,-90.0,0.0,90.0&tiled=true";
-        MockHttpServletResponse response;
 
         // Try first as anonymous user, which should be disallowed.
         setRequestAuth(null, null);
-        response = getAsServletResponse(path);
+        MockHttpServletResponse response = getAsServletResponse(path);
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
 
         // Make initial authorized request to cache the item.

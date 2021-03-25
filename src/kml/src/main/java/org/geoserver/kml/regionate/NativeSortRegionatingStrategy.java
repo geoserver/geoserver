@@ -22,7 +22,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.FilterFactory;
-import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 import org.opengis.filter.spatial.BBOX;
 
@@ -67,8 +66,7 @@ public class NativeSortRegionatingStrategy extends CachedHierarchyRegionatingStr
         }
 
         // check we can actually sort on that attribute
-        if (!fs.getQueryCapabilities()
-                .supportsSorting(new SortBy[] {ff.sort(attribute, SortOrder.DESCENDING)}))
+        if (!fs.getQueryCapabilities().supportsSorting(ff.sort(attribute, SortOrder.DESCENDING)))
             throw new ServiceException(
                     "Native sorting on the "
                             + attribute
@@ -84,6 +82,7 @@ public class NativeSortRegionatingStrategy extends CachedHierarchyRegionatingStr
         return super.getDatabaseName(cfg) + "_" + MapLayerInfo.getRegionateAttribute(cfg);
     }
 
+    @Override
     public FeatureIterator getSortedFeatures(
             GeometryDescriptor geom,
             ReferencedEnvelope latLongEnv,
@@ -104,13 +103,13 @@ public class NativeSortRegionatingStrategy extends CachedHierarchyRegionatingStr
         // build an optimized query (only the necessary attributes
         Query q = new Query();
         q.setFilter(filter);
-        q.setPropertyNames(new String[] {geom.getLocalName(), attribute});
+        q.setPropertyNames(geom.getLocalName(), attribute);
         // TODO: enable this when JTS learns how to compute centroids
         // without triggering the
         // generation of Coordinate[] out of the sequences...
         // q.setHints(new Hints(Hints.JTS_COORDINATE_SEQUENCE_FACTORY,
         // PackedCoordinateSequenceFactory.class));
-        q.setSortBy(new SortBy[] {ff.sort(attribute, SortOrder.DESCENDING)});
+        q.setSortBy(ff.sort(attribute, SortOrder.DESCENDING));
 
         // return the reader
         return fs.getFeatures(q).features();

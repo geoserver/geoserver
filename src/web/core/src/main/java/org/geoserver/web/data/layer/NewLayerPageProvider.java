@@ -5,8 +5,22 @@
  */
 package org.geoserver.web.data.layer;
 
-import java.util.*;
-import org.geoserver.catalog.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geotools.feature.NameImpl;
 import org.geotools.ows.wms.Layer;
@@ -24,10 +38,9 @@ import org.opengis.feature.type.Name;
 @SuppressWarnings("serial")
 public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
 
-    public static final Property<Resource> PUBLISHED =
-            new BeanProperty<Resource>("published", "published");
-    public static final Property<Resource> NAME = new BeanProperty<Resource>("name", "localName");
-    public static final Property<Resource> ACTION = new PropertyPlaceholder<Resource>("action");
+    public static final Property<Resource> PUBLISHED = new BeanProperty<>("published", "published");
+    public static final Property<Resource> NAME = new BeanProperty<>("name", "localName");
+    public static final Property<Resource> ACTION = new PropertyPlaceholder<>("action");
 
     public static final List<Property<Resource>> PROPERTIES =
             Arrays.asList(PUBLISHED, NAME, ACTION);
@@ -42,7 +55,7 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
     protected List<Resource> getItems() {
         // return an empty list in case we still don't know about the store
         if (storeId == null) {
-            return new ArrayList<Resource>();
+            return new ArrayList<>();
         } else if (cachedItems == null) {
             cachedItems = getItemsInternal();
         }
@@ -52,10 +65,9 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
     private List<Resource> getItemsInternal() {
         // else, grab the resource list
         try {
-            List<Resource> result;
             StoreInfo store = getCatalog().getStore(storeId, StoreInfo.class);
 
-            Map<String, Resource> resources = new HashMap<String, Resource>();
+            Map<String, Resource> resources = new HashMap<>();
             if (store instanceof DataStoreInfo) {
                 DataStoreInfo dstore = (DataStoreInfo) store;
                 DataStoreInfo expandedStore = getCatalog().getResourcePool().clone(dstore, true);
@@ -105,8 +117,7 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
 
             } else if (store instanceof WMTSStoreInfo) {
                 WMTSStoreInfo wmsInfo = (WMTSStoreInfo) store;
-                WMTSStoreInfo expandedStore =
-                        (WMTSStoreInfo) getCatalog().getResourcePool().clone(wmsInfo, true);
+                WMTSStoreInfo expandedStore = getCatalog().getResourcePool().clone(wmsInfo, true);
 
                 CatalogBuilder builder = new CatalogBuilder(getCatalog());
                 builder.setStore(store);
@@ -158,7 +169,7 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
                     resource.setPublished(true);
                 }
             }
-            result = new ArrayList<Resource>(resources.values());
+            List<Resource> result = new ArrayList<>(resources.values());
 
             // return by natural order
             Collections.sort(result);
@@ -186,7 +197,7 @@ public class NewLayerPageProvider extends GeoServerDataProvider<Resource> {
         List<Resource> resources = super.getFilteredItems();
         if (showPublished) return resources;
 
-        List<Resource> unconfigured = new ArrayList<Resource>();
+        List<Resource> unconfigured = new ArrayList<>();
         for (Resource resource : resources) {
             if (!resource.isPublished()) unconfigured.add(resource);
         }

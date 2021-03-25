@@ -42,7 +42,7 @@ public class IsInstanceOf implements VolatileFunction, Function {
     private Literal fallback;
 
     public IsInstanceOf() {
-        this.parameters = new ArrayList<Expression>();
+        this.parameters = new ArrayList<>();
         this.fallback = null;
     }
 
@@ -69,7 +69,7 @@ public class IsInstanceOf implements VolatileFunction, Function {
         Expression clazzExpression = parameters.get(0);
 
         // Getting the defined class
-        Class clazz = clazzExpression.evaluate(object, Class.class);
+        Class<?> clazz = clazzExpression.evaluate(object, Class.class);
 
         // Checking the result
         boolean result = false;
@@ -117,7 +117,7 @@ public class IsInstanceOf implements VolatileFunction, Function {
     @Override
     public String toString() {
         List<Expression> params = getParameters();
-        if (params == null || params.size() == 0) {
+        if (params == null || params.isEmpty()) {
             return "IsInstanceOf([INVALID])";
         } else {
             return "IsInstanceOf(" + params.get(0) + ")";

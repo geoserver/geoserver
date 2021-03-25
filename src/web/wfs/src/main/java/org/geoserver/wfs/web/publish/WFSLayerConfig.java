@@ -35,38 +35,33 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         super(id, model);
 
         TextField<Integer> maxFeatures =
-                new TextField<Integer>(
-                        "perReqFeatureLimit",
-                        new PropertyModel<Integer>(model, "resource.maxFeatures"));
+                new TextField<>(
+                        "perReqFeatureLimit", new PropertyModel<>(model, "resource.maxFeatures"));
         maxFeatures.add(RangeValidator.minimum(0));
         Border mfb = new FormComponentFeedbackBorder("perReqFeaturesBorder");
         mfb.add(maxFeatures);
         add(mfb);
         TextField<Integer> maxDecimals =
-                new TextField<Integer>(
-                        "maxDecimals", new PropertyModel<Integer>(model, "resource.numDecimals"));
+                new TextField<>("maxDecimals", new PropertyModel<>(model, "resource.numDecimals"));
         maxFeatures.add(RangeValidator.minimum(0));
         Border mdb = new FormComponentFeedbackBorder("maxDecimalsBorder");
         mdb.add(maxDecimals);
         add(mdb);
         CheckBox padWithZeros =
-                new CheckBox(
-                        "padWithZeros", new PropertyModel<Boolean>(model, "resource.padWithZeros"));
+                new CheckBox("padWithZeros", new PropertyModel<>(model, "resource.padWithZeros"));
         Border pwzb = new FormComponentFeedbackBorder("padWithZerosBorder");
         pwzb.add(padWithZeros);
         add(pwzb);
 
         CheckBox forcedDecimal =
-                new CheckBox(
-                        "forcedDecimal",
-                        new PropertyModel<Boolean>(model, "resource.forcedDecimal"));
+                new CheckBox("forcedDecimal", new PropertyModel<>(model, "resource.forcedDecimal"));
         Border fdb = new FormComponentFeedbackBorder("forcedDecimalBorder");
         fdb.add(forcedDecimal);
         add(fdb);
         CheckBox skipNumberMatched =
                 new CheckBox(
                         "skipNumberMatched",
-                        new PropertyModel<Boolean>(model, "resource.skipNumberMatched"));
+                        new PropertyModel<>(model, "resource.skipNumberMatched"));
         add(skipNumberMatched);
 
         // coordinates measures encoding
@@ -75,11 +70,19 @@ public class WFSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         "encodeMeasures", new PropertyModel<>(model, "resource.encodeMeasures"));
         add(encodeMeasures);
 
+        CheckBox complexToSimple =
+                new CheckBox(
+                        "complexToSimple",
+                        new PropertyModel<>(model, "resource.simpleConversionEnabled"));
+        Border complexToSimpleBorder = new FormComponentFeedbackBorder("complexToSimpleBorder");
+        complexToSimpleBorder.add(complexToSimple);
+        add(complexToSimpleBorder);
+
         // other srs list
         dialog = new GeoServerDialog("wfsDialog");
         add(dialog);
         PropertyModel<Boolean> overrideServiceSRSModel =
-                new PropertyModel<Boolean>(model, "resource.overridingServiceSRS");
+                new PropertyModel<>(model, "resource.overridingServiceSRS");
         final CheckBox overrideServiceSRS =
                 new CheckBox("overridingServiceSRS", overrideServiceSRSModel);
         add(overrideServiceSRS);

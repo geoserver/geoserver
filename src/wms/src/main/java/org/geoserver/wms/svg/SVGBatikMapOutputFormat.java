@@ -63,6 +63,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
      * @return {@code ["image/svg+xml", "image/svg xml", "image/svg"]}
      * @see org.geoserver.wms.GetMapOutputFormat#getOutputFormatNames()
      */
+    @Override
     public Set<String> getOutputFormatNames() {
         return SVG.OUTPUT_FORMATS;
     }
@@ -71,11 +72,13 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
      * @return {@code "image/svg+xml"}
      * @see org.geoserver.wms.GetMapOutputFormat#getMimeType()
      */
+    @Override
     public String getMimeType() {
         return SVG.MIME_TYPE;
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
+    @Override
     public BatikSVGMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
 
         StreamingRenderer renderer = setUpRenderer(mapContent);
@@ -93,12 +96,11 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
     }
 
     private StreamingRenderer setUpRenderer(WMSMapContent mapContent) {
-        StreamingRenderer renderer;
-        renderer = new StreamingRenderer();
+        StreamingRenderer renderer = new StreamingRenderer();
 
         // optimized data loading was not here, but yet it seems sensible to
         // have it...
-        Map<String, Object> rendererParams = new HashMap<String, Object>();
+        Map<String, Object> rendererParams = new HashMap<>();
         rendererParams.put("optimizedDataLoadingEnabled", Boolean.TRUE);
         // we need the renderer to draw everything on the batik provided graphics object
         rendererParams.put(StreamingRenderer.OPTIMIZE_FTS_RENDERING_KEY, Boolean.FALSE);
@@ -160,8 +162,8 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
             // Add a render listener that ignores well known rendering exceptions and reports back
             // non
             // ignorable ones
-            final RenderExceptionStrategy nonIgnorableExceptionListener;
-            nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
+            final RenderExceptionStrategy nonIgnorableExceptionListener =
+                    new RenderExceptionStrategy(renderer);
             renderer.addRenderListener(nonIgnorableExceptionListener);
 
             renderer.paint(
@@ -193,7 +195,6 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
 
     private SVGGeneratorContext setupContext()
             throws FactoryConfigurationError, ParserConfigurationException {
-        Document document = null;
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -201,12 +202,13 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
 
         // Create an instance of org.w3c.dom.Document
         String svgNamespaceURI = "http://www.w3.org/2000/svg";
-        document = db.getDOMImplementation().createDocument(svgNamespaceURI, "svg", null);
+        Document document = db.getDOMImplementation().createDocument(svgNamespaceURI, "svg", null);
 
         // Set up the context
         return SVGGeneratorContext.createDefault(document);
     }
 
+    @Override
     public MapProducerCapabilities getCapabilities(String format) {
         return CAPABILITIES;
     }

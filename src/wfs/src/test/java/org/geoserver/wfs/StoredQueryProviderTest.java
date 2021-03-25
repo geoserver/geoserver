@@ -7,10 +7,18 @@ package org.geoserver.wfs;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.Writer;
 import java.util.List;
 import net.opengis.wfs20.StoredQueryDescriptionType;
 import org.geoserver.catalog.Catalog;
@@ -170,9 +178,9 @@ public class StoredQueryProviderTest {
 
     private File createMyStoredQueryDefinitionFile(File storedQueryDir) throws IOException {
         File storedQueryDefinition = new File(storedQueryDir, MY_STORED_QUERY + ".xml");
-        Writer writer = new FileWriter(storedQueryDefinition);
-        writer.write(MY_STORED_QUERY_DEFINITION);
-        writer.close();
+        try (Writer writer = new FileWriter(storedQueryDefinition)) {
+            writer.write(MY_STORED_QUERY_DEFINITION);
+        }
         return storedQueryDefinition;
     }
 
@@ -180,21 +188,18 @@ public class StoredQueryProviderTest {
             throws Exception {
         Parser p = new Parser(new WFSConfiguration());
         p.setRootElementType(WFS.StoredQueryDescriptionType);
-        StringReader reader = new StringReader(MY_STORED_QUERY_DEFINITION);
-        try {
+        try (StringReader reader = new StringReader(MY_STORED_QUERY_DEFINITION)) {
 
             return (StoredQueryDescriptionType) p.parse(reader);
-        } finally {
-            reader.close();
         }
     }
 
     private File createMyBogusStoredQueryDefinition() throws IOException {
         File storedQueryDir = storedQueryProvider.storedQueryDir().dir();
         File storedQueryDefinition = new File(storedQueryDir, "MyBogusStoredQuery.xml");
-        Writer writer = new FileWriter(storedQueryDefinition);
-        writer.write("This is not a well-formed query");
-        writer.close();
+        try (Writer writer = new FileWriter(storedQueryDefinition)) {
+            writer.write("This is not a well-formed query");
+        }
         return storedQueryDefinition;
     }
 }

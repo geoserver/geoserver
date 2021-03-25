@@ -36,7 +36,7 @@ public class SecurityNamedServiceNewPage<
                 S extends GeoServerSecurityService, T extends SecurityNamedServiceConfig>
         extends SecurityNamedServicePage<T> {
 
-    Form form;
+    Form<T> form;
     WebMarkupContainer panelContainer;
 
     public SecurityNamedServiceNewPage(Class<S> serviceClass) {
@@ -70,7 +70,7 @@ public class SecurityNamedServiceNewPage<
 
         add(new WebMarkupContainer("servicesContainer").add(serviceLinks).setOutputMarkupId(true));
 
-        add(form = new Form<T>("form"));
+        add(form = new Form<>("form"));
 
         // add a container for the actual panel, since we will dynamically update it
         form.add(panelContainer = new WebMarkupContainer("panel"));
@@ -96,21 +96,15 @@ public class SecurityNamedServiceNewPage<
 
     void updatePanel(SecurityNamedServicePanelInfo panelInfo, AjaxRequestTarget target) {
         // create a new config object
-        T config = null;
-        try {
-            config = (T) panelInfo.getServiceConfigClass().getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            throw new WicketRuntimeException(
-                    "Unable to create config class: " + panelInfo.getServiceConfigClass(), e);
-        }
+        T config = getConfig(panelInfo);
 
         config.setClassName(panelInfo.getServiceClass().getCanonicalName());
 
         // update the form model
-        form.setModel(new CompoundPropertyModel<T>(config));
+        form.setModel(new CompoundPropertyModel<>(config));
 
         // create the new panel
-        panel = createPanel("content", panelInfo, new Model(config));
+        panel = createPanel("content", panelInfo, new Model<>(config));
 
         // remove the old panel if it is there
         if (panelContainer.get("content") != null) {
@@ -123,9 +117,19 @@ public class SecurityNamedServiceNewPage<
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private T getConfig(SecurityNamedServicePanelInfo panelInfo) {
+        try {
+            return (T) panelInfo.getServiceConfigClass().getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new WicketRuntimeException(
+                    "Unable to create config class: " + panelInfo.getServiceConfigClass(), e);
+        }
+    }
+
     List<SecurityNamedServicePanelInfo> lookupPanelInfos(Class<S> serviceClass) {
 
-        List<SecurityNamedServicePanelInfo> panelInfos = new ArrayList();
+        List<SecurityNamedServicePanelInfo> panelInfos = new ArrayList<>();
         for (SecurityNamedServicePanelInfo pageInfo :
                 GeoServerApplication.get().getBeansOfType(SecurityNamedServicePanelInfo.class)) {
             if (serviceClass.isAssignableFrom(pageInfo.getServiceClass())) {
@@ -145,18 +149,16 @@ public class SecurityNamedServiceNewPage<
 
         public AjaxLinkGroup(String id, List<T> list) {
             super(id, list);
+            setOutputMarkupId(true);
         }
 
         public AjaxLinkGroup(String id) {
             super(id);
-        }
-
-        void init() {
             setOutputMarkupId(true);
         }
 
         protected AjaxLink<T> newLink(String id, IModel<T> model) {
-            return (AjaxLink<T>)
+            AjaxLink<T> result =
                     new AjaxLink<T>(id, model) {
                         @Override
                         public void onClick(final AjaxRequestTarget target) {
@@ -177,7 +179,9 @@ public class SecurityNamedServiceNewPage<
 
                             AjaxLinkGroup.this.onClick(this, target);
                         }
-                    }.setOutputMarkupId(true);
+                    };
+            result.setOutputMarkupId(true);
+            return result;
         }
 
         protected abstract void onClick(AjaxLink<T> link, AjaxRequestTarget target);

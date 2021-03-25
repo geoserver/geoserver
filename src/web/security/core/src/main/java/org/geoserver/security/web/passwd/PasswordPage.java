@@ -18,7 +18,8 @@ import org.geoserver.web.wicket.HelpLink;
 public class PasswordPage extends AbstractSecurityPage {
 
     public PasswordPage() {
-        Form form = new Form("form", new CompoundPropertyModel(new MasterPasswordConfigModel()));
+        Form form =
+                new Form<>("form", new CompoundPropertyModel<>(new MasterPasswordConfigModel()));
         add(form);
 
         form.add(new MasterPasswordProviderChoice("providerName"));

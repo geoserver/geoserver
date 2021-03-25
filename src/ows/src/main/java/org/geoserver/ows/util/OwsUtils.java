@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,11 +74,10 @@ public class OwsUtils {
     }
 
     /** Cache of reflection information about a class, keyed by class. */
-    static Map<Class, ClassProperties> classPropertiesCache =
-            new SoftValueHashMap<Class, ClassProperties>();
+    static Map<Class<?>, ClassProperties> classPropertiesCache = new SoftValueHashMap<>();
 
     /** Accessor for the class to property info cache. */
-    static ClassProperties classProperties(Class clazz) {
+    static ClassProperties classProperties(Class<?> clazz) {
         // SoftValueHashMap is thread safe, no need to synch
         ClassProperties properties = classPropertiesCache.get(clazz);
         if (properties == null) {
@@ -90,7 +88,7 @@ public class OwsUtils {
     }
 
     /** Returns the properties object describing the properties of a class. */
-    public static ClassProperties getClassProperties(Class clazz) {
+    public static ClassProperties getClassProperties(Class<?> clazz) {
         return classProperties(clazz);
     }
 
@@ -106,7 +104,7 @@ public class OwsUtils {
      * @param type The type of the property, may be <code>null</code>.
      * @return The setter method, or <code>null</code> if not found.
      */
-    public static Method setter(Class clazz, String property, Class type) {
+    public static Method setter(Class<?> clazz, String property, Class<?> type) {
         return classProperties(clazz).setter(property, type);
     }
 
@@ -175,7 +173,9 @@ public class OwsUtils {
             throw new IllegalArgumentException("Property " + property + " is not a map");
         }
 
-        ((Map) o).put(key, value);
+        @SuppressWarnings("unchecked")
+        Map<Object, Object> o1 = (Map) o;
+        o1.put(key, value);
     }
 
     /**
@@ -186,7 +186,7 @@ public class OwsUtils {
      * @param type The type of the property, may be null.
      * @return The setter method, or <code>null</code> if not found.
      */
-    public static Method getter(Class clazz, String property, Class type) {
+    public static Method getter(Class<?> clazz, String property, Class<?> type) {
         return classProperties(clazz).getter(property, type);
     }
 
@@ -220,7 +220,7 @@ public class OwsUtils {
      * @param name The name of the method.
      * @return The method, or <code>null</code> if it could not be found.
      */
-    public static Method method(Class clazz, String name) {
+    public static Method method(Class<?> clazz, String name) {
         return classProperties(clazz).method(name);
     }
 
@@ -233,9 +233,7 @@ public class OwsUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T extends Object> T parameter(Object[] parameters, Class<T> type) {
-        for (int i = 0; i < parameters.length; i++) {
-            Object parameter = parameters[i];
-
+        for (Object parameter : parameters) {
             if ((parameter != null) && type.isAssignableFrom(parameter.getClass())) {
                 return (T) parameter;
             }
@@ -255,10 +253,9 @@ public class OwsUtils {
                 if (xmlEscape) s.append(ResponseUtils.encodeXML(message));
                 else s.append(message);
                 if (ex instanceof ServiceException) {
-                    for (Iterator t = ((ServiceException) ex).getExceptionText().iterator();
-                            t.hasNext(); ) {
+                    for (String value : ((ServiceException) ex).getExceptionText()) {
                         s.append("\n");
-                        String msg = (String) t.next();
+                        String msg = value;
                         if (!lastMessage.equals(msg)) {
                             if (xmlEscape) s.append(ResponseUtils.encodeXML(msg));
                             else s.append(msg);
@@ -275,6 +272,11 @@ public class OwsUtils {
             if (ex == cause || cause == null) break;
             else ex = cause;
         } while (true);
+
+        // some exceptions have no description, use the exception name itself then
+        if (s.length() == 0 && e != null) {
+            s.append(e.getClass().getName());
+        }
     }
 
     /**
@@ -284,7 +286,7 @@ public class OwsUtils {
      * @param target The target object.
      * @param clazz The class of source and target.
      */
-    public static <T> void copy(T source, T target, Class<T> clazz) {
+    public static <T> void copy(T source, T target, Class<? extends T> clazz) {
         ClassProperties properties = getClassProperties(clazz);
         for (String p : properties.properties()) {
             Method getter = properties.getter(p, null);
@@ -292,7 +294,7 @@ public class OwsUtils {
                 continue; // should not really happen
             }
 
-            Class type = getter.getReturnType();
+            Class<?> type = getter.getReturnType();
             Method setter = properties.setter(p, type);
 
             // do a check for read only before calling the getter to avoid an uneccesary call
@@ -334,7 +336,7 @@ public class OwsUtils {
                 continue;
             }
 
-            Class type = g.getReturnType();
+            Class<?> type = g.getReturnType();
             // only continue if this is a collection or a map
             if (!(Map.class.isAssignableFrom(type) || Collection.class.isAssignableFrom(type))) {
                 continue;
@@ -381,9 +383,10 @@ public class OwsUtils {
     }
 
     /** Helper method for updating a collection based property. Only used if setter is null. */
+    @SuppressWarnings("unchecked")
     static void updateCollectionProperty(Object object, Collection newValue, Method getter)
             throws Exception {
-        Collection oldValue = (Collection) getter.invoke(object, null);
+        Collection<Object> oldValue = (Collection) getter.invoke(object, null);
         if (oldValue != null) {
             oldValue.clear();
             oldValue.addAll(newValue);
@@ -391,8 +394,9 @@ public class OwsUtils {
     }
 
     /** Helper method for updating a map based property. Only used if setter is null. */
+    @SuppressWarnings("unchecked")
     static void updateMapProperty(Object object, Map newValue, Method getter) throws Exception {
-        Map oldValue = (Map) getter.invoke(object, null);
+        Map<Object, Object> oldValue = (Map) getter.invoke(object, null);
         if (oldValue != null) {
             oldValue.clear();
             oldValue.putAll(newValue);

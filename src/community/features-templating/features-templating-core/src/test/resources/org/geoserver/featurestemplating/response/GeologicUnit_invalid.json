@@ -1,0 +1,76 @@
+{
+  "@context": {
+    "gsp": "http://www.opengis.net/ont/geosparql#",
+    "sf": "http://www.opengis.net/ont/sf#",
+    "schema": "https://schema.org/",
+    "dc": "http://purl.org/dc/terms/",
+    "Feature": "gsp:Feature",
+    "FeatureCollection": "schema:Collection",
+    "Point": "sf:Point",
+    "wkt": "gsp:asWKT",
+    "features": {
+      "@container": "@set",
+      "@id": "schema:hasPart"
+    },
+    "geometry": "sf:geometry",
+    "description": "dc:description",
+    "title": "dc:title",
+    "name": "schema:name"
+  },
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "$source": "gsml:GeologicUnit"
+    },
+    {
+      "@id": "${@id}",
+      "description": "$filter{xpath('gml:description')='Olivine basalt'},${gml:description}",
+      "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
+      "gsml:composition": [
+        {
+          "$source": "gsml:composition"
+        },
+        {
+          "gsml:compositionPart": [
+            {
+              "$source": "gsml:CompositionPart"
+            },
+            {
+              "gsml:role": {
+                "value": "${gsml:role}",
+                "@codeSpace": "$filter{xpath('../../gml:description')='Olivine basalt'},urn:cgi:classifierScheme:Example:CompositionPartRole"
+              },
+              "proportion": {
+                "$source": "gsml:proportion",
+                "@dataType": "CGI_ValueProperty",
+                "CGI_TermValue": {
+                  "@dataType": "CGI_TermValue",
+                  "value": {
+                    "value": "${gsml:CGI_TermValue}",
+                    "@codeSpace": "some:uri"
+                  }
+                }
+              },
+              "lithology": [
+                {
+                  "$source": "gsml:lithology"
+                },
+                {
+                  "@id": "${gsml:ControlledConcept/@id}",
+                  "name": {
+                    "value": "${gsml:ControlledConcept/gsml:name}",
+                    "invalidAttr": "${../gsml:notExisting}",
+                    "@lang": "en"
+                  },
+                  "vocabulary": {
+                    "@href": "urn:ogc:def:nil:OGC::missing"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

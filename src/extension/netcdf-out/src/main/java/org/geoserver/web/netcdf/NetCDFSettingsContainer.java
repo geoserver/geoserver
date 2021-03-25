@@ -35,14 +35,11 @@ public class NetCDFSettingsContainer implements Serializable {
 
     public static final Version DEFAULT_VERSION = Version.NETCDF_3;
 
-    public static final List<GlobalAttribute> DEFAULT_GLOBAL_ATTRIBUTES =
-            new ArrayList<GlobalAttribute>();
+    public static final List<GlobalAttribute> DEFAULT_GLOBAL_ATTRIBUTES = new ArrayList<>();
 
-    public static final List<VariableAttribute> DEFAULT_VARIABLE_ATTRIBUTES =
-            new ArrayList<VariableAttribute>();
+    public static final List<VariableAttribute> DEFAULT_VARIABLE_ATTRIBUTES = new ArrayList<>();
 
-    public static final List<ExtraVariable> DEFAULT_EXTRA_VARIABLES =
-            new ArrayList<ExtraVariable>();
+    public static final List<ExtraVariable> DEFAULT_EXTRA_VARIABLES = new ArrayList<>();
 
     private int compressionLevel = DEFAULT_COMPRESSION;
 

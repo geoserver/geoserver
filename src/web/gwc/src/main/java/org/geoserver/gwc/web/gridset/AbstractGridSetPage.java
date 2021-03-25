@@ -109,9 +109,9 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             gridsetInfo = getInfo(null);
         }
 
-        IModel<GridSetInfo> model = new Model<GridSetInfo>(gridsetInfo);
+        IModel<GridSetInfo> model = new Model<>(gridsetInfo);
 
-        form = new Form<GridSetInfo>("gridSetForm", model);
+        form = new Form<>("gridSetForm", model);
         feedback = new FeedbackPanel("feedback");
         feedback.setOutputMarkupId(true);
         form.add(feedback);
@@ -119,8 +119,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         form.add(name = name(model));
         form.add(
                 description =
-                        new TextArea<String>(
-                                "description", new PropertyModel<String>(model, "description")));
+                        new TextArea<>("description", new PropertyModel<>(model, "description")));
         form.add(crs = crs(model));
         form.add(bounds = bounds(model));
         form.add(computeBoundsLink = computeBoundsLink(form));
@@ -181,7 +180,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     }
 
     void addZoomLevel(AjaxRequestTarget target) {
-        ReferencedEnvelope bbox = (ReferencedEnvelope) bounds.getModelObject();
+        ReferencedEnvelope bbox = bounds.getModelObject();
         if (null == bbox) {
             String message =
                     new StringResourceModel("AbstractGridSetPage.cantAddZoomLevel").getString();
@@ -215,8 +214,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
     void computeBounds() {
         // perform manual processing of the required fields
-        CoordinateReferenceSystem coordSys;
-        coordSys = (CoordinateReferenceSystem) crs.getModelObject();
+        CoordinateReferenceSystem coordSys = crs.getModelObject();
         if (coordSys == null) {
             bounds.error(
                     new StringResourceModel("AbstractGridsetPage.computeBounds.crsNotSet")
@@ -270,8 +268,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             }
         }
 
-        PropertyModel<ReferencedEnvelope> boundsModel;
-        boundsModel = new PropertyModel<ReferencedEnvelope>(model, "bounds");
+        PropertyModel<ReferencedEnvelope> boundsModel = new PropertyModel<>(model, "bounds");
 
         EnvelopePanel panel = new UpdatingEnvelopePanel("bounds", boundsModel);
         panel.setRequired(true);
@@ -281,24 +278,24 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     }
 
     private TextParamPanel tileHeight(IModel<GridSetInfo> model) {
-        TextParamPanel panel =
-                new TextParamPanel(
+        TextParamPanel<Integer> panel =
+                new TextParamPanel<>(
                         "tileHeight",
-                        new PropertyModel<Integer>(model, "tileHeight"),
+                        new PropertyModel<>(model, "tileHeight"),
                         new StringResourceModel("AbstractGridSetPage.tileHeight"),
                         true,
-                        new RangeValidator<Integer>(16, 2048));
+                        new RangeValidator<>(16, 2048));
         return panel;
     }
 
     private TextParamPanel tileWidth(IModel<GridSetInfo> model) {
-        TextParamPanel panel =
-                new TextParamPanel(
+        TextParamPanel<Integer> panel =
+                new TextParamPanel<>(
                         "tileWidth",
-                        new PropertyModel<Integer>(model, "tileWidth"),
+                        new PropertyModel<>(model, "tileWidth"),
                         new StringResourceModel("AbstractGridSetPage.tileWidth"),
                         true,
-                        new RangeValidator<Integer>(16, 2048));
+                        new RangeValidator<>(16, 2048));
         return panel;
     }
 
@@ -350,19 +347,20 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         private IModel<GridSetInfo> infoModel;
 
         public GridSetCRSPanel(String id, IModel<GridSetInfo> model) {
-            super(id, new PropertyModel<CoordinateReferenceSystem>(model, "crs"));
+            super(id, new PropertyModel<>(model, "crs"));
             this.infoModel = model;
             units = new Label("units", new Model<String>());
             metersPerUnit = new Label("metersPerUnit", new Model<String>());
             units.setOutputMarkupId(true);
             metersPerUnit.setOutputMarkupId(true);
 
-            updateUnits((CoordinateReferenceSystem) getModelObject());
+            updateUnits(getModelObject());
 
             add(units);
             add(metersPerUnit);
         }
 
+        @Override
         protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
             target.add(units);
             target.add(metersPerUnit);
@@ -412,7 +410,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         }
 
         private void updateUnits() {
-            CoordinateReferenceSystem crs = (CoordinateReferenceSystem) getConvertedInput();
+            CoordinateReferenceSystem crs = getConvertedInput();
             updateUnits(crs);
         }
 
@@ -433,10 +431,10 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     }
 
     private TextParamPanel name(IModel<GridSetInfo> model) {
-        TextParamPanel namePanel =
-                new TextParamPanel(
+        TextParamPanel<String> namePanel =
+                new TextParamPanel<>(
                         "name",
-                        new PropertyModel<String>(model, "name"),
+                        new PropertyModel<>(model, "name"),
                         new StringResourceModel("AbstractGridSetPage.name"),
                         true,
                         new UniqueNameValidator(model.getObject().getName()));

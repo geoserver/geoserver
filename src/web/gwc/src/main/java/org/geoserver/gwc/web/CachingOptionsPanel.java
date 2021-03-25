@@ -49,8 +49,8 @@ public class CachingOptionsPanel extends Panel {
 
         super(id, gwcConfigModel);
 
-        final IModel<Boolean> autoCacheLayersModel;
-        autoCacheLayersModel = new PropertyModel<Boolean>(gwcConfigModel, "cacheLayersByDefault");
+        final IModel<Boolean> autoCacheLayersModel =
+                new PropertyModel<>(gwcConfigModel, "cacheLayersByDefault");
         final CheckBox autoCacheLayers = new CheckBox("cacheLayersByDefault", autoCacheLayersModel);
         add(autoCacheLayers);
 
@@ -76,22 +76,21 @@ public class CachingOptionsPanel extends Panel {
                     }
                 });
 
-        IModel<String> lockProviderModel =
-                new PropertyModel<String>(gwcConfigModel, "lockProviderName");
+        IModel<String> lockProviderModel = new PropertyModel<>(gwcConfigModel, "lockProviderName");
         ApplicationContext applicationContext = GeoServerApplication.get().getApplicationContext();
         String[] lockProviders = applicationContext.getBeanNamesForType(LockProvider.class);
-        List<String> lockProviderChoices = new ArrayList<String>(Arrays.asList(lockProviders));
+        List<String> lockProviderChoices = new ArrayList<>(Arrays.asList(lockProviders));
         Collections.sort(lockProviderChoices); // make sure we get a stable listing order
         DropDownChoice<String> lockProviderChoice =
-                new DropDownChoice<String>(
+                new DropDownChoice<>(
                         "lockProvider",
                         lockProviderModel,
                         lockProviderChoices,
                         new LocalizedChoiceRenderer(this));
         configs.add(lockProviderChoice);
 
-        IModel<Boolean> nonDefaultStylesModel;
-        nonDefaultStylesModel = new PropertyModel<Boolean>(gwcConfigModel, "cacheNonDefaultStyles");
+        IModel<Boolean> nonDefaultStylesModel =
+                new PropertyModel<>(gwcConfigModel, "cacheNonDefaultStyles");
         CheckBox cacheNonDefaultStyles =
                 new CheckBox("cacheNonDefaultStyles", nonDefaultStylesModel);
         configs.add(cacheNonDefaultStyles);
@@ -99,34 +98,32 @@ public class CachingOptionsPanel extends Panel {
         List<Integer> metaTilingChoices =
                 Arrays.asList(
                         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
-        IModel<Integer> metaTilingXModel =
-                new PropertyModel<Integer>(gwcConfigModel, "metaTilingX");
+        IModel<Integer> metaTilingXModel = new PropertyModel<>(gwcConfigModel, "metaTilingX");
         DropDownChoice<Integer> metaTilingX =
-                new DropDownChoice<Integer>("metaTilingX", metaTilingXModel, metaTilingChoices);
+                new DropDownChoice<>("metaTilingX", metaTilingXModel, metaTilingChoices);
         metaTilingX.setRequired(true);
         configs.add(metaTilingX);
 
-        IModel<Integer> metaTilingYModel =
-                new PropertyModel<Integer>(gwcConfigModel, "metaTilingY");
+        IModel<Integer> metaTilingYModel = new PropertyModel<>(gwcConfigModel, "metaTilingY");
         DropDownChoice<Integer> metaTilingY =
-                new DropDownChoice<Integer>("metaTilingY", metaTilingYModel, metaTilingChoices);
+                new DropDownChoice<>("metaTilingY", metaTilingYModel, metaTilingChoices);
         metaTilingY.setRequired(true);
         configs.add(metaTilingY);
 
-        IModel<Integer> gutterModel = new PropertyModel<Integer>(gwcConfigModel, "gutter");
+        IModel<Integer> gutterModel = new PropertyModel<>(gwcConfigModel, "gutter");
         List<Integer> gutterChoices =
                 Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 50, 100);
         DropDownChoice<Integer> gutterChoice =
-                new DropDownChoice<Integer>("gutter", gutterModel, gutterChoices);
+                new DropDownChoice<>("gutter", gutterModel, gutterChoices);
         configs.add(gutterChoice);
 
         {
             List<String> formats =
                     new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.VECTOR));
             IModel<List<String>> vectorFormatsModel =
-                    new PropertyModel<List<String>>(gwcConfigModel, "defaultVectorCacheFormats");
+                    new PropertyModel<>(gwcConfigModel, "defaultVectorCacheFormats");
             mergeExisting(formats, vectorFormatsModel.getObject());
-            vectorFormatsGroup = new CheckGroup<String>("vectorFormatsGroup", vectorFormatsModel);
+            vectorFormatsGroup = new CheckGroup<>("vectorFormatsGroup", vectorFormatsModel);
             configs.add(vectorFormatsGroup);
             ListView<String> formatsList =
                     new ListView<String>("vectorFromats", formats) {
@@ -134,7 +131,7 @@ public class CachingOptionsPanel extends Panel {
 
                         @Override
                         protected void populateItem(ListItem<String> item) {
-                            item.add(new Check<String>("vectorFormatsOption", item.getModel()));
+                            item.add(new Check<>("vectorFormatsOption", item.getModel()));
                             item.add(new Label("name", item.getModel()));
                         }
                     };
@@ -143,12 +140,12 @@ public class CachingOptionsPanel extends Panel {
         }
 
         {
-            List<String> formats;
-            formats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.RASTER));
+            List<String> formats =
+                    new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.RASTER));
             IModel<List<String>> rasterFormatsModel =
-                    new PropertyModel<List<String>>(gwcConfigModel, "defaultCoverageCacheFormats");
+                    new PropertyModel<>(gwcConfigModel, "defaultCoverageCacheFormats");
             mergeExisting(formats, rasterFormatsModel.getObject());
-            rasterFormatsGroup = new CheckGroup<String>("rasterFormatsGroup", rasterFormatsModel);
+            rasterFormatsGroup = new CheckGroup<>("rasterFormatsGroup", rasterFormatsModel);
             configs.add(rasterFormatsGroup);
             ListView<String> formatsList =
                     new ListView<String>("rasterFromats", formats) {
@@ -156,7 +153,7 @@ public class CachingOptionsPanel extends Panel {
 
                         @Override
                         protected void populateItem(ListItem<String> item) {
-                            item.add(new Check<String>("rasterFormatsOption", item.getModel()));
+                            item.add(new Check<>("rasterFormatsOption", item.getModel()));
                             item.add(new Label("name", item.getModel()));
                         }
                     };
@@ -164,12 +161,12 @@ public class CachingOptionsPanel extends Panel {
             rasterFormatsGroup.add(formatsList);
         }
         {
-            List<String> formats;
-            formats = new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.GROUP));
+            List<String> formats =
+                    new ArrayList<>(GWC.getAdvertisedCachedFormats(PublishedType.GROUP));
             IModel<List<String>> otherFormatsModel =
-                    new PropertyModel<List<String>>(gwcConfigModel, "defaultOtherCacheFormats");
+                    new PropertyModel<>(gwcConfigModel, "defaultOtherCacheFormats");
             mergeExisting(formats, otherFormatsModel.getObject());
-            otherFormatsGroup = new CheckGroup<String>("otherFormatsGroup", otherFormatsModel);
+            otherFormatsGroup = new CheckGroup<>("otherFormatsGroup", otherFormatsModel);
             configs.add(otherFormatsGroup);
             ListView<String> formatsList =
                     new ListView<String>("otherFromats", formats) {
@@ -177,7 +174,7 @@ public class CachingOptionsPanel extends Panel {
 
                         @Override
                         protected void populateItem(ListItem<String> item) {
-                            item.add(new Check<String>("otherFormatsOption", item.getModel()));
+                            item.add(new Check<>("otherFormatsOption", item.getModel()));
                             item.add(new Label("name", item.getModel()));
                         }
                     };
@@ -191,7 +188,7 @@ public class CachingOptionsPanel extends Panel {
         configs.add(storePanel.setOutputMarkupId(true));
 
         IModel<Set<String>> cachedGridsetsModel =
-                new PropertyModel<Set<String>>(gwcConfigModel, "defaultCachingGridSetIds");
+                new PropertyModel<>(gwcConfigModel, "defaultCachingGridSetIds");
         DefaultGridsetsEditor cachedGridsets =
                 new DefaultGridsetsEditor("cachedGridsets", cachedGridsetsModel);
         configs.add(cachedGridsets);

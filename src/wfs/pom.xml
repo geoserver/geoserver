@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
-    <version>2.18-SNAPSHOT</version>
+    <version>2.20-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver</groupId>
@@ -75,7 +75,6 @@
     <dependency>
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-h2</artifactId>
-      <version>${gt.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

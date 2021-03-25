@@ -45,7 +45,7 @@ public class GeoServerBasicAuthenticationFilterTest {
     @Test
     public void testMultiThreadGetCacheKey() throws Exception {
         ExecutorService executor = Executors.newFixedThreadPool(NTHREADS);
-        List<Future<Boolean>> list = new ArrayList<Future<Boolean>>();
+        List<Future<Boolean>> list = new ArrayList<>();
         for (int i = 0; i < 600; i++) {
             Callable<Boolean> worker = new AuthenticationCallable(authenticationFilter);
             Future<Boolean> submit = executor.submit(worker);
@@ -76,6 +76,7 @@ public class GeoServerBasicAuthenticationFilterTest {
         return authenticationFilter;
     }
 
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     private MockHttpServletRequest createRequest() {
         MockHttpServletRequest request =
                 new GeoServerAbstractTestSupport.GeoServerMockHttpServletRequest();

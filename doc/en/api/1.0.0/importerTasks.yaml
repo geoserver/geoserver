@@ -15,6 +15,8 @@ paths:
   /imports/{importId}/tasks:
     get:
       operationId: getTasks
+      tags:
+       - "ImporterTasks"
       summary: Retrieve all tasks for import with id {importId}
       produces:
         - application/json
@@ -40,6 +42,8 @@ paths:
               }
     post:
       operationId: postTask
+      tags:
+       - "ImporterTasks"
       summary: Create a new task
       description: 'A new task can be created by issuing a POST to imports/<importId>/tasks as a "Content-type: multipart/form-data" multipart encoded data as defined by RFC 2388. One or more file can be uploaded this way, and a task will be created for importing them. In case the file being uploaded is a zip file, it will be unzipped on the server side and treated as a directory of files. 
       
@@ -99,6 +103,8 @@ paths:
   /imports/{importId}/tasks/{taskId}:
     get:
       operationId: getTask
+      tags:
+       - "ImporterTasks"
       summary: Retrieve task with id {taskId} within import with id {importId}  
       produces:
         - application/json
@@ -114,6 +120,8 @@ paths:
             $ref: "#/definitions/Task"
     put:
       operationId: putTask
+      tags:
+       - "ImporterTasks"
       summary: Modify task with id {taskId} within import with id {importId}
       description: 'A PUT request over an existing task can be used to update its representation. The representation can be partial, and just contains the elements that need to be updated.
 
@@ -136,6 +144,8 @@ paths:
             $ref: "#/definitions/Task"
     delete:
       operationId: deleteTask
+      tags:
+       - "ImporterTasks"
       summary: Remove task with id {taskId} within import with id {importId}
       parameters:
         - $ref: "#/parameters/ImportId"      
@@ -146,6 +156,8 @@ paths:
   /imports/{importId}/tasks/{filename}:
     put:
       operationId: putTaskFile
+      tags:
+       - "ImporterTasks"
       summary: Create a new task
       description: 'A new task can be created by issuing a PUT containing the raw file content to this endpoint. The name of the uploaded file will be {filename}. The location of the uploaded file will be the top level directory associated with the import, or the "uploads" directory in the data directory if no directory is associated with the current import.'
       consumes:
@@ -169,6 +181,8 @@ paths:
   /imports/{importId}/tasks/{taskId}/progress:
     get:
       operationId: getTaskProgress
+      tags:
+       - "ImporterTasks"
       summary: Retrieve the current state and import progress of a task with id {taskId} within import with id {importId}
       parameters:
         - $ref: "#/parameters/ImportId"      
@@ -184,6 +198,8 @@ paths:
   /imports/{importId}/tasks/{taskId}/target:
     get:
       operationId: getTaskTarget
+      tags:
+       - "ImporterTasks"
       summary: Retrieve the store of a task with id {taskId} within import with id {importId}
       produces:
         - application/json
@@ -199,6 +215,8 @@ paths:
             $ref: "#/definitions/Store"
     put:
       operationId: putTaskTarget
+      tags:
+       - "ImporterTasks"
       summary: Modify the target store for a task with id {taskId} within import with id {importId}
       consumes:
         - application/json
@@ -213,6 +231,8 @@ paths:
   /imports/{importId}/tasks/{taskId}/layer:
     get:
       operationId: getTaskLayer
+      tags:
+       - "ImporterTasks"
       summary: Retrieve the layer of a task with id {taskId} within import with id {importId}
       produces:
         - application/json
@@ -228,6 +248,8 @@ paths:
             $ref: "#/definitions/Layer"
     put:
       operationId: putTaskLayer
+      tags:
+       - "ImporterTasks"
       summary: Modify the target layer for a task with id {taskId} within import with id {importId}
       consumes:
         - application/json

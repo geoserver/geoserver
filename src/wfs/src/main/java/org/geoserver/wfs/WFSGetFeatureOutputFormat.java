@@ -25,6 +25,7 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
+import org.geoserver.wfs.request.Query;
 import org.geoserver.wfs.response.WFSResponse;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.Version;
@@ -81,6 +82,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
      *
      * <p>Subclasses should override this method to provide a diffent output format.
      */
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return "text/xml";
     }
@@ -90,6 +92,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
      *
      * <p>Subclasses may implement
      */
+    @Override
     public boolean canHandle(Operation operation) {
         // GetFeature operation?
         if ("GetFeature".equalsIgnoreCase(operation.getId())
@@ -151,7 +154,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
      * element names to be returned in the WFS 1.0 capabilities
      */
     protected List<String> getAllCapabilitiesElementNames() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (String name : getOutputFormats()) {
             if (XML_ELEMENT.matcher(name).matches()) {
                 result.add(name);
@@ -187,6 +190,7 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
     }
 
     /** Calls through to {@link #write(FeatureCollectionResponse, OutputStream, Operation)}. */
+    @Override
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
         // for WFS 2.0 we changed the input object type to be the request object adapter, but there
@@ -222,11 +226,11 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
 
     protected int getNumDecimals(List featureCollections, GeoServer geoServer, Catalog catalog) {
         int numDecimals = -1;
-        for (int i = 0; i < featureCollections.size(); i++) {
+        for (Object featureCollection : featureCollections) {
             Integer ftiDecimals =
                     getFeatureTypeInfoProperty(
                             catalog,
-                            (FeatureCollection) featureCollections.get(i),
+                            (FeatureCollection) featureCollection,
                             fti -> fti.getNumDecimals());
 
             // track num decimals, in cases where the query has multiple types we choose the max
@@ -249,11 +253,11 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
     protected boolean getPadWithZeros(
             List featureCollections, GeoServer geoServer, Catalog catalog) {
         boolean padWithZeros = false;
-        for (int i = 0; i < featureCollections.size(); i++) {
+        for (Object featureCollection : featureCollections) {
             Boolean pad =
                     getFeatureTypeInfoProperty(
                             catalog,
-                            (FeatureCollection) featureCollections.get(i),
+                            (FeatureCollection) featureCollection,
                             fti -> fti.getPadWithZeros());
             if (Boolean.TRUE.equals(pad)) {
                 padWithZeros = true;
@@ -265,11 +269,11 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
     protected boolean getForcedDecimal(
             List featureCollections, GeoServer geoServer, Catalog catalog) {
         boolean forcedDecimal = false;
-        for (int i = 0; i < featureCollections.size(); i++) {
+        for (Object featureCollection : featureCollections) {
             Boolean forced =
                     getFeatureTypeInfoProperty(
                             catalog,
-                            (FeatureCollection) featureCollections.get(i),
+                            (FeatureCollection) featureCollection,
                             fti -> fti.getForcedDecimal());
             if (Boolean.TRUE.equals(forced)) {
                 forcedDecimal = true;
@@ -288,11 +292,11 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
      */
     protected boolean encodeMeasures(List featureCollections, Catalog catalog) {
         boolean encodeMeasures = true;
-        for (int i = 0; i < featureCollections.size(); i++) {
+        for (Object featureCollection : featureCollections) {
             Boolean measures =
                     getFeatureTypeInfoProperty(
                             catalog,
-                            (FeatureCollection) featureCollections.get(i),
+                            (FeatureCollection) featureCollection,
                             fti -> fti.getEncodeMeasures());
             if (Boolean.FALSE.equals(measures)) {
                 // no measures should be encoded
@@ -315,14 +319,20 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
 
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
+        final String fileName;
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
+
         FeatureCollectionResponse response;
         if (value instanceof FeatureCollectionResponse) {
             response = (FeatureCollectionResponse) value;
         } else {
             response = FeatureCollectionResponse.adapt(value);
         }
-        final String fileName;
-        if (response.getTypeNames() != null) {
+
+        if (request.getFormatOptions() != null
+                && request.getFormatOptions().containsKey("FILENAME")) {
+            fileName = (String) request.getFormatOptions().get("FILENAME");
+        } else if (response.getTypeNames() != null) {
             fileName =
                     response.getTypeNames()
                             .stream()
@@ -330,13 +340,29 @@ public abstract class WFSGetFeatureOutputFormat extends WFSResponse {
                             .collect(Collectors.joining("_"));
         } else if (response.getTypeName() != null) {
             fileName = response.getTypeName().getLocalPart();
+        } else if (!request.getQueries().isEmpty() && request.getQueries().get(0) != null) {
+            Query query = request.getQueries().get(0);
+            if (query.getTypeNames() != null) {
+                fileName =
+                        query.getTypeNames()
+                                .stream()
+                                .map(tn -> tn.getLocalPart())
+                                .collect(Collectors.joining("_"));
+            } else {
+                fileName = response.getTypeName().getLocalPart();
+            }
         } else {
             fileName = "features";
         }
-        return fileName + "." + getExtension(response);
+
+        if (fileName.contains(".")) {
+            return fileName; // includes extension
+        } else {
+            return fileName + "." + getExtension(response);
+        }
     }
 
-    /** Sets the rigth extension for the response */
+    /** Sets the right extension for the response */
     protected String getExtension(FeatureCollectionResponse response) {
         String mimeType = getMimeType(null, null);
         if (mimeType != null) {

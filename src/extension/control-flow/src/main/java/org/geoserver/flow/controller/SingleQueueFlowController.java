@@ -34,16 +34,19 @@ public class SingleQueueFlowController implements FlowController {
         this.blocker = blocker;
     }
 
+    @Override
     public int getPriority() {
         return controllerPriority;
     }
 
+    @Override
     public void requestComplete(Request request) {
         if (matcher.apply(request)) {
             blocker.requestComplete(request);
         }
     }
 
+    @Override
     public boolean requestIncoming(Request request, long timeout) {
         boolean retval = true;
         if (matcher.apply(request)) {

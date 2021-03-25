@@ -39,7 +39,7 @@ public class ScaleStyleVisitor extends DuplicatingStyleVisitor {
         super.visit(style);
         Style copy = (Style) pages.peek();
 
-        List<FeatureTypeStyle> filtered = new ArrayList<FeatureTypeStyle>();
+        List<FeatureTypeStyle> filtered = new ArrayList<>();
         for (FeatureTypeStyle fts : copy.featureTypeStyles()) {
             // do the same filtering as streaming renderer
             if (fts.featureTypeNames().isEmpty()
@@ -55,10 +55,10 @@ public class ScaleStyleVisitor extends DuplicatingStyleVisitor {
 
     @Override
     public void visit(FeatureTypeStyle fts) {
-        FeatureTypeStyle copy = new FeatureTypeStyleImpl((FeatureTypeStyleImpl) fts);
+        FeatureTypeStyle copy = new FeatureTypeStyleImpl(fts);
 
         // preserve only the rules active at this scale range
-        List<Rule> rulesCopy = new ArrayList<Rule>();
+        List<Rule> rulesCopy = new ArrayList<>();
         for (Rule r : fts.rules()) {
             if (((r.getMinScaleDenominator() - TOLERANCE) <= scaleDenominator)
                     && ((r.getMaxScaleDenominator() + TOLERANCE) > scaleDenominator)) {
@@ -71,7 +71,7 @@ public class ScaleStyleVisitor extends DuplicatingStyleVisitor {
     }
 
     public Style getSimplifiedStyle() {
-        return (Style) getCopy();
+        return getCopy();
     }
 
     @Override

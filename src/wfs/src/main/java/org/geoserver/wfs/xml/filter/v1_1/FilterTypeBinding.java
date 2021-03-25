@@ -6,7 +6,7 @@
 package org.geoserver.wfs.xml.filter.v1_1;
 
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Set;
 import org.geotools.xsd.ElementInstance;
 import org.geotools.xsd.Node;
 import org.opengis.filter.Filter;
@@ -19,6 +19,7 @@ public class FilterTypeBinding extends org.geotools.filter.v1_1.FilterTypeBindin
         super(filterFactory);
     }
 
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         Filter filter = (Filter) super.parse(instance, node, value);
 
@@ -28,10 +29,9 @@ public class FilterTypeBinding extends org.geotools.filter.v1_1.FilterTypeBindin
 
             if (idFilter.getIdentifiers().size() > 1) {
                 // there should only be one type of id specified
-                HashSet types = new HashSet();
+                Set<Class<?>> types = new HashSet<>();
 
-                for (Iterator i = idFilter.getIdentifiers().iterator(); i.hasNext(); ) {
-                    Identifier id = (Identifier) i.next();
+                for (Identifier id : idFilter.getIdentifiers()) {
                     types.add(id.getClass());
                 }
 

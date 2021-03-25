@@ -7,7 +7,10 @@ package org.geoserver.rest.catalog;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import net.sf.json.JSONArray;
@@ -22,8 +25,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class CoverageControllerWCSTest extends CatalogRESTTestSupport {
-
-    private static final double DELTA = 1E-6;
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {

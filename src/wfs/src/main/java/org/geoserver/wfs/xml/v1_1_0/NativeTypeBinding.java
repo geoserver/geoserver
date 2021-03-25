@@ -61,6 +61,7 @@ public class NativeTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.NATIVETYPE;
     }
@@ -72,7 +73,8 @@ public class NativeTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<NativeType> getType() {
         return NativeType.class;
     }
 
@@ -83,6 +85,7 @@ public class NativeTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         NativeType nativ = wfsfactory.createNativeType();
 

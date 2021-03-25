@@ -47,7 +47,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.convert.IConverter;
-import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.platform.GeoServerExtensions;
@@ -85,7 +84,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
 
         // The request filter chain objects have to be cloned
         config = getSecurityManager().getSecurityConfig();
-        List<RequestFilterChain> clones = new ArrayList<RequestFilterChain>();
+        List<RequestFilterChain> clones = new ArrayList<>();
 
         for (RequestFilterChain chain : config.getFilterChain().getRequestChains()) {
             try {
@@ -96,7 +95,7 @@ public class AuthenticationPage extends AbstractSecurityPage {
         }
         config.setFilterChain(new GeoServerSecurityFilterChain(clones));
 
-        form = new Form("form", new CompoundPropertyModel<SecurityManagerConfig>(config));
+        form = new Form<>("form", new CompoundPropertyModel<>(config));
         add(form);
 
         try {
@@ -109,9 +108,9 @@ public class AuthenticationPage extends AbstractSecurityPage {
             throw new RuntimeException(e1);
         }
         form.add(
-                new TextField<String>(
+                new TextField<>(
                         "redirectURL",
-                        new PropertyModel<String>(this, "logoutFilterConfig.redirectURL")));
+                        new PropertyModel<>(this, "logoutFilterConfig.redirectURL")));
 
         try {
             sslFilterConfig =
@@ -121,57 +120,51 @@ public class AuthenticationPage extends AbstractSecurityPage {
         } catch (IOException e1) {
             throw new RuntimeException(e1);
         }
-        form.add(
-                new TextField<Integer>(
-                        "sslPort", new PropertyModel<Integer>(this, "sslFilterConfig.sslPort")));
+        form.add(new TextField<>("sslPort", new PropertyModel<>(this, "sslFilterConfig.sslPort")));
 
         // brute force attack
         form.add(
                 new CheckBox(
                         "bfEnabled",
-                        new PropertyModel<Boolean>(this, "config.bruteForcePrevention.enabled")));
+                        new PropertyModel<>(this, "config.bruteForcePrevention.enabled")));
         final TextField<Integer> bfMinDelay =
-                new TextField<Integer>(
+                new TextField<>(
                         "bfMinDelaySeconds",
-                        new PropertyModel<Integer>(
-                                this, "config.bruteForcePrevention.minDelaySeconds"));
+                        new PropertyModel<>(this, "config.bruteForcePrevention.minDelaySeconds"));
         bfMinDelay.add(RangeValidator.minimum(0));
         form.add(bfMinDelay);
         final TextField<Integer> bfMaxDelay =
-                new TextField<Integer>(
+                new TextField<>(
                         "bfMaxDelaySeconds",
-                        new PropertyModel<Integer>(
-                                this, "config.bruteForcePrevention.maxDelaySeconds"));
+                        new PropertyModel<>(this, "config.bruteForcePrevention.maxDelaySeconds"));
         bfMaxDelay.add(RangeValidator.minimum(0));
         form.add(bfMaxDelay);
 
         final TextField<List<String>> netmasks =
                 new TextField<List<String>>(
                         "bfWhitelistedNetmasks",
-                        new PropertyModel<List<String>>(
-                                this, "config.bruteForcePrevention.whitelistedMasks")) {
+                        new PropertyModel<>(this, "config.bruteForcePrevention.whitelistedMasks")) {
+
+                    @SuppressWarnings("unchecked")
                     @Override
                     public <C> IConverter<C> getConverter(Class<C> type) {
                         return (IConverter<C>) new CommaSeparatedListConverter();
                     }
                 };
         netmasks.add(
-                new IValidator<List<String>>() {
-
-                    @Override
-                    public void validate(IValidatable<List<String>> validatable) {
-                        List<String> masks = validatable.getValue();
-                        for (String mask : masks) {
-                            try {
-                                new IpAddressMatcher(mask);
-                            } catch (Exception e) {
-                                form.error(
-                                        new ParamResourceModel("invalidMask", getPage(), mask)
-                                                .getString());
+                (IValidator<List<String>>)
+                        validatable -> {
+                            List<String> masks = validatable.getValue();
+                            for (String mask : masks) {
+                                try {
+                                    new IpAddressMatcher(mask);
+                                } catch (Exception e) {
+                                    form.error(
+                                            new ParamResourceModel("invalidMask", getPage(), mask)
+                                                    .getString());
+                                }
                             }
-                        }
-                    }
-                });
+                        });
         form.add(netmasks);
         form.add(
                 new AbstractFormValidator() {
@@ -193,10 +186,9 @@ public class AuthenticationPage extends AbstractSecurityPage {
                     }
                 });
         final TextField<Integer> bfMaxBlockedThreads =
-                new TextField<Integer>(
+                new TextField<>(
                         "bfMaxBlockedThreads",
-                        new PropertyModel<Integer>(
-                                this, "config.bruteForcePrevention.maxBlockedThreads"));
+                        new PropertyModel<>(this, "config.bruteForcePrevention.maxBlockedThreads"));
         bfMaxBlockedThreads.add(RangeValidator.minimum(0));
         form.add(bfMaxBlockedThreads);
 
@@ -213,11 +205,10 @@ public class AuthenticationPage extends AbstractSecurityPage {
                 authFilterChainPanel =
                         new AuthFilterChainPanel(
                                 "filterChain",
-                                new PropertyModel<GeoServerSecurityFilterChain>(
-                                        form.getModel(), "filterChain")));
+                                new PropertyModel<>(form.getModel(), "filterChain")));
         form.add(new HelpLink("filterChainHelp").setDialog(dialog));
 
-        form.add(new AuthenticationChainPanel("providerChain", form));
+        form.add(new AuthenticationChainPanel("providerChain"));
         form.add(new HelpLink("providerChainHelp").setDialog(dialog));
 
         form.add(
@@ -250,16 +241,16 @@ public class AuthenticationPage extends AbstractSecurityPage {
         form.replace(new SecurityFilterChainsPanel("authChains", config));
     }
 
-    class AuthenticationChainPanel extends FormComponentPanel {
+    class AuthenticationChainPanel extends FormComponentPanel<SecurityManagerConfig> {
 
-        public AuthenticationChainPanel(String id, Form form) {
-            super(id, new Model());
+        public AuthenticationChainPanel(String id) {
+            super(id, new Model<>());
 
             add(new AuthenticationChainPalette("authProviderNames"));
         }
     }
 
-    class AuthFilterChainPanel extends FormComponentPanel {
+    class AuthFilterChainPanel extends FormComponentPanel<GeoServerSecurityFilterChain> {
 
         DropDownChoice<HTTPMethod> httpMethodChoice;
         TextField<String> urlPathField, chainTestResultField;
@@ -267,14 +258,11 @@ public class AuthenticationPage extends AbstractSecurityPage {
         HTTPMethod httpMethod = HTTPMethod.GET;
 
         public AuthFilterChainPanel(String id, IModel<GeoServerSecurityFilterChain> model) {
-            super(id, new Model());
+            super(id, new Model<>());
 
             this.setOutputMarkupId(true);
 
-            add(
-                    urlPathField =
-                            new TextField<String>(
-                                    "urlPath", new PropertyModel<String>(this, "urlPath")));
+            add(urlPathField = new TextField<>("urlPath", new PropertyModel<>(this, "urlPath")));
             urlPathField.setOutputMarkupId(true);
             urlPathField.add(
                     new OnChangeAjaxBehavior() {
@@ -284,17 +272,17 @@ public class AuthenticationPage extends AbstractSecurityPage {
 
             add(
                     chainTestResultField =
-                            new TextField<String>(
+                            new TextField<>(
                                     "chainTestResult",
-                                    new PropertyModel<String>(this, "chainTestResult")));
+                                    new PropertyModel<>(this, "chainTestResult")));
             chainTestResultField.setEnabled(false);
             chainTestResultField.setOutputMarkupId(true);
 
             add(
                     httpMethodChoice =
-                            new DropDownChoice<HTTPMethod>(
+                            new DropDownChoice<>(
                                     "httpMethod",
-                                    new PropertyModel<HTTPMethod>(this, "httpMethod"),
+                                    new PropertyModel<>(this, "httpMethod"),
                                     Arrays.asList(HTTPMethod.values())));
             httpMethodChoice.setOutputMarkupId(true);
             httpMethodChoice.setNullValid(false);
@@ -337,81 +325,102 @@ public class AuthenticationPage extends AbstractSecurityPage {
                         @SuppressWarnings("deprecation")
                         HttpServletRequest getHttpRequest() {
                             return new HttpServletRequest() {
+                                @Override
                                 public void setCharacterEncoding(String env)
                                         throws UnsupportedEncodingException {}
 
+                                @Override
                                 public void setAttribute(String name, Object o) {}
 
+                                @Override
                                 public void removeAttribute(String name) {}
 
+                                @Override
                                 public boolean isSecure() {
                                     return false;
                                 }
 
+                                @Override
                                 public int getServerPort() {
                                     return 0;
                                 }
 
+                                @Override
                                 public String getServerName() {
                                     return null;
                                 }
 
+                                @Override
                                 public String getScheme() {
                                     return null;
                                 }
 
+                                @Override
                                 public RequestDispatcher getRequestDispatcher(String path) {
                                     return null;
                                 }
 
+                                @Override
                                 public int getRemotePort() {
                                     return 0;
                                 }
 
+                                @Override
                                 public String getRemoteHost() {
                                     return null;
                                 }
 
+                                @Override
                                 public String getRemoteAddr() {
                                     return null;
                                 }
 
+                                @Override
                                 public String getRealPath(String path) {
                                     return null;
                                 }
 
+                                @Override
                                 public BufferedReader getReader() throws IOException {
                                     return null;
                                 }
 
+                                @Override
                                 public String getProtocol() {
                                     return null;
                                 }
 
+                                @Override
                                 public String[] getParameterValues(String name) {
                                     return null;
                                 }
 
-                                public Enumeration getParameterNames() {
+                                @Override
+                                public Enumeration<String> getParameterNames() {
                                     return null;
                                 }
 
-                                public Map getParameterMap() {
+                                @Override
+                                public Map<String, String[]> getParameterMap() {
                                     return null;
                                 }
 
+                                @Override
                                 public String getParameter(String name) {
                                     return null;
                                 }
 
-                                public Enumeration getLocales() {
+                                @Override
+                                public Enumeration<Locale> getLocales() {
                                     return null;
                                 }
 
+                                @Override
                                 public Locale getLocale() {
                                     return null;
                                 }
 
+                                @Override
                                 public int getLocalPort() {
                                     return 0;
                                 }
@@ -454,46 +463,57 @@ public class AuthenticationPage extends AbstractSecurityPage {
                                     return null;
                                 }
 
+                                @Override
                                 public String getLocalName() {
                                     return null;
                                 }
 
+                                @Override
                                 public String getLocalAddr() {
                                     return null;
                                 }
 
+                                @Override
                                 public ServletInputStream getInputStream() throws IOException {
                                     return null;
                                 }
 
+                                @Override
                                 public String getContentType() {
                                     return null;
                                 }
 
+                                @Override
                                 public int getContentLength() {
                                     return 0;
                                 }
 
+                                @Override
                                 public String getCharacterEncoding() {
                                     return null;
                                 }
 
-                                public Enumeration getAttributeNames() {
+                                @Override
+                                public Enumeration<String> getAttributeNames() {
                                     return null;
                                 }
 
+                                @Override
                                 public Object getAttribute(String name) {
                                     return null;
                                 }
 
+                                @Override
                                 public boolean isUserInRole(String role) {
                                     return false;
                                 }
 
+                                @Override
                                 public boolean isRequestedSessionIdValid() {
                                     return false;
                                 }
 
+                                @Override
                                 public boolean isRequestedSessionIdFromUrl() {
                                     return false;
                                 }
@@ -523,46 +543,57 @@ public class AuthenticationPage extends AbstractSecurityPage {
                                     return null;
                                 }
 
+                                @Override
                                 public boolean isRequestedSessionIdFromURL() {
                                     return false;
                                 }
 
+                                @Override
                                 public boolean isRequestedSessionIdFromCookie() {
                                     return false;
                                 }
 
+                                @Override
                                 public Principal getUserPrincipal() {
                                     return null;
                                 }
 
+                                @Override
                                 public HttpSession getSession(boolean create) {
                                     return null;
                                 }
 
+                                @Override
                                 public HttpSession getSession() {
                                     return null;
                                 }
 
+                                @Override
                                 public String getServletPath() {
                                     return "";
                                 }
 
+                                @Override
                                 public String getRequestedSessionId() {
                                     return null;
                                 }
 
+                                @Override
                                 public StringBuffer getRequestURL() {
                                     return null;
                                 }
 
+                                @Override
                                 public String getRequestURI() {
                                     return null;
                                 }
 
+                                @Override
                                 public String getRemoteUser() {
                                     return null;
                                 }
 
+                                @Override
                                 public String getQueryString() {
                                     if (urlPath == null || urlPath.indexOf("?") == -1) {
                                         return null;
@@ -571,10 +602,12 @@ public class AuthenticationPage extends AbstractSecurityPage {
                                     }
                                 }
 
+                                @Override
                                 public String getPathTranslated() {
                                     return null;
                                 }
 
+                                @Override
                                 public String getPathInfo() {
                                     if (urlPath == null || urlPath.indexOf("?") == -1) {
                                         return urlPath;
@@ -583,38 +616,47 @@ public class AuthenticationPage extends AbstractSecurityPage {
                                     }
                                 }
 
+                                @Override
                                 public String getMethod() {
                                     return httpMethod.toString();
                                 }
 
+                                @Override
                                 public int getIntHeader(String name) {
                                     return 0;
                                 }
 
-                                public Enumeration getHeaders(String name) {
+                                @Override
+                                public Enumeration<String> getHeaders(String name) {
                                     return null;
                                 }
 
-                                public Enumeration getHeaderNames() {
+                                @Override
+                                public Enumeration<String> getHeaderNames() {
                                     return null;
                                 }
 
+                                @Override
                                 public String getHeader(String name) {
                                     return null;
                                 }
 
+                                @Override
                                 public long getDateHeader(String name) {
                                     return 0;
                                 }
 
+                                @Override
                                 public Cookie[] getCookies() {
                                     return null;
                                 }
 
+                                @Override
                                 public String getContextPath() {
                                     return null;
                                 }
 
+                                @Override
                                 public String getAuthType() {
                                     return null;
                                 }

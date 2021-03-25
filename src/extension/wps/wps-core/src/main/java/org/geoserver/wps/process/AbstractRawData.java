@@ -96,7 +96,7 @@ public abstract class AbstractRawData implements RawData {
      */
     public static Map<String, String> getOutputMimeParameters(Name processName, ProcessFactory pf) {
         Map<String, Parameter<?>> resultInfo = pf.getResultInfo(processName, null);
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         for (Parameter p : resultInfo.values()) {
             if (RawData.class.isAssignableFrom(p.getType())) {
                 String attribute = (String) p.metadata.get(SELECTION_ATTRIBUTE);

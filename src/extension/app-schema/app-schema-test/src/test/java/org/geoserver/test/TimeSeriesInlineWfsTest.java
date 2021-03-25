@@ -6,7 +6,7 @@
 
 package org.geoserver.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -19,6 +19,7 @@ import org.w3c.dom.Document;
  */
 public class TimeSeriesInlineWfsTest extends TimeSeriesWfsTest {
 
+    @Override
     protected TimeSeriesInlineMockData createTestData() {
         // only the test data is different since the config is slightly different (not using feature
         // chaining)

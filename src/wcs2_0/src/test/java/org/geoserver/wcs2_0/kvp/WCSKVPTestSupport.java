@@ -54,7 +54,7 @@ public abstract class WCSKVPTestSupport extends WCSTestSupport {
 
     protected Map<String, Object> getExtensionsMap(GetCoverageType gc) {
         // collect extensions
-        Map<String, Object> extensions = new HashMap<String, Object>();
+        Map<String, Object> extensions = new HashMap<>();
         for (ExtensionItemType item : gc.getExtension().getContents()) {
             Object value =
                     item.getSimpleContent() != null
@@ -72,6 +72,7 @@ public abstract class WCSKVPTestSupport extends WCSTestSupport {
         return coverage;
     }
 
+    @Override
     protected void setInputLimit(int kbytes) {
         GeoServer gs = getGeoServer();
         WCSInfo info = gs.getService(WCSInfo.class);
@@ -79,6 +80,7 @@ public abstract class WCSKVPTestSupport extends WCSTestSupport {
         gs.save(info);
     }
 
+    @Override
     protected void setOutputLimit(int kbytes) {
         GeoServer gs = getGeoServer();
         WCSInfo info = gs.getService(WCSInfo.class);

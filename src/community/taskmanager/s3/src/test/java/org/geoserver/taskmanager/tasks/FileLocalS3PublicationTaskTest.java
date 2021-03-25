@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -29,6 +30,8 @@ import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -37,19 +40,25 @@ import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Ignore
 public class FileLocalS3PublicationTaskTest extends AbstractTaskManagerTest {
+
+    @BeforeClass
+    public static void setCredentials() {
+        System.setProperty("aws.accessKeyId", "AKIAWOARDPAWVUZWJ3U7");
+        System.setProperty("aws.secretKey", "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");
+    }
 
     private static final Logger LOGGER = Logging.getLogger(FileLocalS3PublicationTaskTest.class);
 
     // configure these constants
-    private static final String FILE_LOCATION = "test/world.tiff";
-    private static final String FILE_SERVICE = "data-directory";
     private static final String WORKSPACE = "gs";
     private static final String COVERAGE_NAME = "world";
     private static final String LAYER_NAME = WORKSPACE + ":" + COVERAGE_NAME;
 
-    private static final String REMOTE_FILE_LOCATION = "test/salinity.tif";
-    private static final String REMOTE_FILE_SERVICE = "s3-test-source";
+    private static final String FILE_LOCATION = "test/world.tiff";
+    // private static final String FILE_SERVICE = "s3-test-source";
+    private static final String FILE_SERVICE = "aws-taskmanagertest";
 
     // attributes
     private static final String ATT_FILE_SERVICE = "fileService";
@@ -118,26 +127,28 @@ public class FileLocalS3PublicationTaskTest extends AbstractTaskManagerTest {
     }
 
     @After
-    public void clearDataFromDatabase() {
+    public void clearDataFromDatabase() throws IOException {
         dao.delete(batch);
         dao.delete(config);
+        FileService fileService = fileServices.get(FILE_SERVICE);
+        fileService.delete(FILE_LOCATION);
     }
 
     @Test
     public void testSuccessAndCleanup() throws SchedulerException, IOException {
         FileService fileService = null;
         try {
-            fileService = fileServices.get(REMOTE_FILE_SERVICE);
+            fileService = fileServices.get(FILE_SERVICE);
             Assume.assumeNotNull(fileService);
             Assume.assumeTrue(
-                    "File exists on s3 service", fileService.checkFileExists(REMOTE_FILE_LOCATION));
+                    "File exists on s3 service", fileService.checkFileExists(FILE_LOCATION));
         } catch (Exception e) {
-            LOGGER.severe(e.getMessage());
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
             Assume.assumeTrue("S3 service is configured and available", false);
         }
 
-        dataUtil.setConfigurationAttribute(config, ATT_FILE_SERVICE, REMOTE_FILE_SERVICE);
-        dataUtil.setConfigurationAttribute(config, ATT_FILE, REMOTE_FILE_LOCATION);
+        dataUtil.setConfigurationAttribute(config, ATT_FILE_SERVICE, FILE_SERVICE);
+        dataUtil.setConfigurationAttribute(config, ATT_FILE, FILE_LOCATION);
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, LAYER_NAME);
         config = dao.save(config);
 
@@ -151,7 +162,7 @@ public class FileLocalS3PublicationTaskTest extends AbstractTaskManagerTest {
         CoverageStoreInfo csi =
                 catalog.getStoreByName(WORKSPACE, COVERAGE_NAME, CoverageStoreInfo.class);
         assertNotNull(csi);
-        assertEquals(fileService.getURI(REMOTE_FILE_LOCATION).toString(), csi.getURL());
+        assertEquals(fileService.getURI(FILE_LOCATION).toString(), csi.getURL());
         assertNotNull(catalog.getResourceByName(LAYER_NAME, CoverageInfo.class));
 
         taskUtil.cleanup(config);

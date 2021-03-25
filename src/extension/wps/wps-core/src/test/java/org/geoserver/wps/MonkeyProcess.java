@@ -29,8 +29,7 @@ public class MonkeyProcess {
         Wait
     }
 
-    static Map<String, BlockingQueue<Command>> commands =
-            new ConcurrentHashMap<String, BlockingQueue<MonkeyProcess.Command>>();
+    static Map<String, BlockingQueue<Command>> commands = new ConcurrentHashMap<>();
 
     private static class Command {
         CommandType type;
@@ -56,7 +55,7 @@ public class MonkeyProcess {
     private static synchronized BlockingQueue<Command> getCommandQueue(String id) {
         BlockingQueue<Command> queue = commands.get(id);
         if (queue == null) {
-            queue = new LinkedBlockingQueue<MonkeyProcess.Command>();
+            queue = new LinkedBlockingQueue<>();
             commands.put(id, queue);
         }
 

@@ -535,7 +535,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         expect(rInfo.getTitle()).andReturn("foo title");
         expect(rInfo.getDescription()).andReturn("foo description");
         expect(rInfo.getKeywords())
-                .andReturn(new LinkedHashSet<String>(Arrays.asList("foo", "bar", "baz", "")))
+                .andReturn(new LinkedHashSet<>(Arrays.asList("foo", "bar", "baz", "")))
                 .anyTimes();
         replay(rInfo);
 
@@ -606,7 +606,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertEquals(-90, bbox.getMinY(), 0d);
             assertEquals(180, bbox.getMaxX(), 0d);
             assertEquals(90, bbox.getMaxY(), 0d);
-            assertTrue(!layer.availableFormats().isEmpty());
+            assertFalse(layer.availableFormats().isEmpty());
             assertTrue(layer.getStyles().isEmpty());
             assertTrue(layer.getDefaultStyle().getName().isEmpty());
 
@@ -645,7 +645,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertEquals(-90, bbox.getMinY(), 0d);
             assertEquals(180, bbox.getMaxX(), 0d);
             assertEquals(90, bbox.getMaxY(), 0d);
-            assertTrue(!layer.availableFormats().isEmpty());
+            assertFalse(layer.availableFormats().isEmpty());
             assertTrue(layer.getStyles().isEmpty());
             assertTrue(layer.getDefaultStyle().getName().isEmpty());
 
@@ -683,7 +683,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
             assertEquals(-90, bbox.getMinY(), 0d);
             assertEquals(180, bbox.getMaxX(), 0d);
             assertEquals(90, bbox.getMaxY(), 0d);
-            assertTrue(!layer.availableFormats().isEmpty());
+            assertFalse(layer.availableFormats().isEmpty());
             assertTrue(layer.getStyles().isEmpty());
             assertTrue(layer.getDefaultStyle().getName().isEmpty());
         } finally {
@@ -793,6 +793,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         Catalog cat = new CatalogImpl();
         ResourcePool rp =
                 new ResourcePool(cat) {
+                    @Override
                     public CoverageStoreInfo clone(
                             CoverageStoreInfo source, boolean allowEnvParametrization) {
                         return source;

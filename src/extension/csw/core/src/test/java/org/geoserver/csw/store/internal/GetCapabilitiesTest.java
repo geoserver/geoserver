@@ -25,7 +25,7 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
     static XpathEngine xpath = XMLUnit.newXpathEngine();
 
     static {
-        Map<String, String> prefixMap = new HashMap<String, String>();
+        Map<String, String> prefixMap = new HashMap<>();
         prefixMap.put("ows", OWS.NAMESPACE);
         prefixMap.put("ogc", OGC.NAMESPACE);
         NamespaceContext nameSpaceContext = new SimpleNamespaceContext(prefixMap);
@@ -117,9 +117,9 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
         // this one is mandatory, cannot be skipped
         assertEquals("1", xpath.evaluate("count(//ogc:Filter_Capabilities)", dom));
 
-        assertTrue(
-                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength()
-                        == 0);
+        assertEquals(
+                0,
+                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength());
         assertEquals("0", xpath.evaluate("count(//ows:Operation)", dom));
     }
 }

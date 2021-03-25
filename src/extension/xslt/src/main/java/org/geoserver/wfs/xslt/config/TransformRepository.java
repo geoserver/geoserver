@@ -86,8 +86,7 @@ public class TransformRepository {
                         Source xslSource = new StreamSource(fis);
 
                         TransformerFactory tf = TransformerFactory.newInstance();
-                        final List<TransformerException> errors =
-                                new ArrayList<TransformerException>();
+                        final List<TransformerException> errors = new ArrayList<>();
                         tf.setErrorListener(
                                 new ErrorListener() {
 
@@ -114,7 +113,7 @@ public class TransformRepository {
                                 });
                         Templates template = tf.newTemplates(xslSource);
 
-                        if (errors.size() > 0) {
+                        if (!errors.isEmpty()) {
                             StringBuilder sb = new StringBuilder("Errors found in the template");
                             for (TransformerException e : errors) {
                                 sb.append("\n").append(e.getMessageAndLocation());
@@ -163,7 +162,7 @@ public class TransformRepository {
     /** Returns all the transform (either global or feature type specific) */
     public List<TransformInfo> getAllTransforms() throws IOException {
         Resource root = dataDir.get(Paths.path("wfs", "transform"));
-        List<TransformInfo> result = new ArrayList<TransformInfo>();
+        List<TransformInfo> result = new ArrayList<>();
         for (Resource f : Resources.list(root, CONFIG_NAME_FILTER)) {
             try {
                 TransformInfo tx = infoCache.getItem(f);
@@ -179,7 +178,7 @@ public class TransformRepository {
     /** Returns all the global transformations (not attached to a particular layer) */
     public List<TransformInfo> getGlobalTransforms() throws IOException {
         List<TransformInfo> allTransformations = getAllTransforms();
-        List<TransformInfo> result = new ArrayList<TransformInfo>();
+        List<TransformInfo> result = new ArrayList<>();
         for (TransformInfo ti : allTransformations) {
             if (ti.getFeatureType() == null) {
                 result.add(ti);
@@ -192,7 +191,7 @@ public class TransformRepository {
     /** Returns transformations associated to a specific feature type */
     public List<TransformInfo> getTypeTransforms(FeatureTypeInfo featureType) throws IOException {
         List<TransformInfo> allTransformations = getAllTransforms();
-        List<TransformInfo> result = new ArrayList<TransformInfo>();
+        List<TransformInfo> result = new ArrayList<>();
         for (TransformInfo ti : allTransformations) {
             if (ti.getFeatureType() != null
                     && ti.getFeatureType().getId().equals(featureType.getId())) {
@@ -267,6 +266,7 @@ public class TransformRepository {
     /**
      * Writes the stylesheet of a transformation. This method will close the provided input stream.
      */
+    @SuppressWarnings("PMD.UseTryWithResources")
     public void putTransformSheet(TransformInfo info, InputStream sheet) throws IOException {
         Resource txFile = getTransformFile(info);
 

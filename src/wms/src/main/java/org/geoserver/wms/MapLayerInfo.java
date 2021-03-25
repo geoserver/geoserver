@@ -7,11 +7,11 @@ package org.geoserver.wms;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -216,7 +216,7 @@ public final class MapLayerInfo {
         if (layerInfo == null) {
             return Collections.emptyList();
         }
-        final List<String> styleNames = new ArrayList<String>();
+        final List<String> styleNames = new ArrayList<>();
 
         for (StyleInfo si : layerInfo.getStyles()) {
             styleNames.add(si.getName());
@@ -272,8 +272,7 @@ public final class MapLayerInfo {
      * avoid to reproject all of the original coordinates)
      */
     public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
-            boolean skipReproject, CoordinateReferenceSystem coordinateReferenceSystem)
-            throws IOException {
+            boolean skipReproject, CoordinateReferenceSystem requestedCRS) throws IOException {
         if (type != TYPE_VECTOR) {
             throw new IllegalArgumentException("Layer type is not vector");
         }
@@ -299,10 +298,10 @@ public final class MapLayerInfo {
 
         Hints hints = new Hints(ResourcePool.REPROJECT, Boolean.valueOf(!skipReproject));
 
-        if (userMapCRSForWFSNG(resource, coordinateReferenceSystem)) {
+        if (userMapCRSForWFSNG(resource, requestedCRS)) {
             // a hint for wfs-ng featuresource to keep the crs in query
             // to skip un-necessary re-projection
-            hints.put(ResourcePool.MAP_CRS, coordinateReferenceSystem);
+            hints.put(ResourcePool.MAP_CRS, requestedCRS);
         }
 
         return resource.getFeatureSource(null, hints);
@@ -356,10 +355,13 @@ public final class MapLayerInfo {
     private boolean userMapCRSForWFSNG(
             FeatureTypeInfo resource, CoordinateReferenceSystem coordinateReferenceSystem)
             throws IOException {
+        // check if map crs is part of other srs, if yes send put it sindie hend
+        String otherSRSListStr = (String) resource.getMetadata().get(FeatureTypeInfo.OTHER_SRS);
         // verify the resource is WFS-NG and contains Other SRS in feature metadata
         if (resource.getStore().getConnectionParameters().get(WFSDataStoreFactory.USEDEFAULTSRS.key)
                         == null
-                || resource.getMetadata().get(FeatureTypeInfo.OTHER_SRS) == null) return false;
+                || otherSRSListStr == null
+                || otherSRSListStr.isEmpty()) return false;
         // do nothing if datastore is configure to stay with native remote srs
         if (Boolean.valueOf(
                 resource.getStore()
@@ -367,26 +369,21 @@ public final class MapLayerInfo {
                         .get(WFSDataStoreFactory.USEDEFAULTSRS.key)
                         .toString())) return false;
 
-        // check if map crs is part of other srs, if yes send put it sindie hend
-        // read all identifiers of this CRS into a list
-        List<String> identifiers =
-                coordinateReferenceSystem
-                        .getIdentifiers()
-                        .stream()
-                        .map(r -> r.toString())
-                        .collect(Collectors.toList());
-        String otherSRSList = (String) resource.getMetadata().get(FeatureTypeInfo.OTHER_SRS);
+        // create list of other srs
+        List<String> otherSRSList = Arrays.asList(otherSRSListStr.split(","));
         // check if mapCRS is supported in remote wfs layer
-        for (String crs : identifiers)
-            if (otherSRSList.contains(crs)) {
-                // also verify axis order if matched
-                try {
-                    return CRS.equalsIgnoreMetadata(CRS.decode(crs), coordinateReferenceSystem);
-                } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        for (String otherSRS : otherSRSList) {
+            try {
+                // if no transformation is required, we have a match
+                if (!CRS.isTransformationRequired(
+                        CRS.decode(otherSRS), coordinateReferenceSystem)) {
+                    LOGGER.fine(otherSRS + " SRS found in Other SRS");
+                    return true;
                 }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
-
+        }
         return false;
     }
 

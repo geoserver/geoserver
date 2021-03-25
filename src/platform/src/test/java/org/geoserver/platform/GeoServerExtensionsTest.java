@@ -11,7 +11,11 @@ import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -75,7 +79,7 @@ public class GeoServerExtensionsTest {
         // note I'm testing null is a valid value. If that's not the case, it
         // should be reflected in the code, but I'm writing the test after the
         // code so that's what it does
-        expect(appContext.isSingleton((String) anyObject())).andReturn(true).anyTimes();
+        expect(appContext.isSingleton(anyObject())).andReturn(true).anyTimes();
         expect(appContext.getBean("fakeKey")).andReturn(null);
         replay(appContext);
 
@@ -119,8 +123,8 @@ public class GeoServerExtensionsTest {
         expect(customAppContext.getBeanNamesForType(ExtensionFilter.class))
                 .andReturn(new String[0]);
         expect(customAppContext.getBean("itDoesntMatterForThePurpose")).andReturn(this);
-        expect(appContext.isSingleton((String) anyObject())).andReturn(true).anyTimes();
-        expect(customAppContext.isSingleton((String) anyObject())).andReturn(true).anyTimes();
+        expect(appContext.isSingleton(anyObject())).andReturn(true).anyTimes();
+        expect(customAppContext.isSingleton(anyObject())).andReturn(true).anyTimes();
         replay(customAppContext);
         replay(appContext);
 
@@ -223,7 +227,7 @@ public class GeoServerExtensionsTest {
 
         gse.setApplicationContext(appContext);
 
-        expect(appContext.isSingleton((String) anyObject())).andReturn(true).anyTimes();
+        expect(appContext.isSingleton(anyObject())).andReturn(true).anyTimes();
         expect(appContext.getBean("beanName")).andReturn(null); // call #1
         expect(appContext.getBean("beanName")).andReturn(this); // call #2
         replay(appContext);
@@ -251,7 +255,7 @@ public class GeoServerExtensionsTest {
         expect(xp.getExtensionPoint()).andReturn(GeoServerExtensionsTest.class);
         expect(xp.getExtensions(GeoServerExtensionsTest.class)).andReturn(Arrays.asList(this));
         expect(appContext.getBean("testKey2")).andReturn(xp);
-        expect(appContext.isSingleton((String) anyObject())).andReturn(true).anyTimes();
+        expect(appContext.isSingleton(anyObject())).andReturn(true).anyTimes();
 
         replay(xp);
         replay(appContext);

@@ -50,6 +50,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
      *     (see {@link org.apache.wicket.Session})
      * @return The string resource value or null if resource not found
      */
+    @Override
     public String loadStringResource(
             Class<?> clazz,
             final String key,
@@ -67,7 +68,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
             ResourceNameIterator iter =
                     new ResourceNameIterator(path, style, variation, locale, null, false);
             while (iter.hasNext()) {
-                String newPath = (String) iter.next();
+                String newPath = iter.next();
 
                 final Properties props = propertiesFactory.load(clazz, newPath);
                 if (props != null) {
@@ -101,6 +102,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
      *     org.apache.wicket.resource.loader.IStringResourceLoader#loadStringResource(org.apache.wicket.Component,
      *     java.lang.String)
      */
+    @Override
     public String loadStringResource(
             final Component component,
             final String key,
@@ -145,7 +147,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
      */
     private List getComponentStack(final Component component) {
         // Build the search stack
-        final List searchStack = new ArrayList();
+        final List<Class<?>> searchStack = new ArrayList<>();
         searchStack.add(component.getClass());
 
         if (!(component instanceof Page)) {

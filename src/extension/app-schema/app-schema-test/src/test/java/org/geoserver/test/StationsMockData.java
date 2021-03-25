@@ -391,11 +391,9 @@ public class StationsMockData extends AbstractAppSchemaMockData {
     }
 
     private void addTextToFile(File file, String content) {
-        Writer output;
-        try {
-            output = new BufferedWriter(new FileWriter(file, true));
+
+        try (Writer output = new BufferedWriter(new FileWriter(file, true))) {
             output.append(content);
-            output.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -436,6 +434,7 @@ public class StationsMockData extends AbstractAppSchemaMockData {
     }
 
     @Override
+    @SuppressWarnings("PMD.JUnit4TestShouldUseAfterAnnotation")
     public void tearDown() {
         super.tearDown();
         try {

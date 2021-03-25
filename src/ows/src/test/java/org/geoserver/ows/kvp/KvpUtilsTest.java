@@ -5,40 +5,53 @@
  */
 package org.geoserver.ows.kvp;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import junit.framework.TestCase;
+import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class KvpUtilsTest extends TestCase {
+public class KvpUtilsTest {
+    @Test
     public void testEmptyString() {
-        assertEquals(0, KvpUtils.readFlat("").size());
+        Assert.assertEquals(0, KvpUtils.readFlat("").size());
     }
 
+    @Test
     public void testTrailingEmtpyStrings() {
-        assertEquals(
+        Assert.assertEquals(
                 Arrays.asList(new String[] {"x", "", "x", "", ""}), KvpUtils.readFlat("x,,x,,"));
     }
 
+    @Test
     public void testEmtpyNestedString() {
         List result = KvpUtils.readNested("");
-        assertEquals(1, result.size());
-        assertEquals(0, ((List) result.get(0)).size());
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(0, ((List) result.get(0)).size());
     }
 
+    @Test
+    public void testNullKvp() {
+        KvpMap<String, String> result = KvpUtils.toStringKVP(null);
+        Assert.assertNull(result);
+    }
+
+    @Test
     public void testStarNestedString() {
         List result = KvpUtils.readNested("*");
-        assertEquals(1, result.size());
-        assertEquals(0, ((List) result.get(0)).size());
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(0, ((List) result.get(0)).size());
     }
 
+    @Test
     public void testWellKnownTokenizers() {
-        String[] expected;
-        List actual;
 
-        expected = new String[] {"1", "2", "3", ""};
-        actual = KvpUtils.readFlat("1,2,3,", KvpUtils.INNER_DELIMETER);
+        String[] expected = {"1", "2", "3", ""};
+        List actual = KvpUtils.readFlat("1,2,3,", KvpUtils.INNER_DELIMETER);
         assertKvp(expected, actual);
 
         expected = new String[] {"abc", "def", ""};
@@ -66,11 +79,11 @@ public class KvpUtilsTest extends TestCase {
         assertKvp(expected, actual);
     }
 
+    @Test
     public void testRadFlatUnkownDelimiter() {
-        List actual;
 
-        final String[] expected = new String[] {"1", "2", "3", ""};
-        actual = KvpUtils.readFlat("1^2^3^", "\\^");
+        final String[] expected = {"1", "2", "3", ""};
+        List actual = KvpUtils.readFlat("1^2^3^", "\\^");
         assertKvp(expected, actual);
 
         actual = KvpUtils.readFlat("1-2-3-", "-");
@@ -79,109 +92,114 @@ public class KvpUtilsTest extends TestCase {
 
     private void assertKvp(String[] expected, List actual) {
         List expectedList = Arrays.asList(expected);
-        assertEquals(expectedList.size(), actual.size());
-        assertEquals(expectedList, actual);
+        Assert.assertEquals(expectedList.size(), actual.size());
+        Assert.assertEquals(expectedList, actual);
     }
 
+    @Test
     public void testEscapedTokens() {
         // test trivial scenarios
         List<String> actual = KvpUtils.escapedTokens("", ',');
-        assertEquals(Arrays.asList(""), actual);
+        Assert.assertEquals(Arrays.asList(""), actual);
 
         actual = KvpUtils.escapedTokens(",", ',');
-        assertEquals(Arrays.asList("", ""), actual);
+        Assert.assertEquals(Arrays.asList("", ""), actual);
 
         actual = KvpUtils.escapedTokens("a,b", ',');
-        assertEquals(Arrays.asList("a", "b"), actual);
+        Assert.assertEquals(Arrays.asList("a", "b"), actual);
 
         actual = KvpUtils.escapedTokens("a,b,c", ',');
-        assertEquals(Arrays.asList("a", "b", "c"), actual);
+        Assert.assertEquals(Arrays.asList("a", "b", "c"), actual);
 
         actual = KvpUtils.escapedTokens("a,b,c", ',', 2);
-        assertEquals(Arrays.asList("a", "b,c"), actual);
+        Assert.assertEquals(Arrays.asList("a", "b,c"), actual);
 
         actual = KvpUtils.escapedTokens("a,b,c", ',', 1);
-        assertEquals(Arrays.asList("a,b,c"), actual);
+        Assert.assertEquals(Arrays.asList("a,b,c"), actual);
 
         actual = KvpUtils.escapedTokens("a,b,c", ',', 0);
-        assertEquals(Arrays.asList("a", "b", "c"), actual);
+        Assert.assertEquals(Arrays.asList("a", "b", "c"), actual);
 
         actual = KvpUtils.escapedTokens("a,b,c", ',', 1000);
-        assertEquals(Arrays.asList("a", "b", "c"), actual);
+        Assert.assertEquals(Arrays.asList("a", "b", "c"), actual);
 
         // test escaped data
         actual = KvpUtils.escapedTokens("\\\\,\\\\", ',');
-        assertEquals(Arrays.asList("\\\\", "\\\\"), actual);
+        Assert.assertEquals(Arrays.asList("\\\\", "\\\\"), actual);
 
         actual = KvpUtils.escapedTokens("a\\,b,c", ',');
-        assertEquals(Arrays.asList("a\\,b", "c"), actual);
+        Assert.assertEquals(Arrays.asList("a\\,b", "c"), actual);
 
         actual = KvpUtils.escapedTokens("a\\,b,c,d", ',', 2);
-        assertEquals(Arrays.asList("a\\,b", "c,d"), actual);
+        Assert.assertEquals(Arrays.asList("a\\,b", "c,d"), actual);
 
         // test error conditions
         try {
             KvpUtils.escapedTokens(null, ',');
-            fail("Expected IllegalArgumentException.");
-        } catch (IllegalArgumentException e) {;
+            Assert.fail("Expected IllegalArgumentException.");
+        } catch (IllegalArgumentException e) {
         }
 
         try {
             KvpUtils.escapedTokens("", '\\');
-            fail("Expected IllegalArgumentException.");
-        } catch (IllegalArgumentException e) {;
+            Assert.fail("Expected IllegalArgumentException.");
+        } catch (IllegalArgumentException e) {
         }
 
         try {
             KvpUtils.escapedTokens("\\", '\\');
-            fail("Expected IllegalArgumentException.");
-        } catch (IllegalArgumentException e) {;
+            Assert.fail("Expected IllegalArgumentException.");
+        } catch (IllegalArgumentException e) {
         }
     }
 
-    public static void testUnescape() {
+    @Test
+    public void testUnescape() {
         // test trivial scenarios
         String actual = KvpUtils.unescape("abc");
-        assertEquals("abc", actual);
+        Assert.assertEquals("abc", actual);
 
         // test escape sequences
         actual = KvpUtils.unescape("abc\\\\");
-        assertEquals("abc\\", actual);
+        Assert.assertEquals("abc\\", actual);
 
         actual = KvpUtils.unescape("abc\\d");
-        assertEquals("abcd", actual);
+        Assert.assertEquals("abcd", actual);
 
         // test error conditions
         try {
             KvpUtils.unescape(null);
-            fail("Expected IllegalArgumentException.");
-        } catch (IllegalArgumentException e) {;
+            Assert.fail("Expected IllegalArgumentException.");
+        } catch (IllegalArgumentException e) {
         }
 
         try {
             KvpUtils.unescape("\\");
-            fail("Expected IllegalArgumentException.");
-        } catch (IllegalArgumentException e) {;
+            Assert.fail("Expected IllegalArgumentException.");
+        } catch (IllegalArgumentException e) {
         }
     }
 
-    public static void testParseQueryString() {
+    @Test
+    public void testParseQueryString() {
         Map<String, Object> kvp =
                 KvpUtils.parseQueryString(
                         "geoserver?request=WMS&version=1.0.0&CQL_FILTER=NAME='geoserver'");
-        assertEquals(3, kvp.size());
-        assertEquals("WMS", kvp.get("request"));
-        assertEquals("1.0.0", kvp.get("version"));
-        assertEquals("NAME='geoserver'", kvp.get("CQL_FILTER"));
+        Assert.assertEquals(3, kvp.size());
+        Assert.assertEquals("WMS", kvp.get("request"));
+        Assert.assertEquals("1.0.0", kvp.get("version"));
+        Assert.assertEquals("NAME='geoserver'", kvp.get("CQL_FILTER"));
     }
 
-    public static void testParseQueryStringRepeated() {
+    @Test
+    public void testParseQueryStringRepeated() {
         Map<String, Object> kvp =
                 KvpUtils.parseQueryString(
-                        "geoserver?request=WMS&version=1.0.0&version=2.0.0&CQL_FILTER=NAME='geoserver'");
-        assertEquals(3, kvp.size());
-        assertEquals("WMS", kvp.get("request"));
-        assertTrue(Arrays.equals(new String[] {"1.0.0", "2.0.0"}, (String[]) kvp.get("version")));
-        assertEquals("NAME='geoserver'", kvp.get("CQL_FILTER"));
+                        "geoserver?request=WMS&version=1.0.0&version=2.0.0&CQL_FILTER=NAME"
+                                + "='geoserver'");
+        Assert.assertEquals(3, kvp.size());
+        Assert.assertEquals("WMS", kvp.get("request"));
+        assertArrayEquals(new String[] {"1.0.0", "2.0.0"}, (String[]) kvp.get("version"));
+        Assert.assertEquals("NAME='geoserver'", kvp.get("CQL_FILTER"));
     }
 }

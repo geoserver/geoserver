@@ -114,7 +114,7 @@ public class WMTSStoreNewPageTest extends GeoServerWicketTestSupport {
         assertNull(page.getDefaultModelObject());
 
         final Catalog catalog = getCatalog();
-        WMTSStoreInfo info = (WMTSStoreInfo) getCatalog().getFactory().createWebMapTileServer();
+        WMTSStoreInfo info = getCatalog().getFactory().createWebMapTileServer();
         URL url = getClass().getResource("WMTSGetCapabilities.xml");
         assertNotNull(url);
         info.setName("bar");
@@ -142,7 +142,7 @@ public class WMTSStoreNewPageTest extends GeoServerWicketTestSupport {
 
         assertNotNull(info.getId());
 
-        WMTSStoreInfo expandedStore = (WMTSStoreInfo) catalog.getResourcePool().clone(info, true);
+        WMTSStoreInfo expandedStore = catalog.getResourcePool().clone(info, true);
 
         assertNotNull(expandedStore.getId());
         assertNotNull(expandedStore.getCatalog());

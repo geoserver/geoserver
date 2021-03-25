@@ -24,7 +24,7 @@ public class OseoGeoJSONFeatureConverter extends BaseMessageConverter<Object> {
     }
 
     @Override
-    protected boolean supports(Class clazz) {
+    protected boolean supports(Class<?> clazz) {
         return SimpleFeature.class.isAssignableFrom(clazz);
     }
 
@@ -42,6 +42,7 @@ public class OseoGeoJSONFeatureConverter extends BaseMessageConverter<Object> {
         return new FeatureJSON().readFeature(inputMessage.getBody());
     }
 
+    @Override
     public int getPriority() {
         return ExtensionPriority.HIGHEST;
     }

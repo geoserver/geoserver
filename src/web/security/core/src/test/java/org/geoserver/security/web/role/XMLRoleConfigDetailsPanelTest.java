@@ -5,7 +5,11 @@
  */
 package org.geoserver.security.web.role;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.Component;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -154,7 +158,7 @@ public class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedServiceP
         assertNull(xmlConfig.getAdminRoleName());
         assertEquals("abc.xml", xmlConfig.getFileName());
         assertEquals(5000, xmlConfig.getCheckInterval());
-        assertEquals(true, xmlConfig.isValidating());
+        assertTrue(xmlConfig.isValidating());
 
         // reload from manager
         xmlConfig = (XMLRoleServiceConfig) getSecurityManager().loadRoleServiceConfig("default2");
@@ -164,7 +168,7 @@ public class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedServiceP
         assertNull(xmlConfig.getAdminRoleName());
         assertEquals("abc.xml", xmlConfig.getFileName());
         assertEquals(5000, xmlConfig.getCheckInterval());
-        assertEquals(true, xmlConfig.isValidating());
+        assertTrue(xmlConfig.isValidating());
 
         // test add with name clash
         clickAddNew();
@@ -202,7 +206,7 @@ public class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedServiceP
                 XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE, xmlConfig.getGroupAdminRoleName());
         assertEquals("roles.xml", xmlConfig.getFileName());
         assertEquals(10000, xmlConfig.getCheckInterval());
-        assertEquals(true, xmlConfig.isValidating());
+        assertTrue(xmlConfig.isValidating());
 
         clickNamedServiceConfig("default2");
         // detailsPage = (RoleTabbedPage) tester.getLastRenderedPage();
@@ -221,14 +225,14 @@ public class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedServiceP
         assertNull(xmlConfig.getAdminRoleName());
         assertEquals("abc.xml", xmlConfig.getFileName());
         assertEquals(5001, xmlConfig.getCheckInterval());
-        assertEquals(false, xmlConfig.isValidating());
+        assertFalse(xmlConfig.isValidating());
 
         // reload from manager
         xmlConfig = (XMLRoleServiceConfig) getSecurityManager().loadRoleServiceConfig("default2");
         assertNull(xmlConfig.getAdminRoleName());
         assertEquals("abc.xml", xmlConfig.getFileName());
         assertEquals(5001, xmlConfig.getCheckInterval());
-        assertEquals(false, xmlConfig.isValidating());
+        assertFalse(xmlConfig.isValidating());
 
         // doRemove("tabbedPanel:panel:removeSelected");
     }

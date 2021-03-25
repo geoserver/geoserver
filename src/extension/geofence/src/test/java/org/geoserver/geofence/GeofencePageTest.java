@@ -4,11 +4,11 @@
  */
 package org.geoserver.geofence;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.URISyntaxException;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
@@ -68,7 +68,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
         FormTester ft = tester.newFormTester("form");
         ft.submit("cancel");
         tester.assertRenderedPage(GeoServerHomePage.class);
-        assertTrue(GeofenceTestUtils.readConfig("test-config.properties").length() == 0);
+        assertEquals(0, GeofenceTestUtils.readConfig("test-config.properties").length());
         // assertTrue(GeofenceTestUtils.readConfig("test-cache-config.properties").length() == 0);
     }
 
@@ -97,7 +97,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
         @SuppressWarnings("unchecked")
         TextField<String> servicesUrl =
                 ((TextField<String>) tester.getComponentFromLastRenderedPage("form:servicesUrl"));
-        servicesUrl.setDefaultModel(new Model<String>("fakeurl"));
+        servicesUrl.setDefaultModel(new Model<>("fakeurl"));
 
         tester.clickLink("form:test", true);
 
@@ -130,6 +130,6 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
         String success =
                 new StringResourceModel(GeofencePage.class.getSimpleName() + ".cacheInvalidated")
                         .getObject();
-        tester.assertInfoMessages((Serializable[]) new String[] {success});
+        tester.assertInfoMessages(new String[] {success});
     }
 }

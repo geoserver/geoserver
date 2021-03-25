@@ -5,7 +5,7 @@
  */
 package org.geoserver.catalog;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -38,7 +38,7 @@ public abstract class StyleHandler {
 
     protected static StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
 
-    protected static String[] IMAGE_EXTENSIONS = new String[] {"png", "jpg", "jpeg", "gif", "svg"};
+    protected static String[] IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "svg"};
 
     protected static MimetypesFileTypeMap IMAGE_TYPES = new MimetypesFileTypeMap();
 

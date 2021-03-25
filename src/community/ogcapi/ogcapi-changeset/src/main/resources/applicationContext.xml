@@ -19,6 +19,6 @@
 >
 
     <!-- <mvc:annotation-driven/> -->
-    <context:component-scan base-package="org.geoserver.api.changeset"/>
+    <context:component-scan base-package="org.geoserver.ogcapi.changeset"/>
 
 </beans>

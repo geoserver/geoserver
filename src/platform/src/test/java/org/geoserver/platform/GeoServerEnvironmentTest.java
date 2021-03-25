@@ -4,7 +4,7 @@
  */
 package org.geoserver.platform;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -89,7 +89,7 @@ public class GeoServerEnvironmentTest {
     public void testSystemProperty() {
         // check for a property we did set up in the setUp
         GeoServerEnvironment genv = new GeoServerEnvironment();
-        LOGGER.info("GeoServerEnvironment = " + GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION);
+        LOGGER.info("GeoServerEnvironment = " + GeoServerEnvironment.allowEnvParametrization());
 
         assertEquals("ABC", genv.resolveValue("${TEST_SYS_PROPERTY}"));
         assertEquals("${TEST_PROPERTY}", genv.resolveValue("${TEST_PROPERTY}"));

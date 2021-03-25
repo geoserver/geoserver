@@ -5,6 +5,7 @@
  */
 package org.geoserver.wcs;
 
+import java.util.List;
 import net.opengis.wcs10.DescribeCoverageType;
 import net.opengis.wcs10.GetCapabilitiesType;
 import net.opengis.wcs10.GetCoverageType;
@@ -37,7 +38,9 @@ public class WCS10WorkspaceQualifier extends WorkspaceQualifyingCallback {
 
         DescribeCoverageType dcov = parameter(operation, DescribeCoverageType.class);
         if (dcov != null) {
-            qualifyLayerNames(dcov.getCoverage(), ws);
+            @SuppressWarnings("unchecked")
+            List<String> coverage = dcov.getCoverage();
+            qualifyLayerNames(coverage, ws);
             return;
         }
 

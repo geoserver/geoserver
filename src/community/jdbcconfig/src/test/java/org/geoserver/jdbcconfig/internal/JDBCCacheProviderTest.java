@@ -4,7 +4,7 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import com.google.common.cache.Cache;
 import java.io.Serializable;

@@ -42,7 +42,7 @@ public class DataAccessRulePage extends AbstractSecurityPage {
 
     private SelectionDataRuleRemovalLink removal;
 
-    private RadioChoice catalogModeChoice;
+    private RadioChoice<CatalogMode> catalogModeChoice;
 
     public DataAccessRulePage() {
         DataAccessRuleProvider provider = new DataAccessRuleProvider();
@@ -76,9 +76,9 @@ public class DataAccessRulePage extends AbstractSecurityPage {
         setHeaderPanel(headerPanel());
 
         Form form =
-                new Form(
+                new Form<>(
                         "catalogModeForm",
-                        new CompoundPropertyModel(
+                        new CompoundPropertyModel<>(
                                 new CatalogModeModel(DataAccessRuleDAO.get().getMode())));
         add(form);
         form.add(
@@ -96,7 +96,7 @@ public class DataAccessRulePage extends AbstractSecurityPage {
                     }
                 });
         catalogModeChoice =
-                new RadioChoice("catalogMode", CATALOG_MODES, new CatalogModeRenderer());
+                new RadioChoice<>("catalogMode", CATALOG_MODES, new CatalogModeRenderer());
         catalogModeChoice.setSuffix(" ");
         form.add(catalogModeChoice);
 
@@ -116,11 +116,12 @@ public class DataAccessRulePage extends AbstractSecurityPage {
                         }
                     }
                 });
-        form.add(new BookmarkablePageLink("cancel", GeoServerHomePage.class));
+        form.add(new BookmarkablePageLink<>("cancel", GeoServerHomePage.class));
     }
 
-    Component editRuleLink(String id, IModel itemModel, Property<DataAccessRule> property) {
-        return new SimpleAjaxLink(id, itemModel, property.getModel(itemModel)) {
+    Component editRuleLink(
+            String id, IModel<DataAccessRule> itemModel, Property<DataAccessRule> property) {
+        return new SimpleAjaxLink<DataAccessRule>(id, itemModel, property.getModel(itemModel)) {
 
             @Override
             protected void onClick(AjaxRequestTarget target) {
@@ -146,15 +147,16 @@ public class DataAccessRulePage extends AbstractSecurityPage {
         return header;
     }
 
-    class CatalogModeRenderer extends ChoiceRenderer {
+    class CatalogModeRenderer extends ChoiceRenderer<CatalogMode> {
 
-        public Object getDisplayValue(Object object) {
-            return (String)
-                    new ParamResourceModel(((CatalogMode) object).name(), getPage()).getObject();
+        @Override
+        public Object getDisplayValue(CatalogMode cm) {
+            return new ParamResourceModel(cm.name(), getPage()).getObject();
         }
 
-        public String getIdValue(Object object, int index) {
-            return ((CatalogMode) object).name();
+        @Override
+        public String getIdValue(CatalogMode cm, int index) {
+            return cm.name();
         }
     }
 }

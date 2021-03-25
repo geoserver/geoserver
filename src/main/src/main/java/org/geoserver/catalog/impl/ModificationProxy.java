@@ -74,6 +74,8 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     }
 
     /** Intercepts getter and setter methods. */
+    @Override
+    @SuppressWarnings("unchecked") // lots of generic behavior, cannot use params
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
         String property = null;
@@ -141,7 +143,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                 // avoid double proxy
                 Object o = ModificationProxy.unwrap(result);
                 if (o == result) {
-                    result = ModificationProxy.create(result, (Class) method.getReturnType());
+                    result = ModificationProxy.create(result, method.getReturnType());
 
                     // cache the proxy, in case it is modified itself
                     properties().put(property, result);
@@ -154,6 +156,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         }
     }
 
+    @Override
     public Object getProxyObject() {
         return proxyObject;
     }
@@ -162,7 +165,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         return properties();
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void commit() {
         synchronized (proxyObject) {
             // commit changes to the proxy object
@@ -231,7 +234,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     }
 
     /** Helper method for determining if a property of a proxied object should also be proxied. */
-    boolean shouldProxyProperty(Class propertyType) {
+    boolean shouldProxyProperty(Class<?> propertyType) {
         if (Catalog.class.isAssignableFrom(propertyType)) {
             // never proxy the catalog
             return false;
@@ -249,7 +252,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                 return properties;
             }
 
-            properties = new HashMap<String, Object>();
+            properties = new HashMap<>();
         }
 
         return properties;
@@ -265,7 +268,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                 return oldCollectionValues;
             }
 
-            oldCollectionValues = new HashMap<String, Object>();
+            oldCollectionValues = new HashMap<>();
         }
 
         return oldCollectionValues;
@@ -302,7 +305,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     }
 
     List<String> getDirtyProperties() {
-        List<String> propertyNames = new ArrayList<String>();
+        List<String> propertyNames = new ArrayList<>();
 
         for (String propertyName : properties().keySet()) {
             // in the case this property is another proxy, check that it is actually dirty
@@ -343,7 +346,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
 
     /** Returns the old values of any changed properties. */
     public List<Object> getOldValues() {
-        List<Object> oldValues = new ArrayList<Object>();
+        List<Object> oldValues = new ArrayList<>();
         for (String propertyName : getDirtyProperties()) {
             if (oldCollectionValues().containsKey(propertyName)) {
                 oldValues.add(oldCollectionValues.get(propertyName));
@@ -366,7 +369,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
 
     /** Returns the new values of any changed properties. */
     public List<Object> getNewValues() {
-        ArrayList newValues = new ArrayList();
+        List<Object> newValues = new ArrayList<>();
         for (String propertyName : getDirtyProperties()) {
             newValues.add(properties().get(propertyName));
         }
@@ -398,7 +401,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     /*
      * Helper method for looking up a getter method.
      */
-    Method setter(String propertyName, Class type) {
+    Method setter(String propertyName, Class<?> type) {
         Method s = null;
         try {
             s = proxyObject.getClass().getMethod("set" + propertyName, type);
@@ -472,6 +475,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         return clone;
     }
 
+    @SuppressWarnings("unchecked")
     private Collection cloneCollection(Collection oldCollection) {
         Class<? extends Collection> oldCollectionClass = oldCollection.getClass();
         try {
@@ -501,18 +505,21 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         String id = ci.getId();
         Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
         FilterFactory ff = CommonFactoryFinder.getFilterFactory();
-        Class iface = getCatalogInfoInterface(ci.getClass());
+        Class<? extends CatalogInfo> iface = getCatalogInfoInterface(ci.getClass());
         CatalogInfo replacement =
                 catalog.get(iface, ff.equal(ff.property("id"), ff.literal(id), true));
         return replacement;
     }
 
     /** Gathers the most specific CatalogInfo sub-interface from the specified class object */
-    private Class getCatalogInfoInterface(Class<? extends CatalogInfo> clazz) {
-        Class result = CatalogInfo.class;
-        for (Class c : clazz.getInterfaces()) {
+    private Class<? extends CatalogInfo> getCatalogInfoInterface(
+            Class<? extends CatalogInfo> clazz) {
+        Class<? extends CatalogInfo> result = CatalogInfo.class;
+        for (Class<?> c : clazz.getInterfaces()) {
             if (result.isAssignableFrom(c)) {
-                result = c;
+                @SuppressWarnings("unchecked")
+                Class<? extends CatalogInfo> cast = (Class<? extends CatalogInfo>) c;
+                result = cast;
             }
         }
 
@@ -524,13 +531,13 @@ public class ModificationProxy implements WrappingProxy, Serializable {
      *
      * @throws RuntimeException If creating the proxy fails.
      */
-    public static <T> T create(T proxyObject, Class<T> clazz) {
+    public static <T> T create(T proxyObject, Class<? extends T> clazz) {
         return ProxyUtils.createProxy(proxyObject, clazz, new ModificationProxy(proxyObject));
     }
 
     /** Wraps a list in a decorator which proxies each item in the list. */
     public static <T> List<T> createList(List<T> proxyList, Class<T> clazz) {
-        return new list(proxyList, clazz);
+        return new list<>(proxyList, clazz);
     }
 
     /**
@@ -573,23 +580,23 @@ public class ModificationProxy implements WrappingProxy, Serializable {
             // Copy the old state onto the new proxy
             ModificationProxy newHandler = handler(newProxy);
             if (Objects.nonNull(oldHandler.oldCollectionValues)) {
-                newHandler.oldCollectionValues =
-                        new HashMap<String, Object>(oldHandler.oldCollectionValues);
+                newHandler.oldCollectionValues = new HashMap<>(oldHandler.oldCollectionValues);
             }
             if (Objects.nonNull(oldHandler.properties)) {
-                newHandler.properties = new HashMap<String, Object>(oldHandler.properties);
+                newHandler.properties = new HashMap<>(oldHandler.properties);
             }
 
             return newProxy;
         }
     }
 
-    static class list<T> extends ProxyList {
+    static class list<T> extends ProxyList<T> implements List<T> {
 
         list(List<T> list, Class<T> clazz) {
             super(list, clazz);
         }
 
+        @Override
         protected <T> T createProxy(T proxyObject, Class<T> proxyInterface) {
             if (proxyObject instanceof Proxy) {
                 InvocationHandler h = handler(proxyObject);
@@ -600,6 +607,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
             return ModificationProxy.create(proxyObject, proxyInterface);
         }
 
+        @Override
         protected <U> U unwrapProxy(U proxy, java.lang.Class<U> proxyInterface) {
             return ModificationProxy.unwrap(proxy);
         };

@@ -35,16 +35,15 @@ Parameter order is not significant.
 Database options
 ----------------
 
-Databases such as PostGIS, Oracle, and ArcSDE share some common or similar configuration options.
+Databases such as PostGIS and Oracle share some common or similar configuration options.
 
 ========================    ====================================================    ============================================================================
 ``name``                    Meaning                                                 ``value`` examples
 ========================    ====================================================    ============================================================================
-``dbtype``                  Database type                                           ``postgisng``, ``Oracle``, ``arcsde``
+``dbtype``                  Database type                                           ``postgisng``, ``Oracle``
 ``host``                    Host name or IP address of database server              ``database.example.org``, ``192.168.3.12``
-``port``                    TCP port on database server                             Default if omitted: ``1521`` (Oracle), ``5432`` (PostGIS), ``5151`` (ArcSDE)
+``port``                    TCP port on database server                             Default if omitted: ``1521`` (Oracle), ``5432`` (PostGIS)
 ``database``                PostGIS/Oracle database
-``instance``                ArcSDE instance
 ``schema``                  The database schema
 ``user``                    The user name used to login to the database server
 ``passwd``                  The password used to login to the database server
@@ -130,51 +129,6 @@ Example::
 
 
 .. note:: You must install the Oracle plugin to connect to Oracle Spatial databases.
-
-
-ArcSDE
-------
-
-This example connects to an ArcSDE database::
-
-    <DataStore>
-        <id>datastore</id>
-        <parameters>
-            <Parameter>
-                <name>dbtype</name>
-                <value>arcsde</value>
-            </Parameter>
-            <Parameter>
-                <name>server</name>
-                <value>arcsde.example.org</value>
-            </Parameter>
-            <Parameter>
-                <name>port</name>
-                <value>5151</value>
-            </Parameter>
-            <Parameter>
-                <name>instance</name>
-                <value>sde</value>
-            </Parameter>
-            <Parameter>
-                <name>user</name>
-                <value>demo</value>
-            </Parameter>
-            <Parameter>
-                <name>password</name>
-                <value>s3cr3t</value>
-            </Parameter>
-            <Parameter>
-                <name>datastore.allowNonSpatialTables</name>
-                <value>true</value>
-            </Parameter>
-        </parameters>
-    </DataStore>
-
-
-The use of non-spatial tables aids delivery of application schemas that use non-spatial properties.
-
-.. note:: You must install the ArcSDE plugin to connect to ArcSDE databases.
 
 
 Shapefile

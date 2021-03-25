@@ -35,7 +35,7 @@ public class GwcResponseProxy extends Response {
     public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
         GwcOperationProxy op = (GwcOperationProxy) value;
         Map<String, String> responseHeaders = op.getResponseHeaders();
-        if (responseHeaders == null || responseHeaders.size() == 0) {
+        if (responseHeaders == null || responseHeaders.isEmpty()) {
             return null;
         }
         String[][] headers = new String[responseHeaders.size()][2];

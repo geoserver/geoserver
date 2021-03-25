@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 import javax.sql.DataSource;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.AbstractAppSchemaTestSupport;
@@ -49,7 +50,7 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
      * A static map which tracks which fixture files can not be found. This prevents continually
      * looking up the file and reporting it not found to the user.
      */
-    protected static Map<String, Boolean> found = new HashMap<String, Boolean>();
+    protected static Map<String, Boolean> found = new HashMap<>();
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -81,8 +82,7 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
             if (skipOnFailure) {
                 // disable the test
                 fixture = null;
-                // leave some trace of the swallowed exception
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "", e);
             } else {
                 // do not swallow the exception
                 throw e;
@@ -107,18 +107,17 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
             setup.setFixture(fixture);
             // do an online/offline check
             Map<String, Boolean> online = setup.getOnlineMap();
-            Boolean available = (Boolean) online.get(fixtureId);
+            Boolean available = online.get(fixtureId);
             if (available == null || available.booleanValue()) {
                 // test the connection
                 try {
                     available = isOnline();
                 } catch (Throwable t) {
-                    System.out.println(
-                            "Skipping "
-                                    + fixtureId
-                                    + " tests, resources not available: "
-                                    + t.getMessage());
-                    t.printStackTrace();
+                    LOGGER.log(
+                            Level.WARNING,
+                            "Skipping " + fixtureId + " tests, resources not available.",
+                            t);
+
                     available = Boolean.FALSE;
                 }
                 online.put(fixtureId, available);
@@ -127,6 +126,7 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
         }
     }
 
+    @SuppressWarnings("PMD.CloseResource")
     private Boolean isOnline() {
         try {
             DataSource dataSource = setup.getDataSource();

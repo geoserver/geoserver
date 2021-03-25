@@ -35,6 +35,7 @@ import org.opengis.feature.type.Name;
  */
 public class DSFinderRepository extends org.geotools.data.gen.DSFinderRepository {
 
+    @Override
     protected URL getURLForLocation(String location) throws IOException {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         File f =

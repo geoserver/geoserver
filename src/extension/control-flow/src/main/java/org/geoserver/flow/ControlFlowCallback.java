@@ -94,6 +94,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
         return runningRequests.get();
     }
 
+    @Override
     public Operation operationDispatched(Request request, Operation operation) {
         // if this request is nested, release the previous controllers and grab new ones
         // Nesting happens only with integrated GWC, sometimes the nested request is similar to the
@@ -132,7 +133,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
                         e);
                 return operation;
             }
-            if (controllers.size() == 0) {
+            if (controllers.isEmpty()) {
                 LOGGER.info("Control-flow inactive, there are no configured rules");
             } else {
                 if (LOGGER.isLoggable(Level.INFO)) {
@@ -200,6 +201,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
         return operation;
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         if (applicationContext instanceof ConfigurableApplicationContext) {
             // register default beans if needed
@@ -243,11 +245,13 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
         }
     }
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         // nothing to do
 
     }
 
+    @Override
     public void finished(Request request) {
         releaseControllers(false);
     }

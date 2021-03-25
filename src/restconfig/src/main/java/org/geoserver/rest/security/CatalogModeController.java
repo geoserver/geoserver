@@ -44,7 +44,7 @@ public class CatalogModeController {
 
     protected void checkUserIsAdmin() {
         if (!getManager().checkAuthenticationForAdminRole()) {
-            throw new RestException("Amdinistrative priveleges required", HttpStatus.FORBIDDEN);
+            throw new RestException("Administrative privileges required", HttpStatus.FORBIDDEN);
         }
     }
 
@@ -61,7 +61,7 @@ public class CatalogModeController {
         checkUserIsAdmin();
 
         CatalogMode mode = ruleDAO.getMode();
-        NamedMap modeMap = new NamedMap(XML_ROOT_ELEM);
+        NamedMap<String, String> modeMap = new NamedMap<>(XML_ROOT_ELEM);
         modeMap.put(MODE_ELEMENT, mode.toString());
         return modeMap;
     }

@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +19,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
 import org.geoserver.platform.resource.Resources;
-import org.geoserver.util.Filter;
 import org.geoserver.util.IOUtils;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.config.ConfigurationResourceProvider;
@@ -147,6 +145,7 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
         return configDirectory.get(configFileName);
     }
 
+    @Override
     public String getLocation() throws IOException {
         return findConfigFile().path();
     }
@@ -183,30 +182,21 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
         List<Resource> previousBackUps =
                 Resources.list(
                         parentFile,
-                        new Filter<Resource>() {
-                            public boolean accept(Resource res) {
-                                if (configFileName.equals(res.name())) {
-                                    return false;
-                                }
-                                if (res.name().startsWith(configFileName)
-                                        && res.name().endsWith(".bak")) {
-                                    return true;
-                                }
+                        res -> {
+                            if (configFileName.equals(res.name())) {
                                 return false;
                             }
+                            if (res.name().startsWith(configFileName)
+                                    && res.name().endsWith(".bak")) {
+                                return true;
+                            }
+                            return false;
                         });
 
         final int maxBackups = 10;
         if (previousBackUps.size() > maxBackups) {
             Collections.sort(
-                    previousBackUps,
-                    new Comparator<Resource>() {
-
-                        @Override
-                        public int compare(Resource o1, Resource o2) {
-                            return (int) (o1.lastmodified() - o2.lastmodified());
-                        }
-                    });
+                    previousBackUps, (o1, o2) -> (int) (o1.lastmodified() - o2.lastmodified()));
             Resource oldest = previousBackUps.get(0);
             LOGGER.debug(
                     "Deleting oldest config backup "

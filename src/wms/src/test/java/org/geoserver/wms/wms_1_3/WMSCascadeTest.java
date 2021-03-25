@@ -7,10 +7,10 @@ package org.geoserver.wms.wms_1_3;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
@@ -38,7 +38,6 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.ows.wms.WebMapServer;
-import org.geotools.ows.wms.request.GetLegendGraphicRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -265,7 +264,6 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                 .getRequest()
                 .getGetLegendGraphic()
                 .setGet(rasterLegendresource);
-        GetLegendGraphicRequest getLegend = webMapServer.createGetLegendGraphicRequest();
 
         BufferedImage image =
                 getAsImage(

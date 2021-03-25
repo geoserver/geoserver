@@ -49,13 +49,12 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
     void encodeDocumentContents(Document container) {
         WMSMapContent mapContent = context.getMapContent();
         GetMapRequest request = context.getRequest();
-        Map formatOptions = request.getFormatOptions();
+        Map<String, Object> formatOptions = request.getFormatOptions();
         LookAtDecoratorFactory lookAtFactory = new LookAtDecoratorFactory();
         LookAtOptions lookAtOptions = new LookAtOptions(formatOptions);
 
         // compute the layer bounds and the total bounds
-        List<ReferencedEnvelope> layerBounds =
-                new ArrayList<ReferencedEnvelope>(mapContent.layers().size());
+        List<ReferencedEnvelope> layerBounds = new ArrayList<>(mapContent.layers().size());
         ReferencedEnvelope aggregatedBounds =
                 computePerLayerQueryBounds(mapContent, layerBounds, null);
         if (aggregatedBounds != null) {

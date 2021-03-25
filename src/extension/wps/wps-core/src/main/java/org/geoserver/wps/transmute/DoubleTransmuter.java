@@ -15,6 +15,7 @@ import org.geoserver.wps.WPSException;
  */
 public class DoubleTransmuter implements LiteralTransmuter {
     /** @see LiteralTransmuter#decode(String) */
+    @Override
     public Double decode(String encoded) {
         Double decoded;
 
@@ -28,16 +29,19 @@ public class DoubleTransmuter implements LiteralTransmuter {
     }
 
     /** @see Transmuter#getType() */
+    @Override
     public Class<?> getType() {
         return Double.class;
     }
 
     /** @see LiteralTransmuter#encode(Object) */
+    @Override
     public String encode(Object value) {
-        return ((Double) value).toString();
+        return value.toString();
     }
 
     /** @see LiteralTransmuter#getEncodedType() */
+    @Override
     public String getEncodedType() {
         return "xs:double";
     }

@@ -4,8 +4,13 @@
  */
 package org.geoserver.rest;
 
+import static org.geoserver.template.TemplateUtils.FM_VERSION;
+
+import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.SimpleHash;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -41,7 +46,7 @@ public class IndexController extends RestBaseController {
     )
     public RestWrapper get() {
 
-        SimpleHash model = new SimpleHash();
+        SimpleHash model = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
         model.put("links", getLinks());
         model.put("page", RequestInfo.get());
 

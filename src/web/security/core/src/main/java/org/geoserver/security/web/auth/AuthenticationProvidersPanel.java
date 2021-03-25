@@ -24,7 +24,7 @@ public class AuthenticationProvidersPanel
     }
 
     @Override
-    protected Class getServiceClass() {
+    protected Class<GeoServerAuthenticationProvider> getServiceClass() {
         return GeoServerAuthenticationProvider.class;
     }
 

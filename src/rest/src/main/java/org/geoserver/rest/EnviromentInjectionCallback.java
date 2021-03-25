@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EnviromentInjectionCallback extends DispatcherCallbackAdapter {
 
+    @Override
     public void init(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> envVars = new HashMap<>();
 
@@ -36,11 +37,12 @@ public class EnviromentInjectionCallback extends DispatcherCallbackAdapter {
         }
 
         // set it into the EnvFunction
-        if (envVars.size() > 0) {
+        if (!envVars.isEmpty()) {
             EnvFunction.setLocalValues(envVars);
         }
     }
 
+    @Override
     public void finished(HttpServletRequest request, HttpServletResponse response) {
         // clean up when we're done
         EnvFunction.clearLocalValues();

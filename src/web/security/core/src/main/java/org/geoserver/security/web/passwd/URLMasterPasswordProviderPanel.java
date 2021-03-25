@@ -28,16 +28,17 @@ public class URLMasterPasswordProviderPanel
                 new TextField<URL>("uRL", URL.class) {
                     @Override
                     public <C> IConverter<C> getConverter(Class<C> type) {
-                        return new IConverter() {
+                        return new IConverter<C>() {
                             @Override
                             public String convertToString(Object value, Locale locale) {
                                 return ((URL) value).toExternalForm();
                             }
 
                             @Override
-                            public Object convertToObject(String value, Locale locale) {
+                            @SuppressWarnings("unchecked")
+                            public C convertToObject(String value, Locale locale) {
                                 try {
-                                    return new URL(value);
+                                    return (C) new URL(value);
                                 } catch (MalformedURLException e) {
                                     throw new RuntimeException(e);
                                 }

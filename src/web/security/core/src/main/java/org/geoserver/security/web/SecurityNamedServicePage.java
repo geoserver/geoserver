@@ -31,7 +31,7 @@ public class SecurityNamedServicePage<T extends SecurityNamedServiceConfig>
 
     public SecurityNamedServicePage() {}
 
-    protected StringResourceModel createTitleModel(Class serviceClass) {
+    protected StringResourceModel createTitleModel(Class<?> serviceClass) {
         return new StringResourceModel(serviceClass.getName() + ".title", new Model());
     }
 
@@ -50,8 +50,9 @@ public class SecurityNamedServicePage<T extends SecurityNamedServiceConfig>
     protected SecurityNamedServicePanel<T> createPanel(
             String id, SecurityNamedServicePanelInfo panelInfo, IModel<T> config) {
         try {
-            SecurityNamedServicePanel panel =
-                    (SecurityNamedServicePanel<T>)
+            @SuppressWarnings("unchecked")
+            SecurityNamedServicePanel<T> panel =
+                    (SecurityNamedServicePanel)
                             panelInfo
                                     .getComponentClass()
                                     .getConstructor(String.class, IModel.class)
@@ -63,6 +64,7 @@ public class SecurityNamedServicePage<T extends SecurityNamedServiceConfig>
     }
 
     protected void handleSubmit(Form<?> form) {
+        @SuppressWarnings("unchecked")
         T config = (T) form.getModelObject();
         try {
             panel.doSave(config);

@@ -6,7 +6,11 @@
 
 package org.geoserver.security.auth;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.security.core.Authentication;
@@ -19,12 +23,12 @@ import org.springframework.security.core.Authentication;
  */
 public class TestingAuthenticationCache implements AuthenticationCache {
 
-    Map<String, Map<String, byte[]>> cache = new HashMap<String, Map<String, byte[]>>();
+    Map<String, Map<String, byte[]>> cache = new HashMap<>();
 
     public static Integer DEFAULT_IDLE_SECS = 60;
     public static Integer DEFAULT_LIVE_SECS = 600;
 
-    Map<String, Map<String, Integer[]>> expireMap = new HashMap<String, Map<String, Integer[]>>();
+    Map<String, Map<String, Integer[]>> expireMap = new HashMap<>();
 
     @Override
     public void removeAll() {
@@ -73,7 +77,7 @@ public class TestingAuthenticationCache implements AuthenticationCache {
         if (timeToIdleSeconds != null || timeToLiveSeconds != null) {
             Map<String, Integer[]> map = expireMap.get(filterName);
             if (map == null) {
-                map = new HashMap<String, Integer[]>();
+                map = new HashMap<>();
                 expireMap.put(filterName, map);
             }
             map.put(cacheKey, new Integer[] {timeToIdleSeconds, timeToLiveSeconds});
@@ -84,7 +88,7 @@ public class TestingAuthenticationCache implements AuthenticationCache {
     public void put(String filterName, String cacheKey, Authentication auth) {
         Map<String, byte[]> map = cache.get(filterName);
         if (map == null) {
-            map = new HashMap<String, byte[]>();
+            map = new HashMap<>();
             cache.put(filterName, map);
         }
         map.put(cacheKey, serializeAuthentication(auth));

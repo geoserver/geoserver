@@ -40,7 +40,7 @@ public class OraclePanel extends AbstractDbPanel {
 
     @Override
     protected LinkedHashMap<String, Component> buildParamPanels() {
-        LinkedHashMap<String, Component> result = new LinkedHashMap<String, Component>();
+        LinkedHashMap<String, Component> result = new LinkedHashMap<>();
 
         // basic panel
         basicParamPanel = new BasicDbParamPanel("01", "localhost", 1521, true);
@@ -111,10 +111,12 @@ public class OraclePanel extends AbstractDbPanel {
         public OCIParamPanel(String id) {
             super(id);
 
-            add(new TextField("alias", new PropertyModel(this, "alias")).setRequired(true));
-            add(new TextField("username", new PropertyModel(this, "username")).setRequired(true));
+            add(new TextField<>("alias", new PropertyModel<>(this, "alias")).setRequired(true));
             add(
-                    new PasswordTextField("password", new PropertyModel(this, "password"))
+                    new TextField<>("username", new PropertyModel<>(this, "username"))
+                            .setRequired(true));
+            add(
+                    new PasswordTextField("password", new PropertyModel<>(this, "password"))
                             .setResetPassword(false));
         }
     }

@@ -58,7 +58,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     private static final String RGB_IR_VIEW = "RgbIrView";
-    private static final String S2_REDUCED_VIEW = "s2reduced_view";
     private static final String BANDS_FLAGS_VIEW = "BandsFlagsView";
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     protected static QName S2REDUCED = new QName(MockData.SF_URI, "s2reduced", MockData.SF_PREFIX);
@@ -157,16 +156,15 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     }
 
     private CoverageView buildBandsFlagsView() {
-        String[] sources =
-                new String[] {
-                    "SWIR",
-                    "VNIR",
-                    "QUALITY_CLASSES",
-                    "QUALITY_CLOUD",
-                    "QUALITY_CLOUDSHADOW",
-                    "QUALITY_HAZE",
-                    "QUALITY_SNOW"
-                };
+        String[] sources = {
+            "SWIR",
+            "VNIR",
+            "QUALITY_CLASSES",
+            "QUALITY_CLOUD",
+            "QUALITY_CLOUDSHADOW",
+            "QUALITY_HAZE",
+            "QUALITY_SNOW"
+        };
 
         List<CoverageBand> bands = new ArrayList<>();
         for (String source : sources) {
@@ -295,7 +293,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         assertEquals(outputBandU.getCompositionType(), defaultComposition);
 
         // Test coverage views
-        final List<CoverageBand> bands = new ArrayList<CoverageBand>();
+        final List<CoverageBand> bands = new ArrayList<>();
         bands.add(outputBandU);
         bands.add(outputBandV);
 
@@ -439,7 +437,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     private GeneralParameterValue[] buildFootprintBandParams(
             FootprintBehavior footprintBehavior, int[] bands) {
-        final List<ParameterValue<?>> parameters = new ArrayList<ParameterValue<?>>();
+        final List<ParameterValue<?>> parameters = new ArrayList<>();
         parameters.add(
                 new DefaultParameterDescriptor<>(
                                 AbstractGridFormat.FOOTPRINT_BEHAVIOR.getName().toString(),
@@ -454,8 +452,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
                                 null,
                                 bands)
                         .createValue());
-        return (GeneralParameterValue[])
-                parameters.toArray(new GeneralParameterValue[parameters.size()]);
+        return parameters.toArray(new GeneralParameterValue[parameters.size()]);
     }
 
     /**

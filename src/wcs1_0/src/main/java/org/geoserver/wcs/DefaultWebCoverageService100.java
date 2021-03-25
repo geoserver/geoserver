@@ -7,12 +7,11 @@ package org.geoserver.wcs;
 
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
-import java.awt.*;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -106,18 +105,20 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
     }
 
     /** */
+    @Override
     public WCSInfo getServiceInfo() {
         return geoServer.getService(WCSInfo.class);
     }
 
     /** */
+    @Override
     public Wcs10CapsTransformer getCapabilities(GetCapabilitiesType request) {
         // do the version negotiation dance
-        List<String> provided = new ArrayList<String>();
+        List<String> provided = new ArrayList<>();
         provided.add("1.0.0");
         List<String> accepted = null;
         if (request.getVersion() != null) {
-            accepted = new ArrayList<String>();
+            accepted = new ArrayList<>();
             accepted.add(request.getVersion());
         }
         String version = RequestUtils.getVersionPreOws(provided, accepted);
@@ -133,6 +134,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
     }
 
     /** */
+    @Override
     public Wcs10DescribeCoverageTransformer describeCoverage(DescribeCoverageType request) {
         final String version = request.getVersion();
         if ("1.0.0".equals(version)) {
@@ -148,12 +150,13 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
     }
 
     /** */
+    @Override
     public GridCoverage[] getCoverage(final GetCoverageType request) {
         WCSInfo wcs = getServiceInfo();
 
         CoverageInfo meta = null;
         GridCoverage2D coverage = null;
-        final List<GridCoverage> coverageResults = new ArrayList<GridCoverage>();
+        final List<GridCoverage> coverageResults = new ArrayList<>();
         try {
 
             // acquire coverage info
@@ -178,12 +181,12 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             // spatial
             final SpatialSubsetType spatialSubset = domainSubset.getSpatialSubset();
             final EList grids = spatialSubset.getGrid();
-            if (grids.size() == 0)
+            if (grids.isEmpty())
                 throw new IllegalArgumentException(
                         "Invalid number of Grid for spatial subsetting was set:" + grids.size());
             final RectifiedGridType grid = (RectifiedGridType) grids.get(0);
             final List envelopes = spatialSubset.getEnvelope();
-            if (envelopes.size() == 0)
+            if (envelopes.isEmpty())
                 throw new IllegalArgumentException(
                         "Invalid number of Envelope for spatial subsetting was set:"
                                 + envelopes.size());
@@ -307,7 +310,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                                 null);
             // NOTICE that we always have to respect the provided envelope
             final ParameterValue<GeneralGridGeometry> requestedGridGeometryParam =
-                    new DefaultParameterDescriptor<GeneralGridGeometry>(
+                    new DefaultParameterDescriptor<>(
                                     AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
                                     GeneralGridGeometry.class,
                                     null,
@@ -324,8 +327,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
              * exception is thrown, we have nothing to do.
              */
             final List<GeneralParameterDescriptor> parameterDescriptors =
-                    new ArrayList<GeneralParameterDescriptor>(
-                            readParametersDescriptor.getDescriptor().descriptors());
+                    new ArrayList<>(readParametersDescriptor.getDescriptor().descriptors());
             Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
             parameterDescriptors.addAll(dynamicParameters);
 
@@ -336,12 +338,12 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             DimensionInfo timeDimension =
                     meta.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
             if (timeDimension != null && timeDimension.isEnabled() && dimensions.hasTime()) {
-                final List<Object> timeValues = new ArrayList<Object>();
+                final List<Object> timeValues = new ArrayList<>();
                 if (temporalSubset != null && temporalSubset.getTimePosition() != null) {
                     // grab the time positions
                     final EList timePosition = temporalSubset.getTimePosition();
-                    for (Iterator it = timePosition.iterator(); it.hasNext(); ) {
-                        TimePositionType tp = (TimePositionType) it.next();
+                    for (Object o : timePosition) {
+                        TimePositionType tp = (TimePositionType) o;
                         Date date = (Date) tp.getValue();
                         if (date == null) {
                             date = dimensions.getMaxTime();
@@ -350,8 +352,8 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                     }
                     // grab the time intervals
                     final EList timePeriods = temporalSubset.getTimePeriod();
-                    for (Iterator it = timePeriods.iterator(); it.hasNext(); ) {
-                        TimePeriodType tp = (TimePeriodType) it.next();
+                    for (Object timePeriod : timePeriods) {
+                        TimePeriodType tp = (TimePeriodType) timePeriod;
                         Date begin = (Date) tp.getBeginPosition().getValue();
                         Date end = (Date) tp.getEndPosition().getValue();
                         timeValues.add(new DateRange(begin, end));
@@ -386,14 +388,14 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             if (elevationDimension != null
                     && elevationDimension.isEnabled()
                     && dimensions.hasElevation()) {
-                List<Object> elevations = new ArrayList<Object>();
+                List<Object> elevations = new ArrayList<>();
                 // extract elevation values
                 List axisSubset = null;
                 if (request.getRangeSubset() != null) {
                     axisSubset = request.getRangeSubset().getAxisSubset();
-                    if (axisSubset.size() > 0) {
-                        for (int a = 0; a < axisSubset.size(); a++) {
-                            AxisSubsetType axis = (AxisSubsetType) axisSubset.get(a);
+                    if (!axisSubset.isEmpty()) {
+                        for (Object o : axisSubset) {
+                            AxisSubsetType axis = (AxisSubsetType) o;
 
                             String axisName = axis.getName();
                             if (axisName.equalsIgnoreCase(WCSUtils.ELEVATION)) {
@@ -450,7 +452,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                         if (dimInfo instanceof DimensionInfo && dimensions.hasDomain(axisName)) {
                             int valueCount = axis.getSingleValue().size();
                             if (valueCount > 0) {
-                                List<Object> dimValues = new ArrayList<Object>(valueCount);
+                                List<Object> dimValues = new ArrayList<>(valueCount);
                                 for (int s = 0; s < valueCount; s++) {
                                     dimValues.addAll(
                                             dimensions.convertDimensionValue(
@@ -528,7 +530,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             //
             // perform read
             //
-            coverage = (GridCoverage2D) reader.read(readParameters);
+            coverage = reader.read(readParameters);
             if ((coverage == null) || !(coverage instanceof GridCoverage2D)) {
                 throw new IOException(
                         "No raster data found in the request (it may be that "
@@ -552,8 +554,8 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                 // extract the band indexes
                 EList axisSubset = request.getRangeSubset().getAxisSubset();
                 if (axisSubset.size() > 0) {
-                    for (int a = 0; a < axisSubset.size(); a++) {
-                        AxisSubsetType axis = (AxisSubsetType) axisSubset.get(a);
+                    for (Object o : axisSubset) {
+                        AxisSubsetType axis = (AxisSubsetType) o;
 
                         try {
                             String axisName = axis.getName();
@@ -715,14 +717,10 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             retVal.setCoordinateReferenceSystem(nativeCRS);
             return retVal;
 
-        } catch (TransformException te) {
+        } catch (TransformException | FactoryException te) {
             // something bad happened while trying to transform this
             // envelope. let's try with wgs84
             if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, te.getLocalizedMessage(), te);
-        } catch (FactoryException fe) {
-            // something bad happened while trying to transform this
-            // envelope. let's try with wgs84
-            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, fe.getLocalizedMessage(), fe);
         }
 
         try {
@@ -735,8 +733,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             //
             final CoordinateReferenceSystem nativeGeoCRS =
                     CRSUtilities.getStandardGeographicCRS2D(nativeCRS);
-            final GeneralEnvelope nativeGeoEnvelope =
-                    (GeneralEnvelope) CRS.transform(nativeEnvelope, nativeGeoCRS);
+            final GeneralEnvelope nativeGeoEnvelope = CRS.transform(nativeEnvelope, nativeGeoCRS);
             nativeGeoEnvelope.setCoordinateReferenceSystem(nativeGeoCRS);
 
             GeneralEnvelope requestedBBOXInNativeGeographicCRS = null;

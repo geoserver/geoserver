@@ -8,7 +8,11 @@ package org.geoserver.wms;
 import static org.geoserver.ows.util.ResponseUtils.baseURL;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextLayout;
@@ -33,6 +37,7 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.ServiceExceptionHandler;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.json.JSONType;
 import org.geoserver.wms.map.RenderedImageMap;
@@ -73,8 +78,7 @@ import org.geotools.util.Version;
 public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
 
     static final Set<String> FORMATS =
-            new HashSet<String>(
-                    Arrays.asList("image/png", "image/png8", "image/gif", "image/jpeg"));
+            new HashSet<>(Arrays.asList("image/png", "image/png8", "image/gif", "image/jpeg"));
 
     /** Map from content type to ImageIO format name for {@link ImageIO#write} */
     static final Map<String, String> IMAGEIO_FORMATS =
@@ -98,7 +102,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
      * @param geoServer needed to know whether to write detailed exception reports or not (as per
      *     {@code GeoServer.getGlobal().isVerbose()})
      */
-    public WMSServiceExceptionHandler(List services, GeoServer geoServer) {
+    public WMSServiceExceptionHandler(List<Service> services, GeoServer geoServer) {
         super(services);
         this.geoServer = geoServer;
     }
@@ -432,9 +436,7 @@ public class WMSServiceExceptionHandler extends ServiceExceptionHandler {
         FontRenderContext frc = g.getFontRenderContext();
 
         // scan over the
-        for (int i = 0; i < lines.length; i++) {
-            final String line = lines[i];
-
+        for (final String line : lines) {
             if ("".equals(line)) {
                 cursor.y += lineHeight;
             } else {

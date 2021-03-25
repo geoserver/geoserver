@@ -5,10 +5,9 @@
  */
 package org.geoserver.web.wicket.browser;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.Model;
@@ -33,20 +32,18 @@ public class FileBreadcrumsTest {
         if (!leaf.exists()) leaf.mkdirs();
         tester.startPage(
                 new FormTestPage(
-                        new ComponentBuilder() {
+                        (ComponentBuilder)
+                                id ->
+                                        new FileBreadcrumbs(
+                                                id, new Model<>(root), new Model<>(leaf)) {
 
-                            public Component buildComponent(String id) {
-                                return new FileBreadcrumbs(id, new Model(root), new Model(leaf)) {
-
-                                    @Override
-                                    protected void pathItemClicked(
-                                            File file, AjaxRequestTarget target) {
-                                        lastClicked = file;
-                                        setSelection(file);
-                                    }
-                                };
-                            }
-                        }));
+                                            @Override
+                                            protected void pathItemClicked(
+                                                    File file, AjaxRequestTarget target) {
+                                                lastClicked = file;
+                                                setSelection(file);
+                                            }
+                                        }));
 
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, true);
     }

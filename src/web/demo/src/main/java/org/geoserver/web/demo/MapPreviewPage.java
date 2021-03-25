@@ -87,12 +87,12 @@ public class MapPreviewPage extends GeoServerBasePage {
                             return new Label(id, property.getModel(itemModel));
                         } else if (property == COMMON) {
                             Fragment f = new Fragment(id, "commonLinks", MapPreviewPage.this);
-                            ListView lv =
-                                    new ListView("commonFormat", commonFormatLinks(layer)) {
+                            ListView<ExternalLink> lv =
+                                    new ListView<ExternalLink>(
+                                            "commonFormat", commonFormatLinks(layer)) {
                                         @Override
-                                        public void populateItem(ListItem item) {
-                                            final ExternalLink link =
-                                                    (ExternalLink) item.getModelObject();
+                                        public void populateItem(ListItem<ExternalLink> item) {
+                                            final ExternalLink link = item.getModelObject();
                                             item.add(link);
                                         }
                                     };
@@ -156,13 +156,13 @@ public class MapPreviewPage extends GeoServerBasePage {
         if (formats != null) {
             return formats;
         }
-        formats = new ArrayList<String>();
+        formats = new ArrayList<>();
 
         final GeoServerApplication application = getGeoServerApplication();
-        final List<GetMapOutputFormat> outputFormats;
-        outputFormats = application.getBeansOfType(GetMapOutputFormat.class);
+        final List<GetMapOutputFormat> outputFormats =
+                application.getBeansOfType(GetMapOutputFormat.class);
         for (GetMapOutputFormat producer : outputFormats) {
-            Set<String> producerFormats = new HashSet<String>(producer.getOutputFormatNames());
+            Set<String> producerFormats = new HashSet<>(producer.getOutputFormatNames());
             producerFormats.add(producer.getMimeType());
             String knownFormat = producer.getMimeType();
             for (String formatName : producerFormats) {
@@ -174,14 +174,14 @@ public class MapPreviewPage extends GeoServerBasePage {
             }
             formats.add(knownFormat);
         }
-        formats = new ArrayList<String>(new HashSet<String>(formats));
+        formats = new ArrayList<>(new HashSet<>(formats));
         prepareFormatList(formats, new FormatComparator("format.wms."));
         this.availableWMSFormats = formats;
         return formats;
     }
 
     private List<String> getAvailableWFSFormats() {
-        List<String> formats = new ArrayList<String>();
+        List<String> formats = new ArrayList<>();
 
         final GeoServerApplication application = getGeoServerApplication();
         for (WFSGetFeatureOutputFormat producer :
@@ -223,7 +223,7 @@ public class MapPreviewPage extends GeoServerBasePage {
             Label format = new Label(i + "", label);
             format.add(
                     new AttributeModifier(
-                            "value", new Model<String>(ResponseUtils.urlEncode(wmsOutputFormat))));
+                            "value", new Model<>(ResponseUtils.urlEncode(wmsOutputFormat))));
             wmsFormats.add(format);
         }
         wmsFormatsGroup.add(wmsFormats);
@@ -245,8 +245,7 @@ public class MapPreviewPage extends GeoServerBasePage {
                 Label format = new Label(i + "", label);
                 format.add(
                         new AttributeModifier(
-                                "value",
-                                new Model<String>(ResponseUtils.urlEncode(wfsOutputFormat))));
+                                "value", new Model<>(ResponseUtils.urlEncode(wfsOutputFormat))));
                 wfsFormats.add(format);
             }
         }
@@ -270,7 +269,7 @@ public class MapPreviewPage extends GeoServerBasePage {
         menu.add(
                 new AttributeAppender(
                         "onchange",
-                        new Model<String>("window.open(" + choice + ");this.selectedIndex=0"),
+                        new Model<>("window.open(" + choice + ");this.selectedIndex=0"),
                         ";"));
         f.add(menu);
         return f;
@@ -298,6 +297,7 @@ public class MapPreviewPage extends GeoServerBasePage {
             this.prefix = prefix;
         }
 
+        @Override
         public int compare(String f1, String f2) {
             String t1 = translateFormat(prefix, f1);
             String t2 = translateFormat(prefix, f2);
@@ -315,7 +315,7 @@ public class MapPreviewPage extends GeoServerBasePage {
 
         @Override
         protected byte[] getImageData(Attributes attributes) {
-            PreviewLayer layer = (PreviewLayer) itemModel.getObject();
+            PreviewLayer layer = itemModel.getObject();
             try {
                 return IOUtils.toByteArray(
                         layer.getIcon().getResource().getResourceStream().getInputStream());

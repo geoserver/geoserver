@@ -20,9 +20,13 @@ import com.github.fge.jsonschema.util.JsonLoader;
 import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 
 /** @author Juan Marin, OpenGeo */
 public class JSONValidator {
+    static final Logger LOGGER = Logging.getLogger(JSONValidator.class);
 
     public static boolean isValidSchema(String json, File schemaFile) {
         boolean isValid = false;
@@ -56,7 +60,7 @@ public class JSONValidator {
         try {
             report = schema.validate(jsonNode);
         } catch (ProcessingException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
             return false;
         }
 

@@ -5,14 +5,59 @@
  */
 package org.geoserver.security.validation;
 
-import static org.geoserver.security.validation.SecurityConfigException.*;
+import static org.geoserver.security.validation.SecurityConfigException.ANONYMOUS_NOT_LAST_$1;
+import static org.geoserver.security.validation.SecurityConfigException.AUTH_PROVIDER_ACTIVE_$1;
+import static org.geoserver.security.validation.SecurityConfigException.AUTH_PROVIDER_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.SecurityConfigException.AUTH_PROVIDER_NOT_FOUND_$1;
+import static org.geoserver.security.validation.SecurityConfigException.CLASSNAME_REQUIRED;
+import static org.geoserver.security.validation.SecurityConfigException.CLASS_NOT_FOUND_$1;
+import static org.geoserver.security.validation.SecurityConfigException.CLASS_WRONG_TYPE_$2;
+import static org.geoserver.security.validation.SecurityConfigException.FILTER_CHAIN_EMPTY_$1;
+import static org.geoserver.security.validation.SecurityConfigException.FILTER_CHAIN_NAME_MANDATORY;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_CONFIG_PASSWORD_ENCODER_$1;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_MAX_LENGTH;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_MIN_LENGTH;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_PASSWORD_ENCODER_$1;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_STRONG_CONFIG_PASSWORD_ENCODER;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_STRONG_PASSWORD_ENCODER;
+import static org.geoserver.security.validation.SecurityConfigException.NAME_REQUIRED;
+import static org.geoserver.security.validation.SecurityConfigException.NOT_AN_AUTHENTICATION_FILTER_$2;
+import static org.geoserver.security.validation.SecurityConfigException.NOT_A_SERVICE_AUTHENTICATION_FILTER_$2;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_ENCODER_REQUIRED_$1;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_ACTIVE_$2;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_MASTER_DELETE;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_NOT_FOUND_$1;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_REQUIRED_$1;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWORD_ENCODER_REQUIRED;
+import static org.geoserver.security.validation.SecurityConfigException.PATTERN_LIST_EMPTY_$1;
+import static org.geoserver.security.validation.SecurityConfigException.RESERVED_ROLE_NAME;
+import static org.geoserver.security.validation.SecurityConfigException.ROLE_SERVICE_ACTIVE_$1;
+import static org.geoserver.security.validation.SecurityConfigException.ROLE_SERVICE_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.SecurityConfigException.ROLE_SERVICE_NOT_FOUND_$1;
+import static org.geoserver.security.validation.SecurityConfigException.UNKNOWN_FILTER_$2;
+import static org.geoserver.security.validation.SecurityConfigException.UNKNOWN_ROLE_FILTER_$2;
+import static org.geoserver.security.validation.SecurityConfigException.USERGROUP_SERVICE_ACTIVE_$2;
+import static org.geoserver.security.validation.SecurityConfigException.USERGROUP_SERVICE_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.SecurityConfigException.USERGROUP_SERVICE_NOT_FOUND_$1;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import org.geoserver.security.*;
+import org.geoserver.security.GeoServerAuthenticationProvider;
+import org.geoserver.security.GeoServerRoleService;
+import org.geoserver.security.GeoServerSecurityFilterChain;
+import org.geoserver.security.GeoServerUserGroupService;
+import org.geoserver.security.ServiceLoginFilterChain;
 import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
-import org.geoserver.security.config.*;
+import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
+import org.geoserver.security.config.PasswordPolicyConfig;
+import org.geoserver.security.config.SecurityAuthProviderConfig;
+import org.geoserver.security.config.SecurityManagerConfig;
+import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.config.SecurityRoleServiceConfig;
+import org.geoserver.security.config.SecurityUserGroupServiceConfig;
+import org.geoserver.security.config.UsernamePasswordAuthenticationProviderConfig;
 import org.geoserver.security.config.impl.MemoryRoleServiceConfigImpl;
 import org.geoserver.security.config.impl.MemoryUserGroupServiceConfigImpl;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
@@ -211,14 +256,13 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
     @Test
     public void testNamedServices() {
         SecurityConfigValidator validator = new SecurityConfigValidator(getSecurityManager());
-        Class<?>[] extensionPoints =
-                new Class<?>[] {
-                    GeoServerUserGroupService.class,
-                    GeoServerRoleService.class,
-                    PasswordValidator.class,
-                    GeoServerAuthenticationProvider.class,
-                    GeoServerSecurityFilter.class
-                };
+        Class<?>[] extensionPoints = {
+            GeoServerUserGroupService.class,
+            GeoServerRoleService.class,
+            PasswordValidator.class,
+            GeoServerAuthenticationProvider.class,
+            GeoServerSecurityFilter.class
+        };
 
         for (Class<?> ep : extensionPoints) {
             try {

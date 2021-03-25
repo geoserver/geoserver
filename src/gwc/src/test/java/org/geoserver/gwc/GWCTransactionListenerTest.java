@@ -5,14 +5,18 @@
  */
 package org.geoserver.gwc;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Collections;
@@ -126,7 +130,7 @@ public class GWCTransactionListenerTest {
 
         when(mediator.getTileLayersByFeatureType(
                         eq(layerName.getNamespaceURI()), eq(layerName.getLocalPart())))
-                .thenReturn(Collections.EMPTY_SET);
+                .thenReturn(Collections.emptySet());
 
         listener.dataStoreChange(event);
         // nothing else to do
@@ -139,7 +143,7 @@ public class GWCTransactionListenerTest {
     @Test
     public void testDataStoreChangeInsert() {
 
-        Map<Object, Object> extendedProperties = new HashMap<Object, Object>();
+        Map<Object, Object> extendedProperties = new HashMap<>();
         ReferencedEnvelope affectedBounds = new ReferencedEnvelope(-180, 0, 0, 90, WGS84);
 
         issueInsert(extendedProperties, affectedBounds);
@@ -162,7 +166,7 @@ public class GWCTransactionListenerTest {
 
     @Test
     public void testAfterTransactionCompoundCRS() throws Exception {
-        Map<Object, Object> extendedProperties = new HashMap<Object, Object>();
+        Map<Object, Object> extendedProperties = new HashMap<>();
         final CoordinateReferenceSystem compoundCrs = CRS.decode("EPSG:7415");
         ReferencedEnvelope3D transactionBounds =
                 new ReferencedEnvelope3D(142892, 470783, 142900, 470790, 16, 20, compoundCrs);
@@ -185,7 +189,7 @@ public class GWCTransactionListenerTest {
 
     @Test
     public void testAfterTransaction() throws Exception {
-        Map<Object, Object> extendedProperties = new HashMap<Object, Object>();
+        Map<Object, Object> extendedProperties = new HashMap<>();
         ReferencedEnvelope affectedBounds1 = new ReferencedEnvelope(-180, 0, 0, 90, WGS84);
         ReferencedEnvelope affectedBounds2 = new ReferencedEnvelope(0, 180, 0, 90, WGS84);
 

@@ -30,7 +30,7 @@ class PercentagesRoundHandler {
     }
 
     double[] roundPercentages(double[] percentages) {
-        if (percentages == null) return null;
+        if (percentages == null || percentages.length == 0) return null;
         double delta = 0.0;
         for (int i = 0; i < percentages.length; i++) {
             double percentage = percentages[i] += delta;

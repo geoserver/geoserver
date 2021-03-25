@@ -55,11 +55,8 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
         props.put("sf.*.r", "*");
         props.put("cite.*.r", "cite");
         props.put("cite.*.w", "cite");
-        FileOutputStream outputFile = new FileOutputStream(layers);
-        try {
+        try (FileOutputStream outputFile = new FileOutputStream(layers)) {
             props.store(outputFile, "");
-        } finally {
-            outputFile.close();
         }
     }
 
@@ -67,7 +64,7 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("wms", "http://www.opengis.net/wms");
         namespaces.put("ows", "http://www.opengis.net/ows");
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
@@ -143,7 +140,7 @@ public class AuthencationKeyOWSTest extends GeoServerSystemTestSupport {
         GeoServerSecurityFilterChain filterChain = mconfig.getFilterChain();
         VariableFilterChain chain =
                 (VariableFilterChain) filterChain.getRequestChainByName("default");
-        List<Filter> result = new ArrayList<Filter>();
+        List<Filter> result = new ArrayList<>();
         for (String filterName : chain.getCompiledFilterNames()) {
             try {
                 result.add(getSecurityManager().loadFilter(filterName));

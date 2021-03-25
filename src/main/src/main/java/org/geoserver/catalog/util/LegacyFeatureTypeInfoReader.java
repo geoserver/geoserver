@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import org.checkerframework.checker.units.qual.m;
 import org.geoserver.ows.util.XmlCharsetDetector;
 import org.geoserver.platform.resource.Resource;
 import org.locationtech.jts.geom.Envelope;
@@ -41,12 +42,9 @@ public class LegacyFeatureTypeInfoReader {
      */
     public void read(Resource file) throws IOException {
         parentDirectory = file.parent();
-        Reader reader = XmlCharsetDetector.getCharsetAwareReader(file.in());
 
-        try {
+        try (Reader reader = XmlCharsetDetector.getCharsetAwareReader(file.in())) {
             featureType = ReaderUtils.parse(reader);
-        } finally {
-            reader.close();
         }
     }
 
@@ -86,10 +84,10 @@ public class LegacyFeatureTypeInfoReader {
     public List<String> keywords() {
         String raw = ReaderUtils.getChildText(featureType, "keywords");
         if (raw == null || "".equals(raw)) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         StringTokenizer st = new StringTokenizer(raw, ", ");
-        ArrayList keywords = new ArrayList();
+        List<String> keywords = new ArrayList<>();
         while (st.hasMoreTokens()) {
             keywords.add(st.nextToken());
         }
@@ -98,12 +96,12 @@ public class LegacyFeatureTypeInfoReader {
     }
 
     public List<Map<String, String>> metadataLinks() {
-        ArrayList links = new ArrayList();
+        List<Map<String, String>> links = new ArrayList<>();
         Element metadataLinks = ReaderUtils.getChildElement(featureType, "metadataLinks");
         if (metadataLinks != null) {
             Element[] metadataLink = ReaderUtils.getChildElements(metadataLinks, "metadataLink");
             for (Element e : metadataLink) {
-                HashMap m = new HashMap();
+                Map<String, String> m = new HashMap<>();
                 m.put("metadataType", e.getAttribute("metadataType"));
                 m.put("type", e.getAttribute("type"));
                 if (e.getFirstChild() != null) {
@@ -149,7 +147,7 @@ public class LegacyFeatureTypeInfoReader {
     public List<String> styles() throws Exception {
         Element styleRoot = ReaderUtils.getChildElement(featureType, "styles");
         if (styleRoot != null) {
-            List<String> styleNames = new ArrayList<String>();
+            List<String> styleNames = new ArrayList<>();
             Element[] styles = ReaderUtils.getChildElements(styleRoot, "style");
             for (Element style : styles) {
                 styleNames.add(style.getTextContent().trim());
@@ -164,7 +162,7 @@ public class LegacyFeatureTypeInfoReader {
         Element legendURL = ReaderUtils.getChildElement(featureType, "LegendURL");
 
         if (legendURL != null) {
-            HashMap map = new HashMap();
+            Map<String, Object> map = new HashMap<>();
             map.put("width", Integer.parseInt(ReaderUtils.getAttribute(legendURL, "width", true)));
             map.put(
                     "height",

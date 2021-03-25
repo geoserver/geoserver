@@ -5,11 +5,19 @@
 package org.geoserver.geofence.web;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
-import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.SubmitLink;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.ResourceModel;
@@ -35,8 +43,7 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
     public GeofenceAdminRulePage(final ShortAdminRule rule, final GeofenceAdminRulesModel rules) {
 
-        final Form<ShortAdminRule> form =
-                new Form<>("form", new CompoundPropertyModel<ShortAdminRule>(rule));
+        final Form<ShortAdminRule> form = new Form<>("form", new CompoundPropertyModel<>(rule));
         add(form);
 
         form.add(new TextField<Integer>("priority").setRequired(true));
@@ -95,7 +102,7 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
     protected List<String> getWorkspaceNames() {
 
-        SortedSet<String> resultSet = new TreeSet<String>();
+        SortedSet<String> resultSet = new TreeSet<>();
         for (WorkspaceInfo ws : getCatalog().getFacade().getWorkspaces()) {
             resultSet.add(ws.getName());
         }
@@ -144,10 +151,12 @@ public class GeofenceAdminRulePage extends GeoServerSecuredPage {
 
         private static final long serialVersionUID = -7146780173551842734L;
 
+        @Override
         public Object getDisplayValue(AdminGrantType object) {
             return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
+        @Override
         public String getIdValue(AdminGrantType object, int index) {
             return object.name();
         }

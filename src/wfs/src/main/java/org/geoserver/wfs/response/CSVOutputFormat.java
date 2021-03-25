@@ -12,9 +12,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import org.eclipse.xsd.XSDElementDeclaration;
@@ -25,7 +27,6 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -55,7 +56,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
         // that will be used when requesting the format in a
         // GEtFeature request:
         // ie ;.../geoserver/wfs?request=getfeature&outputFormat=myOutputFormat
-        super(gs, "csv");
+        super(gs, new LinkedHashSet<>(Arrays.asList("csv", "text/csv")));
     }
 
     /** @return "text/csv"; */
@@ -67,15 +68,13 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     @Override
-    public String getPreferredDisposition(Object value, Operation operation) {
-        return DISPOSITION_ATTACH;
+    protected String getExtension(FeatureCollectionResponse response) {
+        return "csv";
     }
 
     @Override
-    public String getAttachmentFileName(Object value, Operation operation) {
-        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
-        String outputFileName = request.getQueries().get(0).getTypeNames().get(0).getLocalPart();
-        return outputFileName + ".csv";
+    public String getPreferredDisposition(Object value, Operation operation) {
+        return DISPOSITION_ATTACH;
     }
 
     /** @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation) */
@@ -146,8 +145,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
         AttrFormatter[] formatters = getFormatters(fc.getSchema());
 
         // write out the features
-        FeatureIterator<?> i = fc.features();
-        try {
+        try (FeatureIterator<?> i = fc.features()) {
             while (i.hasNext()) {
                 Feature f = i.next();
                 // dump fid
@@ -204,8 +202,6 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                 // by RFC each line is terminated by CRLF
                 w.write("\r\n");
             }
-        } finally {
-            i.close();
         }
 
         w.flush();

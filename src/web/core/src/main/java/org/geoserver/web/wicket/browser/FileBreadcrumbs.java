@@ -54,7 +54,7 @@ public abstract class FileBreadcrumbs extends Panel {
 
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
-                                        pathItemClicked((File) getModelObject(), target);
+                                        pathItemClicked(getModelObject(), target);
                                     }
                                 };
                         link.add(name);
@@ -86,12 +86,13 @@ public abstract class FileBreadcrumbs extends Panel {
             this.currentFileModel = currentFileModel;
         }
 
+        @Override
         public List<File> getObject() {
             File root = rootFileModel.getObject();
             File current = currentFileModel.getObject();
 
             // get all directories between current and root
-            List<File> files = new ArrayList<File>();
+            List<File> files = new ArrayList<>();
             while (current != null && !current.equals(root)) {
                 files.add(current);
                 current = current.getParentFile();
@@ -104,10 +105,12 @@ public abstract class FileBreadcrumbs extends Panel {
             return files;
         }
 
+        @Override
         public void setObject(List<File> object) {
             throw new UnsupportedOperationException("This model cannot be set!");
         }
 
+        @Override
         public void detach() {
             // nothing to do here
         }

@@ -23,13 +23,14 @@ import org.springframework.web.servlet.ModelAndView;
 public class CiteComplianceHack implements HandlerInterceptor {
 
     GeoServer gs;
-    Class serviceClass;
+    Class<? extends ServiceInfo> serviceClass;
 
-    public CiteComplianceHack(GeoServer gs, Class serviceClass) {
+    public CiteComplianceHack(GeoServer gs, Class<? extends ServiceInfo> serviceClass) {
         this.gs = gs;
         this.serviceClass = serviceClass;
     }
 
+    @Override
     public boolean preHandle(
             HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
@@ -41,6 +42,7 @@ public class CiteComplianceHack implements HandlerInterceptor {
         return true;
     }
 
+    @Override
     public void postHandle(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -50,6 +52,7 @@ public class CiteComplianceHack implements HandlerInterceptor {
         // do nothing
     }
 
+    @Override
     public void afterCompletion(
             HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
             throws Exception {

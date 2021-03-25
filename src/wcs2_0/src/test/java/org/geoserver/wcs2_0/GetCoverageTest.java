@@ -4,7 +4,10 @@
  */
 package org.geoserver.wcs2_0;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -69,7 +72,7 @@ public class GetCoverageTest extends WCSTestSupport {
     @Test
     public void testAllowSubsamplingOnScaleFactor() throws Exception {
         // setup a request
-        Map<String, String> raw = setupGetCoverageRain();
+        Map<String, Object> raw = setupGetCoverageRain();
         raw.put("scalefactor", "0.5");
         assertScalingByHalf(raw);
     }
@@ -81,7 +84,7 @@ public class GetCoverageTest extends WCSTestSupport {
         int height = range.getSpan(1);
 
         // setup a request
-        Map<String, String> raw = setupGetCoverageRain();
+        Map<String, Object> raw = setupGetCoverageRain();
         raw.put("scaleextent", "i(0," + (width / 2) + "),j(0," + (height / 2) + ")");
         assertScalingByHalf(raw);
     }
@@ -90,7 +93,6 @@ public class GetCoverageTest extends WCSTestSupport {
     public void getNearestTime() throws Exception {
         // get the original transform
         CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(TIMESERIES));
-        WCS20GetCoverageRequestReader reader = new WCS20GetCoverageRequestReader();
         GetCoverageType gc =
                 parse(
                         "wcs?request=GetCoverage&service=WCS&version=2.0.1"
@@ -128,15 +130,15 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     protected GetCoverageType parse(String url) throws Exception {
-        Map<String, Object> rawKvp = new CaseInsensitiveMap(KvpUtils.parseQueryString(url));
-        Map<String, Object> kvp = new CaseInsensitiveMap(parseKvp(rawKvp));
+        Map<String, Object> rawKvp = new CaseInsensitiveMap<>(KvpUtils.parseQueryString(url));
+        Map<String, Object> kvp = new CaseInsensitiveMap<>(parseKvp(rawKvp));
         WCS20GetCoverageRequestReader reader = new WCS20GetCoverageRequestReader();
         GetCoverageType gc = (GetCoverageType) reader.createRequest();
         return (GetCoverageType) reader.read(gc, kvp, rawKvp);
     }
 
-    private void assertScalingByHalf(Map<String, String> raw) throws Exception {
-        Map kvp = parseKvp(raw);
+    private void assertScalingByHalf(Map<String, Object> raw) throws Exception {
+        Map<String, Object> kvp = parseKvp(raw);
         WCS20GetCoverageRequestReader reader = new WCS20GetCoverageRequestReader();
         GetCoverageType getCoverageRequest =
                 (GetCoverageType) reader.read(reader.createRequest(), kvp, raw);
@@ -174,8 +176,8 @@ public class GetCoverageTest extends WCSTestSupport {
         scheduleForCleaning(result);
     }
 
-    private Map<String, String> setupGetCoverageRain() {
-        Map<String, String> raw = new HashMap<>();
+    private Map<String, Object> setupGetCoverageRain() {
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "WCS");
         raw.put("request", "GetCoverage");
         raw.put("version", "2.0.1");

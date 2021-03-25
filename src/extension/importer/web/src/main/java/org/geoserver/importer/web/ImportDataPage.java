@@ -73,8 +73,8 @@ public class ImportDataPage extends GeoServerSecuredPage {
     WebMarkupContainer sourcePanel;
 
     WorkspaceDetachableModel workspace;
-    DropDownChoice workspaceChoice;
-    TextField workspaceNameTextField;
+    DropDownChoice<WorkspaceInfo> workspaceChoice;
+    TextField<String> workspaceNameTextField;
     Component statusLabel;
 
     StoreModel<StoreInfo> store;
@@ -126,7 +126,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         // workspace chooser
         workspace = new WorkspaceDetachableModel(catalog.getDefaultWorkspace());
         workspaceChoice =
-                new DropDownChoice(
+                new DropDownChoice<>(
                         "workspace",
                         workspace,
                         new WorkspacesModel(),
@@ -147,7 +147,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         workspaceNameContainer.setOutputMarkupId(true);
         form.add(workspaceNameContainer);
 
-        workspaceNameTextField = new TextField("workspaceName", new Model());
+        workspaceNameTextField = new TextField<>("workspaceName", new Model<>());
         workspaceNameTextField.setOutputMarkupId(true);
         boolean defaultWorkspace = catalog.getDefaultWorkspace() != null;
         workspaceNameTextField.setVisible(!defaultWorkspace);
@@ -155,14 +155,15 @@ public class ImportDataPage extends GeoServerSecuredPage {
         workspaceNameContainer.add(workspaceNameTextField);
 
         // store chooser
-        WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
-        store = new StoreModel<StoreInfo>(ws != null ? catalog.getDefaultDataStore(ws) : null);
+        WorkspaceInfo ws = workspace.getObject();
+        store = new StoreModel<>(ws != null ? catalog.getDefaultDataStore(ws) : null);
         storeChoice =
                 new DropDownChoice<StoreInfo>(
                         "store",
                         store,
                         new EnabledStoresModel(workspace),
                         new StoreChoiceRenderer()) {
+                    @Override
                     protected String getNullValidKey() {
                         return ImportDataPage.class.getSimpleName() + "." + super.getNullValidKey();
                     };
@@ -182,10 +183,12 @@ public class ImportDataPage extends GeoServerSecuredPage {
                         tag.addBehavior(AttributeModifier.replace("class", "disabled"));
                     }
 
+                    @Override
                     protected void onError(AjaxRequestTarget target, Form<?> form) {
                         addFeedbackPanels(target);
                     }
 
+                    @Override
                     protected void onSubmit(AjaxRequestTarget target, final Form<?> form) {
 
                         // update status to indicate we are working
@@ -286,7 +289,8 @@ public class ImportDataPage extends GeoServerSecuredPage {
                 });
 
         form.add(
-                new AjaxLink<Long>("cancel", new Model<Long>()) {
+                new AjaxLink<Long>("cancel", new Model<>()) {
+                    @Override
                     protected void disableLink(ComponentTag tag) {
                         super.disableLink(tag);
                         ImporterWebUtils.disableLink(tag);
@@ -329,6 +333,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                             }
                         },
                         true) {
+                    @Override
                     protected void onSelectionUpdate(AjaxRequestTarget target) {
                         removeImportLink.setEnabled(!getSelection().isEmpty());
                         target.add(removeImportLink);
@@ -394,7 +399,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         ImportSourcePanel panel = (ImportSourcePanel) sourcePanel.get("content");
         ImportData source = panel.createImportSource();
 
-        WorkspaceInfo targetWorkspace = (WorkspaceInfo) workspace.getObject();
+        WorkspaceInfo targetWorkspace = workspace.getObject();
         if (targetWorkspace == null) {
             Catalog cat = getCatalog();
 
@@ -424,7 +429,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
     }
 
     void updateTargetStore(AjaxRequestTarget target) {
-        WorkspaceInfo ws = (WorkspaceInfo) workspace.getObject();
+        WorkspaceInfo ws = workspace.getObject();
         store.setObject(
                 ws != null
                         ? GeoServerApplication.get().getCatalog().getDefaultDataStore(ws)
@@ -537,7 +542,6 @@ public class ImportDataPage extends GeoServerSecuredPage {
             }
         };
 
-        //        directory(new PackageResourceReference(GeoServerApplication.class,
         // "img/icons/silk/folder.png"),
         //                DirectoryPage.class,
         // "org.geotools.data.shapefile.ShapefileDataStoreFactory"), //
@@ -550,9 +554,6 @@ public class ImportDataPage extends GeoServerSecuredPage {
         //        sqlserver(new PackageResourceReference(GeoServerApplication.class,
         //                "img/icons/geosilk/database_vector.png"), SQLServerPage.class,
         //                "org.geotools.data.sqlserver.SQLServerDataStoreFactory"), //
-        //        arcsde(new PackageResourceReference(GeoServerApplication.class,
-        //                "img/icons/geosilk/database_vector.png"), ArcSDEPage.class,
-        //                "org.geotools.arcsde.data.ArcSDEDataStoreFactory");
 
         DataIcon icon;
 
@@ -560,15 +561,15 @@ public class ImportDataPage extends GeoServerSecuredPage {
             this.icon = icon;
         }
 
-        IModel getName(Component component) {
+        IModel<String> getName(Component component) {
             return new ParamResourceModel(this.name().toLowerCase() + "_name", component);
         }
 
-        IModel getDescription(Component component) {
+        IModel<String> getDescription(Component component) {
             return new ParamResourceModel(this.name().toLowerCase() + "_description", component);
         }
 
-        IModel getHelpLink(Component component) {
+        IModel<String> getHelpLink(Component component) {
             return new ParamResourceModel(this.name().toLowerCase() + "_helpLink", component);
         }
 
@@ -581,14 +582,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
         }
 
         boolean isDataStoreFactoryAvaiable(String className) {
-            Class<DataStoreFactorySpi> clazz = null;
-            try {
-                clazz = (Class<DataStoreFactorySpi>) Class.forName(className);
-            } catch (Exception e) {
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE, "DataStore class not available: " + className, e);
-                }
-            }
+            Class<DataStoreFactorySpi> clazz = getDataStoreFactorySpi(className);
             if (clazz == null) {
                 return false;
             }
@@ -607,6 +601,18 @@ public class ImportDataPage extends GeoServerSecuredPage {
             }
 
             return factory.isAvailable();
+        }
+
+        @SuppressWarnings("unchecked")
+        private Class<DataStoreFactorySpi> getDataStoreFactorySpi(String className) {
+            try {
+                return (Class<DataStoreFactorySpi>) Class.forName(className);
+            } catch (Exception e) {
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.log(Level.FINE, "DataStore class not available: " + className, e);
+                }
+            }
+            return null;
         }
 
         abstract ImportSourcePanel createPanel(String panelId);

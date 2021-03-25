@@ -7,7 +7,6 @@
 package org.geoserver.wps.xml.v1_0_0;
 
 import java.io.Reader;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
@@ -41,6 +40,7 @@ public class WpsXmlReader extends XmlRequestReader {
         this.resolverProvider = resolverProvider;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         Parser parser = new Parser(configuration);
@@ -57,7 +57,7 @@ public class WpsXmlReader extends XmlRequestReader {
         if (!parser.getValidationErrors().isEmpty()) {
             WPSException exception = new WPSException("Invalid request", "InvalidParameterValue");
 
-            for (Exception error : (List<Exception>) parser.getValidationErrors()) {
+            for (Exception error : parser.getValidationErrors()) {
                 LOGGER.warning(error.getLocalizedMessage());
                 exception.getExceptionText().add(error.getLocalizedMessage());
             }

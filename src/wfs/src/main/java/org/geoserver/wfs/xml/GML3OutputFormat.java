@@ -54,6 +54,7 @@ import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
+import org.geoserver.wfs.response.ComplexFeatureAwareFormat;
 import org.geoserver.wfs.xml.v1_1_0.WFS;
 import org.geoserver.wfs.xml.v1_1_0.WFSConfiguration;
 import org.geotools.feature.FeatureCollection;
@@ -66,7 +67,8 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.w3c.dom.Document;
 
-public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
+public class GML3OutputFormat extends WFSGetFeatureOutputFormat
+        implements ComplexFeatureAwareFormat {
 
     /** Enables the optimized encoders */
     public static final boolean OPTIMIZED_ENCODING =
@@ -97,7 +99,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
 
     public GML3OutputFormat(GeoServer geoServer, WFSConfiguration configuration) {
         this(
-                new HashSet(Arrays.asList(new Object[] {"gml3", "text/xml; subtype=gml/3.1.1"})),
+                new HashSet<>(Arrays.asList("gml3", "text/xml; subtype=gml/3.1.1")),
                 geoServer,
                 configuration);
     }
@@ -112,14 +114,17 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         this.configuration = configuration;
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) {
         return "text/xml; subtype=gml/3.1.1";
     }
 
+    @Override
     public String getCapabilitiesElementName() {
         return "GML3";
     }
 
+    @Override
     protected void write(
             FeatureCollectionResponse results, OutputStream output, Operation getFeature)
             throws ServiceException, IOException, UnsupportedEncodingException {
@@ -132,7 +137,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         GetFeatureRequest request = GetFeatureRequest.adapt(getFeature.getParameters()[0]);
 
         // round up the info objects for each feature collection
-        HashMap<String, Set<ResourceInfo>> ns2metas = new HashMap<String, Set<ResourceInfo>>();
+        HashMap<String, Set<ResourceInfo>> ns2metas = new HashMap<>();
         for (int fcIndex = 0; fcIndex < featureCollections.size(); fcIndex++) {
             if (request != null) {
                 List<Query> queries = request.getQueries();
@@ -158,7 +163,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
                     Set<ResourceInfo> metas = ns2metas.get(featureTypeName.getNamespaceURI());
 
                     if (metas == null) {
-                        metas = new HashSet<ResourceInfo>();
+                        metas = new HashSet<>();
                         ns2metas.put(featureTypeName.getNamespaceURI(), metas);
                     }
                     metas.add(meta);
@@ -179,10 +184,10 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
                                     + " in the GeoServer catalog");
 
                 // add it to the map
-                Set metas = ns2metas.get(namespaceURI);
+                Set<ResourceInfo> metas = ns2metas.get(namespaceURI);
 
                 if (metas == null) {
-                    metas = new HashSet();
+                    metas = new HashSet<>();
                     ns2metas.put(namespaceURI, metas);
                 }
 
@@ -261,8 +266,8 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
                         request.getVersion(),
                         "request",
                         "DescribeFeatureType");
-        for (Iterator i = ns2metas.entrySet().iterator(); i.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) i.next();
+        for (Map.Entry<String, Set<ResourceInfo>> stringSetEntry : ns2metas.entrySet()) {
+            Map.Entry entry = (Map.Entry) stringSetEntry;
 
             String namespaceURI = (String) entry.getKey();
             Set metas = (Set) entry.getValue();
@@ -275,6 +280,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
                     FeatureType featureType = meta.getFeatureType();
                     Object userSchemaLocation = featureType.getUserData().get("schemaURI");
                     if (userSchemaLocation != null && userSchemaLocation instanceof Map) {
+                        @SuppressWarnings("unchecked")
                         Map<String, String> schemaURIs = (Map<String, String>) userSchemaLocation;
                         for (String namespace : schemaURIs.keySet()) {
                             encoder.setSchemaLocation(namespace, schemaURIs.get(namespace));
@@ -404,18 +410,15 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
         // more then 3 char.
         File featureOut = File.createTempFile(output.hashCode() + "_dump", ".xml");
         // create a buffered output stream to write the output from encode to disk first
-        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(featureOut));
         // create a buffered input stream to read the dumped xml file in
-        BufferedInputStream in = new BufferedInputStream(new FileInputStream(featureOut));
-        try {
+        try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(featureOut));
+                BufferedInputStream in = new BufferedInputStream(new FileInputStream(featureOut))) {
             // the output file has to be unique with each Class object to ensure concurrency
             encode(results, out, encoder);
             this.transform(in, this.getXSLT(), output);
         } catch (TransformerException e) {
             throw (IOException) new IOException(e.getMessage()).initCause(e);
         } finally {
-            out.close();
-            in.close();
             featureOut.delete();
         }
     }
@@ -456,16 +459,24 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat {
     // is used which reports all warnings and errors to System.err and does not throw any Exceptions
     private class TransformerErrorListener implements ErrorListener {
 
+        @Override
         public void error(TransformerException exception) throws TransformerException {
             throw exception;
         }
 
+        @Override
         public void fatalError(TransformerException exception) throws TransformerException {
             throw exception;
         }
 
+        @Override
         public void warning(TransformerException exception) throws TransformerException {
             throw exception;
         }
+    }
+
+    @Override
+    public boolean supportsComplexFeatures(Object value, Operation operation) {
+        return true;
     }
 }

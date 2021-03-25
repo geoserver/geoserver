@@ -39,19 +39,17 @@ import org.vfny.geoserver.wcs.WcsException;
 public class WCSDimensionsHelper {
 
     /** Duration in ms of well know time periods */
-    static final BigDecimal[] DURATIONS =
-            new BigDecimal[] {
-                new BigDecimal(31536000000L),
-                new BigDecimal(2628000000L),
-                new BigDecimal(86400000L),
-                new BigDecimal(3600000L),
-                new BigDecimal(60000),
-                new BigDecimal(1000L)
-            };
+    static final BigDecimal[] DURATIONS = {
+        new BigDecimal(31536000000L),
+        new BigDecimal(2628000000L),
+        new BigDecimal(86400000L),
+        new BigDecimal(3600000L),
+        new BigDecimal(60000),
+        new BigDecimal(1000L)
+    };
 
     /** Labels for the above time periods */
-    static final String[] DURATION_UNITS =
-            new String[] {"year", "month", "day", "hour", "minute", "second"};
+    static final String[] DURATION_UNITS = {"year", "month", "day", "hour", "minute", "second"};
 
     /** Quick access fields for timeDimension and elevationDimension */
     DimensionInfo timeDimension;
@@ -85,7 +83,7 @@ public class WCSDimensionsHelper {
                 new ReaderDimensionsAccessor(
                         (GridCoverage2DReader) ci.getGridCoverageReader(null, null));
 
-        Map<String, DimensionInfo> dimensions = new HashMap<String, DimensionInfo>();
+        Map<String, DimensionInfo> dimensions = new HashMap<>();
         for (Map.Entry<String, Serializable> entry : ci.getMetadata().entrySet()) {
             if (entry.getValue() instanceof DimensionInfo) {
                 dimensions.put(entry.getKey(), (DimensionInfo) entry.getValue());
@@ -131,7 +129,7 @@ public class WCSDimensionsHelper {
     /** Initialize dimensions */
     private void initDimensions(Map<String, DimensionInfo> dimensions) {
         Utilities.ensureNonNull("dimensions", dimensions);
-        Map<String, DimensionInfo> updatedDimensions = new HashMap<String, DimensionInfo>();
+        Map<String, DimensionInfo> updatedDimensions = new HashMap<>();
         updatedDimensions.putAll(dimensions);
 
         // Initialize Time dimensions
@@ -288,7 +286,7 @@ public class WCSDimensionsHelper {
      * return a dimensions Map. Return an empty map if no dimensions are found.
      */
     public static Map<String, DimensionInfo> getDimensionsFromMetadata(MetadataMap metadata) {
-        Map<String, DimensionInfo> dimensionsMap = new HashMap<String, DimensionInfo>();
+        Map<String, DimensionInfo> dimensionsMap = new HashMap<>();
         if (metadata != null && !metadata.isEmpty()) {
             final Set<String> metadataKeys = metadata.keySet();
             final Iterator<String> metadataIterator = metadataKeys.iterator();

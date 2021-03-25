@@ -5,13 +5,21 @@
  */
 package org.geoserver.security.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.security.*;
+import org.geoserver.security.AccessMode;
+import org.geoserver.security.CatalogMode;
+import org.geoserver.security.DataAccessLimits;
+import org.geoserver.security.LayerGroupAccessLimits;
+import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.VectorAccessLimits;
+import org.geoserver.security.WorkspaceAccessLimits;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;

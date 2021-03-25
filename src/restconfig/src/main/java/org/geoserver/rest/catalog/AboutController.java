@@ -142,7 +142,8 @@ public class AboutController extends RestBaseController {
         if (AboutModel.class.isAssignableFrom(clazz)) {
             return new ObjectToMapWrapper<AboutModel>(AboutModel.class) {
                 @Override
-                protected void wrapInternal(Map properties, SimpleHash model, AboutModel object) {
+                protected void wrapInternal(
+                        Map<String, Object> properties, SimpleHash model, AboutModel object) {
                     final List<Map<String, Object>> manifests = new ArrayList<>();
                     for (ManifestModel manifest : object.getManifests()) {
                         final Map<String, Object> map = new HashMap<>();
@@ -169,6 +170,7 @@ public class AboutController extends RestBaseController {
         }
     }
 
+    @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         XStream xs = persister.getXStream();
 
@@ -183,7 +185,7 @@ public class AboutController extends RestBaseController {
                 new Converter() {
 
                     @Override
-                    public boolean canConvert(Class type) {
+                    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
                         return type.equals(ManifestModel.class);
                     }
 
@@ -201,7 +203,8 @@ public class AboutController extends RestBaseController {
                                     new Converter() {
 
                                         @Override
-                                        public boolean canConvert(Class type) {
+                                        public boolean canConvert(
+                                                @SuppressWarnings("rawtypes") Class type) {
                                             return Entry.class.isAssignableFrom(type);
                                         }
 

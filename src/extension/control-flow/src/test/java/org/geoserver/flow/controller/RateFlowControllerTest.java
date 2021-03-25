@@ -4,7 +4,9 @@
  */
 package org.geoserver.flow.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import javax.servlet.http.Cookie;
 import org.geoserver.ows.HttpErrorCodeException;
@@ -12,6 +14,7 @@ import org.geoserver.ows.Request;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
+@SuppressWarnings("PMD.AvoidUsingHardCodedIP")
 public class RateFlowControllerTest extends AbstractFlowControllerTest {
 
     @Test
@@ -26,8 +29,7 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
         checkHeaders(firstRequest, "Any OGC request", 2, 1);
 
         // grab the cookie
-        Cookie cookie =
-                (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
+        Cookie cookie = ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
         String cookieValue = cookie.getValue();
 
         // second request
@@ -69,8 +71,7 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
         assertTrue(controller.requestIncoming(firstRequest, Integer.MAX_VALUE));
 
         // grab the cookie
-        Cookie cookie =
-                (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
+        Cookie cookie = ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
         String cookieValue = cookie.getValue();
 
         // second request

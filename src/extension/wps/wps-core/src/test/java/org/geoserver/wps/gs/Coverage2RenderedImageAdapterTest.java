@@ -12,15 +12,12 @@ import static org.junit.Assert.assertNull;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.image.DataBuffer;
-import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import javax.media.jai.RasterFactory;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.coverage.CoverageFactoryFinder;
-import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
-import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Test;
@@ -76,8 +73,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
                 else raster.setSample(x, y, 0, x + y); // normal background
             }
         }
-        final Color[] colors =
-                new Color[] {Color.BLUE, Color.CYAN, Color.WHITE, Color.YELLOW, Color.RED};
+        final Color[] colors = {Color.BLUE, Color.CYAN, Color.WHITE, Color.YELLOW, Color.RED};
 
         return factory.create(
                 "Float coverage",
@@ -88,14 +84,6 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
                 null,
                 new Color[][] {colors},
                 null);
-    }
-
-    private static void view(RenderedImage ri, GridGeometry2D gg, GridSampleDimension[] gsd) {
-        final GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
-
-        GridCoverage2D rendered = factory.create("Merged coverage", ri, gg, gsd, null, null);
-
-        rendered.show();
     }
 
     @Test

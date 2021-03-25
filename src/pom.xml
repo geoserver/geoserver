@@ -13,7 +13,7 @@
  <groupId>org.geoserver</groupId>
  <artifactId>geoserver</artifactId>
  <packaging>pom</packaging>
- <version>2.18-SNAPSHOT</version>
+ <version>2.20-SNAPSHOT</version>
  <name>GeoServer</name>
 
  <scm>
@@ -184,6 +184,11 @@
     <artifactId>gs-web-core</artifactId>
     <version>${gs.version}</version>
    </dependency>
+    <dependency>
+    <groupId>org.geoserver</groupId>
+    <artifactId>gs-kml</artifactId>
+    <version>${gs.version}</version>
+   </dependency>
    <dependency>
     <groupId>org.geotools</groupId>
     <artifactId>gt-geotools</artifactId>
@@ -236,11 +241,6 @@
    </dependency>
    <dependency>
     <groupId>org.geotools</groupId>
-    <artifactId>gt-validation</artifactId>
-    <version>${gt.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geotools</groupId>
     <artifactId>gt-render</artifactId>
     <version>${gt.version}</version>
    </dependency>
@@ -272,6 +272,11 @@
    <dependency>
     <groupId>org.geotools</groupId>
     <artifactId>gt-referencing</artifactId>
+    <version>${gt.version}</version>
+   </dependency>
+   <dependency>
+    <groupId>org.geotools.jdbc</groupId>
+    <artifactId>gt-jdbc-h2</artifactId>
     <version>${gt.version}</version>
    </dependency>
    <dependency>
@@ -347,11 +352,6 @@
    </dependency>
    <dependency>
     <groupId>org.geotools.jdbc</groupId>
-    <artifactId>gt-jdbc-h2</artifactId>
-    <version>${gt.version}</version>
-   </dependency>
-   <dependency>
-    <groupId>org.geotools.jdbc</groupId>
     <artifactId>gt-jdbc-oracle</artifactId>
     <version>${gt.version}</version>
    </dependency>
@@ -405,6 +405,11 @@
      <artifactId>gt-cql</artifactId>
      <version>${gt.version}</version>
    </dependency>
+   <dependency>
+    <groupId>org.geotools</groupId>
+    <artifactId>gt-cql-json</artifactId>
+    <version>${gt.version}</version>
+   </dependency>
     <dependency>
      <groupId>org.geotools</groupId>
      <artifactId>gt-csv</artifactId>
@@ -433,16 +438,6 @@
    <dependency>
      <groupId>org.geotools</groupId>
      <artifactId>gt-imageio-ext-gdal</artifactId>
-     <version>${gt.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geotools</groupId>
-     <artifactId>gt-arcsde-common</artifactId>
-     <version>${gt.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geotools</groupId>
-     <artifactId>gt-arcsde</artifactId>
      <version>${gt.version}</version>
    </dependency>
    <dependency>
@@ -608,6 +603,11 @@
     <version>${oracle.jdbc.version}</version>
    </dependency>
    <dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>${mysql.jdbc.version}</version>
+   </dependency>
+   <dependency>
     <groupId>org.wkb4j</groupId>
     <artifactId>wkb4j</artifactId>
     <version>1.0-RC1</version>
@@ -615,9 +615,9 @@
    <dependency>
     <groupId>junit</groupId>
     <artifactId>junit</artifactId>
-    <version>4.12</version>
+    <version>4.13.1</version>
     <scope>test</scope>
-   </dependency>
+   </dependency> 
    <dependency>
      <groupId>org.awaitility</groupId>
      <artifactId>awaitility</artifactId>
@@ -662,7 +662,7 @@
    <dependency>
      <groupId>org.mockito</groupId>
      <artifactId>mockito-core</artifactId>
-     <version>2.23.0</version>
+     <version>${mockito.version}</version>
    </dependency>    
    <dependency>
      <groupId>xalan</groupId>
@@ -673,11 +673,6 @@
      <groupId>xalan</groupId>
      <artifactId>serializer</artifactId>
      <version>2.7.2</version>
-   </dependency>
-   <dependency>
-    <groupId>xpp3</groupId>
-    <artifactId>xpp3</artifactId>
-    <version>1.1.3.4.O</version>
    </dependency>
    <dependency>
     <groupId>org.codehaus.jettison</groupId>
@@ -707,14 +702,7 @@
    <dependency>
     <groupId>commons-beanutils</groupId>
     <artifactId>commons-beanutils</artifactId>
-    <version>1.9.2</version>
-    <classifier>noclassprop</classifier>
-   </dependency>
-   <dependency>
-    <groupId>commons-beanutils</groupId>
-    <artifactId>commons-beanutils</artifactId>
-    <version>1.9.2</version>
-    <scope>provided</scope>
+    <version>1.9.4</version>
    </dependency>
    <dependency>
     <groupId>commons-digester</groupId>
@@ -804,12 +792,12 @@
    <dependency>
     <groupId>org.apache.httpcomponents</groupId>
     <artifactId>httpclient</artifactId>
-    <version>4.5.11</version>
+    <version>4.5.13</version>
    </dependency>
    <dependency>
     <groupId>org.apache.httpcomponents</groupId>
     <artifactId>httpclient-cache</artifactId>
-    <version>4.5.11</version>
+    <version>4.5.13</version>
    </dependency>
    <dependency>
     <groupId>org.springframework</groupId>
@@ -1057,32 +1045,12 @@
     <artifactId>jt-concurrent-tile-cache</artifactId>
     <version>${jaiext.version}</version>
    </dependency>
-         <!-- EMF -->
 
-      <dependency>
-	    <groupId>org.eclipse.emf</groupId>
-	    <artifactId>org.eclipse.emf.common</artifactId>
-	    <version>2.12.0</version>
-    </dependency>
-	<dependency>
-		<groupId>org.eclipse.emf</groupId>
-		<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-		<version>2.12.0</version>
-	</dependency>
-	<dependency>
-		<groupId>org.eclipse.emf</groupId>
-		<artifactId>org.eclipse.emf.ecore</artifactId>
-		<version>2.12.0</version>
-	</dependency>
-	<dependency>
-		<groupId>org.eclipse.xsd</groupId>
-		<artifactId>org.eclipse.xsd</artifactId>
-		<version>2.12.0</version>
-	</dependency>
+   <!-- Text -->
    <dependency>
     <groupId>org.freemarker</groupId>
     <artifactId>freemarker</artifactId>
-    <version>2.3.18</version>
+    <version>2.3.31</version>
    </dependency>
    <dependency> 
      <groupId>net.sf.json-lib</groupId> 
@@ -1107,7 +1075,7 @@
    <dependency>
      <groupId>com.fasterxml.jackson.core</groupId>
      <artifactId>jackson-databind</artifactId>
-     <version>${jackson2.version}</version>
+     <version>${jackson2.databind.version}</version>
    </dependency>
 
    <dependency>
@@ -1124,12 +1092,6 @@
      <groupId>javax.activation</groupId>
      <artifactId>activation</artifactId>
      <version>1.1</version>
-   </dependency>
-   <dependency> 
-     <!-- needed by the arcsde plugin -->
-     <groupId>jsqlparser</groupId> 
-     <artifactId>jsqlparser</artifactId> 
-     <version>0.3.14</version> 
    </dependency>
      <dependency>
       <groupId>org.restlet</groupId>
@@ -1190,7 +1152,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>27.0-jre</version>
+      <version>30.1-jre</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
@@ -1225,7 +1187,7 @@
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
-            <version>2.11.0</version>
+            <version>2.12.0</version>
         </dependency>
 	<dependency>
 	  <groupId>javax.jms</groupId>
@@ -1272,7 +1234,7 @@
     <dependency>
       <groupId>no.ecc.vectortile</groupId>
       <artifactId>java-vector-tile</artifactId>
-      <version>1.3.7</version>
+      <version>1.3.9</version>
     </dependency>
     <dependency>
       <groupId>com.ning</groupId>
@@ -1304,7 +1266,7 @@
     <dependency>
      <groupId>com.github.oshi</groupId>
      <artifactId>oshi-core</artifactId>
-     <version>3.13.3</version>
+     <version>5.5.1</version>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
@@ -1373,26 +1335,6 @@
  </dependencyManagement>
 
  <dependencies>
-  <dependency>
-   <groupId>org.springframework</groupId>
-   <artifactId>spring-beans</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>org.springframework</groupId>
-   <artifactId>spring-core</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>org.springframework</groupId>
-   <artifactId>spring-context</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>org.springframework</groupId>
-   <artifactId>spring-webmvc</artifactId>
-  </dependency>
-  <dependency>
-   <groupId>org.geotools</groupId>
-   <artifactId>gt-main</artifactId>
-  </dependency>
   <dependency>
    <groupId>junit</groupId>
    <artifactId>junit</artifactId>
@@ -1546,7 +1488,6 @@
       <descriptor>release/bin.xml</descriptor>
       <descriptor>release/ext-db2.xml</descriptor>
       <descriptor>release/ext-feature-pregeneralized.xml</descriptor>
-      <descriptor>release/ext-imagemosaic-jdbc.xml</descriptor>
       <descriptor>release/ext-jp2k.xml</descriptor>
       <descriptor>release/ext-mysql.xml</descriptor>
       <descriptor>release/ext-oracle.xml</descriptor>
@@ -1588,6 +1529,12 @@
       <descriptor>release/ext-geofence-server.xml</descriptor>
       <descriptor>release/ext-authkey.xml</descriptor>
       <descriptor>release/ext-web-resource.xml</descriptor>
+      <descriptor>release/ext-params-extractor.xml</descriptor>
+      <descriptor>release/ext-gwc-s3.xml</descriptor>
+      <descriptor>release/ext-wmts-multi-dimensional.xml</descriptor>
+      <descriptor>release/ext-wps-download.xml</descriptor> 
+      <descriptor>release/ext-wps-jdbc.xml</descriptor>
+      <descriptor>release/ext-mapml.xml</descriptor> 
      </descriptors>
      <finalName>geoserver-${project.version}</finalName>
      <outputDirectory>${project.build.directory}/release</outputDirectory>
@@ -1658,7 +1605,7 @@
    <plugin>
      <groupId>pl.project13.maven</groupId>
      <artifactId>git-commit-id-plugin</artifactId>
-     <version>2.1.15</version>
+     <version>4.0.3</version>
      <executions>
        <execution>
          <goals>
@@ -1968,20 +1915,20 @@
  </modules>
 
  <properties>
-  <gs.version>2.18-SNAPSHOT</gs.version>
-  <gt.version>24-SNAPSHOT</gt.version>
-  <gwc.version>1.18-SNAPSHOT</gwc.version>
-  <jts.version>1.16.1</jts.version>
-  <spring.version>5.1.14.RELEASE</spring.version>
-  <spring.security.version>5.1.9.RELEASE</spring.security.version>
+  <gs.version>2.20-SNAPSHOT</gs.version>
+  <gt.version>26-SNAPSHOT</gt.version>
+  <gwc.version>1.20-SNAPSHOT</gwc.version>
+  <jts.version>1.18.1</jts.version>
+  <spring.version>5.1.20.RELEASE</spring.version>
+  <spring.security.version>5.1.13.RELEASE</spring.security.version>
   <servlet-api.version>3.0.1</servlet-api.version>
-  <jetty.version>9.4.18.v20190429</jetty.version>
+  <jetty.version>9.4.36.v20210114</jetty.version>
   <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
   <poi.version>4.0.0</poi.version>
   <wicket.version>7.6.0</wicket.version>
-  <ant.version>1.8.4</ant.version>
-  <imageio-ext.version>1.3.2</imageio-ext.version>
-  <jaiext.version>1.1.14</jaiext.version>
+  <ant.version>1.10.9</ant.version>
+  <imageio-ext.version>1.3.5</imageio-ext.version>
+  <jaiext.version>1.1.20</jaiext.version>
   <java.awt.headless>true</java.awt.headless>
   <sun.java2d.d3d>true</sun.java2d.d3d>
   <jvm.opts></jvm.opts>
@@ -2000,27 +1947,30 @@
   <image.tests>true</image.tests>
   <interactive.image>false</interactive.image>
   <windows.leniency>true</windows.leniency>
-  <gf.version>3.4.2</gf.version>
+  <gf.version>3.5.0</gf.version>
   <jasypt.version>1.9.2</jasypt.version>
   <hibernate-version>3.6.9.Final</hibernate-version>
   <hibernate-generic-dao-version>1.1.0</hibernate-generic-dao-version>
-  <hibernate-spatial-version>1.1.3.1</hibernate-spatial-version>
-  <hibernate-spatial-h2-version>1.1.3.1</hibernate-spatial-h2-version>
+  <hibernate-spatial-version>1.1.3.2</hibernate-spatial-version>
   <opengeo-geodb.version>0.9</opengeo-geodb.version>
   <!-- NOTE: be careful if upgrading slf4j, check the netcdf and netcdf-out build correcly -->
   <slf4j.version>1.6.4</slf4j.version>
   <joda-time.version>2.8.1</joda-time.version>
   <git.commit.useNative>false</git.commit.useNative>
   <git.commit.runOnlyOnce>true</git.commit.runOnlyOnce>
+  <eclipse.emf.version>2.15.0</eclipse.emf.version>
   <jackson1.version>1.9.13</jackson1.version>
-  <jackson2.version>2.10.1</jackson2.version>
+  <jackson2.version>2.10.5</jackson2.version>
+  <jackson2.databind.version>2.10.5.1</jackson2.databind.version>
   <compress-lzf.version>1.0.3</compress-lzf.version>
   <marlin.version>0.9.3</marlin.version>
-  <postgresql.jdbc.version>42.2.5</postgresql.jdbc.version>
+  <postgresql.jdbc.version>42.2.19</postgresql.jdbc.version>
   <postgis.jdbc.version>1.3.3</postgis.jdbc.version>
-  <oracle.jdbc.version>19.6.0.0</oracle.jdbc.version>
+  <oracle.jdbc.version>19.10.0.0</oracle.jdbc.version>
+  <mysql.jdbc.version>8.0.23</mysql.jdbc.version>
   <solrj.version>7.2.1</solrj.version>
-  <jacoco.version>0.8.1</jacoco.version>
+  <mockito.version>3.8.0</mockito.version>
+  <jacoco.version>0.8.6</jacoco.version>
   <hazelcast.version>3.11.1</hazelcast.version>
   <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts} -Djava.awt.headless=${java.awt.headless} -Dsun.java2d.d3d=${sun.java2d.d3d} -DremoteOwsTests=${remoteOwsTests} -DquietTests=${quietTests} -Dorg.geotools.image.test.enabled=${image.tests} -Dorg.geotools.image.test.interactive=${interactive.image} -Duser.timezone=${user.timezone} -Dwindows.leniency=${windows.leniency} -XX:+TieredCompilation -XX:TieredStopAtLevel=1</argLine>
   <fmt.action>format</fmt.action>
@@ -2028,10 +1978,10 @@
   <errorProneFlags></errorProneFlags>
   <errorProne.version>2.3.4</errorProne.version>
   <javac.version>9+181-r4173-1</javac.version>
-  <pmd.version>6.20.0</pmd.version>
+  <pmd.version>6.29.0</pmd.version>
   <checkstyle.skip>false</checkstyle.skip>
   <qa>false</qa>
-  <lint>deprecation</lint>
+  <lint>deprecation,unchecked</lint>
  </properties>
 
  <profiles>
@@ -2230,7 +2180,7 @@
       </build>
     </profile>
 
-    <!-- Dependency version checks -->
+    <!-- Dependency vulnerability checks -->
     <profile>
       <id>dependencycheck</id>
       <build>
@@ -2238,10 +2188,11 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>3.2.1</version>
+            <version>6.1.1</version>
             <configuration>
               <failBuildOnCVSS>8</failBuildOnCVSS>
               <suppressionFile>${geoserverBaseDir}/../build/qa/dependency-check-suppression.xml</suppressionFile>
+              <format>ALL</format>
             </configuration>
             <executions>
               <execution>
@@ -2267,7 +2218,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-pmd-plugin</artifactId>
-            <version>3.11.0</version>
+            <version>3.14.0</version>
             <dependencies>
               <dependency>
                 <groupId>net.sourceforge.pmd</groupId>
@@ -2293,11 +2244,13 @@
             <configuration>
               <rulesets>
                 <ruleset>${geoserverBaseDir}/../build/qa/pmd-ruleset.xml</ruleset>
+                <ruleset>${geoserverBaseDir}/../build/qa/pmd-junit-ruleset.xml</ruleset>
               </rulesets>
               <failurePriority>3</failurePriority>
               <minimumPriority>3</minimumPriority>
               <verbose>true</verbose>
               <printFailingErrors>true</printFailingErrors>
+              <includeTests>true</includeTests>
               <excludeRoots>
                 <excludeRoot>target/generated-sources</excludeRoot>
               </excludeRoots>

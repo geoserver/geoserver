@@ -24,9 +24,10 @@ import org.geoserver.web.CapabilitiesHomePagePanel.CapsInfo;
 public class ServiceInfoCapabilitiesProvider implements CapabilitiesHomePageLinkProvider {
 
     /** @see org.geoserver.web.CapabilitiesHomePageLinkProvider#getCapabilitiesComponent */
+    @Override
     public Component getCapabilitiesComponent(final String id) {
 
-        List<CapsInfo> serviceInfoLinks = new ArrayList<CapabilitiesHomePagePanel.CapsInfo>();
+        List<CapsInfo> serviceInfoLinks = new ArrayList<>();
 
         List<Service> extensions = GeoServerExtensions.extensions(Service.class);
         for (Service si : extensions) {

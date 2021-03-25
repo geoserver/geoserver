@@ -4,7 +4,11 @@
  */
 package org.geoserver.wms.map;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.geotools.map.Layer;
 import org.geotools.renderer.RenderListener;
@@ -27,10 +31,10 @@ public class RenderTimeStatistics implements RenderListener {
 
     public RenderTimeStatistics() {
         this.layers = new LinkedList<>();
-        this.startRenderingLayersTimes = new HashMap<Integer, Long>();
-        this.endRenderingLayersTimes = new HashMap<Integer, Long>();
-        this.renderingLayersTimes = new HashMap<Integer, Long>();
-        this.renderingLayersIdxs = new ArrayList<Integer>();
+        this.startRenderingLayersTimes = new HashMap<>();
+        this.endRenderingLayersTimes = new HashMap<>();
+        this.renderingLayersTimes = new HashMap<>();
+        this.renderingLayersIdxs = new ArrayList<>();
     }
 
     @Override

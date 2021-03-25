@@ -44,6 +44,7 @@ public class AbstractGeometryTypeBinding
         this.crs = crs;
     }
 
+    @Override
     public void initializeChildContext(
             ElementInstance childInstance, Node node, MutablePicoContainer context) {
         // if an srsName is set for this geometry, put it in the context for
@@ -60,6 +61,7 @@ public class AbstractGeometryTypeBinding
         }
     }
 
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         try {
             if (node.hasAttribute("srsName")) {

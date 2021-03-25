@@ -115,18 +115,16 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     static final Envelope DEFAULT_ENVELOPE = new Envelope(-180, 180, -90, 90);
 
     /** Map of data store name to data store connection parameters map. */
-    private final Map<String, Map<String, Serializable>> datastoreParams =
-            new LinkedHashMap<String, Map<String, Serializable>>();
+    private final Map<String, Map<String, Serializable>> datastoreParams = new LinkedHashMap<>();
 
     /** Map of data store name to namespace prefix. */
-    private final Map<String, String> datastoreNamespacePrefixes =
-            new LinkedHashMap<String, String>();
+    private final Map<String, String> datastoreNamespacePrefixes = new LinkedHashMap<>();
 
     private final Map<String, String> namespaces;
 
     private final List<String> isolatedNamespaces = new ArrayList<>();
 
-    private final Map<String, String> layerStyles = new LinkedHashMap<String, String>();
+    private final Map<String, String> layerStyles = new LinkedHashMap<>();
 
     private File styles;
 
@@ -164,7 +162,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
 
     public AbstractAppSchemaMockData(Map<String, String> namespaces) {
         super(newRandomDirectory());
-        this.namespaces = new LinkedHashMap<String, String>(namespaces);
+        this.namespaces = new LinkedHashMap<>(namespaces);
 
         // create a featureTypes directory
         featureTypesBaseDir = new File(data, "featureTypes");
@@ -174,7 +172,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
         styles = new File(data, "styles");
         styles.mkdir();
 
-        propertiesFiles = new HashMap<String, File>();
+        propertiesFiles = new HashMap<>();
 
         addContent();
         // create corresponding tables in the test db using the properties files
@@ -217,6 +215,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *
      * @see org.geoserver.test.NamespaceTestData#getNamespaces()
      */
+    @Override
     public Map<String, String> getNamespaces() {
         return Collections.unmodifiableMap(namespaces);
     }
@@ -284,6 +283,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *
      * @see org.geoserver.data.test.TestData#getDataDirectoryRoot()
      */
+    @Override
     public File getDataDirectoryRoot() {
         return data;
     }
@@ -293,6 +293,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *
      * @see org.geoserver.data.test.TestData#isTestDataAvailable()
      */
+    @Override
     public boolean isTestDataAvailable() {
         return true;
     }
@@ -302,6 +303,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *
      * @see org.geoserver.data.test.TestData#setUp()
      */
+    @Override
+    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws IOException {
         setUpCatalog();
         setUpSecurity();
@@ -318,6 +321,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      *
      * @see org.geoserver.data.test.TestData#tearDown()
      */
+    @Override
+    @SuppressWarnings("PMD.JUnit4TestShouldUseAfterAnnotation")
     public void tearDown() {
         try {
             IOUtils.delete(data);
@@ -397,7 +402,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     private static void writeInfoFile(
             String namespacePrefix, String typeName, File featureTypeDir, String dataStoreName) {
         // prepare extra params default
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put(KEY_STYLE, "Default");
         params.put(KEY_SRS_HANDLINGS, 2);
         params.put(KEY_ALIAS, null);
@@ -408,51 +413,53 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             File info = new File(featureTypeDir, "info.xml");
             info.delete();
             info.createNewFile();
-            FileWriter writer = new FileWriter(info);
-            writer.write("<featureType datastore=\"" + dataStoreName + "\">");
-            writer.write("<name>" + typeName + "</name>");
-            writer.write("<nativeName>" + typeName + "</nativeName>");
-            if (params.get(KEY_ALIAS) != null)
-                writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
-            writer.write("<SRS>" + params.get(KEY_SRS_NUMBER) + "</SRS>");
-            // this mock type may have wrong SRS compared to the actual one in the property files...
-            // let's configure SRS handling not to alter the original one, and have 4326 used only
-            // for capabilities
-            writer.write("<SRSHandling>" + params.get(KEY_SRS_HANDLINGS) + "</SRSHandling>");
-            writer.write("<title>" + typeName + "</title>");
-            writer.write("<abstract>abstract about " + typeName + "</abstract>");
-            writer.write("<numDecimals value=\"8\"/>");
-            writer.write("<keywords>" + typeName + "</keywords>");
-            Envelope llEnvelope = (Envelope) params.get(KEY_LL_ENVELOPE);
-            if (llEnvelope == null) llEnvelope = DEFAULT_ENVELOPE;
-            writer.write(
-                    "<latLonBoundingBox dynamic=\"false\" minx=\""
-                            + llEnvelope.getMinX()
-                            + "\" miny=\""
-                            + llEnvelope.getMinY()
-                            + "\" maxx=\""
-                            + llEnvelope.getMaxX()
-                            + "\" maxy=\""
-                            + llEnvelope.getMaxY()
-                            + "\"/>");
-            Envelope nativeEnvelope = (Envelope) params.get(KEY_NATIVE_ENVELOPE);
-            if (nativeEnvelope != null)
+            try (FileWriter writer = new FileWriter(info)) {
+                writer.write("<featureType datastore=\"" + dataStoreName + "\">");
+                writer.write("<name>" + typeName + "</name>");
+                writer.write("<nativeName>" + typeName + "</nativeName>");
+                if (params.get(KEY_ALIAS) != null)
+                    writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
+                writer.write("<SRS>" + params.get(KEY_SRS_NUMBER) + "</SRS>");
+                // this mock type may have wrong SRS compared to the actual one in the property
+                // files...
+                // let's configure SRS handling not to alter the original one, and have 4326 used
+                // only
+                // for capabilities
+                writer.write("<SRSHandling>" + params.get(KEY_SRS_HANDLINGS) + "</SRSHandling>");
+                writer.write("<title>" + typeName + "</title>");
+                writer.write("<abstract>abstract about " + typeName + "</abstract>");
+                writer.write("<numDecimals value=\"8\"/>");
+                writer.write("<keywords>" + typeName + "</keywords>");
+                Envelope llEnvelope = (Envelope) params.get(KEY_LL_ENVELOPE);
+                if (llEnvelope == null) llEnvelope = DEFAULT_ENVELOPE;
                 writer.write(
-                        "<nativeBBox dynamic=\"false\" minx=\""
-                                + nativeEnvelope.getMinX()
+                        "<latLonBoundingBox dynamic=\"false\" minx=\""
+                                + llEnvelope.getMinX()
                                 + "\" miny=\""
-                                + nativeEnvelope.getMinY()
+                                + llEnvelope.getMinY()
                                 + "\" maxx=\""
-                                + nativeEnvelope.getMaxX()
+                                + llEnvelope.getMaxX()
                                 + "\" maxy=\""
-                                + nativeEnvelope.getMaxY()
+                                + llEnvelope.getMaxY()
                                 + "\"/>");
-            String style = (String) params.get(KEY_STYLE);
-            if (style == null) style = "Default";
-            writer.write("<styles default=\"" + style + "\"/>");
-            writer.write("</featureType>");
-            writer.flush();
-            writer.close();
+                Envelope nativeEnvelope = (Envelope) params.get(KEY_NATIVE_ENVELOPE);
+                if (nativeEnvelope != null)
+                    writer.write(
+                            "<nativeBBox dynamic=\"false\" minx=\""
+                                    + nativeEnvelope.getMinX()
+                                    + "\" miny=\""
+                                    + nativeEnvelope.getMinY()
+                                    + "\" maxx=\""
+                                    + nativeEnvelope.getMaxX()
+                                    + "\" maxy=\""
+                                    + nativeEnvelope.getMaxY()
+                                    + "\"/>");
+                String style = (String) params.get(KEY_STYLE);
+                if (style == null) style = "Default";
+                writer.write("<styles default=\"" + style + "\"/>");
+                writer.write("</featureType>");
+                writer.flush();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -572,9 +579,8 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      */
     public void addStyle(String styleId, String fileName) {
         layerStyles.put(styleId, styleId + ".sld");
-        InputStream styleContents = getClass().getResourceAsStream(TEST_DATA + fileName);
-        File to = new File(styles, styleId + ".sld");
-        try {
+        try (InputStream styleContents = getClass().getResourceAsStream(TEST_DATA + fileName)) {
+            File to = new File(styles, styleId + ".sld");
             IOUtils.copy(styleContents, to);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -726,53 +732,55 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @return Modified content string
      */
     private String modifyOnlineMappingFileContent(String mappingFileName) throws IOException {
-        InputStream is = openResource(mappingFileName);
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        StringBuffer content = new StringBuffer();
-        boolean parametersStartFound = false;
-        boolean parametersEndFound = false;
-        boolean isOracle = onlineTestId.equals("oracle");
-        for (String line = br.readLine(); line != null; line = br.readLine()) {
-            if (!parametersStartFound || (parametersStartFound && parametersEndFound)) {
-                // before <parameters> or after </parameters>
-                if (!parametersStartFound) {
-                    // look for start tag
-                    if (line.trim().equals("<parameters>")) {
-                        parametersStartFound = true;
-                        // copy <parameters> with new db params
-                        if (isOracle) {
-                            content.append(AppSchemaTestOracleSetup.DB_PARAMS);
+        try (InputStream is = openResource(mappingFileName);
+                BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            StringBuffer content = new StringBuffer();
+            boolean parametersStartFound = false;
+            boolean parametersEndFound = false;
+            boolean isOracle = onlineTestId.equals("oracle");
+            for (String line = br.readLine(); line != null; line = br.readLine()) {
+                if (!parametersStartFound || (parametersStartFound && parametersEndFound)) {
+                    // before <parameters> or after </parameters>
+                    if (!parametersStartFound) {
+                        // look for start tag
+                        if (line.trim().equals("<parameters>")) {
+                            parametersStartFound = true;
+                            // copy <parameters> with new db params
+                            if (isOracle) {
+                                content.append(AppSchemaTestOracleSetup.DB_PARAMS);
+                            } else {
+                                content.append(AppSchemaTestPostgisSetup.DB_PARAMS);
+                            }
                         } else {
-                            content.append(AppSchemaTestPostgisSetup.DB_PARAMS);
+                            // copy content
+                            content.append(line);
                         }
+                    } else if (line.trim().startsWith("<sourceType>")) {
+                        // make everything upper case due to OracleDialect not wrapping them in
+                        // quotes
+                        line = line.trim();
+                        String sourceTypeTag = "<sourceType>";
+                        content.append(sourceTypeTag);
+                        String tableName =
+                                line.substring(
+                                        line.indexOf(sourceTypeTag) + sourceTypeTag.length(),
+                                        line.indexOf("</sourceType>"));
+                        content.append(tableName.toUpperCase());
+                        content.append("</sourceType>");
+                        content.append("\n");
                     } else {
-                        // copy content
                         content.append(line);
                     }
-                } else if (line.trim().startsWith("<sourceType>")) {
-                    // make everything upper case due to OracleDialect not wrapping them in quotes
-                    line = line.trim();
-                    String sourceTypeTag = "<sourceType>";
-                    content.append(sourceTypeTag);
-                    String tableName =
-                            line.substring(
-                                    line.indexOf(sourceTypeTag) + sourceTypeTag.length(),
-                                    line.indexOf("</sourceType>"));
-                    content.append(tableName.toUpperCase());
-                    content.append("</sourceType>");
                     content.append("\n");
                 } else {
-                    content.append(line);
-                }
-                content.append("\n");
-            } else {
-                // else skip <parameters> content and do nothing
-                // look for end tag
-                if (line.trim().equals("</parameters>")) {
-                    parametersEndFound = true;
+                    // else skip <parameters> content and do nothing
+                    // look for end tag
+                    if (line.trim().equals("</parameters>")) {
+                        parametersEndFound = true;
+                    }
                 }
             }
+            return content.toString();
         }
-        return content.toString();
     }
 }

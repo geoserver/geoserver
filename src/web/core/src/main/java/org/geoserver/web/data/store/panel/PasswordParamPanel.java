@@ -17,7 +17,7 @@ import org.apache.wicket.model.IModel;
  *
  * @author Gabriel Roldan
  */
-public class PasswordParamPanel extends Panel implements ParamPanel {
+public class PasswordParamPanel extends Panel implements ParamPanel<String> {
 
     private static final long serialVersionUID = -7801141820174575611L;
 
@@ -25,8 +25,8 @@ public class PasswordParamPanel extends Panel implements ParamPanel {
 
     public PasswordParamPanel(
             final String id,
-            final IModel model,
-            final IModel paramLabelModel,
+            final IModel<String> model,
+            final IModel<String> paramLabelModel,
             final boolean required) {
         super(id, model);
         String requiredMark = required ? " *" : "";
@@ -41,14 +41,15 @@ public class PasswordParamPanel extends Panel implements ParamPanel {
         // keep the password value
         passwordField.setResetPassword(false);
 
-        FormComponentFeedbackBorder requiredFieldFeedback;
-        requiredFieldFeedback = new FormComponentFeedbackBorder("border");
+        FormComponentFeedbackBorder requiredFieldFeedback =
+                new FormComponentFeedbackBorder("border");
 
         requiredFieldFeedback.add(passwordField);
 
         add(requiredFieldFeedback);
     }
 
+    @Override
     public PasswordTextField getFormComponent() {
         return passwordField;
     }
@@ -57,21 +58,21 @@ public class PasswordParamPanel extends Panel implements ParamPanel {
      * Used so that someone with access to the browser cannot read the HTML source of the page and
      * get the password. It replaces it with random text but updates the original value on write.
      */
-    static class WriteOnlyModel implements IModel {
+    static class WriteOnlyModel implements IModel<String> {
         String fakePass = "_gs_pwd_" + UUID.randomUUID();
-        IModel delegate;
+        IModel<String> delegate;
 
-        public WriteOnlyModel(IModel delegate) {
+        public WriteOnlyModel(IModel<String> delegate) {
             this.delegate = delegate;
         }
 
         @Override
-        public Object getObject() {
+        public String getObject() {
             return fakePass;
         }
 
         @Override
-        public void setObject(Object object) {
+        public void setObject(String object) {
             if (!fakePass.equals(object)) {
                 delegate.setObject(object);
             }

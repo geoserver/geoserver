@@ -121,7 +121,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         configsContainer.add(configs);
 
         // enabled flag, and show the rest only if enabled is true
-        final PropertyModel<Boolean> enabledModel = new PropertyModel<Boolean>(model, "enabled");
+        final PropertyModel<Boolean> enabledModel = new PropertyModel<>(model, "enabled");
         enabled = new CheckBox("enabled", enabledModel);
         add(enabled);
         enabled.add(
@@ -147,8 +147,8 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         // check the attributes and show a dropdown
         List<String> attributes = getAttributesOfType(resource, type);
         attribute =
-                new DropDownChoice<String>(
-                        "attribute", new PropertyModel<String>(model, "attribute"), attributes);
+                new DropDownChoice<>(
+                        "attribute", new PropertyModel<>(model, "attribute"), attributes);
         attribute.setOutputMarkupId(true);
         attribute.setRequired(true);
         attContainer.add(attribute);
@@ -164,13 +164,11 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
                     }
                 });
 
-        List<String> endAttributes = new ArrayList<String>(attributes);
+        List<String> endAttributes = new ArrayList<>(attributes);
         initializeEndAttributesValues(endAttributes);
         endAttribute =
-                new DropDownChoice<String>(
-                        "endAttribute",
-                        new PropertyModel<String>(model, "endAttribute"),
-                        endAttributes);
+                new DropDownChoice<>(
+                        "endAttribute", new PropertyModel<>(model, "endAttribute"), endAttributes);
         endAttribute.setOutputMarkupId(true);
         endAttribute.setRequired(false);
         attContainer.add(endAttribute);
@@ -208,11 +206,11 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         // units block
         unitsContainer = new WebMarkupContainer("unitsContainer");
         configs.add(unitsContainer);
-        IModel<String> uModel = new PropertyModel<String>(model, "units");
-        units = new TextField<String>("units", uModel);
+        IModel<String> uModel = new PropertyModel<>(model, "units");
+        units = new TextField<>("units", uModel);
         unitsContainer.add(units);
-        IModel<String> usModel = new PropertyModel<String>(model, "unitSymbol");
-        unitSymbol = new TextField<String>("unitSymbol", usModel);
+        IModel<String> usModel = new PropertyModel<>(model, "unitSymbol");
+        unitSymbol = new TextField<>("unitSymbol", usModel);
         unitsContainer.add(unitSymbol);
         // set defaults for elevation if units have never been set
         if ("elevation".equals(id) && uModel.getObject() == null) {
@@ -232,9 +230,9 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
 
         presentationModes = getPresentationModes();
         presentation =
-                new DropDownChoice<DimensionPresentation>(
+                new DropDownChoice<>(
                         "presentation",
-                        new PropertyModel<DimensionPresentation>(model, "presentation"),
+                        new PropertyModel<>(model, "presentation"),
                         presentationModes,
                         new PresentationModeRenderer());
         configs.add(presentation);
@@ -253,10 +251,10 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
                     }
                 });
 
-        IModel<BigDecimal> rmodel = new PropertyModel<BigDecimal>(model, "resolution");
+        IModel<BigDecimal> rmodel = new PropertyModel<>(model, "resolution");
         resTime = new PeriodEditor("resTime", rmodel);
         resolutions.add(resTime);
-        resElevation = new TextField<BigDecimal>("resElevation", rmodel);
+        resElevation = new TextField<>("resElevation", rmodel);
         resolutions.add(resElevation);
         updateTypeDependentStates();
 
@@ -279,13 +277,11 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         defValueContainer.add(referenceValueContainer);
 
         defaultValueStrategies =
-                new ArrayList<DimensionDefaultValueSetting.Strategy>(
-                        Arrays.asList(DimensionDefaultValueSetting.Strategy.values()));
+                new ArrayList<>(Arrays.asList(DimensionDefaultValueSetting.Strategy.values()));
         IModel<DimensionDefaultValueSetting.Strategy> strategyModel =
-                new PropertyModel<DimensionDefaultValueSetting.Strategy>(
-                        model.getObject().getDefaultValue(), "strategy");
+                new PropertyModel<>(model.getObject().getDefaultValue(), "strategy");
         defaultValueStrategy =
-                new DropDownChoice<DimensionDefaultValueSetting.Strategy>(
+                new DropDownChoice<>(
                         "strategy",
                         strategyModel,
                         defaultValueStrategies,
@@ -310,11 +306,12 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         refValueValidationMessage.setVisible(false);
 
         IModel<String> refValueModel =
-                new PropertyModel<String>(model.getObject().getDefaultValue(), "referenceValue");
+                new PropertyModel<>(model.getObject().getDefaultValue(), "referenceValue");
         referenceValue = new TextField<>("referenceValue", refValueModel);
         referenceValue.add(
                 new AjaxFormComponentUpdatingBehavior("change") {
 
+                    @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         refValueValidationMessage.setDefaultModelObject(null);
                         refValueValidationMessage.setVisible(false);
@@ -492,6 +489,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         return true;
     }
 
+    @Override
     public void convertInput() {
         // Keep the original attributes
         if (resetDimensionDataOnDisabled() && !enabled.getModelObject()) {
@@ -583,7 +581,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
 
     /** Returns all attributes conforming to the specified type */
     List<String> getAttributesOfType(ResourceInfo resource, Class<?> type) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
         if (resource instanceof FeatureTypeInfo) {
             try {
@@ -639,8 +637,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
     }
 
     List<DimensionPresentation> getPresentationModes() {
-        presentationModes =
-                new ArrayList<DimensionPresentation>(Arrays.asList(DimensionPresentation.values()));
+        presentationModes = new ArrayList<>(Arrays.asList(DimensionPresentation.values()));
         if (String.class.isAssignableFrom(getAttributeType())
                 || Boolean.class.isAssignableFrom(getAttributeType())) {
             presentationModes.remove(DimensionPresentation.DISCRETE_INTERVAL);
@@ -672,10 +669,12 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
             super();
         }
 
+        @Override
         public Object getDisplayValue(DimensionPresentation object) {
             return new ParamResourceModel(object.name(), DimensionEditorBase.this).getString();
         }
 
+        @Override
         public String getIdValue(DimensionPresentation object, int index) {
             return String.valueOf(object.ordinal());
         }
@@ -693,10 +692,12 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
             super();
         }
 
+        @Override
         public Object getDisplayValue(DimensionDefaultValueSetting.Strategy object) {
             return new ParamResourceModel(object.name(), DimensionEditorBase.this).getString();
         }
 
+        @Override
         public String getIdValue(DimensionDefaultValueSetting.Strategy object, int index) {
             return String.valueOf(object.ordinal());
         }

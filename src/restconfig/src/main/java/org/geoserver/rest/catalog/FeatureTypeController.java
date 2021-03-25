@@ -568,7 +568,8 @@ public class FeatureTypeController extends AbstractCatalogController {
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
         return new ObjectToMapWrapper<FeatureTypeInfo>(FeatureTypeInfo.class) {
             @Override
-            protected void wrapInternal(Map properties, SimpleHash model, FeatureTypeInfo object) {
+            protected void wrapInternal(
+                    Map<String, Object> properties, SimpleHash model, FeatureTypeInfo object) {
                 try {
                     properties.put("boundingBox", object.boundingBox());
                 } catch (Exception e) {

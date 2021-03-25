@@ -25,10 +25,12 @@ class PushbackFeatureIterator<F extends Feature> implements FeatureIterator<F> {
         this.delegate = delegate;
     }
 
+    @Override
     public boolean hasNext() {
         return current != null || delegate.hasNext();
     }
 
+    @Override
     public F next() throws NoSuchElementException {
         if (current != null) {
             last = current;
@@ -54,6 +56,7 @@ class PushbackFeatureIterator<F extends Feature> implements FeatureIterator<F> {
         }
     }
 
+    @Override
     public void close() {
         delegate.close();
     }

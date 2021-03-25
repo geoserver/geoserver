@@ -13,7 +13,7 @@ import org.geowebcache.controller.GeoWebCacheDispatcherController;
 
 public class DispatcherController extends GeoWebCacheDispatcherController {
 
-    public static final ThreadLocal<String> BASE_URL = new InheritableThreadLocal<String>();
+    public static final ThreadLocal<String> BASE_URL = new InheritableThreadLocal<>();
 
     @Override
     public void handleRestApiRequest(HttpServletRequest request, HttpServletResponse response)

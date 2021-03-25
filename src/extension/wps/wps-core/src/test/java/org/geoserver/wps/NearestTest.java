@@ -12,7 +12,6 @@ import java.util.HashMap;
 import javax.xml.namespace.QName;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.geoserver.wfs.WFSInfo;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,11 +26,7 @@ public class NearestTest extends WPSTestSupport {
         super.onSetUp(testData);
 
         testData.addVectorLayer(
-                STREAMS,
-                new HashMap<LayerProperty, Object>(),
-                "Streams.properties",
-                MockData.class,
-                getCatalog());
+                STREAMS, new HashMap<>(), "Streams.properties", MockData.class, getCatalog());
     }
 
     @Before

@@ -20,7 +20,19 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.web.CatalogIconFactory;
 import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -72,7 +84,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
         this.storeId = storeId;
 
         // the store selector, used when no store is initially known
-        Form<?> selector = new Form<Void>("selector");
+        Form<?> selector = new Form<>("selector");
         selector.add(storesDropDown());
         selector.setVisible(storeId == null);
         add(selector);
@@ -269,7 +281,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         if (stores.getModelObject() != null) {
-                            StoreInfo store = (StoreInfo) stores.getModelObject();
+                            StoreInfo store = stores.getModelObject();
                             NewLayerPage.this.storeId = store.getId();
                             provider.setStoreId(store.getId());
                             storeName.setDefaultModelObject(store.getName());

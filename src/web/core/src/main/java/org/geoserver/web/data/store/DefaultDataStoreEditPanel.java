@@ -25,6 +25,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
@@ -93,7 +94,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             throw new RuntimeException(e);
         }
 
-        final Map<String, ParamInfo> paramsMetadata = new LinkedHashMap<String, ParamInfo>();
+        final Map<String, ParamInfo> paramsMetadata = new LinkedHashMap<>();
 
         {
             final boolean isNew = null == info.getId();
@@ -112,20 +113,20 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             }
         }
 
-        final List<String> keys = new ArrayList<String>(paramsMetadata.keySet());
-        final IModel paramsModel = new PropertyModel(model, "connectionParameters");
+        final List<String> keys = new ArrayList<>(paramsMetadata.keySet());
+        final IModel<Map<String, Serializable>> paramsModel =
+                new PropertyModel<>(model, "connectionParameters");
 
-        ListView paramsList =
-                new ListView("parameters", keys) {
+        ListView<String> paramsList =
+                new ListView<String>("parameters", keys) {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void populateItem(ListItem item) {
+                    protected void populateItem(ListItem<String> item) {
                         String paramName = item.getDefaultModelObjectAsString();
                         ParamInfo paramMetadata = paramsMetadata.get(paramName);
 
-                        Component inputComponent;
-                        inputComponent =
+                        Component inputComponent =
                                 getInputComponent("parameterPanel", paramsModel, paramMetadata);
 
                         String description = paramMetadata.getTitle();
@@ -146,7 +147,9 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
      * properties.
      */
     protected Panel getInputComponent(
-            final String componentId, final IModel paramsModel, final ParamInfo paramMetadata) {
+            final String componentId,
+            final IModel<Map<String, Serializable>> paramsModel,
+            final ParamInfo paramMetadata) {
 
         final GeoServerEnvironment gsEnvironment =
                 GeoServerExtensions.bean(GeoServerEnvironment.class);
@@ -160,14 +163,14 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
 
         Panel parameterPanel;
         if ("namespace".equals(paramName)) {
-            IModel namespaceModel = new NamespaceParamModel(paramsModel, paramName);
-            IModel paramLabelModel = new ResourceModel(paramLabel, paramLabel);
+            IModel<NamespaceInfo> namespaceModel = new NamespaceParamModel(paramsModel, paramName);
+            IModel<String> paramLabelModel = new ResourceModel(paramLabel, paramLabel);
             parameterPanel = new NamespacePanel(componentId, namespaceModel, paramLabelModel, true);
-        } else if (options != null && options.size() > 0) {
+        } else if (options != null && !options.isEmpty()) {
 
-            IModel<Serializable> valueModel = new MapModel(paramsModel, paramName);
+            IModel<Serializable> valueModel = new MapModel<>(paramsModel, paramName);
             if (binding.isEnum()) {
-                valueModel = new EnumAdapterModel(valueModel, binding);
+                valueModel = adaptEnumeration(binding, valueModel);
             }
             IModel<String> labelModel = new ResourceModel(paramLabel, paramLabel);
             parameterPanel =
@@ -179,14 +182,14 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             parameterPanel =
                     new CheckBoxParamPanel(
                             componentId,
-                            new MapModel(paramsModel, paramName),
+                            new MapModel<>(paramsModel, paramName),
                             new ResourceModel(paramLabel, paramLabel));
 
         } else if (File.class == binding) {
             parameterPanel =
                     new FileParamPanel(
                             componentId,
-                            new MapModel(paramsModel, paramName),
+                            new MapModel<>(paramsModel, paramName),
                             new ResourceModel(paramLabel, paramLabel),
                             required);
 
@@ -194,15 +197,15 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             parameterPanel =
                     new PasswordParamPanel(
                             componentId,
-                            new MapModel(paramsModel, paramName),
+                            new MapModel<>(paramsModel, paramName),
                             new ResourceModel(paramLabel, paramLabel),
                             required);
         } else {
-            IModel model;
+            IModel<String> model;
             if ("url".equalsIgnoreCase(paramName)) {
                 model = new URLModel(paramsModel, paramName);
             } else {
-                model = new MapModel(paramsModel, paramName);
+                model = new MapModel<>(paramsModel, paramName);
             }
 
             Panel tp;
@@ -215,7 +218,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
                                 required);
             } else {
                 tp =
-                        new TextParamPanel(
+                        new TextParamPanel<>(
                                 componentId,
                                 model,
                                 new ResourceModel(paramLabel, paramLabel),
@@ -223,11 +226,12 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             }
 
             // if it can be a reference to the local filesystem make sure it's valid
+            @SuppressWarnings("unchecked")
             FormComponent<String> fc = ((ParamPanel) tp).getFormComponent();
 
             // AF: Disable Validator if GeoServer Env Parametrization is enabled!
             if (paramName.equalsIgnoreCase("url")) {
-                if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                if (gsEnvironment == null || !GeoServerEnvironment.allowEnvParametrization()) {
                     fc.add(new FileExistsValidator());
                 }
             }
@@ -238,7 +242,7 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
             // absolute and bye bye data dir portability
 
             // AF: Disable Binding if GeoServer Env Parametrization is enabled!
-            if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+            if (gsEnvironment == null || !GeoServerEnvironment.allowEnvParametrization()) {
                 if (binding != null
                         && !String.class.equals(binding)
                         && !File.class.equals(binding)
@@ -260,6 +264,12 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
         return parameterPanel;
     }
 
+    @SuppressWarnings("unchecked")
+    private IModel<Serializable> adaptEnumeration(
+            Class<?> binding, IModel<Serializable> valueModel) {
+        return new EnumAdapterModel(valueModel, binding);
+    }
+
     private boolean isEmpty(Object value) {
         if (value == null) {
             return true;
@@ -277,15 +287,14 @@ public class DefaultDataStoreEditPanel extends StoreEditPanel {
      *
      * @author aaime
      */
-    static final class URLModel extends MapModel {
+    static final class URLModel extends MapModel<String> {
 
-        URLModel(IModel model, String expression) {
+        URLModel(IModel<Map<String, Serializable>> model, String expression) {
             super(model, expression);
         }
 
         @Override
-        public void setObject(Object object) {
-            String file = (String) object;
+        public void setObject(String file) {
             if (!file.startsWith("file://")
                     && !file.startsWith("file:")
                     && !file.startsWith("http://")

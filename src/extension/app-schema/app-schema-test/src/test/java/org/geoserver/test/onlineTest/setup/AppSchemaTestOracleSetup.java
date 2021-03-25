@@ -161,7 +161,7 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                 // + pkey
                 int size = schema.getAttributeCount() + 1;
                 String[] fieldNames = new String[size];
-                List<String> createParams = new ArrayList<String>();
+                List<String> createParams = new ArrayList<>();
                 int j = 0;
                 String type;
                 String field;
@@ -235,8 +235,9 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                     j++;
                 }
                 // Add numeric PK for sorting
-                fieldNames[j] = "PKEY";
-                createParams.add("PKEY VARCHAR2(30)");
+                String pkey = schema.getTypeName() + "_PKEY";
+                fieldNames[j] = pkey;
+                createParams.add(pkey + " VARCHAR2(30)");
                 buf.append(StringUtils.join(createParams.iterator(), ", "));
                 buf.append(")\n");
                 buf.append(
@@ -244,7 +245,9 @@ public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
                                 + tableName
                                 + " ADD CONSTRAINT "
                                 + tableName
-                                + " PRIMARY KEY (PKEY)\n");
+                                + " PRIMARY KEY ("
+                                + pkey
+                                + ")\n");
                 // then insert rows
                 SimpleFeature feature;
                 FeatureId id;

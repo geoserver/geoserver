@@ -6,10 +6,10 @@
 package org.geoserver.importer.web;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
-import java.io.Serializable;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.wicket.model.Model;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.geoserver.importer.ImportData;
 import org.geoserver.importer.mosaic.Mosaic;
 import org.geoserver.web.wicket.browser.GeoServerFileChooser;
@@ -22,7 +22,13 @@ public class MosaicPanel extends SpatialFilePanel {
 
     @Override
     protected void initFileChooser(GeoServerFileChooser fileChooser) {
-        fileChooser.setFilter(new Model((Serializable) DirectoryFileFilter.DIRECTORY));
+        fileChooser.setFilter(
+                new LoadableDetachableModel<FileFilter>() {
+                    @Override
+                    protected FileFilter load() {
+                        return DirectoryFileFilter.DIRECTORY;
+                    }
+                });
     }
 
     @Override

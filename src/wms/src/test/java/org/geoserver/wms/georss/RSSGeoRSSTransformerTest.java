@@ -5,8 +5,8 @@
  */
 package org.geoserver.wms.georss;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -69,11 +69,11 @@ public class RSSGeoRSSTransformerTest extends WMSTestSupport {
                     new File(
                             testData.getDataDirectoryRoot().getAbsolutePath()
                                     + "/workspaces/cite/cite/BasicPolygons/link.ftl");
-            FileOutputStream out = new FileOutputStream(linkFile);
-            out.write("http://dummp.com".getBytes());
-            out.close();
+            try (FileOutputStream out = new FileOutputStream(linkFile)) {
+                out.write("http://dummp.com".getBytes());
+            }
         } catch (Exception e) {
-            System.out.println("Error writing link.ftl: " + e);
+            LOGGER.severe("Error writing link.ftl: " + e);
         }
 
         Document document;

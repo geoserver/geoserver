@@ -5,6 +5,7 @@
 package org.geoserver.security;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -104,8 +105,8 @@ public class GeoServerRestRoleServiceTest {
         assertEquals(3, roles.size());
         assertEquals("ROLE_ADMIN", adminRole.getAuthority());
         assertEquals(testUserEmailRoles.size(), testUserRoles.size());
-        assertTrue(!testUserRoles.contains(GeoServerRole.ADMIN_ROLE));
-        assertTrue(!testUserRoles.contains(adminRole));
+        assertFalse(testUserRoles.contains(GeoServerRole.ADMIN_ROLE));
+        assertFalse(testUserRoles.contains(adminRole));
         assertTrue(adminUserRoles.contains(GeoServerRole.ADMIN_ROLE));
     }
 

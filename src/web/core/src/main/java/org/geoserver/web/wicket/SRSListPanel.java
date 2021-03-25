@@ -69,7 +69,7 @@ public abstract class SRSListPanel extends Panel {
                     protected Component getComponentForProperty(
                             String id, IModel<SRS> itemModel, Property<SRS> property) {
 
-                        SRS srs = (SRS) itemModel.getObject();
+                        SRS srs = itemModel.getObject();
 
                         if (SRSProvider.CODE.equals(property)) {
 

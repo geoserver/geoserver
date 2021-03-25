@@ -63,7 +63,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
         @Override
         protected List<String> load() {
             List<AuthorityURLInfo> authorities = availableAuthoritiesProvider.getModelObject();
-            List<String> names = new ArrayList<String>(authorities.size());
+            List<String> names = new ArrayList<>(authorities.size());
             for (AuthorityURLInfo auth : authorities) {
                 names.add(auth.getName());
             }
@@ -119,7 +119,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
 
         identifiers =
                 new ListView<LayerIdentifierInfo>(
-                        "identifiers", new ArrayList<LayerIdentifierInfo>(getModelObject())) {
+                        "identifiers", new ArrayList<>(getModelObject())) {
 
                     private static final long serialVersionUID = 1L;
 
@@ -131,14 +131,13 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
                                         "class", item.getIndex() % 2 == 0 ? "even" : "odd"));
 
                         IModel<String> authModel =
-                                new PropertyModel<String>(item.getModel(), "authority");
+                                new PropertyModel<>(item.getModel(), "authority");
 
                         IModel<List<String>> authNamesModel = new AuthListModel();
 
                         // Authority name
-                        DropDownChoice<String> authorities;
-                        authorities =
-                                new DropDownChoice<String>(
+                        DropDownChoice<String> authorities =
+                                new DropDownChoice<>(
                                         "authority", authModel, authNamesModel.getObject());
 
                         authorities.setRequired(true);
@@ -149,11 +148,10 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
                         item.add(authFeedbak);
 
                         // Identifier
-                        TextField<String> identifier;
-                        identifier =
-                                new TextField<String>(
+                        TextField<String> identifier =
+                                new TextField<>(
                                         "identifier",
-                                        new PropertyModel<String>(item.getModel(), "identifier"));
+                                        new PropertyModel<>(item.getModel(), "identifier"));
                         identifier.setRequired(true);
 
                         FormComponentFeedbackBorder idFeedbak =
@@ -163,16 +161,14 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
 
                         // remove link
                         AjaxLink<Integer> link =
-                                new AjaxLink<Integer>(
-                                        "removeLink", new Model<Integer>(item.getIndex())) {
+                                new AjaxLink<Integer>("removeLink", new Model<>(item.getIndex())) {
 
                                     private static final long serialVersionUID = 1L;
 
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
                                         List<LayerIdentifierInfo> list =
-                                                new ArrayList<LayerIdentifierInfo>(
-                                                        identifiers.getModelObject());
+                                                new ArrayList<>(identifiers.getModelObject());
                                         int index = getModelObject();
                                         list.remove(index);
                                         identifiers.setModelObject(list);
@@ -213,7 +209,7 @@ public class LayerIdentifierListEditor extends FormComponentPanel<List<LayerIden
 
     private void updateLinksVisibility() {
         List<LayerIdentifierInfo> list = identifiers.getModelObject();
-        boolean anyLink = list.size() > 0;
+        boolean anyLink = !list.isEmpty();
         table.setVisible(anyLink);
         noMetadata.setVisible(!anyLink);
     }

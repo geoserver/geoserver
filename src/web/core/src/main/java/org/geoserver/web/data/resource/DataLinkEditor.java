@@ -5,7 +5,6 @@
  */
 package org.geoserver.web.data.resource;
 
-import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -56,8 +55,7 @@ public class DataLinkEditor extends Panel {
         container.add(table);
         links =
                 new ListView<DataLinkInfo>(
-                        "links",
-                        new PropertyModel<List<DataLinkInfo>>(resourceModel, "dataLinks")) {
+                        "links", new PropertyModel<>(resourceModel, "dataLinks")) {
 
                     @Override
                     protected void populateItem(ListItem<DataLinkInfo> item) {
@@ -73,14 +71,13 @@ public class DataLinkEditor extends Panel {
                         item.add(urlBorder);
                         TextField<String> format =
                                 new TextField<>(
-                                        "format",
-                                        new PropertyModel<String>(item.getModel(), "type"));
+                                        "format", new PropertyModel<>(item.getModel(), "type"));
                         format.setRequired(true);
                         item.add(format);
                         TextField<String> url =
                                 new TextField<>(
                                         "dataLinkURL",
-                                        new PropertyModel<String>(item.getModel(), "content"));
+                                        new PropertyModel<>(item.getModel(), "content"));
                         url.add(new UrlValidator());
                         url.setRequired(true);
                         urlBorder.add(url);
@@ -91,7 +88,7 @@ public class DataLinkEditor extends Panel {
 
                                     @Override
                                     public void onClick(AjaxRequestTarget target) {
-                                        ResourceInfo ri = (ResourceInfo) resourceModel.getObject();
+                                        ResourceInfo ri = resourceModel.getObject();
                                         ri.getDataLinks().remove(getModelObject());
                                         updateLinksVisibility();
                                         target.add(container);
@@ -115,7 +112,7 @@ public class DataLinkEditor extends Panel {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        ResourceInfo ri = (ResourceInfo) resourceModel.getObject();
+                        ResourceInfo ri = resourceModel.getObject();
                         DataLinkInfo link = ri.getCatalog().getFactory().createDataLink();
                         link.setType("text/plain");
                         ri.getDataLinks().add(link);

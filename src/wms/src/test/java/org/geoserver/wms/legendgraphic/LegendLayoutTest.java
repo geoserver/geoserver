@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import javax.media.jai.PlanarImage;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -30,7 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridCoverage;
 
-public class LegendLayoutTest extends BaseLegendTest {
+public class LegendLayoutTest extends BaseLegendTest<BufferedImageLegendGraphicBuilder> {
     @Before
     public void setLegendProducer() throws Exception {
         this.legendProducer = new BufferedImageLegendGraphicBuilder();
@@ -51,27 +52,27 @@ public class LegendLayoutTest extends BaseLegendTest {
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature;
-            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature =
+                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(multipleRulesStyle);
 
             final int HEIGHT_HINT = 30;
             req.setHeight(HEIGHT_HINT);
-            HashMap legendOptions = new HashMap();
+            Map<String, Object> legendOptions = new HashMap<>();
             req.setLegendOptions(legendOptions);
 
             // use default values for the rest of parameters
             this.legendProducer.buildLegendGraphic(req);
 
-            BufferedImage vImage = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+            BufferedImage vImage = this.legendProducer.buildLegendGraphic(req);
 
             // Change layout
-            legendOptions = new HashMap();
+            legendOptions = new HashMap<>();
             legendOptions.put("layout", "horizontal");
             req.setLegendOptions(legendOptions);
 
-            BufferedImage hImage = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+            BufferedImage hImage = this.legendProducer.buildLegendGraphic(req);
 
             // Check rotation
             assertEquals(vImage.getHeight(), hImage.getWidth());
@@ -103,8 +104,8 @@ public class LegendLayoutTest extends BaseLegendTest {
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature;
-            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature =
+                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(multipleRulesStyle);
 
@@ -112,7 +113,7 @@ public class LegendLayoutTest extends BaseLegendTest {
             req.setHeight(HEIGHT_HINT);
 
             // Change layout
-            HashMap legendOptions = new HashMap();
+            Map<String, Object> legendOptions = new HashMap<>();
             legendOptions.put("layout", "horizontal");
             legendOptions.put("mx", "0");
             legendOptions.put("my", "0");
@@ -121,7 +122,7 @@ public class LegendLayoutTest extends BaseLegendTest {
             legendOptions.put("forceRule", "false");
             req.setLegendOptions(legendOptions);
 
-            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
 
             // Check output
             assertEquals(HEIGHT_HINT, image.getHeight());
@@ -154,8 +155,8 @@ public class LegendLayoutTest extends BaseLegendTest {
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature;
-            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature =
+                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(multipleRulesStyle);
 
@@ -163,7 +164,7 @@ public class LegendLayoutTest extends BaseLegendTest {
             req.setHeight(HEIGHT_HINT);
 
             // Change layout
-            HashMap legendOptions = new HashMap();
+            Map<String, Object> legendOptions = new HashMap<>();
             legendOptions.put("layout", "vertical");
             legendOptions.put("columnheight", "85");
             legendOptions.put("columns", "1");
@@ -174,7 +175,7 @@ public class LegendLayoutTest extends BaseLegendTest {
             legendOptions.put("forceRule", "false");
             req.setLegendOptions(legendOptions);
 
-            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
 
             // Check output
             assertEquals(3 * HEIGHT_HINT, image.getHeight());
@@ -207,8 +208,8 @@ public class LegendLayoutTest extends BaseLegendTest {
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature;
-            feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature =
+                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(multipleRulesStyle);
 
@@ -216,7 +217,7 @@ public class LegendLayoutTest extends BaseLegendTest {
             req.setHeight(HEIGHT_HINT);
 
             // Change layout
-            HashMap legendOptions = new HashMap();
+            Map<String, Object> legendOptions = new HashMap<>();
             legendOptions.put("layout", "horizontal");
             legendOptions.put("rowwidth", "100");
             legendOptions.put("rows", "2");
@@ -227,7 +228,7 @@ public class LegendLayoutTest extends BaseLegendTest {
             legendOptions.put("forceRule", "false");
             req.setLegendOptions(legendOptions);
 
-            BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+            BufferedImage image = this.legendProducer.buildLegendGraphic(req);
             // Check output
             assertEquals(2 * HEIGHT_HINT, image.getHeight());
             assertPixel(image, 9, 13, new Color(115, 38, 0));
@@ -260,14 +261,14 @@ public class LegendLayoutTest extends BaseLegendTest {
         final int HEIGHT_HINT = 20;
         req.setHeight(HEIGHT_HINT);
 
-        HashMap legendOptions = new HashMap();
+        Map<String, Object> legendOptions = new HashMap<>();
         legendOptions.put("layout", "horizontal");
         legendOptions.put("forceLabels", "off");
         req.setLegendOptions(legendOptions);
 
         this.legendProducer.buildLegendGraphic(req);
 
-        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
 
         assertEquals(HEIGHT_HINT, image.getHeight());
         assertPixel(image, 10, HEIGHT_HINT / 2, new Color(192, 160, 0));
@@ -306,12 +307,12 @@ public class LegendLayoutTest extends BaseLegendTest {
         final int HEIGHT_HINT = 20;
         req.setHeight(HEIGHT_HINT);
 
-        HashMap legendOptions = new HashMap();
+        Map<String, Object> legendOptions = new HashMap<>();
         legendOptions.put("forceTitles", "on");
         legendOptions.put("fontName", "Bitstream Vera Sans");
         req.setLegendOptions(legendOptions);
 
-        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
 
         // Title height may vary between test environments
         assertTrue(
@@ -328,7 +329,7 @@ public class LegendLayoutTest extends BaseLegendTest {
         legendOptions.put("forceTitles", "off");
         req.setLegendOptions(legendOptions);
 
-        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        image = this.legendProducer.buildLegendGraphic(req);
 
         assertEquals(HEIGHT_HINT * 6, image.getHeight());
         // Verify the first icon of each layer is in the right place
@@ -377,12 +378,12 @@ public class LegendLayoutTest extends BaseLegendTest {
         final int HEIGHT_HINT = 20;
         req.setHeight(HEIGHT_HINT);
 
-        HashMap legendOptions = new HashMap();
+        Map<String, Object> legendOptions = new HashMap<>();
         legendOptions.put("forceTitles", "off");
         legendOptions.put("forceLabels", "on");
         req.setLegendOptions(legendOptions);
 
-        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
 
         assertEquals(HEIGHT_HINT * 6, image.getHeight());
         assertTrue("Expected witdh > 40 but was " + image.getWidth(), 40 < image.getWidth());
@@ -395,7 +396,7 @@ public class LegendLayoutTest extends BaseLegendTest {
         legendOptions.put("forceLabels", "off");
         req.setLegendOptions(legendOptions);
 
-        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        image = this.legendProducer.buildLegendGraphic(req);
 
         assertEquals(HEIGHT_HINT * 6, image.getHeight());
         // With no titles and no labels, legend should be as wide as a single icon
@@ -439,14 +440,14 @@ public class LegendLayoutTest extends BaseLegendTest {
 
         // Test layout with grouplayout=VERTICAL
 
-        HashMap legendOptions = new HashMap();
+        Map<String, Object> legendOptions = new HashMap<>();
         legendOptions.put("forceTitles", "off");
         legendOptions.put("forceLabels", "off");
         legendOptions.put("layout", "VERTICAL");
         legendOptions.put("grouplayout", "VERTICAL");
         req.setLegendOptions(legendOptions);
 
-        BufferedImage image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
 
         /* Legend layout:
          *
@@ -471,7 +472,7 @@ public class LegendLayoutTest extends BaseLegendTest {
         legendOptions.put("grouplayout", "VERTICAL");
         req.setLegendOptions(legendOptions);
 
-        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        image = this.legendProducer.buildLegendGraphic(req);
 
         /* Legend layout:
          *
@@ -495,7 +496,7 @@ public class LegendLayoutTest extends BaseLegendTest {
         legendOptions.put("grouplayout", "HORIZONTAL");
         req.setLegendOptions(legendOptions);
 
-        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        image = this.legendProducer.buildLegendGraphic(req);
 
         /* Legend layout:
          *
@@ -517,7 +518,7 @@ public class LegendLayoutTest extends BaseLegendTest {
         legendOptions.put("grouplayout", "HORIZONTAL");
         req.setLegendOptions(legendOptions);
 
-        image = (BufferedImage) this.legendProducer.buildLegendGraphic(req);
+        image = this.legendProducer.buildLegendGraphic(req);
 
         /* Legend layout:
          *

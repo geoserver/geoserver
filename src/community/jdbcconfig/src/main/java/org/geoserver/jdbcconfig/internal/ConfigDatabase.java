@@ -54,11 +54,11 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CatalogVisitor;
@@ -117,6 +117,9 @@ import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.sort.SortBy;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -130,8 +133,25 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-/** */
-public class ConfigDatabase {
+/**
+ * Stores and retrieves actual {@link CatalogInfo} and {@link ServiceInfo} from the underlying
+ * database, with an in memory cache for both objects.
+ *
+ * <p><b>Important implementation notes</b> This bean is annotated with {@link Transactional} in all
+ * write methods and all exposed read methods. The write methods are obvious, the read ones less so.
+ * The reads load XML from the database and use XStream to decode it. This can cause references to
+ * object related objects to be resolved, which happen by calling again onto the catalog, the facade
+ * and eventually again this class. Using a read only transaction around the read methods ensures
+ * that a single connection is used in this process, which prevents deadlock at the connection pool
+ * level. Also, methods returning a {@link CloseableIterator} of info objects just look up the
+ * identifier, and resolve them to full objects during the iteration. This lazy loading also needs
+ * to be protected by transactional loading, which is tricky. A trivial implementation would just
+ * call itself, which ends up bypassing the transaction annotations (which are implemented as a
+ * proxy around the object). To avoid deadlocks there, the {@link ConfigDatabase} also loads itself
+ * from the application context, with full transactional proxying, and uses that instance for
+ * deferred loading while iterating.
+ */
+public class ConfigDatabase implements ApplicationContextAware {
 
     public static final Logger LOGGER = Logging.getLogger(ConfigDatabase.class);
 
@@ -164,6 +184,9 @@ public class ConfigDatabase {
     private ConfigClearingListener configListener;
 
     private ConcurrentMap<String, Semaphore> locks;
+
+    /* the bean itself, but with the transactional proxy wrappers around */
+    private ConfigDatabase transactionalConfigDatabase;
 
     /** Protected default constructor needed by spring-jdbc instrumentation */
     protected ConfigDatabase() {
@@ -291,6 +314,11 @@ public class ConfigDatabase {
         return count;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> CloseableIterator<T> query(
             final Class<T> of,
             final Filter filter,
@@ -298,12 +326,17 @@ public class ConfigDatabase {
             @Nullable Integer limit,
             @Nullable SortBy sortOrder) {
         if (sortOrder == null) {
-            return query(of, filter, offset, limit, new SortBy[] {});
+            return query(of, filter, offset, limit);
         } else {
-            return query(of, filter, offset, limit, new SortBy[] {sortOrder});
+            return query(of, filter, offset, limit, sortOrder);
         }
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> CloseableIterator<T> query(
             final Class<T> of,
             final Filter filter,
@@ -392,7 +425,11 @@ public class ConfigDatabase {
                             @Nullable
                             @Override
                             public T apply(String id) {
-                                return getById(id, of);
+                                // tricky bit... transaction management works only if the method
+                                // is called from a Spring proxy that processed the annotations,
+                                // so we cannot call getId directly, it needs to be done from
+                                // "outside"
+                                return transactionalConfigDatabase.getById(id, of);
                             }
                         });
 
@@ -415,6 +452,11 @@ public class ConfigDatabase {
         return result;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> CloseableIterator<String> queryIds(
             final Class<T> of, final Filter filter) {
 
@@ -480,6 +522,11 @@ public class ConfigDatabase {
         return iterator;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> List<T> queryAsList(
             final Class<T> of,
             final Filter filter,
@@ -497,6 +544,11 @@ public class ConfigDatabase {
         return list;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends CatalogInfo> T getDefault(final String key, Class<T> type) {
         String sql = "SELECT ID FROM DEFAULT_OBJECT WHERE DEF_KEY = :key";
 
@@ -525,7 +577,8 @@ public class ConfigDatabase {
 
         byte[] value = binding.objectToEntry(info);
         final String blob = new String(value, StandardCharsets.UTF_8);
-        final Class<T> interf = ClassMappings.fromImpl(info.getClass()).getInterface();
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        final Class<T> interf = (Class) ClassMappings.fromImpl(info.getClass()).getInterface();
         final Integer typeId = dbMappings.getTypeId(interf);
 
         Map<String, ?> params = params("type_id", typeId, "id", id, "blob", blob);
@@ -603,7 +656,11 @@ public class ConfigDatabase {
 
         if (isRelationShip) {
             Info relatedObject = lookUpRelatedObject(info, prop, colIndex);
-            if (relatedObject == null) {
+            // Layer styles might not be actually persisted, in the case of WMS cascaded layers,
+            // where they are created on the fly based on the style names found in the caps
+            // documents. So check if the id is not null, in addition to checking
+            // if the related object is not null.
+            if (relatedObject == null || relatedObject.getId() == null) {
                 concreteTargetPropertyOid = null;
             } else {
                 // the related property may refer to an abstract type (e.g.
@@ -677,8 +734,8 @@ public class ConfigDatabase {
         String[] steps = localPropertyName.split("\\.");
         // Step back through ancestor property references If starting at a.b.c.d, then look at
         // a.b.c, then a.b, then a
-        for (int i = steps.length - 1; i >= 0; i--) {
-            String backPropName = Strings.join(".", Arrays.copyOfRange(steps, 0, i));
+        for (int len = steps.length - 1; len > 0; len--) {
+            String backPropName = Arrays.stream(steps).limit(len).collect(Collectors.joining("."));
             Object backProp = ff.property(backPropName).evaluate(info);
             if (backProp != null) {
                 if (prop.isCollectionProperty()
@@ -837,7 +894,8 @@ public class ConfigDatabase {
 
         updateQueryableProperties(oldObject, objectId, changedProperties);
 
-        Class<T> clazz = ClassMappings.fromImpl(oldObject.getClass()).getInterface();
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        Class<T> clazz = (Class) ClassMappings.fromImpl(oldObject.getClass()).getInterface();
 
         // / <HACK>
         // we're explicitly changing the resourceinfo's layer name property here because
@@ -1034,6 +1092,11 @@ public class ConfigDatabase {
     }
 
     @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> T getById(final String id, final Class<T> type) {
         Assert.notNull(id, "id");
 
@@ -1097,6 +1160,11 @@ public class ConfigDatabase {
     }
 
     @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> String getIdByIdentity(
             final Class<T> type, final String... identityMappings) {
         Assert.notNull(identityMappings, "id");
@@ -1124,6 +1192,11 @@ public class ConfigDatabase {
     }
 
     @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public ServiceInfo getService(
             final WorkspaceInfo ws, final Class<? extends ServiceInfo> clazz) {
         Assert.notNull(clazz, "clazz");
@@ -1150,6 +1223,11 @@ public class ConfigDatabase {
     }
 
     @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> T getByIdentity(final Class<T> type, final String... identityMappings) {
         String id = getIdByIdentity(type, identityMappings);
 
@@ -1192,9 +1270,12 @@ public class ConfigDatabase {
         } else if (real instanceof LayerInfo) {
             LayerInfo layer = (LayerInfo) real;
             resolveTransient(layer.getDefaultStyle());
-            if (!layer.getStyles().isEmpty()) {
-                for (StyleInfo s : layer.getStyles()) {
-                    resolveTransient(s);
+            // avoids concurrent modification exceptions on the list contents
+            synchronized (layer) {
+                if (!layer.getStyles().isEmpty()) {
+                    for (StyleInfo s : layer.getStyles()) {
+                        resolveTransient(s);
+                    }
                 }
             }
             resolveTransient(layer.getResource());
@@ -1287,6 +1368,11 @@ public class ConfigDatabase {
     private void disposeServiceCache() {
         serviceCache.invalidateAll();
         serviceCache.cleanUp();
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.transactionalConfigDatabase = applicationContext.getBean(ConfigDatabase.class);
     }
 
     private final class CatalogLoader implements Callable<CatalogInfo> {
@@ -1508,6 +1594,11 @@ public class ConfigDatabase {
         return !propertyTypes.isEmpty();
     }
 
+    public void clearCache() {
+        cache.invalidateAll();
+        serviceCache.invalidateAll();
+    }
+
     public void clearCache(Info info) {
         if (info instanceof ServiceInfo) {
             // need to figure out how to remove only the relevant cache
@@ -1540,6 +1631,11 @@ public class ConfigDatabase {
         }
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
 
         CloseableIterator<T> it =
@@ -1559,6 +1655,11 @@ public class ConfigDatabase {
         return result;
     }
 
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> String getId(Class<T> type, Filter filter)
             throws IllegalArgumentException {
 
@@ -1600,10 +1701,12 @@ public class ConfigDatabase {
     // Copied from org.geoserver.catalog.ResourcePool
     public class CatalogClearingListener implements CatalogListener {
 
+        @Override
         public void handleAddEvent(CatalogAddEvent event) {
             updateCache(event.getSource());
         }
 
+        @Override
         public void handleModifyEvent(CatalogModifyEvent event) {
             // make sure that cache is not refilled before commit
             if (event.getSource() instanceof ResourceInfo) {
@@ -1616,6 +1719,7 @@ public class ConfigDatabase {
             clearCache(event.getSource());
         }
 
+        @Override
         public void handlePostModifyEvent(CatalogPostModifyEvent event) {
             updateCache(event.getSource());
             releaseWriteLock(event.getSource().getId());
@@ -1626,10 +1730,12 @@ public class ConfigDatabase {
             }
         }
 
+        @Override
         public void handleRemoveEvent(CatalogRemoveEvent event) {
             clearCache(event.getSource());
         }
 
+        @Override
         public void reloaded() {}
     }
     /** Listens to configuration events clearing cache entires when resources are modified. */
@@ -1788,17 +1894,25 @@ public class ConfigDatabase {
 
         @Override
         public void visit(LayerInfo layer) {
-            if (layer.getDefaultStyle() != null) {
-                layer.setDefaultStyle(getById(layer.getDefaultStyle().getId(), StyleInfo.class));
-            }
-            Set<StyleInfo> newStyles = new HashSet<>();
-            for (StyleInfo style : layer.getStyles()) {
-                if (style != null) {
-                    newStyles.add(getById(style.getId(), StyleInfo.class));
+            // avoids concurrent modification exceptions on the list contents
+            // Layer styles might not be actually persisted, in the case of WMS cascaded layers,
+            // where they are created on the fly based on the style names found in the caps
+            // documents. So check if the id is not null, in addition to checking if the style is
+            // not null.
+            synchronized (layer) {
+                if (layer.getDefaultStyle() != null && layer.getDefaultStyle().getId() != null) {
+                    layer.setDefaultStyle(
+                            getById(layer.getDefaultStyle().getId(), StyleInfo.class));
                 }
+                Set<StyleInfo> newStyles = new HashSet<>();
+                for (StyleInfo style : new ArrayList<>(layer.getStyles())) {
+                    if (style != null && style.getId() != null) {
+                        newStyles.add(getById(style.getId(), StyleInfo.class));
+                    }
+                }
+                layer.getStyles().clear();
+                layer.getStyles().addAll(newStyles);
             }
-            layer.getStyles().clear();
-            layer.getStyles().addAll(newStyles);
         }
 
         @Override

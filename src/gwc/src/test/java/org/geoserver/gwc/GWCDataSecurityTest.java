@@ -5,12 +5,12 @@
  */
 package org.geoserver.gwc;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
@@ -21,7 +21,11 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -90,7 +94,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         GWC.get().getConfig().setSecurityEnabled(true);
 
         testData.addStyle("raster", "raster.sld", SystemTestData.class, getCatalog());
-        Map properties = new HashMap();
+        Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, "raster");
         testData.addRasterLayer(
                 new QName(MockData.SF_URI, "mosaic", MockData.SF_PREFIX),

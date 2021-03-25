@@ -48,7 +48,7 @@ public class DefaultFlowControllerProvider implements FlowControllerProvider {
 
     private void initControllers() {
         checkConfiguration();
-        if (controllers.size() == 0) {
+        if (controllers.isEmpty()) {
             LOGGER.info("Control-flow inactive, there are no configured rules");
         }
     }
@@ -81,7 +81,7 @@ public class DefaultFlowControllerProvider implements FlowControllerProvider {
     void reloadConfiguration() {
         try {
             List<FlowController> newControllers =
-                    new ArrayList<FlowController>(configurator.buildFlowControllers());
+                    new ArrayList<>(configurator.buildFlowControllers());
             Collections.sort(newControllers, new ControllerPriorityComparator());
             controllers = newControllers;
             int controllersCount = controllers.size();

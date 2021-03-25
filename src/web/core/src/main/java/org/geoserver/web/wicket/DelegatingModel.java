@@ -17,17 +17,20 @@ public class DelegatingModel<T> implements IModel<T> {
         myComponent = c;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public T getObject() {
         return (T) myComponent.getDefaultModel().getObject();
     }
 
+    @Override
     public void setObject(T o) {
         @SuppressWarnings("unchecked")
         IModel<T> mod = (IModel<T>) myComponent.getDefaultModel();
         mod.setObject(o);
     }
 
+    @Override
     public void detach() {
         myComponent.getDefaultModel().detach();
     }

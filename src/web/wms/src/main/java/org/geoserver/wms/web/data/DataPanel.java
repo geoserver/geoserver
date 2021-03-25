@@ -42,7 +42,7 @@ public class DataPanel extends Panel {
     String featureTypeId;
 
     public DataPanel(String id, FeatureTypeInfo ft) {
-        super(id, new Model<FeatureTypeInfo>(ft));
+        super(id, new Model<>(ft));
         this.featureTypeId = ft.getId();
 
         add(
@@ -83,8 +83,7 @@ public class DataPanel extends Panel {
 
                                         @Override
                                         public void onClick(AjaxRequestTarget target) {
-                                            DataAttribute attribute =
-                                                    (DataAttribute) itemModel.getObject();
+                                            DataAttribute attribute = itemModel.getObject();
                                             try {
                                                 updateAttributeStats(attribute);
                                             } catch (IOException e) {
@@ -125,7 +124,7 @@ public class DataPanel extends Panel {
         // grab the feature collection and run the min/max visitors (this will move the
         // query to the dbms in case of such data source)
         Query q = new Query();
-        q.setPropertyNames(new String[] {attribute.getName()});
+        q.setPropertyNames(attribute.getName());
         FeatureCollection<?, ?> fc = fs.getFeatures(q);
         MinVisitor minVisitor = new MinVisitor(attribute.getName());
         MaxVisitor maxVisitor = new MaxVisitor(attribute.getName());

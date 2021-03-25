@@ -14,7 +14,7 @@ To list available branches in the repository::
   % git branch
      2.15.x
      2.16.x
-   * master
+   * main
 
 To switch to the 2.16.x branch above::
 
@@ -58,7 +58,7 @@ On macOS using decomposed unicode paths, and a default APFS case-insensitive fil
    core.ignorecase false
    core.precomposeunicode true
 
-We recommend making these changes to ``--gloabl`` (or ``--system``) as they reflect the operating system and file system on your local machine.
+We recommend making these changes to ``--global`` (or ``--system``) as they reflect the operating system and file system on your local machine.
 
 Some useful reading on this subject:
 
@@ -245,13 +245,13 @@ Primary branches
 Primary branches are present in all repositories and correspond to the main release streams of the 
 project. These branches consist of:
 
-* The **master** branch that is the current unstable development version of the project
+* The **main** branch that is the current unstable development version of the project
 * The current **stable** branch that is the current stable development version of the project
 * The branches for previous stable versions
 
 For example at present these branches are:
 
-* **master** - The 2.17.x release stream, where unstable development such as major new features take place
+* **main** - The 2.17.x release stream, where unstable development such as major new features take place
 * **2.16.x** - The 2.16.x release stream, where stable development such as bug fixing and stable features take place
 * **2.15.x** - The 2.15.x release stream, which is at end-of-life and has no active development
 
@@ -266,7 +266,7 @@ Release tags are used to mark releases from the stable or maintenance branches. 
 * 2.15.1
 
 
-Release tagas are only used during a versioned release of the software. At any given time a release branch
+Release tags are only used during a versioned release of the software. At any given time a release branch
 corresponds to the exact state of the last release from that branch. During release these branches are tagged.
 
 Release branches are also present in all repositories.
@@ -281,7 +281,7 @@ in a developer's local repository, and possibly their remote forked repository. 
 up into the canonical repository.
 
 When a developer feels a particular feature is complete enough the feature branch is merged into a primary branch,
-usually ``master``. If the work is suitable for the current stable branch the changeset can be ported back to the
+usually ``main``. If the work is suitable for the current stable branch the changeset can be ported back to the
 stable branch as well. This is explained in greater detail in the :ref:`source_workflow` section.
 
 Codebase structure
@@ -322,10 +322,10 @@ Updating from canonical
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 Generally developers always work on a recent version of the official source code. The following example 
-shows how to pull down the latest changes for the master branch from the canonical repository::
+shows how to pull down the latest changes for the main development branch from the canonical repository::
 
-  % git checkout master
-  % git pull upstream master
+  % git checkout main
+  % git pull upstream main
   
 Similarly for the stable branch::
 
@@ -338,7 +338,7 @@ Making local changes
 As mentioned above, git has a two-phase workflow in which changes are first staged and then committed 
 locally. For example, to change, stage and commit a single file::
 
-  % git checkout master
+  % git checkout main
   # do some work on file x
   % git add x
   % git commit -m "commit message" x
@@ -360,14 +360,14 @@ For the primary branches these commits should always be pushed up to the canonic
 some reason not suitable to be pushed to the canonical repository then the work should not be done on a primary
 branch, but on a feature branch. 
 
-For example, to push a local bug fix up to the canonical ``master`` branch::
+For example, to push a local bug fix up to the canonical ``main`` branch::
   
-  % git checkout master
+  % git checkout main
   # make a change
   % git add/rm/mv ...
   % git commit -m "making change x"
-  % git pull upstream master
-  % git push upstream master
+  % git pull upstream main
+  % git push upstream main
   
 The example shows the practice of first pulling from canonical before pushing to it. Developers should **always** do 
 this. In fact, if there are commits in canonical that have not been pulled down, by default git will not allow 
@@ -382,7 +382,7 @@ you to push the change until you have pulled those commits.
    
    An easy way to avoid merge commits is to do a "rebase" when pulling down changes::
    
-     % git pull --rebase upstream master
+     % git pull --rebase upstream main
      
    The rebase makes local changes appear in git history after the changes that are pulled down.
    This allows the following merge to be fast-forward. This is not a required practice since merge commits are fairly harmless, 
@@ -398,9 +398,9 @@ bug fix. The developer tries to make the fix in the midst of the other changes
 and ends up committing a file that should not have been changed. 
 Feature branches are the remedy for this problem.
 
-To create a new feature branch off the master branch::
+To create a new feature branch off the main branch::
 
-  % git checkout -b my_feature master
+  % git checkout -b my_feature main
   % # make some changes
   % git add/rm, etc...
   % git commit -m "first part of my_feature"
@@ -424,13 +424,13 @@ Merging feature branches
 Once a developer is done with a feature branch it must be merged into one of the primary branches and pushed up
 to the canonical repository. The way to do this is with the ``git merge`` command::
 
-  % git checkout master
+  % git checkout main
   % git merge my_feature
 
 It's as easy as that. After the feature branch has been merged into the primary branch push it up as described before::
 
-  % git pull --rebase upstream master
-  % git push upstream master
+  % git pull --rebase upstream main
+  % git push upstream main
   
 
 Porting changes between primary branches
@@ -439,17 +439,17 @@ Porting changes between primary branches
 Often a single change (such as a bug fix) has to be committed to multiple branches. Unfortunately primary
 branches **cannot** be merged with the ``git merge`` command. Instead we use ``git cherry-pick``.
 
-As an example consider making a change to master::
+As an example consider making a change to main::
 
-  % git checkout master
+  % git checkout main
   % # make the change
   % git add/rm/etc... 
   % git commit -m "fixing bug GEOS-XYZ"
-  % git pull --rebase upstream master
-  % git push upstream master
+  % git pull --rebase upstream main
+  % git push upstream main
   
 We want to backport the bug fix to the stable branch as well. To do so we have to note the commit
-id of the change we just made on master. The ``git log`` command will provide this. Let's assume the commit
+id of the change we just made on main. The ``git log`` command will provide this. Let's assume the commit
 id is "123". Backporting to the stable branch then becomes::
 
   % git checkout 2.2.x
@@ -507,9 +507,9 @@ specifying the revision immediately prior to the first commit::
   
 This invokes an editor that allows indicating which commits should be combined.
 Git then *squashes* the commits into an equivalent single commit. 
-After this we can merge the cleaned-up feature branch into master as usual::
+After this we can merge the cleaned-up feature branch into main as usual::
 
-  % git checkout master
+  % git checkout main
   % git merge my_feature
 
 Again, be sure to read up on this feature before attempting to use it. And again, **never rebase a public commit**.
@@ -522,7 +522,7 @@ against the working area but does not commit the result to the target branch.
 This squashes all the commits from the feature branch into a single changeset that
 is staged and ready to be committed::
 
-  % git checkout master
+  % git checkout main
   % git merge --squash my_feature
   % git commit -m "implemented feature x"
   

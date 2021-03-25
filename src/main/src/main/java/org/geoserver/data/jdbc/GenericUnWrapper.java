@@ -53,7 +53,7 @@ public class GenericUnWrapper implements UnWrapper {
     static final Map<Class<?>, Method> CONNECTION_METHODS;
 
     static {
-        CONNECTION_METHODS = new ConcurrentHashMap<Class<?>, Method>();
+        CONNECTION_METHODS = new ConcurrentHashMap<>();
 
         // if the environment does not contain the classes ... skip
         methodSearch(
@@ -81,7 +81,7 @@ public class GenericUnWrapper implements UnWrapper {
     static final Map<Class<?>, Method> STATEMENT_METHODS;
 
     static {
-        STATEMENT_METHODS = new ConcurrentHashMap<Class<?>, Method>();
+        STATEMENT_METHODS = new ConcurrentHashMap<>();
         methodSearch(
                 "JBoss Resource Adapter",
                 STATEMENT_METHODS,
@@ -109,11 +109,13 @@ public class GenericUnWrapper implements UnWrapper {
         // this space is intentionally left blank
     }
 
+    @Override
     public boolean canUnwrap(Connection conn) {
         Connection unwrapped = unwrapInternal(Connection.class, conn, CONNECTION_METHODS);
         return unwrapped != null;
     }
 
+    @Override
     public Connection unwrap(Connection conn) {
         Connection unwrapped = unwrapInternal(Connection.class, conn, CONNECTION_METHODS);
         if (unwrapped != null) {
@@ -125,11 +127,13 @@ public class GenericUnWrapper implements UnWrapper {
         }
     }
 
+    @Override
     public boolean canUnwrap(Statement statement) {
         Statement unwrapped = unwrapInternal(Statement.class, statement, STATEMENT_METHODS);
         return unwrapped != null;
     }
 
+    @Override
     public Statement unwrap(Statement statement) {
         Statement unwrapped = unwrapInternal(Statement.class, statement, STATEMENT_METHODS);
         if (unwrapped != null) {
@@ -246,7 +250,7 @@ public class GenericUnWrapper implements UnWrapper {
                 return null;
             }
             return target.cast(result);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
             LOGGER.log(
                     Level.FINEST,
                     "Using "
@@ -258,30 +262,8 @@ public class GenericUnWrapper implements UnWrapper {
                             + " failed: "
                             + e);
             return null; // unexpected with no arguments
-        } catch (IllegalAccessException e) {
-            LOGGER.log(
-                    Level.FINEST,
-                    "Using "
-                            + wrapper.getName()
-                            + "."
-                            + accessMethod.getName()
-                            + "() to unwrap "
-                            + target.getSimpleName()
-                            + " failed: "
-                            + e);
-            return null; // could be a visibility issue
-        } catch (InvocationTargetException e) {
-            LOGGER.log(
-                    Level.FINEST,
-                    "Using "
-                            + wrapper.getName()
-                            + "."
-                            + accessMethod.getName()
-                            + "() to unwrap "
-                            + target.getSimpleName()
-                            + " failed: "
-                            + e);
-            return null; // abort abort
-        }
+        } // could be a visibility issue
+        // abort abort
+
     }
 }

@@ -408,3 +408,66 @@ and then the display of the NDVI index computed with the above style:
 
 .. figure:: images/s2-ndvi.png
    :align: center
+
+
+Group candidate selection
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``vec:GroupCandidateSelection`` is a **Vector-to-Vector** rendering transformation
+which filters a FeatureCollection according to the aggregate operation chosen (MIN or MAX) and the groups defined through attribute names. Given a feature collection, groups according to the defined grouping attributes, and returns the feature having the MIN or MAX value for the chosen attribute. One feature will be chosen for each group.
+The following SLD invokes the transformation:
+
+.. code-block:: xml
+
+   <?xml version="1.0" encoding="UTF-8"?>
+       <sld:StyledLayerDescriptor xmlns:sld="http://www.opengis.net/sld" xmlns="http://www.opengis.net/sld" xmlns:st="http://www.stations.org/1.0" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.0.0">
+        <sld:UserLayer>
+        <sld:UserStyle>
+            <sld:Name>Default Styler</sld:Name>
+            <sld:Title>Default Styler</sld:Title>
+            <sld:FeatureTypeStyle>
+                <Transformation>
+                    <ogc:Function name="vec:GroupCandidateSelection">
+                        <ogc:Function name="parameter">
+                            <ogc:Literal>data</ogc:Literal>
+                        </ogc:Function>
+                        <ogc:Function name="parameter">
+                            <ogc:Literal>operationAttribute</ogc:Literal>
+                            <ogc:Literal>st:numericAttribute</ogc:Literal>
+                        </ogc:Function>
+                        <ogc:Function name="parameter">
+                            <ogc:Literal>aggregation</ogc:Literal>
+                            <ogc:Literal>MIN</ogc:Literal>
+                        </ogc:Function>
+                        <ogc:Function name="parameter">
+                            <ogc:Literal>groupingAttributes</ogc:Literal>
+                            <ogc:Literal>st:inferredAttribute</ogc:Literal>
+                            <ogc:Literal>st:inferredAttribute2</ogc:Literal>
+                        </ogc:Function>
+                    </ogc:Function>
+                </Transformation>
+                <sld:rule>
+                    <sld:Title>Stations Selected Candidate</sld:Title>
+                    <sld:PointSymbolizer>
+                        <Stroke>
+                            <CssParameter name="stroke">#000000</CssParameter>
+                        </Stroke>
+                    </sld:PointSymbolizer>
+                </sld:rule>
+            </sld:FeatureTypeStyle>
+        </sld:UserStyle>
+     </sld:UserLayer>
+  </sld:StyledLayerDescriptor>
+
+
+Where ``st:numericAttribute``, ``st:inferredAttribute`` and ``st:inferredAttribute2`` are attributes of the current layer being rendered, in this case, a layer based complex features, having the attributes used for rendering in the  ``http://www.stations.org/1.0`` namespace.
+
+This vector process accepts four parameters:
+
+* ``data``: the data on which perform the computation.
+
+* ``aggregation``: the type of operation required to filter data (MIN or MAX).
+
+* ``operationAttribute``: the xpath to the attribute whose value will be used to perform the MIN or MAX operation.
+
+* ``groupingAttributes``: a lists of xpath pointing to the attirbutes defining the features' groups for which perform the filtering process.

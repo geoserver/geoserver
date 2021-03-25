@@ -5,8 +5,19 @@
  */
 package org.geoserver.config;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,15 +58,15 @@ public class GeoServerImplTest {
         // GEOS-7890
         GeoServerInfo global1 = geoServer.getFactory().createGlobal();
         GeoServerInfo global2 = geoServer.getFactory().createGlobal();
-        global1.setGlobalServices(Boolean.valueOf(true));
-        global1.setXmlExternalEntitiesEnabled(Boolean.valueOf(false));
-        global1.getSettings().setVerbose(Boolean.valueOf(false));
-        global1.getSettings().setVerboseExceptions(Boolean.valueOf(false));
+        global1.setGlobalServices(true);
+        global1.setXmlExternalEntitiesEnabled(false);
+        global1.getSettings().setVerbose(false);
+        global1.getSettings().setVerboseExceptions(false);
 
-        global2.setGlobalServices(Boolean.valueOf(true));
-        global2.setXmlExternalEntitiesEnabled(Boolean.valueOf(false));
-        global2.getSettings().setVerbose(Boolean.valueOf(false));
-        global2.getSettings().setVerboseExceptions(Boolean.valueOf(false));
+        global2.setGlobalServices(true);
+        global2.setXmlExternalEntitiesEnabled(false);
+        global2.getSettings().setVerbose(false);
+        global2.getSettings().setVerboseExceptions(false);
         assertEquals(global1, global2);
     }
 
@@ -91,7 +102,7 @@ public class GeoServerImplTest {
         }
 
         ServiceInfo s = geoServer.getServiceByName("foo", ServiceInfo.class);
-        assertTrue(s != service);
+        assertNotSame(s, service);
         assertEquals(service, s);
     }
 
@@ -138,14 +149,15 @@ public class GeoServerImplTest {
 
     static class TestListener extends ConfigurationListenerAdapter {
 
-        List<String> gPropertyNames = new ArrayList();
-        List<Object> gOldValues = new ArrayList();
-        List<Object> gNewValues = new ArrayList();
+        List<String> gPropertyNames = new ArrayList<>();
+        List<Object> gOldValues = new ArrayList<>();
+        List<Object> gNewValues = new ArrayList<>();
 
-        List<String> sPropertyNames = new ArrayList();
-        List<Object> sOldValues = new ArrayList();
-        List<Object> sNewValues = new ArrayList();
+        List<String> sPropertyNames = new ArrayList<>();
+        List<Object> sOldValues = new ArrayList<>();
+        List<Object> sNewValues = new ArrayList<>();
 
+        @Override
         public void handleGlobalChange(
                 GeoServerInfo global,
                 List<String> propertyNames,
@@ -156,6 +168,7 @@ public class GeoServerImplTest {
             gNewValues.addAll(newValues);
         }
 
+        @Override
         public void handleServiceChange(
                 ServiceInfo service,
                 List<String> propertyNames,
@@ -173,11 +186,11 @@ public class GeoServerImplTest {
         GeoServerInfoImpl gsii = new GeoServerInfoImpl(geoServer);
         Map<Object, Object> before = gsii.getClientProperties();
 
-        Map<Object, Object> newProps = new HashMap<Object, Object>();
+        Map<Object, Object> newProps = new HashMap<>();
         newProps.put("123", "456");
         gsii.setClientProperties(newProps);
 
-        assertFalse(before.equals(newProps));
+        assertNotEquals(before, newProps);
     }
 
     @Test

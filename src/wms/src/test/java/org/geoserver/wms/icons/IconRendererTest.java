@@ -15,7 +15,6 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.styling.StyleFactory;
 import org.junit.Test;
-import org.opengis.feature.type.Name;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
 import org.opengis.style.FeatureTypeStyle;
@@ -23,7 +22,6 @@ import org.opengis.style.Graphic;
 import org.opengis.style.GraphicalSymbol;
 import org.opengis.style.Mark;
 import org.opengis.style.Rule;
-import org.opengis.style.SemanticType;
 import org.opengis.style.Style;
 import org.opengis.style.Symbolizer;
 
@@ -51,7 +49,7 @@ public class IconRendererTest {
 
         Graphic g =
                 sfact.graphic(
-                        Arrays.asList((GraphicalSymbol) m),
+                        Arrays.asList(m),
                         Expression.NIL,
                         Expression.NIL,
                         Expression.NIL,
@@ -72,8 +70,8 @@ public class IconRendererTest {
                         null,
                         null,
                         null,
-                        Collections.<Name>emptySet(),
-                        Collections.<SemanticType>emptySet(),
+                        Collections.emptySet(),
+                        Collections.emptySet(),
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
@@ -109,7 +107,7 @@ public class IconRendererTest {
 
         Graphic g =
                 sfact.graphic(
-                        Arrays.asList((GraphicalSymbol) m),
+                        Arrays.asList(m),
                         Expression.NIL,
                         Expression.NIL,
                         Expression.NIL,
@@ -130,8 +128,8 @@ public class IconRendererTest {
                         null,
                         null,
                         null,
-                        Collections.<Name>emptySet(),
-                        Collections.<SemanticType>emptySet(),
+                        Collections.emptySet(),
+                        Collections.emptySet(),
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
@@ -167,7 +165,7 @@ public class IconRendererTest {
 
         Graphic g =
                 sfact.graphic(
-                        Arrays.asList((GraphicalSymbol) m),
+                        Arrays.asList(m),
                         Expression.NIL,
                         Expression.NIL,
                         ffact.literal(45.0),
@@ -188,8 +186,8 @@ public class IconRendererTest {
                         null,
                         null,
                         null,
-                        Collections.<Name>emptySet(),
-                        Collections.<SemanticType>emptySet(),
+                        Collections.emptySet(),
+                        Collections.emptySet(),
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
@@ -240,8 +238,8 @@ public class IconRendererTest {
                         null,
                         null,
                         null,
-                        Collections.<Name>emptySet(),
-                        Collections.<SemanticType>emptySet(),
+                        Collections.emptySet(),
+                        Collections.emptySet(),
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
@@ -289,8 +287,8 @@ public class IconRendererTest {
                         null,
                         null,
                         null,
-                        Collections.<Name>emptySet(),
-                        Collections.<SemanticType>emptySet(),
+                        Collections.emptySet(),
+                        Collections.emptySet(),
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
@@ -340,8 +338,8 @@ public class IconRendererTest {
                         null,
                         null,
                         null,
-                        Collections.<Name>emptySet(),
-                        Collections.<SemanticType>emptySet(),
+                        Collections.emptySet(),
+                        Collections.emptySet(),
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
@@ -389,8 +387,8 @@ public class IconRendererTest {
                         null,
                         null,
                         null,
-                        Collections.<Name>emptySet(),
-                        Collections.<SemanticType>emptySet(),
+                        Collections.emptySet(),
+                        Collections.emptySet(),
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
@@ -438,8 +436,8 @@ public class IconRendererTest {
                         null,
                         null,
                         null,
-                        Collections.<Name>emptySet(),
-                        Collections.<SemanticType>emptySet(),
+                        Collections.emptySet(),
+                        Collections.emptySet(),
                         Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 

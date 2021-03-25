@@ -10,6 +10,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.geoserver.rest.catalog.HttpTestUtils.hasHeader;
 import static org.geoserver.rest.catalog.HttpTestUtils.hasStatus;
 import static org.geoserver.rest.catalog.HttpTestUtils.istream;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -20,7 +21,10 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import junit.framework.AssertionFailedError;
@@ -428,7 +432,6 @@ public class WMTSLayerTest extends CatalogRESTTestSupport {
                         + ".html";
         // Exception path
         String exception = "No such cascaded wmts: " + ws + "," + wl;
-        String exception2 = "No such cascaded wmts layer: " + ws + "," + wmts + "," + wl;
 
         // CASE 1: No wmtsstore set
 

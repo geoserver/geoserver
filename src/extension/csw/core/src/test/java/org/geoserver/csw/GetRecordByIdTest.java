@@ -29,7 +29,7 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
 
     @Test
     public void testKVPReader() throws Exception {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "CSW");
         raw.put("version", "2.0.2");
         raw.put("request", "GetRecordById");
@@ -64,7 +64,7 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
                         EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetRecordByIdType dr =
                 (GetRecordByIdType)
-                        reader.read(null, getResourceAsReader("GetRecordById.xml"), (Map) null);
+                        reader.read(null, getResourceAsReader("GetRecordById.xml"), null);
         assertGetRecordByIdValid(dr);
     }
 
@@ -77,12 +77,7 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
                         new CSWConfiguration(),
                         GeoServerExtensions.bean(EntityResolverProvider.class));
         try {
-            GetRecordByIdType dr =
-                    (GetRecordByIdType)
-                            reader.read(
-                                    null,
-                                    getResourceAsReader("GetRecordByIdEntityExpansion.xml"),
-                                    (Map) null);
+            reader.read(null, getResourceAsReader("GetRecordByIdEntityExpansion.xml"), null);
             fail("Should have failed with an entity expansion disallowed exception");
         } catch (ServiceException e) {
             Throwable cause = e.getCause();

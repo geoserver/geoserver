@@ -27,11 +27,12 @@ public class ImporterConfigPage extends GeoServerSecuredPage {
     public ImporterConfigPage() {
         Importer importer = getGeoServerApplication().getBeanOfType(Importer.class);
         ImporterInfo info = importer.getConfiguration();
-        Model<ImporterInfo> model = new Model<ImporterInfo>(info);
+        Model<ImporterInfo> model = new Model<>(info);
 
         Form form = new Form<>("form", model);
         add(form);
 
+        @SuppressWarnings("unchecked")
         DirectoryInput chooser =
                 new DirectoryInput(
                         "uploadRoot",
@@ -47,19 +48,19 @@ public class ImporterConfigPage extends GeoServerSecuredPage {
                 };
         form.add(chooser);
 
-        RangeValidator threadValidator = new RangeValidator(1, Integer.MAX_VALUE);
-        TextField maxSync =
-                new TextField(
+        RangeValidator<Integer> threadValidator = new RangeValidator<>(1, Integer.MAX_VALUE);
+        TextField<Integer> maxSync =
+                new TextField<>(
                         "maxSync",
-                        new PropertyModel<Integer>(model, "maxSynchronousImports"),
+                        new PropertyModel<>(model, "maxSynchronousImports"),
                         Integer.class);
         maxSync.add(threadValidator);
         form.add(maxSync);
 
-        TextField maxAsync =
-                new TextField(
+        TextField<Integer> maxAsync =
+                new TextField<>(
                         "maxAsync",
-                        new PropertyModel<Integer>(model, "maxAsynchronousImports"),
+                        new PropertyModel<>(model, "maxAsynchronousImports"),
                         Integer.class);
         maxAsync.add(threadValidator);
         form.add(maxAsync);
@@ -82,6 +83,7 @@ public class ImporterConfigPage extends GeoServerSecuredPage {
 
         Button cancel =
                 new Button("cancel") {
+                    @Override
                     public void onSubmit() {
                         doReturn();
                     }

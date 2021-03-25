@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.media.jai.CachedTile;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -27,7 +28,6 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.data.FeatureSource;
-import org.geotools.data.jdbc.JDBCUtils;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -104,6 +104,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
         this.gs = gs;
     }
 
+    @Override
     public Filter getFilter(WMSMapContent context, Layer layer) {
         Catalog catalog = gs.getCatalog();
         Set<String> featuresInTile = Collections.emptySet();
@@ -160,11 +161,11 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
         }
 
         // This okay, just means the tile is empty
-        if (featuresInTile.size() == 0) {
+        if (featuresInTile.isEmpty()) {
             throw new HttpErrorCodeException(204);
         } else {
             FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
-            Set<FeatureId> ids = new HashSet<FeatureId>();
+            Set<FeatureId> ids = new HashSet<>();
             for (String fid : featuresInTile) {
                 ids.add(ff.featureId(fid));
             }
@@ -172,6 +173,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
         }
     }
 
+    @Override
     public void clearCache(FeatureTypeInfo cfg) {
         try {
             GeoServerResourceLoader loader = gs.getCatalog().getResourceLoader();
@@ -215,26 +217,24 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
     @SuppressFBWarnings(
             "DMI_CONSTANT_DB_PASSWORD") // well spotted, but the db contents are not sensitive
     private Set<String> getFeaturesForTile(String dataDir, Tile tile) throws Exception {
-        Connection conn = null;
-        Statement st = null;
 
         // build the synchonization token
         canonicalizer.add(tableName);
         tableName = canonicalizer.get(tableName);
+        String synchToken = tableName; // tableName is updatable
 
-        try {
-            // make sure no two thread in parallel can build the same db
-            synchronized (tableName) {
-                // get a hold to the database that contains the cache (this will
-                // eventually create the db)
-                conn =
-                        DriverManager.getConnection(
-                                "jdbc:h2:file:" + dataDir + "/geosearch/h2cache_" + tableName,
-                                "geoserver",
-                                "geopass");
-
-                // try to create the table, if it's already there this will fail
-                st = conn.createStatement();
+        // make sure no two thread in parallel can build the same db
+        synchronized (synchToken) {
+            try (
+            // get a hold to the database that contains the cache (this will
+            // eventually create the db)
+            Connection conn =
+                            DriverManager.getConnection(
+                                    "jdbc:h2:file:" + dataDir + "/geosearch/h2cache_" + tableName,
+                                    "geoserver",
+                                    "geopass");
+                    // try to create the table, if it's already there this will fail
+                    Statement st = conn.createStatement()) {
                 st.execute(
                         "CREATE TABLE IF NOT EXISTS TILECACHE( " //
                                 + "x BIGINT, " //
@@ -242,12 +242,8 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
                                 + "z INT, " //
                                 + "fid varchar (64))");
                 st.execute("CREATE INDEX IF NOT EXISTS IDX_TILECACHE ON TILECACHE(x, y, z)");
+                return readFeaturesForTile(tile, conn);
             }
-
-            return readFeaturesForTile(tile, conn);
-        } finally {
-            JDBCUtils.close(st);
-            JDBCUtils.close(conn, null, null);
         }
     }
 
@@ -289,30 +285,28 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
 
     /** Store the fids inside */
     private void storeFids(Tile t, Set<String> fids, Connection conn) throws SQLException {
-        PreparedStatement ps = null;
         try {
             // we are going to execute this one many times,
             // let's prepare it so that the db engine does
             // not have to parse it at every call
             String stmt = "INSERT INTO TILECACHE VALUES (" + t.x + ", " + t.y + ", " + t.z + ", ?)";
-            ps = conn.prepareStatement(stmt);
-
-            if (fids.size() == 0) {
-                // we just have to mark the tile as empty
-                ps.setString(1, null);
-                ps.execute();
-            } else {
-                // store all the fids
-                conn.setAutoCommit(false);
-                for (String fid : fids) {
-                    ps.setString(1, fid);
+            try (PreparedStatement ps = conn.prepareStatement(stmt)) {
+                if (fids.isEmpty()) {
+                    // we just have to mark the tile as empty
+                    ps.setString(1, null);
                     ps.execute();
+                } else {
+                    // store all the fids
+                    conn.setAutoCommit(false);
+                    for (String fid : fids) {
+                        ps.setString(1, fid);
+                        ps.execute();
+                    }
+                    conn.commit();
                 }
-                conn.commit();
             }
         } finally {
             conn.setAutoCommit(true);
-            JDBCUtils.close(ps);
         }
     }
 
@@ -320,7 +314,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
     private Set<String> computeFids(Tile tile, Connection conn) throws Exception {
         Tile parent = tile.getParent();
         Set<String> parentFids = getUpwardFids(parent, conn);
-        Set<String> currFids = new HashSet<String>();
+        Set<String> currFids = new HashSet<>();
         FeatureIterator fi = null;
         try {
             // grab the features
@@ -426,7 +420,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
         }
 
         // return the curren tile fids, and recurse up to the parent
-        Set<String> fids = new HashSet();
+        Set<String> fids = new HashSet<>();
         fids.addAll(readFeaturesForTile(tile, conn));
         Tile parent = tile.getParent();
         if (parent != null) {
@@ -446,27 +440,24 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
      *       <ul>
      */
     protected Set<String> readCachedTileFids(Tile tile, Connection conn) throws SQLException {
-        Set<String> fids = null;
-        Statement st = null;
-        ResultSet rs = null;
-        try {
-            st = conn.createStatement();
-            rs =
-                    st.executeQuery(
-                            "SELECT fid FROM TILECACHE where x = "
-                                    + tile.x
-                                    + " AND y = "
-                                    + tile.y
-                                    + " and z = "
-                                    + tile.z);
+        try (Statement st = conn.createStatement();
+                ResultSet rs =
+                        st.executeQuery(
+                                "SELECT fid FROM TILECACHE where x = "
+                                        + tile.x
+                                        + " AND y = "
+                                        + tile.y
+                                        + " and z = "
+                                        + tile.z)) {
             // decide whether we have to collect the fids or just to
             // return that the tile was empty
+            Set<String> fids = null;
             if (rs.next()) {
                 String fid = rs.getString(1);
                 if (fid == null) {
                     return Collections.emptySet();
                 } else {
-                    fids = new HashSet<String>();
+                    fids = new HashSet<>();
                     fids.add(fid);
                 }
             }
@@ -474,12 +465,8 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
             while (rs.next()) {
                 fids.add(rs.getString(1));
             }
-        } finally {
-            JDBCUtils.close(rs);
-            JDBCUtils.close(st);
+            return fids;
         }
-
-        return fids;
     }
 
     /**
@@ -518,6 +505,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
          *
          * This code takes care of the first, whilst the second issue remains as a TODO
          */
+        @Override
         public boolean contains(double x, double y) {
             if (super.contains(x, y)) {
                 return true;
@@ -549,6 +537,7 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
          * Returns the parent of this tile, or null if this tile is (one of) the root of the current
          * dataset
          */
+        @Override
         public Tile getParent() {
             if (envelope.contains((BoundingBox) dataEnvelope)) {
                 return null;

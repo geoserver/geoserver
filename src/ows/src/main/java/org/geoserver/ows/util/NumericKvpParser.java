@@ -23,7 +23,7 @@ public class NumericKvpParser extends KvpParser {
      * @param key The key to bind to.
      * @param binding The resulting type of parsed object, must be a subclass of {@link Number}.
      */
-    public NumericKvpParser(String key, Class binding) {
+    public NumericKvpParser(String key, Class<?> binding) {
         super(key, binding);
 
         if (!Number.class.isAssignableFrom(binding)) {
@@ -32,6 +32,7 @@ public class NumericKvpParser extends KvpParser {
     }
 
     /** Parses the string into a numberic value. */
+    @Override
     public Object parse(String value) throws Exception {
         return Converters.convert(value, getBinding());
     }

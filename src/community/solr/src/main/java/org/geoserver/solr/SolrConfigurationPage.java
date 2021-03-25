@@ -94,8 +94,7 @@ public abstract class SolrConfigurationPage extends Panel {
         solrurl = (String) connectionparameters.get("solr_url");
 
         final Form<SolrConfigurationPage> solr_form =
-                new Form<SolrConfigurationPage>(
-                        "solr_form", new CompoundPropertyModel<SolrConfigurationPage>(this));
+                new Form<>("solr_form", new CompoundPropertyModel<>(this));
         add(solr_form);
 
         List<SolrAttribute> attributes =
@@ -126,6 +125,7 @@ public abstract class SolrConfigurationPage extends Panel {
                     /** */
                     private static final long serialVersionUID = 819555072210390051L;
 
+                    @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         onSave(target);
                     }
@@ -209,15 +209,15 @@ public abstract class SolrConfigurationPage extends Panel {
                 (SolrLayerConfiguration) ri.getMetadata().get(SolrLayerConfiguration.KEY);
         try {
 
-            ArrayList<SolrAttribute> result = new ArrayList<SolrAttribute>();
-            Map<String, SolrAttribute> tempMap = new HashMap<String, SolrAttribute>();
+            ArrayList<SolrAttribute> result = new ArrayList<>();
+            Map<String, SolrAttribute> tempMap = new HashMap<>();
             if (solrLayerConfiguration != null) {
                 for (SolrAttribute att : solrLayerConfiguration.getAttributes()) {
                     tempMap.put(att.getName(), att);
                 }
             } else {
                 tempMap.clear();
-                solrLayerConfiguration = new SolrLayerConfiguration(new ArrayList<SolrAttribute>());
+                solrLayerConfiguration = new SolrLayerConfiguration(new ArrayList<>());
                 solrLayerConfiguration.setLayerName(ri.getName());
                 ri.getMetadata().put(SolrLayerConfiguration.KEY, solrLayerConfiguration);
             }
@@ -258,7 +258,7 @@ public abstract class SolrConfigurationPage extends Panel {
                             String id,
                             IModel<SolrAttribute> itemModel,
                             Property<SolrAttribute> property) {
-                        SolrAttribute att = (SolrAttribute) itemModel.getObject();
+                        SolrAttribute att = itemModel.getObject();
                         boolean isGeometry =
                                 att.getType() != null
                                         && Geometry.class.isAssignableFrom(att.getType());
@@ -267,9 +267,7 @@ public abstract class SolrConfigurationPage extends Panel {
                             if (isPK) {
                                 Fragment f =
                                         new Fragment(id, "checkboxPk", SolrConfigurationPage.this);
-                                f.add(
-                                        new CheckBox(
-                                                "pk", new PropertyModel<Boolean>(itemModel, "pk")));
+                                f.add(new CheckBox("pk", new PropertyModel<>(itemModel, "pk")));
                                 return f;
                             } else {
                                 Fragment f = new Fragment(id, "empty", SolrConfigurationPage.this);
@@ -277,11 +275,7 @@ public abstract class SolrConfigurationPage extends Panel {
                             }
                         } else if (property == SolrAttributeProvider.NAME && (isGeometry || isPK)) {
                             Fragment f = new Fragment(id, "label", SolrConfigurationPage.this);
-                            f.add(
-                                    new Label(
-                                            "label",
-                                            ((SolrAttribute) itemModel.getObject()).getName()
-                                                    + "*"));
+                            f.add(new Label("label", itemModel.getObject().getName() + "*"));
                             return f;
 
                         } else if (property == SolrAttributeProvider.TYPE && isGeometry) {
@@ -296,25 +290,19 @@ public abstract class SolrConfigurationPage extends Panel {
                         } else if (property == SolrAttributeProvider.USE) {
                             Fragment f =
                                     new Fragment(id, "checkboxUse", SolrConfigurationPage.this);
-                            f.add(
-                                    new CheckBox(
-                                            "use", new PropertyModel<Boolean>(itemModel, "use")));
+                            f.add(new CheckBox("use", new PropertyModel<>(itemModel, "use")));
                             return f;
                         } else if (property == SolrAttributeProvider.EMPTY) {
                             Fragment f =
                                     new Fragment(id, "checkboxEmpty", SolrConfigurationPage.this);
-                            f.add(
-                                    new CheckBox(
-                                            "isEmpty",
-                                            new PropertyModel<Boolean>(itemModel, "empty")));
+                            f.add(new CheckBox("isEmpty", new PropertyModel<>(itemModel, "empty")));
                             return f;
                         } else if (property == SolrAttributeProvider.SRID) {
                             if (isGeometry) {
                                 Fragment f = new Fragment(id, "text", SolrConfigurationPage.this);
                                 f.add(
-                                        new TextField<Integer>(
-                                                "text",
-                                                new PropertyModel<Integer>(itemModel, "srid")));
+                                        new TextField<>(
+                                                "text", new PropertyModel<>(itemModel, "srid")));
                                 return f;
                             } else {
                                 Fragment f = new Fragment(id, "empty", SolrConfigurationPage.this);
@@ -330,8 +318,7 @@ public abstract class SolrConfigurationPage extends Panel {
                                 f.add(
                                         new CheckBox(
                                                 "defaultGeometry",
-                                                new PropertyModel<Boolean>(
-                                                        itemModel, "defaultGeometry")));
+                                                new PropertyModel<>(itemModel, "defaultGeometry")));
                                 return f;
                             } else {
                                 Fragment f = new Fragment(id, "empty", SolrConfigurationPage.this);
@@ -357,10 +344,12 @@ public abstract class SolrConfigurationPage extends Panel {
 
         private static final long serialVersionUID = -6371918467884222834L;
 
+        @Override
         public Object getDisplayValue(Class<?> object) {
-            return ((Class<?>) object).getSimpleName();
+            return object.getSimpleName();
         }
 
+        @Override
         public String getIdValue(Class<?> object, int index) {
             return (String) getDisplayValue(object);
         }

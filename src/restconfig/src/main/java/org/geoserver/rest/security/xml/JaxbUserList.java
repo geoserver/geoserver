@@ -19,7 +19,7 @@ public class JaxbUserList {
     public JaxbUserList() {}
 
     public JaxbUserList(Collection<GeoServerUser> users) {
-        this.users = new ArrayList<JaxbUser>();
+        this.users = new ArrayList<>();
         for (GeoServerUser user : users) {
             this.users.add(new JaxbUser(user));
         }

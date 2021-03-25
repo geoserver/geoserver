@@ -23,7 +23,7 @@ public class GdalTranslateTransform extends AbstractCommandLinePreTransform
 
     /** Checks if gdal_translate is available */
     public static boolean isAvailable() throws IOException {
-        return new GdalTranslateTransform(new ArrayList<String>()).checkAvailable();
+        return new GdalTranslateTransform(new ArrayList<>()).checkAvailable();
     }
 
     public GdalTranslateTransform(List<String> options) {
@@ -51,6 +51,7 @@ public class GdalTranslateTransform extends AbstractCommandLinePreTransform
         return getExecutableFromPath("gdal_translate");
     }
 
+    @Override
     protected List<String> getAvailabilityTestOptions() {
         return Collections.singletonList("--version");
     }

@@ -47,7 +47,7 @@ public class QueryLayerFunctionFactory implements FunctionFactory {
 
     public QueryLayerFunctionFactory() {
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
-        List<FunctionName> names = new ArrayList<FunctionName>();
+        List<FunctionName> names = new ArrayList<>();
         names.add(ff.functionName(QUERY_SINGLE, -1)); // 2 or 3 args
         names.add(ff.functionName(QUERY_COLLECTION, -1)); // 2 or 3 args
         names.add(ff.functionName(COLLECT_GEOMETRIES, 1));
@@ -80,6 +80,7 @@ public class QueryLayerFunctionFactory implements FunctionFactory {
         this.catalog = catalog;
     }
 
+    @Override
     public Function function(String name, List<Expression> args, Literal fallback) {
         return function(new NameImpl(name), args, fallback);
     }
@@ -102,6 +103,7 @@ public class QueryLayerFunctionFactory implements FunctionFactory {
         }
     }
 
+    @Override
     public List<FunctionName> getFunctionNames() {
         if (isInitialized()) {
             return functionNames;

@@ -34,8 +34,7 @@ public class DirectTemplateFeatureCollectionFactory
     static Logger LOGGER = Logging.getLogger(DirectTemplateFeatureCollectionFactory.class);
 
     /** thread local to track open iterators */
-    static ThreadLocal<List<TemplateFeatureIterator>> ITERATORS =
-            new ThreadLocal<List<TemplateFeatureIterator>>();
+    static ThreadLocal<List<TemplateFeatureIterator>> ITERATORS = new ThreadLocal<>();
 
     public void purge() {
         List<TemplateFeatureIterator> its = ITERATORS.get();
@@ -54,6 +53,7 @@ public class DirectTemplateFeatureCollectionFactory
 
     public DirectTemplateFeatureCollectionFactory() {}
 
+    @Override
     public TemplateCollectionModel createTemplateFeatureCollection(
             FeatureCollection collection, BeansWrapper wrapper) {
         return new TemplateFeatureCollection(collection, wrapper);
@@ -76,12 +76,13 @@ public class DirectTemplateFeatureCollectionFactory
             this.wrapper = wrapper;
         }
 
+        @Override
         public TemplateModelIterator iterator() throws TemplateModelException {
             TemplateFeatureIterator it =
                     new TemplateFeatureIterator(collection.features(), wrapper);
             List<TemplateFeatureIterator> open = ITERATORS.get();
             if (open == null) {
-                open = new LinkedList();
+                open = new LinkedList<>();
                 ITERATORS.set(open);
             }
             open.add(it);
@@ -132,10 +133,12 @@ public class DirectTemplateFeatureCollectionFactory
             this.wrapper = wrapper;
         }
 
+        @Override
         public TemplateModel next() throws TemplateModelException {
             return wrapper.wrap(iterator.next());
         }
 
+        @Override
         public boolean hasNext() throws TemplateModelException {
             return iterator.hasNext();
         }

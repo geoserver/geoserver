@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -104,7 +103,7 @@ public class WCSRequestBuilderPanel extends Panel {
     public WCSRequestBuilderPanel(String id, GetCoverageRequest getCoverage) {
         super(id);
         setOutputMarkupId(true);
-        setDefaultModel(new Model(getCoverage));
+        setDefaultModel(new Model<>(getCoverage));
         this.getCoverage = getCoverage;
 
         // the feedback panel, for validation errors
@@ -114,9 +113,9 @@ public class WCSRequestBuilderPanel extends Panel {
 
         // the version chooser
         final DropDownChoice<Version> version =
-                new DropDownChoice<Version>(
+                new DropDownChoice<>(
                         "version",
-                        new PropertyModel<Version>(getCoverage, "version"),
+                        new PropertyModel<>(getCoverage, "version"),
                         Arrays.asList(Version.values()));
         add(version);
 
@@ -149,9 +148,9 @@ public class WCSRequestBuilderPanel extends Panel {
 
         // the coverage id chooser
         coverage =
-                new DropDownChoice<String>(
+                new DropDownChoice<>(
                         "coverage",
-                        new PropertyModel<String>(getCoverage, "coverage"),
+                        new PropertyModel<>(getCoverage, "coverage"),
                         new CoverageNamesModel());
         add(coverage);
 
@@ -187,7 +186,7 @@ public class WCSRequestBuilderPanel extends Panel {
         add(details);
 
         // the envelope chooser
-        envelope = new EnvelopePanel("envelope", new PropertyModel(getCoverage, "bounds"));
+        envelope = new EnvelopePanel("envelope", new PropertyModel<>(getCoverage, "bounds"));
         envelope.setCRSFieldVisible(true);
         envelope.setCrsRequired(true);
         details.add(envelope);
@@ -200,14 +199,14 @@ public class WCSRequestBuilderPanel extends Panel {
                 (CoverageResponseDelegateFinder)
                         GeoServerApplication.get().getBean("coverageResponseDelegateFactory");
         formats =
-                new DropDownChoice<String>(
+                new DropDownChoice<>(
                         "format",
-                        new PropertyModel(getCoverage, "outputFormat"),
+                        new PropertyModel<>(getCoverage, "outputFormat"),
                         responseFactory.getOutputFormats());
         details.add(formats);
 
         // the target CRS
-        targetCRS = new CRSPanel("targetCRS", new PropertyModel(getCoverage, "targetCRS"));
+        targetCRS = new CRSPanel("targetCRS", new PropertyModel<>(getCoverage, "targetCRS"));
         details.add(targetCRS);
 
         // the target grid to world (for WCS 1.1 ones)
@@ -218,23 +217,21 @@ public class WCSRequestBuilderPanel extends Panel {
         add(responseWindow);
 
         responseWindow.setPageCreator(
-                new ModalWindow.PageCreator() {
-
-                    public Page createPage() {
-                        DemoRequest request = new DemoRequest(null);
-                        HttpServletRequest http =
-                                GeoServerApplication.get().servletRequest(getRequest());
-                        String url =
-                                ResponseUtils.buildURL(
-                                        ResponseUtils.baseURL(http),
-                                        "ows",
-                                        Collections.singletonMap("strict", "true"),
-                                        URLType.SERVICE);
-                        request.setRequestUrl(url);
-                        request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                        return new DemoRequestResponse(new Model(request));
-                    }
-                });
+                (ModalWindow.PageCreator)
+                        () -> {
+                            DemoRequest request = new DemoRequest(null);
+                            HttpServletRequest http =
+                                    GeoServerApplication.get().servletRequest(getRequest());
+                            String url =
+                                    ResponseUtils.buildURL(
+                                            ResponseUtils.baseURL(http),
+                                            "ows",
+                                            Collections.singletonMap("strict", "true"),
+                                            URLType.SERVICE);
+                            request.setRequestUrl(url);
+                            request.setRequestBody((String) responseWindow.getDefaultModelObject());
+                            return new DemoRequestResponse(new Model<>(request));
+                        });
 
         // the describe coverage link
         describeLink =
@@ -247,7 +244,8 @@ public class WCSRequestBuilderPanel extends Panel {
                         final String coverageName =
                                 WCSRequestBuilderPanel.this.getCoverage.coverage;
                         if (coverageName != null) {
-                            responseWindow.setDefaultModel(new Model(getDescribeXML(coverageName)));
+                            responseWindow.setDefaultModel(
+                                    new Model<>(getDescribeXML(coverageName)));
                             responseWindow.show(target);
                         }
                     }
@@ -299,16 +297,16 @@ public class WCSRequestBuilderPanel extends Panel {
         targetlayoutContainer.setVisible(false);
 
         targetLayoutChooser =
-                new DropDownChoice<TargetLayout>(
+                new DropDownChoice<>(
                         "targetLayout",
-                        new Model(TargetLayout.Automatic),
+                        new Model<>(TargetLayout.Automatic),
                         Arrays.asList(TargetLayout.values()),
                         new TargetLayoutRenderer());
         targetlayoutContainer.add(targetLayoutChooser);
 
         g2w =
                 new AffineTransformPanel(
-                        "targetGridToWorld", new PropertyModel(getCoverage, "targetGridToWorld"));
+                        "targetGridToWorld", new PropertyModel<>(getCoverage, "targetGridToWorld"));
         targetlayoutContainer.add(g2w);
         g2w.setVisible(false);
         g2w.setOutputMarkupId(true);
@@ -347,11 +345,11 @@ public class WCSRequestBuilderPanel extends Panel {
         sourceGridContainer = new WebMarkupContainer("sourceGridContainer");
         details.add(sourceGridContainer);
 
-        manualGrid = new CheckBox("manualGrid", new Model(Boolean.FALSE));
+        manualGrid = new CheckBox("manualGrid", new Model<>(Boolean.FALSE));
         sourceGridContainer.add(manualGrid);
 
         sourceGridRange =
-                new GridPanel("sourceGrid", new PropertyModel(getCoverage, "sourceGridRange"));
+                new GridPanel("sourceGrid", new PropertyModel<>(getCoverage, "sourceGridRange"));
         sourceGridContainer.add(sourceGridRange);
         sourceGridRange.setVisible(false);
         sourceGridRange.setOutputMarkupId(true);
@@ -454,16 +452,18 @@ public class WCSRequestBuilderPanel extends Panel {
         }
     }
 
-    class TargetLayoutRenderer extends ChoiceRenderer {
+    class TargetLayoutRenderer extends ChoiceRenderer<TargetLayout> {
 
-        public Object getDisplayValue(Object object) {
-            final String name = ((TargetLayout) object).name();
+        @Override
+        public Object getDisplayValue(TargetLayout object) {
+            final String name = object.name();
             return new StringResourceModel("tl." + name, WCSRequestBuilderPanel.this, null)
                     .getString();
         }
 
-        public String getIdValue(Object object, int index) {
-            return ((TargetLayout) object).name();
+        @Override
+        public String getIdValue(TargetLayout object, int index) {
+            return object.name();
         }
     }
 }

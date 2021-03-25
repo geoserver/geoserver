@@ -4,7 +4,7 @@
  */
 package org.geoserver.monitor.auditlog;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import freemarker.template.Configuration;
 import java.io.File;

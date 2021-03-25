@@ -5,9 +5,10 @@
  */
 package org.geoserver.test;
 
-import junit.extensions.TestSetup;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import junit.extensions.TestSetup; // NOPMD
+import junit.framework.TestSuite; // NOPMD
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * Abstract class for tests that do need to run a one time setup/teardown phase.
@@ -31,7 +32,12 @@ import junit.framework.TestSuite;
  * @author Andrea Aime - TOPP
  * @author Gabriel Roldan - TOPP
  */
-public abstract class OneTimeSetupTest extends TestCase {
+@SuppressWarnings({
+    "PMD.DisallowJunit3",
+    "PMD.JUnit4TestShouldUseBeforeAnnotation",
+    "PMD.JUnit4TestShouldUseAfterAnnotation"
+})
+public abstract class OneTimeSetupTest {
     private static boolean oneTimeSetupDone;
     private static boolean forceOneTimeTearDown;
     private boolean inSetup;
@@ -83,8 +89,8 @@ public abstract class OneTimeSetupTest extends TestCase {
      * Provides the proper behavior so that the one time setup is run once matter how the test is
      * started. If you need to implement a per test method setup, override {@link #setUpInternal()}
      */
-    @Override
-    protected final void setUp() throws Exception {
+    @Before
+    public final void setUp() throws Exception {
         if (inSetup)
             throw new RuntimeException(
                     "setUpInternal seems to call back to super.setUp(). "
@@ -109,8 +115,8 @@ public abstract class OneTimeSetupTest extends TestCase {
      * started. If you need to implement a per test method setup, overide {@link
      * #tearDownInternal()}
      */
-    @Override
-    protected final void tearDown() throws Exception {
+    @After
+    public final void tearDown() throws Exception {
         if (inTearDown)
             throw new RuntimeException(
                     "tearDownInternal seems to call back to super.tearDown(). "

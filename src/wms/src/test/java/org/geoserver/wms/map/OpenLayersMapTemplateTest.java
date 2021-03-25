@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.map;
 
+import static org.geoserver.template.TemplateUtils.FM_VERSION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -13,11 +14,11 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.geoserver.data.test.MockData;
@@ -27,9 +28,7 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.junit.Test;
 import org.w3c.dom.Document;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 public class OpenLayersMapTemplateTest extends WMSTestSupport {
 
@@ -37,7 +36,7 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
     public void test() throws Exception {
         Configuration cfg = TemplateUtils.getSafeConfiguration();
         cfg.setClassForTemplateLoading(OpenLayersMapOutputFormat.class, "");
-        cfg.setObjectWrapper(new BeansWrapper());
+        cfg.setObjectWrapper(new BeansWrapper(FM_VERSION));
 
         Template template = cfg.getTemplate("OpenLayers2MapTemplate.ftl");
         assertNotNull(template);
@@ -50,18 +49,18 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
         mapContent.setMapHeight(256);
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        HashMap map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("context", mapContent);
         map.put("request", mapContent.getRequest());
         map.put("maxResolution", Double.valueOf(0.0005)); // just a random number
         map.put("baseUrl", "http://localhost:8080/geoserver/wms");
         map.put("relBaseUrl", "//localhost:8080/geoserver/wms");
-        map.put("parameters", new ArrayList());
+        map.put("parameters", new ArrayList<>());
         map.put("layerName", "layer");
         map.put("units", "degrees");
         map.put("pureCoverage", "false");
         map.put("supportsFiltering", "true");
-        map.put("styles", new ArrayList());
+        map.put("styles", new ArrayList<>());
         map.put("servicePath", "wms");
         map.put("yx", "false");
         template.process(map, new OutputStreamWriter(output));
@@ -72,17 +71,13 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
 
         DocumentBuilder docBuilder = dbf.newDocumentBuilder();
         docBuilder.setEntityResolver(
-                new EntityResolver() {
-
-                    public InputSource resolveEntity(String publicId, String systemId)
-                            throws SAXException, IOException {
-                        StringReader reader =
-                                new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                        InputSource source = new InputSource(reader);
-                        source.setPublicId(publicId);
-                        source.setSystemId(systemId);
-                        return source;
-                    }
+                (publicId, systemId) -> {
+                    StringReader reader =
+                            new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                    InputSource source = new InputSource(reader);
+                    source.setPublicId(publicId);
+                    source.setSystemId(systemId);
+                    return source;
                 });
 
         Document document = docBuilder.parse(new ByteArrayInputStream(output.toByteArray()));

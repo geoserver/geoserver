@@ -6,10 +6,10 @@
 package org.geoserver.wps.gs;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -27,6 +27,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.crs.ForceCoordinateSystemFeatureResults;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -40,6 +41,7 @@ import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
 import org.geotools.util.SimpleInternationalString;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory;
@@ -121,6 +123,7 @@ public class ImportProcessTest extends WPSTestSupport {
 
     @Test
     public void testImportBuildingsCancellation() throws Exception {
+        Assume.assumeFalse(System.getProperty("macos-github-build") != null);
         FeatureTypeInfo ti =
                 getCatalog().getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
         SimpleFeatureCollection rawSource =
@@ -148,21 +151,17 @@ public class ImportProcessTest extends WPSTestSupport {
         try {
             Future<?> future =
                     executor.submit(
-                            new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    importer.execute(
-                                            testFeatureCollection,
-                                            null,
-                                            SystemTestData.CITE_PREFIX,
-                                            SystemTestData.CITE_PREFIX,
-                                            "Buildings2",
-                                            null,
-                                            null,
-                                            null,
-                                            listener);
-                                }
+                            () -> {
+                                importer.execute(
+                                        testFeatureCollection,
+                                        null,
+                                        SystemTestData.CITE_PREFIX,
+                                        SystemTestData.CITE_PREFIX,
+                                        "Buildings2",
+                                        null,
+                                        null,
+                                        null,
+                                        listener);
                             });
             // cancel the import
             listener.setTask(new SimpleInternationalString("Test message"));
@@ -228,16 +227,13 @@ public class ImportProcessTest extends WPSTestSupport {
 
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
-        SimpleFeatureIterator fi =
-                fs.getFeatures(ff.equals(ff.property("FID"), ff.literal("113"))).features();
-        SimpleFeature f = fi.next();
-        fi.close();
+        SimpleFeature f =
+                DataUtilities.first(
+                        fs.getFeatures(ff.equals(ff.property("FID"), ff.literal("113"))));
         assertEquals("113", f.getAttribute("FID"));
         assertEquals("123 Main Street", f.getAttribute("ADDRESS"));
 
-        fi = fs.getFeatures(ff.equals(ff.property("FID"), ff.literal("114"))).features();
-        f = fi.next();
-        fi.close();
+        f = DataUtilities.first(fs.getFeatures(ff.equals(ff.property("FID"), ff.literal("114"))));
         assertEquals("114", f.getAttribute("FID"));
         assertEquals("215 Main Street", f.getAttribute("ADDRESS"));
     }

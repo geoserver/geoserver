@@ -10,6 +10,7 @@ public class MessageKvpParser extends KvpParser {
         super("message", Message.class);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         return new Message(value);
     }

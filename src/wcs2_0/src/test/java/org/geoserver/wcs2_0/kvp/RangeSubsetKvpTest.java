@@ -4,18 +4,16 @@
  */
 package org.geoserver.wcs2_0.kvp;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.referencing.CRS;
-import org.geotools.util.logging.Logging;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -26,8 +24,6 @@ import org.w3c.dom.Document;
  * @author Simone Giannecchini, GeoSolutions SAS
  */
 public class RangeSubsetKvpTest extends WCSKVPTestSupport {
-
-    private Logger LOGGER = Logging.getLogger(RangeSubsetKvpTest.class);
 
     @Test
     public void capabilties() throws Exception {

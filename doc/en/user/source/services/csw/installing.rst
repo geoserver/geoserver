@@ -3,12 +3,23 @@
 Installing Catalog Services for Web (CSW)
 =========================================
 
-To install the CSW extension:
 
-#. Visit the GeoServer `Download <http://geoserver.org/download>`_ and navigate to the download page for the version od GeoServer your are using. The **csw** download is listed under extensions. The file name is called :file:`geoserver-*-csw-plugin.zip`, where ``*`` matches the version number of GeoServer you are using.
+The CSW extension is listed among the other extension downloads on the GeoServer download page.
 
-#. Extract this this file and place the JARs in ``WEB-INF/lib``.
+The installation process is similar to other GeoServer extensions:
 
-#. Perform any configuration required by your servlet container, and then restart.
+#. Download the :download_extension:`csw`
+   
+   Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 
-#. Verify that the module was installed correctly by going to the Welcome page of the :ref:`web_admin` and seeing that :guilabel:`CSW` is listed in the :guilabel:`Service Capabilities` list.
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.
+   Make sure you do not create any sub-directories during the extraction process.
+
+#. Restart GeoServer or the servlet container, as appropriate to your configuration.
+
+#. Verify that the module was installed correctly by navigating to the Welcome page of the :ref:`web_admin` and seeing the :guilabel:`CSW` entry is listed in the :guilabel:`Service Capabilities` list, and the CSW modules are listed in the :ref:`web_admin` Module list.
+
+.. figure:: images/install.png
+
+   CSW Installation Verification
+

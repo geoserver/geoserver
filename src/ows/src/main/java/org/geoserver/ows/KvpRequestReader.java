@@ -7,7 +7,6 @@ package org.geoserver.ows;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -66,7 +65,7 @@ public class KvpRequestReader {
             org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
 
     /** The class of the request bean */
-    private Class requestBean;
+    private Class<?> requestBean;
 
     /** A list of kvp names to filter. */
     protected Set<String> filter;
@@ -79,7 +78,7 @@ public class KvpRequestReader {
      *
      * @param requestBean The type of the request read, not <code>null</code>
      */
-    public KvpRequestReader(Class requestBean) {
+    public KvpRequestReader(Class<?> requestBean) {
         if (requestBean == null) {
             throw new NullPointerException();
         }
@@ -88,7 +87,7 @@ public class KvpRequestReader {
     }
 
     /** @return The class of the request bean. */
-    public final Class getRequestBean() {
+    public final Class<?> getRequestBean() {
         return requestBean;
     }
 
@@ -142,10 +141,10 @@ public class KvpRequestReader {
      * @param rawKvp The raw kvp set (unparsed), map of String,String
      * @return A new request object, or the original
      */
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
-        for (Iterator e = kvp.entrySet().iterator(); e.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) e.next();
-            String property = (String) entry.getKey();
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
+        for (Map.Entry<String, Object> entry : kvp.entrySet()) {
+            String property = entry.getKey();
             Object value = entry.getValue();
 
             if (value == null) {
@@ -180,7 +179,7 @@ public class KvpRequestReader {
                 setter = OwsUtils.setter(request.getClass(), property, null);
                 if (setter != null) {
                     // convert
-                    Class target = setter.getParameterTypes()[0];
+                    Class<?> target = setter.getParameterTypes()[0];
                     Object converted = Converters.convert(value, target);
                     if (converted != null) {
                         value = converted;
@@ -219,6 +218,7 @@ public class KvpRequestReader {
     }
 
     /** Equals override, equality is based on {@link #getRequestBean()} */
+    @Override
     public final boolean equals(Object obj) {
         if (obj instanceof KvpRequestReader) {
             KvpRequestReader other = (KvpRequestReader) obj;
@@ -229,6 +229,7 @@ public class KvpRequestReader {
         return false;
     }
 
+    @Override
     public final int hashCode() {
         return requestBean.hashCode();
     }

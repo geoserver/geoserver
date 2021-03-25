@@ -26,10 +26,10 @@ public class ProxyUtils {
             new ConcurrentHashMap<>();
 
     static final class ProxyClassConstructorKey {
-        Class c1;
-        Class c2;
+        Class<?> c1;
+        Class<?> c2;
 
-        public ProxyClassConstructorKey(Class c1, Class c2) {
+        public ProxyClassConstructorKey(Class<?> c1, Class<?> c2) {
             this.c1 = c1;
             this.c2 = c2;
         }
@@ -80,14 +80,14 @@ public class ProxyUtils {
      * @param clazz The explicit interface to proxy.
      * @param h The invocation handler to intercept method calls.
      */
-    public static <T> T createProxy(T proxyObject, Class<T> clazz, InvocationHandler h) {
+    public static <T> T createProxy(T proxyObject, Class<? extends T> clazz, InvocationHandler h) {
         try {
             // proxy all interfaces implemented by the source object
-            List<Class> proxyInterfaces = Arrays.asList(proxyObject.getClass().getInterfaces());
+            List<Class<?>> proxyInterfaces = Arrays.asList(proxyObject.getClass().getInterfaces());
 
             // ensure that the specified class is included
             boolean add = true;
-            for (Class interfce : proxyObject.getClass().getInterfaces()) {
+            for (Class<?> interfce : proxyObject.getClass().getInterfaces()) {
                 if (clazz.isAssignableFrom(interfce)) {
                     add = false;
                     break;
@@ -100,12 +100,14 @@ public class ProxyUtils {
                 proxyInterfaces.add(clazz);
             }
 
-            return (T)
-                    Proxy.newProxyInstance(
-                            clazz.getClassLoader(),
-                            proxyInterfaces.toArray(new Class[proxyInterfaces.size()]),
-                            h);
-
+            @SuppressWarnings("unchecked")
+            T instance =
+                    (T)
+                            Proxy.newProxyInstance(
+                                    clazz.getClassLoader(),
+                                    proxyInterfaces.toArray(new Class[proxyInterfaces.size()]),
+                                    h);
+            return instance;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -123,6 +125,7 @@ public class ProxyUtils {
      * @return The underlying proxied object, or the object passed in if no underlying object is
      *     recognized.
      */
+    @SuppressWarnings("unchecked")
     public static <T> T unwrap(T object, Class<? extends InvocationHandler> handlerClass) {
         if (object instanceof Proxy) {
             InvocationHandler h = handler(object, handlerClass);
@@ -148,7 +151,7 @@ public class ProxyUtils {
         if (object instanceof Proxy) {
             InvocationHandler h = Proxy.getInvocationHandler(object);
             if (handlerClass.isInstance(h)) {
-                return (H) h;
+                return handlerClass.cast(h);
             }
         }
 

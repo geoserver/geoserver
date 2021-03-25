@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 import javax.swing.Icon;
@@ -232,7 +233,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
     public static final String GRAPHIC = "graphic";
 
-    static Map<Class, String> symbolizerNames = new HashMap<>();
+    static Map<Class<?>, String> symbolizerNames = new HashMap<>();
 
     static {
         symbolizerNames.put(PolygonSymbolizer.class, POLYGON);
@@ -306,9 +307,8 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             ArrayList<JSONObject> jRules = new ArrayList<>();
             if (legend instanceof CascadedLegendRequest) {
                 CascadedLegendRequest cascadedLegend = (CascadedLegendRequest) legend;
-                JSONArray cascadedRules = null;
 
-                cascadedRules = cascadedLegend.getCascadedJSONRules();
+                JSONArray cascadedRules = cascadedLegend.getCascadedJSONRules();
 
                 // if null or empty..go back to default behavior
                 if (cascadedRules != null) {
@@ -532,16 +532,15 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         if (index >= 0) {
             String base = iconUrl.substring(0, index + 1);
             String[] refs = iconUrl.substring(index + 1).split("&");
-            for (int i = 0; i < refs.length; i++) {
-                if (refs[i].matches("(\\d\\.)\\d(\\.\\d[\\.\\w+]*=[\\d.]*)")) {
+            for (String s : refs) {
+                if (s.matches("(\\d\\.)\\d(\\.\\d[\\.\\w+]*=[\\d.]*)")) {
                     String ref =
-                            refs[i].replaceAll(
-                                    "(\\d\\.)\\d(\\.\\d=)", "$1" + origRuleNo.get(0) + "$2");
-                    String[] split = refs[i].split("\\.");
+                            s.replaceAll("(\\d\\.)\\d(\\.\\d=)", "$1" + origRuleNo.get(0) + "$2");
+                    String[] split = s.split("\\.");
                     int symCount = Integer.parseInt(split[2].replaceAll("=", ""));
                     if (symbolizerCount == symCount) base += ref + "&";
                 } else {
-                    base += refs[i] + "&";
+                    base += s + "&";
                 }
             }
             if (base.endsWith("&")) {
@@ -617,7 +616,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                             jGraphic.element(EXTERNAL_GRAPHIC_URL, url.toString());
                         }
                     } catch (MalformedURLException e) {
-                        e.printStackTrace();
+                        LOGGER.log(Level.WARNING, "", e);
                     }
                 }
                 Icon icon = em.getInlineContent();
@@ -638,7 +637,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 }
 
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
             }
             jGraphic.element(EXTERNAL_GRAPHIC_TYPE, eg.getFormat());
         }

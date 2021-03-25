@@ -1,0 +1,27 @@
+{
+  "_id": { "$oid" : "58e5889ce4b02461ad5af086"},
+  "id": "7",
+  "name": "station 7",
+  "inferredAttribute": "ok",
+  "groupAttribute": "groupAttribute2",
+  "groupAttribute2": "groupAttribute22",
+  "numericValue": 11.0,
+  "contact": {
+    "mail": "station3@mail.com"
+  },
+  "geometry": {
+    "coordinates": [
+      50,
+      -50
+    ],
+    "type": "Point"
+  },
+  "measurements": [
+    {
+      "values": []
+    },
+    {
+      "values": []
+    }
+  ]
+}

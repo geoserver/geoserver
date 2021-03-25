@@ -12,26 +12,30 @@ import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateSequenceModel;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /** A freemarker model that's at the same time a sequence and a map */
 public class SequenceMapModel extends MapModel implements TemplateSequenceModel {
-    private ArrayList list;
+    private List<Object> list;
 
-    public SequenceMapModel(Map map, BeansWrapper wrapper) {
+    public SequenceMapModel(Map<?, ?> map, BeansWrapper wrapper) {
         super(map, wrapper);
 
-        this.list = new ArrayList(map.values());
+        this.list = new ArrayList<>(map.values());
     }
 
+    @Override
     public TemplateModel get(int index) throws TemplateModelException {
         return wrap(list.get(index));
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     protected Set keySet() {
         // override, just return the map contents
-        Set set = new HashSet();
+        Set<Object> set = new HashSet<>();
         set.addAll(((Map) object).keySet());
 
         return set;

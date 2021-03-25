@@ -49,7 +49,7 @@ public class KMLTransformingFeatureReader
     public SimpleFeature next() {
         SimpleFeature feature;
         try {
-            feature = (SimpleFeature) reader.next();
+            feature = reader.next();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

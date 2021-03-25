@@ -22,9 +22,9 @@ public class CoverageDimensionImpl implements CoverageDimensionInfo {
 
     String description;
 
-    NumberRange range;
+    NumberRange<? extends Number> range;
 
-    List<Double> nullValues = new ArrayList<Double>();
+    List<Double> nullValues = new ArrayList<>();
 
     String unit;
 
@@ -50,34 +50,42 @@ public class CoverageDimensionImpl implements CoverageDimensionInfo {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public NumberRange getRange() {
+    @Override
+    public NumberRange<? extends Number> getRange() {
         return range;
     }
 
-    public void setRange(NumberRange range) {
+    @Override
+    public void setRange(NumberRange<? extends Number> range) {
         this.range = range;
     }
 
+    @Override
     public List<Double> getNullValues() {
         return nullValues;
     }
@@ -86,10 +94,12 @@ public class CoverageDimensionImpl implements CoverageDimensionInfo {
         this.nullValues = nullValues;
     }
 
+    @Override
     public String getUnit() {
         return unit;
     }
 
+    @Override
     public void setUnit(String unit) {
         this.unit = unit;
     }

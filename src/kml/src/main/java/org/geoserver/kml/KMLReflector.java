@@ -35,21 +35,20 @@ public class KMLReflector {
     private static int DEFAULT_OVERLAY_SIZE;
 
     static {
-        Map<String, Map<String, Object>> temp = new HashMap<String, Map<String, Object>>();
-        Map<String, Object> options;
+        Map<String, Map<String, Object>> temp = new HashMap<>();
 
-        options = new HashMap<String, Object>();
+        Map<String, Object> options = new HashMap<>();
         options.put("superoverlay", true);
         options.put("mode", "superoverlay");
         temp.put("superoverlay", options);
 
-        options = new HashMap<String, Object>();
+        options = new HashMap<>();
         options.put("superoverlay", false);
         options.put("kmscore", 100); // download -> really download vectors
         options.put("mode", "download");
         temp.put("download", options);
 
-        options = new HashMap<String, Object>();
+        options = new HashMap<>();
         options.put("superoverlay", false);
         options.put("mode", "refresh");
         temp.put("refresh", options);
@@ -121,7 +120,7 @@ public class KMLReflector {
             throw new ServiceException("Unknown KML mode: " + mode);
         }
 
-        Map modeOptions = new HashMap(MODES.get(mode));
+        Map<String, Object> modeOptions = new HashMap<>(MODES.get(mode));
 
         if ("superoverlay".equals(mode)) {
             String submode =
@@ -146,7 +145,7 @@ public class KMLReflector {
         }
 
         // first set up some of the normal wms defaults
-        Map fo = request.getFormatOptions();
+        Map<String, Object> fo = request.getFormatOptions();
         boolean refreshMode = mode.equals("refresh");
         if (request.getWidth() < 1) {
             request.setWidth(refreshMode || containsRasterData ? DEFAULT_OVERLAY_SIZE : 256);
@@ -199,9 +198,8 @@ public class KMLReflector {
         return wmsResponse;
     }
 
-    private static void mergeDefaults(Map fo, Map defaults) {
-        for (Object o : defaults.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
+    private static void mergeDefaults(Map<String, Object> fo, Map<String, Object> defaults) {
+        for (Map.Entry<String, Object> entry : defaults.entrySet()) {
             if (fo.get(entry.getKey()) == null) {
                 fo.put(entry.getKey(), entry.getValue());
             }

@@ -20,7 +20,7 @@ Release branches
 At any given time GeoServer is undergoing two to three main branches of development.
 
 #. The *stable* branch in which only bug fixing, and smaller scale feature development occurs on
-#. The *unstable* (master) branch in which more experimental and larger scale feature development occurs
+#. The *unstable* (main development branch - main) branch in which more experimental and larger scale feature development occurs
 #. The *maintenance* branch which was the previously stable branch that is nearing end of life and sees
    only the most stable development, typically mostly bug fixes.
 
@@ -52,7 +52,7 @@ both functionality and stability, so unless the project steering committee deter
 it will happen regardless of what bug reports are in Jira. Pending resourcing, they can be fixed in the next release 
 that comes out one month later.
 
-At any given point in time there are two branches under the development, the stable branch and the master/unstable
+At any given point in time there are two branches under the development, the stable branch and the main development branch/unstable
 branch. Once every six months when the creation of a new stable branch occurs a third active maintenance branch 
 is created. This branch is kept up to date with the stable stable for a period of one-month after which the final
 release on that branch is created. That said there is nothing against a developer continuing to maintain the branch
@@ -77,7 +77,7 @@ If, for any reason, a release is delayed the next release will be rescheduled 30
 Unstable branch
 ```````````````
 
-The type of development on the master/unstable branch changes over its lifetime from four months of open
+The type of development on the main development branch/unstable branch changes over its lifetime from four months of open
 development to two months of stable/hardening development.
 
 Open development phase

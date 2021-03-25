@@ -43,6 +43,7 @@ public class GeoServerException extends Exception implements IGeoServerException
         super(cause);
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -56,6 +57,7 @@ public class GeoServerException extends Exception implements IGeoServerException
         return this;
     }
 
+    @Override
     public Object[] getArgs() {
         return args;
     }

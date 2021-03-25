@@ -5,6 +5,7 @@
 package org.geoserver.opensearch.eo.store;
 
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
 
 /**
@@ -33,6 +34,22 @@ class SourcePropertyMapper {
     }
 
     String getSourceName(String name) {
+        PropertyDescriptor pd = getDescriptor(name);
+        if (pd == null) {
+            return null;
+        } else {
+            return (String) pd.getUserData().get(JDBCOpenSearchAccess.SOURCE_ATTRIBUTE);
+        }
+    }
+
+    PropertyDescriptor getDescriptor(Name name) {
+        for (PropertyDescriptor pd : schema.getDescriptors()) {
+            if (name.equals(pd.getName())) return pd;
+        }
+        return null;
+    }
+
+    String getSourceName(Name name) {
         PropertyDescriptor pd = getDescriptor(name);
         if (pd == null) {
             return null;

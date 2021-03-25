@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -127,7 +128,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         Element outputFormats = getFirstElementByTagName(doc, "ResultFormat");
         NodeList formats = outputFormats.getChildNodes();
 
-        TreeSet s1 = new TreeSet();
+        Set<String> s1 = new TreeSet<>();
         for (int i = 0; i < formats.getLength(); i++) {
             String format = formats.item(i).getNodeName();
             s1.add(format);
@@ -135,9 +136,9 @@ public class GetCapabilitiesTest extends WFSTestSupport {
 
         List extensions = GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class);
 
-        TreeSet s2 = new TreeSet();
-        for (Iterator e = extensions.iterator(); e.hasNext(); ) {
-            WFSGetFeatureOutputFormat extension = (WFSGetFeatureOutputFormat) e.next();
+        Set<String> s2 = new TreeSet<>();
+        for (Object o : extensions) {
+            WFSGetFeatureOutputFormat extension = (WFSGetFeatureOutputFormat) o;
             s2.add(extension.getCapabilitiesElementName());
         }
 
@@ -151,7 +152,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         Element spatialOperators = getFirstElementByTagName(doc, "ogc:Spatial_Operators");
         NodeList ops = spatialOperators.getChildNodes();
 
-        TreeSet<String> o = new TreeSet<String>();
+        TreeSet<String> o = new TreeSet<>();
         for (int i = 0; i < ops.getLength(); i++) {
             String operator = ops.item(i).getLocalName();
             o.add(operator);
@@ -196,8 +197,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         assertEquals("WFS_Capabilities", e.getLocalName());
 
         final List<FeatureTypeInfo> enabledTypes = getCatalog().getFeatureTypes();
-        for (Iterator<FeatureTypeInfo> it = enabledTypes.iterator(); it.hasNext(); ) {
-            FeatureTypeInfo ft = it.next();
+        for (FeatureTypeInfo ft : enabledTypes) {
             if (ft.enabled()) {
                 String prefixedName = ft.prefixedName();
 

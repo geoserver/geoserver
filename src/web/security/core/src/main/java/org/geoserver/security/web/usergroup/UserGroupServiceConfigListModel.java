@@ -24,7 +24,7 @@ public class UserGroupServiceConfigListModel
     @Override
     protected List<SecurityUserGroupServiceConfig> load() {
         GeoServerSecurityManager secMgr = GeoServerApplication.get().getSecurityManager();
-        List<SecurityUserGroupServiceConfig> configs = new ArrayList();
+        List<SecurityUserGroupServiceConfig> configs = new ArrayList<>();
         try {
             for (String ugServiceName : secMgr.listUserGroupServices()) {
                 SecurityUserGroupServiceConfig config =

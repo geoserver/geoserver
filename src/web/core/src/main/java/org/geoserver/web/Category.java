@@ -35,6 +35,7 @@ public class Category implements Comparable<Category>, Serializable {
         this.namekey = namekey;
     }
 
+    @Override
     public int compareTo(Category other) {
         return getOrder() - other.getOrder();
     }

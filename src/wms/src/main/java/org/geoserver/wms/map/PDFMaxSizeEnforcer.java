@@ -35,12 +35,14 @@ public class PDFMaxSizeEnforcer {
             renderer.addRenderListener(
                     new RenderListener() {
 
+                        @Override
                         public void featureRenderer(SimpleFeature feature) {
                             if (pdfBytes.size() > maxSize) {
                                 renderer.stopRendering();
                             }
                         }
 
+                        @Override
                         public void errorOccurred(Exception e) {}
                     });
         }

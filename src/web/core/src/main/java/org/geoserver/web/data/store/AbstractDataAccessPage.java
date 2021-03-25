@@ -6,7 +6,8 @@
 package org.geoserver.web.data.store;
 
 import java.io.IOException;
-import java.util.Iterator;
+import java.io.Serializable;
+import java.util.Map;
 import java.util.logging.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -22,7 +23,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.validation.IValidator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -78,57 +78,51 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
             dsFactory = resourcePool.getDataStoreFactory(storeInfo);
         } catch (IOException e) {
             String msg =
-                    (String)
-                            new ResourceModel("AbstractDataAccessPage.cantGetDataStoreFactory")
-                                    .getObject();
+                    new ResourceModel("AbstractDataAccessPage.cantGetDataStoreFactory").getObject();
             msg += ": " + e.getMessage();
             throw new IllegalArgumentException(msg);
         }
         if (dsFactory == null) {
             String msg =
-                    (String)
-                            new ResourceModel("AbstractDataAccessPage.cantGetDataStoreFactory")
-                                    .getObject();
+                    new ResourceModel("AbstractDataAccessPage.cantGetDataStoreFactory").getObject();
             throw new IllegalArgumentException(msg);
         }
 
-        final IModel model = new CompoundPropertyModel(storeInfo);
+        final IModel<DataStoreInfo> model = new CompoundPropertyModel<>(storeInfo);
 
-        final Form paramsForm = new Form("dataStoreForm", model);
+        final Form<DataStoreInfo> paramsForm = new Form<>("dataStoreForm", model);
         add(paramsForm);
 
         paramsForm.add(new Label("storeType", dsFactory.getDisplayName()));
         paramsForm.add(new Label("storeTypeDescription", dsFactory.getDescription()));
 
-        {
-            final IModel wsModel = new PropertyModel(model, "workspace");
-            final IModel wsLabelModel = new ResourceModel("workspace", "Workspace");
-            workspacePanel = new WorkspacePanel("workspacePanel", wsModel, wsLabelModel, true);
-        }
+        workspacePanel =
+                new WorkspacePanel(
+                        "workspacePanel",
+                        new PropertyModel<>(model, "workspace"),
+                        new ResourceModel("workspace", "Workspace"),
+                        true);
         paramsForm.add(workspacePanel);
 
-        final TextParamPanel dataStoreNamePanel;
-
-        dataStoreNamePanel =
-                new TextParamPanel(
+        final TextParamPanel<String> dataStoreNamePanel =
+                new TextParamPanel<>(
                         "dataStoreNamePanel",
-                        new PropertyModel(model, "name"),
+                        new PropertyModel<>(model, "name"),
                         new ResourceModel("AbstractDataAccessPage.dataSrcName", "Data Source Name"),
                         true);
         paramsForm.add(dataStoreNamePanel);
 
         paramsForm.add(
-                new TextParamPanel(
+                new TextParamPanel<String>(
                         "dataStoreDescriptionPanel",
-                        new PropertyModel(model, "description"),
+                        new PropertyModel<>(model, "description"),
                         new ResourceModel("AbstractDataAccessPage.description", "Description"),
-                        false,
-                        (IValidator[]) null));
+                        false));
 
         paramsForm.add(
                 new CheckBoxParamPanel(
                         "dataStoreEnabledPanel",
-                        new PropertyModel(model, "enabled"),
+                        new PropertyModel<>(model, "enabled"),
                         new ResourceModel("enabled", "Enabled")));
 
         {
@@ -155,7 +149,7 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
                         dataStoreInfoId);
         paramsForm.add(storeNameValidator);
 
-        paramsForm.add(new BookmarkablePageLink("cancel", StorePage.class));
+        paramsForm.add(new BookmarkablePageLink<>("cancel", StorePage.class));
 
         paramsForm.add(
                 new AjaxSubmitLink("save", paramsForm) {
@@ -270,8 +264,8 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
                                 final Param[] dsParams = dsFactory.getParametersInfo();
                                 for (Param p : dsParams) {
                                     if ("namespace".equals(p.getName())) {
-                                        final IModel paramsModel =
-                                                new PropertyModel(model, "connectionParameters");
+                                        final IModel<Map<String, Serializable>> paramsModel =
+                                                new PropertyModel<>(model, "connectionParameters");
                                         namespaceModel =
                                                 new NamespaceParamModel(paramsModel, "namespace");
                                         break;
@@ -300,8 +294,8 @@ abstract class AbstractDataAccessPage extends GeoServerSecuredPage {
 
     private NamespacePanel findNamespacePanel(MarkupContainer c) {
         Component child;
-        for (Iterator<? extends Component> it = ((MarkupContainer) c).iterator(); it.hasNext(); ) {
-            child = it.next();
+        for (Component component : c) {
+            child = component;
             if (child instanceof NamespacePanel) {
                 return (NamespacePanel) child;
             } else if (child instanceof MarkupContainer) {

@@ -43,42 +43,52 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
         super(delegate);
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         delegate.accept(visitor);
     }
 
+    @Override
     public ReferencedEnvelope boundingBox() throws Exception {
         return delegate.boundingBox();
     }
 
+    @Override
     public boolean enabled() {
         return delegate.enabled();
     }
 
+    @Override
     public String getAbstract() {
         return delegate.getAbstract();
     }
 
+    @Override
     public <T> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
         return delegate.getAdapter(adapterClass, hints);
     }
 
+    @Override
     public List<String> getAlias() {
         return delegate.getAlias();
     }
 
+    @Override
     public Catalog getCatalog() {
         return delegate.getCatalog();
     }
 
+    @Override
     public CoordinateReferenceSystem getCRS() {
         return delegate.getCRS();
     }
 
+    @Override
     public String getDescription() {
         return delegate.getDescription();
     }
 
+    @Override
     public String getId() {
         return delegate.getId();
     }
@@ -88,18 +98,22 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
         return delegate.getKeywords();
     }
 
+    @Override
     public List<String> keywordValues() {
         return delegate.keywordValues();
     }
 
+    @Override
     public ReferencedEnvelope getLatLonBoundingBox() {
         return delegate.getLatLonBoundingBox();
     }
 
+    @Override
     public MetadataMap getMetadata() {
         return delegate.getMetadata();
     }
 
+    @Override
     public List<MetadataLinkInfo> getMetadataLinks() {
         return delegate.getMetadataLinks();
     }
@@ -109,114 +123,142 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
         return delegate.getDataLinks();
     }
 
+    @Override
     public String getName() {
         return delegate.getName();
     }
 
+    @Override
     public NamespaceInfo getNamespace() {
         return delegate.getNamespace();
     }
 
+    @Override
     public ReferencedEnvelope getNativeBoundingBox() {
         return delegate.getNativeBoundingBox();
     }
 
+    @Override
     public CoordinateReferenceSystem getNativeCRS() {
         return delegate.getNativeCRS();
     }
 
+    @Override
     public String getNativeName() {
         return delegate.getNativeName();
     }
 
+    @Override
     public String prefixedName() {
         return delegate.prefixedName();
     }
 
+    @Override
     public ProjectionPolicy getProjectionPolicy() {
         return delegate.getProjectionPolicy();
     }
 
+    @Override
     public Name getQualifiedName() {
         return delegate.getQualifiedName();
     }
 
+    @Override
     public Name getQualifiedNativeName() {
         return delegate.getQualifiedNativeName();
     }
 
+    @Override
     public String getSRS() {
         return delegate.getSRS();
     }
 
+    @Override
     public WMSStoreInfo getStore() {
         return delegate.getStore();
     }
 
+    @Override
     public String getTitle() {
         return delegate.getTitle();
     }
 
+    @Override
     public Layer getWMSLayer(ProgressListener listener) throws IOException {
         return delegate.getWMSLayer(listener);
     }
 
+    @Override
     public boolean isEnabled() {
         return delegate.isEnabled();
     }
 
+    @Override
     public void setAbstract(String abstract1) {
         delegate.setAbstract(abstract1);
     }
 
+    @Override
     public void setCatalog(Catalog catalog) {
         delegate.setCatalog(catalog);
     }
 
+    @Override
     public void setDescription(String description) {
         delegate.setDescription(description);
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         delegate.setEnabled(enabled);
     }
 
+    @Override
     public void setLatLonBoundingBox(ReferencedEnvelope box) {
         delegate.setLatLonBoundingBox(box);
     }
 
+    @Override
     public void setName(String name) {
         delegate.setName(name);
     }
 
+    @Override
     public void setNamespace(NamespaceInfo namespace) {
         delegate.setNamespace(namespace);
     }
 
+    @Override
     public void setNativeBoundingBox(ReferencedEnvelope box) {
         delegate.setNativeBoundingBox(box);
     }
 
+    @Override
     public void setNativeCRS(CoordinateReferenceSystem nativeCRS) {
         delegate.setNativeCRS(nativeCRS);
     }
 
+    @Override
     public void setNativeName(String nativeName) {
         delegate.setNativeName(nativeName);
     }
 
+    @Override
     public void setProjectionPolicy(ProjectionPolicy policy) {
         delegate.setProjectionPolicy(policy);
     }
 
+    @Override
     public void setSRS(String srs) {
         delegate.setSRS(srs);
     }
 
+    @Override
     public void setStore(StoreInfo store) {
         delegate.setStore(store);
     }
 
+    @Override
     public void setTitle(String title) {
         delegate.setTitle(title);
     }
@@ -370,5 +412,15 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     @Override
     public void setMetadataBBoxRespected(boolean metadataBBoxRespected) {
         delegate.setMetadataBBoxRespected(metadataBBoxRespected);
+    }
+
+    @Override
+    public boolean isSimpleConversionEnabled() {
+        return delegate.isSimpleConversionEnabled();
+    }
+
+    @Override
+    public void setSimpleConversionEnabled(boolean activateComplexToSimpleOutput) {
+        delegate.setSimpleConversionEnabled(activateComplexToSimpleOutput);
     }
 }

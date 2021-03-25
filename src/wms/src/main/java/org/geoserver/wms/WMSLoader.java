@@ -29,10 +29,12 @@ public class WMSLoader extends LegacyServiceLoader<WMSInfo> {
 
     static Logger LOGGER = Logging.getLogger("org.geoserver.wms");
 
+    @Override
     public Class<WMSInfo> getServiceClass() {
         return WMSInfo.class;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public WMSInfo load(LegacyServicesReader reader, GeoServer geoServer) throws Exception {
         WMSInfoImpl wms = new WMSInfoImpl();
@@ -130,8 +132,7 @@ public class WMSLoader extends LegacyServiceLoader<WMSInfo> {
                     // use defaults
                     bm.getStyles().addAll(Collections.nCopies(bm.getLayers().size(), null));
                 } else {
-                    for (int i = 0; i < styleNames.size(); i++) {
-                        String styleName = styleNames.get(i);
+                    for (String styleName : styleNames) {
                         styleName = styleName.trim();
 
                         StyleInfo style = null;

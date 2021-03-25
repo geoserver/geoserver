@@ -245,7 +245,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
                                 panelId,
                                 new ParamResourceModel(
                                         "epsgOrderDescription", SRSDescriptionPage.this),
-                                new Model<String>(finalEpsgWkt));
+                                new Model<>(finalEpsgWkt));
                     }
                 });
         String finalWkt = wkt;
@@ -257,11 +257,12 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
                                 panelId,
                                 new ParamResourceModel(
                                         "internalOrderDescription", SRSDescriptionPage.this),
-                                new Model<String>(finalWkt));
+                                new Model<>(finalWkt));
                     }
                 });
-        TabbedPanel wktTabs =
-                new TabbedPanel("wktTabs", tabs) {
+        TabbedPanel<ITab> wktTabs =
+                new TabbedPanel<ITab>("wktTabs", tabs) {
+                    @Override
                     protected String getTabContainerCssClass() {
                         return "tab-row tab-row-compact";
                     }

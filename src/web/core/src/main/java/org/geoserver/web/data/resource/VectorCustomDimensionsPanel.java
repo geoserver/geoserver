@@ -50,7 +50,7 @@ public class VectorCustomDimensionsPanel extends Panel {
     public VectorCustomDimensionsPanel(String id, IModel<FeatureTypeInfo> typeInfoModel) {
         super(id, typeInfoModel);
         this.typeInfoModel = typeInfoModel;
-        this.metadata = new PropertyModel<MetadataMap>(typeInfoModel, "metadata");
+        this.metadata = new PropertyModel<>(typeInfoModel, "metadata");
 
         this.setOutputMarkupId(true);
 
@@ -71,8 +71,7 @@ public class VectorCustomDimensionsPanel extends Panel {
         final FeedbackPanel feedback = new FeedbackPanel("feedback");
         addDimContainer.add(feedback);
         // add the name input
-        final TextField<String> nameInput =
-                new TextField<String>("nameInput", new Model<String>(""));
+        final TextField<String> nameInput = new TextField<>("nameInput", new Model<>(""));
         addDimContainer.add(nameInput);
         // add the ajax button
         final AjaxButton addButton =
@@ -141,8 +140,8 @@ public class VectorCustomDimensionsPanel extends Panel {
     private List<IModel<VectorCustomDimensionEntry>> getCustomDimensionMetadataList(
             final IModel<FeatureTypeInfo> typeInfoModel) {
         final PropertyModel<MetadataMap> metadata =
-                new PropertyModel<MetadataMap>(getTypeInfoModel(), "metadata");
-        final List<VectorDimensionModel> models = new ArrayList<>();
+                new PropertyModel<>(getTypeInfoModel(), "metadata");
+        final List<IModel<VectorCustomDimensionEntry>> models = new ArrayList<>();
         final FeatureTypeInfo typeInfo = typeInfoModel.getObject();
         final FeatureTypeDimensionsAccessor accessor = new FeatureTypeDimensionsAccessor(typeInfo);
         final Map<String, DimensionInfo> customDimensions = accessor.getCustomDimensions();
@@ -150,7 +149,7 @@ public class VectorCustomDimensionsPanel extends Panel {
             final String dimensionName = dimension.getKey();
             models.add(new VectorDimensionModel(metadata, dimensionName, DimensionInfo.class));
         }
-        return (List) models;
+        return models;
     }
 
     private RefreshingView<VectorCustomDimensionEntry> buildVectorCustomDimensionsView(
@@ -160,7 +159,7 @@ public class VectorCustomDimensionsPanel extends Panel {
 
                     @Override
                     protected Iterator<IModel<VectorCustomDimensionEntry>> getItemModels() {
-                        return (Iterator) getCustomDimensionMetadataList(typeInfoModel).iterator();
+                        return getCustomDimensionMetadataList(typeInfoModel).iterator();
                     }
 
                     @Override
@@ -215,6 +214,7 @@ public class VectorCustomDimensionsPanel extends Panel {
             key = VECTOR_CUSTOM_DIMENSION_PREFIX + expression;
         }
 
+        @Override
         public VectorCustomDimensionEntry getObject() {
             final DimensionInfo dim =
                     (DimensionInfo)
@@ -229,6 +229,7 @@ public class VectorCustomDimensionsPanel extends Panel {
             return entry;
         }
 
+        @Override
         public void setObject(VectorCustomDimensionEntry object) {
             // check if is a renamed dimension
             if (object.hasModifiedKey()) {

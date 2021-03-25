@@ -10,8 +10,8 @@ contribute to get a complete picture of the Quality of Service of the entire Spa
 Installing the Plug-in
 ----------------------
 
-As a community module, the package needs to be downloaded from the nightly builds, picking the community folder of the corresponding GeoServer series (e.g. if working on GeoServer master nightly builds, 
-pick the zip file form master/community-latest). The module is only supported in GeoServer 2.15 and later on. 
+As a community module, the package needs to be downloaded from the nightly builds, picking the community folder of the corresponding GeoServer series (e.g. if working on the GeoServer main development branch nightly builds,
+pick the zip file form main/community-latest). The module is only supported in GeoServer 2.15 and later on. 
 
 To install the module, unpack the zip file contents into GeoServer own WEB-INF/lib directory and restart GeoServer.
 

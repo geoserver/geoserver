@@ -31,6 +31,7 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
     }
 
     /** Takes care of keeping in synch namespace and workspaces in face of modifications */
+    @Override
     public synchronized void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
         List<String> properties = event.getPropertyNames();
         if (event.getSource() instanceof NamespaceInfo
@@ -103,6 +104,7 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
     }
 
     /** Takes care of keeping the stores namespace URI in synch with namespace changes */
+    @Override
     public void handlePostModifyEvent(CatalogPostModifyEvent event) {
         if (event.getSource() instanceof NamespaceInfo) {
             NamespaceInfo ns = (NamespaceInfo) event.getSource();
@@ -111,7 +113,7 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
             WorkspaceInfo ws = catalog.getWorkspaceByName(ns.getPrefix());
             if (ws != null) {
                 List<DataStoreInfo> stores = catalog.getDataStoresByWorkspace(ws);
-                if (stores.size() > 0) {
+                if (!stores.isEmpty()) {
                     for (DataStoreInfo store : stores) {
                         String oldURI = (String) store.getConnectionParameters().get("namespace");
                         if (oldURI != null && !namespaceURI.equals(oldURI)) {
@@ -126,11 +128,13 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
         syncIsolation(event.getSource());
     }
 
+    @Override
     public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
         // ignore
     }
 
     /** When a namespace is removed, makes sure the associated workspace is removed as well. */
+    @Override
     public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
         if (event.getSource() instanceof NamespaceInfo) {
             NamespaceInfo ns = (NamespaceInfo) event.getSource();
@@ -142,6 +146,7 @@ public class NamespaceWorkspaceConsistencyListener implements CatalogListener {
         }
     }
 
+    @Override
     public void reloaded() {
         // ignore
     }

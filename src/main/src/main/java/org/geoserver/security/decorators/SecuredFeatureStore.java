@@ -46,11 +46,12 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
 
     FeatureStore<T, F> storeDelegate;
 
-    public SecuredFeatureStore(FeatureStore delegate, WrapperPolicy policy) {
+    public SecuredFeatureStore(FeatureStore<T, F> delegate, WrapperPolicy policy) {
         super(delegate, policy);
         this.storeDelegate = delegate;
     }
 
+    @Override
     public List<FeatureId> addFeatures(FeatureCollection<T, F> collection) throws IOException {
         Query writeQuery = getWriteQuery(policy);
 
@@ -65,7 +66,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
             // check if any of the inserted features does not pass the write filters
             if (writeQuery.getFilter() != null && writeQuery.getFilter() != Filter.INCLUDE) {
                 final FilteringFeatureCollection<T, F> filtered =
-                        new FilteringFeatureCollection<T, F>(collection, writeQuery.getFilter());
+                        new FilteringFeatureCollection<>(collection, writeQuery.getFilter());
                 if (filtered.size() < collection.size()) {
                     String typeName = getSchema().getName().getLocalPart();
                     if (policy.response == Response.CHALLENGE) {
@@ -116,6 +117,7 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
         modifyFeatures(names, values, filter);
     }
 
+    @Override
     public void modifyFeatures(Name[] names, Object[] values, Filter filter) throws IOException {
         // are we limiting anything?
         Query writeQuery = getWriteQuery(policy);
@@ -136,19 +138,18 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
             storeDelegate.modifyFeatures(names, values, mixed.getFilter());
         } else {
             // get the writable attribute set
-            Set<String> queryNames =
-                    new HashSet<String>(Arrays.asList(writeQuery.getPropertyNames()));
+            Set<String> queryNames = new HashSet<>(Arrays.asList(writeQuery.getPropertyNames()));
 
             // check the update fields
-            for (int i = 0; i < names.length; i++) {
-                final String localName = names[i].getLocalPart();
+            for (Name name : names) {
+                final String localName = name.getLocalPart();
                 if (queryNames.contains(localName)) {
                     String typeName = getSchema().getName().getLocalPart();
                     if (policy.getResponse() == Response.CHALLENGE) {
                         throw SecureCatalogImpl.unauthorizedAccess(typeName);
                     } else {
                         throw new UnsupportedOperationException(
-                                "Trying to write on the write protected attribute " + names[i]);
+                                "Trying to write on the write protected attribute " + name);
                     }
                 }
             }
@@ -157,11 +158,13 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
         }
     }
 
+    @Override
     public void modifyFeatures(Name attributeName, Object attributeValue, Filter filter)
             throws IOException {
         modifyFeatures(new Name[] {attributeName}, new Object[] {attributeValue}, filter);
     }
 
+    @Override
     public void removeFeatures(Filter filter) throws IOException {
         // are we limiting anything?
         Query writeQuery = getWriteQuery(policy);
@@ -178,15 +181,18 @@ public class SecuredFeatureStore<T extends FeatureType, F extends Feature>
         storeDelegate.removeFeatures(mixed.getFilter());
     }
 
+    @Override
     public void setFeatures(FeatureReader<T, F> reader) throws IOException {
         throw new UnsupportedOperationException(
                 "Unaware of any GS api using this, " + "so it has not been implemented");
     }
 
+    @Override
     public Transaction getTransaction() {
         return storeDelegate.getTransaction();
     }
 
+    @Override
     public void setTransaction(Transaction transaction) {
         storeDelegate.setTransaction(transaction);
     }

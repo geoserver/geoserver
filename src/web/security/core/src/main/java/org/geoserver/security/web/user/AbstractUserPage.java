@@ -6,7 +6,6 @@
 package org.geoserver.security.web.user;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -71,10 +70,10 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
         boolean hasRoleStore = hasRoleStore(getSecurityManager().getActiveRoleService().getName());
 
         // build the form
-        Form form = new Form<Serializable>("form", new CompoundPropertyModel(user));
+        Form<GeoServerUser> form = new Form<>("form", new CompoundPropertyModel<>(user));
         add(form);
 
-        form.add(new TextField("username").setEnabled(hasUserGroupStore));
+        form.add(new TextField<>("username").setEnabled(hasUserGroupStore));
         form.add(new CheckBox("enabled").setEnabled(hasUserGroupStore));
 
         PasswordTextField pw1 =
@@ -89,7 +88,7 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
         pw1.setEnabled(hasUserGroupStore && !emptyPasswd);
 
         PasswordTextField pw2 =
-                new PasswordTextField("confirmPassword", new Model(user.getPassword())) {
+                new PasswordTextField("confirmPassword", new Model<>(user.getPassword())) {
                     @Override
                     public boolean isRequired() {
                         return isFinalSubmit(this);
@@ -116,7 +115,7 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
         List<GeoServerRole> roles;
         try {
             roles =
-                    new ArrayList(
+                    new ArrayList<>(
                             getSecurityManager()
                                     .getActiveRoleService()
                                     .getRolesForUser(user.getUsername()));
@@ -124,7 +123,7 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
             throw new WicketRuntimeException(e);
         }
 
-        form.add(rolePalette = new RolePaletteFormComponent("roles", new ListModel(roles)));
+        form.add(rolePalette = new RolePaletteFormComponent("roles", new ListModel<>(roles)));
         rolePalette.add(
                 new AjaxFormComponentUpdatingBehavior("change") {
                     @Override
@@ -137,7 +136,7 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
         rolePalette.setEnabled(hasRoleStore);
 
         boolean isGroupAdmin = roles.contains(GeoServerRole.GROUP_ADMIN_ROLE);
-        List<GeoServerUserGroup> adminGroups = new ArrayList();
+        List<GeoServerUserGroup> adminGroups = new ArrayList<>();
         if (isGroupAdmin) {
             for (String groupName : GroupAdminProperty.get(user.getProperties())) {
                 try {
@@ -152,7 +151,7 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
                 adminGroupChoice =
                         new UserGroupListMultipleChoice(
                                 "adminGroups",
-                                new ListModel(adminGroups),
+                                new ListModel<>(adminGroups),
                                 new GroupsModel(ugServiceName)));
         adminGroupChoice.setOutputMarkupId(true);
         adminGroupChoice.setEnabled(hasUserGroupStore && isGroupAdmin);
@@ -297,8 +296,8 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
 
         @Override
         protected List<GeoServerRole> load() {
-            List<GeoServerRole> tmp = new ArrayList<GeoServerRole>();
-            List<GeoServerRole> result = new ArrayList<GeoServerRole>();
+            List<GeoServerRole> tmp = new ArrayList<>();
+            List<GeoServerRole> result = new ArrayList<>();
             try {
                 GeoServerUserGroupService ugService =
                         getSecurityManager().loadUserGroupService(ugServiceName);

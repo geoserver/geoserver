@@ -26,10 +26,8 @@ public class CatalogStoreCapabilities {
 
     protected Map<Name, RecordDescriptor> descriptors;
 
-    protected Map<String, List<DomainType>> operationParameters =
-            new HashMap<String, List<DomainType>>();
-    protected Map<String, List<DomainType>> operationConstraints =
-            new HashMap<String, List<DomainType>>();
+    protected Map<String, List<DomainType>> operationParameters = new HashMap<>();
+    protected Map<String, List<DomainType>> operationConstraints = new HashMap<>();
 
     public CatalogStoreCapabilities(Map<Name, RecordDescriptor> descriptors) {
         this.descriptors = descriptors;
@@ -40,8 +38,8 @@ public class CatalogStoreCapabilities {
         Ows10Factory owsf = Ows10Factory.eINSTANCE;
 
         /** OperationMetadata */
-        operationParameters.put("OperationsMetadata", new LinkedList<DomainType>());
-        operationConstraints.put("OperationsMetadata", new LinkedList<DomainType>());
+        operationParameters.put("OperationsMetadata", new LinkedList<>());
+        operationConstraints.put("OperationsMetadata", new LinkedList<>());
 
         // - Parameters
         DomainType opMetadataParam1 = owsf.createDomainType();
@@ -60,8 +58,8 @@ public class CatalogStoreCapabilities {
         operationConstraints.get("OperationsMetadata").add(opMetadataConstraint1);
 
         /** GetCapabilities */
-        operationParameters.put("GetCapabilities", new LinkedList<DomainType>());
-        operationConstraints.put("GetCapabilities", new LinkedList<DomainType>());
+        operationParameters.put("GetCapabilities", new LinkedList<>());
+        operationConstraints.put("GetCapabilities", new LinkedList<>());
 
         // - Parameters
         DomainType getCapabilitiesParam = owsf.createDomainType();
@@ -79,8 +77,8 @@ public class CatalogStoreCapabilities {
         operationConstraints.get("GetCapabilities").add(getCapabilitiesConstraint);
 
         /** DescribeRecord */
-        operationParameters.put("DescribeRecord", new LinkedList<DomainType>());
-        operationConstraints.put("DescribeRecord", new LinkedList<DomainType>());
+        operationParameters.put("DescribeRecord", new LinkedList<>());
+        operationConstraints.put("DescribeRecord", new LinkedList<>());
 
         // prepare typenames and schema's
         List<String> typeNames = new ArrayList<>();
@@ -111,8 +109,8 @@ public class CatalogStoreCapabilities {
         operationConstraints.get("DescribeRecord").add(describeRecordConstraint);
 
         /** GetRecords */
-        operationParameters.put("GetRecords", new LinkedList<DomainType>());
-        operationConstraints.put("GetRecords", new LinkedList<DomainType>());
+        operationParameters.put("GetRecords", new LinkedList<>());
+        operationConstraints.put("GetRecords", new LinkedList<>());
 
         // - Parameters
         DomainType getRecordsParam1 = owsf.createDomainType();
@@ -146,8 +144,8 @@ public class CatalogStoreCapabilities {
         operationConstraints.get("GetRecords").add(getRecordConstraint1);
 
         /** GetRecordById */
-        operationParameters.put("GetRecordById", new LinkedList<DomainType>());
-        operationConstraints.put("GetRecordById", new LinkedList<DomainType>());
+        operationParameters.put("GetRecordById", new LinkedList<>());
+        operationConstraints.put("GetRecordById", new LinkedList<>());
 
         // - Parameters
         DomainType getRecordByIdParam1 = owsf.createDomainType();
@@ -178,8 +176,8 @@ public class CatalogStoreCapabilities {
         operationConstraints.get("GetRecordById").add(getRecordByIdConstraint1);
 
         /** GetDomain */
-        operationParameters.put("GetDomain", new LinkedList<DomainType>());
-        operationConstraints.put("GetDomain", new LinkedList<DomainType>());
+        operationParameters.put("GetDomain", new LinkedList<>());
+        operationConstraints.put("GetDomain", new LinkedList<>());
 
         // - Parameters
         DomainType getDomainParam1 = owsf.createDomainType();
@@ -192,8 +190,8 @@ public class CatalogStoreCapabilities {
         operationParameters.get("GetDomain").add(getDomainParam2);
 
         /** Transaction */
-        operationParameters.put("Transaction", new LinkedList<DomainType>());
-        operationConstraints.put("Transaction", new LinkedList<DomainType>());
+        operationParameters.put("Transaction", new LinkedList<>());
+        operationConstraints.put("Transaction", new LinkedList<>());
     }
 
     /** True if the store supports transactions (insert, update, delete), false otherwise */

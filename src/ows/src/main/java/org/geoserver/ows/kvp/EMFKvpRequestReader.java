@@ -6,7 +6,6 @@
 package org.geoserver.ows.kvp;
 
 import java.lang.reflect.Method;
-import java.util.Iterator;
 import java.util.Map;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
@@ -32,7 +31,7 @@ public class EMFKvpRequestReader extends KvpRequestReader {
      *
      * @param requestBean The request class, which must be an emf class.
      */
-    public EMFKvpRequestReader(Class requestBean, EFactory factory) {
+    public EMFKvpRequestReader(Class<?> requestBean, EFactory factory) {
         super(requestBean);
 
         // make sure an eobject is passed in
@@ -45,6 +44,7 @@ public class EMFKvpRequestReader extends KvpRequestReader {
     }
 
     /** Reflectivley creates the request bean instance. */
+    @Override
     public Object createRequest() {
         String className = getRequestBean().getName();
 
@@ -64,13 +64,14 @@ public class EMFKvpRequestReader extends KvpRequestReader {
         }
     }
 
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    @Override
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         // use emf reflection
         EObject eObject = (EObject) request;
 
-        for (Iterator e = kvp.entrySet().iterator(); e.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) e.next();
-            String property = (String) entry.getKey();
+        for (Map.Entry<String, Object> entry : kvp.entrySet()) {
+            String property = entry.getKey();
             Object value = entry.getValue();
 
             // respect the filter

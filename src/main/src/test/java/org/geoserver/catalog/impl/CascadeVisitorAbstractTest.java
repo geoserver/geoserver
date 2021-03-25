@@ -5,7 +5,11 @@
  */
 package org.geoserver.catalog.impl;
 
-import static org.geoserver.data.test.CiteTestData.*;
+import static org.geoserver.data.test.CiteTestData.BRIDGES;
+import static org.geoserver.data.test.CiteTestData.BUILDINGS;
+import static org.geoserver.data.test.CiteTestData.CITE_PREFIX;
+import static org.geoserver.data.test.CiteTestData.FORESTS;
+import static org.geoserver.data.test.CiteTestData.LAKES;
 
 import java.io.IOException;
 import org.geoserver.catalog.Catalog;
@@ -22,10 +26,12 @@ public class CascadeVisitorAbstractTest extends GeoServerSystemTestSupport {
 
     protected static final String WS_STYLE = "wsStyle";
 
+    @Override
     protected void setUpTestData(org.geoserver.data.test.SystemTestData testData) throws Exception {
         // add nothing here
     };
 
+    @Override
     protected void onSetUp(org.geoserver.data.test.SystemTestData testData) throws Exception {
         Catalog catalog = getCatalog();
 

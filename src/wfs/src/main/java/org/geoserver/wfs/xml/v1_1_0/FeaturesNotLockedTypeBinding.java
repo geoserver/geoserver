@@ -38,6 +38,7 @@ public class FeaturesNotLockedTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.FEATURESNOTLOCKEDTYPE;
     }
@@ -49,7 +50,8 @@ public class FeaturesNotLockedTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<FeaturesNotLockedType> getType() {
         return FeaturesNotLockedType.class;
     }
 
@@ -60,6 +62,7 @@ public class FeaturesNotLockedTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         // TODO: implement
         return null;

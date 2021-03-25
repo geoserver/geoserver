@@ -48,7 +48,7 @@ public class RasterAsPointCollectionTest extends WPSTestSupport {
 
         addWcs11Coverages(testData);
 
-        Map<LayerProperty, Object> props = new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<LayerProperty, Object> props = new HashMap<>();
         props.put(
                 LayerProperty.ENVELOPE,
                 new ReferencedEnvelope(

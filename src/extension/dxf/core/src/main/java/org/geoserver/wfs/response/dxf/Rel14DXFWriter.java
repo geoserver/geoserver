@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.type.FeatureTypeImpl;
@@ -55,7 +57,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
 
     public Rel14DXFWriter() {
         super();
-        textConfig = new HashMap<String, Object>();
+        textConfig = new HashMap<>();
         textConfig.put("height", 0.72);
     }
 
@@ -64,6 +66,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Supports version if it's a number and equals to 14. */
+    @Override
     public boolean supportsVersion(String version) {
         if (super.supportsVersion(version)) return true;
         try {
@@ -75,13 +78,15 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Creates a new writer, using the given underlying writer. */
+    @Override
     public DXFWriter newInstance(Writer writer) {
         return new Rel14DXFWriter(writer);
     }
 
     /** Writes the DXF for the given feature list. */
     @Override
-    public void write(List featureList, String version) throws IOException {
+    public void write(List<SimpleFeatureCollection> featureList, String version)
+            throws IOException {
         // DXF General Structure
         writeHeader(featureList);
         writeClasses(featureList);
@@ -95,7 +100,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Writes the Header section. */
-    private void writeHeader(List featureList) throws IOException {
+    private void writeHeader(List<SimpleFeatureCollection> featureList) throws IOException {
         writeSectionStart("HEADER");
         // writes a list of variables
         writeVariables(featureList);
@@ -141,7 +146,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Writes the tables section */
-    private void writeTables(List featureList) throws IOException {
+    private void writeTables(List<SimpleFeatureCollection> featureList) throws IOException {
         LOGGER.warning("Rel14DXFWriter.writeTables");
         writeSectionStart("TABLES");
         // Tables structure
@@ -158,7 +163,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Writes the blocks section */
-    private void writeBlocks(List featureList) throws IOException {
+    private void writeBlocks(List<SimpleFeatureCollection> featureList) throws IOException {
         writeSectionStart("BLOCKS");
         // static blocks (model space and paper space)
         writeModelSpaceBlock();
@@ -171,12 +176,12 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Writes the entities section */
-    private void writeEntities(List featureList) throws IOException {
+    private void writeEntities(List<SimpleFeatureCollection> featureList) throws IOException {
         writeSectionStart("ENTITIES");
 
         // entities computed from the feature list
         // (simple geometries or insert of blocks)
-        for (Object coll : featureList) writeEntity((FeatureCollection) coll);
+        for (SimpleFeatureCollection coll : featureList) writeEntity(coll);
         writeSectionEnd();
     }
 
@@ -186,14 +191,13 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Writes entities representing the given collection. */
-    private void writeEntity(FeatureCollection coll) throws IOException {
+    private void writeEntity(SimpleFeatureCollection coll) throws IOException {
         String layer = getLayerName(coll);
         if (geometryAsBlock) {
             for (String name : blockNames.values()) writeInsert(layer, name);
         } else {
             // iterates through all the items
-            FeatureIterator<SimpleFeature> iter = coll.features();
-            try {
+            try (FeatureIterator<SimpleFeature> iter = coll.features()) {
                 while (iter.hasNext()) {
                     SimpleFeature f = iter.next();
                     String fid = f.getID();
@@ -214,8 +218,6 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                         }
                     }
                 }
-            } finally {
-                iter.close();
             }
         }
     }
@@ -293,17 +295,16 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Writes all the given feature list associated blocks. */
-    private void writeEntityBlocks(List featureList) throws IOException {
-        for (Object coll : featureList) writeFeatureBlocks((FeatureCollection) coll);
+    private void writeEntityBlocks(List<SimpleFeatureCollection> featureList) throws IOException {
+        for (SimpleFeatureCollection coll : featureList) writeFeatureBlocks(coll);
     }
 
     /** Writes all the given feature collection associated blocks. */
-    private void writeFeatureBlocks(FeatureCollection coll) throws IOException {
+    private void writeFeatureBlocks(SimpleFeatureCollection coll) throws IOException {
         LOGGER.warning("Rel14DXFWriter.writeFeatureBlocks");
         String layer = getLayerName(coll);
 
-        FeatureIterator<SimpleFeature> iter = coll.features();
-        try {
+        try (SimpleFeatureIterator iter = coll.features()) {
             while (iter.hasNext()) {
                 SimpleFeature f = iter.next();
                 String fid = f.getID();
@@ -320,16 +321,14 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                     writeEndBlock(endHandle, ownerHandle, false, "0", name);
                 }
             }
-        } finally {
-            iter.close();
         }
     }
 
     /** Writes all the given attribute definition blocks to be used for later INSERT entities */
-    private void writeAttributeDefinitionBlocks(List<FeatureCollection> featureList)
+    private void writeAttributeDefinitionBlocks(List<SimpleFeatureCollection> featureList)
             throws IOException {
         LOGGER.warning("Rel14DXFWriter.writeAttributeDefinitionBlocks");
-        for (FeatureCollection coll : featureList) {
+        for (SimpleFeatureCollection coll : featureList) {
 
             // consider only items cached to be treated as
             // blocks (by the previous block_record analysis)
@@ -471,7 +470,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Writes block references table. */
-    private void writeBlockRecords(List featureList) throws IOException {
+    private void writeBlockRecords(List<SimpleFeatureCollection> featureList) throws IOException {
         writeTableStart("BLOCK_RECORD");
         writeGroup(5, "1");
         writeOwnerHandle("0");
@@ -521,23 +520,22 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Builds a block list for the given feature list. */
-    private int countBlocks(List featureList) {
+    private int countBlocks(List<SimpleFeatureCollection> featureList) {
         if (blockNames == null) {
             // initializes block cache
             // for names and handles
-            blockNames = new HashMap<String, String>();
-            blockHandles = new HashMap<String, String>();
+            blockNames = new HashMap<>();
+            blockHandles = new HashMap<>();
             // cycle through feature to accumulate
             // blocks
-            for (Object coll : featureList) addBlocks((FeatureCollection) coll);
+            for (SimpleFeatureCollection coll : featureList) addBlocks(coll);
         }
         return blockNames.size();
     }
 
     /** Add blocks for the given collection. */
-    private void addBlocks(FeatureCollection coll) {
-        FeatureIterator<SimpleFeature> iter = coll.features();
-        try {
+    private void addBlocks(SimpleFeatureCollection coll) {
+        try (SimpleFeatureIterator iter = coll.features()) {
             while (iter.hasNext()) {
                 SimpleFeature f = iter.next();
                 Geometry geom = (Geometry) f.getDefaultGeometry();
@@ -550,8 +548,6 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
                     blockNames.put(f.getID(), (blockCounter++) + "");
                 }
             }
-        } finally {
-            iter.close();
         }
         if (writeAttributes) {
             // add attribute definition blocks
@@ -842,7 +838,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Writes the viewport table. */
-    private void writeViewPort(List featureList) throws IOException {
+    private void writeViewPort(List<SimpleFeatureCollection> featureList) throws IOException {
         writeTableStart("VPORT");
         writeGroup(5, "8");
         writeOwnerHandle("0");
@@ -853,7 +849,8 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Writes a viewport framing the given feature list. */
-    private void writeViewPortItem(String name, List featureList) throws IOException {
+    private void writeViewPortItem(String name, List<SimpleFeatureCollection> featureList)
+            throws IOException {
         writeGroup(0, "VPORT");
         writeHandle("VPort");
         writeSubClass("AcDbSymbolTableRecord");
@@ -912,7 +909,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Writes variables for the header section. */
-    protected void writeVariables(List featureList) throws IOException {
+    protected void writeVariables(List<SimpleFeatureCollection> featureList) throws IOException {
         // version
         writeVariable("ACADVER");
         writeGroup(1, version);
@@ -945,6 +942,7 @@ public class Rel14DXFWriter extends AbstractDXFWriter {
     }
 
     /** Description for the writer. */
+    @Override
     public String getDescription() {
         return "DXF Release 14";
     }

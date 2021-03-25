@@ -57,6 +57,7 @@ public class GeoServerConfigPersister
         this.xp = xp;
     }
 
+    @Override
     public void handleAddEvent(CatalogAddEvent event) {
         Object source = event.getSource();
         try {
@@ -92,6 +93,7 @@ public class GeoServerConfigPersister
         }
     }
 
+    @Override
     public void handleModifyEvent(CatalogModifyEvent event) {
         Object source = event.getSource();
 
@@ -163,6 +165,7 @@ public class GeoServerConfigPersister
         }
     }
 
+    @Override
     public void handlePostModifyEvent(CatalogPostModifyEvent event) {
         Object source = event.getSource();
         try {
@@ -198,6 +201,7 @@ public class GeoServerConfigPersister
         }
     }
 
+    @Override
     public void handleRemoveEvent(CatalogRemoveEvent event) {
         Object source = event.getSource();
         try {
@@ -233,12 +237,14 @@ public class GeoServerConfigPersister
         }
     }
 
+    @Override
     public void handleGlobalChange(
             GeoServerInfo global,
             List<String> propertyNames,
             List<Object> oldValues,
             List<Object> newValues) {}
 
+    @Override
     public void handlePostGlobalChange(GeoServerInfo global) {
         try {
             persist(global, dd.config(global));
@@ -247,10 +253,12 @@ public class GeoServerConfigPersister
         }
     }
 
+    @Override
     public void handleSettingsAdded(SettingsInfo settings) {
         handleSettingsPostModified(settings);
     }
 
+    @Override
     public void handleSettingsModified(
             SettingsInfo settings,
             List<String> propertyNames,
@@ -266,6 +274,7 @@ public class GeoServerConfigPersister
         }
     }
 
+    @Override
     public void handleSettingsPostModified(SettingsInfo settings) {
         LOGGER.fine("Persisting settings " + settings);
         try {
@@ -275,17 +284,20 @@ public class GeoServerConfigPersister
         }
     }
 
+    @Override
     public void handleSettingsRemoved(SettingsInfo settings) {
         LOGGER.fine("Removing settings " + settings);
         rmRes(dd.config(settings));
     }
 
+    @Override
     public void handleLoggingChange(
             LoggingInfo logging,
             List<String> propertyNames,
             List<Object> oldValues,
             List<Object> newValues) {}
 
+    @Override
     public void handlePostLoggingChange(LoggingInfo logging) {
         try {
             persist(logging, dd.config(logging));
@@ -296,16 +308,20 @@ public class GeoServerConfigPersister
 
     public void handleServiceAdded(ServiceInfo service) {}
 
+    @Override
     public void handleServiceChange(
             ServiceInfo service,
             List<String> propertyNames,
             List<Object> oldValues,
             List<Object> newValues) {}
 
+    @Override
     public void handlePostServiceChange(ServiceInfo service) {}
 
+    @Override
     public void handleServiceRemove(ServiceInfo service) {}
 
+    @Override
     public void reloaded() {}
 
     // workspaces

@@ -34,7 +34,7 @@ public class GETMAPValidator {
      * validates against the "normal" location of the schema (ie.
      * ".../capabilities/sld/StyleLayerDescriptor.xsd" uses the geoserver_home patch
      */
-    public List validateGETMAP(InputStream xml) {
+    public List<SAXException> validateGETMAP(InputStream xml) {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
 
         Resource schema = loader.get("data/capabilities/sld/GetMap.xsd");
@@ -42,14 +42,14 @@ public class GETMAPValidator {
         try {
             return validateGETMAP(xml, URLs.fileToUrl(schemaFile));
         } catch (Exception e) {
-            ArrayList al = new ArrayList();
+            List<SAXException> al = new ArrayList<>();
             al.add(new SAXException(e));
 
             return al;
         }
     }
 
-    public static String getErrorMessage(InputStream xml, List errors) {
+    public static String getErrorMessage(InputStream xml, List<? extends Exception> errors) {
         return getErrorMessage(new InputStreamReader(xml), errors);
     }
 
@@ -59,15 +59,15 @@ public class GETMAPValidator {
      *
      * <p>This will kick out a VERY LARGE errorMessage.
      */
-    public static String getErrorMessage(Reader xml, List errors) {
+    public static String getErrorMessage(Reader xml, List<? extends Exception> errors) {
         return SLDValidator.getErrorMessage(xml, errors);
     }
 
-    public List validateGETMAP(InputStream xml, URL SchemaUrl) {
+    public List<SAXException> validateGETMAP(InputStream xml, URL SchemaUrl) {
         return validateGETMAP(new InputSource(xml), SchemaUrl);
     }
 
-    public List validateGETMAP(InputSource xml, ServletContext servContext) {
+    public List<SAXException> validateGETMAP(InputSource xml, ServletContext servContext) {
 
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
 
@@ -80,7 +80,7 @@ public class GETMAPValidator {
         try {
             return validateGETMAP(xml, URLs.fileToUrl(schemaFile));
         } catch (Exception e) {
-            ArrayList al = new ArrayList();
+            List<SAXException> al = new ArrayList<>();
             al.add(new SAXException(e));
 
             return al;
@@ -95,7 +95,7 @@ public class GETMAPValidator {
      *     ".../capabilities/sld/StyleLayerDescriptor.xsd"
      * @return list of SAXExceptions (0 if the file's okay)
      */
-    public List validateGETMAP(InputSource xml, URL SchemaUrl) {
+    public List<SAXException> validateGETMAP(InputSource xml, URL SchemaUrl) {
         EntityResolverProvider provider = GeoServerExtensions.bean(EntityResolverProvider.class);
         return ResponseUtils.validate(xml, SchemaUrl, true, provider.getEntityResolver());
     }

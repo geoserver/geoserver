@@ -6,10 +6,12 @@
 package org.geoserver.wfs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -24,6 +26,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.xml.WFSXmlUtils;
 import org.geotools.data.DataStore;
+import org.geotools.data.DefaultTransaction;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.junit.Before;
@@ -190,8 +193,8 @@ public class TransactionTest extends WFSTestSupport {
                         + "</wfs:Transaction>";
 
         dom = postAsDOM("wfs", insert);
-        assertTrue(dom.getElementsByTagName("wfs:SUCCESS").getLength() != 0);
-        assertTrue(dom.getElementsByTagName("wfs:InsertResult").getLength() != 0);
+        assertNotEquals(0, dom.getElementsByTagName("wfs:SUCCESS").getLength());
+        assertNotEquals(0, dom.getElementsByTagName("wfs:InsertResult").getLength());
 
         // do another get feature
         dom = postAsDOM("wfs", getFeature);
@@ -225,8 +228,8 @@ public class TransactionTest extends WFSTestSupport {
                 postAsDOM(
                         "wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=cgf:Lines",
                         insert);
-        assertTrue(dom.getElementsByTagName("wfs:SUCCESS").getLength() != 0);
-        assertTrue(dom.getElementsByTagName("wfs:InsertResult").getLength() != 0);
+        assertNotEquals(0, dom.getElementsByTagName("wfs:SUCCESS").getLength());
+        assertNotEquals(0, dom.getElementsByTagName("wfs:InsertResult").getLength());
     }
 
     @Test
@@ -413,8 +416,8 @@ public class TransactionTest extends WFSTestSupport {
                         + "</wfs:Transaction>";
 
         dom = postAsDOM("cgf/wfs", insert);
-        assertTrue(dom.getElementsByTagName("wfs:SUCCESS").getLength() != 0);
-        assertTrue(dom.getElementsByTagName("wfs:InsertResult").getLength() != 0);
+        assertNotEquals(0, dom.getElementsByTagName("wfs:SUCCESS").getLength());
+        assertNotEquals(0, dom.getElementsByTagName("wfs:InsertResult").getLength());
 
         dom = postAsDOM("sf/wfs", insert);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//ogc:ServiceException)", dom);
@@ -465,8 +468,8 @@ public class TransactionTest extends WFSTestSupport {
                         + "</wfs:Transaction>";
 
         dom = postAsDOM("cgf/Lines/wfs", insert);
-        assertTrue(dom.getElementsByTagName("wfs:SUCCESS").getLength() != 0);
-        assertTrue(dom.getElementsByTagName("wfs:InsertResult").getLength() != 0);
+        assertNotEquals(0, dom.getElementsByTagName("wfs:SUCCESS").getLength());
+        assertNotEquals(0, dom.getElementsByTagName("wfs:InsertResult").getLength());
 
         dom = postAsDOM("cgf/Polygons/wfs", insert);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//ogc:ServiceException)", dom);
@@ -534,7 +537,7 @@ public class TransactionTest extends WFSTestSupport {
         ds.setWorkspace(cat.getDefaultWorkspace());
         ds.setEnabled(true);
 
-        Map params = ds.getConnectionParameters();
+        Map<String, Serializable> params = ds.getConnectionParameters();
         params.put("dbtype", "h2");
         params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
         cat.add(ds);
@@ -655,12 +658,14 @@ public class TransactionTest extends WFSTestSupport {
                 };
 
         final SecurityContext ctxBackup = SecurityContextHolder.getContext();
-        org.geotools.data.DefaultTransaction gtTransaction;
+        @SuppressWarnings("PMD.CloseResource")
+        DefaultTransaction gtTransaction;
         try {
             SecurityContext tmpSecurityCtx = new SecurityContextImpl();
             tmpSecurityCtx.setAuthentication(authentication);
             SecurityContextHolder.setContext(tmpSecurityCtx);
 
+            @SuppressWarnings("PMD.CloseResource")
             ApplicationContext context = GeoServerSystemTestSupport.applicationContext;
             Transaction transaction = new Transaction(getWFS(), getCatalog(), context);
             gtTransaction = transaction.getDatastoreTransaction(request);
@@ -673,6 +678,7 @@ public class TransactionTest extends WFSTestSupport {
                 gtTransaction.getProperty("VersioningCommitAuthor"));
         assertEquals(wfsReqHandle, gtTransaction.getProperty("VersioningCommitMessage"));
         assertEquals("extValue", gtTransaction.getProperty("extKey"));
+        gtTransaction.close();
     }
 
     /** Tests XML entity expansion limit on parsing with system property configuration. */

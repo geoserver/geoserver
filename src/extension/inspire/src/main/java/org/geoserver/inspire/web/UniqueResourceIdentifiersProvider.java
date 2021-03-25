@@ -7,7 +7,6 @@ package org.geoserver.inspire.web;
 
 import java.util.Arrays;
 import java.util.List;
-import org.apache.wicket.model.IModel;
 import org.geoserver.inspire.UniqueResourceIdentifier;
 import org.geoserver.inspire.UniqueResourceIdentifiers;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -16,23 +15,24 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 public class UniqueResourceIdentifiersProvider
         extends GeoServerDataProvider<UniqueResourceIdentifier> {
 
-    IModel<UniqueResourceIdentifiers> model;
+    UniqueResourceIdentifiers items;
 
-    public UniqueResourceIdentifiersProvider(IModel<UniqueResourceIdentifiers> model) {
-        this.model = model;
+    public UniqueResourceIdentifiersProvider(UniqueResourceIdentifiers items) {
+        this.items = new UniqueResourceIdentifiers(items);
+        setEditable(true);
     }
 
     @Override
     protected List<Property<UniqueResourceIdentifier>> getProperties() {
         return Arrays.asList(
-                new BeanProperty<UniqueResourceIdentifier>("code", "code"),
-                new BeanProperty<UniqueResourceIdentifier>("namespace", "namespace"),
-                new BeanProperty<UniqueResourceIdentifier>("metadataURL", "metadataURL"),
-                new PropertyPlaceholder<UniqueResourceIdentifier>("remove"));
+                new BeanProperty<>("code", "code"),
+                new BeanProperty<>("namespace", "namespace"),
+                new BeanProperty<>("metadataURL", "metadataURL"),
+                new PropertyPlaceholder<>("remove"));
     }
 
     @Override
-    protected List<UniqueResourceIdentifier> getItems() {
-        return model.getObject();
+    protected UniqueResourceIdentifiers getItems() {
+        return items;
     }
 }

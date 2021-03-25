@@ -4,13 +4,21 @@
  */
 package org.geoserver.rest;
 
+import static org.geoserver.template.TemplateUtils.FM_VERSION;
+
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.CollectionModel;
 import freemarker.ext.beans.MapModel;
+import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.ows.util.ClassProperties;
@@ -29,18 +37,19 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
     /** The class of object being serialized. */
     Class<T> clazz;
 
-    Collection<Class> classesToExpand;
+    Collection<Class<?>> classesToExpand;
 
     /** Constructs an ObjectToMapWrapper for the provided clazz. */
     public ObjectToMapWrapper(Class<T> clazz) {
-        this(clazz, Collections.EMPTY_LIST);
+        this(clazz, Collections.emptyList());
     }
 
     /**
      * Constructs an ObjectToMapWrapper for the provided clazz. Any child properties that match
      * classesToExpand will be unwrapped to a map
      */
-    public ObjectToMapWrapper(Class<T> clazz, Collection<Class> classesToExpand) {
+    public ObjectToMapWrapper(Class<T> clazz, Collection<Class<?>> classesToExpand) {
+        super(FM_VERSION);
         this.clazz = clazz;
         this.classesToExpand = classesToExpand;
     }
@@ -77,7 +86,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
         if (object instanceof Collection) {
             Collection c = (Collection) object;
             if (c.isEmpty() || clazz.isAssignableFrom(c.iterator().next().getClass())) {
-                SimpleHash hash = new SimpleHash();
+                SimpleHash hash = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
                 hash.put("values", new CollectionModel(c, this));
                 setRequestInfo(hash);
                 wrapInternal(hash, (Collection<T>) object);
@@ -87,7 +96,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
         if (object != null && clazz.isAssignableFrom(object.getClass())) {
             Map<String, Object> map = objectToMap(object, clazz);
 
-            SimpleHash model = new SimpleHash();
+            SimpleHash model = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
             model.put("properties", new MapModel(map, this));
             model.put("className", clazz.getSimpleName());
             setRequestInfo(model);
@@ -107,7 +116,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
      * @param object Object to convert.
      * @param clazz The advertized class of the object, from which the map keys are generated.
      */
-    protected Map<String, Object> objectToMap(Object object, Class clazz) {
+    protected Map<String, Object> objectToMap(Object object, Class<?> clazz) {
         HashMap<String, Object> map = new HashMap<>();
 
         ClassProperties cp = OwsUtils.getClassProperties(clazz);
@@ -130,9 +139,9 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
                 value = "null";
             }
             String key = Character.toLowerCase(p.charAt(0)) + p.substring(1);
-            Class valueClass = getClassForUnwrapping(value);
+            Class<?> valueClass = getClassForUnwrapping(value);
             if (value instanceof Collection) {
-                List values = new ArrayList();
+                List<Object> values = new ArrayList<>();
                 for (Object o : (Collection) value) {
                     valueClass = getClassForUnwrapping(o);
                     if (valueClass == null) {
@@ -151,8 +160,8 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
         return map;
     }
 
-    private Class getClassForUnwrapping(Object o) {
-        for (Class clazz : classesToExpand) {
+    private Class<?> getClassForUnwrapping(Object o) {
+        for (Class<?> clazz : classesToExpand) {
             if (clazz.isAssignableFrom(o.getClass())) {
                 return clazz;
             }
@@ -187,4 +196,13 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
      * @param object The object being serialized.
      */
     protected void wrapInternal(SimpleHash model, Collection<T> object) {}
+
+    @SuppressWarnings("unchecked")
+    protected Map<String, Object> hashToProperties(SimpleHash model) {
+        try {
+            return model.toMap();
+        } catch (TemplateModelException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

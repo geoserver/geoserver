@@ -49,6 +49,7 @@ public class XStreamInfoSerialBinding<T> extends SerialBase implements EntryBind
         this.compress = compress;
     }
 
+    @Override
     public T entryToObject(DatabaseEntry entry) {
 
         byte[] data = entry.getData();
@@ -78,6 +79,7 @@ public class XStreamInfoSerialBinding<T> extends SerialBase implements EntryBind
         return info;
     }
 
+    @Override
     public void objectToEntry(final T info, DatabaseEntry entry) {
         try (FastOutputStream serialOutput = super.getSerialOutput(info)) {
             @SuppressWarnings("PMD.CloseResource") // just wrappers

@@ -57,6 +57,7 @@ public class DeleteElementTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.DELETEELEMENTTYPE;
     }
@@ -68,7 +69,8 @@ public class DeleteElementTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<DeleteElementType> getType() {
         return DeleteElementType.class;
     }
 
@@ -79,11 +81,12 @@ public class DeleteElementTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         DeleteElementType deleteElement = wfsfactory.createDeleteElementType();
 
         // &lt;xsd:element maxOccurs="1" minOccurs="1" ref="ogc:Filter"&gt;
-        deleteElement.setFilter((Filter) node.getChildValue(Filter.class));
+        deleteElement.setFilter(node.getChildValue(Filter.class));
 
         // &lt;xsd:attribute name="handle" type="xsd:string" use="optional"/&gt;
         if (node.hasAttribute("handle")) {

@@ -23,14 +23,16 @@ public class ConfirmRemovalUserPanelTest extends AbstractConfirmRemovalPanelTest
 
     protected boolean disassociateRoles = false;
 
+    @Override
     protected void setupPanel(final List<GeoServerUser> roots) {
         tester.startPage(
                 new FormTestPage(
                         new ComponentBuilder() {
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             public Component buildComponent(String id) {
-                                Model<Boolean> model = new Model<Boolean>(disassociateRoles);
+                                Model<Boolean> model = new Model<>(disassociateRoles);
                                 return new ConfirmRemovalUserPanel(
                                         id, model, roots.toArray(new GeoServerUser[roots.size()])) {
                                     @Override

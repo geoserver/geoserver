@@ -15,25 +15,21 @@ class AttributesProvider extends GeoServerDataProvider<AttributeDescription> {
     /** serialVersionUID */
     private static final long serialVersionUID = -1478240785822735763L;
 
-    List<AttributeDescription> attributes = new ArrayList<AttributeDescription>();
+    List<AttributeDescription> attributes = new ArrayList<>();
 
-    static final Property<AttributeDescription> NAME =
-            new BeanProperty<AttributeDescription>("name", "name");
+    static final Property<AttributeDescription> NAME = new BeanProperty<>("name", "name");
 
-    static final Property<AttributeDescription> BINDING =
-            new BeanProperty<AttributeDescription>("binding", "binding");
+    static final Property<AttributeDescription> BINDING = new BeanProperty<>("binding", "binding");
 
     static final Property<AttributeDescription> NULLABLE =
-            new BeanProperty<AttributeDescription>("nullable", "nullable");
+            new BeanProperty<>("nullable", "nullable");
 
-    static final Property<AttributeDescription> SIZE =
-            new BeanProperty<AttributeDescription>("size", "size");
+    static final Property<AttributeDescription> SIZE = new BeanProperty<>("size", "size");
 
-    static final Property<AttributeDescription> CRS =
-            new BeanProperty<AttributeDescription>("crs", "crs");
+    static final Property<AttributeDescription> CRS = new BeanProperty<>("crs", "crs");
 
     static final PropertyPlaceholder<AttributeDescription> UPDOWN =
-            new PropertyPlaceholder<AttributeDescription>("upDown");
+            new PropertyPlaceholder<>("upDown");
 
     public AttributesProvider() {}
 

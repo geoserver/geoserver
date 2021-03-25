@@ -1,0 +1,1677 @@
+openapi: 3.0.3
+info:
+  title: 'WIP: OGC Testbed-16 D137 DGGS server API - process style'
+  description: |-
+    WARNING - This is work-in-progress.
+
+    The API supports, as per CFP, "the geographic location to zone-ID(s) and reverse conversion", plus other eventual additions to allow better comparison and discussion.
+
+    Basic ideas:
+    * The same API elements are used for a DGGS-RS service and a DGGS-Data service
+    * In the case of a DGGS-RS service, the collections are the DGGS instances themselves, 
+      and the returned features have no properties other than the geometry and resolution
+      (e.g., in GeoJSON the properties object will be ``null``)
+    * In the case of a DGGS-Data service, the collections are the sample DGGS data (hence, made available in a particular DGGS instance, too), and the returned features have
+      actual values associated in the ``properties`` object.
+
+    To care to different use cases, two different output formats were be implemented
+    for each endpoint returning cells:
+    * A classic GeoJSON output, with geometry being either the boundary or the center 
+      point of the zone (to be controlled with a request parameter), for usage in 
+      GIS tools. The longitudes will eventually be extended outside of the -180,180 
+      range to allow visualization by tools that cannot deal properly with dateline crossing.
+    * A DGGSJSON output, a small variation of the classic GeoJSON where the geometry is 
+      replaced by an array of zone-ids, was used in both zone oriented and feature oriented
+      API.
+
+    Questions, discussion topics:
+    * Support for multiple DDGSs: rHealPix and H3 were used in order to offer the 
+      clients and DGGS data servers at least a DGGS they are not already supporting natively.
+    * Is the API going to be sufficiently self-describing such that the clients
+      can figure out everything they need by just walking the API, or will it need specific knowledge contained in an API profile (e.g, a profile for rHeadlPix, one for H3, consider for example ZoneId and how to determine them).
+    * For parametric DDGSs (e.g., rHealPix) do are specific instances exposed as its own DGGS
+                                                or somehow are the full parameters of the DGGS in each resource exposed?
+    * This API follows a process API, where most resources are a process and one needs to know valid values to hit them.
+
+
+    CHANGES
+    * 2020-07-02 initial version
+    * 2020-07-23 usage of zones instead of cells everywhere, extending to support also data DGGS servers.
+    * 2020-09-22 minor updates before publication of a working service based on the API
+  contact:
+    name: Andrea Aime
+    email: andrea.aime@geo-solutions.it
+  license:
+    name: OGC License
+    url: 'http://www.opengeospatial.org/legal/'
+  version: 0.0.3
+tags:
+  - name: Capabilities
+    description: essential characteristics of this API
+
+paths:
+  /:
+    get:
+      tags:
+        - Capabilities
+      summary: landing page
+      description: |-
+        The landing page provides links to the API definition, the conformance
+        statements and to other resources provided by the API.
+      responses:
+        '200':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/LandingPage'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  /conformance:
+    get:
+      tags:
+        - Capabilities
+      summary: Information about what standards/specifications this API conforms to.
+      description: |-
+        A list of all conformance classes specified in a standard that the
+        server conforms to.
+      responses:
+        '200':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ConformanceDeclaration'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+  /collections:
+    get:
+      tags:
+        - Capabilities
+      summary: The list of supported collections
+      responses:
+        '200':
+          $ref: '#/components/responses/DGGSList'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}:
+    get:
+      tags:
+        - DGGS access
+      summary: Describes a particular DGGS
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          $ref: '#/components/responses/DGGSDescription'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/zones:
+    get:
+      tags:
+        - DGGS access
+      summary: Access the list of zones in a given DGGS. Can list either all the zones, or a particular subset based on resolution, WGS84 bbox, or list of containing zones (e.g., polygon defined in DGGS terms)
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/resolution'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/geom'
+        - $ref: '#/components/parameters/zones'
+        - $ref: '#/components/parameters/properties'
+      responses:
+        '200':
+          $ref: '#/components/responses/ZoneList'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/zone:
+    get:
+      tags:
+        - DGGS access
+      summary: Access the definition of a particular zone
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/zoneId'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/properties'          
+      responses:
+        '200':
+          $ref: '#/components/responses/Zone'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/neighbors:
+    get:
+      tags:
+        - DGGS access
+      summary: |-
+        Get the list of neighboring zones, to a given zone.
+        Questions for further discussion:
+        - Should it return just a list of identifiers instead of a GeoJSON collection?
+        - Could this even be a list of links in the zone itself?
+
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/zoneId'
+        - $ref: '#/components/parameters/datetime' 
+        - $ref: '#/components/parameters/radius'
+        - $ref: '#/components/parameters/properties'          
+      responses:
+        '200':
+          $ref: '#/components/responses/ZoneList'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/parents:
+    get:
+      tags:
+        - DGGS access
+      summary: |- 
+               Get the list of parent zones, to a given zone.
+               Questions for further discussion:
+               -  Should it return just a list of identifiers instead of a GeoJSON collection?
+
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/zoneId'
+        - $ref: '#/components/parameters/datetime' 
+        - $ref: '#/components/parameters/levels'
+        - $ref: '#/components/parameters/properties'          
+      responses:
+        '200':
+          $ref: '#/components/responses/ZoneList'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/children:
+    get:
+      tags:
+        - DGGS access
+      summary: Get the list of child zones, to a given zone.
+        Question, should it return just a list of identifiers instead of a GeoJSON collection?
+
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/zoneId'
+        - $ref: '#/components/parameters/datetime' 
+        - $ref: '#/components/parameters/levels'
+        - $ref: '#/components/parameters/properties'          
+      responses:
+        '200':
+          $ref: '#/components/responses/ZoneList'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/point:
+    get:
+      tags:
+        - DGGS access
+      summary: Returns the id of the zone containing the given point, at the given resolution
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/point'
+        - $ref: '#/components/parameters/resolution'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/properties'          
+      responses:
+        '200':
+          $ref: '#/components/responses/ZoneList'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/polygon:
+    get:
+      tags:
+        - DGGS access
+      summary: Lists zones contained in the polygon
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/polygon'
+        - $ref: '#/components/parameters/compact'
+        - $ref: '#/components/parameters/resolution'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/properties'          
+      responses:
+        '200':
+          $ref: '#/components/responses/ZoneList'
+        '406':
+          $ref: '#/components/responses/NotSupported'
+        '500':
+          $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/responses/ServerError'
+
+  /collections/{collectionId}/processes:
+    get:
+      tags:
+        - DAPA
+      summary: list the available data retrieval patterns
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/f'
+      responses:
+        200:
+          description: The operation was executed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dapa'
+              example:
+                title: Data retrieval patterns
+                description: The following endpoints are available to retrieve and
+                  process the observations in addition to the standard feature queries.
+                  The endpoints are described in the API definition and the links
+                  point to the specification of the operation in the OpenAPI definition
+                  with the available input parameters and the response schema.
+                endpoints:
+                  - title: retrieve a time series for selected variables for each station
+                      in an area
+                    description: |-
+                      This DAPA endpoint returns observation values at the selected location
+                        in the selected time interval or at the selected time instant.
+  
+                      All values in the time interval for each requested variable 
+                      (parameter `variables`) are aggregated and each of the requested statistical 
+                      functions (parameter `functions`) is applied to the aggregated values.
+                    links:
+                      - rel: ogc-dapa-endpoint
+                        title: Execute the data retrieval pattern with the default parameters
+                        href: /collections/observation/processes/area:retrieve
+                      - rel: ogc-dapa-endpoint-definition
+                        title: Detailed description in the API definition (OpenAPI 3.0)
+                        href: /api?f=json#/paths/~1collections~1observation~1dapa
+                      - rel: ogc-dapa-endpoint-documentation
+                        title: Detailed description in the API documentation
+                        href: /api?f=html#/DAPA/get_collections_observation_dapa
+                    id: area
+                    inputCollectionId: observation
+                    mediaTypes:
+                      - application/geo+json
+                      - text/csv
+                  - title: retrieve a time series for selected variables for each station
+                      in an area and apply functions on the values of each time step
+                    description: "This DAPA endpoint returns a time series for an area\
+                      \ (parameter `bbox`, `coord` or `coordRef`) in the selected time\
+                      \ interval or at the selected time instant (parameter `datetime`).\
+                      \ \n\nAll values in the area for each requested variable (parameter\
+                      \ `variables`) are aggregated for each time step and each of the\
+                      \ requested statistical functions (parameter `functions`) is applied\
+                      \ to the aggregated values."
+                    links:
+                      - rel: ogc-dapa-endpoint
+                        title: Execute the data retrieval pattern with the default parameters
+                        href: /collections/observation/processes/area:aggregate-space
+                      - rel: ogc-dapa-endpoint-definition
+                        title: Detailed description in the API definition (OpenAPI 3.0)
+                        href: /api?f=json#/paths/~1collections~1observation~1dapa
+                      - rel: ogc-dapa-endpoint-documentation
+                        title: Detailed description in the API documentation
+                        href: /api?f=html#/DAPA/get_collections_observation_dapa
+                    id: area:aggregate-space
+                    inputCollectionId: observation
+                    mediaTypes:
+                      - application/geo+json
+                      - text/csv
+            text/html:
+              schema:
+                $ref: '#/components/schemas/htmlSchema'
+        400:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        406:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotAcceptable
+        500:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+          
+  /collections/{collectionId}/variables:
+    get:
+      tags:
+        - DAPA
+      summary: fetch the observable properties included in this observation collection
+      parameters:
+        - $ref: '#/components/parameters/collectionId' 
+        - $ref: '#/components/parameters/f'
+      responses:
+        200:
+          description: The operation was executed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Variables'
+              example:
+                variables:
+                  - id: B01
+                    title: Variable of type Long
+                  - id: B02
+                    title: Variable of type Long
+            text/html:
+              schema:
+                $ref: '#/components/schemas/htmlSchema'
+        400:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        406:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotAcceptable
+        500:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+  /collections/{collectionId}/processes/area:retrieve:
+    get:
+      tags:
+        - DAPA
+      summary: retrieve a time series for selected variables for each station in an
+        area
+      description: |-
+        This DAPA endpoint returns observation values at the selected location (parameter `coord` or `coordRef`) in the selected time interval or at the selected time instant (parameter `datetime`).
+
+        All values in the time interval for each requested variable (parameter `variables`) are aggregated and each of the requested statistical functions (parameter `functions`) is applied to the aggregated values.
+      parameters:
+        - $ref: '#/components/parameters/collectionId' 
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/geom'
+        - $ref: '#/components/parameters/zones'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/f'
+        - $ref: '#/components/parameters/variables'
+      responses:
+        200:
+          description: The operation was executed successfully.
+          content:
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/csv'
+              example: |-
+                FID,zoneId,resolution,date,B01,B02,B03,B04,B05,B06,B07,B08,B09,B10,B11,B12,B8A,NDVI,NDBI,NDWI,geometry
+                s2-rpix.P67303.2020-09-06 00:00:00,P67303,5,2020-09-06T02:00:00,96,456,660,667,2704,519,1108,2186,2499,1854,1155,2740,2784,0.53248676,-0.3083907,-0.53613682,"POLYGON ((-35.10748095969024 148.74999999999997, -35.10748095969024 149.12037037037038, -35.49268851161001 149.12037037037038, -35.49268851161001 148.74999999999997, -35.10748095969024 148.74999999999997))"
+                s2-rpix.P67304.2020-09-06 00:00:00,P67304,5,2020-09-06T02:00:00,85,1592,1691,1701,3370,587,2110,2906,3157,2792,2147,3341,3636,0.26166241,-0.15013853,-0.26437671,"POLYGON ((-35.10748095969024 149.12037037037038, -35.10748095969024 149.49074074074076, -35.49268851161001 149.49074074074076, -35.49268851161001 149.12037037037038, -35.10748095969024 149.12037037037038))"
+                s2-rpix.P67306.2020-09-06 00:00:00,P67306,5,2020-09-06T02:00:00,81,859,977,1067,2089,319,1326,1789,1947,2217,1742,2120,2230,0.25279172,-0.01334424,-0.29330013,"POLYGON ((-35.49268851161001 148.74999999999997, -35.49268851161001 149.12037037037038, -35.879718636556554 149.12037037037038, -35.879718636556554 148.74999999999997, -35.49268851161001 148.74999999999997))"
+                s2-rpix.P67307.2020-09-06 00:00:00,P67307,5,2020-09-06T02:00:00,80,1200,1274,1330,2687,466,1662,2290,2490,2538,1948,2682,2947,0.26502548,-0.0806587,-0.28482354,"POLYGON ((-35.49268851161001 149.12037037037038, -35.49268851161001 149.49074074074076, -35.879718636556554 149.49074074074076, -35.879718636556554 149.12037037037038, -35.49268851161001 149.12037037037038))"
+            application/geo+json:
+              schema:
+                $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/featureCollectionGeoJSON
+              example:
+                type: FeatureCollection
+                features:
+                  - type: Feature
+                    id: s2-rpix.P67303.2020-09-06 00:00:00
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        - - - 148.75
+                            - -35.10748096
+                          - - 149.12037037
+                            - -35.10748096
+                          - - 149.12037037
+                            - -35.49268851
+                          - - 148.75
+                            - -35.49268851
+                          - - 148.75
+                            - -35.10748096
+                    geometry_name: geometry
+                    properties:
+                      zoneId: P67303
+                      resolution: 5
+                      date: '2020-09-06T00:00:00Z'
+                      B01: 96
+                      B02: 456
+                      B03: 660
+                      B04: 667
+                      B05: 2704
+                      B06: 519
+                      B07: 1108
+                      B08: 2186
+                      B09: 2499
+                      B10: 1854
+                      B11: 1155
+                      B12: 2740
+                      B8A: 2784
+                      NDVI: 0.5324867559987535
+                      NDBI: -0.3083907013868103
+                      NDWI: -0.536136816211784
+
+        400:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        406:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotAcceptable
+        500:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+  /collections/{collectionId}/processes/area:aggregate-space:
+    get:
+      tags:
+        - DAPA
+      summary: retrieve a time series for selected variables for each station in an
+        area and apply functions on the values of each time step
+      description: "This DAPA endpoint returns a time series for an area (parameter\
+        \ `bbox`, `coords` or `coordsRef`) in the selected time interval or at the\
+        \ selected time instant (parameter `datetime`). \n\nAll values in the area\
+        \ for each requested variable (parameter `variables`) are aggregated for each\
+        \ time step and each of the requested statistical functions (parameter `functions`)\
+        \ is applied to the aggregated values."
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/geom'
+        - $ref: '#/components/parameters/zones' 
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/f'
+        - $ref: '#/components/parameters/functions'
+        - $ref: '#/components/parameters/variables'
+      responses:
+        200:
+          description: The operation was executed successfully.
+          content:
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/csv'
+              example: |-
+                FID,geometry,zoneId,B01_max,B01_min,B01_count,B02_max,B02_min,B02_count,B03_max,B03_min,B03_count
+                area_time_P67307,"POLYGON ((148.76 -35.92, 149.4 -35.92, 149.4 -35.12, 148.76 -35.12, 148.76 -35.92))",P67307,80,80,2,1200,559,2,1274,713,2
+                area_time_P67303,"POLYGON ((148.76 -35.92, 149.4 -35.92, 149.4 -35.12, 148.76 -35.12, 148.76 -35.92))",P67303,96,85,2,456,329,2,660,530,2
+                area_time_P67304,"POLYGON ((148.76 -35.92, 149.4 -35.92, 149.4 -35.12, 148.76 -35.12, 148.76 -35.92))",P67304,85,83,2,1592,558,2,1691,783,2
+                area_time_P67306,"POLYGON ((148.76 -35.92, 149.4 -35.92, 149.4 -35.12, 148.76 -35.12, 148.76 -35.92))",P67306,81,80,2,859,332,2,977,471,2
+            application/geo+json:
+              schema:
+                $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/featureCollectionGeoJSON
+              example:
+                type: FeatureCollection
+                features:
+                  - type: Feature
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        - - - 148.76
+                            - -35.92
+                          - - 149.4
+                            - -35.92
+                          - - 149.4
+                            - -35.12
+                          - - 148.76
+                            - -35.12
+                          - - 148.76
+                            - -35.92
+                    properties:
+                      zoneId: P67307
+                      B01_max: 80
+                      B01_min: 80
+                      B01_count: 2
+                      B02_max: 1200
+                      B02_min: 559
+                      B02_count: 2
+                      B03_max: 1274
+                      B03_min: 713
+                      B03_count: 2
+                    id: area_time_P67307
+                  - type: Feature
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        - - - 148.76
+                            - -35.92
+                          - - 149.4
+                            - -35.92
+                          - - 149.4
+                            - -35.12
+                          - - 148.76
+                            - -35.12
+                          - - 148.76
+                            - -35.92
+                    properties:
+                      zoneId: P67303
+                      B01_max: 96
+                      B01_min: 85
+                      B01_count: 2
+                      B02_max: 456
+                      B02_min: 329
+                      B02_count: 2
+                      B03_max: 660
+                      B03_min: 530
+                      B03_count: 2
+                    id: area_time_P67303
+                  - type: Feature
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        - - - 148.76
+                            - -35.92
+                          - - 149.4
+                            - -35.92
+                          - - 149.4
+                            - -35.12
+                          - - 148.76
+                            - -35.12
+                          - - 148.76
+                            - -35.92
+                    properties:
+                      zoneId: P67304
+                      B01_max: 85
+                      B01_min: 83
+                      B01_count: 2
+                      B02_max: 1592
+                      B02_min: 558
+                      B02_count: 2
+                      B03_max: 1691
+                      B03_min: 783
+                      B03_count: 2
+                    id: area_time_P67304
+                  - type: Feature
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        - - - 148.76
+                            - -35.92
+                          - - 149.4
+                            - -35.92
+                          - - 149.4
+                            - -35.12
+                          - - 148.76
+                            - -35.12
+                          - - 148.76
+                            - -35.92
+                    properties:
+                      zoneId: P67306
+                      B01_max: 81
+                      B01_min: 80
+                      B01_count: 2
+                      B02_max: 859
+                      B02_min: 332
+                      B02_count: 2
+                      B03_max: 977
+                      B03_min: 471
+                      B03_count: 2
+                    id: area_time_P67306
+
+        400:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        406:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotAcceptable
+        500:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError  
+  /collections/{collectionId}/processes/area:aggregate-time:
+    get:
+      tags:
+        - DAPA
+      summary: retrieve a time series for selected variables for each station in an
+        area and apply functions on the values of each time series
+      description: |-
+        This DAPA endpoint returns a time series for each station in an area (parameter `box`, `coords` or `coordsRef`) in the selected time interval or at the selected time instant (parameter `datetime`).
+
+        Each time series contains daily observation values for each selected variable (parameter `variables`) for which a value has been observed at the station during the time interval.
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/geom'
+        - $ref: '#/components/parameters/zones'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/f'
+        - $ref: '#/components/parameters/functions'
+        - $ref: '#/components/parameters/variables'
+      responses:
+        200:
+          description: The operation was executed successfully.
+          content:
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/csv'
+              example: |-
+                FID,date,B01_max,B01_min,B01_count,B02_max,B02_min,B02_count,B03_max,B03_min,B03_count
+                area_space_time_2019-09-02_02:00:00.0,2019-09-02T02:00:00,85,80,4,559,329,4,783,471,4
+                area_space_time_2020-09-06_02:00:00.0,2020-09-06T02:00:00,96,80,4,1592,456,4,1691,660,4
+            application/geo+json:
+              schema:
+                $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/featureCollectionGeoJSON
+              example:
+                type: FeatureCollection
+                crs:
+                  type: name
+                  properties:
+                    name: EPSG:4326
+                features:
+                  - type: Feature
+                    properties:
+                      date: '2019-09-02T00:00:00.000+0000'
+                      B01_max: 85
+                      B01_min: 80
+                      B01_count: 4
+                      B02_max: 559
+                      B02_min: 329
+                      B02_count: 4
+                      B03_max: 783
+                      B03_min: 471
+                      B03_count: 4
+                    id: area_space_time_2019-09-02_02:00:00.0
+                  - type: Feature
+                    properties:
+                      date: '2020-09-06T00:00:00.000+0000'
+                      B01_max: 96
+                      B01_min: 80
+                      B01_count: 4
+                      B02_max: 1592
+                      B02_min: 456
+                      B02_count: 4
+                      B03_max: 1691
+                      B03_min: 660
+                      B03_count: 4
+                    id: area_space_time_2020-09-06_02:00:00.0
+
+
+        400:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        406:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotAcceptable
+        500:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+  /collections/{collectionId}/processes/area:aggregate-space-time:
+    get:
+      tags:
+        - DAPA
+      summary: retrieve a time series for selected variables for each zone in an
+        area and apply functions on all values
+      description: "This DAPA endpoint returns observation values for an area (parameter\
+        \ `bbox`, `coord` or `coordRef`) in the selected time interval or at the selected\
+        \ time instant (parameter `datetime`). \n\nAll values for each requested variable\
+        \ (parameter `variables`) are aggregated and each of the requested statistical\
+        \ functions (parameter `functions`) is applied to the aggregated values."
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/geom'
+        - $ref: '#/components/parameters/zones'
+        - $ref: '#/components/parameters/resolution'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/f'
+        - $ref: '#/components/parameters/functions'
+        - $ref: '#/components/parameters/variables'
+      responses:
+        200:
+          description: The operation was executed successfully.
+          content:
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/csv'
+              example: |-
+                FID,geometry,phenomenonTime,B01_max,B01_min,B01_count,B02_max,B02_min,B02_count,B03_max,B03_min,B03_count
+                space-time-aggregate,"POLYGON ((148.76 -35.92, 149.4 -35.92, 149.4 -35.12, 148.76 -35.12, 148.76 -35.92))",2019-09-02T00:00:00.000Z/2020-09-06T00:00:00.000Z,96,80,8,1592,329,8,1691,471,8
+            application/geo+json:
+              schema:
+                $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/featureCollectionGeoJSON
+              example:
+                type: FeatureCollection
+                features:
+                  - type: Feature
+                    id: space-time-aggregate
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        - - - 148.76
+                            - -35.92
+                          - - 149.4
+                            - -35.92
+                          - - 149.4
+                            - -35.12
+                          - - 148.76
+                            - -35.12
+                          - - 148.76
+                            - -35.92
+                    geometry_name: geometry
+                    properties:
+                      phenomenonTime: 2019-09-02T00:00:00.000Z/2020-09-06T00:00:00.000Z
+                      B01_max: 96
+                      B01_min: 80
+                      B01_count: 8
+                      B02_max: 1592
+                      B02_min: 329
+                      B02_count: 8
+                      B03_max: 1691
+                      B03_min: 471
+                      B03_count: 8
+
+        400:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        406:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotAcceptable
+        500:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+  /collections/{collectionId}/processes/position:retrieve:
+    get:
+      tags:
+        - DAPA
+      summary: retrieve a time series for selected variables at a position
+      description: |-
+        This DAPA endpoint returns a time series with daily observation values at the selected location (parameter `coords` or `coordsRef`) in the selected time interval or at the selected time instant (parameter `datetime`).
+
+        The time series contains values for each selected variable (parameter `variables`) for which a value can be interpolated at the location.
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/geom'
+        - $ref: '#/components/parameters/zones'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/f'
+        - $ref: '#/components/parameters/variables'
+      responses:
+        200:
+          description: The operation was executed successfully.
+          content:
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/csv'
+              example: |-
+                FID,zoneId,resolution,date,B01,B02,B03,B04,B05,B06,B07,B08,B09,B10,B11,B12,B8A,NDVI,NDBI,NDWI,geometry
+                s2-rpix.P67306.2019-09-02 00:00:00,P67306,5,2019-09-02T02:00:00,80,332,471,554,1897,535,865,1537,1760,1588,1006,1982,2030,0.47019445,-0.20907065,-0.53086966,"POLYGON ((-35.49268851161001 148.74999999999997, -35.49268851161001 149.12037037037038, -35.879718636556554 149.12037037037038, -35.879718636556554 148.74999999999997, -35.49268851161001 148.74999999999997))"
+                s2-rpix.P67306.2020-09-06 00:00:00,P67306,5,2020-09-06T02:00:00,81,859,977,1067,2089,319,1326,1789,1947,2217,1742,2120,2230,0.25279172,-0.01334424,-0.29330013,"POLYGON ((-35.49268851161001 148.74999999999997, -35.49268851161001 149.12037037037038, -35.879718636556554 149.12037037037038, -35.879718636556554 148.74999999999997, -35.49268851161001 148.74999999999997))"            
+            application/geo+json:
+              schema:
+                $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/featureCollectionGeoJSON
+              example:
+                type: FeatureCollection
+                features:
+                  - type: Feature
+                    id: s2-rpix.P67306.2020-09-06 00:00:00
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        - - - 148.75
+                            - -35.49268851
+                          - - 149.12037037
+                            - -35.49268851
+                          - - 149.12037037
+                            - -35.87971864
+                          - - 148.75
+                            - -35.87971864
+                          - - 148.75
+                            - -35.49268851
+                    geometry_name: geometry
+                    properties:
+                      zoneId: P67306
+                      resolution: 5
+                      date: '2020-09-06T00:00:00Z'
+                      B01: 81
+                      B02: 859
+                      B03: 977
+                      B04: 1067
+                      B05: 2089
+                      B06: 319
+                      B07: 1326
+                      B08: 1789
+                      B09: 1947
+                      B10: 2217
+                      B11: 1742
+                      B12: 2120
+                      B8A: 2230
+                      NDVI: 0.25279172016653045
+                      NDBI: -0.013344243721281544
+                      NDWI: -0.2933001285347044
+                  - type: Feature
+                    id: s2-rpix.P67306.2019-09-02 00:00:00
+                    geometry:
+                      type: Polygon
+                      coordinates:
+                        - - - 148.75
+                            - -35.49268851
+                          - - 149.12037037
+                            - -35.49268851
+                          - - 149.12037037
+                            - -35.87971864
+                          - - 148.75
+                            - -35.87971864
+                          - - 148.75
+                            - -35.49268851
+                    geometry_name: geometry
+                    properties:
+                      zoneId: P67306
+                      resolution: 5
+                      date: '2019-09-02T00:00:00Z'
+                      B01: 80
+                      B02: 332
+                      B03: 471
+                      B04: 554
+                      B05: 1897
+                      B06: 535
+                      B07: 865
+                      B08: 1537
+                      B09: 1760
+                      B10: 1588
+                      B11: 1006
+                      B12: 1982
+                      B8A: 2030
+                      NDVI: 0.47019445329933063
+                      NDBI: -0.20907065146152837
+                      NDWI: -0.5308696614295199
+        400:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        406:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotAcceptable
+        500:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+  /collections/{collectionId}/processes/position:aggregate-time:
+    get:
+      tags:
+        - DAPA
+      summary: retrieve a time series for selected variables at a position
+      description: "This DAPA endpoint returns observation values at the selected\
+        \ location (parameter `coords` or `coordsRef`) in the selected time interval\
+        \ or at the selected time instant (parameter `datetime`). \n\nAll values in\
+        \ the time interval for each requested variable (parameter `variables`) are\
+        \ aggregated and each of the requested statistical functions (parameter `functions`)\
+        \ is applied to the aggregated values."
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/geom'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/f'
+        - $ref: '#/components/parameters/functions'
+        - $ref: '#/components/parameters/variables'
+      responses:
+        200:
+          description: The operation was executed successfully.
+          content:
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/csv'
+              example: |-
+                FID,geometry,zoneId,B01_max,B01_min,B01_count,B02_max,B02_min,B02_count,B03_max,B03_min,B03_count,B04_max,B04_min,B04_count,B05_max,B05_min,B05_count,B06_max,B06_min,B06_count,B07_max,B07_min,B07_count,B08_max,B08_min,B08_count,B09_max,B09_min,B09_count,B10_max,B10_min,B10_count,B11_max,B11_min,B11_count,B12_max,B12_min,B12_count,B8A_max,B8A_min,B8A_count,NDVI_max,NDVI_min,NDVI_count,NDBI_max,NDBI_min,NDBI_count,NDWI_max,NDWI_min,NDWI_count
+                position_time_P67306,POINT (148.93518518518522 -35.68620357408329),P67306,81,80,2,859,332,2,977,471,2,1067,554,2,2089,1897,2,535,319,2,1326,865,2,1789,1537,2,1947,1760,2,2217,1588,2,1742,1006,2,2120,1982,2,2230,2030,2,0.47019445,0.25279172,2,-0.01334424,-0.20907065,2,-0.29330013,-0.53086966,2
+            application/geo+json:
+              schema:
+                $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/featureCollectionGeoJSON
+              example:
+                type: FeatureCollection
+                features:
+                  type: FeatureCollection
+                  features:
+                    - type: Feature
+                      id: position_time_P67306
+                      geometry:
+                        type: Point
+                        coordinates:
+                          - 148.93518519
+                          - -35.68620357
+                      geometry_name: geometry
+                      properties:
+                        zoneId: P67306
+                        B01_max: 81
+                        B01_min: 80
+                        B01_count: 2
+                        B02_max: 859
+                        B02_min: 332
+                        B02_count: 2
+                        B03_max: 977
+                        B03_min: 471
+                        B03_count: 2
+                        B04_max: 1067
+                        B04_min: 554
+                        B04_count: 2
+                        B05_max: 2089
+                        B05_min: 1897
+                        B05_count: 2
+                        B06_max: 535
+                        B06_min: 319
+                        B06_count: 2
+                        B07_max: 1326
+                        B07_min: 865
+                        B07_count: 2
+                        B08_max: 1789
+                        B08_min: 1537
+                        B08_count: 2
+                        B09_max: 1947
+                        B09_min: 1760
+                        B09_count: 2
+                        B10_max: 2217
+                        B10_min: 1588
+                        B10_count: 2
+                        B11_max: 1742
+                        B11_min: 1006
+                        B11_count: 2
+                        B12_max: 2120
+                        B12_min: 1982
+                        B12_count: 2
+                        B8A_max: 2230
+                        B8A_min: 2030
+                        B8A_count: 2
+                        NDVI_max: 0.47019445329933063
+                        NDVI_min: 0.25279172016653045
+                        NDVI_count: 2
+                        NDBI_max: -0.013344243721281544
+                        NDBI_min: -0.20907065146152837
+                        NDBI_count: 2
+                        NDWI_max: -0.2933001285347044
+                        NDWI_min: -0.5308696614295199
+                        NDWI_count: 2
+        400:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/InvalidParameter
+        406:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/NotAcceptable
+        500:
+          $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/responses/ServerError
+components:
+  schemas:
+    collection:
+      type: object
+      required:
+        - id
+        - links
+      properties:
+        id:
+          description: Identifier of the collection. In case the identifier is a DGGS RS service,
+            this will be the DGGS instance identifier, otherwise, the value is going to be the data collection id
+          type: string
+          example: TB16-Pix
+        dggs-id:
+          description: Identifiers of the DGGS instance. For DGGS RS services, the will be the same as the id,
+            for DGGS Data services, dggs-id identifies the particular DGGS instance used.
+          type: string
+          example: TB16-Pix
+        title:
+          description: Human readable title of the collection
+          type: string
+          example: Testbed 16 DGGS reference system based on rHealPix
+        description:
+          description: A description of the collection
+          type: string
+          example: Some description of the DGGS here
+        resolutions:
+          type: array
+          items:
+            type: number
+        links:
+          type: array
+          description: The list of links, e.g., to the operations provided by this DGGS collection.
+          items:
+            $ref: "#/components/schemas/link"
+          example:
+            - href: http://data.example.com/buildings
+              rel: item
+            - href: http://example.com/concepts/buildings.html
+              rel: describedBy
+              type: text/html
+    collection-list:
+      type: object
+      required:
+        - links
+        - dggs-list
+      properties:
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+        dggs-list:
+          type: array
+          items:
+            type: string
+    zoneGeoJSON:
+      allOf:
+        - $ref: 'https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/featureCollectionGeoJSON'
+        - type: object
+          required:
+            - resolution
+          properties:
+            resolution:
+              type: number
+    DGGSJSON:
+      type: object
+      required:
+        - id
+        - type
+        - geometry
+        - properties
+      properties:
+        id:
+          oneOf:
+            - type: string
+            - type: integer
+        type:
+          type: string
+          enum:
+            - Feature
+        geometry:
+          description: The geometry of the feature, as a list of DGGS zone ids
+          type: array
+          items:
+            type: string
+        properties:
+          type: object
+          nullable: true
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+    zoneCollectionGeoJSON:
+      type: object
+      required:
+        - type
+        - features
+      properties:
+        type:
+          type: string
+          enum:
+            - FeatureCollection
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/zoneGeoJSON"
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+        timeStamp:
+          $ref: "#/components/schemas/timeStamp"
+        numberMatched:
+          $ref: "#/components/schemas/numberMatched"
+        numberReturned:
+          $ref: "#/components/schemas/numberReturned"
+    zoneCollectionDGGSJSON:
+      type: object
+      required:
+        - type
+        - features
+      properties:
+        type:
+          type: string
+          enum:
+            - FeatureCollection
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/DGGSJSON"
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+        timeStamp:
+          $ref: "#/components/schemas/timeStamp"
+        numberMatched:
+          $ref: "#/components/schemas/numberMatched"
+        numberReturned:
+          $ref: "#/components/schemas/numberReturned"
+    zoneList:
+      type: object
+      required:
+        - zones
+        - links
+      properties:
+        zones:
+          type: array
+          items:
+            type: string
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+        timeStamp:
+          $ref: "#/components/schemas/timeStamp"
+        numberMatched:
+          $ref: "#/components/schemas/numberMatched"
+        numberReturned:
+          $ref: "#/components/schemas/numberReturned"
+    link:
+      type: object
+      required:
+        - href
+      properties:
+        href:
+          type: string
+          example: http://data.example.com/buildings/123
+        rel:
+          type: string
+          example: alternate
+        type:
+          type: string
+          example: application/geo+json
+        hreflang:
+          type: string
+          example: en
+        title:
+          type: string
+          example: Trierer Strasse 70, 53115 Bonn
+        length:
+          type: integer
+    timeStamp:
+      description: This property indicates the time and date when the response was generated.
+      type: string
+      format: date-time
+      example: '2017-08-17T08:05:32Z'
+    numberMatched:
+      description: |-
+        The number of features of the feature type that match the selection
+        parameters such as `bbox`.
+      type: integer
+      minimum: 0
+      example: 127
+    numberReturned:
+      description: |-
+        The number of features in the feature collection.
+
+        If the information about the number of features is not known or difficult to compute
+        a server may omit this information in a response.
+
+        If the value is provided, the value shall be identical to the number
+        of items in the "features" array.
+      type: integer
+      minimum: 0
+      example: 10
+    dapa:
+      type: object
+      properties:
+        endpoints:
+          type: array
+          items:
+            required:
+              - id
+              - inputCollectionId
+            type: object
+            properties:
+              mediaTypes:
+                type: array
+                items:
+                  type: string
+              externalDocs:
+                required:
+                  - url
+                type: object
+                properties:
+                  url:
+                    type: string
+                  description:
+                    type: string
+              inputCollectionId:
+                type: string
+              id:
+                type: string
+              title:
+                type: string
+              links:
+                type: array
+                items:
+                  $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/link
+              description:
+                type: string
+        title:
+          type: string
+        links:
+          type: array
+          items:
+            $ref: https://raw.githubusercontent.com/opengeospatial/ogcapi-features/master/core/openapi/ogcapi-features-1.yaml#/components/schemas/link
+        description:
+          type: string
+    Variables:
+      type: object
+      properties:
+        variables:
+          type: array
+          items:
+            required:
+              - id
+            type: object
+            properties:
+              title:
+                type: string
+              uom:
+                type: string
+              description:
+                type: string
+              id:
+                type: string
+    htmlSchema:
+      type: string
+      example: <html>...</html>
+    csv:
+      type: string
+      example: |-
+        FID,geometry,zoneId,B01_max,B01_min,B01_count,B02_max,B02_min,B02_count,B03_max,B03_min,B03_count,B04_max,B04_min,B04_count,B05_max,B05_min,B05_count,B06_max,B06_min,B06_count,B07_max,B07_min,B07_count,B08_max,B08_min,B08_count,B09_max,B09_min,B09_count,B10_max,B10_min,B10_count,B11_max,B11_min,B11_count,B12_max,B12_min,B12_count,B8A_max,B8A_min,B8A_count,NDVI_max,NDVI_min,NDVI_count,NDBI_max,NDBI_min,NDBI_count,NDWI_max,NDWI_min,NDWI_count
+        position_time_P67306,POINT (148.93518518518522 -35.68620357408329),P67306,81,80,2,859,332,2,977,471,2,1067,554,2,2089,1897,2,535,319,2,1326,865,2,1789,1537,2,1947,1760,2,2217,1588,2,1742,1006,2,2120,1982,2,2230,2030,2,0.47019445,0.25279172,2,-0.01334424,-0.20907065,2,-0.29330013,-0.53086966,2
+     
+  responses:
+    NotSupported:
+      description: None of the requested media types is supported at the path.
+      content:
+        application/json:
+          schema:
+            $ref: 'http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml#/components/schemas/exception'
+        text/html:
+          schema:
+            type: string
+    DGGSDescription:
+      description: |-
+        Describes a particular DGGS
+
+        This information includes:
+
+        * A local identifier for the DGGS that is unique for this API;
+        * An optional human readable title and description for the DGGS;
+        * The predominant zone shape (rectangular, triangular, hexagonal)
+        * The list of resolutions for the particular DGGS
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/collection'
+          example:
+            id: TB16-Pix
+            title: Testbed 16 DGGS reference system based on rHealPix
+            description: A rHealPix instance based on WGS84, rotated so that all the corners of the cube lie in water
+            resolutions: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+            links:
+              - href: 'https://iopscience.iop.org/article/10.1088/1755-1315/34/1/012012/pdf'
+                rel: describedBy
+                type: application/PDF
+                title: The rHealPix DGGS specification
+        text/html:
+          schema:
+            type: string
+    DGGSList:
+      description: |-
+        The list of DGGS available and link to the processes
+
+        The response contains the list of DGGS objects.
+        This information includes:
+
+        * A local identifier for the DGGS that is unique for this API;
+        * An optional human readable title and description for the DGGS;
+        * The predominant zone shape (rectangular, triangular, hexagonal)
+        * The list of resolutions for the particular DGGS
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/collection-list'
+          example:
+            links:
+              - href: 'http://data.example.org/dggs.json'
+                rel: self
+                type: application/json
+                title: this document
+              - href: 'http://data.example.org/dggs.html'
+                rel: alternate
+                type: text/html
+                title: this document as HTML
+            dggs-list:
+              - id: TB16-Pix
+                title: The Testbed16 DGGS based on rHealPix
+                description: The rHealPix DGGS
+                resolutions: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+                links:
+                  - href: 'https://iopscience.iop.org/article/10.1088/1755-1315/34/1/012012/pdf'
+                    rel: describedBy
+                    type: application/PDF
+                    title: The rHealPix DGGS specification
+                  - href: 'http://data.example.org/dggs/rHealPix/zones'
+                    rel: zones
+                    type: appplication/json
+              - id: H3
+                title: H3
+                description: The H3 DGGS
+                resolutions: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+                links:
+                  - href: 'https://eng.uber.com/h3/'
+                    rel: describedBy
+                    type: text/html
+                    title: The H3 specification
+                  - href: 'http://data.example.org/dggs/H3/zones'
+                    rel: zones
+                    type: appplication/json
+        text/html:
+          schema:
+            type: string
+    ZoneList:
+      description: |-
+        A list of DGGS zones.
+
+        For traditional clients the response can be a GeoJSON payload with full boundaries,
+        or a simple list of ZoneIds, for DGGS aware clients
+
+      content:
+        application/geo+json:
+          schema:
+            $ref: '#/components/schemas/zoneCollectionGeoJSON'
+          example:
+            - type: FeatureCollection
+              features:
+                - type: Feature
+                  id: 'P4'
+                  geometry:
+                    type: Polygon
+                    coordinates:
+                      - ...
+                  properties:
+                    resolution: 0
+                    center:
+                      type: Point
+                      coordinates: [0, 0]
+                - type: Feature
+                  id: 'Q4'
+                  geometry:
+                    type: Polygon
+                    coordinates:
+                      - ...
+                  properties:
+                    resolution: 0
+                    center:
+                      type: Point
+                      coordinates: [0, 0]
+        application/dggs+json:
+          schema:
+            $ref: '#/components/schemas/zoneCollectionDGGSJSON'
+          example:
+            - type: FeatureCollection
+              features:
+                - type: Feature
+                  id: 'P4'
+                  geometry: [ 'P4' ]
+                  properties: null
+                - type: Feature
+                  id: 'Q4'
+                  geometry: ['Q4']
+                  properties:
+                    myAttribute: 3
+                    otherAttribute: "abc"
+                - type: Feature
+                  id: 'myFeature.1'
+                  geometry: ['Q4', 'P4', 'P32']
+                  properties:
+                    myAttribute: 3
+                    otherAttribute: "abc"
+        text/html:
+          schema:
+            type: string
+    Zone:
+      description: |-
+        A single DGGS zone
+
+        The response contains the description of a single DGGS zone.
+      content:
+        application/geo+json:
+          schema:
+            $ref: '#/components/schemas/zoneGeoJSON'
+          example:
+            type: Feature
+            id: 'P4'
+            geometry:
+              type: Polygon
+              coordinates:
+                - ...
+            resolution: 0
+            properties:
+              att1: value1
+              att2: value2
+        application/dggs+json:
+          schema:
+            $ref: '#/components/schemas/DGGSJSON'
+          example:
+            type: Feature
+            id: 'P4'
+            geometry: ['P4']
+            properties:
+              att1: value1
+              att2: value2
+        text/html:
+          schema:
+            type: string
+
+  parameters:
+    f:
+      name: f
+      in: query
+      description: |-
+        The format of the response. If no value is provided, the standard http
+        rules apply,i.e., the accept header shall be used to determine the format.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+    zoneId:
+      name: zoneId
+      in: query
+      required: true
+      schema:
+        type: string
+        example: Q3
+    levels:
+      name: levels
+      description: Number of levels for zone parent/children extraction
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        example: 5
+    radius:
+      name: radius
+      description: Distance, in zones, from the center zone, to be walked when extracting neighbours. Also known as ``k`` in a k-ring extraction in some DGGSs.
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        example: 5
+    resolution:
+      name: resolution
+      in: query
+      required: true
+      schema:
+        type: number
+    crs:
+      name: crs
+      in: query
+      description: |-
+        The CRS of the response geometries. Default is
+        WGS84 longitude/latitude (CRS84).
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: string
+        default: 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'
+        enum:
+          - 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'
+          - 'http://www.opengis.net/def/crs/EPSG/0/3857'
+          - 'http://www.opengis.net/def/crs/EPSG/0/4326'
+    bbox:
+      name: bbox
+      in: query
+      description: |-
+        Only features that have a geometry that intersects the bounding box are selected.
+        The bounding box is provided as four or six numbers, depending on whether the
+         CRS includes a vertical axis (height or depth):
+
+        * Lower left corner, coordinate axis 1
+        * Lower left corner, coordinate axis 2
+        * Minimum value, coordinate axis 3 (optional)
+        * Upper right corner, coordinate axis 1
+        * Upper right corner, coordinate axis 2
+        * Maximum value, coordinate axis 3 (optional)
+
+        The CRS of the values is WGS 84 in longitude/latitude order
+        (CRS84) unless a different coordinate
+        reference system is specified in the parameter `bbox-crs`.
+
+        For WGS 84 longitude/latitude the values are in most cases the sequence of
+        minimum longitude, minimum latitude, maximum longitude and maximum latitude.
+        However, in cases where the box spans the antimeridian the first value
+        (west-most box edge) is larger than the third value (east-most box edge).
+
+        If the vertical axis is included, the third and the sixth number are
+        the bottom and the top of the 3-dimensional bounding box.
+
+        If a feature has multiple spatial geometry properties, it is the decision of the
+        server whether only a single spatial geometry property is used to determine
+        the extent or all relevant geometries.
+      required: false
+      schema:
+        type: array
+        minItems: 4
+        maxItems: 6
+        items:
+          type: number
+      style: form
+      explode: false
+    point:
+      name: point
+      in: query
+      description: |-
+        Only zones that contain/touch the point are returned.  The point is provided in axis order:
+
+        * Longitude
+        * Latitude
+
+        The CRS of the values is WGS 84 with axis order longitude/latitude
+        (http://www.opengis.net/def/crs/OGC/1.3/CRS84).
+      required: false
+      schema:
+        type: array
+        minItems: 2
+        maxItems: 2
+        items:
+          type: number
+      style: form
+      explode: false
+    polygon:
+      name: polygon
+      in: query
+      description: |-
+        Only zones contained in the polygon are returned. The polygon is specifed in WKT form.
+
+        The CRS of the values is WGS 84 with axis order longitude/latitude (CRS84).
+      required: false
+      schema:
+        type: string
+      style: form
+      explode: false
+    compact:
+      name: compact
+      in: query
+      description: |-
+        The optional compact parameter controls whether the polygon will be filled with zones
+        at the target resolution level only (compact=false) or using higher level zones when
+        fully fitting inside the polygon (compact=true) 
+      required: false
+      schema:
+        type: boolean
+        default: false
+      style: form
+    limit:
+      name: limit
+      in: query
+      description: |-
+        The optional limit parameter limits the number of items that are presented in the response document.
+
+        Only items on the first level of the collection in the response document are counted.
+
+        Minimum = 1. Maximum = 10000. Default = 10.
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 10000
+        default: 10
+      style: form
+    zones:
+      name: zones
+      in: query
+      description: |-
+        Comma separated list of zone identifiers
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+    collectionId:
+      name: collectionId
+      in: path
+      description: local identifier of a collection
+      required: true
+      schema:
+        type: string
+    datetime:
+      name: datetime
+      in: query
+      description: |-
+        Either a date-time or an interval, open or closed. Date and time expressions
+        adhere to RFC 3339. Open intervals are expressed using double-dots.
+
+        Examples:
+
+        * A date-time: "2018-02-12T23:20:50Z"
+        * A closed interval: "2018-02-12T00:00:00Z/2018-03-18T12:31:12Z"
+        * Open intervals: "2018-02-12T00:00:00Z/.." or "../2018-03-18T12:31:12Z"
+
+        Only features that have a temporal property that intersects the value of
+        `datetime` are selected.
+
+        If a feature has multiple temporal properties, it is the decision of the
+        server whether only a single temporal property is used to determine
+        the extent or all relevant temporal properties.
+      required: false
+      schema:
+        type: string
+      style: form
+      explode: false
+    geom:
+      name: geom
+      in: query
+      description: 'A Well Known Text representation of a (MULTI)POLYGON geometry
+        as defined in Simple Feature Access - Part 1: Common Architecture.'
+      required: false
+      style: form
+      explode: false
+      schema:
+        pattern: ^\s*MULTIPOLYGON\s*\(\s*(\(\s*\(\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+(?:\s*\,\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+\s*)+\)\s*(?:\s*\,\s*\(\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+(?:\s*\,\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+\s*)+\)\s*)*\))\s*(?:\s*\,\s*(\(\s*\(\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+(?:\s*\,\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+\s*)+\)\s*(?:\s*\,\s*\(\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+(?:\s*\,\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+\s*)+\)\s*)*\))\s*)*\)\s*$|^\s*POLYGON\s*\(\s*(\(\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+(?:\s*\,\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+\s*)+\))\s*(?:\s*\,\s*(\(\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+(?:\s*\,\s*[+-]?\d+\.?\d*(?:\s+[+-]?\d+\.?\d*)+\s*)+\))\s*)*\)\s*$
+        type: string
+    functions:
+      name: functions
+      in: query
+      description: The statistical function(s) to apply when aggregating multiple values to a single value.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+          enum:
+            - std-dev
+            - count
+            - max
+            - mean
+            - min
+            - sum
+        default:
+          - max
+          - mean
+          - min
+    variables:
+      name: variables
+      in: query
+      description: |-
+        A comma-separated list of values with names of observable properties that should be returned in the response.
+        More information about the available properties can be retrieved from the `../variables` path.
+        The default is to return all observed properties.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+    properties:
+      name: properties
+      in: query
+      description: |-
+        A comma-separated list of values with names of observable properties that should be returned in the response.
+        The default is to return all observed properties.
+      required: false
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string

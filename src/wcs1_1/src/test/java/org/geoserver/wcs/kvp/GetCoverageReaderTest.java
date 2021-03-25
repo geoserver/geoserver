@@ -13,7 +13,6 @@ import static org.junit.Assert.fail;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import net.opengis.wcs11.AxisSubsetType;
@@ -44,7 +43,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
     // }
 
     Map<String, Object> baseMap() {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "WCS");
         raw.put("version", "1.1.1");
         raw.put("request", "GetCoverage");
@@ -233,8 +232,8 @@ public class GetCoverageReaderTest extends WCSTestSupport {
                 (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         Double[] origin = (Double[]) getCoverage.getOutput().getGridCRS().getGridOrigin();
         assertEquals(2, origin.length);
-        assertEquals(0, Double.compare(10.5, (double) origin[0]));
-        assertEquals(0, Double.compare(-30.2, (double) origin[1]));
+        assertEquals(0, Double.compare(10.5, origin[0]));
+        assertEquals(0, Double.compare(-30.2, origin[1]));
 
         raw.put("GridOrigin", "12");
         try {
@@ -270,8 +269,8 @@ public class GetCoverageReaderTest extends WCSTestSupport {
                 (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         Double[] offsets = (Double[]) getCoverage.getOutput().getGridCRS().getGridOffsets();
         assertEquals(2, offsets.length);
-        assertEquals(0, Double.compare(10.5, (double) offsets[0]));
-        assertEquals(0, Double.compare(-30.2, (double) offsets[1]));
+        assertEquals(0, Double.compare(10.5, offsets[0]));
+        assertEquals(0, Double.compare(-30.2, offsets[1]));
 
         raw.put("GridOffsets", "12");
         try {
@@ -310,23 +309,24 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         this.testRangeSubset("nearest");
     }
 
-    protected Map parseKvp(Map /* <String,String> */ raw) throws Exception {
+    @Override
+    protected Map<String, Object> parseKvp(Map<String, Object> raw) throws Exception {
         // parse like the dispatcher but make sure we don't change the original map
-        HashMap input = new HashMap(raw);
+        Map<String, Object> input = new HashMap<>(raw);
         List<Throwable> errors = KvpUtils.parse(input);
-        if (errors != null && errors.size() > 0) throw (Exception) errors.get(0);
+        if (errors != null && !errors.isEmpty()) throw (Exception) errors.get(0);
 
         return caseInsensitiveKvp(input);
     }
 
-    protected Map caseInsensitiveKvp(HashMap input) {
+    @Override
+    protected <V> Map<String, V> caseInsensitiveKvp(Map<String, V> input) {
         // make it case insensitive like the servlet+dispatcher maps
-        Map result = new HashMap();
-        for (Iterator it = input.keySet().iterator(); it.hasNext(); ) {
-            String key = (String) it.next();
+        Map<String, V> result = new HashMap<>();
+        for (String key : input.keySet()) {
             result.put(key.toUpperCase(), input.get(key));
         }
-        return new CaseInsensitiveMap(result);
+        return new CaseInsensitiveMap<>(result);
     }
 
     /**

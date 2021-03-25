@@ -788,7 +788,7 @@ public class GeoServerDataDirectory {
     // SLD Manipulation
 
     List<Resource> additionalStyleResources(StyleInfo s) throws IOException {
-        final List<Resource> resources = new ArrayList<Resource>();
+        final List<Resource> resources = new ArrayList<>();
         final Resource baseDir = get(s);
         try {
             Style parsedStyle = parsedStyleResources(s);
@@ -883,6 +883,12 @@ public class GeoServerDataDirectory {
     public ResourceLocator getResourceLocator() {
         GeoServerResourceLocator locator = new GeoServerResourceLocator();
         locator.setSourceUrl(URLs.fileToUrl(getStyles().dir()));
+        return locator;
+    }
+
+    public ResourceLocator getResourceLocator(WorkspaceInfo ws) {
+        GeoServerResourceLocator locator = new GeoServerResourceLocator();
+        locator.setSourceUrl(URLs.fileToUrl(getStyles(ws).dir()));
         return locator;
     }
 

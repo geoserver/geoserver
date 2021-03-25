@@ -185,7 +185,9 @@ public class AsynchResourceIterator<T> implements Iterator<T>, Closeable {
                 completed = true;
                 return false;
             } else {
-                mapped = (T) o;
+                @SuppressWarnings("unchecked")
+                T cast = (T) o;
+                mapped = cast;
                 return true;
             }
         } catch (InterruptedException e) {

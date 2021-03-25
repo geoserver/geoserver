@@ -23,14 +23,14 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
     protected String field;
 
     /** type to remap to */
-    protected Class type;
+    protected Class<?> type;
 
     /** the expression to apply (stored as a string as CQL does not always round trip properly */
     protected String cql;
 
     protected transient Expression expression;
 
-    public AttributeComputeTransform(String field, Class type, String cql) throws CQLException {
+    public AttributeComputeTransform(String field, Class<?> type, String cql) throws CQLException {
         this.field = field;
         this.type = type;
         setCql(cql);
@@ -44,11 +44,11 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
         this.field = field;
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 
-    public void setType(Class type) {
+    public void setType(Class<?> type) {
         this.type = type;
     }
 
@@ -68,6 +68,7 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
         return expression;
     }
 
+    @Override
     public SimpleFeatureType apply(
             ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
         // validate the target attribute is not already there
@@ -87,6 +88,7 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
         return builder.buildFeatureType();
     }
 
+    @Override
     public SimpleFeature apply(
             ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {

@@ -39,6 +39,7 @@ public class CacheSeedingWebMapService implements MethodInterceptor {
      * @see
      *     org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
      */
+    @Override
     public WebMap invoke(MethodInvocation invocation) throws Throwable {
 
         final Method method = invocation.getMethod();

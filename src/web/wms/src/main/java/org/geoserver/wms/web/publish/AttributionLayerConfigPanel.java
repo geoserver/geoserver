@@ -38,46 +38,42 @@ public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<Pub
         }
 
         add(
-                new TextField<String>(
-                        "wms.attribution.title",
-                        new PropertyModel<String>(model, "attribution.title")));
+                new TextField<>(
+                        "wms.attribution.title", new PropertyModel<>(model, "attribution.title")));
 
         final TextField<String> href =
-                new TextField<String>(
-                        "wms.attribution.href",
-                        new PropertyModel<String>(model, "attribution.href"));
+                new TextField<>(
+                        "wms.attribution.href", new PropertyModel<>(model, "attribution.href"));
         href.add(new UrlValidator());
         href.setOutputMarkupId(true);
         add(href);
 
         final TextField<String> logo =
-                new TextField<String>(
-                        "wms.attribution.logo",
-                        new PropertyModel<String>(model, "attribution.logoURL"));
+                new TextField<>(
+                        "wms.attribution.logo", new PropertyModel<>(model, "attribution.logoURL"));
         logo.add(new UrlValidator());
         logo.setOutputMarkupId(true);
         add(logo);
 
         final TextField<String> type =
-                new TextField<String>(
-                        "wms.attribution.type",
-                        new PropertyModel<String>(model, "attribution.logoType"));
+                new TextField<>(
+                        "wms.attribution.type", new PropertyModel<>(model, "attribution.logoType"));
         type.setOutputMarkupId(true);
         add(type);
 
         final TextField<Integer> height =
-                new TextField<Integer>(
+                new TextField<>(
                         "wms.attribution.height",
-                        new PropertyModel<Integer>(model, "attribution.logoHeight"),
+                        new PropertyModel<>(model, "attribution.logoHeight"),
                         Integer.class);
         height.add(RangeValidator.minimum(0));
         height.setOutputMarkupId(true);
         add(height);
 
         final TextField<Integer> width =
-                new TextField<Integer>(
+                new TextField<>(
                         "wms.attribution.width",
-                        new PropertyModel<Integer>(model, "attribution.logoWidth"),
+                        new PropertyModel<>(model, "attribution.logoWidth"),
                         Integer.class);
         width.add(RangeValidator.minimum(0));
         width.setOutputMarkupId(true);
@@ -87,6 +83,7 @@ public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<Pub
                 new AjaxSubmitLink("verifyImage") {
                     private static final long serialVersionUID = 6814575194862084111L;
 
+                    @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         if (logo.getDefaultModelObjectAsString() != null) {
                             try {

@@ -24,23 +24,23 @@ import org.opengis.filter.expression.PropertyName;
  *
  * @author Andrea Aime - GeoSolutions
  */
-class RetypingIterator implements Iterator<Feature>, Closeable {
+class RetypingIterator<F extends Feature> implements Iterator<F>, Closeable {
 
-    FeatureIterator<Feature> delegate;
+    FeatureIterator<F> delegate;
 
-    Set names;
+    Set<Object> names;
 
     ComplexFeatureBuilder builder;
 
     public RetypingIterator(
-            FeatureIterator<Feature> delegate, FeatureType schema, List<PropertyName> properties) {
+            FeatureIterator<F> delegate, FeatureType schema, List<PropertyName> properties) {
         this.delegate = delegate;
         this.builder = new ComplexFeatureBuilder(schema);
         this.names = buildNames(properties);
     }
 
-    private Set buildNames(List<PropertyName> properties) {
-        Set result = new HashSet();
+    private Set<Object> buildNames(List<PropertyName> properties) {
+        Set<Object> result = new HashSet<>();
         for (PropertyName pn : properties) {
             String fullName = pn.getPropertyName();
             if (fullName.indexOf('@') != -1 || fullName.indexOf('/') != -1) {
@@ -77,8 +77,8 @@ class RetypingIterator implements Iterator<Feature>, Closeable {
     }
 
     @Override
-    public Feature next() {
-        Feature original = delegate.next();
+    public F next() {
+        F original = delegate.next();
         // this does not really work...
         //        for (PropertyDescriptor pd : original.getType().getDescriptors()) {
         //            Collection<Property> properties = original.getProperties(pd.getName());
@@ -110,7 +110,9 @@ class RetypingIterator implements Iterator<Feature>, Closeable {
             feature.getUserData().putAll(original.getUserData());
         }
 
-        return feature;
+        @SuppressWarnings("unchecked")
+        F result = (F) feature;
+        return result;
     }
 
     @Override
@@ -118,6 +120,7 @@ class RetypingIterator implements Iterator<Feature>, Closeable {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void close() {
         delegate.close();
     }

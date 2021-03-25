@@ -55,12 +55,9 @@ public class LegacyCatalogReader {
      * @throws IOException In event of a parser error.
      */
     public void read(Resource file) throws IOException {
-        Reader reader = XmlCharsetDetector.getCharsetAwareReader(file.in());
 
-        try {
+        try (Reader reader = XmlCharsetDetector.getCharsetAwareReader(file.in())) {
             catalog = ReaderUtils.parse(reader);
-        } finally {
-            reader.close();
         }
     }
 
@@ -86,12 +83,12 @@ public class LegacyCatalogReader {
         Element dataStoresElement = ReaderUtils.getChildElement(catalog, "datastores", true);
 
         NodeList dataStoreElements = dataStoresElement.getElementsByTagName("datastore");
-        Map dataStores = new LinkedHashMap();
+        Map<String, Map<String, Object>> dataStores = new LinkedHashMap<>();
 
         for (int i = 0; i < dataStoreElements.getLength(); i++) {
             Element dataStoreElement = (Element) dataStoreElements.item(i);
 
-            Map dataStore = new HashMap();
+            Map<String, Object> dataStore = new HashMap<>();
 
             String id = ReaderUtils.getAttribute(dataStoreElement, "id", true);
             dataStore.put("id", id);
@@ -103,7 +100,7 @@ public class LegacyCatalogReader {
                             ReaderUtils.getBooleanAttribute(
                                     dataStoreElement, "enabled", false, true)));
             try {
-                Map params = dataStoreParams(dataStoreElement);
+                Map<String, String> params = dataStoreParams(dataStoreElement);
                 dataStore.put("connectionParams", params);
 
             } catch (Exception e) {
@@ -142,12 +139,12 @@ public class LegacyCatalogReader {
         Element formatsElement = ReaderUtils.getChildElement(catalog, "formats", true);
 
         NodeList formatElements = formatsElement.getElementsByTagName("format");
-        ArrayList formats = new ArrayList();
+        List<Map<String, Object>> formats = new ArrayList<>();
 
         for (int i = 0; i < formatElements.getLength(); i++) {
             Element formatElement = (Element) formatElements.item(i);
 
-            Map format = new HashMap();
+            Map<String, Object> format = new HashMap<>();
 
             format.put("id", ReaderUtils.getAttribute(formatElement, "id", true));
             format.put("namespace", ReaderUtils.getAttribute(formatElement, "namespace", false));
@@ -252,7 +249,7 @@ public class LegacyCatalogReader {
         Element stylesElement = ReaderUtils.getChildElement(catalog, "styles", true);
 
         NodeList styleElements = stylesElement.getElementsByTagName("style");
-        Map styles = new HashMap();
+        Map<String, String> styles = new HashMap<>();
 
         for (int i = 0; i < styleElements.getLength(); i++) {
             Element styleElement = (Element) styleElements.item(i);
@@ -269,12 +266,12 @@ public class LegacyCatalogReader {
      * @return The map of connection paramters.
      * @throws Exception If problem parsing any parameters.
      */
-    protected Map dataStoreParams(Element dataStoreElement) throws Exception {
+    protected Map<String, String> dataStoreParams(Element dataStoreElement) throws Exception {
         Element paramsElement =
                 ReaderUtils.getChildElement(dataStoreElement, "connectionParams", true);
         NodeList paramList = paramsElement.getElementsByTagName("parameter");
 
-        Map params = new HashMap();
+        Map<String, String> params = new HashMap<>();
 
         for (int i = 0; i < paramList.getLength(); i++) {
             Element paramElement = (Element) paramList.item(i);
@@ -294,20 +291,23 @@ public class LegacyCatalogReader {
      * @return A <prefix,uri> tuple.
      * @throws Exception If problem parsing any parameters.
      */
-    protected Map.Entry namespaceTuple(Element namespaceElement) throws Exception {
+    protected Map.Entry<String, String> namespaceTuple(Element namespaceElement) throws Exception {
         final String pre = namespaceElement.getAttribute("prefix");
         final String uri = namespaceElement.getAttribute("uri");
 
-        return new Map.Entry() {
-            public Object getKey() {
+        return new Map.Entry<String, String>() {
+            @Override
+            public String getKey() {
                 return pre;
             }
 
-            public Object getValue() {
+            @Override
+            public String getValue() {
                 return uri;
             }
 
-            public Object setValue(Object value) {
+            @Override
+            public String setValue(String value) {
                 throw new UnsupportedOperationException();
             }
         };

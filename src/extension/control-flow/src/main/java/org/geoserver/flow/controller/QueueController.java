@@ -22,7 +22,7 @@ public abstract class QueueController implements FlowController {
     int queueSize;
 
     /** The per request queue collection */
-    Map<String, TimedBlockingQueue> queues = new ConcurrentHashMap<String, TimedBlockingQueue>();
+    Map<String, TimedBlockingQueue> queues = new ConcurrentHashMap<>();
 
     @Override
     public boolean requestIncoming(Request request, long timeout) {

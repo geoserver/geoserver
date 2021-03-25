@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.geoserver</groupId>
+        <artifactId>community</artifactId>
+        <version>2.20-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-features-templating</artifactId>
+    <packaging>pom</packaging>
+    <name>Features Templating Module</name>
+    <description>Features templating plugin</description>
+
+    <modules>
+        <module>features-templating-core</module>
+        <module>features-templating-wfs</module>
+        <module>features-templating-ogcapi</module>
+    </modules>
+
+    <developers>
+        <developer>
+            <name>Marco Volpini</name>
+            <id>taba90</id>
+            <email>marco.volpini@geosolutions.it</email>
+            <organization>GeoSolutions S.A.S. </organization>
+            <roles>
+                <role>Java Developer</role>
+                <role>Module Maintainer</role>
+            </roles>
+        </developer>
+    </developers>
+    
+</project>

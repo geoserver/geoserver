@@ -12,14 +12,16 @@ import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.ProfileImpl;
 import org.geotools.gml3.GML;
 import org.geotools.gml3.GMLSchema;
+import org.opengis.feature.type.Name;
+import org.opengis.feature.type.Schema;
 
 public class GML3Profile extends TypeMappingProfile {
-    static Set profiles = new HashSet();
+    static Set<Schema> profiles = new HashSet<>();
 
     static {
         // set with guaranteed iteration order, so that we can put deprecated elements only
         // after the ones that replaced them
-        Set profile = new LinkedHashSet();
+        Set<Name> profile = new LinkedHashSet<>();
 
         // basic
         profile.add(new NameImpl(GML.NAMESPACE, GML.MeasureType.getLocalPart()));

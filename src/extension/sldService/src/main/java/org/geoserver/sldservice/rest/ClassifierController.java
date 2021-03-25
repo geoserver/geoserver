@@ -11,11 +11,13 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,15 +53,13 @@ import org.geotools.data.Query;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.visitor.*;
+import org.geotools.feature.visitor.CalcResult;
+import org.geotools.feature.visitor.StandardDeviationVisitor;
 import org.geotools.filter.function.RangedClassifier;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.styling.ChannelSelection;
 import org.geotools.styling.ColorMap;
-import org.geotools.styling.ColorMapEntry;
-import org.geotools.styling.ColorMapEntryImpl;
-import org.geotools.styling.ContrastEnhancement;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.RasterSymbolizer;
@@ -83,7 +83,6 @@ import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.PropertyIsBetween;
-import org.opengis.filter.expression.Literal;
 import org.opengis.filter.spatial.BBOX;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.operation.TransformException;
@@ -298,7 +297,7 @@ public class ClassifierController extends BaseSLDServiceController {
     }
 
     private List<Color> getCustomColors(String customClasses) {
-        List<Color> colors = new ArrayList<Color>();
+        List<Color> colors = new ArrayList<>();
         for (String value : customClasses.split(";")) {
             String[] parts = value.split(",");
             colors.add(Color.decode(parts[2]));
@@ -308,8 +307,8 @@ public class ClassifierController extends BaseSLDServiceController {
 
     private RangedClassifier getCustomClassifier(
             String customClasses, Class<?> propertyType, boolean normalize) {
-        List<Comparable> min = new ArrayList<Comparable>();
-        List<Comparable> max = new ArrayList<Comparable>();
+        List<Comparable> min = new ArrayList<>();
+        List<Comparable> max = new ArrayList<>();
         for (String value : customClasses.split(";")) {
             String[] parts = value.split(",");
             if (parts.length != 3) {
@@ -329,7 +328,7 @@ public class ClassifierController extends BaseSLDServiceController {
                 min.toArray(new Comparable[] {}), max.toArray(new Comparable[] {}));
     }
 
-    private Class normalizePropertyType(Class<?> propertyType, boolean normalize) {
+    private Class<?> normalizePropertyType(Class<?> propertyType, boolean normalize) {
         if (normalize
                 && (Integer.class.isAssignableFrom(propertyType)
                         || Long.class.isAssignableFrom(propertyType))) {
@@ -444,58 +443,19 @@ public class ClassifierController extends BaseSLDServiceController {
                         && colorMap.getColorMapEntries().length > 1;
         builder.applyColorRamp(colorMap, ramp, skipFirstEntry, reverse);
 
-        // check for single valued colormaps
-        if (colorMap.getColorMapEntries().length == 1) {
-            adaptSingleValueColorMap(image, colorMap);
-        }
-
         // wrap the colormap into a raster symbolizer and rule
         RasterSymbolizer rasterSymbolizer = SF.createRasterSymbolizer();
         rasterSymbolizer.setColorMap(colorMap);
         if (bandSelected) {
             SelectedChannelType grayChannel =
-                    SF.createSelectedChannelType(
-                            String.valueOf(selectedBand), (ContrastEnhancement) null);
-            ChannelSelection channelSelection =
-                    SF.createChannelSelection(new SelectedChannelType[] {grayChannel});
+                    SF.createSelectedChannelType(String.valueOf(selectedBand), null);
+            ChannelSelection channelSelection = SF.createChannelSelection(grayChannel);
             rasterSymbolizer.setChannelSelection(channelSelection);
         }
 
         Rule rule = SF.createRule();
         rule.symbolizers().add(rasterSymbolizer);
         return Collections.singletonList(rule);
-    }
-
-    private void adaptSingleValueColorMap(RenderedImage image, ColorMap colorMap) {
-        // force it to be visible, depending on the method the first entry might be
-        // transparent
-        ColorMapEntry cm0 = colorMap.getColorMapEntry(0);
-        cm0.setOpacity(FF.literal(1));
-
-        // should always be a literal, just covering for possible future changes
-        if (cm0.getQuantity() instanceof Literal) {
-            // wrap it between two values that are slightly below and above
-            Float value = cm0.getQuantity().evaluate(null, Float.class);
-            if (Float.isInfinite(value)) {
-                // all must be the same color, switch to ramp mode
-                colorMap.setType(ColorMap.TYPE_RAMP);
-            } else {
-                int intBits = Float.floatToIntBits(value);
-                ColorMapEntry cm1 = new ColorMapEntryImpl();
-                cm1.setQuantity(FF.literal(Float.intBitsToFloat(intBits + 1)));
-                cm0.setQuantity(FF.literal(Float.intBitsToFloat(intBits - 1)));
-
-                cm1.setColor(cm0.getColor());
-                cm1.setLabel(cm0.getLabel());
-                cm1.setOpacity(cm0.getOpacity());
-
-                colorMap.addColorMapEntry(cm1);
-                colorMap.setType(ColorMap.TYPE_INTERVALS);
-            }
-        } else {
-            // make it formally valid, but the value match will not really not work
-            colorMap.setType(ColorMap.TYPE_VALUES);
-        }
     }
 
     /** Returns the selected band */
@@ -625,6 +585,10 @@ public class ClassifierController extends BaseSLDServiceController {
                 rules =
                         builder.equalAreaClassification(
                                 ftCollection, property, propertyType, intervals, open, normalize);
+            } else if ("standardDeviation".equals(method)) {
+                rules =
+                        builder.standardDeviationClassification(
+                                ftCollection, property, propertyType, intervals, open, normalize);
             } else {
                 throw new RestException(
                         "Unknown classification method " + method, HttpStatus.BAD_REQUEST);
@@ -643,7 +607,7 @@ public class ClassifierController extends BaseSLDServiceController {
                             : builder.closedRangedRules(groups, property, propertyType, normalize);
         }
 
-        final Class geomT = ftType.getGeometryDescriptor().getType().getBinding();
+        final Class<?> geomT = ftType.getGeometryDescriptor().getType().getBinding();
         if (geomT.isAssignableFrom(Point.class) && strokeColor != null) {
             builder.setIncludeStrokeForPoints(true);
         }
@@ -692,7 +656,7 @@ public class ClassifierController extends BaseSLDServiceController {
         }
         final double standardDeviation = standardDeviationVisitor.getResult().toDouble();
 
-        return new NumberRange(
+        return new NumberRange<>(
                 Double.class,
                 mean - standardDeviation * numStandardDeviations,
                 mean + standardDeviation * numStandardDeviations);
@@ -762,9 +726,9 @@ public class ClassifierController extends BaseSLDServiceController {
     private Hints getQueryHints(String viewParams) {
         if (viewParams != null && !viewParams.isEmpty()) {
             FormatOptionsKvpParser parser = new FormatOptionsKvpParser();
-            Map<String, String> params;
             try {
-                params = (Map<String, String>) parser.parse(viewParams);
+                @SuppressWarnings("unchecked")
+                Map<String, String> params = (Map<String, String>) parser.parse(viewParams);
                 return new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, params);
             } catch (Exception e) {
                 throw new RestException("Invalid viewparams", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -777,7 +741,7 @@ public class ClassifierController extends BaseSLDServiceController {
     public class RulesList {
         private String layerName;
 
-        private List<JSONObject> rules = new ArrayList<JSONObject>();
+        private List<JSONObject> rules = new ArrayList<>();
 
         public RulesList(final String layer) {
             setLayerName(layer);
@@ -808,7 +772,8 @@ public class ClassifierController extends BaseSLDServiceController {
         /**
          * @see com.thoughtworks.xstream.converters.ConverterMatcher#canConvert(java .lang.Class)
          */
-        public boolean canConvert(Class clazz) {
+        @Override
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class clazz) {
             return RulesList.class.isAssignableFrom(clazz)
                     || JSONObject.class.isAssignableFrom(clazz);
         }
@@ -818,6 +783,7 @@ public class ClassifierController extends BaseSLDServiceController {
          *     com.thoughtworks.xstream.io.HierarchicalStreamWriter,
          *     com.thoughtworks.xstream.converters.MarshallingContext)
          */
+        @Override
         public void marshal(
                 Object value, HierarchicalStreamWriter writer, MarshallingContext context) {
 
@@ -894,6 +860,7 @@ public class ClassifierController extends BaseSLDServiceController {
          * @see
          *     com.thoughtworks.xstream.converters.Converter#unmarshal(com.thoughtworks.xstream.io.HierarchicalStreamReader,com.thoughtworks.xstream.converters.UnmarshallingContext)
          */
+        @Override
         public Object unmarshal(HierarchicalStreamReader arg0, UnmarshallingContext arg1) {
             // TODO Auto-generated method stub
             return null;

@@ -4,9 +4,9 @@
  */
 package org.geoserver.wms.vector;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-import org.geoserver.wms.vector.PipelineBuilder.Clip;
 import org.geoserver.wms.vector.PipelineBuilder.ClipRemoveDegenerateGeometries;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
@@ -56,7 +56,6 @@ public class ClipRemoveDegenerateTest {
     public void testClipDegenerativeLine() throws Exception {
         ClipRemoveDegenerateGeometries clip =
                 new ClipRemoveDegenerateGeometries(new Envelope(0, 10, 0, 10));
-        Clip clip2 = new Clip(new Envelope(0, 10, 0, 10));
 
         Geometry result = clip._run(fromWKT("LINESTRING(-1 -1,0 0)")); // intersection is POINT(0 0)
         assertNull(result);
@@ -88,7 +87,6 @@ public class ClipRemoveDegenerateTest {
     public void testClipDegenerativePolygon() throws Exception {
         ClipRemoveDegenerateGeometries clip =
                 new ClipRemoveDegenerateGeometries(new Envelope(0, 10, 0, 10));
-        Clip clip2 = new Clip(new Envelope(0, 10, 0, 10));
 
         Geometry result =
                 clip._run(fromWKT("POLYGON( (-10 -10, 0 -10, 0 0,-10 0,-10 -10))")); // intersection

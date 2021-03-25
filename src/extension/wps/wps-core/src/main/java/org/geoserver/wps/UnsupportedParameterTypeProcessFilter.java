@@ -32,7 +32,7 @@ public class UnsupportedParameterTypeProcessFilter extends ProcessSelector
 
     static final Logger LOGGER = Logging.getLogger(UnsupportedParameterTypeProcessFilter.class);
 
-    private Set<Name> processBlacklist = new HashSet<Name>();
+    private Set<Name> processBlacklist = new HashSet<>();
 
     @Override
     protected boolean allowProcess(Name processName) {

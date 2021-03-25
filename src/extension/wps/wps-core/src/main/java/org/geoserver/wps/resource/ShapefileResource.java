@@ -33,6 +33,7 @@ public class ShapefileResource implements WPSResource {
         this.store = store;
     }
 
+    @Override
     public void delete() throws Exception {
         try {
             store.dispose();
@@ -41,6 +42,7 @@ public class ShapefileResource implements WPSResource {
         }
     }
 
+    @Override
     public String getName() {
         return name;
     }

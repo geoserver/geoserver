@@ -1,0 +1,487 @@
+/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ * Copyright © 2019 World Wide Web Consortium, (Massachusetts Institute of Technology, 
+ * European Research Consortium for Informatics and Mathematics, Keio    
+ * University, Beihang). All Rights Reserved. This work is distributed under the 
+ * W3C® Software License [1] in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR 
+ * A PARTICULAR PURPOSE.
+ * [1] http://www.w3.org/Consortium/Legal/copyright-software
+ * 
+ */
+.leaflet-container {
+  /* Override the `background-color` set by leaflet.css, enables inheritance from
+     the map or <body> element (same as iframes) to give the author more control. */
+  background-color: transparent;
+  max-height: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  min-width: 100%;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* this is required by tiles which are actually divs with multiple images in them */
+.leaflet-tile img {
+        position: absolute;
+        left: 0;
+        top: 0;
+	}
+/* MapML treats images like map layers, so far as fade animation is concerned */
+.leaflet-fade-anim .leaflet-image-layer {
+        will-change: opacity;
+	}
+        
+.leaflet-image-layer {
+        visibility: hidden;
+}
+.leaflet-image-loaded {
+        visibility: inherit;
+}
+
+/* Use legible font-sizes (Leaflet upstream PR: https://github.com/Leaflet/Leaflet/pull/7346). */
+.leaflet-control-scale-line,
+.leaflet-container .leaflet-control-scale,
+.leaflet-container .leaflet-control-attribution {
+  font-size: 12px;
+}
+
+/* Remove opinionated color of links. */
+.leaflet-container a,
+.leaflet-container a.leaflet-popup-close-button,
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: initial;
+}
+
+/*
+ * Controls.
+ */
+ 
+ .leaflet-top .leaflet-control {
+   margin-top: 5px;
+ }
+ 
+ .leaflet-left .leaflet-control {
+   margin-left: 5px;
+ }
+
+.leaflet-bar a {
+  box-sizing: border-box;
+  width: 44px !important;
+  height: 44px !important;
+  line-height: 44px !important;
+  font-size: 34px !important;
+  font-weight: normal;
+}
+
+.leaflet-control-layers-toggle {
+  width: 44px !important;
+  height: 44px !important;
+}
+
+.leaflet-bar a,
+.leaflet-control-layers {
+  border-color: #e3e3e3 !important;
+}
+
+.leaflet-control-layers {
+  border-radius: 4px !important;
+}
+.leaflet-touch .leaflet-bar a:last-child {
+  border-bottom-left-radius: 4px !important;
+  border-bottom-right-radius: 4px !important;
+}
+.leaflet-touch .leaflet-bar a:first-child {
+  border-top-left-radius: 4px !important;
+  border-top-right-radius: 4px !important;
+}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+  border-style: inherit;
+}
+
+/* Less opinionated box-shadows. */
+.mapml-contextmenu,
+.mapml-debug,
+.leaflet-bar,
+.leaflet-control-layers,
+.leaflet-popup-content-wrapper,
+.leaflet-tooltip-pane .leaflet-tooltip,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar,
+.leaflet-popup-tip {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgb(0, 0, 0, 0.3);
+}
+
+/* Increase contrast between the attribution container and the underlying content. */
+.leaflet-container .leaflet-control-attribution {
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* Remove opinionated styles of attribution links. */
+.leaflet-control-attribution a {
+  color: revert;
+  text-decoration: revert;
+}
+
+/*
+ * Zoom controls.
+ */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+  text-indent: unset;
+}
+
+/*
+ * Fullscreen control.
+ */
+
+.leaflet-control-fullscreen a {
+  background-size: 38px 76px !important;
+  background-position: 3px 3px !important;
+}
+.leaflet-fullscreen-on .leaflet-control-fullscreen a {
+  background-size: 38px 76px !important;
+  background-position: 3px -35px !important;
+}
+
+/*
+ * Layer controls.
+ */
+
+.leaflet-control-layers.leaflet-control {
+  margin-right: 5px;
+  margin-left: 5px;
+  padding: 0;
+}
+
+.leaflet-control-layers-list {
+  padding: 0;
+  text-transform: capitalize;
+}
+
+.leaflet-control-layers fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-height: 44px;
+}
+
+.leaflet-control-layers-overlays > fieldset > .mapml-control-layers > summary,
+.leaflet-control-layers-overlays > fieldset > .mapml-control-layers > summary ~ * {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.leaflet-control-layers-overlays > fieldset > .mapml-control-layers > summary {
+  padding-top: 12.5px;
+  padding-bottom: 12.5px;
+}
+
+.leaflet-control-layers-overlays > fieldset > .mapml-control-layers details > summary {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.leaflet-control-layers-overlays > fieldset > .mapml-control-layers details {
+  padding-bottom: 4px;
+  margin: 0 0 0 15px;
+}
+
+.leaflet-control-layers-overlays > fieldset > .mapml-control-layers details > summary ~ * {
+  display: block;
+  margin-top: 5px;
+  margin-left: 15px;
+  width: calc(100% - 15px);
+}
+
+.leaflet-control-layers label {
+  display: inline;
+}
+
+.mapml-control-layers summary::-webkit-details-marker {
+  margin-right: 5px;
+}
+.mapml-control-layers summary::marker {
+  margin-right: 5px;
+}
+
+.mapml-control-layers details [type="radio"],
+.mapml-control-layers details [type="checkbox"] {
+  margin-right: 5px;
+  margin-left: 0;
+}
+
+.leaflet-control-layers-list .leaflet-control-layers-overlays > :not(:last-of-type) {
+  border-bottom: 1px solid #e3e3e3;
+}
+
+/* Revert Leaflet styles that are causing misalignment. */
+.leaflet-control-layers-selector {
+  margin-top: revert;
+  position: revert;
+}
+.mapml-control-layers summary label > * {
+  vertical-align: middle;
+}
+
+/*
+ * Context menu.
+ */
+
+.mapml-contextmenu {
+  display: none;
+  max-width: 100%;
+  -webkit-border-radius: 4px;
+          border-radius: 4px;
+  padding: 4px 0;
+  background-color: #fff;
+  cursor: default;
+}
+
+.mapml-contextmenu a.mapml-contextmenu-item {
+  display: block;
+  color: #222;
+  font-size: 12px;
+  line-height: 20px;
+  text-decoration: none;
+  padding: 0 12px;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  cursor: default;
+}
+
+.mapml-contextmenu a.mapml-contextmenu-item.over {
+  background-color: #f4f4f4;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+      
+.mapml-contextmenu-separator {
+  border-bottom: 1px solid #e3e3e3;
+  margin: 5px 0;
+}
+
+/*
+ * Debug mode.
+ */
+
+.mapml-debug {
+  contain: content;
+  max-height: 100%;
+  max-width: 100%;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: #fff;
+  cursor: default;
+}
+
+.mapml-debug-banner {
+  margin-left: 4px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.mapml-debug-panel,
+.mapml-debug-grid {
+  font-family: monospace;
+}
+
+.mapml-debug-panel {
+  margin-top: 4px;
+}
+
+.mapml-debug-tile {
+  text-indent: 6px;
+  line-height: 1.8;
+}
+
+.mapml-debug-coordinates {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+/*
+ * User interaction.
+ */
+ 
+ :host(.leaflet-drag-target) .leaflet-grab {
+   cursor: move;
+   cursor: -webkit-grabbing;
+   cursor:    -moz-grabbing;
+   cursor:         grabbing;
+ }
+ 
+ /* Prevent `:hover` styles from applying to controls when the user is panning
+ the map display and the cursor happens to move over a control. */
+:host(.leaflet-drag-target) .leaflet-control {
+  pointer-events: none;
+}
+
+/* Disable dragging of controls. */
+.leaflet-control :not([draggable="true"]),
+.mapml-contextmenu :not([draggable="true"]) {
+  -webkit-user-drag: none;
+}
+
+/* Disable text selection in controls. */
+.leaflet-control,
+.mapml-contextmenu,
+.mapml-debug {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide unintended highlighting of controls from clicking the map display in
+   quick succession. This is a workaround for `user-select: contain`, since it has
+   virtually no browser support: https://www.chromestatus.com/feature/5730263904550912. */
+.leaflet-control a::selection,
+.leaflet-popup-close-button::selection,
+.leaflet-control-attribution::selection {
+  background-color: transparent;
+}
+
+/* Disable pointer events where they'd interfere with the intended action. */
+.leaflet-tooltip,
+.leaflet-crosshair *,
+.mapml-contextmenu-item > *,
+.mapml-control-layers label[for^="o"],
+.mapml-draggable [aria-grabbed="true"] .mapml-control-layers > * {
+  pointer-events: none!important;
+}
+
+/* Restore the default focus outline of UA stylesheets,
+   which Leaflet unfortunately removes (https://github.com/Leaflet/Leaflet/issues/6986). */
+.leaflet-container :focus {
+  outline-color: -webkit-focus-ring-color !important;
+  outline-style: auto !important;
+  outline-width: thin !important;
+  outline: revert !important;
+}
+/* Unset the outline that Leaflet occasionally sets on controls without also
+   delegating focus. */
+.leaflet-active:not(:focus) {
+  outline: unset !important;
+}
+
+/* Restore the default UA tap highlight color by overriding the opinionated tap
+   highlight color inherited from leaflet.css. */
+.leaflet-control a {
+  -webkit-tap-highlight-color: initial;
+}
+
+/* Less opinionated styles for the zoom box than inherited from leaflet.css. */
+.leaflet-zoom-box {
+  border: thin dotted;
+  background-color: rgba(255,255,255,0.33);
+}
+
+label,
+input,
+button,
+summary {
+  cursor: pointer;
+}
+
+.mapml-draggable,
+.mapml-draggable * {
+  cursor: row-resize;
+  background-color: white;
+}
+
+.leaflet-crosshair {
+  cursor: crosshair;
+}
+
+/*
+ * Visibility hack – mitigates FOUC.
+ * (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/154)
+ */
+
+/* Unset `visibility: hidden` (inherited from web-map/mapml-viewer.js). */
+.leaflet-container .mapml-contextmenu,
+.leaflet-container .leaflet-control-container {
+  visibility: unset!important;
+}
+
+.mapml-crosshair {
+  margin: -36px 0 0 -36px;
+  width: 72px;
+  height: 72px;
+  left: 50%;
+  top: 50%;
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: 10000;
+}
+
+.mapml-popup-button {
+	padding: 0 4px 0 4px;
+	border: none;
+	text-align: center;
+	width: 18px;
+	height: 14px;
+	font: 16px/14px Tahoma, Verdana, sans-serif;
+	color: #c3c3c3;
+	text-decoration: none;
+	font-weight: bold;
+  background: transparent;
+  white-space: nowrap;
+}
+
+.mapml-focus-buttons {
+  white-space: nowrap;
+  display: inline;
+}
+
+.mapml-feature-count {
+  display:inline;
+  white-space: nowrap;
+  text-align: center;
+  padding: 2px;
+}
+
+.mapml-outline {
+  outline-style: auto;
+  outline-offset: -1px;
+  z-index: 1000;
+  pointer-events: none;
+  position: relative;
+}
+
+/* Quick fix for https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/358,
+   refactor TBD in https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/263. */
+.mapml-control-summary-container {
+  display: contents;
+}
+.mapml-control-summary-container .mapml-layer-remove-button {
+  text-decoration: none;
+  float: right;
+}
+.mapml-control-summary-container * {
+  display: inline;
+}
+.mapml-control-summary-container label {
+  margin-right: 15px;
+}
+
+ 
+ /* Force printers to include background-images of controls for printing.
+   (https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/294) */
+@media print {
+  .leaflet-control {
+    -webkit-print-color-adjust: exact;
+                  color-adjust: exact;
+  }
+}
+
+.leaflet-pane > svg g.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive g {
+  pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+  pointer-events: auto;
+}

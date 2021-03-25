@@ -156,7 +156,7 @@ public class GetCapabilitiesTest extends WPSTestSupport {
         if (workspace != null) {
             expectedOperationUrl = "http://localhost:8080/geoserver/" + workspace + "/wps";
         }
-        String[] operations = new String[] {"GetCapabilities", "DescribeProcess", "Execute"};
+        String[] operations = {"GetCapabilities", "DescribeProcess", "Execute"};
         for (String operation : operations) {
             String getPath =
                     "//ows:Operation[@name='"

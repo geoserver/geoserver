@@ -62,14 +62,14 @@ public class PNGLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
         // Getting a writer
         //
         // /////////////////////////////////////////////////////////////////
-        final Iterator<ImageWriter> it;
-        it = ImageIO.getImageWritersByMIMEType(PNGLegendOutputFormat.MIME_TYPE);
+        final Iterator<ImageWriter> it =
+                ImageIO.getImageWritersByMIMEType(PNGLegendOutputFormat.MIME_TYPE);
         ImageWriter writer = null;
 
         if (!it.hasNext()) {
             throw new IllegalStateException("No PNG ImageWriter found");
         } else {
-            writer = (ImageWriter) it.next();
+            writer = it.next();
         }
 
         // /////////////////////////////////////////////////////////////////

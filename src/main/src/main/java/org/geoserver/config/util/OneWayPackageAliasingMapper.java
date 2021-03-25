@@ -21,7 +21,7 @@ public class OneWayPackageAliasingMapper extends PackageAliasingMapper {
     }
 
     @Override
-    public String serializedClass(final Class type) {
+    public String serializedClass(@SuppressWarnings("rawtypes") final Class type) {
         return wrapped.serializedClass(type);
     }
 }

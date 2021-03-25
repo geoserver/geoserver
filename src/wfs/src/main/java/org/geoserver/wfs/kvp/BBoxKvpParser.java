@@ -23,6 +23,7 @@ public class BBoxKvpParser extends KvpParser {
         super("bbox", Envelope.class);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         List unparsed = KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER);
 

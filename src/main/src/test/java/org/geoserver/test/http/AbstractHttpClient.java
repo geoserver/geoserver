@@ -5,7 +5,7 @@
  */
 package org.geoserver.test.http;
 
-import org.geotools.data.ows.HTTPClient;
+import org.geotools.http.HTTPClient;
 
 /**
  * A base class for HTTPClient
@@ -24,34 +24,42 @@ public abstract class AbstractHttpClient implements HTTPClient {
 
     protected boolean tryGzip;
 
+    @Override
     public String getUser() {
         return user;
     }
 
+    @Override
     public void setUser(String user) {
         this.user = user;
     }
 
+    @Override
     public String getPassword() {
         return this.password;
     }
 
+    @Override
     public void setPassword(String password) {
         this.password = password;
     }
 
+    @Override
     public int getConnectTimeout() {
         return connectTimeout;
     }
 
+    @Override
     public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
     }
 
+    @Override
     public int getReadTimeout() {
         return this.readTimeout;
     }
 
+    @Override
     public void setReadTimeout(int readTimeout) {
         this.readTimeout = readTimeout;
     }

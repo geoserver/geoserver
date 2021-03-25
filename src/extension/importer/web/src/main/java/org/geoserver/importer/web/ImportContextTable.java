@@ -29,7 +29,8 @@ public class ImportContextTable extends GeoServerTablePanel<ImportContext> {
     }
 
     @Override
-    protected Component getComponentForProperty(String id, IModel itemModel, Property property) {
+    protected Component getComponentForProperty(
+            String id, IModel<ImportContext> itemModel, Property<ImportContext> property) {
         if (ImportContextProvider.ID == property) {
             PageParameters pp = new PageParameters();
             pp.add("id", property.getModel(itemModel).getObject());

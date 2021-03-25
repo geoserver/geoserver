@@ -50,7 +50,7 @@ class ChooseImagePanel extends Panel {
 
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
 
-        SortedSet<String> imageSet = new TreeSet<String>();
+        SortedSet<String> imageSet = new TreeSet<>();
         GeoServerDataDirectory dd =
                 GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
         for (Resource r : dd.getStyles(ws).list()) {
@@ -62,9 +62,9 @@ class ChooseImagePanel extends Panel {
 
         FileUploadField upload = new FileUploadField("upload", new Model<ArrayList<FileUpload>>());
 
-        Model<String> imageModel = new Model<String>();
+        Model<String> imageModel = new Model<>();
         DropDownChoice<String> image =
-                new DropDownChoice<String>("image", imageModel, new ArrayList<String>(imageSet));
+                new DropDownChoice<>("image", imageModel, new ArrayList<>(imageSet));
 
         Image display =
                 new Image(

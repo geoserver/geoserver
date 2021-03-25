@@ -379,6 +379,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         return root;
     }
 
+    @Override
     public DataAccessLimits getAccessLimits(
             Authentication user, LayerInfo layer, List<LayerGroupInfo> context) {
         final boolean directAccess = context == null || context.isEmpty();
@@ -389,6 +390,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         return buildLimits(layer.getResource().getClass(), readFilter, writeFilter);
     }
 
+    @Override
     public DataAccessLimits getAccessLimits(Authentication user, ResourceInfo resource) {
         boolean read = canAccess(user, resource, AccessMode.READ, true);
         boolean write = canAccess(user, resource, AccessMode.WRITE, true);
@@ -429,6 +431,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         }
     }
 
+    @Override
     public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace) {
         boolean readable = canAccess(user, workspace, AccessMode.READ);
         boolean writable = canAccess(user, workspace, AccessMode.WRITE);
@@ -531,7 +534,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                     }
                 }
             }
-            if (exceptions.size() == 0) {
+            if (exceptions.isEmpty()) {
                 return rootAccess ? Filter.INCLUDE : Filter.EXCLUDE;
             } else {
                 return rootAccess ? Predicates.and(exceptions) : Predicates.or(exceptions);
@@ -562,14 +565,27 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                         wsNode.getChildren().entrySet()) {
                     String layerName = layerEntry.getKey();
                     SecureTreeNode layerNode = layerEntry.getValue();
+                    String prefixedName = wsName + ":" + layerName;
+                    Filter typeFilter = getTypeFilter(prefixedName, clazz);
+                    if (typeFilter == null) {
+                        // dangling rule, referencing a non existing layer/group, continue
+                        continue;
+                    }
+
                     boolean layerAccess = canAccess(user, layerNode);
                     if (layerAccess != wsAccess) {
                         if (wsAccess) {
                             layerExceptions.add(
-                                    Predicates.notEqual("prefixedName", wsName + ":" + layerName));
+                                    Predicates.not(
+                                            Predicates.and(
+                                                    typeFilter,
+                                                    Predicates.equal(
+                                                            "prefixedName", prefixedName))));
                         } else {
                             layerExceptions.add(
-                                    Predicates.equal("prefixedName", wsName + ":" + layerName));
+                                    Predicates.and(
+                                            typeFilter,
+                                            Predicates.equal("prefixedName", prefixedName)));
                         }
                     }
                 }
@@ -597,20 +613,10 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                 }
             }
 
-            if (exceptions.size() == 0) {
+            if (exceptions.isEmpty()) {
                 return rootAccess ? Filter.INCLUDE : Filter.EXCLUDE;
             } else {
-                Filter filter = rootAccess ? Predicates.and(exceptions) : Predicates.or(exceptions);
-                // in case of published info, we have to filter the layer groups as a separate
-                // entity
-                if (PublishedInfo.class.equals(clazz)) {
-                    Filter layerFilter =
-                            Predicates.and(Predicates.isInstanceOf(LayerInfo.class), filter);
-                    Filter layerGroupFilter = Predicates.isInstanceOf(LayerGroupInfo.class);
-                    return Predicates.or(layerFilter, layerGroupFilter);
-                } else {
-                    return filter;
-                }
+                return rootAccess ? Predicates.and(exceptions) : Predicates.or(exceptions);
             }
         } else if (StyleInfo.class.isAssignableFrom(clazz)
                 || LayerGroupInfo.class.isAssignableFrom(clazz)) {
@@ -630,7 +636,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                     }
                 }
             }
-            if (exceptions.size() == 0) {
+            if (exceptions.isEmpty()) {
                 return rootAccess ? Filter.INCLUDE : Filter.EXCLUDE;
             } else {
                 return rootAccess ? Predicates.and(exceptions) : Predicates.or(exceptions);
@@ -639,6 +645,20 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
             // for the other types we have no clue, use the in memory filtering
             return InMemorySecurityFilter.buildUserAccessFilter(this, user);
         }
+    }
+
+    private Filter getTypeFilter(String prefixedName, Class<?> clazz) {
+        if (rawCatalog.getLayerByName(prefixedName) != null)
+            if (clazz.equals(PublishedInfo.class)) {
+                // restrict to layers in this case
+                return Predicates.isInstanceOf(LayerInfo.class);
+            } else {
+                // otherwise use the native type, e.g., CoverageInfo, FeatureTypeInfo, LayerInfo
+                return Predicates.isInstanceOf(clazz);
+            }
+        else if (rawCatalog.getLayerGroupByName(prefixedName) != null)
+            return Predicates.isInstanceOf(LayerGroupInfo.class);
+        else return null;
     }
 
     private boolean canAccess(Authentication user, SecureTreeNode node) {

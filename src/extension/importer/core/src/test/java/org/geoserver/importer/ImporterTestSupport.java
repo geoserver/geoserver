@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -76,7 +75,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         ImporterTestUtils.setComparisonTolerance();
 
         // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("xsi", "http://www.w3.org/2001/XMLSchema-instance");
         namespaces.put("wms", "http://www.opengis.net/wms");
@@ -214,7 +213,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         ds.setName(dsName);
         ds.setType("H2");
 
-        Map params = new HashMap();
+        Map<String, Serializable> params = new HashMap<>();
         params.put("database", getTestData().getDataDirectoryRoot().getPath() + "/" + dsName);
         params.put("dbtype", "h2");
         ds.getConnectionParameters().putAll(params);
@@ -248,14 +247,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
             final File dbFile = new File(databaseLocation);
             File container = dbFile.getParentFile();
             File[] dbFiles =
-                    container.listFiles(
-                            new FilenameFilter() {
-
-                                @Override
-                                public boolean accept(File dir, String name) {
-                                    return name.startsWith(dbFile.getName());
-                                }
-                            });
+                    container.listFiles((dir, name1) -> name1.startsWith(dbFile.getName()));
             for (File f : dbFiles) {
                 assertTrue("Failed to remove file " + f.getPath(), FileUtils.deleteQuietly(f));
             }
@@ -309,7 +301,7 @@ public abstract class ImporterTestSupport extends GeoServerSystemTestSupport {
         }
 
         public JSONObject buildObject() {
-            return JSONObject.fromObject(((StringWriter) writer).toString());
+            return JSONObject.fromObject(writer.toString());
         }
     }
 

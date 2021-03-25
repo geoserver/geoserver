@@ -27,7 +27,7 @@ public class GeoServerFunctionFactory implements FunctionFactory {
     @Override
     public List<FunctionName> getFunctionNames() {
         // Simple creation of the FunctionName list
-        List<FunctionName> functionList = new ArrayList<FunctionName>();
+        List<FunctionName> functionList = new ArrayList<>();
         functionList.add(IsInstanceOf.NAME);
         return Collections.unmodifiableList(functionList);
     }

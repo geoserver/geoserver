@@ -100,8 +100,7 @@ public class ListAttributesController extends AbstractCatalogController {
             Collection<PropertyDescriptor> attributes = null;
             /* Check if it's feature type or coverage */
             if (obj instanceof FeatureTypeInfo) {
-                FeatureTypeInfo fTpInfo;
-                fTpInfo = (FeatureTypeInfo) obj;
+                FeatureTypeInfo fTpInfo = (FeatureTypeInfo) obj;
 
                 LayerAttributesList out = new LayerAttributesList(layerName);
                 try {
@@ -130,7 +129,7 @@ public class ListAttributesController extends AbstractCatalogController {
     public class LayerAttributesList {
         private String layerName;
 
-        private Map<String, String> attributes = new HashMap<String, String>();
+        private Map<String, String> attributes = new HashMap<>();
 
         public LayerAttributesList(final String layer) {
             layerName = layer;
@@ -141,7 +140,7 @@ public class ListAttributesController extends AbstractCatalogController {
         }
 
         public List<String> getAttributesNames() {
-            List<String> out = new ArrayList<String>();
+            List<String> out = new ArrayList<>();
 
             for (String key : attributes.keySet()) {
                 out.add(key);
@@ -182,7 +181,8 @@ public class ListAttributesController extends AbstractCatalogController {
         /**
          * @see com.thoughtworks.xstream.converters.ConverterMatcher#canConvert(java .lang.Class)
          */
-        public boolean canConvert(Class clazz) {
+        @Override
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class clazz) {
             return LayerAttributesList.class.isAssignableFrom(clazz);
         }
 
@@ -191,6 +191,7 @@ public class ListAttributesController extends AbstractCatalogController {
          *     com.thoughtworks.xstream.io.HierarchicalStreamWriter,
          *     com.thoughtworks.xstream.converters.MarshallingContext)
          */
+        @Override
         public void marshal(
                 Object value, HierarchicalStreamWriter writer, MarshallingContext context) {
             final LayerAttributesList obj = (LayerAttributesList) value;
@@ -218,6 +219,7 @@ public class ListAttributesController extends AbstractCatalogController {
          *     .xstream.io.HierarchicalStreamReader,
          *     com.thoughtworks.xstream.converters.UnmarshallingContext)
          */
+        @Override
         public Object unmarshal(HierarchicalStreamReader arg0, UnmarshallingContext arg1) {
             // TODO Auto-generated method stub
             return null;

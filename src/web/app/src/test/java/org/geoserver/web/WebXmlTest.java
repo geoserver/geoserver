@@ -7,13 +7,15 @@ package org.geoserver.web;
 
 import java.io.File;
 import java.io.FileInputStream;
-import junit.framework.TestCase;
 import org.custommonkey.xmlunit.Validator;
 import org.geotools.util.URLs;
+import org.junit.Assert;
+import org.junit.Test;
 import org.xml.sax.InputSource;
 
-public class WebXmlTest extends TestCase {
+public class WebXmlTest {
 
+    @Test
     public void testWebXmlDTDCompliance() throws Exception {
         // makes sure web.xml is DTD compliant (without requiring internet access in the process)
         InputSource is = new InputSource(new FileInputStream("src/main/webapp/WEB-INF/web.xml"));
@@ -22,6 +24,6 @@ public class WebXmlTest extends TestCase {
                         is,
                         URLs.fileToUrl(new File("src/test/java/org/geoserver/web/web-app_2_3.dtd"))
                                 .toString());
-        assertTrue(v.isValid());
+        Assert.assertTrue(v.isValid());
     }
 }

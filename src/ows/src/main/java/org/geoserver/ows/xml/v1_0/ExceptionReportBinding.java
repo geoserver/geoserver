@@ -54,6 +54,7 @@ public class ExceptionReportBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return OWS.EXCEPTIONREPORT;
     }
@@ -65,7 +66,8 @@ public class ExceptionReportBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<ExceptionReportType> getType() {
         return ExceptionReportType.class;
     }
 }

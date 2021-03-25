@@ -52,24 +52,23 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
         assertEquals(3, lines.size());
 
         // check the header
-        String[] header =
-                new String[] {
-                    "gml:id",
-                    "gsmlp:identifier",
-                    "gsmlp:name",
-                    "gsmlp:drillingMethod",
-                    "gsmlp:driller",
-                    "gsmlp:drillStartDate",
-                    "gsmlp:startPoint",
-                    "gsmlp:inclinationType",
-                    "gsmlp:boreholeMaterialCustodian",
-                    "gsmlp:boreholeLength_m",
-                    "gsmlp:elevation_m",
-                    "gsmlp:elevation_srs",
-                    "gsmlp:specification_uri",
-                    "gsmlp:metadata_uri",
-                    "gsmlp:shape"
-                };
+        String[] header = {
+            "gml:id",
+            "gsmlp:identifier",
+            "gsmlp:name",
+            "gsmlp:drillingMethod",
+            "gsmlp:driller",
+            "gsmlp:drillStartDate",
+            "gsmlp:startPoint",
+            "gsmlp:inclinationType",
+            "gsmlp:boreholeMaterialCustodian",
+            "gsmlp:boreholeLength_m",
+            "gsmlp:elevation_m",
+            "gsmlp:elevation_srs",
+            "gsmlp:specification_uri",
+            "gsmlp:metadata_uri",
+            "gsmlp:shape"
+        };
 
         assertTrue(Arrays.asList(lines.get(0)).containsAll(Arrays.asList(header)));
 
@@ -122,24 +121,23 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
         assertEquals(IDENTIFIER, lines.get(1)[identifierIndex]);
 
         // check the header
-        String[] header =
-                new String[] {
-                    "gml:id",
-                    "gsmlp:identifier",
-                    "gsmlp:name",
-                    "gsmlp:drillingMethod",
-                    "gsmlp:driller",
-                    "gsmlp:drillStartDate",
-                    "gsmlp:startPoint",
-                    "gsmlp:inclinationType",
-                    "gsmlp:boreholeMaterialCustodian",
-                    "gsmlp:boreholeLength_m",
-                    "gsmlp:elevation_m",
-                    "gsmlp:elevation_srs",
-                    "gsmlp:specification_uri",
-                    "gsmlp:metadata_uri",
-                    "gsmlp:shape"
-                };
+        String[] header = {
+            "gml:id",
+            "gsmlp:identifier",
+            "gsmlp:name",
+            "gsmlp:drillingMethod",
+            "gsmlp:driller",
+            "gsmlp:drillStartDate",
+            "gsmlp:startPoint",
+            "gsmlp:inclinationType",
+            "gsmlp:boreholeMaterialCustodian",
+            "gsmlp:boreholeLength_m",
+            "gsmlp:elevation_m",
+            "gsmlp:elevation_srs",
+            "gsmlp:specification_uri",
+            "gsmlp:metadata_uri",
+            "gsmlp:shape"
+        };
 
         assertTrue(Arrays.asList(lines.get(0)).containsAll(Arrays.asList(header)));
 
@@ -189,7 +187,7 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
     static List<String[]> readLines(String csvContent) throws IOException {
         CSVReader reader = new CSVReader(new StringReader(csvContent));
 
-        List<String[]> result = new ArrayList<String[]>();
+        List<String[]> result = new ArrayList<>();
         String[] nextLine;
         while ((nextLine = reader.readNext()) != null) {
             result.add(nextLine);

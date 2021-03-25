@@ -5,33 +5,27 @@
  */
 package org.geoserver.monitor;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class PipeliningTaskQueueTest {
-
-    static {
-        //        java.util.logging.ConsoleHandler handler = new java.util.logging.ConsoleHandler();
-        //        handler.setLevel(java.util.logging.Level.ALL);
-        //
-        //
-        // org.geotools.util.logging.Logging.getLogger("org.geoserver.monitor").setLevel(java.util.logging.Level.ALL);
-        //
-        // org.geotools.util.logging.Logging.getLogger("org.geoserver.monitor").addHandler(handler);
-    }
-
+    static final Logger LOGGER = Logging.getLogger(PipeliningTaskQueueTest.class);
     PipeliningTaskQueue<Integer> taskQueue;
 
     @Before
     public void setUp() throws Exception {
-        taskQueue = new PipeliningTaskQueue();
+        taskQueue = new PipeliningTaskQueue<>();
         taskQueue.start();
     }
 
@@ -43,24 +37,25 @@ public class PipeliningTaskQueueTest {
     @Test
     public void test() throws Exception {
 
-        ConcurrentLinkedQueue<Worker> completed = new ConcurrentLinkedQueue<Worker>();
+        ConcurrentLinkedQueue<Worker> completed = new ConcurrentLinkedQueue<>();
         int groups = 5;
-        ArrayList<Worker>[] workers = new ArrayList[groups];
-        for (int i = 0; i < workers.length; i++) {
-            workers[i] = new ArrayList();
+        List<List<Worker>> workers = new ArrayList<>();
+        for (int i = 0; i < groups; i++) {
+            List<Worker> list = new ArrayList<>();
             for (int j = 0; j < groups; j++) {
-                workers[i].add(new Worker(i, j, completed));
+                list.add(new Worker(i, j, completed));
             }
+            workers.add(list);
         }
 
         for (int i = 0; i < groups; i++) {
-            for (int j = 0; j < workers.length; j++) {
-                Worker w = workers[j].get(i);
+            for (int j = 0; j < groups; j++) {
+                Worker w = workers.get(j).get(i);
                 taskQueue.execute(w.group, w);
             }
         }
 
-        while (completed.size() < groups * workers.length) {
+        while (completed.size() < groups * groups) {
             Thread.sleep(1000);
         }
 
@@ -83,13 +78,14 @@ public class PipeliningTaskQueueTest {
             this.completed = completed;
         }
 
+        @Override
         public void run() {
             Random r = new Random();
             int x = r.nextInt(10) + 1;
             try {
                 Thread.sleep(x * 100);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
             }
 
             completed.add(this);

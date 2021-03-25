@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.geoserver.api.APIDispatcher;
 import org.geoserver.gsr.api.ServiceException;
 import org.geoserver.gsr.model.exception.ServiceError;
 import org.geoserver.kml.KMZMapOutputFormat;
+import org.geoserver.ogcapi.APIDispatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
@@ -75,6 +75,7 @@ public class GSRDispatcher extends APIDispatcher {
         private static class FormatContentNegotiationStrategy
                 implements ContentNegotiationStrategy {
 
+            @Override
             public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest) {
                 String f = webRequest.getParameter("f");
                 if ("json".equals(f) || "pjson".equals(f)) {

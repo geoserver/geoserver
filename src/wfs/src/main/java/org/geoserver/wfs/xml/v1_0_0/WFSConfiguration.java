@@ -66,12 +66,14 @@ public class WFSConfiguration extends Configuration {
         catalog.addListener(
                 new CatalogListener() {
 
+                    @Override
                     public void handleAddEvent(CatalogAddEvent event) {
                         if (event.getSource() instanceof FeatureTypeInfo) {
                             reloaded();
                         }
                     }
 
+                    @Override
                     public void handleModifyEvent(CatalogModifyEvent event) {
                         if (event.getSource() instanceof DataStoreInfo
                                 || event.getSource() instanceof FeatureTypeInfo
@@ -80,10 +82,13 @@ public class WFSConfiguration extends Configuration {
                         }
                     }
 
+                    @Override
                     public void handlePostModifyEvent(CatalogPostModifyEvent event) {}
 
+                    @Override
                     public void handleRemoveEvent(CatalogRemoveEvent event) {}
 
+                    @Override
                     public void reloaded() {
                         wfs.dispose();
                     }
@@ -92,11 +97,14 @@ public class WFSConfiguration extends Configuration {
                 .addListener(
                         new ResourcePool.Listener() {
 
+                            @Override
                             public void disposed(FeatureTypeInfo featureType, FeatureType ft) {}
 
+                            @Override
                             public void disposed(
                                     CoverageStoreInfo coverageStore, GridCoverageReader gcr) {}
 
+                            @Override
                             public void disposed(DataStoreInfo dataStore, DataAccess da) {
                                 wfs.dispose();
                             }
@@ -110,6 +118,7 @@ public class WFSConfiguration extends Configuration {
         return catalog;
     }
 
+    @Override
     protected void registerBindings(MutablePicoContainer container) {
         // Types
         container.registerComponentImplementation(WFS.ALLSOMETYPE, AllSomeTypeBinding.class);
@@ -152,6 +161,7 @@ public class WFSConfiguration extends Configuration {
                 WFS.WFS_TRANSACTIONRESPONSETYPE, WFS_TransactionResponseTypeBinding.class);
     }
 
+    @Override
     public void configureContext(MutablePicoContainer context) {
         super.configureContext(context);
 

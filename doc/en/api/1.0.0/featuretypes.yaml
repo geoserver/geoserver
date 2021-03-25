@@ -24,6 +24,8 @@ paths:
   /workspaces/{workspaceName}/datastores/{storeName}/featuretypes:
     get:           
       operationId: getFeatureTypes
+      tags:
+       - "FeatureTypes"
       description: |
         Get a list of feature types for the workspace and datastore. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/featuretypes.xml" for XML)
       parameters:
@@ -112,9 +114,10 @@ paths:
                     ]
                   }
                 }
-
     post:
       operationId: postFeatureTypes
+      tags:
+       - "FeatureTypes"
       description: |
         Create a new feature type. Note -  when creating a new feature type via POST, if no underlying dataset with the specified name exists an attempt will be made to create it. This will work only in cases where the underlying data format supports the creation of new types (such as a database). When creating a feature type in this manner the client should include all attribute information in the feature type representation.
       parameters:
@@ -146,12 +149,16 @@ paths:
               type: string        
     put:
       operationId: putFeatureTypes
+      tags:
+       - "FeatureTypes"
       description: Invalid. Use POST for adding a new feature type, or PUT on an individual feature type to edit that type.  
       responses:
         405:
           description: Method not allowed.
     delete:
       operationId: deleteFeatureTypes
+      tags:
+       - "FeatureTypes"
       description: Invalid.
       responses:
         405:
@@ -159,8 +166,10 @@ paths:
   /workspaces/{workspaceName}/featuretypes:
     get:           
       operationId: getFeatureTypes
+      tags:
+       - "FeatureTypes"
       description: |
-        Get a list of all feature types for all datastors in the workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/featuretypes.xml" for XML)
+        Get a list of all feature types for all datastores in the workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/featuretypes.xml" for XML)
       parameters:
         - name: workspaceName
           in: path
@@ -242,9 +251,10 @@ paths:
                     ]
                   }
                 }
-
     post:
       operationId: postFeatureTypes
+      tags:
+       - "FeatureTypes"
       description: |
         Create a new feature type, the feature type definition needs to reference a store. Note -  when creating a new feature type via POST, if no underlying dataset with the specified name exists an attempt will be made to create it. This will work only in cases where the underlying data format supports the creation of new types (such as a database). When creating a feature type in this manner the client should include all attribute information in the feature type representation.
       parameters:
@@ -271,12 +281,16 @@ paths:
               type: string        
     put:
       operationId: putFeatureTypes
+      tags:
+       - "FeatureTypes"
       description: Invalid. Use POST for adding a new feature type, or PUT on an individual feature type to edit that type.  
       responses:
         405:
           description: Method not allowed.
     delete:
       operationId: deleteFeatureTypes
+      tags:
+       - "FeatureTypes"
       description: Invalid.
       responses:
         405:
@@ -284,6 +298,8 @@ paths:
   /workspaces/{workspaceName}/datastores/{storeName}/featuretypes/{featureTypeName}:
     get:    
       operationId: getFeatureType
+      tags:
+       - "FeatureTypes"
       description:  Get an individual feature type
       produces:
         - text/html
@@ -581,12 +597,16 @@ paths:
     
     post:
       operationId: postFeatureType
+      tags:
+       - "FeatureTypes"
       description: Invalid. Use POST on the /featuretypes endpoint to add a new feature type, or PUT on an individual feature type to edit that type.
       responses:
         405:
           description: Method not allowed.
     put:
       operationId: putFeatureType
+      tags:
+       - "FeatureTypes"
       description: Update an individual feature type
       consumes:        
         - application/xml
@@ -611,7 +631,7 @@ paths:
           type: string
         - name: recalculate
           in: query
-          description: Specifies whether to recalculate any bounding boxes for a feature type. Some properties of feature types are automatically recalculated when necessary. In particular, the native bounding box is recalculated when the projection or projection policy are changed, and the lat/lon bounding box is recalculated when the native bounding box is recalculated, or when a new native bounding box is explicitly provided in the request. (The native and lat/lon bounding boxes are not automatically recalculated when they are explicitly included in the request.) In addition, the client may explicitly request a fixed set of fields to calculate, by including a comma-separated list of their names in the recalculate parameter.  The empty parameter 'recalculate=' is useful avoid slow recalculation when operating against large datasets as 'recalculate=' avoids calculating any fields, regardless of any changes to projection, projection policy, etc. The nativebbox parameter 'recalculate=nativebbox' is used recalculates the native bounding box, while avoiding recalculating the lat/lon bounding box. Recalculate parameters can be used in together - 'recalculate=nativebbox,latlonbbox' can be used after a bulk import to  to recalculates both the native bounding box and the lat/lon bounding box.
+          description: Specifies whether to recalculate any bounding boxes for a feature type. Some properties of feature types are automatically recalculated when necessary. In particular, the native bounding box is recalculated when the projection or projection policy are changed, and the lat/lon bounding box is recalculated when the native bounding box is recalculated, or when a new native bounding box is explicitly provided in the request. (The native and lat/lon bounding boxes are not automatically recalculated when they are explicitly included in the request.) In addition, the client may explicitly request a fixed set of fields to calculate, by including a comma-separated list of their names in the recalculate parameter.  The empty parameter 'recalculate=' is useful avoid slow recalculation when operating against large datasets as 'recalculate=' avoids calculating any fields, regardless of any changes to projection, projection policy, etc. The nativebbox parameter 'recalculate=nativebbox' is used recalculates the native bounding box, while avoiding recalculating the lat/lon bounding box. Recalculate parameters can be used in together - 'recalculate=nativebbox,latlonbbox' can be used after a bulk import to recalculate both the native bounding box and the lat/lon bounding box.
           required: false
           type: array
           collectionFormat: csv
@@ -631,6 +651,8 @@ paths:
           description: The feature type was successfully updated.
     delete:
       operationId: deleteFeatureType
+      tags:
+       - "FeatureTypes"
       description: Delete a feature type (optionally recursively deleting layers).
       parameters:
         - name: workspaceName
@@ -661,6 +683,8 @@ paths:
   /workspaces/{workspaceName}/featuretypes/{featureTypeName}:
     get:    
       operationId: getFeatureType
+      tags:
+       - "FeatureTypes"
       description:  Get an individual feature type in the default data store for the workspace
       produces:
         - text/html
@@ -953,12 +977,16 @@ paths:
     
     post:
       operationId: postFeatureType
+      tags:
+       - "FeatureTypes"
       description: Invalid. Use POST on the /featuretypes endpoint to add a new feature type, or PUT on an individual feature type to edit that type.
       responses:
         405:
           description: Method not allowed.
     put:
       operationId: putFeatureType
+      tags:
+       - "FeatureTypes"
       description: Update an individual feature type in the default data store for the workspace
       consumes:        
         - application/xml
@@ -978,7 +1006,7 @@ paths:
           type: string
         - name: recalculate
           in: query
-          description: Specifies whether to recalculate any bounding boxes for a feature type. Some properties of feature types are automatically recalculated when necessary. In particular, the native bounding box is recalculated when the projection or projection policy are changed, and the lat/lon bounding box is recalculated when the native bounding box is recalculated, or when a new native bounding box is explicitly provided in the request. (The native and lat/lon bounding boxes are not automatically recalculated when they are explicitly included in the request.) In addition, the client may explicitly request a fixed set of fields to calculate, by including a comma-separated list of their names in the recalculate parameter.  The empty parameter 'recalculate=' is useful avoid slow recalculation when operating against large datasets as 'recalculate=' avoids calculating any fields, regardless of any changes to projection, projection policy, etc. The nativebbox parameter 'recalculate=nativebbox' is used recalculates the native bounding box, while avoiding recalculating the lat/lon bounding box. Recalculate parameters can be used in together - 'recalculate=nativebbox,latlonbbox' can be used after a bulk import to  to recalculates both the native bounding box and the lat/lon bounding box.
+          description: Specifies whether to recalculate any bounding boxes for a feature type. Some properties of feature types are automatically recalculated when necessary. In particular, the native bounding box is recalculated when the projection or projection policy are changed, and the lat/lon bounding box is recalculated when the native bounding box is recalculated, or when a new native bounding box is explicitly provided in the request. (The native and lat/lon bounding boxes are not automatically recalculated when they are explicitly included in the request.) In addition, the client may explicitly request a fixed set of fields to calculate, by including a comma-separated list of their names in the recalculate parameter.  The empty parameter 'recalculate=' is useful avoid slow recalculation when operating against large datasets as 'recalculate=' avoids calculating any fields, regardless of any changes to projection, projection policy, etc. The nativebbox parameter 'recalculate=nativebbox' is used recalculates the native bounding box, while avoiding recalculating the lat/lon bounding box. Recalculate parameters can be used in together - 'recalculate=nativebbox,latlonbbox' can be used after a bulk import to recalculate both the native bounding box and the lat/lon bounding box.
           required: false
           type: array
           collectionFormat: csv
@@ -998,6 +1026,8 @@ paths:
           description: The feature type was successfully updated.
     delete:
       operationId: deleteFeatureType
+      tags:
+       - "FeatureTypes"
       description: Delete a feature type in the default data store for the workspace (optionally recursively deleting layers).
       parameters:
         - name: workspaceName
@@ -1165,7 +1195,7 @@ definitions:
         description: The number of decimal places to use when encoding floating point numbers from data of this feature type.
       responseSRS:
         type: object
-        description: The srs's that the WFS service will advertise in the capabilities document for this feature type (overriding the global WFS settings).
+        description: The SRSs that the WFS service will advertise in the capabilities document for this feature type (overriding the global WFS settings).
         properties:
           string:
             type: string

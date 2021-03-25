@@ -11,7 +11,7 @@ LDAP server setup
 -----------------
 
 A mock LDAP server will be used for this tutorial. Download and run the 
-`acme-ldap <http://files.opengeo.org/geoserver/acme-ldap.jar>`_ jar:: 
+`acme-ldap <http://geoserver-docs.s3-website.eu-south-1.amazonaws.com/acme-ldap-1.0.jar>`_ jar:: 
 
   java -jar acme-ldap.jar
 

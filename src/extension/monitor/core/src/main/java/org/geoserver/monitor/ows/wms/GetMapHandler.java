@@ -35,9 +35,9 @@ public class GetMapHandler extends RequestObjectHandler {
             return null;
         }
 
-        List<String> layers = new ArrayList<String>();
-        for (int i = 0; i < mapLayers.size(); i++) {
-            layers.add((String) OwsUtils.get(mapLayers.get(i), "name"));
+        List<String> layers = new ArrayList<>();
+        for (Object mapLayer : mapLayers) {
+            layers.add((String) OwsUtils.get(mapLayer, "name"));
         }
 
         return layers;

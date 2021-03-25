@@ -17,7 +17,14 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.UncheckedExecutionException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +32,11 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.LocalPublished;
 import org.geoserver.ows.LocalWorkspace;
@@ -107,7 +118,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     private final LoadingCache<String, GeoServerTileLayer> layerCache;
 
     /** Ids of pending deletes */
-    private final Set<String> pendingDeletes = new CopyOnWriteArraySet<String>();
+    private final Set<String> pendingDeletes = new CopyOnWriteArraySet<>();
 
     private final TimeoutReadWriteLock lock =
             new TimeoutReadWriteLock(GWC_CONFIGURATION_LOCK_TIMEOUT * 1000, "GWC Configuration");
@@ -132,14 +143,10 @@ public class CatalogConfiguration implements TileLayerConfiguration {
                         .build(new TileLayerLoader(tileLayerCatalog));
 
         tileLayerCatalog.addListener(
-                new TileLayerCatalogListener() {
-
-                    @Override
-                    public void onEvent(String layerId, TileLayerCatalogListener.Type type) {
-                        if (type == TileLayerCatalogListener.Type.MODIFY
-                                || type == TileLayerCatalogListener.Type.DELETE) {
-                            layerCache.invalidate(layerId);
-                        }
+                (layerId, type) -> {
+                    if (type == TileLayerCatalogListener.Type.MODIFY
+                            || type == TileLayerCatalogListener.Type.DELETE) {
+                        layerCache.invalidate(layerId);
                     }
                 });
     }
@@ -188,7 +195,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
             final Set<String> storedNames = tileLayerCatalog.getLayerNames();
             Set<String> names = null;
             if (!pendingDeletes.isEmpty()) {
-                names = new HashSet<String>(storedNames);
+                names = new HashSet<>(storedNames);
                 for (String id : pendingDeletes) {
                     GeoServerTileLayerInfo old = tileLayerCatalog.getLayerById(id);
                     names.remove(old.getName());
@@ -203,7 +210,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
                         String newName = e.getValue().getName();
                         if (!Objects.equal(oldName, newName)) {
                             if (names == null) {
-                                names = new HashSet<String>(storedNames);
+                                names = new HashSet<>(storedNames);
                             }
                             names.remove(oldName);
                             names.add(newName);
@@ -668,15 +675,15 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         Set<String> oldGridSubsetNames = gridsetNames(oldGridSubsets);
         Set<String> newGridSubsetNames = gridsetNames(newGridSubsets);
 
-        Set<String> removedGridSets = new HashSet<String>(oldGridSubsetNames);
+        Set<String> removedGridSets = new HashSet<>(oldGridSubsetNames);
         removedGridSets.removeAll(newGridSubsetNames);
         for (String removedGridset : removedGridSets) {
             mediator.deleteCacheByGridSetId(layerName, removedGridset);
         }
 
         // then proceed with any removed cache format/style on the remaining gridsets
-        Set<String> oldFormats = new HashSet<String>(oldInfo.getMimeFormats());
-        Set<String> newFormats = new HashSet<String>(newInfo.getMimeFormats());
+        Set<String> oldFormats = new HashSet<>(oldInfo.getMimeFormats());
+        Set<String> newFormats = new HashSet<>(newInfo.getMimeFormats());
         if (!oldFormats.equals(newFormats)) {
             oldFormats.removeAll(newFormats);
             for (String removedFormat : oldFormats) {
@@ -691,7 +698,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
         Set<String> newStyles = newInfo.cachedStyles();
 
         if (!newStyles.equals(oldStyles)) {
-            oldStyles = new HashSet<String>(oldStyles);
+            oldStyles = new HashSet<>(oldStyles);
             oldStyles.removeAll(newStyles);
             for (String removedStyle : oldStyles) {
                 mediator.truncateByLayerAndStyle(layerName, removedStyle);
@@ -700,7 +707,7 @@ public class CatalogConfiguration implements TileLayerConfiguration {
     }
 
     private Set<String> gridsetNames(Set<XMLGridSubset> gridSubsets) {
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         for (XMLGridSubset gridSubset : gridSubsets) {
             names.add(gridSubset.getGridSetName());
         }

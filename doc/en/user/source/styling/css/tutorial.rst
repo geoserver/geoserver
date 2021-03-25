@@ -5,7 +5,7 @@ Tutorial: Styling data with CSS
 
 This tutorial will show using CSS to style a layer, along with the equivalent SLD code.
 
-To use this tutorial, you will need the :ref:`CSS extension <css_install>` as well as the ``states`` layer from the `default GeoServer configuration <https://github.com/geoserver/geoserver/tree/master/data/release/data/shapefiles>`_.
+To use this tutorial, you will need the :ref:`CSS extension <css_install>` as well as the ``states`` layer from the `default GeoServer configuration <https://github.com/geoserver/geoserver/tree/main/data/release/data/shapefiles>`_.
 
 Creating a style for the states layer
 -------------------------------------
@@ -223,7 +223,7 @@ For the second style, we have a ``PropertyIsBetween`` filter, which doesn't dire
 
 .. highlight:: css
 
-However, ``PropertyIsBetween`` can easily be replaced by a combination of two comparison selectors. In CSS, you can apply multiple selectors to a rule by simply placing them one after the other. Selectors separated by only whitespace must all be satisfied for a style to apply. Multiple such groups can be attached to a rule by separating them with commas (``,``). If a feature matches any of the comma-separated groups for a rule then that style is applied. Thus, the CSS equivalent of the second rule is::
+However, ``PropertyIsBetween`` can easily be replaced by a combination of two comparison selectors. In CSS, you can apply multiple selectors to a rule by simply placing them one after the other. Selectors separated by only blank-space must all be satisfied for a style to apply. Multiple such groups can be attached to a rule by separating them with commas (``,``). If a feature matches any of the comma-separated groups for a rule then that style is applied. Thus, the CSS equivalent of the second rule is::
 
     [PERSONS >= 2000000] [PERSONS < 4000000] {
       fill: #FF4D4D;
@@ -270,7 +270,7 @@ The fourth and final rule is a bit different. It applies a label and outline to 
 
 .. highlight:: scss
 
-This introduces the idea of rendering an extracted value (``STATE_ABBR``) directly into the map, unlike all of the rules thus far. For this, you can use a CQL expression wrapped in square braces (``[]``) as the value of a CSS property. It is also necessary to surround values containing whitespace, such as ``Times New Roman``, with single- or double-quotes (``"``, ``'``). With these details in mind, let's write the rule::
+This introduces the idea of rendering an extracted value (``STATE_ABBR``) directly into the map, unlike all of the rules thus far. For this, you can use a CQL expression wrapped in square braces (``[]``) as the value of a CSS property. It is also necessary to surround values containing blank-space, such as ``Times New Roman``, with single- or double-quotes (``"``, ``'``). With these details in mind, let's write the rule::
 
     * {
       stroke-width: 0.2;
@@ -320,7 +320,7 @@ You will see that the borders are missing! In the GeoServer CSS module, each typ
 * **fill**, which controls whether or not Polygon fills are applied. This specified the color or graphic to use for the fill.
 * **stroke**, which controls whether or not Line and Polygon outline strokes are applied. This specifies the color (or graphic fill) of the stroke.
 * **mark**, which controls whether or not point markers are drawn. This identifies a Well-Known Mark or image URL to use.
-* **label**, which controls whether or not to draw labels on the map. This identifies the text to use for labeling the map, usually as a CQL expression. 
+* **label**, which controls whether or not to draw labels on the map. This identifies the text to use for labelling the map, usually as a CQL expression. 
 * **halo-radius**, which controls whether or not to draw a halo around labels. This specifies how large such halos should be.
 
 .. seealso:: 
@@ -430,7 +430,7 @@ So far, we haven't set titles for any of the style rules. This doesn't really ca
 
 Because of the way that CSS is translated to SLD, each SLD rule is a combination of several CSS rules. This is handled by combining the titles with the word "with". If the title is omitted for a rule, then it is simply not included in the SLD output.
 
-The final CSS should looks like this::
+The final CSS should look like this::
 
     /* @title Population < 2M */
     [PERSONS < 2000000] {

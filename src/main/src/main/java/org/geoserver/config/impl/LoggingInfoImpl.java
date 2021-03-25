@@ -22,6 +22,7 @@ public class LoggingInfoImpl implements LoggingInfo {
 
     boolean stdOutLogging;
 
+    @Override
     public String getId() {
         return id;
     }
@@ -30,26 +31,32 @@ public class LoggingInfoImpl implements LoggingInfo {
         this.id = id;
     }
 
+    @Override
     public String getLevel() {
         return level;
     }
 
+    @Override
     public void setLevel(String level) {
         this.level = level;
     }
 
+    @Override
     public String getLocation() {
         return location;
     }
 
+    @Override
     public void setLocation(String location) {
         this.location = location;
     }
 
+    @Override
     public boolean isStdOutLogging() {
         return stdOutLogging;
     }
 
+    @Override
     public void setStdOutLogging(boolean stdOutLogging) {
         this.stdOutLogging = stdOutLogging;
     }

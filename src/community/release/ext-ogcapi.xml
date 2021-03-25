@@ -11,6 +11,9 @@
       <includes>	
         <include>gs-ogcapi-*.jar</include>
         <include>gt-jdbc-h2-*.jar</include>
+        <!-- to parse JTS geometries embedded in larger JSON documents 
+             that are not necessarily GeoJSON collections or features -->
+        <include>gt-geojsondatastore-*.jar</include>
         <include>swagger-core-*.jar</include>
         <include>jackson-dataformat-*.jar</include>
         <include>jackson-databind-*.jar</include>
@@ -31,6 +34,13 @@
         <include>h2-*.jar</include>
         <include>geodb-*.jar</include>
         <include>hatbox-*.jar</include>
+        <!-- DGGS stuff -->
+        <include>*dggs*.jar</include>
+        <include>h3*.jar</include>
+        <include>jep*.jar</include>
+        <include>*clickhouse*.jar</include>
+        <include>*httpmime*.jar</include>
+        <include>*lz4*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

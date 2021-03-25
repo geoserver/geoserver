@@ -26,6 +26,7 @@ public class WorkspaceModel<T extends WorkspaceInfo> extends LoadableDetachableM
         this.resourceFilePanel = resourceFilePanel;
     }
 
+    @Override
     public void setObject(T object) {
         super.setObject(object);
         if (object != null) {

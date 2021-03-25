@@ -31,6 +31,12 @@ With direct integration, tile caching is enabled for all standard WMS requests t
 
 This setting is disabled by default. When enabling this option, it is a good idea to also turn on :ref:`gwc_webadmin_diskquotas` as well, to prevent unbounded growth of the stored tiles.
 
+Explicitly require TILED Parameter
+``````````````````````````````````
+When this parameter is checked direct WMS integration requires that the ``tiled=true`` parameter be set in all requests that will be cached. If this parameter is unchecked all incoming requests will be considered for caching, the request must still conform to all required parameters.
+
+
+
 Enable WMS-C Service
 ~~~~~~~~~~~~~~~~~~~~
 

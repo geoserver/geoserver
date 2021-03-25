@@ -275,7 +275,8 @@ public class WFS extends XSD {
         return schemaBuilder;
     }
 
-    protected void addDependencies(Set dependencies) {
+    @Override
+    protected void addDependencies(Set<XSD> dependencies) {
         super.addDependencies(dependencies);
 
         dependencies.add(OGC.getInstance());
@@ -284,11 +285,13 @@ public class WFS extends XSD {
     }
 
     /** Returns 'http://www.opengis.net/wfs' */
+    @Override
     public String getNamespaceURI() {
         return NAMESPACE;
     }
 
     /** Returns the location of 'wfs.xsd' */
+    @Override
     public String getSchemaLocation() {
         return org.geotools.wfs.v1_1.WFS.class.getResource("wfs.xsd").toString();
     }

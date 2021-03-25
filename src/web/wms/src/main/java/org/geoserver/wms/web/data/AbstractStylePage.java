@@ -14,7 +14,6 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
@@ -173,8 +172,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         // Try getting the first layer associated with this style
         if (style != null) {
             layers = catalog.getLayers(style);
-            if (layers.size() > 0) {
-                layerModel = new Model<LayerInfo>(layers.get(0));
+            if (!layers.isEmpty()) {
+                layerModel = new Model<>(layers.get(0));
                 return;
             }
         }
@@ -188,8 +187,8 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         catalog.getResourcesByStore(defaultStore, ResourceInfo.class);
                 for (ResourceInfo resource : resources) {
                     layers = catalog.getLayers(resource);
-                    if (layers.size() > 0) {
-                        layerModel = new Model<LayerInfo>(layers.get(0));
+                    if (!layers.isEmpty()) {
+                        layerModel = new Model<>(layers.get(0));
                         return;
                     }
                 }
@@ -198,27 +197,26 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         // Try getting the first layer returned by the catalog
         layers = catalog.getLayers();
-        if (layers.size() > 0) {
-            layerModel = new Model<LayerInfo>(layers.get(0));
+        if (!layers.isEmpty()) {
+            layerModel = new Model<>(layers.get(0));
             return;
         }
 
         // If none of these succeeded, return an empty model
-        layerModel = new Model<LayerInfo>(new LayerInfoImpl());
+        layerModel = new Model<>(new LayerInfoImpl());
     }
 
     protected void initUI(StyleInfo style) {
         /* init model */
         if (style == null) {
-            styleModel =
-                    new CompoundPropertyModel<StyleInfo>(getCatalog().getFactory().createStyle());
+            styleModel = new CompoundPropertyModel<>(getCatalog().getFactory().createStyle());
             styleModel.getObject().setName("");
             styleModel.getObject().setLegend(getCatalog().getFactory().createLegend());
         } else {
             if (style.getLegend() == null) {
                 style.setLegend(getCatalog().getFactory().createLegend());
             }
-            styleModel = new CompoundPropertyModel<StyleInfo>(style);
+            styleModel = new CompoundPropertyModel<>(style);
         }
 
         /* init main form */
@@ -237,13 +235,14 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         popup = new ModalWindow("popup");
         styleForm.add(popup);
         /* init tabs */
-        List<ITab> tabs = new ArrayList<ITab>();
+        List<ITab> tabs = new ArrayList<>();
 
         // Well known tabs
         PanelCachingTab dataTab =
                 new PanelCachingTab(
-                        new AbstractTab(new Model<String>("Data")) {
+                        new AbstractTab(new Model<>("Data")) {
 
+                            @Override
                             public Panel getPanel(String id) {
                                 return new StyleAdminPanel(id, AbstractStylePage.this);
                             }
@@ -251,9 +250,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         PanelCachingTab publishingTab =
                 new PanelCachingTab(
-                        new AbstractTab(new Model<String>("Publishing")) {
+                        new AbstractTab(new Model<>("Publishing")) {
                             private static final long serialVersionUID = 4184410057835108176L;
 
+                            @Override
                             public Panel getPanel(String id) {
                                 return new LayerAssociationPanel(id, AbstractStylePage.this);
                             };
@@ -261,8 +261,9 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         PanelCachingTab previewTab =
                 new PanelCachingTab(
-                        new AbstractTab(new Model<String>("Layer Preview")) {
+                        new AbstractTab(new Model<>("Layer Preview")) {
 
+                            @Override
                             public Panel getPanel(String id) {
                                 return new OpenLayersPreviewPanel(id, AbstractStylePage.this);
                             }
@@ -270,9 +271,10 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         PanelCachingTab attributeTab =
                 new PanelCachingTab(
-                        new AbstractTab(new Model<String>("Layer Attributes")) {
+                        new AbstractTab(new Model<>("Layer Attributes")) {
                             private static final long serialVersionUID = 4184410057835108176L;
 
+                            @Override
                             public Panel getPanel(String id) {
                                 try {
                                     return new LayerAttributePanel(id, AbstractStylePage.this);
@@ -297,13 +299,11 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         // sort the tabs based on order
         Collections.sort(
                 tabPanels,
-                new Comparator<StyleEditTabPanelInfo>() {
-                    public int compare(StyleEditTabPanelInfo o1, StyleEditTabPanelInfo o2) {
-                        Integer order1 = o1.getOrder() >= 0 ? o1.getOrder() : Integer.MAX_VALUE;
-                        Integer order2 = o2.getOrder() >= 0 ? o2.getOrder() : Integer.MAX_VALUE;
+                (o1, o2) -> {
+                    Integer order1 = o1.getOrder() >= 0 ? o1.getOrder() : Integer.MAX_VALUE;
+                    Integer order2 = o2.getOrder() >= 0 ? o2.getOrder() : Integer.MAX_VALUE;
 
-                        return order1.compareTo(order2);
-                    }
+                    return order1.compareTo(order2);
                 });
         // instantiate tab panels and add to tabs list
         for (StyleEditTabPanelInfo tabPanelInfo : tabPanels) {
@@ -313,8 +313,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                 if (titleKey != null) {
                     titleModel = new org.apache.wicket.model.ResourceModel(titleKey);
                 } else {
-                    titleModel =
-                            new Model<String>(tabPanelInfo.getComponentClass().getSimpleName());
+                    titleModel = new Model<>(tabPanelInfo.getComponentClass().getSimpleName());
                 }
 
                 final Class<StyleEditTabPanel> panelClass = tabPanelInfo.getComponentClass();
@@ -343,6 +342,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
 
         tabbedPanel =
                 new AjaxTabbedPanel<ITab>("context", tabs) {
+                    @Override
                     protected String getTabContainerCssClass() {
                         return "tab-row tab-row-compact";
                     }
@@ -402,7 +402,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                         new CodeMirrorEditor(
                                 "styleEditor",
                                 styleHandler().getCodeMirrorEditMode(),
-                                new PropertyModel<String>(this, "rawStyle")));
+                                new PropertyModel<>(this, "rawStyle")));
         // force the id otherwise this blasted thing won't be usable from other forms
         editor.setTextAreaMarkupId("editor");
         editor.setMarkupId("style-editor");
@@ -615,6 +615,23 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                     }
                 };
         add(cancelLink);
+
+        // add additional style components that may be used e.g. by extensions
+        List<StyleComponentInfo> compInfo =
+                getGeoServerApplication().getBeansOfType(StyleComponentInfo.class);
+        for (StyleComponentInfo comp : compInfo) {
+            try {
+                Class<?> component = comp.getComponentClass();
+                Component c =
+                        (Component)
+                                component
+                                        .getConstructor(String.class, AbstractStylePage.class)
+                                        .newInstance(comp.getId(), this);
+                styleForm.add(c);
+            } catch (Exception e) {
+                throw new WicketRuntimeException(e);
+            }
+        }
     }
 
     StyleHandler styleHandler() {
@@ -667,18 +684,16 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     List<Exception> validateSLD() {
         try {
             final String style = editor.getInput();
-            ByteArrayInputStream input = new ByteArrayInputStream(style.getBytes());
             List<Exception> validationErrors =
                     styleHandler()
                             .validate(
-                                    input,
+                                    new ByteArrayInputStream(style.getBytes()),
                                     null,
                                     getCatalog().getResourcePool().getEntityResolver());
-            input = new ByteArrayInputStream(style.getBytes());
             StyledLayerDescriptor sld =
                     styleHandler()
                             .parse(
-                                    input,
+                                    new ByteArrayInputStream(style.getBytes()),
                                     null,
                                     null,
                                     getCatalog().getResourcePool().getEntityResolver());
@@ -731,6 +746,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         try {
             Styles.handler("css");
         } catch (Exception e) {
+            LOGGER.finest(e.getLocalizedMessage()); // fool spotbugs?
             return;
         }
 

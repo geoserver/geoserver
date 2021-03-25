@@ -7,7 +7,6 @@ package org.geoserver.web.demo;
 
 import static org.geoserver.catalog.Predicates.sortBy;
 
-import com.google.common.base.Function;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
@@ -64,8 +63,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         fullSizeCaller = new FullSizeCallable();
     }
 
-    public static final Property<PreviewLayer> TYPE =
-            new BeanProperty<PreviewLayer>("type", "type");
+    public static final Property<PreviewLayer> TYPE = new BeanProperty<>("type", "type");
 
     public static final AbstractProperty<PreviewLayer> NAME =
             new AbstractProperty<PreviewLayer>("name") {
@@ -81,20 +79,17 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
                 }
             };
 
-    public static final Property<PreviewLayer> TITLE =
-            new BeanProperty<PreviewLayer>("title", "title");
+    public static final Property<PreviewLayer> TITLE = new BeanProperty<>("title", "title");
 
     public static final Property<PreviewLayer> ABSTRACT =
-            new BeanProperty<PreviewLayer>("abstract", "abstract", false);
+            new BeanProperty<>("abstract", "abstract", false);
 
     public static final Property<PreviewLayer> KEYWORDS =
-            new BeanProperty<PreviewLayer>("keywords", "keywords", false);
+            new BeanProperty<>("keywords", "keywords", false);
 
-    public static final Property<PreviewLayer> COMMON =
-            new PropertyPlaceholder<PreviewLayer>("commonFormats");
+    public static final Property<PreviewLayer> COMMON = new PropertyPlaceholder<>("commonFormats");
 
-    public static final Property<PreviewLayer> ALL =
-            new PropertyPlaceholder<PreviewLayer>("allFormats");
+    public static final Property<PreviewLayer> ALL = new PropertyPlaceholder<>("allFormats");
 
     public static final List<Property<PreviewLayer>> PROPERTIES =
             Arrays.asList(TYPE, TITLE, NAME, ABSTRACT, KEYWORDS, COMMON, ALL);
@@ -151,17 +146,10 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
 
     @Override
     public Iterator<PreviewLayer> iterator(final long first, final long count) {
-        Iterator<PreviewLayer> iterator = filteredItems(first, count);
-        if (iterator instanceof CloseableIterator) {
+        try (CloseableIterator<PreviewLayer> iterator = filteredItems(first, count)) {
             // don't know how to force wicket to close the iterator, lets return
             // a copy. Shouldn't be much overhead as we're paging
-            try {
-                return Lists.newArrayList(iterator).iterator();
-            } finally {
-                CloseableIteratorAdapter.close(iterator);
-            }
-        } else {
-            return iterator;
+            return Lists.newArrayList(iterator).iterator();
         }
     }
 
@@ -170,7 +158,7 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
      * page
      */
     @SuppressWarnings("resource")
-    private Iterator<PreviewLayer> filteredItems(long first, long count) {
+    private CloseableIterator<PreviewLayer> filteredItems(long first, long count) {
         final Catalog catalog = getCatalog();
 
         // global sorting
@@ -194,17 +182,13 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
                 catalog.list(PublishedInfo.class, filter, (int) first, (int) count, sortOrder);
         return CloseableIteratorAdapter.transform(
                 pi,
-                new Function<PublishedInfo, PreviewLayer>() {
-
-                    @Override
-                    public PreviewLayer apply(PublishedInfo input) {
-                        if (input instanceof LayerInfo) {
-                            return new PreviewLayer((LayerInfo) input);
-                        } else if (input instanceof LayerGroupInfo) {
-                            return new PreviewLayer((LayerGroupInfo) input);
-                        }
-                        return null;
+                input -> {
+                    if (input instanceof LayerInfo) {
+                        return new PreviewLayer((LayerInfo) input);
+                    } else if (input instanceof LayerGroupInfo) {
+                        return new PreviewLayer((LayerGroupInfo) input);
                     }
+                    return null;
                 });
     }
 

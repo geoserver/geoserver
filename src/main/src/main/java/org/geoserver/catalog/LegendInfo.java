@@ -13,6 +13,7 @@ package org.geoserver.catalog;
 public interface LegendInfo extends Info {
 
     /** Identifier. */
+    @Override
     String getId();
 
     /**

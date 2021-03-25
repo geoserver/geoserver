@@ -76,18 +76,16 @@ public class GridSetsPage extends GeoServerSecuredPage {
             final boolean isInternal =
                     GWC.get().getGridSetBroker().getEmbeddedNames().contains(gridSetName);
 
-            SimpleBookmarkableLink link;
-
-            link =
+            SimpleBookmarkableLink link =
                     new SimpleBookmarkableLink(
                             id,
                             GridSetEditPage.class,
-                            new Model<String>(gridSetName),
+                            new Model<>(gridSetName),
                             AbstractGridSetPage.GRIDSET_NAME,
                             gridSetName);
 
             if (isInternal) {
-                link.add(new AttributeModifier("style", new Model<String>("font-style: italic;")));
+                link.add(new AttributeModifier("style", new Model<>("font-style: italic;")));
                 link.add(
                         new AttributeModifier(
                                 "title", new ResourceModel("nameLink.titleInternalGridSet")));
@@ -99,8 +97,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
 
         @Override
         protected Component actionLink(final String id, String gridSetName) {
-            SimpleBookmarkableLink link;
-            link =
+            SimpleBookmarkableLink link =
                     new SimpleBookmarkableLink(
                             id,
                             GridSetNewPage.class,
@@ -169,11 +166,11 @@ public class GridSetsPage extends GeoServerSecuredPage {
         public void onClick(AjaxRequestTarget target) {
             // see if the user selected anything
             List<GridSet> selection = gridsets.getSelection();
-            if (selection.size() == 0) {
+            if (selection.isEmpty()) {
                 return;
             }
 
-            final Set<String> selectedGridsetIds = new HashSet<String>();
+            final Set<String> selectedGridsetIds = new HashSet<>();
             for (GridSet gset : selection) {
                 selectedGridsetIds.add(gset.getName());
             }

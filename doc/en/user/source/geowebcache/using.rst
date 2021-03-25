@@ -17,7 +17,7 @@ Although this direct integration is disabled by default, it can be enabled by go
 When this feature is enabled, GeoServer WMS will cache and retrieve tiles from GeoWebCache (via a GetMap request) only if **all of the following criteria are followed**:
 
 * WMS Direct integration is enabled (you can set this on the :ref:`gwc_webadmin_defaults` page)
-* ``tiled=true`` is included in the request
+* ``tiled=true`` is included in the request (unless the ``Explicitly require TILED Parameter`` is unchecked. you can set this on the :ref:`gwc_webadmin_defaults` page)
 * The request only references a single layer
 * Caching is enabled for that layer
 * The image requested is of the same height and width as the size saved in the layer configuration

@@ -7,10 +7,10 @@ package org.geoserver.wfs.v2_0;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -55,12 +55,12 @@ public class GetFeatureTest extends WFS20TestSupport {
     protected void setUpInternal(SystemTestData data) throws Exception {
         data.addVectorLayer(
                 new QName(SystemTestData.SF_URI, "WithGMLProperties", SystemTestData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 org.geoserver.wfs.v1_1.GetFeatureTest.class,
                 getCatalog());
         data.addVectorLayer(
                 new QName(SystemTestData.SF_URI, "PrimitiveGeoFeatureId", SystemTestData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 TestData.class,
                 getCatalog());
     }
@@ -72,7 +72,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         fti.setSkipNumberMatched(true);
         this.getCatalog().save(fti);
 
-        assertEquals(true, fti.getSkipNumberMatched());
+        assertTrue(fti.getSkipNumberMatched());
 
         Document dom =
                 getAsDOM("wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
@@ -234,7 +234,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         assertGML32(doc);
 
         NodeList features = doc.getElementsByTagName("cdf:Fifteen");
-        assertFalse(features.getLength() == 0);
+        assertNotEquals(0, features.getLength());
 
         for (int i = 0; i < features.getLength(); i++) {
             Element feature = (Element) features.item(i);
@@ -390,7 +390,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         assertGML32(doc);
 
         NodeList features = doc.getElementsByTagName("cdf:Other");
-        assertFalse(features.getLength() == 0);
+        assertNotEquals(0, features.getLength());
 
         for (int i = 0; i < features.getLength(); i++) {
             Element feature = (Element) features.item(i);
@@ -454,7 +454,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         assertGML32(doc);
 
         NodeList features = doc.getElementsByTagName("cdf:Other");
-        assertFalse(features.getLength() == 0);
+        assertNotEquals(0, features.getLength());
 
         for (int i = 0; i < features.getLength(); i++) {
             Element feature = (Element) features.item(i);
@@ -936,9 +936,9 @@ public class GetFeatureTest extends WFS20TestSupport {
             Document doc = postAsDOM("wfs", xml);
             assertGML32(doc);
             NodeList aggregatedBoundList = doc.getElementsByTagName("wfs:boundedBy");
-            assertFalse(aggregatedBoundList.getLength() == 0);
+            assertNotEquals(0, aggregatedBoundList.getLength());
             NodeList features = doc.getElementsByTagName("cdf:Other");
-            assertFalse(features.getLength() == 0);
+            assertNotEquals(0, features.getLength());
 
             for (int i = 0; i < features.getLength(); i++) {
                 Element feature = (Element) features.item(i);
@@ -982,9 +982,9 @@ public class GetFeatureTest extends WFS20TestSupport {
             Document doc = postAsDOM("wfs", xml);
             assertGML32(doc);
             NodeList aggregatedBoundList = doc.getElementsByTagName("wfs:boundedBy");
-            assertTrue(aggregatedBoundList.getLength() == 0);
+            assertEquals(0, aggregatedBoundList.getLength());
             NodeList features = doc.getElementsByTagName("cdf:Other");
-            assertFalse(features.getLength() == 0);
+            assertNotEquals(0, features.getLength());
 
             for (int i = 0; i < features.getLength(); i++) {
                 Element feature = (Element) features.item(i);
@@ -1006,7 +1006,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         getTestData()
                 .addVectorLayer(
                         new QName(SystemTestData.SF_URI, "new", SystemTestData.SF_PREFIX),
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         org.geoserver.wfs.v1_1.GetFeatureTest.class,
                         getCatalog());
         // reloadCatalogAndConfiguration();
@@ -1378,16 +1378,6 @@ public class GetFeatureTest extends WFS20TestSupport {
                 "count(wfs:FeatureCollection/wfs:member[position() = 2]/wfs:FeatureCollection//cdf:Seven)",
                 dom);
 
-        String xml =
-                "<wfs:GetFeature "
-                        + "service='WFS' "
-                        + "version='2.0.0' "
-                        + "xmlns:cdf='http://www.opengis.net/cite/data' "
-                        + "xmlns:wfs='http://www.opengis.net/wfs/2.0' "
-                        + "> "
-                        + "<wfs:Query typeNames='cdf:Fifteen'/> "
-                        + "<wfs:Query typeNames='cdf:Seven'/> "
-                        + "</wfs:GetFeature>";
         dom =
                 getAsDOM(
                         "wfs?version=2.0.0&service=wfs&request=GetFeature&typename=cdf:Fifteen,cdf:Seven");

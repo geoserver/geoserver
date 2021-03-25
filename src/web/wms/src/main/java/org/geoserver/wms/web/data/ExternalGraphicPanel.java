@@ -10,12 +10,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
@@ -34,7 +35,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.io.IOUtils;
 import org.apache.wicket.util.string.Strings;
-import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.RangeValidator;
@@ -52,13 +52,16 @@ import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.util.logging.Logging;
 
 /** Allows setting the data for using an ExternalImage */
 @SuppressWarnings("serial")
 public class ExternalGraphicPanel extends Panel {
     private static final long serialVersionUID = 5098470683723890874L;
 
-    private static final String[] EXTENSIONS = new String[] {"png", "gif", "jpeg", "jpg"};
+    static final Logger LOGGER = Logging.getLogger(ExternalGraphicPanel.class);
+
+    private static final String[] EXTENSIONS = {"png", "gif", "jpeg", "jpg"};
 
     private TextField<String> onlineResource;
     private TextField<String> format;
@@ -72,7 +75,7 @@ public class ExternalGraphicPanel extends Panel {
     private AjaxButton show;
     private AjaxButton hide;
 
-    private Model<String> showhideStyleModel = new Model<String>("");
+    private Model<String> showhideStyleModel = new Model<>("");
 
     public ExternalGraphicPanel(
             String id,
@@ -90,67 +93,59 @@ public class ExternalGraphicPanel extends Panel {
         table.setOutputMarkupId(true);
 
         IModel<String> bind = styleModel.bind("legend.onlineResource");
-        onlineResource = new TextField<String>("onlineResource", bind);
+        onlineResource = new TextField<>("onlineResource", bind);
         onlineResource.add(
-                new IValidator<String>() {
-
-                    @Override
-                    public void validate(IValidatable<String> input) {
-                        String value = input.getValue();
-                        int last = value == null ? -1 : value.lastIndexOf('.');
-                        if (last == -1
-                                || !Arrays.asList(EXTENSIONS)
-                                        .contains(value.substring(last + 1).toLowerCase())) {
-                            ValidationError error = new ValidationError();
-                            error.setMessage("Not an image");
-                            error.addKey("nonImage");
-                            input.error(error);
-                            return;
-                        }
-                        URI uri = null;
-                        try {
-                            uri = new URI(value);
-                        } catch (URISyntaxException e1) {
-                            // Unable to check if absolute
-                        }
-                        if (uri != null && uri.isAbsolute() && isUrl(value)) {
+                (IValidator<String>)
+                        input -> {
+                            String value = input.getValue();
+                            int last = value == null ? -1 : value.lastIndexOf('.');
+                            if (last == -1
+                                    || !Arrays.asList(EXTENSIONS)
+                                            .contains(value.substring(last + 1).toLowerCase())) {
+                                ValidationError error = new ValidationError();
+                                error.setMessage("Not an image");
+                                error.addKey("nonImage");
+                                input.error(error);
+                                return;
+                            }
+                            URI uri = null;
                             try {
-                                URL url = uri.toURL();
-                                URLConnection conn = url.openConnection();
-                                if ("text/html".equals(conn.getContentType())) {
+                                uri = new URI(value);
+                            } catch (URISyntaxException e1) {
+                                // Unable to check if absolute
+                            }
+                            if (uri != null && uri.isAbsolute() && isUrl(value)) {
+                                try {
+                                    URL url = uri.toURL();
+                                    URLConnection conn = url.openConnection();
+                                    if ("text/html".equals(conn.getContentType())) {
+                                        ValidationError error = new ValidationError();
+                                        error.setMessage("Unable to access image");
+                                        error.addKey("imageUnavailable");
+                                        input.error(error);
+                                        return; // error message back!
+                                    }
+                                } catch (IOException e) {
                                     ValidationError error = new ValidationError();
                                     error.setMessage("Unable to access image");
                                     error.addKey("imageUnavailable");
                                     input.error(error);
-                                    return; // error message back!
                                 }
-                            } catch (MalformedURLException e) {
-                                ValidationError error = new ValidationError();
-                                error.setMessage("Unable to access image");
-                                error.addKey("imageUnavailable");
-                                input.error(error);
-                            } catch (IOException e) {
-                                ValidationError error = new ValidationError();
-                                error.setMessage("Unable to access image");
-                                error.addKey("imageUnavailable");
-                                input.error(error);
-                            }
-                            return; // no further checks possible
-                        } else {
-                            try {
+                                return; // no further checks possible
+                            } else {
+                                try {
 
-                                WorkspaceInfo wsInfo = styleModel.getObject().getWorkspace();
-                                getIconFromStyleDirectory(wsInfo, value);
-                            } catch (Exception e) {
-                                ValidationError error = new ValidationError();
-                                error.setMessage(
-                                        "File not found in styles directory or given path is invalid");
-                                error.addKey("imageNotFound");
-                                input.error(error);
+                                    WorkspaceInfo wsInfo = styleModel.getObject().getWorkspace();
+                                    getIconFromStyleDirectory(wsInfo, value);
+                                } catch (Exception e) {
+                                    ValidationError error = new ValidationError();
+                                    error.setMessage(
+                                            "File not found in styles directory or given path is invalid");
+                                    error.addKey("imageNotFound");
+                                    input.error(error);
+                                }
                             }
-                        }
-                    }
-                });
+                        });
         onlineResource.setOutputMarkupId(true);
         table.add(onlineResource);
 
@@ -269,7 +264,7 @@ public class ExternalGraphicPanel extends Panel {
                                 width.setModelValue(new String[] {"" + image.getWidth()});
                                 height.setModelValue(new String[] {"" + image.getHeight()});
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                LOGGER.log(Level.WARNING, "", e);
                             }
                             target.add(format);
                             target.add(width);
@@ -280,17 +275,17 @@ public class ExternalGraphicPanel extends Panel {
 
         table.add(autoFill);
 
-        format = new TextField<String>("format", styleModel.bind("legend.format"));
+        format = new TextField<>("format", styleModel.bind("legend.format"));
         format.setOutputMarkupId(true);
         table.add(format);
 
-        width = new TextField<Integer>("width", styleModel.bind("legend.width"), Integer.class);
+        width = new TextField<>("width", styleModel.bind("legend.width"), Integer.class);
         width.add(RangeValidator.minimum(0));
         width.setRequired(true);
         width.setOutputMarkupId(true);
         table.add(width);
 
-        height = new TextField<Integer>("height", styleModel.bind("legend.height"), Integer.class);
+        height = new TextField<>("height", styleModel.bind("legend.height"), Integer.class);
         height.add(RangeValidator.minimum(0));
         height.setRequired(true);
         height.setOutputMarkupId(true);
@@ -410,7 +405,7 @@ public class ExternalGraphicPanel extends Panel {
             } catch (FileNotFoundException notFound) {
                 form.error("Unable to access " + url);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
                 form.error("Recommend use of styles directory at " + e);
             }
         }

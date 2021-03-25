@@ -15,6 +15,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public abstract class SecureObjectsTest {
 
     @BeforeClass
+    @SuppressWarnings("PMD.CloseResource") // the app context lives on until end of test
     public static void initAppContext() {
         // setup extensions so that we can do extension point lookups
         ApplicationContext ac =

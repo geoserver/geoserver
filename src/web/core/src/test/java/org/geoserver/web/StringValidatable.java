@@ -13,29 +13,33 @@ import org.apache.wicket.validation.IValidationError;
 
 /** Helper class to test validators that need to validate a String object */
 public class StringValidatable implements IValidatable<String> {
-    List<IValidationError> errors = new ArrayList<IValidationError>();
+    List<IValidationError> errors = new ArrayList<>();
     String value;
 
     public StringValidatable(String value) {
         this.value = value;
     }
 
+    @Override
     public void error(IValidationError error) {
         errors.add(error);
     }
 
+    @Override
     public String getValue() {
         return value;
     }
 
+    @Override
     public boolean isValid() {
-        return errors.size() == 0;
+        return errors.isEmpty();
     }
 
     public List<IValidationError> getErrors() {
         return errors;
     }
 
+    @Override
     public IModel<String> getModel() {
         return null;
     }

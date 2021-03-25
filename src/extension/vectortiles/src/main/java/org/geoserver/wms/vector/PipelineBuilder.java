@@ -7,9 +7,11 @@ package org.geoserver.wms.vector;
 import static org.geotools.renderer.lite.VectorMapRenderUtils.buildTransform;
 
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 import org.geotools.data.util.ScreenMap;
 import org.geotools.geometry.jts.Decimator;
@@ -21,6 +23,7 @@ import org.geotools.referencing.operation.transform.ProjectiveTransform;
 import org.geotools.renderer.crs.ProjectionHandler;
 import org.geotools.renderer.crs.ProjectionHandlerFinder;
 import org.geotools.renderer.lite.RendererUtilities;
+import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
@@ -63,6 +66,8 @@ public class PipelineBuilder {
         public CoordinateReferenceSystem sourceCrs; // data's CRS
 
         public AffineTransform worldToScreen;
+
+        public double sourceCRSSimplificationDistance;
 
         public double targetCRSSimplificationDistance;
 
@@ -119,6 +124,7 @@ public class PipelineBuilder {
         context.paintArea = paintArea;
         context.sourceCrs = sourceCrs;
         context.worldToScreen = RendererUtilities.worldToScreenTransform(mapArea, paintArea);
+
         context.queryBuffer = queryBuffer;
 
         final boolean wrap = false;
@@ -133,12 +139,12 @@ public class PipelineBuilder {
         double[] spans_sourceCRS;
         double[] spans_targetCRS;
         try {
-            MathTransform screenToWorld = context.sourceToScreen.inverse();
 
             // 0.8px is used to make sure the generalization isn't too much (doesn't make visible
             // changes)
             spans_sourceCRS =
-                    Decimator.computeGeneralizationDistances(screenToWorld, context.paintArea, 0.8);
+                    Decimator.computeGeneralizationDistances(
+                            context.sourceToScreen.inverse(), context.paintArea, 0.8);
 
             spans_targetCRS =
                     Decimator.computeGeneralizationDistances(
@@ -153,6 +159,10 @@ public class PipelineBuilder {
         }
 
         context.screenSimplificationDistance = PIXEL_BASE_SAMPLE_SIZE / overSampleFactor;
+
+        // use min so generalize "less" (if pixel is different size in X and Y)
+        context.sourceCRSSimplificationDistance = Math.min(spans_sourceCRS[0], spans_sourceCRS[1]);
+
         // use min so generalize "less" (if pixel is different size in X and Y)
         context.targetCRSSimplificationDistance =
                 Math.min(spans_targetCRS[0], spans_targetCRS[1]) / overSampleFactor;
@@ -268,8 +278,24 @@ public class PipelineBuilder {
      *
      * @param isTransformToScreenCoordinates Use screen coordinate space simplification tolerance
      */
-    public PipelineBuilder simplify(boolean isTransformToScreenCoordinates) {
+    public PipelineBuilder simplify(
+            boolean isTransformToScreenCoordinates,
+            final Set<RenderingHints.Key> fsHints,
+            final Hints qHints) {
 
+        if (fsHints != null && qHints != null) {
+            // if possible we let the datastore do the generalizations
+
+            // check for distance support
+            if (fsHints.contains(Hints.GEOMETRY_DISTANCE)) {
+
+                // the datastore supports distance based simplification,
+                // let's add the Hint to the query
+                qHints.put(Hints.GEOMETRY_DISTANCE, context.sourceCRSSimplificationDistance);
+
+                // do not return: we can still perform some in memory generalization ...
+            }
+        }
         double pixelDistance = context.screenSimplificationDistance;
         double simplificationDistance = context.targetCRSSimplificationDistance;
 
@@ -426,7 +452,7 @@ public class PipelineBuilder {
          * difference.
          */
         private Geometry collectionClip(GeometryCollection geom) throws Exception {
-            ArrayList<Geometry> result = new ArrayList<Geometry>();
+            ArrayList<Geometry> result = new ArrayList<>();
             for (int t = 0; t < geom.getNumGeometries(); t++) {
                 Geometry g = geom.getGeometryN(0);
                 Geometry clipped = _run(g); // gets the non-degenerative of the result
@@ -434,11 +460,11 @@ public class PipelineBuilder {
                     result.add(clipped);
                 }
             }
-            if (result.size() == 0) {
+            if (result.isEmpty()) {
                 return null;
             }
             return new GeometryCollection(
-                    (Geometry[]) result.toArray(new Geometry[result.size()]), geom.getFactory());
+                    result.toArray(new Geometry[result.size()]), geom.getFactory());
         }
 
         /*
@@ -449,12 +475,14 @@ public class PipelineBuilder {
             if ((result instanceof Polygon) || (result instanceof MultiPolygon)) {
                 return result;
             }
-            List polys = org.locationtech.jts.geom.util.PolygonExtracter.getPolygons(result);
-            if (polys.size() == 0) {
+            @SuppressWarnings("unchecked")
+            List<Polygon> polys =
+                    org.locationtech.jts.geom.util.PolygonExtracter.getPolygons(result);
+            if (polys.isEmpty()) {
                 return null;
             }
             if (polys.size() == 1) {
-                return (Polygon) polys.get(0);
+                return polys.get(0);
             }
             // this could, theoretically, produce invalid MULTIPOLYGONS since polygons cannot share
             // edges. Taking
@@ -462,39 +490,39 @@ public class PipelineBuilder {
             // systems will not correctly
             // deal with a GeometryCollection with multiple polygons in them.
             // The best strategy is to just create a (potentially) invalid multipolygon.
-            return new MultiPolygon(
-                    (Polygon[]) polys.toArray(new Polygon[polys.size()]), result.getFactory());
+            return new MultiPolygon(polys.toArray(new Polygon[polys.size()]), result.getFactory());
         }
 
         private Geometry onlyLines(Geometry result) {
             if ((result instanceof LineString) || (result instanceof MultiLineString)) {
                 return result;
             }
-            List lines = org.locationtech.jts.geom.util.LineStringExtracter.getLines(result);
-            if (lines.size() == 0) {
+            @SuppressWarnings("unchecked")
+            List<LineString> lines =
+                    org.locationtech.jts.geom.util.LineStringExtracter.getLines(result);
+            if (lines.isEmpty()) {
                 return null;
             }
             if (lines.size() == 1) {
-                return (LineString) lines.get(0);
+                return lines.get(0);
             }
             return new MultiLineString(
-                    (LineString[]) lines.toArray(new LineString[lines.size()]),
-                    result.getFactory());
+                    lines.toArray(new LineString[lines.size()]), result.getFactory());
         }
 
         private Geometry onlyPoints(Geometry result) {
             if ((result instanceof Point) || (result instanceof MultiPoint)) {
                 return result;
             }
-            List pts = org.locationtech.jts.geom.util.PointExtracter.getPoints(result);
-            if (pts.size() == 0) {
+            @SuppressWarnings("unchecked")
+            List<Point> pts = org.locationtech.jts.geom.util.PointExtracter.getPoints(result);
+            if (pts.isEmpty()) {
                 return null;
             }
             if (pts.size() == 1) {
-                return (Point) pts.get(0);
+                return pts.get(0);
             }
-            return new MultiPoint(
-                    (Point[]) pts.toArray(new Point[pts.size()]), result.getFactory());
+            return new MultiPoint(pts.toArray(new Point[pts.size()]), result.getFactory());
         }
     }
 }

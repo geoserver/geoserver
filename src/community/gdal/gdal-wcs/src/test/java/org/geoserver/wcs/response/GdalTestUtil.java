@@ -81,7 +81,6 @@ public class GdalTestUtil {
                 IS_GDAL_AVAILABLE = gdal.isAvailable();
             } catch (Exception e) {
                 IS_GDAL_AVAILABLE = false;
-                e.printStackTrace();
                 LOGGER.log(
                         Level.SEVERE,
                         "Disabling gdal_translate output format tests, as gdal_translate lookup failed",

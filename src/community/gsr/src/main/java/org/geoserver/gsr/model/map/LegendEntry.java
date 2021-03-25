@@ -21,13 +21,11 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import org.geoserver.gsr.model.symbol.PictureMarkerSymbol;
 import org.geoserver.gsr.model.symbol.SimpleFillSymbol;
 import org.geoserver.gsr.model.symbol.SimpleLineSymbol;
 import org.geoserver.gsr.model.symbol.SimpleMarkerSymbol;
 import org.geoserver.gsr.model.symbol.SimpleMarkerSymbolEnum;
 import org.geoserver.gsr.model.symbol.Symbol;
-import org.geoserver.gsr.model.symbol.TextSymbol;
 import org.geotools.data.Base64;
 
 class LegendEntry {
@@ -59,9 +57,7 @@ class LegendEntry {
                 canvas.setColor(strokeColor);
                 canvas.setStroke(stroke);
                 canvas.draw(shape);
-            } else if (symbol instanceof PictureMarkerSymbol) {
                 // TODO: Implement image preview
-            } else if (symbol instanceof TextSymbol) {
                 // TODO: Implement font preview
             } else if (symbol instanceof SimpleFillSymbol) {
                 SimpleFillSymbol simpleFillSymbol = (SimpleFillSymbol) symbol;

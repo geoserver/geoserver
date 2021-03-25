@@ -15,12 +15,10 @@ import org.geoserver.catalog.CoverageInfo;
  *
  * @author Andrea Aime - TOPP
  */
-public class CoverageInfoLabelComparator implements Comparator {
+public class CoverageInfoLabelComparator implements Comparator<CoverageInfo> {
 
-    public int compare(Object o1, Object o2) {
-        CoverageInfo c1 = (CoverageInfo) o1;
-        CoverageInfo c2 = (CoverageInfo) o2;
-
+    @Override
+    public int compare(CoverageInfo c1, CoverageInfo c2) {
         // this will take care of null values as well
         return new CompareToBuilder().append(c1.getTitle(), c2.getTitle()).toComparison();
     }

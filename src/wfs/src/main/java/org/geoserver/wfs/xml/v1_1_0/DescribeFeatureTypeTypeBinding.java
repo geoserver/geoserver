@@ -92,10 +92,12 @@ public class DescribeFeatureTypeTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.DESCRIBEFEATURETYPETYPE;
     }
 
+    @Override
     public int getExecutionMode() {
         return BEFORE;
     }
@@ -107,7 +109,8 @@ public class DescribeFeatureTypeTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<DescribeFeatureTypeType> getType() {
         return DescribeFeatureTypeType.class;
     }
 
@@ -118,6 +121,8 @@ public class DescribeFeatureTypeTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
+    @SuppressWarnings("unchecked") // EMF model without generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         DescribeFeatureTypeType describeFeatureType = wfsfactory.createDescribeFeatureTypeType();
 

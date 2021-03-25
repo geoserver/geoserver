@@ -11,7 +11,13 @@ import java.util.function.BiFunction;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.data.test.MockData;
-import org.geoserver.wfs.request.*;
+import org.geoserver.wfs.request.Delete;
+import org.geoserver.wfs.request.Insert;
+import org.geoserver.wfs.request.Property;
+import org.geoserver.wfs.request.TransactionElement;
+import org.geoserver.wfs.request.TransactionRequest;
+import org.geoserver.wfs.request.TransactionResponse;
+import org.geoserver.wfs.request.Update;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
@@ -46,7 +52,7 @@ public class TransactionCallbackTester implements TransactionCallback {
             } else if (element instanceof Delete) {
                 try {
                     // mass delete more than requested
-                    ((Delete) element).setFilter(CQL.toFilter("FID > 102"));
+                    element.setFilter(CQL.toFilter("FID > 102"));
                 } catch (CQLException e) {
                     throw new WFSException(e);
                 }

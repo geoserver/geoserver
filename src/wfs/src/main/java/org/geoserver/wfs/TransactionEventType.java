@@ -11,7 +11,7 @@ import org.opengis.util.CodeList;
 
 public class TransactionEventType extends CodeList<TransactionEventType> {
     private static final long serialVersionUID = -4218786755116808448L;
-    private static final List VALUES = new ArrayList(5);
+    private static final List<TransactionEventType> VALUES = new ArrayList<>(5);
 
     /**
      * Notification of inserted features, before insertion occurs (collection contains newly
@@ -50,9 +50,10 @@ public class TransactionEventType extends CodeList<TransactionEventType> {
         super(name, VALUES);
     }
 
+    @Override
     public TransactionEventType[] family() {
         synchronized (VALUES) {
-            return (TransactionEventType[]) VALUES.toArray(new TransactionEventType[VALUES.size()]);
+            return VALUES.toArray(new TransactionEventType[VALUES.size()]);
         }
     }
 }

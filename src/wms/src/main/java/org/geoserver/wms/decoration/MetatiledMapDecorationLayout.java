@@ -36,6 +36,7 @@ public class MetatiledMapDecorationLayout extends MapDecorationLayout {
      * @param mapContent the WMSMapContext for the current map request
      * @see {Block#paint}
      */
+    @Override
     public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) {
         int width = paintArea.width / tileSize;
         int height = paintArea.height / tileSize;

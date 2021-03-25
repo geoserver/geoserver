@@ -15,6 +15,7 @@ import org.geoserver.ows.OWS10ServiceExceptionHandler;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.json.JSONType;
@@ -30,7 +31,7 @@ public class WfsExceptionHandler extends OWS10ServiceExceptionHandler {
     GeoServer gs;
 
     /** @param services The wfs service descriptors. */
-    public WfsExceptionHandler(List services, GeoServer gs) {
+    public WfsExceptionHandler(List<Service> services, GeoServer gs) {
         super(services);
         this.gs = gs;
     }
@@ -40,6 +41,7 @@ public class WfsExceptionHandler extends OWS10ServiceExceptionHandler {
     }
 
     /** Encodes a ogc:ServiceExceptionReport to output. */
+    @Override
     public void handleServiceException(ServiceException exception, Request request) {
 
         boolean verbose = gs.getSettings().isVerboseExceptions();

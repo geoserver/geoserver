@@ -3,7 +3,7 @@
 Security
 ========
 
-This section provides an overview of the GeoServer security subsystem api.
+This section provides an overview of the GeoServer security subsystem API.
 
 .. _security_manager:
 
@@ -22,7 +22,7 @@ the duties of this class include:
 * Access to various singleton classes such as ``ResourceAccessManager``,
   ``KeyStoreProvider``, ``AuthenticationCache``,
   ``GeoServerSecurityFilterChain``, etc..
-* Implement the spring security AuthentictionProviderManager interface
+* Implement the spring security AuthenticationProviderManager interface
   providing the list of active :ref:`auth_provider` instances.
 
 Security Services
@@ -34,7 +34,7 @@ Security Services
 * Role services
 * Authentication filters
 * Authentication providers
-* Master password providers
+* Keystore password providers
 
 The interface provides some common methods for all security services,
 including::
@@ -46,7 +46,7 @@ service. The configuration object is a simple java bean that contains the
 service configuration. These objects are persisted via xstream in the GeoServer
 data directory. See :ref:`service_config` for more details.
 
-Security services are created via methods provided by the securty manager. For
+Security services are created via methods provided by the security manager. For
 instance to create a new xml user group service::
 
    GeoServerSecurityManager mgr = ...;
@@ -170,7 +170,7 @@ doing authentication.
 
 Security filters are maintained in the :ref:`filter chain <auth_filter_chain>` which maintains
 the mapping of the filters to be applied to a specific type of request. For example
-the filters applied to a web ui request are different than those applied to an OGC
+the filters applied to a web UI request are different than those applied to an OGC
 or REST request.
 
 .. figure:: images/filter_chain.png
@@ -179,14 +179,14 @@ or REST request.
 Password Policy
 ^^^^^^^^^^^^^^^
 
-``PasswordPolicy`` is the interface for validating user passwords,applying constraints such
+``PasswordPolicy`` is the interface for validating user passwords, applying constraints such
 as password length, character mix, etc...
 
-MasterPasswordProvider
+RootPasswordProvider
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Security service that provides a method for obtaining the GeoServer master password.
-The master password serves two purposes.
+Security service that provides a method for obtaining the GeoServer keystore password.
+The keystore password serves two purposes.
 
 #. Is the password for the GeoServer "root" account
 #. Protects the GeoServer keystore that is used to store encryption keys
@@ -366,7 +366,7 @@ and is responsible for creating the actual filter chain from the
 ``GeoServerSecurityFilterChain`` configuration object.
 
 
-Pluggable Login / Logout Endpoints
+Pluggable Login Endpoints
 ----------------------------------
 
 To enable a new Login button just add lines similar to the following configuration into the ``applicationContext.xml``::
@@ -389,9 +389,9 @@ The properties of ``LoginFormInfo`` are:
 
 #. **id**; a unique ID to be provided to the extension.
 
-#. **titleKey**; key of the ``GeoServerApplication.properties`` message with internazionalization. If **null** or not present, the Login button won't have any text.
+#. **titleKey**; key of the ``GeoServerApplication.properties`` message with internationalization. If **null** or not present, the Login button won't have any text.
 
-#. **descriptionKey**; optional image alt message. This value represents the key of the ``GeoServerApplication.properties`` message with internazionalization.
+#. **descriptionKey**; optional image alt message. This value represents the key of the ``GeoServerApplication.properties`` message with internationalization.
 
 #. **componentClass**; base class which will provide base package path for resources. Wicket will look for resources relative to the *componentClass* package.
 
@@ -412,51 +412,4 @@ Example of **include** HTML can be::
     <label class="shown" for="_spring_security_remember_me"><wicket:message key="rememberMe">Remember me</wicket:message></label>
     <input id="_spring_security_remember_me" type="checkbox" name="_spring_security_remember_me" />
     
-Logout Pluggable Chains and Buttons
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Using a similar approach is possible to define and plug custom Logout Endpoints and Buttons.
-
-The configuration to use must be like the following one::
-
-	<!-- logout button -->
-	<bean id="geoserverFormLogoutButton" class="org.geoserver.web.LogoutFormInfo">
-		<property name="id" value="geoserverFormLogoutButton" />
-		<property name="titleKey" value="logout" />
-		<property name="descriptionKey" value="GeoServerBasePage.description" />
-		<property name="componentClass" value="org.geoserver.web.GeoServerBasePage" />
-		<property name="name" value="form" />
-		<property name="icon" value="img/icons/silk/door-out.png" />
-		<property name="logoutPath" value="j_spring_security_logout" />
-	</bean>
-
-The properties are similar to the Login buttons. Less in number but with the same meaning.
-
-The activation of a Logout Handler is not automatic though. You will need to sligthly modify the GeoServer Security configuration in order to activate the new Logout Filter Chain.
-
-Lets say that we want to enable a brand new Logout handler for Google ``j_spring_oauth2_google_logout``.
-
-First thing to do is to add the new paths to the ``webLogout`` Filter Chain
-
-.. figure:: images/web_logout.png
-   :align: center
-
-Add two new ANT patterns to the webLgout chain::
-
-    /j_spring_oauth2_google_logout,/j_spring_oauth2_google_logout/
-    
-Last step is to modify the configuration of the ``LogoutFilter`` by adding all the available ANT patterns to be catched by the Logout filter chain.
-
-#. Edit the file ``$GEOSERVER_DATA_DIR\security\filter\formLogout\config.xml``
-
-#. Update the ``formLogoutChain`` property accordingly::
-
-        <logoutFilter>
-          <id>52857278:13c7ffd66a8:-7ff3</id>
-          <name>formLogout</name>
-          <className>org.geoserver.security.filter.GeoServerLogoutFilter</className>
-          <redirectURL>/web/</redirectURL>
-          <formLogoutChain>/j_spring_security_logout,/j_spring_security_logout/,/j_spring_oauth2_google_logout,/j_spring_oauth2_google_logout/</formLogoutChain>
-        </logoutFilter>
-
-Save everything and reload GeoServer.

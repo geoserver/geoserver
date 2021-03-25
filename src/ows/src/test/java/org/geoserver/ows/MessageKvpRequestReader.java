@@ -10,6 +10,7 @@ public class MessageKvpRequestReader extends KvpRequestReader {
         super(Message.class);
     }
 
+    @Override
     public Object createRequest() {
         return new Message();
     }

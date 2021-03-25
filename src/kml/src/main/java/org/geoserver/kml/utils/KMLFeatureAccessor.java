@@ -54,8 +54,7 @@ public class KMLFeatureAccessor {
     static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.kml");
 
     /** Factory used to create filter objects */
-    private static FilterFactory filterFactory =
-            (FilterFactory) CommonFactoryFinder.getFilterFactory(null);
+    private static FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory(null);
 
     /**
      * Loads the feature collection based on the current styling and the scale denominator. If no
@@ -204,12 +203,11 @@ public class KMLFeatureAccessor {
 
         // Google earth likes to make requests that go beyond 180 when zoomed out
         // fix them
-        List<ReferencedEnvelope> envelopes = new ArrayList<ReferencedEnvelope>();
+        List<ReferencedEnvelope> envelopes = new ArrayList<>();
         if (KmlEncodingContext.WORLD_BOUNDS_WGS84.contains((Envelope) aoi)) {
             envelopes.add(aoi);
         } else {
-            Envelope intersection =
-                    KmlEncodingContext.WORLD_BOUNDS_WGS84.intersection((Envelope) aoi);
+            Envelope intersection = KmlEncodingContext.WORLD_BOUNDS_WGS84.intersection(aoi);
             if (intersection.getWidth() > 0) {
                 envelopes.add(new ReferencedEnvelope(intersection, DefaultGeographicCRS.WGS84));
             }
@@ -228,7 +226,7 @@ public class KMLFeatureAccessor {
             }
         }
 
-        List<ReferencedEnvelope> sourceEnvelopes = new ArrayList<ReferencedEnvelope>();
+        List<ReferencedEnvelope> sourceEnvelopes = new ArrayList<>();
         CoordinateReferenceSystem sourceCrs = schema.getCoordinateReferenceSystem();
         if ((sourceCrs != null)
                 && !CRS.equalsIgnoreMetadata(aoi.getCoordinateReferenceSystem(), sourceCrs)) {
@@ -249,7 +247,7 @@ public class KMLFeatureAccessor {
         }
 
         GeometryDescriptor gd = schema.getGeometryDescriptor();
-        if (sourceEnvelopes.size() == 0) {
+        if (sourceEnvelopes.isEmpty()) {
             return Filter.INCLUDE;
         } else if (sourceEnvelopes.size() == 1) {
             ReferencedEnvelope se = sourceEnvelopes.get(0);
@@ -262,7 +260,7 @@ public class KMLFeatureAccessor {
                     null);
         } else {
             // we have to OR the multiple source envelopes
-            List<Filter> filters = new ArrayList<Filter>();
+            List<Filter> filters = new ArrayList<>();
             for (ReferencedEnvelope se : sourceEnvelopes) {
                 filters.add(
                         filterFactory.bbox(

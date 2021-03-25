@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-oseo</artifactId>
-    <version>2.18-SNAPSHOT</version>
+    <version>2.20-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community</groupId>
@@ -19,7 +19,7 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-oseo-core</artifactId>
+      <artifactId>gs-oseo-service</artifactId>
       <version>${gs.version}</version>
     </dependency>
     <dependency>
@@ -59,6 +59,13 @@
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-oseo-core</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+      <version>${gs.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-oseo-service</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
       <version>${gs.version}</version>

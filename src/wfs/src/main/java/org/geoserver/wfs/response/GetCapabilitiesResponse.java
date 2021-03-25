@@ -7,7 +7,6 @@ package org.geoserver.wfs.response;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.List;
 import javax.xml.transform.TransformerException;
 import org.geoserver.ows.Response;
@@ -21,12 +20,14 @@ public class GetCapabilitiesResponse extends Response {
     }
 
     /** Makes sure this triggers only */
+    @Override
     public boolean canHandle(Operation operation) {
         // is this a wfs capabilities request?
         return "GetCapabilities".equalsIgnoreCase(operation.getId())
                 && operation.getService().getId().equals("wfs");
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) {
         GetCapabilitiesRequest request = GetCapabilitiesRequest.adapt(operation.getParameters()[0]);
 
@@ -34,8 +35,8 @@ public class GetCapabilitiesResponse extends Response {
             // look for an accepted format
             List formats = request.getAcceptFormats();
 
-            for (Iterator f = formats.iterator(); f.hasNext(); ) {
-                String format = (String) f.next();
+            for (Object o : formats) {
+                String format = (String) o;
 
                 if (format.endsWith("/xml")) {
                     return format;
@@ -47,6 +48,7 @@ public class GetCapabilitiesResponse extends Response {
         return "application/xml";
     }
 
+    @Override
     public void write(Object value, OutputStream output, Operation operation) throws IOException {
         TransformerBase tx = (TransformerBase) value;
 

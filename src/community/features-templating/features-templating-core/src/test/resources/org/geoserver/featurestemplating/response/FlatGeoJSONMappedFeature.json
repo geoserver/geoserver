@@ -1,0 +1,49 @@
+{
+  "$VendorOptions": "flat_output:true",
+  "type":"FeatureCollection",
+  "features":[
+    {
+      "$source":"gsml:MappedFeature"
+    },
+    {
+      "@id":"${@id}",
+      "geometry":"${gsml:shape}",
+      "properties":{
+        "name":"$${strConcat('FeatureName: ', xpath('gml:name'))}",
+        "gsml:GeologicUnit_description":"${gsml:specification/gsml:GeologicUnit/gml:description}",
+        "gsml:GeologicUnit_gsml:geologicUnitType":"urn:ogc:def:nil:OGC::unknown",
+        "gsml:GeologicUnit_gsml:composition":[
+            {
+              "$source":"gsml:specification/gsml:GeologicUnit/gsml:composition"
+            },
+            {
+              "gsml:compositionPart":[
+                {
+                  "$source":"gsml:CompositionPart"
+                },
+                {
+                  "gsml:role_value":"$${strConcat('FeatureName: ', xpath('gsml:role'))}",
+                  "gsml:role_@codeSpace":"urn:cgi:classifierScheme:Example:CompositionPartRole",
+                  "proportion":{
+                    "$source":"gsml:proportion",
+                    "@dataType":"CGI_ValueProperty",
+                    "CGI_TermValue_@dataType":"CGI_TermValue",
+                    "CGI_TermValue_value":"${gsml:CGI_TermValue}"
+                  },
+                  "lithology":[
+                    {
+                      "$source":"gsml:lithology"
+                    },
+                    {
+                      "name":"${gsml:ControlledConcept/gsml:name}" ,
+                      "vocabulary":"@href:urn:ogc:def:nil:OGC::missing"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+    }
+  ]
+}

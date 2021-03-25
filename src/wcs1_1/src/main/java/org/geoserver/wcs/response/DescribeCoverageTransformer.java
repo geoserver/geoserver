@@ -9,7 +9,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
     protected static final String XSI_URI = "http://www.w3.org/2001/XMLSchema-instance";
 
-    protected static final Map<String, String> METHOD_NAME_MAP = new HashMap<String, String>();
+    protected static final Map<String, String> METHOD_NAME_MAP = new HashMap<>();
 
     static {
         METHOD_NAME_MAP.put("nearest neighbor", "nearest");
@@ -82,6 +81,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
         setNamespaceDeclarationEnabled(false);
     }
 
+    @Override
     public Translator createTranslator(ContentHandler handler) {
         return new WCS111DescribeCoverageTranslator(handler);
     }
@@ -102,6 +102,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
          * @param o The Object to encode.
          * @throws IllegalArgumentException if the Object is not encodeable.
          */
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             // try {
             if (!(o instanceof DescribeCoverageType)) {
@@ -136,8 +137,8 @@ public class DescribeCoverageTransformer extends TransformerBase {
             attributes.addAttribute("", locationAtt, locationAtt, "", locationDef);
 
             start("wcs:CoverageDescriptions", attributes);
-            for (Iterator it = request.getIdentifier().iterator(); it.hasNext(); ) {
-                String coverageId = (String) it.next();
+            for (Object value : request.getIdentifier()) {
+                String coverageId = (String) value;
 
                 // check the coverage is known
                 LayerInfo layer = catalog.getLayerByName(coverageId);
@@ -217,8 +218,8 @@ public class DescribeCoverageTransformer extends TransformerBase {
             start("ows:Keywords");
 
             if (kwords != null) {
-                for (Iterator it = kwords.iterator(); it.hasNext(); ) {
-                    element("ows:Keyword", it.next().toString());
+                for (Object kword : kwords) {
+                    element("ows:Keyword", kword.toString());
                 }
             }
 
@@ -345,6 +346,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
          * Given a set of sample dimensions, this will return a valid range only if all sample
          * dimensions have one, otherwise null
          */
+        @SuppressWarnings("unchecked") // dimension range does not have a specific Number type
         protected NumberRange getCoverageRange(List<CoverageDimensionInfo> dimensions) {
             NumberRange range = null;
             for (CoverageDimensionInfo dimension : dimensions) {
@@ -361,7 +363,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
                 if (nulls == null) return;
                 if (nulls.size() == 1) {
                     element("wcs:NullValue", nulls.get(0).toString());
-                } else if (nulls.size() >= 1) {
+                } else if (!nulls.isEmpty()) {
                     // the new specification allows only for a list of values,
                     // Can we assume min and max are two integer numbers and
                     // make up a list out of them? For the moment, just fail
@@ -374,8 +376,7 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
         protected void handleInterpolationMethods(CoverageInfo ci) {
             start("wcs:InterpolationMethods");
-            for (Iterator it = ci.getInterpolationMethods().iterator(); it.hasNext(); ) {
-                String method = (String) it.next();
+            for (String method : ci.getInterpolationMethods()) {
                 String converted = METHOD_NAME_MAP.get(method);
                 if (converted != null) element("wcs:InterpolationMethod", converted);
             }
@@ -385,9 +386,8 @@ public class DescribeCoverageTransformer extends TransformerBase {
 
         protected void handleSupportedFormats(CoverageInfo ci) throws Exception {
             // gather all the formats for this coverage
-            Set<String> formats = new LinkedHashSet<String>();
-            for (Iterator it = ci.getSupportedFormats().iterator(); it.hasNext(); ) {
-                String format = (String) it.next();
+            Set<String> formats = new LinkedHashSet<>();
+            for (String format : ci.getSupportedFormats()) {
                 // wcs 1.1 requires mime types, not format names
                 try {
                     CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
@@ -405,12 +405,13 @@ public class DescribeCoverageTransformer extends TransformerBase {
             }
         }
 
+        @SuppressWarnings("unchecked") // EMF model without generics
         protected void handleSupportedCRSs(CoverageInfo ci) throws Exception {
             Set supportedCRSs = new LinkedHashSet();
             if (ci.getRequestSRS() != null) supportedCRSs.addAll(ci.getRequestSRS());
             if (ci.getResponseSRS() != null) supportedCRSs.addAll(ci.getResponseSRS());
-            for (Iterator it = supportedCRSs.iterator(); it.hasNext(); ) {
-                String crsName = (String) it.next();
+            for (Object crSs : supportedCRSs) {
+                String crsName = (String) crSs;
                 CoordinateReferenceSystem crs = CRS.decode(crsName);
                 element("wcs:SupportedCRS", urnIdentifier(crs));
                 element("wcs:SupportedCRS", crsName);

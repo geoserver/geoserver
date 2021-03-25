@@ -5,9 +5,12 @@
  */
 package org.geoserver.template;
 
+import static org.geoserver.template.TemplateUtils.FM_VERSION;
+
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.CollectionModel;
 import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateModel;
@@ -106,11 +109,13 @@ public class FeatureWrapper extends BeansWrapper {
     protected TemplateFeatureCollectionFactory templateFeatureCollectionFactory;
 
     public FeatureWrapper() {
+        super(FM_VERSION);
         setSimpleMapWrapper(true);
         this.templateFeatureCollectionFactory = copyTemplateFeatureCollectionFactory;
     }
 
     public FeatureWrapper(TemplateFeatureCollectionFactory templateFeatureCollectionFactory) {
+        super(FM_VERSION);
         setSimpleMapWrapper(true);
         this.templateFeatureCollectionFactory = templateFeatureCollectionFactory;
     }
@@ -197,11 +202,12 @@ public class FeatureWrapper extends BeansWrapper {
         return name.getNamespaceURI() == null ? "" : name.getNamespaceURI();
     }
 
+    @Override
     public TemplateModel wrap(Object object) throws TemplateModelException {
         // check for feature collection
         if (object instanceof FeatureCollection) {
             // create a model with just one variable called 'features'
-            SimpleHash map = new SimpleHash();
+            SimpleHash map = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
             map.put(
                     "features",
                     templateFeatureCollectionFactory.createTemplateFeatureCollection(
@@ -224,12 +230,10 @@ public class FeatureWrapper extends BeansWrapper {
     private SimpleHash buildType(ComplexType ft) {
         // create a variable "attributes" which his a list of all the
         // attributes, but at the same time, is a map keyed by name
-        Map<String, Object> attributeMap = new LinkedHashMap<String, Object>();
+        Map<String, Object> attributeMap = new LinkedHashMap<>();
         Collection<PropertyDescriptor> descriptors = ft.getDescriptors();
-        for (Iterator<PropertyDescriptor> it = descriptors.iterator(); it.hasNext(); ) {
-            PropertyDescriptor descr = it.next();
-
-            Map<String, Object> attribute = new HashMap<String, Object>();
+        for (PropertyDescriptor descr : descriptors) {
+            Map<String, Object> attribute = new HashMap<>();
             attribute.put("name", descr.getName().getLocalPart());
             attribute.put("namespace", getNamespace(descr.getName()));
             attribute.put("prefix", getPrefix(descr.getName()));
@@ -243,7 +247,7 @@ public class FeatureWrapper extends BeansWrapper {
 
         // build up the result, feature type is represented by its name an
         // attributes
-        SimpleHash map = new SimpleHash();
+        SimpleHash map = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
         map.put("attributes", new SequenceMapModel(attributeMap, this));
         map.put("name", ft.getName().getLocalPart());
         map.put("namespace", getNamespace(ft.getName()));
@@ -254,7 +258,7 @@ public class FeatureWrapper extends BeansWrapper {
 
     private SimpleHash buildComplex(ComplexAttribute att) {
         // create the model
-        SimpleHash map = new SimpleHash();
+        SimpleHash map = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
 
         // next create the Map representing the per attribute useful
         // properties for a template
@@ -291,12 +295,15 @@ public class FeatureWrapper extends BeansWrapper {
         // create a variable "attributes" which his a list of all the
         // attributes, but at the same time, is a map keyed by name
         map.put("attributes", new SequenceMapModel(attributeMap, this));
+        if (att instanceof Feature) {
+            map.put("bounds", ((Feature) att).getBounds());
+        }
 
         return map;
     }
 
     private Map<String, Object> buildDummyFeatureTypeInfo(ComplexAttribute f) {
-        Map<String, Object> dummy = new HashMap<String, Object>();
+        Map<String, Object> dummy = new HashMap<>();
         dummy.put("name", f.getType().getName().getLocalPart());
         dummy.put("namespace", getNamespace(f.getType().getName()));
         dummy.put("prefix", getPrefix(f.getType().getName()));
@@ -334,15 +341,15 @@ public class FeatureWrapper extends BeansWrapper {
             this.feature = feature;
         }
 
+        @Override
         public Set entrySet() {
             if (entrySet == null) {
-                entrySet = new LinkedHashSet<MapEntry>();
+                entrySet = new LinkedHashSet<>();
                 final Collection<PropertyDescriptor> types = feature.getType().getDescriptors();
                 Name attName;
                 Map attributesMap;
-                for (Iterator<PropertyDescriptor> iterator = types.iterator();
-                        iterator.hasNext(); ) {
-                    attName = iterator.next().getName();
+                for (PropertyDescriptor type : types) {
+                    attName = type.getName();
                     attributesMap = new AttributeMap(attName, feature);
                     entrySet.add(
                             new MapEntry<Object, Object>(attName.getLocalPart(), attributesMap));
@@ -395,6 +402,7 @@ public class FeatureWrapper extends BeansWrapper {
          * Override so asking for the hashCode does not implies traversing the whole map and thus
          * calling entrySet() prematurely
          */
+        @Override
         @SuppressWarnings("PMD.OverrideBothEqualsAndHashcode")
         public int hashCode() {
             return attributeName.hashCode();
@@ -406,9 +414,10 @@ public class FeatureWrapper extends BeansWrapper {
          * </code> property, which is lazily evaluated through the use of a {@link
          * DeferredValueEntry}
          */
+        @Override
         public Set entrySet() {
             if (entrySet == null) {
-                entrySet = new LinkedHashSet<MapEntry>();
+                entrySet = new LinkedHashSet<>();
                 final ComplexType featureType = feature.getType();
                 PropertyDescriptor attributeDescr = featureType.getDescriptor(attributeName);
                 Property property = feature.getProperty(attributeName);
@@ -481,6 +490,7 @@ public class FeatureWrapper extends BeansWrapper {
             }
 
             /** Returns the value corresponding to this entry, as a String. */
+            @Override
             public Object getValue() {
                 Object actualValue = super.getValue();
                 String stringValue = FeatureWrapper.valueToString(actualValue);
@@ -509,6 +519,7 @@ public class FeatureWrapper extends BeansWrapper {
     protected static class CopyTemplateFeatureCollectionFactory
             implements TemplateFeatureCollectionFactory<CollectionModel> {
 
+        @Override
         @SuppressWarnings("unchecked")
         public CollectionModel createTemplateFeatureCollection(
                 FeatureCollection collection, BeansWrapper wrapper) {

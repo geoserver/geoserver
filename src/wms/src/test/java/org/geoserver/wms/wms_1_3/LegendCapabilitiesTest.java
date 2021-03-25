@@ -71,8 +71,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
 
         // add layer
         testData.addStyle(null, STYLE_NAME, STYLE_FILE, getClass(), getCatalog(), legend);
-        Map<SystemTestData.LayerProperty, Object> propertyMap =
-                new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, STYLE_NAME);
         testData.addRasterLayer(
                 LAYER_QNAME, LAYER_FILE, null, propertyMap, SystemTestData.class, getCatalog());
@@ -91,8 +90,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         // add layer
         WorkspaceInfo wsInfo = getCatalog().getWorkspaceByName("gs");
         testData.addStyle(wsInfo, STYLE_NAME_WS, STYLE_FILE, getClass(), getCatalog(), legendWs);
-        Map<SystemTestData.LayerProperty, Object> propertyMapWs =
-                new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<SystemTestData.LayerProperty, Object> propertyMapWs = new HashMap<>();
         propertyMapWs.put(LayerProperty.STYLE, STYLE_NAME_WS);
         testData.addRasterLayer(
                 LAYER_QNAME_WS,
@@ -113,7 +111,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         wms.getSRS().add("EPSG:4326");
         getGeoServer().save(wms);
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("", "http://www.opengis.net/wms");
         namespaces.put("wms", "http://www.opengis.net/wms");
@@ -130,8 +128,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
 
         // add layer
         testData.addStyle(null, STYLE_NAME_HTTP, STYLE_FILE, getClass(), getCatalog(), legend);
-        Map<SystemTestData.LayerProperty, Object> propertyMap =
-                new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, STYLE_NAME);
         testData.addRasterLayer(
                 LAYER_QNAME_HTP_LEGND,
@@ -150,13 +147,25 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         // three
         // cases
         String expectedGetLegendGraphicRequestURL =
-                "/ows?service=WMS&request=GetLegendGraphic&format=image%2Fjpeg&width=20&height=20&layer=gs%3A"
+                "/ows?service=WMS&request=GetLegendGraphic&format=image%2Fjpeg&width="
+                        + LEGEND_WIDTH
+                        + "&height="
+                        + LEGEND_HEIGHT
+                        + "&layer=gs%3A"
                         + LAYER_NAME;
         String expectedGetLegendGraphicRequestURLWS =
-                "/ows?service=WMS&request=GetLegendGraphic&format=image%2Fjpeg&width=20&height=20&layer=gs%3A"
+                "/ows?service=WMS&request=GetLegendGraphic&format=image%2Fjpeg&width="
+                        + LEGEND_WIDTH
+                        + "&height="
+                        + LEGEND_HEIGHT
+                        + "&layer=gs%3A"
                         + LAYER_NAME_WS;
         String expectedGetLegendGraphicRequestURLHttp =
-                "/ows?service=WMS&request=GetLegendGraphic&format=image%2Fjpeg&width=20&height=20&layer=gs%3A"
+                "/ows?service=WMS&request=GetLegendGraphic&format=image%2Fjpeg&width="
+                        + LEGEND_WIDTH
+                        + "&height="
+                        + LEGEND_HEIGHT
+                        + "&layer=gs%3A"
                         + HTTP_LEGEND_LAYER;
 
         final String legendUrlPath =

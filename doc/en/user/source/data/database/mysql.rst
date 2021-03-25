@@ -46,7 +46,7 @@ Configuring a MySQL data store
    * - ``port``
      - The port on which the mysql server is accepting connections.
    * - ``database``
-     - The name of the database to connect to.
+     - The name of the database to connect to. Can also contain a suffix with a connection URL query, such as mydbname?useSSL=false
    * - ``user``
      - The name of the user to connect to the mysql database as.
    * - ``password``     

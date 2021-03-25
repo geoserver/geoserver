@@ -6,6 +6,7 @@
 package org.geoserver.catalog.impl;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,19 +39,19 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
 
     protected GridGeometry grid;
 
-    protected List<String> supportedFormats = new ArrayList<String>();
+    protected List<String> supportedFormats = new ArrayList<>();
 
-    protected List<String> interpolationMethods = new ArrayList<String>();
+    protected List<String> interpolationMethods = new ArrayList<>();
 
     protected String defaultInterpolationMethod;
 
-    protected List<CoverageDimensionInfo> dimensions = new ArrayList<CoverageDimensionInfo>();
+    protected List<CoverageDimensionInfo> dimensions = new ArrayList<>();
 
-    protected List<String> requestSRS = new ArrayList<String>();
+    protected List<String> requestSRS = new ArrayList<>();
 
-    protected List<String> responseSRS = new ArrayList<String>();
+    protected List<String> responseSRS = new ArrayList<>();
 
-    protected Map parameters = new HashMap();
+    protected Map<String, Serializable> parameters = new HashMap<>();
 
     protected String nativeCoverageName;
 
@@ -64,62 +65,76 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         super(catalog, id);
     }
 
+    @Override
     public CoverageStoreInfo getStore() {
         return (CoverageStoreInfo) super.getStore();
     }
 
+    @Override
     public GridGeometry getGrid() {
         return grid;
     }
 
+    @Override
     public void setGrid(GridGeometry grid) {
         this.grid = grid;
     }
 
+    @Override
     public String getNativeFormat() {
         return nativeFormat;
     }
 
+    @Override
     public void setNativeFormat(String nativeFormat) {
         this.nativeFormat = nativeFormat;
     }
 
+    @Override
     public List<String> getSupportedFormats() {
         return supportedFormats;
     }
 
+    @Override
     public List<String> getInterpolationMethods() {
         return interpolationMethods;
     }
 
+    @Override
     public String getDefaultInterpolationMethod() {
         return defaultInterpolationMethod;
     }
 
+    @Override
     public void setDefaultInterpolationMethod(String defaultInterpolationMethod) {
         this.defaultInterpolationMethod = defaultInterpolationMethod;
     }
 
+    @Override
     public List<CoverageDimensionInfo> getDimensions() {
         return dimensions;
     }
 
+    @Override
     public List<String> getRequestSRS() {
         return requestSRS;
     }
 
+    @Override
     public List<String> getResponseSRS() {
         return responseSRS;
     }
 
-    public Map getParameters() {
+    @Override
+    public Map<String, Serializable> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Map parameters) {
+    public void setParameters(Map<String, Serializable> parameters) {
         this.parameters = parameters;
     }
 
+    @Override
     public GridCoverage getGridCoverage(ProgressListener listener, Hints hints) throws IOException {
 
         // manage projection policy
@@ -132,6 +147,7 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         return catalog.getResourcePool().getGridCoverage(this, null, hints);
     }
 
+    @Override
     public GridCoverage getGridCoverage(
             ProgressListener listener, ReferencedEnvelope envelope, Hints hints)
             throws IOException {
@@ -145,6 +161,7 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         return catalog.getResourcePool().getGridCoverage(this, envelope, hints);
     }
 
+    @Override
     public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
             throws IOException {
         // manage projection policy
@@ -177,10 +194,12 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         this.responseSRS = responseSRS;
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
 
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
@@ -204,6 +223,7 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         return result;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof CoverageInfo)) {
             return false;
@@ -247,10 +267,12 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         return true;
     }
 
+    @Override
     public String getNativeCoverageName() {
         return nativeCoverageName;
     }
 
+    @Override
     public void setNativeCoverageName(String nativeCoverageName) {
         this.nativeCoverageName = nativeCoverageName;
     }

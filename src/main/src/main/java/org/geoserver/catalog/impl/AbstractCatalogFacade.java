@@ -37,7 +37,10 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
     }
 
     protected void beforeSaved(
-            CatalogInfo object, List propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         CatalogInfo real = ModificationProxy.unwrap(object);
 
         // TODO: protect this original object, perhaps with another proxy
@@ -49,6 +52,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
         ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(object);
 
         // get the real object
+        @SuppressWarnings("unchecked")
         T real = (T) h.getProxyObject();
 
         // commit to the original object
@@ -58,7 +62,10 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
     }
 
     protected void afterSaved(
-            CatalogInfo object, List propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         CatalogInfo real = ModificationProxy.unwrap(object);
 
         // fire the post modify event
@@ -80,7 +87,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
             layer.setDefaultStyle(style);
         }
 
-        LinkedHashSet<StyleInfo> styles = new LinkedHashSet<StyleInfo>();
+        LinkedHashSet<StyleInfo> styles = new LinkedHashSet<>();
         for (StyleInfo s : layer.getStyles()) {
             s = ResolvingProxy.resolve(getCatalog(), s);
             s = unwrap(s);

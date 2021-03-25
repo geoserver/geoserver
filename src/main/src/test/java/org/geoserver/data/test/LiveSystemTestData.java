@@ -9,6 +9,10 @@ import java.io.File;
 import java.io.IOException;
 import org.geoserver.util.IOUtils;
 
+@SuppressWarnings({
+    "PMD.JUnit4TestShouldUseBeforeAnnotation",
+    "PMD.JUnit4TestShouldUseAfterAnnotation"
+})
 public class LiveSystemTestData extends SystemTestData {
 
     protected File source;
@@ -24,6 +28,7 @@ public class LiveSystemTestData extends SystemTestData {
         IOUtils.deepCopy(source, data);
     }
 
+    @Override
     public void tearDown() throws Exception {
         if (data != null) {
             IOUtils.delete(data);

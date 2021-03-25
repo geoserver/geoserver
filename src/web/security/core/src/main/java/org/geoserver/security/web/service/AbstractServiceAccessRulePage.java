@@ -5,9 +5,7 @@
  */
 package org.geoserver.security.web.service;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -39,11 +37,11 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
     public AbstractServiceAccessRulePage(final ServiceAccessRule rule) {
 
         // build the form
-        Form form = new Form<Serializable>("form", new CompoundPropertyModel(rule));
+        Form<ServiceAccessRule> form = new Form<>("form", new CompoundPropertyModel<>(rule));
         add(form);
         form.add(new EmptyRolesValidator());
 
-        form.add(serviceChoice = new DropDownChoice<String>("service", getServiceNames()));
+        form.add(serviceChoice = new DropDownChoice<>("service", getServiceNames()));
         serviceChoice.add(
                 new OnChangeAjaxBehavior() {
                     @Override
@@ -54,7 +52,7 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
                 });
         serviceChoice.setRequired(true);
 
-        form.add(methodChoice = new DropDownChoice<String>("method", new MethodsModel(rule)));
+        form.add(methodChoice = new DropDownChoice<>("method", new MethodsModel(rule)));
 
         // we add on change behavior to ensure the underlying model is updated but don't actually
         // do anything on change... this allows us to keep state when someone adds a new role,
@@ -68,8 +66,7 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
 
         form.add(
                 rolesFormComponent =
-                        new RuleRolesFormComponent(
-                                "roles", new PropertyModel<Collection<String>>(rule, "roles")));
+                        new RuleRolesFormComponent("roles", new PropertyModel<>(rule, "roles")));
         // new Model((Serializable)new ArrayList(rule.getRoles()))));
 
         // build the submit/cancel
@@ -80,7 +77,7 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
                         onFormSubmit((ServiceAccessRule) getForm().getModelObject());
                     }
                 });
-        form.add(new BookmarkablePageLink("cancel", ServiceAccessRulePage.class));
+        form.add(new BookmarkablePageLink<>("cancel", ServiceAccessRulePage.class));
     }
 
     /** Implements the actual save action */
@@ -88,7 +85,7 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
 
     /** Returns a sorted list of workspace names */
     ArrayList<String> getServiceNames() {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         for (Service ows : GeoServerExtensions.extensions(Service.class)) {
             if (!result.contains(ows.getId())) result.add(ows.getId());
         }
@@ -131,7 +128,7 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
 
         @Override
         public List<String> getObject() {
-            List<String> result = new ArrayList<String>();
+            List<String> result = new ArrayList<>();
             for (Service ows : GeoServerExtensions.extensions(Service.class)) {
                 String service = rule.getService();
                 if (ows.getId().equals(service)) {

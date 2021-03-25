@@ -28,6 +28,7 @@ public class NativeElementHandler implements TransactionElementHandler {
 
     public NativeElementHandler() {}
 
+    @Override
     public void checkValidity(TransactionElement element, Map featureTypeInfos)
             throws WFSTransactionException {
 
@@ -42,6 +43,7 @@ public class NativeElementHandler implements TransactionElementHandler {
         }
     }
 
+    @Override
     public void execute(
             TransactionElement element,
             TransactionRequest request,
@@ -52,7 +54,8 @@ public class NativeElementHandler implements TransactionElementHandler {
         // nothing to do, we just ignore if possible
     }
 
-    public Class getElementClass() {
+    @Override
+    public Class<Native> getElementClass() {
         return Native.class;
     }
 
@@ -60,6 +63,7 @@ public class NativeElementHandler implements TransactionElementHandler {
      * @return an empty array.
      * @see TransactionElementHandler#getTypeNames(TransactionRequest, TransactionElement)
      */
+    @Override
     public QName[] getTypeNames(TransactionRequest request, TransactionElement element)
             throws WFSTransactionException {
         // we don't handle this

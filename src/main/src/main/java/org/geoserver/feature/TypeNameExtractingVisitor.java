@@ -23,7 +23,7 @@ import org.opengis.filter.identity.Identifier;
 public class TypeNameExtractingVisitor extends DefaultFilterVisitor {
 
     Catalog catalog;
-    Set<QName> typeNames = new HashSet<QName>();
+    Set<QName> typeNames = new HashSet<>();
 
     public TypeNameExtractingVisitor(Catalog catalog) {
         this.catalog = catalog;

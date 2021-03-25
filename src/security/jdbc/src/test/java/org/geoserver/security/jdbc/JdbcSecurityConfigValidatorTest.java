@@ -5,7 +5,9 @@
  */
 package org.geoserver.security.jdbc;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DDL_FILE_INVALID;
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DDL_FILE_REQUIRED;
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DML_FILE_INVALID;
@@ -15,7 +17,8 @@ import static org.geoserver.security.jdbc.JDBCSecurityConfigException.DRIVER_CLA
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.JDBCURL_REQUIRED;
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.JNDINAME_REQUIRED;
 import static org.geoserver.security.jdbc.JDBCSecurityConfigException.USERNAME_REQUIRED;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -169,7 +172,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
 
         GeoServerSecurityManager secMgr = createNiceMock(GeoServerSecurityManager.class);
         expect(secMgr.listRoleServices())
-                .andReturn(new TreeSet<String>(Arrays.asList("default", "jdbc")))
+                .andReturn(new TreeSet<>(Arrays.asList("default", "jdbc")))
                 .anyTimes();
         replay(secMgr);
         validator = new JdbcSecurityConfigValidator(secMgr);
@@ -335,13 +338,13 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
 
         GeoServerSecurityManager secMgr = createNiceMock(GeoServerSecurityManager.class);
         expect(secMgr.listUserGroupServices())
-                .andReturn(new TreeSet<String>(Arrays.asList("default", "jdbc")))
+                .andReturn(new TreeSet<>(Arrays.asList("default", "jdbc")))
                 .anyTimes();
 
         GeoServerPlainTextPasswordEncoder pwEncoder = getPlainTextPasswordEncoder();
         expect(secMgr.loadPasswordEncoder(pwEncoder.getName())).andReturn(pwEncoder).anyTimes();
         expect(secMgr.listPasswordValidators())
-                .andReturn(new TreeSet<String>(Arrays.asList(PasswordValidator.DEFAULT_NAME)))
+                .andReturn(new TreeSet<>(Arrays.asList(PasswordValidator.DEFAULT_NAME)))
                 .anyTimes();
         replay(secMgr);
 
@@ -410,6 +413,7 @@ public class JdbcSecurityConfigValidatorTest extends SecurityConfigValidatorTest
     }
 
     @Override
+    @Test
     public void testAuthenticationProvider() throws IOException {
         super.testAuthenticationProvider();
         JDBCConnectAuthProviderConfig config =

@@ -895,7 +895,8 @@ public class JDBCCatalogFacade implements CatalogFacade {
     private <T extends CatalogInfo> T addInternal(T info) {
         Assert.notNull(info, "Info object cannot be null");
 
-        Class<T> clazz = ClassMappings.fromImpl(info.getClass()).getInterface();
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        Class<T> clazz = (Class) ClassMappings.fromImpl(info.getClass()).getInterface();
 
         setId(info, clazz);
 

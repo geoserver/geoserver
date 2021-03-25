@@ -25,6 +25,7 @@ public class TimeKvpParser extends org.geoserver.ows.kvp.TimeKvpParser {
         this.geoServer = geoServer;
     }
 
+    @Override
     protected TimeParser getTimeParser() {
         WCSInfo info = geoServer.getService(WCSInfo.class);
         int maxRequestedDimensionValues = info.getMaxRequestedDimensionValues();

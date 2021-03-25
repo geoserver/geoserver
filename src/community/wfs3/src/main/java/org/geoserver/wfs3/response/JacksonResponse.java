@@ -26,7 +26,7 @@ import org.geoserver.wfs3.BaseRequest;
 /** Response encoding outputs in JSON/YAML using Jackson */
 public abstract class JacksonResponse extends WFSResponse {
 
-    public JacksonResponse(GeoServer gs, Class targetClass) {
+    public JacksonResponse(GeoServer gs, Class<?> targetClass) {
         this(
                 gs,
                 targetClass,
@@ -37,7 +37,7 @@ public abstract class JacksonResponse extends WFSResponse {
                                 BaseRequest.XML_MIME)));
     }
 
-    protected JacksonResponse(GeoServer gs, Class targetClass, Set<String> formats) {
+    protected JacksonResponse(GeoServer gs, Class<?> targetClass, Set<String> formats) {
         super(gs, targetClass, formats);
     }
 

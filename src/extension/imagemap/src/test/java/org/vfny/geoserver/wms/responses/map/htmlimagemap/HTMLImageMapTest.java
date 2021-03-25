@@ -79,6 +79,7 @@ public class HTMLImageMapTest {
         File testdata = TestData.file(this, ".");
         System.setProperty("GEOSERVER_DATA_DIR", testdata.getAbsolutePath());
         GeoServerResourceLoader loader = new GeoServerResourceLoader(testdata);
+        @SuppressWarnings("PMD.CloseResource")
         GenericWebApplicationContext context = new GenericWebApplicationContext();
         context.getBeanFactory().registerSingleton("resourceLoader", loader);
 
@@ -127,12 +128,10 @@ public class HTMLImageMapTest {
             out.flush();
             out.close();
             File testFile = TestData.file(this, "results/" + testName + ".txt");
-            BufferedReader reader = new BufferedReader(new FileReader(testFile));
-
-            String s = null;
-            while ((s = reader.readLine()) != null) testText.append(s + "\n");
-
-            reader.close();
+            try (BufferedReader reader = new BufferedReader(new FileReader(testFile))) {
+                String s = null;
+                while ((s = reader.readLine()) != null) testText.append(s + "\n");
+            }
 
         } finally {
             imageMap.dispose();

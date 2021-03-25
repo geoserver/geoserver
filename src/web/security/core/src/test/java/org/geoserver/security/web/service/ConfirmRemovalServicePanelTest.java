@@ -32,6 +32,7 @@ public class ConfirmRemovalServicePanelTest
                         new ComponentBuilder() {
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             public Component buildComponent(String id) {
                                 return new ConfirmRemovalServicePanel(id, roots) {
                                     @Override

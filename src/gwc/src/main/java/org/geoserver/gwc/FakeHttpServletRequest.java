@@ -15,6 +15,7 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
@@ -34,24 +35,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @SuppressWarnings({"rawtypes", "deprecation"})
 class FakeHttpServletRequest implements HttpServletRequest {
 
-    private static final Enumeration EMPTY_ENUMERATION =
-            new Enumeration() {
-                @Override
-                public boolean hasMoreElements() {
-                    // TODO Auto-generated method stub
-                    return false;
-                }
-
-                @Override
-                public Object nextElement() {
-                    // TODO Auto-generated method stub
-                    return null;
-                }
-            };
-
     private String workspace;
 
-    private Map<String, String> parameterMap;
+    private Map<String, String[]> parameterMap;
 
     private Cookie[] cookies;
 
@@ -63,7 +49,13 @@ class FakeHttpServletRequest implements HttpServletRequest {
 
     public FakeHttpServletRequest(
             Map<String, String> parameterMap, Cookie[] cookies, String workspace) {
-        this.parameterMap = parameterMap;
+        this.parameterMap =
+                parameterMap
+                        .entrySet()
+                        .stream()
+                        .collect(
+                                Collectors.toMap(
+                                        e -> e.getKey(), e -> new String[] {e.getValue()}));
         this.cookies = cookies;
         this.workspace = workspace;
         // grab the original request from Spring to forward security related attributes
@@ -76,60 +68,74 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     /** Standard interface */
+    @Override
     public String getAuthType() {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getContextPath() {
         return "/geoserver";
     }
 
+    @Override
     public Cookie[] getCookies() {
         return cookies;
     }
 
+    @Override
     public long getDateHeader(String name) {
         return original.map(r -> r.getDateHeader(name))
                 .orElseThrow(() -> new ServletDebugException());
     }
 
+    @Override
     public String getHeader(String name) {
         return original.map(r -> r.getHeader(name)).orElse(null);
     }
 
-    public Enumeration getHeaderNames() {
-        return original.map(r -> r.getHeaderNames()).orElse(EMPTY_ENUMERATION);
+    @Override
+    public Enumeration<String> getHeaderNames() {
+        return original.map(r -> r.getHeaderNames()).orElse(Collections.emptyEnumeration());
     }
 
-    public Enumeration getHeaders(String name) {
+    @Override
+    public Enumeration<String> getHeaders(String name) {
         return original.map(r -> r.getHeaders(name)).orElseThrow(() -> new ServletDebugException());
     }
 
+    @Override
     public int getIntHeader(String name) {
         return original.map(r -> r.getIntHeader(name))
                 .orElseThrow(() -> new ServletDebugException());
     }
 
+    @Override
     public String getMethod() {
         return "GET";
     }
 
+    @Override
     public String getPathInfo() {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getPathTranslated() {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getQueryString() {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getRemoteUser() {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getRequestURI() {
         if (workspace != null && !workspace.isEmpty()) {
             return "/geoserver/" + workspace + "/wms";
@@ -138,38 +144,47 @@ class FakeHttpServletRequest implements HttpServletRequest {
         }
     }
 
+    @Override
     public StringBuffer getRequestURL() {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getRequestedSessionId() {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getServletPath() {
         throw new ServletDebugException();
     }
 
+    @Override
     public HttpSession getSession() {
         throw new ServletDebugException();
     }
 
+    @Override
     public HttpSession getSession(boolean arg0) {
         throw new ServletDebugException();
     }
 
+    @Override
     public Principal getUserPrincipal() {
         throw new ServletDebugException();
     }
 
+    @Override
     public boolean isRequestedSessionIdFromCookie() {
         throw new ServletDebugException();
     }
 
+    @Override
     public boolean isRequestedSessionIdFromURL() {
         throw new ServletDebugException();
     }
 
+    @Override
     public boolean isRequestedSessionIdFromUrl() {
         throw new ServletDebugException();
     }
@@ -195,46 +210,57 @@ class FakeHttpServletRequest implements HttpServletRequest {
         return null;
     }
 
+    @Override
     public boolean isRequestedSessionIdValid() {
         throw new ServletDebugException();
     }
 
+    @Override
     public boolean isUserInRole(String arg0) {
         throw new ServletDebugException();
     }
 
+    @Override
     public Object getAttribute(String arg0) {
         throw new ServletDebugException();
     }
 
-    public Enumeration getAttributeNames() {
+    @Override
+    public Enumeration<String> getAttributeNames() {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getCharacterEncoding() {
         return "UTF-8";
     }
 
+    @Override
     public int getContentLength() {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getContentType() {
         return null;
     }
 
+    @Override
     public ServletInputStream getInputStream() throws IOException {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getLocalAddr() {
         return original.map(r -> r.getLocalAddr()).orElseThrow(() -> new ServletDebugException());
     }
 
+    @Override
     public String getLocalName() {
         return original.map(r -> r.getLocalName()).orElseThrow(() -> new ServletDebugException());
     }
 
+    @Override
     public int getLocalPort() {
         return original.map(r -> r.getLocalPort()).orElse(0);
     }
@@ -275,83 +301,105 @@ class FakeHttpServletRequest implements HttpServletRequest {
         return DispatcherType.REQUEST;
     }
 
+    @Override
     public Locale getLocale() {
         return original.map(r -> r.getLocale()).orElseThrow(() -> new ServletDebugException());
     }
 
-    public Enumeration getLocales() {
+    @Override
+    public Enumeration<Locale> getLocales() {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getParameter(String name) {
-        return parameterMap.get(name);
+        String[] value = parameterMap.get(name);
+        if (value == null || value.length == 0) return null;
+        return value[0];
     }
 
-    public Map getParameterMap() {
+    @Override
+    public Map<String, String[]> getParameterMap() {
         return parameterMap;
     }
 
-    public Enumeration getParameterNames() {
+    @Override
+    public Enumeration<String> getParameterNames() {
         return Collections.enumeration(parameterMap.keySet());
     }
 
+    @Override
     public String[] getParameterValues(String name) {
-        return new String[] {parameterMap.get(name)};
+        return parameterMap.get(name);
     }
 
+    @Override
     public String getProtocol() {
         return original.map(r -> r.getProtocol()).orElseThrow(() -> new ServletDebugException());
     }
 
+    @Override
     public BufferedReader getReader() throws IOException {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getRealPath(String arg0) {
         throw new ServletDebugException();
     }
 
+    @Override
     @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     public String getRemoteAddr() {
         return original.map(r -> r.getRemoteAddr()).orElse("127.0.0.1");
     }
 
+    @Override
     public String getRemoteHost() {
         return original.map(r -> r.getRemoteHost()).orElse("localhost");
     }
 
+    @Override
     public int getRemotePort() {
         return original.map(r -> r.getRemotePort()).orElseThrow(() -> new ServletDebugException());
     }
 
+    @Override
     public RequestDispatcher getRequestDispatcher(String arg0) {
         throw new ServletDebugException();
     }
 
+    @Override
     public String getScheme() {
         return original.map(r -> r.getScheme()).orElse("http");
     }
 
+    @Override
     public String getServerName() {
         return original.map(r -> r.getServerName()).orElse("localhost");
     }
 
+    @Override
     public int getServerPort() {
         return original.map(r -> r.getServerPort()).orElse(8080);
     }
 
+    @Override
     public boolean isSecure() {
         return original.map(r -> r.isSecure()).orElseThrow(() -> new ServletDebugException());
     }
 
+    @Override
     public void removeAttribute(String arg0) {
         throw new ServletDebugException();
     }
 
+    @Override
     public void setAttribute(String arg0, Object arg1) {
         throw new ServletDebugException();
     }
 
+    @Override
     public void setCharacterEncoding(String arg0) throws UnsupportedEncodingException {
         if (!arg0.equals("UTF-8")) {
             throw new ServletDebugException();

@@ -39,6 +39,7 @@ public class GetCapabilitiesBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.GETCAPABILITIES;
     }

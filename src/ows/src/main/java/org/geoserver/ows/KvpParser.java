@@ -77,7 +77,7 @@ public abstract class KvpParser {
     String key;
 
     /** The class of parsed objects. */
-    Class binding;
+    Class<?> binding;
 
     /** The service to bind to */
     String service;
@@ -88,7 +88,7 @@ public abstract class KvpParser {
     /** The request to bind to */
     String request;
 
-    public KvpParser(String key, Class binding) {
+    public KvpParser(String key, Class<?> binding) {
         this.key = key;
         this.binding = binding;
     }
@@ -99,7 +99,7 @@ public abstract class KvpParser {
     }
 
     /** @return The type of parsed objects. */
-    protected Class getBinding() {
+    protected Class<?> getBinding() {
         return binding;
     }
 

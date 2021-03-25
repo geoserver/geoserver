@@ -5,7 +5,7 @@
  */
 package org.geoserver.wms;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +23,7 @@ public class ProxyBaseURLIntegrationTest extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
     }

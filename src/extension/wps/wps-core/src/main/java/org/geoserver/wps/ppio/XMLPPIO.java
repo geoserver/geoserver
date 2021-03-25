@@ -29,12 +29,13 @@ public abstract class XMLPPIO extends ComplexPPIO {
     protected volatile EntityResolverProvider resolverProvider;
 
     /** Constructor specifying 'text/xml' as mime type. */
-    protected XMLPPIO(Class externalType, Class internalType, QName element) {
+    protected XMLPPIO(Class<?> externalType, Class<?> internalType, QName element) {
         this(externalType, internalType, "text/xml", element);
     }
 
     /** Constructor explicitly specifying mime type. */
-    protected XMLPPIO(Class externalType, Class internalType, String mimeType, QName element) {
+    protected XMLPPIO(
+            Class<?> externalType, Class<?> internalType, String mimeType, QName element) {
         super(externalType, internalType, mimeType);
         if (element == null) {
             throw new NullPointerException("element must not be null");
@@ -56,6 +57,7 @@ public abstract class XMLPPIO extends ComplexPPIO {
     public abstract void encode(Object object, ContentHandler handler) throws Exception;
 
     /** Encodes the internal object representation of a parameter as a string. */
+    @Override
     public void encode(Object value, OutputStream os) throws Exception {
         // create the document serializer
         TransformerHandler serializer =

@@ -17,14 +17,32 @@ import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.GeoServerTablePanel;
+import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 
 public class StylePageTest extends GeoServerWicketTestSupport {
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        WorkspaceInfo cite = getCatalog().getWorkspaceByName("cite");
+        testData.addStyle(
+                cite, "simplePoint", "simplePoint.sld", StylePageTest.class, getCatalog());
+    }
+
+    @Before
+    public void clearFilter() {
+        // clear persistent table filters from session
+        tester.getSession().removeAttribute(GeoServerTablePanel.FILTER_INPUTS);
+    }
 
     @Test
     public void testPageLoad() {
@@ -65,22 +83,15 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         assertTrue(catchedException);
 
         StyleInfo actual = provider.iterator(0, 1).next();
-        CloseableIterator<StyleInfo> list =
+        try (CloseableIterator<StyleInfo> list =
                 catalog.list(
-                        StyleInfo.class, Filter.INCLUDE, 0, 1, Predicates.sortBy("name", true));
-        assertTrue(list.hasNext());
-        StyleInfo expected = list.next();
+                        StyleInfo.class, Filter.INCLUDE, 0, 1, Predicates.sortBy("name", true))) {
+            assertTrue(list.hasNext());
+            StyleInfo expected = list.next();
 
-        // Close the iterator
-        try {
-            if (list != null) {
-                list.close();
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            // Ensure equality
+            assertEquals(expected, actual);
         }
-        // Ensure equality
-        assertEquals(expected, actual);
     }
 
     @Test
@@ -170,6 +181,27 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("table:filterForm:filter", "");
         dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(dv.size(), catalog.getStyles().size());
+    }
+
+    @Test
+    public void testWorkspaceFilter() {
+        login();
+        Catalog catalog = getCatalog();
+        tester.startPage(StylePage.class);
+        tester.assertRenderedPage(StylePage.class);
+        DataView dv =
+                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+
+        assertEquals(dv.size(), catalog.getStyles().size());
+        // apply filter by only viewing style with name polygon
+        FormTester ft = tester.newFormTester("table:filterForm");
+        ft.setValue("filter", "cite");
+        ft.submit("submit");
+
+        print(tester.getLastRenderedPage(), true, true);
+
+        dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        assertEquals(1, dv.size());
     }
 
     @Test

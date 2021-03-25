@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -54,6 +53,7 @@ public class GeoServerUserDao implements UserDetailsService {
         return GeoServerExtensions.bean(GeoServerUserDao.class);
     }
 
+    @Override
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException, DataAccessException {
         checkUserMap();
@@ -147,21 +147,21 @@ public class GeoServerUserDao implements UserDetailsService {
     public List<String> getRoles() {
         checkUserMap();
 
-        Set<String> roles = new TreeSet<String>();
+        Set<String> roles = new TreeSet<>();
         roles.add("ROLE_ADMINISTRATOR");
         for (User user : getUsers()) {
             for (GrantedAuthority ga : user.getAuthorities()) {
                 roles.add(ga.getAuthority());
             }
         }
-        return new ArrayList<String>(roles);
+        return new ArrayList<>(roles);
     }
 
     /** Returns the list of users. To be used for UI editing of users, it's a live map */
     public List<User> getUsers() {
         checkUserMap();
 
-        return new ArrayList<User>(userMap.values());
+        return new ArrayList<>(userMap.values());
     }
 
     /** Adds a user in the user map */
@@ -220,13 +220,13 @@ public class GeoServerUserDao implements UserDetailsService {
 
     /** Loads the user from property file into the users map */
     TreeMap<String, User> loadUsersFromProperties(Properties props) {
-        TreeMap<String, User> users = new TreeMap<String, User>();
+        TreeMap<String, User> users = new TreeMap<>();
         UserAttributeEditor configAttribEd = new UserAttributeEditor();
 
-        for (Iterator<Object> iter = props.keySet().iterator(); iter.hasNext(); ) {
+        for (Object o : props.keySet()) {
             // the attribute editors parses the list of strings into password, username and enabled
             // flag
-            String username = (String) iter.next();
+            String username = (String) o;
             configAttribEd.setAsText(props.getProperty(username));
 
             // if the parsing succeeded turn that into a user object

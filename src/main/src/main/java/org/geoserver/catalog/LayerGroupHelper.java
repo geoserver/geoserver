@@ -19,7 +19,10 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.styling.*;
+import org.geotools.styling.NamedStyle;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyledLayer;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.opengis.geometry.Envelope;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -40,7 +43,7 @@ public class LayerGroupHelper {
 
     /** */
     public List<LayerInfo> allLayers() {
-        List<LayerInfo> layers = new ArrayList<LayerInfo>();
+        List<LayerInfo> layers = new ArrayList<>();
         allLayers(group, layers);
         return layers;
     }
@@ -122,7 +125,7 @@ public class LayerGroupHelper {
 
     /** Returns all the groups contained in this group (including the group itself) */
     public List<LayerGroupInfo> allGroups() {
-        List<LayerGroupInfo> groups = new ArrayList<LayerGroupInfo>();
+        List<LayerGroupInfo> groups = new ArrayList<>();
         allGroups(group, groups);
         return groups;
     }
@@ -139,7 +142,7 @@ public class LayerGroupHelper {
 
     /** */
     public List<StyleInfo> allStyles() {
-        List<StyleInfo> styles = new ArrayList<StyleInfo>();
+        List<StyleInfo> styles = new ArrayList<>();
         allStyles(group, styles);
         return styles;
     }
@@ -170,7 +173,7 @@ public class LayerGroupHelper {
     }
 
     public List<LayerInfo> allLayersForRendering() {
-        List<LayerInfo> layers = new ArrayList<LayerInfo>();
+        List<LayerInfo> layers = new ArrayList<>();
         allLayersForRendering(group, layers, true);
         return layers;
     }
@@ -211,7 +214,7 @@ public class LayerGroupHelper {
     }
 
     public List<StyleInfo> allStylesForRendering() {
-        List<StyleInfo> styles = new ArrayList<StyleInfo>();
+        List<StyleInfo> styles = new ArrayList<>();
         allStylesForRendering(group, styles, true);
         return styles;
     }
@@ -271,8 +274,8 @@ public class LayerGroupHelper {
         LayerInfo l = layers.get(0);
         ReferencedEnvelope bounds = new ReferencedEnvelope(crs);
 
-        for (int i = 0; i < layers.size(); i++) {
-            l = layers.get(i);
+        for (LayerInfo layer : layers) {
+            l = layer;
             bounds.expandToInclude(transform(l.getResource().getLatLonBoundingBox(), crs));
         }
 
@@ -354,7 +357,7 @@ public class LayerGroupHelper {
      * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
      */
     public Stack<LayerGroupInfo> checkLoops() {
-        Stack<LayerGroupInfo> path = new Stack<LayerGroupInfo>();
+        Stack<LayerGroupInfo> path = new Stack<>();
         if (checkLoops(group, path)) {
             return path;
         } else {

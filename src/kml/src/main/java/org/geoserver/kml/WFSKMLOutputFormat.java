@@ -24,7 +24,6 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
@@ -40,7 +39,7 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
     public WFSKMLOutputFormat(KMLEncoder encoder, GeoServer gs) {
         super(
                 gs,
-                new HashSet(
+                new HashSet<>(
                         Arrays.asList(
                                 new String[] {
                                     "KML",
@@ -86,7 +85,7 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
         // build the contents
         for (SimpleFeatureCollection collection : collections) {
             // create the folder
-            SimpleFeatureCollection fc = (SimpleFeatureCollection) collection;
+            SimpleFeatureCollection fc = collection;
             Folder folder = document.createAndAddFolder();
             folder.setName(fc.getSchema().getTypeName());
 
@@ -104,8 +103,7 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
 
             // create the streaming features
             context.setCurrentFeatureCollection(fc);
-            List<Feature> features =
-                    new IteratorList<Feature>(new WFSFeatureIteratorFactory(context));
+            List<Feature> features = new IteratorList<>(new WFSFeatureIteratorFactory(context));
             context.addFeatures(folder, features);
         }
 
@@ -116,7 +114,7 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
     private List<SimpleFeatureCollection> getFeatureCollections(
             FeatureCollectionResponse featureCollection) {
         List<FeatureCollection> inputs = featureCollection.getFeatures();
-        List<SimpleFeatureCollection> result = new ArrayList<SimpleFeatureCollection>();
+        List<SimpleFeatureCollection> result = new ArrayList<>();
         for (FeatureCollection fc : inputs) {
             if (!(fc instanceof SimpleFeatureCollection)) {
                 throw new ServiceException(
@@ -139,10 +137,8 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     @Override
-    public String getAttachmentFileName(Object value, Operation operation) {
-        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
-        String outputFileName = request.getQueries().get(0).getTypeNames().get(0).getLocalPart();
-        return outputFileName + ".kml";
+    protected String getExtension(FeatureCollectionResponse response) {
+        return "kml";
     }
 
     @Override
@@ -171,8 +167,9 @@ public class WFSKMLOutputFormat extends WFSGetFeatureOutputFormat {
             this.kmz = false;
         }
 
+        @Override
         public List<SimpleFeatureType> getFeatureTypes() {
-            List<SimpleFeatureType> results = new ArrayList<SimpleFeatureType>();
+            List<SimpleFeatureType> results = new ArrayList<>();
             for (SimpleFeatureCollection fc : collections) {
                 results.add(fc.getSchema());
             }

@@ -402,6 +402,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
     }
 
     @Ignore
+    @Test
     public void testTimeIntervalResolution() throws Exception {
         // adding a extra elevation that is simply not there, should not break
         setupVectorDimension(

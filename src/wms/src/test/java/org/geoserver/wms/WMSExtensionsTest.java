@@ -5,8 +5,16 @@
  */
 package org.geoserver.wms;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +48,7 @@ public class WMSExtensionsTest {
         expect(mockContext.getBeanNamesForType(ExtensionFilter.class)).andReturn(new String[0]);
         expect(mockContext.getBean("producer1")).andReturn(mockProducer1);
         expect(mockContext.getBean("producer2")).andReturn(mockProducer2);
-        expect(mockContext.isSingleton((String) anyObject())).andReturn(false).anyTimes();
+        expect(mockContext.isSingleton(anyObject())).andReturn(false).anyTimes();
         // end of unpleasant block
 
         replay(mockContext);
@@ -62,7 +70,7 @@ public class WMSExtensionsTest {
                 .andReturn(new String[] {});
         expect(mockContext.getBeanNamesForType(ExtensionProvider.class)).andReturn(new String[0]);
         expect(mockContext.getBeanNamesForType(ExtensionFilter.class)).andReturn(new String[0]);
-        expect(mockContext.isSingleton((String) anyObject())).andReturn(false).anyTimes();
+        expect(mockContext.isSingleton(anyObject())).andReturn(false).anyTimes();
         // end of unpleasant block
 
         replay(mockContext);
@@ -79,7 +87,7 @@ public class WMSExtensionsTest {
         ApplicationContext mockContext = EasyMock.createMock(ApplicationContext.class);
         // I'm not so pleasant with this block of code as it implies knowing how
         // the internals of GeoServerExtensions work
-        expect(mockContext.isSingleton((String) anyObject())).andReturn(false).anyTimes();
+        expect(mockContext.isSingleton(anyObject())).andReturn(false).anyTimes();
         expect(mockContext.getBeanNamesForType(ExtensionFilter.class)).andReturn(new String[0]);
         expect(mockContext.getBeanNamesForType(GetMapOutputFormat.class))
                 .andReturn(new String[] {"producer1"}); // call#1
@@ -96,7 +104,7 @@ public class WMSExtensionsTest {
 
         // end of unpleasant block
 
-        Set<String> testFormatNames = new HashSet<String>();
+        Set<String> testFormatNames = new HashSet<>();
         testFormatNames.add("image/fakeformat");
         testFormatNames.add("image/dummy");
 
@@ -106,8 +114,8 @@ public class WMSExtensionsTest {
         replay(mockProducer);
 
         // note the lookup shall be case insensitive..
-        GetMapOutputFormat producer;
-        producer = WMSExtensions.findMapProducer("ImaGe/FaKeForMat", mockContext); // call#1
+        GetMapOutputFormat producer =
+                WMSExtensions.findMapProducer("ImaGe/FaKeForMat", mockContext); // call#1
         assertSame(mockProducer, producer);
 
         producer = WMSExtensions.findMapProducer("notARegisteredFormat", mockContext); // call#2

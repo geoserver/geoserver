@@ -104,7 +104,8 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
             Name oldName = RESOURCE_NAME_MAPPER.apply(actualValue);
             Name newName = RESOURCE_NAME_MAPPER.apply(proxiedValue);
             if (!oldName.equals(newName)) {
-                Map<Name, LayerInfo> nameMap = getMapForValue(nameMultiMap, LayerInfoImpl.class);
+                ConcurrentHashMap<Class<LayerInfo>, Map<Name, LayerInfo>> names = nameMultiMap;
+                Map<Name, LayerInfo> nameMap = getMapForValue(names, LayerInfoImpl.class);
                 LayerInfo value = nameMap.remove(oldName);
                 // handle case of feature type without a corresponding layer
                 if (value != null) {
@@ -124,8 +125,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     protected CatalogInfoLookup<StoreInfo> stores = new CatalogInfoLookup<>(STORE_NAME_MAPPER);
 
     /** The default store keyed by workspace id */
-    protected Map<String, DataStoreInfo> defaultStores =
-            new ConcurrentHashMap<String, DataStoreInfo>();
+    protected Map<String, DataStoreInfo> defaultStores = new ConcurrentHashMap<>();
 
     /** resources */
     protected CatalogInfoLookup<ResourceInfo> resources =
@@ -149,7 +149,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     protected LayerInfoLookup layers = new LayerInfoLookup();
 
     /** maps */
-    protected List<MapInfo> maps = new CopyOnWriteArrayList<MapInfo>();
+    protected List<MapInfo> maps = new CopyOnWriteArrayList<>();
 
     /** layer groups */
     protected CatalogInfoLookup<LayerGroupInfo> layerGroups =
@@ -165,10 +165,12 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         setCatalog(catalog);
     }
 
+    @Override
     public void setCatalog(Catalog catalog) {
         this.catalog = (CatalogImpl) catalog;
     }
 
+    @Override
     public Catalog getCatalog() {
         return catalog;
     }
@@ -176,12 +178,14 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     //
     // Stores
     //
+    @Override
     public StoreInfo add(StoreInfo store) {
         resolve(store);
         stores.add(store);
         return ModificationProxy.create(store, StoreInfo.class);
     }
 
+    @Override
     public void remove(StoreInfo store) {
         store = unwrap(store);
 
@@ -190,6 +194,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         }
     }
 
+    @Override
     public void save(StoreInfo store) {
         ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(store);
 
@@ -204,15 +209,18 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         afterSaved(store, propertyNames, oldValues, newValues);
     }
 
+    @Override
     public <T extends StoreInfo> T detach(T store) {
         return store;
     }
 
+    @Override
     public <T extends StoreInfo> T getStore(String id, Class<T> clazz) {
         T store = stores.findById(id, clazz);
         return wrapInModificationProxy(store, clazz);
     }
 
+    @Override
     public <T extends StoreInfo> T getStoreByName(
             WorkspaceInfo workspace, String name, Class<T> clazz) {
 
@@ -227,6 +235,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return wrapInModificationProxy(result, clazz);
     }
 
+    @Override
     public <T extends StoreInfo> List<T> getStoresByWorkspace(
             WorkspaceInfo workspace, Class<T> clazz) {
         // TODO: support ANY_WORKSPACE?
@@ -241,10 +250,13 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return ModificationProxy.createList(matches, clazz);
     }
 
+    @Override
     public <T extends StoreInfo> List<T> getStores(Class<T> clazz) {
-        return ModificationProxy.createList(stores.list(clazz, CatalogInfoLookup.TRUE), clazz);
+        List<T> list = stores.list(clazz, CatalogInfoLookup.ptrue());
+        return ModificationProxy.createList(list, clazz);
     }
 
+    @Override
     public DataStoreInfo getDefaultDataStore(WorkspaceInfo workspace) {
         if (defaultStores.containsKey(workspace.getId())) {
             DataStoreInfo defaultStore = defaultStores.get(workspace.getId());
@@ -254,6 +266,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         }
     }
 
+    @Override
     public void setDefaultDataStore(WorkspaceInfo workspace, DataStoreInfo store) {
         DataStoreInfo old = defaultStores.get(workspace.getId());
 
@@ -283,6 +296,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     //
     // Resources
     //
+    @Override
     public ResourceInfo add(ResourceInfo resource) {
         resolve(resource);
         synchronized (resources) {
@@ -291,6 +305,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return ModificationProxy.create(resource, ResourceInfo.class);
     }
 
+    @Override
     public void remove(ResourceInfo resource) {
         resource = unwrap(resource);
         synchronized (resources) {
@@ -298,6 +313,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         }
     }
 
+    @Override
     public void save(ResourceInfo resource) {
         ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(resource);
 
@@ -313,15 +329,18 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         afterSaved(resource, propertyNames, oldValues, newValues);
     }
 
+    @Override
     public <T extends ResourceInfo> T detach(T resource) {
         return resource;
     }
 
+    @Override
     public <T extends ResourceInfo> T getResource(String id, Class<T> clazz) {
         T result = resources.findById(id, clazz);
         return wrapInModificationProxy(result, clazz);
     }
 
+    @Override
     public <T extends ResourceInfo> T getResourceByName(
             NamespaceInfo namespace, String name, Class<T> clazz) {
         T result;
@@ -335,10 +354,13 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return wrapInModificationProxy(result, clazz);
     }
 
+    @Override
     public <T extends ResourceInfo> List<T> getResources(Class<T> clazz) {
-        return ModificationProxy.createList(resources.list(clazz, CatalogInfoLookup.TRUE), clazz);
+        return ModificationProxy.createList(
+                resources.list(clazz, CatalogInfoLookup.ptrue()), clazz);
     }
 
+    @Override
     public <T extends ResourceInfo> List<T> getResourcesByNamespace(
             NamespaceInfo namespace, Class<T> clazz) {
         // TODO: support ANY_NAMESPACE?
@@ -353,6 +375,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return ModificationProxy.createList(matches, clazz);
     }
 
+    @Override
     public <T extends ResourceInfo> T getResourceByStore(
             StoreInfo store, String name, Class<T> clazz) {
         T resource = null;
@@ -383,6 +406,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         }
     }
 
+    @Override
     public <T extends ResourceInfo> List<T> getResourcesByStore(StoreInfo store, Class<T> clazz) {
         List<T> matches = resources.list(clazz, r -> store.equals(r.getStore()));
         return ModificationProxy.createList(matches, clazz);
@@ -391,6 +415,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     //
     // Layers
     //
+    @Override
     public LayerInfo add(LayerInfo layer) {
         resolve(layer);
         layers.add(layer);
@@ -398,10 +423,12 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return ModificationProxy.create(layer, LayerInfo.class);
     }
 
+    @Override
     public void remove(LayerInfo layer) {
         layers.remove(unwrap(layer));
     }
 
+    @Override
     public void save(LayerInfo layer) {
         ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(layer);
 
@@ -416,20 +443,24 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         afterSaved(layer, propertyNames, oldValues, newValues);
     }
 
+    @Override
     public LayerInfo detach(LayerInfo layer) {
         return layer;
     }
 
+    @Override
     public LayerInfo getLayer(String id) {
         LayerInfo li = layers.findById(id, LayerInfo.class);
         return wrapInModificationProxy(li, LayerInfo.class);
     }
 
+    @Override
     public LayerInfo getLayerByName(String name) {
         LayerInfo result = layers.findFirst(LayerInfo.class, li -> name.equals(li.getName()));
         return wrapInModificationProxy(result, LayerInfo.class);
     }
 
+    @Override
     public List<LayerInfo> getLayers(ResourceInfo resource) {
         // in the current setup we cannot have multiple layers associated to the same
         // resource, as they would all share the same name (the one of the resource) so
@@ -451,6 +482,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         //     return ModificationProxy.createList(matches,LayerInfo.class);
     }
 
+    @Override
     public List<LayerInfo> getLayers(StyleInfo style) {
         List<LayerInfo> matches =
                 layers.list(
@@ -459,6 +491,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return ModificationProxy.createList(matches, LayerInfo.class);
     }
 
+    @Override
     public List<LayerInfo> getLayers() {
         return ModificationProxy.createList(new ArrayList<>(layers.values()), LayerInfo.class);
     }
@@ -466,6 +499,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     //
     // Maps
     //
+    @Override
     public MapInfo add(MapInfo map) {
         resolve(map);
         synchronized (maps) {
@@ -475,12 +509,14 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return ModificationProxy.create(map, MapInfo.class);
     }
 
+    @Override
     public void remove(MapInfo map) {
         synchronized (maps) {
             maps.remove(unwrap(map));
         }
     }
 
+    @Override
     public void save(MapInfo map) {
         ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(map);
 
@@ -494,10 +530,12 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         afterSaved(map, propertyNames, oldValues, newValues);
     }
 
+    @Override
     public MapInfo detach(MapInfo map) {
         return map;
     }
 
+    @Override
     public MapInfo getMap(String id) {
         for (MapInfo map : maps) {
             if (id.equals(map.getId())) {
@@ -508,6 +546,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return null;
     }
 
+    @Override
     public MapInfo getMapByName(String name) {
         for (MapInfo map : maps) {
             if (name.equals(map.getName())) {
@@ -518,13 +557,15 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return null;
     }
 
+    @Override
     public List<MapInfo> getMaps() {
-        return ModificationProxy.createList(new ArrayList(maps), MapInfo.class);
+        return ModificationProxy.createList(new ArrayList<>(maps), MapInfo.class);
     }
 
     //
     // Layer groups
     //
+    @Override
     public LayerGroupInfo add(LayerGroupInfo layerGroup) {
         resolve(layerGroup);
         synchronized (layerGroups) {
@@ -536,6 +577,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     /* (non-Javadoc)
      * @see org.geoserver.catalog.impl.CatalogDAO#remove(org.geoserver.catalog.LayerGroupInfo)
      */
+    @Override
     public void remove(LayerGroupInfo layerGroup) {
         synchronized (layerGroups) {
             layerGroups.remove(unwrap(layerGroup));
@@ -545,6 +587,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     /* (non-Javadoc)
      * @see org.geoserver.catalog.impl.CatalogDAO#save(org.geoserver.catalog.LayerGroupInfo)
      */
+    @Override
     public void save(LayerGroupInfo layerGroup) {
         ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(layerGroup);
 
@@ -559,15 +602,18 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         afterSaved(layerGroup, propertyNames, oldValues, newValues);
     }
 
+    @Override
     public LayerGroupInfo detach(LayerGroupInfo layerGroup) {
         return layerGroup;
     }
 
+    @Override
     public List<LayerGroupInfo> getLayerGroups() {
         return ModificationProxy.createList(
                 new ArrayList<>(layerGroups.values()), LayerGroupInfo.class);
     }
 
+    @Override
     public List<LayerGroupInfo> getLayerGroupsByWorkspace(WorkspaceInfo workspace) {
         // TODO: support ANY_WORKSPACE?
 
@@ -588,6 +634,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return ModificationProxy.createList(matches, LayerGroupInfo.class);
     }
 
+    @Override
     public LayerGroupInfo getLayerGroup(String id) {
         LayerGroupInfo result = layerGroups.findById(id, LayerGroupInfo.class);
         return wrapInModificationProxy(result, LayerGroupInfo.class);
@@ -616,6 +663,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     //
     // Namespaces
     //
+    @Override
     public NamespaceInfo add(NamespaceInfo namespace) {
         resolve(namespace);
         NamespaceInfo unwrapped = unwrap(namespace);
@@ -624,6 +672,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return ModificationProxy.create(unwrapped, NamespaceInfo.class);
     }
 
+    @Override
     public void remove(NamespaceInfo namespace) {
         if (namespace.equals(defaultNamespace)) {
             defaultNamespace = null;
@@ -632,6 +681,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         namespaces.remove(namespace);
     }
 
+    @Override
     public void save(NamespaceInfo namespace) {
         ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(namespace);
 
@@ -646,14 +696,17 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         afterSaved(namespace, propertyNames, oldValues, newValues);
     }
 
+    @Override
     public NamespaceInfo detach(NamespaceInfo namespace) {
         return namespace;
     }
 
+    @Override
     public NamespaceInfo getDefaultNamespace() {
         return wrapInModificationProxy(defaultNamespace, NamespaceInfo.class);
     }
 
+    @Override
     public void setDefaultNamespace(NamespaceInfo defaultNamespace) {
         NamespaceInfo old = this.defaultNamespace;
         // fire modify event before change
@@ -673,16 +726,19 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
                 Arrays.asList(defaultNamespace));
     }
 
+    @Override
     public NamespaceInfo getNamespace(String id) {
         NamespaceInfo ns = namespaces.findById(id, NamespaceInfo.class);
         return wrapInModificationProxy(ns, NamespaceInfo.class);
     }
 
+    @Override
     public NamespaceInfo getNamespaceByPrefix(String prefix) {
         NamespaceInfo ns = namespaces.findByName(new NameImpl(prefix), NamespaceInfo.class);
         return wrapInModificationProxy(ns, NamespaceInfo.class);
     }
 
+    @Override
     public NamespaceInfo getNamespaceByURI(String uri) {
         NamespaceInfo result =
                 namespaces.findFirst(NamespaceInfo.class, ns -> uri.equals(ns.getURI()));
@@ -697,6 +753,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return ModificationProxy.createList(found, NamespaceInfo.class);
     }
 
+    @Override
     public List<NamespaceInfo> getNamespaces() {
         return ModificationProxy.createList(
                 new ArrayList<>(namespaces.values()), NamespaceInfo.class);
@@ -706,6 +763,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     // Workspaces
     //
     // Workspace methods
+    @Override
     public WorkspaceInfo add(WorkspaceInfo workspace) {
         resolve(workspace);
         WorkspaceInfo unwrapped = unwrap(workspace);
@@ -713,6 +771,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return ModificationProxy.create(unwrapped, WorkspaceInfo.class);
     }
 
+    @Override
     public void remove(WorkspaceInfo workspace) {
         if (workspace.equals(this.defaultWorkspace)) {
             this.defaultWorkspace = null;
@@ -720,6 +779,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         workspaces.remove(workspace);
     }
 
+    @Override
     public void save(WorkspaceInfo workspace) {
         // need to synch up the default store lookup
         ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(workspace);
@@ -742,14 +802,17 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         afterSaved(workspace, propertyNames, oldValues, newValues);
     }
 
+    @Override
     public WorkspaceInfo detach(WorkspaceInfo workspace) {
         return workspace;
     }
 
+    @Override
     public WorkspaceInfo getDefaultWorkspace() {
         return wrapInModificationProxy(defaultWorkspace, WorkspaceInfo.class);
     }
 
+    @Override
     public void setDefaultWorkspace(WorkspaceInfo workspace) {
         WorkspaceInfo old = defaultWorkspace;
         // fire modify event before change
@@ -769,16 +832,19 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
                 Arrays.asList(workspace));
     }
 
+    @Override
     public List<WorkspaceInfo> getWorkspaces() {
         return ModificationProxy.createList(
                 new ArrayList<>(workspaces.values()), WorkspaceInfo.class);
     }
 
+    @Override
     public WorkspaceInfo getWorkspace(String id) {
         WorkspaceInfo ws = workspaces.findById(id, WorkspaceInfo.class);
         return wrapInModificationProxy(ws, WorkspaceInfo.class);
     }
 
+    @Override
     public WorkspaceInfo getWorkspaceByName(String name) {
         WorkspaceInfo ws = workspaces.findByName(new NameImpl(name), WorkspaceInfo.class);
         return wrapInModificationProxy(ws, WorkspaceInfo.class);
@@ -787,6 +853,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     //
     // Styles
     //
+    @Override
     public StyleInfo add(StyleInfo style) {
         resolve(style);
         synchronized (styles) {
@@ -795,12 +862,14 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return ModificationProxy.create(style, StyleInfo.class);
     }
 
+    @Override
     public void remove(StyleInfo style) {
         synchronized (styles) {
             styles.remove(unwrap(style));
         }
     }
 
+    @Override
     public void save(StyleInfo style) {
         ModificationProxy h = (ModificationProxy) Proxy.getInvocationHandler(style);
 
@@ -815,15 +884,18 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         afterSaved(style, propertyNames, oldValues, newValues);
     }
 
+    @Override
     public StyleInfo detach(StyleInfo style) {
         return style;
     }
 
+    @Override
     public StyleInfo getStyle(String id) {
         StyleInfo match = styles.findById(id, StyleInfo.class);
         return wrapInModificationProxy(match, StyleInfo.class);
     }
 
+    @Override
     public StyleInfo getStyleByName(String name) {
         StyleInfo match = styles.findByName(new NameImpl(null, name), StyleInfo.class);
         if (match == null) {
@@ -849,10 +921,12 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         }
     }
 
+    @Override
     public List<StyleInfo> getStyles() {
         return ModificationProxy.createList(new ArrayList<>(styles.values()), StyleInfo.class);
     }
 
+    @Override
     public List<StyleInfo> getStylesByWorkspace(WorkspaceInfo workspace) {
         // TODO: support ANY_WORKSPACE?
         List<StyleInfo> matches;
@@ -872,6 +946,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         return ModificationProxy.createList(matches, StyleInfo.class);
     }
 
+    @Override
     public void dispose() {
         if (stores != null) stores.clear();
         if (defaultStores != null) defaultStores.clear();
@@ -884,6 +959,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         if (styles != null) styles.clear();
     }
 
+    @Override
     public void resolve() {
         // JD creation checks are done here b/c when xstream depersists
         // some members may be left null
@@ -946,13 +1022,14 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
 
         // maps
         if (maps == null) {
-            maps = new ArrayList<MapInfo>();
+            maps = new ArrayList<>();
         }
         for (MapInfo m : maps) {
             resolve(m);
         }
     }
 
+    @Override
     public void syncTo(CatalogFacade dao) {
         dao = ProxyUtils.unwrap(dao, LockingCatalogFacade.class);
         if (dao instanceof DefaultCatalogFacade) {
@@ -1080,7 +1157,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
 
         Iterator<T> iterator = iterable.iterator();
 
-        return new CloseableIteratorAdapter<T>(iterator);
+        return new CloseableIteratorAdapter<>(iterator);
     }
 
     @SuppressWarnings("unchecked")
@@ -1089,23 +1166,23 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         List<T> all;
 
         if (NamespaceInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) namespaces.list(of, toPredicate(filter));
+            all = namespaces.list(of, toPredicate(filter));
         } else if (WorkspaceInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) workspaces.list(of, toPredicate(filter));
+            all = workspaces.list(of, toPredicate(filter));
         } else if (StoreInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) stores.list(of, toPredicate(filter));
+            all = stores.list(of, toPredicate(filter));
         } else if (ResourceInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) resources.list(of, toPredicate(filter));
+            all = resources.list(of, toPredicate(filter));
         } else if (LayerInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) layers.list(of, toPredicate(filter));
+            all = layers.list(of, toPredicate(filter));
         } else if (LayerGroupInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) layerGroups.list(of, toPredicate(filter));
+            all = layerGroups.list(of, toPredicate(filter));
         } else if (PublishedInfo.class.isAssignableFrom(of)) {
             all = new ArrayList<>();
             all.addAll((List<T>) layers.list(LayerInfo.class, toPredicate(filter)));
             all.addAll((List<T>) layerGroups.list(LayerGroupInfo.class, toPredicate(filter)));
         } else if (StyleInfo.class.isAssignableFrom(of)) {
-            all = (List<T>) styles.list(of, toPredicate(filter));
+            all = styles.list(of, toPredicate(filter));
         } else if (MapInfo.class.isAssignableFrom(of)) {
             all = (List<T>) new ArrayList<>(maps);
         } else {
@@ -1130,29 +1207,27 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
         if (filter != null && filter != Filter.INCLUDE) {
             return o -> filter.evaluate(o);
         } else {
-            return CatalogInfoLookup.TRUE;
+            return CatalogInfoLookup.ptrue();
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Comparator<Object> comparator(final SortBy sortOrder) {
-        return new Comparator<Object>() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                Object v1 = OwsUtils.get(o1, sortOrder.getPropertyName().getPropertyName());
-                Object v2 = OwsUtils.get(o2, sortOrder.getPropertyName().getPropertyName());
-                if (v1 == null) {
-                    if (v2 == null) {
-                        return 0;
-                    } else {
-                        return -1;
-                    }
-                } else if (v2 == null) {
-                    return 1;
+        return (o1, o2) -> {
+            Object v1 = OwsUtils.get(o1, sortOrder.getPropertyName().getPropertyName());
+            Object v2 = OwsUtils.get(o2, sortOrder.getPropertyName().getPropertyName());
+            if (v1 == null) {
+                if (v2 == null) {
+                    return 0;
+                } else {
+                    return -1;
                 }
-                Comparable c1 = (Comparable) v1;
-                Comparable c2 = (Comparable) v2;
-                return c1.compareTo(c2);
+            } else if (v2 == null) {
+                return 1;
             }
+            Comparable c1 = (Comparable) v1;
+            Comparable c2 = (Comparable) v2;
+            return c1.compareTo(c2);
         };
     }
 }

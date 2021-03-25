@@ -132,6 +132,7 @@ public class GeoServerExtensionsHelper {
         Boolean isSpringContext;
         Boolean active = false;
 
+        @Override
         public Statement apply(Statement base, Description description) {
             return statement(base);
         }

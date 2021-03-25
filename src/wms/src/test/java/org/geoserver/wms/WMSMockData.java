@@ -45,8 +45,10 @@ import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.util.ProgressListener;
 
 /**
@@ -76,16 +78,12 @@ public class WMSMockData {
 
     private StyleInfoImpl defaultStyle;
 
-    private GetMapOutputFormat mockMapProducer;
-
     private GeoServer mockGeoServer;
 
     private WMS mockWMS;
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({"deprecation", "PMD.JUnit4TestShouldUseBeforeAnnotation"})
     public void setUp() throws Exception {
-        mockMapProducer = new DummyRasterMapProducer();
-
         catalog = new CatalogImpl();
 
         namespaceInfo = new NamespaceInfoImpl();
@@ -182,11 +180,13 @@ public class WMSMockData {
         }
 
         /** @see org.geoserver.wms.GetMapOutputFormat#getOutputFormatNames() */
+        @Override
         public Set<String> getOutputFormatNames() {
             return Collections.singleton(MIME_TYPE);
         }
 
         /** @see org.geoserver.wms.GetMapOutputFormat#getMimeType() */
+        @Override
         public String getMimeType() {
             return MIME_TYPE;
         }
@@ -195,6 +195,7 @@ public class WMSMockData {
          * @see
          *     org.geoserver.wms.map.RasterMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
          */
+        @Override
         public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
             produceMapCalled = true;
             return new WebMap(mapContent) {};
@@ -217,6 +218,7 @@ public class WMSMockData {
         public void write(Object value, OutputStream output, Operation operation)
                 throws IOException, ServiceException {}
 
+        @Override
         public MapProducerCapabilities getCapabilities(String format) {
             return new MapProducerCapabilities(true, true, true, true, MIME_TYPE);
         }
@@ -227,9 +229,8 @@ public class WMSMockData {
     }
 
     public GetMapRequest createRequest() {
-        GetMapRequest request;
 
-        request = new GetMapRequest();
+        GetMapRequest request = new GetMapRequest();
         request.setFormat(DummyRasterMapProducer.MIME_TYPE);
         request.setWidth(512);
         request.setHeight(256);
@@ -242,7 +243,7 @@ public class WMSMockData {
         } catch (IOException e) {
             throw new RuntimeException("shouldn't happen", e);
         }
-        request.setRawKvp(new HashMap<String, String>());
+        request.setRawKvp(new HashMap<>());
         request.setBaseUrl("http://example.geoserver.org/geoserver");
 
         return request;
@@ -262,7 +263,8 @@ public class WMSMockData {
                      * Override to avoid going down to the catalog and geoserver resource loader etc
                      */
                     @Override
-                    public FeatureSource getFeatureSource(ProgressListener listener, Hints hints) {
+                    public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
+                            ProgressListener listener, Hints hints) {
                         try {
                             return dataStore.getFeatureSource(getQualifiedName());
                         } catch (IOException e) {
@@ -307,8 +309,8 @@ public class WMSMockData {
 
     public SimpleFeature addFeature(final SimpleFeatureType featureType, final Object[] values)
             throws IOException, ParseException {
-        SimpleFeatureStore fs;
-        fs = (SimpleFeatureStore) dataStore.getFeatureSource(featureType.getName());
+        SimpleFeatureStore fs =
+                (SimpleFeatureStore) dataStore.getFeatureSource(featureType.getName());
 
         SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(featureType);
         sfb.addAll(values);

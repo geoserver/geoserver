@@ -23,6 +23,7 @@ public class JAIToolsRangePPIO extends LiteralPPIO {
     /** Parses a single range from a string */
     public static Range<Double> parseRange(String sRange) {
         try {
+            @SuppressWarnings("unchecked")
             Range<Double> result = CONVERTER.convert(sRange, Range.class);
             if (result == null) {
                 throw new IllegalArgumentException("Bad range definition '" + sRange + "'");
@@ -39,11 +40,13 @@ public class JAIToolsRangePPIO extends LiteralPPIO {
     }
 
     /** Decodes the parameter (as a string) to its internal object implementation. */
+    @Override
     public Object decode(String value) throws Exception {
         return parseRange(value);
     }
 
     /** Encodes the internal object representation of a parameter as a string. */
+    @Override
     public String encode(Object value) throws Exception {
         throw new UnsupportedOperationException("JaiTools range not supported out of the box");
     }

@@ -17,9 +17,7 @@ import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.IModelComparator;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.ResourceInfo;
@@ -57,12 +55,12 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
         container.setOutputMarkupId(true);
         add(container);
 
+        UniqueResourceIdentifiersProvider provider =
+                new UniqueResourceIdentifiersProvider(identifiersModel.getObject());
+
         // the link list
         identifiers =
-                new GeoServerTablePanel<UniqueResourceIdentifier>(
-                        "identifiers",
-                        new UniqueResourceIdentifiersProvider(identifiersModel),
-                        false) {
+                new GeoServerTablePanel<UniqueResourceIdentifier>("identifiers", provider, false) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -80,8 +78,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                                     new FormComponentFeedbackBorder("border");
                             codeFragment.add(codeBorder);
                             TextField<String> code =
-                                    new TextField<String>(
-                                            "txt", new PropertyModel<String>(itemModel, "code"));
+                                    new TextField<>("txt", new PropertyModel<>(itemModel, "code"));
                             code.setLabel(
                                     new ParamResourceModel(
                                             "th.code", UniqueResourceIdentifiersEditor.this));
@@ -98,9 +95,8 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                                     new FormComponentFeedbackBorder("border");
                             nsFragment.add(namespaceBorder);
                             TextField<String> namespace =
-                                    new TextField<String>(
-                                            "txt",
-                                            new PropertyModel<String>(itemModel, "namespace"));
+                                    new TextField<>(
+                                            "txt", new PropertyModel<>(itemModel, "namespace"));
                             namespace.setLabel(
                                     new ParamResourceModel(
                                             "th.namespace", UniqueResourceIdentifiersEditor.this));
@@ -117,9 +113,8 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                                     new FormComponentFeedbackBorder("border");
                             urlFragment.add(namespaceBorder);
                             TextField<String> url =
-                                    new TextField<String>(
-                                            "txt",
-                                            new PropertyModel<String>(itemModel, "metadataURL"));
+                                    new TextField<>(
+                                            "txt", new PropertyModel<>(itemModel, "metadataURL"));
                             url.add(new URIValidator());
                             namespaceBorder.add(url);
                             return urlFragment;
@@ -136,10 +131,8 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                                         protected void onClick(
                                                 AjaxRequestTarget target, Form form) {
                                             UniqueResourceIdentifiers identifiers =
-                                                    identifiersModel.getObject();
-                                            UniqueResourceIdentifier sdi =
-                                                    (UniqueResourceIdentifier)
-                                                            itemModel.getObject();
+                                                    provider.getItems();
+                                            UniqueResourceIdentifier sdi = itemModel.getObject();
                                             identifiers.remove(sdi);
                                             target.add(container);
                                         }
@@ -162,8 +155,9 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form form) {
-                        UniqueResourceIdentifiers identifiers = identifiersModel.getObject();
-                        identifiers.add(new UniqueResourceIdentifier());
+                        UniqueResourceIdentifiersProvider provider =
+                                (UniqueResourceIdentifiersProvider) identifiers.getDataProvider();
+                        provider.getItems().add(new UniqueResourceIdentifier());
 
                         target.add(container);
                     }
@@ -184,43 +178,24 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
         // to stomach... however, could not find other way to add a validation to an editabl table,
         // grrr
         add(
-                new IValidator<UniqueResourceIdentifiers>() {
-
-                    @Override
-                    public void validate(IValidatable<UniqueResourceIdentifiers> validatable) {
-                        UniqueResourceIdentifiers identifiers = identifiersModel.getObject();
-                        if (identifiers.size() == 0) {
-                            ValidationError error = new ValidationError();
-                            String message =
-                                    new ParamResourceModel(
-                                                    "noSpatialDatasetIdentifiers",
-                                                    UniqueResourceIdentifiersEditor.this)
-                                            .getString();
-                            error.setMessage(message);
-                            validatable.error(error);
-                        }
-                    }
-                });
+                (IValidator<UniqueResourceIdentifiers>)
+                        validatable -> {
+                            UniqueResourceIdentifiers identifiers = provider.getItems();
+                            if (identifiers.size() == 0) {
+                                ValidationError error = new ValidationError();
+                                String message =
+                                        new ParamResourceModel("noSpatialDatasetIdentifiers", this)
+                                                .getString();
+                                error.setMessage(message);
+                                validatable.error(error);
+                            }
+                        });
     }
 
     @Override
     public void convertInput() {
         UniqueResourceIdentifiersProvider provider =
                 (UniqueResourceIdentifiersProvider) identifiers.getDataProvider();
-        UniqueResourceIdentifiers ids = provider.model.getObject();
-        setConvertedInput(ids);
-    }
-
-    @Override
-    public IModelComparator getModelComparator() {
-        // if we don't use this one, the call to setObject won't be made, and the metadata
-        // map won't be updated
-        return new IModelComparator() {
-
-            @Override
-            public boolean compare(Component component, Object newObject) {
-                return false;
-            }
-        };
+        setConvertedInput(provider.getItems());
     }
 }

@@ -51,7 +51,7 @@ public class RecordCustomizer extends FeatureCustomizer {
     @Override
     public void customizeFeature(Feature feature, CatalogInfo resource) {
         CloseableIterator<String> links = null;
-        List<Property> newReferencesList = new ArrayList<Property>();
+        List<Property> newReferencesList = new ArrayList<>();
         String link = null;
         try {
             links = downloadLinkHandler.generateDownloadLinks(resource);
@@ -73,7 +73,8 @@ public class RecordCustomizer extends FeatureCustomizer {
             }
         }
 
-        List<Property> propertyList = new ArrayList<Property>();
+        List<Property> propertyList = new ArrayList<>();
+        @SuppressWarnings("unchecked")
         List<Property> oldValues = (List<Property>) feature.getValue();
         Iterator<Property> oldValuesIterator = oldValues.iterator();
         boolean insertReferences = false;

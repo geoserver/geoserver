@@ -13,7 +13,7 @@ import org.geoserver.security.CatalogMode;
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.test.http.MockHttpClient;
 import org.geoserver.test.http.MockHttpResponse;
-import org.geotools.data.ows.HTTPClient;
+import org.geotools.http.HTTPClient;
 import org.geotools.ows.ServiceException;
 import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.ows.wmts.map.WMTSCoverageReader;
@@ -54,11 +54,12 @@ public class SecuredWMTSLayerTest {
         HTTPClient client = TestHttpClientProvider.get(capabilitiesURL);
 
         WebMapTileServer wmts =
-                new SecuredWebMapTileServer(new WebMapTileServer(serverURL, client, null));
+                new SecuredWebMapTileServer(new WebMapTileServer(serverURL, client));
         WMTSLayer layer =
                 new SecuredWMTSLayer(
                         wmts.getCapabilities().getLayerList().iterator().next(), policy);
 
-        WMTSCoverageReader coverageReader = new WMTSCoverageReader(wmts, layer);
+        // the test is to create this
+        new WMTSCoverageReader(wmts, layer);
     }
 }

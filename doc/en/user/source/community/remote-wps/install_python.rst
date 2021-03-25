@@ -16,7 +16,7 @@ The source code repository is available at the following address:
 
   https://github.com/geoserver/wps-remote
 
-The source code is available on the **master** branch.
+The source code is available on the main development (**main**) branch.
 
 How The System Works
 ++++++++++++++++++++

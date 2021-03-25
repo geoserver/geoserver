@@ -24,9 +24,9 @@ import org.geotools.data.Transaction;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.PropertyName;
@@ -46,7 +46,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
 
     @Override
     public RecordDescriptor[] getRecordDescriptors() throws IOException {
-        ArrayList<RecordDescriptor> ft = new ArrayList<RecordDescriptor>(descriptorByType.values());
+        ArrayList<RecordDescriptor> ft = new ArrayList<>(descriptorByType.values());
         return ft.toArray(new RecordDescriptor[ft.size()]);
     }
 
@@ -63,7 +63,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         final PropertyName property = rd.translateProperty(attributeName);
         AttributeDescriptor ad = (AttributeDescriptor) property.evaluate(rd.getFeatureType());
         if (ad == null) {
-            return new CloseableIteratorAdapter<String>(new ArrayList<String>().iterator());
+            return new CloseableIteratorAdapter<>(new ArrayList<String>().iterator());
         }
 
         // build the query against csw:record
@@ -72,38 +72,33 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         q.setProperties(Arrays.asList(translateProperty(rd, attributeName)));
 
         // collect the values without duplicates
-        final Set<String> values = new HashSet<String>();
+        final Set<String> values = new HashSet<>();
         getRecords(q, Transaction.AUTO_COMMIT, rd)
                 .accepts(
-                        new FeatureVisitor() {
-
-                            @Override
-                            public void visit(Feature feature) {
-                                Property prop = (Property) property.evaluate(feature);
-                                if (prop != null)
-                                    try {
-                                        values.add(
-                                                new String(
-                                                        ((String) prop.getValue())
-                                                                .getBytes("ISO-8859-1"),
-                                                        "UTF-8"));
-                                    } catch (UnsupportedEncodingException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                            }
+                        feature -> {
+                            Property prop = (Property) property.evaluate(feature);
+                            if (prop != null)
+                                try {
+                                    values.add(
+                                            new String(
+                                                    ((String) prop.getValue())
+                                                            .getBytes("ISO-8859-1"),
+                                                    "UTF-8"));
+                                } catch (UnsupportedEncodingException e) {
+                                    throw new RuntimeException(e);
+                                }
                         },
                         null);
 
         // sort and return
-        List<String> result = new ArrayList(values);
+        List<String> result = new ArrayList<>(values);
         Collections.sort(result);
-        return new CloseableIteratorAdapter<String>(result.iterator());
+        return new CloseableIteratorAdapter<>(result.iterator());
     }
 
     @Override
-    public FeatureCollection getRecords(Query q, Transaction t, RecordDescriptor rdOutput)
-            throws IOException {
-        RecordDescriptor rd;
+    public FeatureCollection<FeatureType, Feature> getRecords(
+            Query q, Transaction t, RecordDescriptor rdOutput) throws IOException {
         Name typeName = null;
         if (q.getTypeName() == null) {
             typeName = CSWRecordDescriptor.RECORD_DESCRIPTOR.getName();
@@ -112,7 +107,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         } else {
             typeName = new NameImpl(q.getTypeName());
         }
-        rd = descriptorByType.get(typeName);
+        RecordDescriptor rd = descriptorByType.get(typeName);
 
         if (rd == null) {
             throw new IOException(q.getTypeName() + " is not a supported type");
@@ -121,7 +116,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
         return getRecordsInternal(rd, rdOutput, q, t);
     }
 
-    public abstract FeatureCollection getRecordsInternal(
+    public abstract FeatureCollection<FeatureType, Feature> getRecordsInternal(
             RecordDescriptor rd, RecordDescriptor rdOutput, Query q, Transaction t)
             throws IOException;
 

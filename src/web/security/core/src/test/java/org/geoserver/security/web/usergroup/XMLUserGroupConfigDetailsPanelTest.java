@@ -5,7 +5,11 @@
  */
 package org.geoserver.security.web.usergroup;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.Component;
 import org.geoserver.security.validation.PasswordValidatorImpl;
@@ -160,7 +164,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         assertEquals(PasswordValidatorImpl.DEFAULT_NAME, xmlConfig.getPasswordPolicyName());
         assertEquals("abc.xml", xmlConfig.getFileName());
         assertEquals(5000, xmlConfig.getCheckInterval());
-        assertEquals(true, xmlConfig.isValidating());
+        assertTrue(xmlConfig.isValidating());
 
         // reload from manager
         xmlConfig =
@@ -172,7 +176,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         assertEquals(PasswordValidatorImpl.DEFAULT_NAME, xmlConfig.getPasswordPolicyName());
         assertEquals("abc.xml", xmlConfig.getFileName());
         assertEquals(5000, xmlConfig.getCheckInterval());
-        assertEquals(true, xmlConfig.isValidating());
+        assertTrue(xmlConfig.isValidating());
 
         // test add with name clash
         clickAddNew();
@@ -211,7 +215,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         assertEquals(PasswordValidatorImpl.DEFAULT_NAME, xmlConfig.getPasswordPolicyName());
         assertEquals("users.xml", xmlConfig.getFileName());
         assertEquals(10000, xmlConfig.getCheckInterval());
-        assertEquals(true, xmlConfig.isValidating());
+        assertTrue(xmlConfig.isValidating());
 
         clickNamedServiceConfig("default2");
 
@@ -234,7 +238,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         assertEquals(PasswordValidatorImpl.MASTERPASSWORD_NAME, xmlConfig.getPasswordPolicyName());
         assertEquals("abc.xml", xmlConfig.getFileName());
         assertEquals(5001, xmlConfig.getCheckInterval());
-        assertEquals(false, xmlConfig.isValidating());
+        assertFalse(xmlConfig.isValidating());
 
         // reload from manager
         xmlConfig =
@@ -244,7 +248,7 @@ public class XMLUserGroupConfigDetailsPanelTest extends AbstractSecurityNamedSer
         assertEquals(PasswordValidatorImpl.MASTERPASSWORD_NAME, xmlConfig.getPasswordPolicyName());
         assertEquals("abc.xml", xmlConfig.getFileName());
         assertEquals(5001, xmlConfig.getCheckInterval());
-        assertEquals(false, xmlConfig.isValidating());
+        assertFalse(xmlConfig.isValidating());
     }
 
     @Test

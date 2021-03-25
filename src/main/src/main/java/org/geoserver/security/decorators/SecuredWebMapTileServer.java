@@ -17,7 +17,6 @@ import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wms.request.GetFeatureInfoRequest;
 import org.geotools.ows.wms.response.GetFeatureInfoResponse;
 import org.geotools.ows.wmts.WebMapTileServer;
-import org.geotools.ows.wmts.model.WMTSCapabilities;
 import org.geotools.ows.wmts.request.GetTileRequest;
 import org.geotools.tile.Tile;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -52,6 +51,7 @@ public class SecuredWebMapTileServer extends WebMapTileServer {
     //
     // -------------------------------------------------------------------------------------------
 
+    @Override
     public GetCapabilitiesResponse issueRequest(GetCapabilitiesRequest request)
             throws IOException, ServiceException {
         if (delegate != null) {
@@ -69,11 +69,6 @@ public class SecuredWebMapTileServer extends WebMapTileServer {
     @Override
     public Set<Tile> issueRequest(GetTileRequest request) throws ServiceException {
         return delegate.issueRequest(request);
-    }
-
-    @Override
-    public WMTSCapabilities getCapabilities() {
-        return delegate.getCapabilities();
     }
 
     @Override

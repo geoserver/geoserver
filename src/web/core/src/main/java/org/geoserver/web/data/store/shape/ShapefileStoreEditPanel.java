@@ -11,6 +11,7 @@ import static org.geotools.data.shapefile.ShapefileDataStoreFactory.DBFCHARSET;
 import static org.geotools.data.shapefile.ShapefileDataStoreFactory.MEMORY_MAPPED;
 import static org.geotools.data.shapefile.ShapefileDataStoreFactory.URLP;
 
+import java.util.Map;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -39,7 +40,8 @@ public class ShapefileStoreEditPanel extends StoreEditPanel {
         final IModel model = storeEditForm.getModel();
         setDefaultModel(model);
 
-        final IModel paramsModel = new PropertyModel(model, "connectionParameters");
+        final IModel<Map<String, Object>> paramsModel =
+                new PropertyModel<>(model, "connectionParameters");
 
         Panel file = buildFileParamPanel(paramsModel);
         add(file);
@@ -47,36 +49,36 @@ public class ShapefileStoreEditPanel extends StoreEditPanel {
         add(
                 new CharsetPanel(
                         "charset",
-                        new MapModel(paramsModel, DBFCHARSET.key),
+                        new MapModel<>(paramsModel, DBFCHARSET.key),
                         new ParamResourceModel("charset", this),
                         false));
 
         add(
                 new CheckBoxParamPanel(
                         "memoryMapped",
-                        new MapModel(paramsModel, MEMORY_MAPPED.key),
+                        new MapModel<>(paramsModel, MEMORY_MAPPED.key),
                         new ParamResourceModel("memoryMapped", this)));
         add(
                 new CheckBoxParamPanel(
                         "cacheMemoryMaps",
-                        new MapModel(paramsModel, CACHE_MEMORY_MAPS.key),
+                        new MapModel<>(paramsModel, CACHE_MEMORY_MAPS.key),
                         new ParamResourceModel("cacheMemoryMaps", this)));
 
         add(
                 new CheckBoxParamPanel(
                         "spatialIndex",
-                        new MapModel(paramsModel, CREATE_SPATIAL_INDEX.key),
+                        new MapModel<>(paramsModel, CREATE_SPATIAL_INDEX.key),
                         new ParamResourceModel("spatialIndex", this)));
     }
 
-    protected Panel buildFileParamPanel(final IModel paramsModel) {
+    protected Panel buildFileParamPanel(final IModel<Map<String, Object>> paramsModel) {
         FileParamPanel file =
                 new FileParamPanel(
                         "url",
-                        new MapModel(paramsModel, URLP.key),
+                        new MapModel<>(paramsModel, URLP.key),
                         new ParamResourceModel("shapefile", this),
                         true);
-        file.setFileFilter(new Model(new ExtensionFileFilter(".shp")));
+        file.setFileFilter(new Model<>(new ExtensionFileFilter(".shp")));
         file.getFormComponent().add(new FileExistsValidator());
         return file;
     }

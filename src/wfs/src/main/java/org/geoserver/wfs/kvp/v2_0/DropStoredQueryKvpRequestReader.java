@@ -21,12 +21,14 @@ public class DropStoredQueryKvpRequestReader extends WFSKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         EObject obj = (EObject) super.read(request, kvp, rawKvp);
 
         // handle storedQuery_id parameter
         if (kvp.containsKey("storedQuery_id")) {
             // we get it back as a list of uri
+            @SuppressWarnings("unchecked")
             List<URI> list = (List<URI>) kvp.get("storedQuery_id");
             EMFUtils.set(obj, "id", list.get(0).toString());
         }

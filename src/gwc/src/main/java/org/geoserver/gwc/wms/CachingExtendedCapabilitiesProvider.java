@@ -46,6 +46,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
     }
 
     /** @see org.geoserver.wms.ExtendedCapabilitiesProvider#getSchemaLocations(String) */
+    @Override
     public String[] getSchemaLocations(String schemaBaseURL) {
         return new String[0];
     }
@@ -54,6 +55,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
      * @return {@code TileSet*}
      * @see org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots
      */
+    @Override
     public List<String> getVendorSpecificCapabilitiesRoots(final GetCapabilitiesRequest request) {
         if (gwc.getConfig().isDirectWMSIntegrationEnabled() && isTiled(request)) {
             return Collections.singletonList("TileSet*");
@@ -62,17 +64,19 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
     }
 
     private boolean isTiled(GetCapabilitiesRequest request) {
-        return Boolean.valueOf(request.getRawKvp().get("TILED")).booleanValue();
+        return Boolean.valueOf(request.getRawKvp().get("TILED")).booleanValue()
+                || !gwc.getConfig().isRequireTiledParameter();
     }
 
     /**
      * @see
      *     org.geoserver.wms.ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls(GetCapabilitiesRequest)
      */
+    @Override
     public List<String> getVendorSpecificCapabilitiesChildDecls(
             final GetCapabilitiesRequest request) {
         if (gwc.getConfig().isDirectWMSIntegrationEnabled() && isTiled(request)) {
-            List<String> wmscElements = new ArrayList<String>();
+            List<String> wmscElements = new ArrayList<>();
             wmscElements.add(
                     "<!ELEMENT TileSet (SRS, BoundingBox?, Resolutions, Width, Height, Format, Layers*, Styles*) >");
             wmscElements.add("<!ELEMENT Resolutions (#PCDATA) >");
@@ -91,6 +95,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
      * @see
      *     org.geoserver.wms.ExtendedCapabilitiesProvider#registerNamespaces(org.xml.sax.helpers.NamespaceSupport)
      */
+    @Override
     public void registerNamespaces(NamespaceSupport namespaces) {
         // nothing to do
     }
@@ -98,6 +103,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
     /**
      * @see org.geoserver.wms.ExtendedCapabilitiesProvider#encode(Translator, ServiceInfo, Object)
      */
+    @Override
     public void encode(final Translator tx, final WMSInfo wms, final GetCapabilitiesRequest request)
             throws IOException {
         if (!gwc.getConfig().isDirectWMSIntegrationEnabled()) {
@@ -109,8 +115,8 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
         }
 
         final String namespacePrefixFilter = request.getNamespace();
-        Iterable<? extends TileLayer> tileLayers;
-        tileLayers = gwc.getTileLayersByNamespacePrefix(namespacePrefixFilter);
+        Iterable<? extends TileLayer> tileLayers =
+                gwc.getTileLayersByNamespacePrefix(namespacePrefixFilter);
 
         final String nsPrefix;
         {
@@ -149,8 +155,8 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
         String srsStr = grid.getSRS().toString();
         StringBuilder resolutionsStr = new StringBuilder();
         double[] res = grid.getResolutions();
-        for (int i = 0; i < res.length; i++) {
-            resolutionsStr.append(Double.toString(res[i]) + " ");
+        for (double re : res) {
+            resolutionsStr.append(Double.toString(re) + " ");
         }
 
         String[] bs = boundsPrep(grid.getCoverageBestFitBounds());
@@ -161,8 +167,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
         tx.chars(srsStr);
         tx.end("SRS");
 
-        AttributesImpl atts;
-        atts = new AttributesImpl();
+        AttributesImpl atts = new AttributesImpl();
         atts.addAttribute("", "SRS", "SRS", "", srsStr);
         atts.addAttribute("", "minx", "minx", "", bs[0]);
         atts.addAttribute("", "miny", "miny", "", bs[1]);

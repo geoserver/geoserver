@@ -1,0 +1,32 @@
+name: Docs CI
+
+on: [pull_request]
+
+env:
+  MAVEN_OPTS: -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Xmx512m -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS
+
+jobs:
+  docs:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - uses: BSFishy/pip-action@v1
+      with:
+        packages: |
+          sphinx
+          requests
+    - name: Build docs
+      run: mvn -f doc/en install
+  docs-zhcn:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - uses: BSFishy/pip-action@v1
+      with:
+        packages: |
+          sphinx
+          requests
+    - name: Build docs
+      run: mvn -f doc/zhCN install

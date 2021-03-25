@@ -27,7 +27,7 @@ public class TextDecorationTest {
     public void testExpandRequestVariable() throws Exception {
         // setup environment
         Request request = new Request();
-        Map kvp = new CaseInsensitiveMap(new HashMap());
+        Map<String, Object> kvp = new CaseInsensitiveMap<>(new HashMap<>());
         kvp.put("time", "2008-10-31T00:00:00.000Z");
         request.setRawKvp(kvp);
         Dispatcher.REQUEST.set(request);

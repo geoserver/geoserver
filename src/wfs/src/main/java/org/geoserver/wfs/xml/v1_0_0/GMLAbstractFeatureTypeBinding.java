@@ -39,6 +39,7 @@ public final class GMLAbstractFeatureTypeBinding
         this.catalog = catalog;
     }
 
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         // pre process parsee tree to make sure types match up
         FeatureTypeInfo meta =
@@ -52,7 +53,7 @@ public final class GMLAbstractFeatureTypeBinding
                 if (pd instanceof AttributeDescriptor) {
                     AttributeDescriptor attributeType = (AttributeDescriptor) pd;
                     String name = attributeType.getLocalName();
-                    Class type = attributeType.getType().getBinding();
+                    Class<?> type = attributeType.getType().getBinding();
 
                     if ("boundedBy".equals(name)) {
                         Node boundedByNode = node.getChild("boundedBy");

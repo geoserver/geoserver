@@ -4,7 +4,9 @@
  */
 package org.geoserver.wcs2_0.kvp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import net.opengis.wcs20.RangeItemType;
 import net.opengis.wcs20.RangeSubsetType;

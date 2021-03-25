@@ -147,7 +147,6 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
                 .getRequest()
                 .getGetLegendGraphic()
                 .setGet(rasterLegendresource);
-        GetLegendGraphicRequest getLegend = webMapServer.createGetLegendGraphicRequest();
 
         BufferedImage image =
                 getAsImage(

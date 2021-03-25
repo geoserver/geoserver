@@ -32,6 +32,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -49,18 +50,21 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
         super(gs);
     }
 
-    public Class getElementClass() {
+    @Override
+    public Class<Delete> getElementClass() {
         return Delete.class;
     }
 
     /**
      * @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject)
      */
+    @Override
     public QName[] getTypeNames(TransactionRequest request, TransactionElement element)
             throws WFSTransactionException {
         return new QName[] {element.getTypeName()};
     }
 
+    @Override
     public void checkValidity(TransactionElement delete, Map featureTypeInfos)
             throws WFSTransactionException {
         if (!getInfo().getServiceLevel().getOps().contains(WFSInfo.Operation.TRANSACTION_DELETE)) {
@@ -75,6 +79,7 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
         }
     }
 
+    @Override
     public void execute(
             TransactionElement delete,
             TransactionRequest request,
@@ -128,8 +133,7 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
             if ((request.getLockId() != null)
                     && store instanceof FeatureLocking
                     && (request.isReleaseActionSome())) {
-                SimpleFeatureLocking locking;
-                locking = (SimpleFeatureLocking) store;
+                SimpleFeatureLocking locking = (SimpleFeatureLocking) store;
 
                 // TODO: Revisit Lock/Delete interaction in gt2
                 // This a bit better and what should be done, we
@@ -144,13 +148,13 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                 // would be extra work when doing release mode ALL.
                 //
                 DataStore data = (DataStore) store.getDataStore();
-                FeatureWriter<SimpleFeatureType, SimpleFeature> writer;
-                writer = data.getFeatureWriter(typeName, filter, store.getTransaction());
+                FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
+                        data.getFeatureWriter(typeName, filter, store.getTransaction());
 
                 try {
                     while (writer.hasNext()) {
                         String fid = writer.next().getID();
-                        Set featureIds = new HashSet();
+                        Set<FeatureId> featureIds = new HashSet<>();
                         featureIds.add(factory.featureId(fid));
                         locking.unLockFeatures(factory.id(featureIds));
                         writer.remove();

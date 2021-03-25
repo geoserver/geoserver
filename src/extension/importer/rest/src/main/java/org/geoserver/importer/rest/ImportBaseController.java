@@ -43,8 +43,7 @@ public class ImportBaseController extends RestBaseController {
             }
             throw new RestException("No import specified", HttpStatus.BAD_REQUEST);
         } else {
-            ImportContext context = null;
-            context = importer.getContext(imp);
+            ImportContext context = importer.getContext(imp);
             if (context == null && !optional) {
                 throw new RestException("No such import: " + imp.toString(), HttpStatus.NOT_FOUND);
             }
@@ -102,7 +101,7 @@ public class ImportBaseController extends RestBaseController {
         ImportTransform tx = null;
         if (transformId != null) {
             try {
-                tx = (ImportTransform) task.getTransform().getTransforms().get(transformId);
+                tx = task.getTransform().getTransforms().get(transformId);
             } catch (NumberFormatException | IndexOutOfBoundsException e) {
                 LOGGER.log(
                         Level.FINER,

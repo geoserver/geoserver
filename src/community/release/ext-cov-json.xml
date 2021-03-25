@@ -1,0 +1,18 @@
+<assembly>
+  <id>cov-json-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-cov-json*.jar</include>
+        <include>jackson-databind*</include>
+        <include>jackson-annotations*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

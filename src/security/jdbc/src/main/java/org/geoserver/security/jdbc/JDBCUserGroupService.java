@@ -59,14 +59,13 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     static Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
 
-    protected Set<UserGroupLoadedListener> listeners =
-            Collections.synchronizedSet(new HashSet<UserGroupLoadedListener>());
+    protected Set<UserGroupLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     protected String passwordEncoderName, passwordValidatorName;
 
     public JDBCUserGroupService() throws IOException {
-        emptyUsers = Collections.unmodifiableSortedSet(new TreeSet<GeoServerUser>());
-        emptyGroups = Collections.unmodifiableSortedSet(new TreeSet<GeoServerUserGroup>());
+        emptyUsers = Collections.unmodifiableSortedSet(new TreeSet<>());
+        emptyGroups = Collections.unmodifiableSortedSet(new TreeSet<>());
     }
 
     @Override
@@ -143,6 +142,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     /** @see org.geoserver.security.jdbc.AbstractJDBCService#getOrderedNamesForCreate() */
+    @Override
     protected String[] getOrderedNamesForCreate() {
         return new String[] {
             "users.create",
@@ -155,11 +155,13 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
         };
     }
     /** @see org.geoserver.security.jdbc.AbstractJDBCService#getOrderedNamesForDrop() */
+    @Override
     protected String[] getOrderedNamesForDrop() {
         return new String[] {"groupmembers.drop", "groups.drop", "userprops.drop", "users.drop"};
     }
 
     /** @see org.geoserver.security.GeoServerUserGroupService#getUserByUsername(java.lang.String) */
+    @Override
     public GeoServerUser getUserByUsername(String username) throws IOException {
 
         Connection con = null;
@@ -198,6 +200,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     /**
      * @see org.geoserver.security.GeoServerUserGroupService#getGroupByGroupname(java.lang.String)
      */
+    @Override
     public GeoServerUserGroup getGroupByGroupname(String groupname) throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -224,11 +227,12 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     /** @see org.geoserver.security.GeoServerUserGroupService#getUsers() */
+    @Override
     public SortedSet<GeoServerUser> getUsers() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<String, GeoServerUser> map = new HashMap<String, GeoServerUser>();
+        Map<String, GeoServerUser> map = new HashMap<>();
         try {
             con = getConnection();
             ps = getDMLStatement("users.all", con);
@@ -262,17 +266,18 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             closeFinally(con, ps, rs);
         }
 
-        SortedSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
+        SortedSet<GeoServerUser> users = new TreeSet<>();
         users.addAll(map.values());
         return Collections.unmodifiableSortedSet(users);
     }
 
     /** @see org.geoserver.security.GeoServerUserGroupService#getUserGroups() */
+    @Override
     public SortedSet<GeoServerUserGroup> getUserGroups() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Collection<GeoServerUserGroup> tmp = new ArrayList<GeoServerUserGroup>();
+        Collection<GeoServerUserGroup> tmp = new ArrayList<>();
         try {
             con = getConnection();
             ps = getDMLStatement("groups.all", con);
@@ -290,7 +295,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             closeFinally(con, ps, rs);
         }
 
-        SortedSet<GeoServerUserGroup> groups = new TreeSet<GeoServerUserGroup>();
+        SortedSet<GeoServerUserGroup> groups = new TreeSet<>();
         groups.addAll(tmp);
         return Collections.unmodifiableSortedSet(groups);
     }
@@ -299,6 +304,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
      * @see org.geoserver.security.GeoServerUserGroupService#createUserObject(java.lang.String,
      *     java.lang.String, boolean)
      */
+    @Override
     public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
             throws IOException {
         GeoServerUser user = new GeoServerUser(username);
@@ -311,6 +317,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
      * @see org.geoserver.security.GeoServerUserGroupService#createGroupObject(java.lang.String,
      *     boolean)
      */
+    @Override
     public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled)
             throws IOException {
         GeoServerUserGroup group = new GeoServerUserGroup(groupname);
@@ -322,11 +329,12 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
      * @see
      *     org.geoserver.security.GeoServerUserGroupService#getGroupsForUser(org.geoserver.security.impl.GeoServerUser)
      */
+    @Override
     public SortedSet<GeoServerUserGroup> getGroupsForUser(GeoServerUser user) throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Collection<GeoServerUserGroup> tmp = new ArrayList<GeoServerUserGroup>();
+        Collection<GeoServerUserGroup> tmp = new ArrayList<>();
         try {
             con = getConnection();
             ps = getDMLStatement("groupmembers.groupsForUser", con);
@@ -345,7 +353,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             closeFinally(con, ps, rs);
         }
 
-        TreeSet<GeoServerUserGroup> groups = new TreeSet<GeoServerUserGroup>();
+        TreeSet<GeoServerUserGroup> groups = new TreeSet<>();
         groups.addAll(tmp);
         return Collections.unmodifiableSortedSet(groups);
     }
@@ -354,11 +362,12 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
      * @see
      *     org.geoserver.security.GeoServerUserGroupService#getUsersForGroup(org.geoserver.security.impl.GeoServerUserGroup)
      */
+    @Override
     public SortedSet<GeoServerUser> getUsersForGroup(GeoServerUserGroup group) throws IOException {
         Connection con = null;
         PreparedStatement ps = null, ps2 = null;
         ResultSet rs = null, rs2 = null;
-        Map<String, GeoServerUser> map = new HashMap<String, GeoServerUser>();
+        Map<String, GeoServerUser> map = new HashMap<>();
         try {
             con = getConnection();
             ps = getDMLStatement("groupmembers.usersForGroup", con);
@@ -396,11 +405,12 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             closeFinally(con, ps, rs);
         }
 
-        TreeSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
+        TreeSet<GeoServerUser> users = new TreeSet<>();
         users.addAll(map.values());
         return Collections.unmodifiableSortedSet(users);
     }
 
+    @Override
     public int getUserCount() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -422,6 +432,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
         return count;
     }
 
+    @Override
     public int getGroupCount() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -444,6 +455,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     /** @see org.geoserver.security.GeoServerUserGroupService#load() */
+    @Override
     public void load() throws IOException {
         // do nothing
     }
@@ -452,6 +464,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
      * @see
      *     org.geoserver.security.GeoServerUserGroupService#registerUserGroupChangedListener(org.geoserver.security.event.UserGroupChangedListener)
      */
+    @Override
     public void registerUserGroupLoadedListener(UserGroupLoadedListener listener) {
         listeners.add(listener);
     }
@@ -460,6 +473,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
      * @see
      *     org.geoserver.security.GeoServerUserGroupService#unregisterUserGroupChangedListener(org.geoserver.security.event.UserGroupChangedListener)
      */
+    @Override
     public void unregisterUserGroupLoadedListener(UserGroupLoadedListener listener) {
         listeners.remove(listener);
     }
@@ -507,7 +521,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<String, GeoServerUser> map = new HashMap<String, GeoServerUser>();
+        Map<String, GeoServerUser> map = new HashMap<>();
         try {
             con = getConnection();
             ps = getDMLStatement("user.usersHavingProperty", con);
@@ -543,7 +557,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             closeFinally(con, ps, rs);
         }
 
-        SortedSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
+        SortedSet<GeoServerUser> users = new TreeSet<>();
         users.addAll(map.values());
         return Collections.unmodifiableSortedSet(users);
     }
@@ -580,7 +594,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<String, GeoServerUser> map = new HashMap<String, GeoServerUser>();
+        Map<String, GeoServerUser> map = new HashMap<>();
         try {
             con = getConnection();
             ps = getDMLStatement("user.usersNotHavingProperty", con);
@@ -616,7 +630,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             closeFinally(con, ps, rs);
         }
 
-        SortedSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
+        SortedSet<GeoServerUser> users = new TreeSet<>();
         users.addAll(map.values());
         return Collections.unmodifiableSortedSet(users);
     }
@@ -657,7 +671,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<String, GeoServerUser> map = new HashMap<String, GeoServerUser>();
+        Map<String, GeoServerUser> map = new HashMap<>();
         try {
             con = getConnection();
             ps = getDMLStatement("user.usersHavingPropertyValue", con);
@@ -695,7 +709,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             closeFinally(con, ps, rs);
         }
 
-        SortedSet<GeoServerUser> users = new TreeSet<GeoServerUser>();
+        SortedSet<GeoServerUser> users = new TreeSet<>();
         users.addAll(map.values());
         return Collections.unmodifiableSortedSet(users);
     }

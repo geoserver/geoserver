@@ -77,7 +77,7 @@ public abstract class AbstractConfirmRemovalPanelTest<T> extends AbstractSecurit
         }
 
         if (removeableObject != null && problematicObject != null) {
-            List<T> objects = new ArrayList<T>();
+            List<T> objects = new ArrayList<>();
             objects.add(removeableObject);
             objects.add(problematicObject);
 

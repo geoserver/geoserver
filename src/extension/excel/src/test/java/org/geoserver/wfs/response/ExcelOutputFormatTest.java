@@ -5,7 +5,9 @@
  */
 package org.geoserver.wfs.response;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,9 +20,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wfs.WFSTestSupport;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
-import org.geotools.feature.FeatureIterator;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -33,18 +36,20 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         MockHttpServletResponse resp =
                 getAsServletResponse(
                         "wfs?request=GetFeature&version=1.0.0&typeName=sf:PrimitiveGeoFeature&outputFormat=excel");
-        InputStream in = getBinaryInputStream(resp);
+        try (InputStream in = getBinaryInputStream(resp)) {
 
-        // check the mime type
-        assertEquals("application/msexcel", resp.getContentType());
+            // check the mime type
+            assertEquals("application/msexcel", resp.getContentType());
 
-        // check the content disposition
-        assertEquals(
-                "attachment; filename=PrimitiveGeoFeature.xls",
-                resp.getHeader("Content-Disposition"));
+            // check the content disposition
+            assertEquals(
+                    "attachment; filename=PrimitiveGeoFeature.xls",
+                    resp.getHeader("Content-Disposition"));
 
-        HSSFWorkbook wb = new HSSFWorkbook(in);
-        testExcelOutputFormat(wb);
+            try (HSSFWorkbook wb = new HSSFWorkbook(in)) {
+                testExcelOutputFormat(wb);
+            }
+        }
     }
 
     @Test
@@ -53,27 +58,29 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         MockHttpServletResponse resp =
                 getAsServletResponse(
                         "wfs?request=GetFeature&version=1.0.0&typeName=sf:PrimitiveGeoFeature&outputFormat=excel2007");
-        InputStream in = getBinaryInputStream(resp);
+        try (InputStream in = getBinaryInputStream(resp)) {
 
-        // check the mime type
-        assertEquals(
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                resp.getContentType());
+            // check the mime type
+            assertEquals(
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    resp.getContentType());
 
-        // check the content disposition
-        assertEquals(
-                "attachment; filename=PrimitiveGeoFeature.xlsx",
-                resp.getHeader("Content-Disposition"));
+            // check the content disposition
+            assertEquals(
+                    "attachment; filename=PrimitiveGeoFeature.xlsx",
+                    resp.getHeader("Content-Disposition"));
 
-        XSSFWorkbook wb = new XSSFWorkbook(in);
-        testExcelOutputFormat(wb);
+            try (XSSFWorkbook wb = new XSSFWorkbook(in)) {
+                testExcelOutputFormat(wb);
+            }
+        }
     }
 
     private void testExcelOutputFormat(Workbook wb) throws IOException {
         Sheet sheet = wb.getSheet("PrimitiveGeoFeature");
         assertNotNull(sheet);
 
-        FeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
+        SimpleFeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
 
         // check the number of rows in the output
         final int feautureRows = fs.getCount(Query.ALL);
@@ -91,9 +98,7 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
 
         // check some selected values to see if the content and data type is the one
         // we expect
-        FeatureIterator fi = fs.getFeatures().features();
-        SimpleFeature sf = (SimpleFeature) fi.next();
-        fi.close();
+        SimpleFeature sf = DataUtilities.first(fs.getFeatures());
 
         // ... a string cell
         Cell cell = sheet.getRow(1).getCell(1);
@@ -126,10 +131,10 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         MockHttpServletResponse resp =
                 getAsServletResponse(
                         "wfs?request=GetFeature&typeName=sf:PrimitiveGeoFeature,sf:GenericEntity&outputFormat=excel");
-        InputStream in = getBinaryInputStream(resp);
-
-        Workbook wb = new HSSFWorkbook(in);
-        testMultipleFeatureTypes(wb);
+        try (InputStream in = getBinaryInputStream(resp);
+                Workbook wb = new HSSFWorkbook(in)) {
+            testMultipleFeatureTypes(wb);
+        }
     }
 
     @Test
@@ -138,10 +143,10 @@ public class ExcelOutputFormatTest extends WFSTestSupport {
         MockHttpServletResponse resp =
                 getAsServletResponse(
                         "wfs?request=GetFeature&typeName=sf:PrimitiveGeoFeature,sf:GenericEntity&outputFormat=excel2007");
-        InputStream in = getBinaryInputStream(resp);
-
-        Workbook wb = new XSSFWorkbook(in);
-        testMultipleFeatureTypes(wb);
+        try (InputStream in = getBinaryInputStream(resp);
+                Workbook wb = new XSSFWorkbook(in); ) {
+            testMultipleFeatureTypes(wb);
+        }
     }
 
     private void testMultipleFeatureTypes(Workbook wb) throws IOException {

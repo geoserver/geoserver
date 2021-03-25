@@ -28,7 +28,7 @@ public class CoverageNamesModel extends LoadableDetachableModel<List<String>> {
         List<CoverageInfo> coverages = catalog.getCoverages();
 
         // build the sorted list of names
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (CoverageInfo ci : coverages) {
             result.add(ci.prefixedName());
         }

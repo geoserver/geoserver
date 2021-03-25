@@ -87,6 +87,7 @@ public class BackupRestoreStoresIndexModel extends LoadableDetachableModel<List<
             //
         }
 
+        @Override
         public int compare(StoreInfo s1, StoreInfo s2) {
             return s1.getName().compareToIgnoreCase(s2.getName());
         }

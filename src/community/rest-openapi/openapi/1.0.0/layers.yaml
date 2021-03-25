@@ -1,0 +1,328 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: GeoServer Layers
+  description: A layer is a published resource (feature type or coverage).
+security:
+- basicAuth: [
+    ]
+tags:
+- name: layers
+  description: Layers API
+paths:
+  /layers:
+    get:
+      operationId: getLayers
+      tags:
+      - layers
+      summary: Get a list of layers
+      description: Displays a list of all layers on the server.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Layers'
+              examples:
+                response:
+                  value: |
+                    {
+                      "layers": {
+                        "layer": [
+                          {
+                            "name": "tiger:giant_polygon",
+                            "href": "http:\/\/localhost:8080\/geoserver\/rest\/layers\/tiger%3Agiant_polygon.json"
+                          },
+                          {
+                            "name": "sf:bugsites",
+                            "href": "http:\/\/localhost:8080\/geoserver\/rest\/layers\/sf%3Abugsites.json"
+                          },
+                        ]
+                      }
+                    }
+  /layers/{qualifiedLayerName}:
+    parameters:
+    - name: qualifiedLayerName
+      in: path
+      required: true
+      description: The name of the layer to retrieve, preferrably including namespace prefix (e.g. "cite:roads") to avoid ambiguities
+      schema:
+        type: string
+    get:
+      operationId: getLayer
+      tags:
+      - layers
+      summary: Retrieve a layer
+      description: Retrieves a single layer definition.
+      responses:
+        '200':
+          $ref: "#/components/responses/LayerResponse"
+    put:
+      operationId: updateLayer
+      tags:
+      - layers
+      summary: Modify a layer.
+      description: Modifies an existing layer on the server.
+      requestBody:
+        $ref: '#/components/requestBodies/Layer'
+      responses:
+        '200':
+          description: The layer was successfully updated.
+    delete:
+      operationId: deleteLayer
+      tags:
+      - layers
+      summary: Delete layer
+      description: Deletes a layer from the server.
+      parameters:
+      - name: recurse
+        in: query
+        description: Recursively removes the layer from all layer groups which reference it. If this results in an empty layer group, also delete the layer group. Allowed values for this parameter are true or false. The default value is false. A request with 'recurse=false' will fail if any layer groups reference the layer.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: OK
+  /workspaces/{workspaceName}/layers:
+    parameters:
+    - name: workspaceName
+      in: path
+      required: true
+      description: The name of the workspace to list layers in
+      schema:
+        type: string
+    get:
+      operationId: getLayersByWorkspace
+      tags:
+      - layers
+      summary: Get a list of layers in a workspace.
+      description: Displays a list of all layers in the provided workspace.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Layers'
+              examples:
+                response:
+                  value: |
+                    {
+                      "layers": {
+                        "layer": [
+                          {
+                            "name": "bugsites",
+                            "href": "http:\/\/localhost:8080\/geoserver\/rest\/workspaces\/sf\/layers\/bugsites.json"
+                          },
+                        ]
+                      }
+                    }
+  /workspaces/{workspaceName}/layers/{layerName}.:
+    parameters:
+    - name: workspaceName
+      in: path
+      required: true
+      description: The name of the workspace the layer is in.
+      schema:
+        type: string
+    - name: layerName
+      in: path
+      required: true
+      description: The name of the layer to retrieve, *without* workspace prefix, since it's given by the workspaceName parameter already. Request will fail otherwise.
+      schema:
+        type: string
+    get:
+      operationId: getLayerByWorkspace
+      tags:
+      - layers
+      summary: Retrieve a layer
+      description: Retrieves a single layer definition.
+      parameters:
+        - in: query
+          name: quietOnNotFound
+          required: false
+          schema:
+             type: boolean
+             default: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LayerResponse'
+    put:
+      operationId: updateLayerByWorkspace
+      tags:
+      - layers
+      summary: Modify a layer.
+      description: Modifies an existing layer on the server.
+      requestBody:
+        $ref: '#/components/requestBodies/Layer'
+      responses:
+        '200':
+          description: The layer was successfully updated.
+    delete:
+      operationId: deleteLayerByWorkspace
+      tags:
+      - layers
+      summary: Delete layer
+      description: Deletes a layer from the server.
+      parameters:
+      - name: recurse
+        in: query
+        description: Recursively removes the layer from all layer groups which reference it. If this results in an empty layer group, also delete the layer group. Allowed values for this parameter are true or false. The default value is false. A request with 'recurse=false' will fail if any layer groups reference the layer.
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: OK
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  responses:
+    LayerResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LayerResponse'
+  requestBodies:
+    Layer:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LayerInfoWrapper'
+      description: The updated layer definition.
+      required: true
+  schemas:
+    LayerInfoWrapper:
+      type: object
+      properties:
+        layer:
+          $ref: "catalog.yaml#/components/schemas/LayerInfo"
+    Layers:
+      title: layers
+      type: object
+      properties:
+        layers:
+          $ref: '#/components/schemas/LayerReference'
+    LayerReference:
+      title: layers
+      type: object
+      properties:
+        layer:
+          $ref: "catalogresponses.yaml#/components/schemas/NamedLinks"
+    LayerResponse:
+      type: object
+      properties:
+        layer:
+          $ref: "#/components/schemas/Layer"
+    Layer:
+      title: layer
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the layer
+        path:
+          type: string
+          description: Location of the layer in the WMS capabilities layer tree
+        type:
+          type: string
+          enum:
+          - VECTOR
+          - RASTER
+          - REMOTE
+          - WMS
+          - GROUP
+          description: Type of published layer. Can be VECTOR, RASTER, REMOTE, WMS or GROUP. Must be consistent with resource definition.
+        defaultStyle:
+          $ref: 'catalogresponses.yaml#/components/schemas/NamedLink'
+        styles:
+          type: object
+          description: Avaialble styles for layer publication
+          properties:
+            '@class':
+              type: string
+              enum:
+              - linked-hash-set
+              description: required value linked-hash-set.
+            style:
+              type: array
+              items:
+                $ref: 'catalogresponses.yaml#/components/schemas/NamedLink'
+        resource:
+          $ref: 'catalogresponses.yaml#/components/schemas/NamedLink'
+        opaque:
+          type: boolean
+          description: Controls layer transparency (whether the layer is opaque or transparent).
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetadataEntry'
+        attribution:
+          $ref: "catalog.yaml#/components/schemas/AttributionInfo"
+        authorityURLs:
+          type: array
+          items:
+            $ref: "catalog.yaml#/components/schemas/AuthorityURLInfo"
+        identifiers:
+          type: array
+          items:
+            $ref: "catalog.yaml#/components/schemas/LayerIdentifierInfo"
+      example:      {
+                        "layer": {
+                            "name": "poi",
+                            "path": "/",
+                            "type": "VECTOR",
+                            "defaultStyle": {
+                                "name": "poi",
+                                "href": "http://localhost:8080/geoserver/rest/styles/poi.json"
+                            },
+                            "styles": {
+                                "@class": "linked-hash-set",
+                                "style": [
+                                    {
+                                        "name": "burg",
+                                        "href": "http://localhost:8080/geoserver/rest/styles/burg.json"
+                                    },
+                                    {
+                                        "name": "point",
+                                        "href": "http://localhost:8080/geoserver/rest/styles/point.json"
+                                    }
+                                ]
+                            },
+                            "resource": {
+                                "@class": "featureType",
+                                "name": "poi",
+                                "href": "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc/featuretypes/poi.json"
+                            },
+                            "attribution": {
+                                "logoWidth": 0,
+                                "logoHeight": 0
+                            }
+                        }
+                    }
+
+    MetadataEntry:
+      type: object
+      title: entry
+      properties:
+        '@key':
+          title: key
+          type: string
+          enum:
+          - buffer
+          description: Key used for metadata entry, additional keys are added over time
+        $:
+          title: text
+          type: string
+          description: Text value for provided key Valid text depends on key used. Example  {'@key'='buffer','$'='5'}") or 5

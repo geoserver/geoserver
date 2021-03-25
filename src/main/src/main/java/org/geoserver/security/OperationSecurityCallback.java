@@ -33,14 +33,17 @@ public class OperationSecurityCallback implements DispatcherCallback {
         this.dao = dao;
     }
 
+    @Override
     public void finished(Request request) {
         // nothing to do
     }
 
+    @Override
     public Request init(Request request) {
         return request;
     }
 
+    @Override
     public Operation operationDispatched(Request request, Operation operation) {
         String service = request.getService();
         String method = request.getRequest();
@@ -94,16 +97,19 @@ public class OperationSecurityCallback implements DispatcherCallback {
         return operation;
     }
 
+    @Override
     public Object operationExecuted(Request request, Operation operation, Object result) {
         // nothing to do
         return result;
     }
 
+    @Override
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         return response;
     }
 
+    @Override
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
         return service;
     }

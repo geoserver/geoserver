@@ -5,7 +5,11 @@
  */
 package org.geoserver.security.web.passwd;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.Component;
 import org.geoserver.security.config.PasswordPolicyConfig;
@@ -164,7 +168,7 @@ public class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedService
         assertEquals(4, pwConfig.getMaxLength());
 
         // reload from manager
-        pwConfig = (PasswordPolicyConfig) getSecurityManager().loadPasswordPolicyConfig("default2");
+        pwConfig = getSecurityManager().loadPasswordPolicyConfig("default2");
         assertNotNull(pwConfig);
         assertEquals("default2", pwConfig.getName());
         assertEquals(PasswordValidatorImpl.class.getName(), pwConfig.getClassName());

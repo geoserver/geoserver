@@ -32,9 +32,9 @@ public class SelectingProcessFactory extends DelegatingProcessFactory {
     @Override
     public Set<Name> getNames() {
         // filter out the processes we want to hide
-        Set<Name> names = new LinkedHashSet<Name>(super.getNames());
+        Set<Name> names = new LinkedHashSet<>(super.getNames());
         for (Iterator<Name> it = names.iterator(); it.hasNext(); ) {
-            Name name = (Name) it.next();
+            Name name = it.next();
             if (!selector.allowProcess(name)) {
                 it.remove();
             }
@@ -43,6 +43,7 @@ public class SelectingProcessFactory extends DelegatingProcessFactory {
         return names;
     }
 
+    @Override
     public Process create(Name name) {
         if (selector.allowProcess(name)) {
             return delegate.create(name);
@@ -51,6 +52,7 @@ public class SelectingProcessFactory extends DelegatingProcessFactory {
         }
     }
 
+    @Override
     public InternationalString getDescription(Name name) {
         if (selector.allowProcess(name)) {
             return delegate.getDescription(name);
@@ -59,6 +61,7 @@ public class SelectingProcessFactory extends DelegatingProcessFactory {
         }
     }
 
+    @Override
     public Map<String, Parameter<?>> getParameterInfo(Name name) {
         if (selector.allowProcess(name)) {
             return delegate.getParameterInfo(name);
@@ -67,6 +70,7 @@ public class SelectingProcessFactory extends DelegatingProcessFactory {
         }
     }
 
+    @Override
     public Map<String, Parameter<?>> getResultInfo(Name name, Map<String, Object> parameters)
             throws IllegalArgumentException {
         if (selector.allowProcess(name)) {
@@ -76,6 +80,7 @@ public class SelectingProcessFactory extends DelegatingProcessFactory {
         }
     }
 
+    @Override
     public InternationalString getTitle(Name name) {
         if (selector.allowProcess(name)) {
             return delegate.getTitle(name);
@@ -84,6 +89,7 @@ public class SelectingProcessFactory extends DelegatingProcessFactory {
         }
     }
 
+    @Override
     public String getVersion(Name name) {
         if (selector.allowProcess(name)) {
             return delegate.getVersion(name);
@@ -92,6 +98,7 @@ public class SelectingProcessFactory extends DelegatingProcessFactory {
         }
     }
 
+    @Override
     public boolean supportsProgress(Name name) {
         if (selector.allowProcess(name)) {
             return delegate.supportsProgress(name);

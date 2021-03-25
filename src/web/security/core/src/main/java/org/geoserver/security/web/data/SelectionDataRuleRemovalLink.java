@@ -7,6 +7,8 @@ package org.geoserver.security.web.data;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -17,8 +19,11 @@ import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
+import org.geotools.util.logging.Logging;
 
 public class SelectionDataRuleRemovalLink extends AjaxLink {
+
+    static final Logger LOGGER = Logging.getLogger(SelectionDataRuleRemovalLink.class);
 
     GeoServerTablePanel<DataAccessRule> rules;
     GeoServerDialog dialog;
@@ -35,7 +40,7 @@ public class SelectionDataRuleRemovalLink extends AjaxLink {
     @Override
     public void onClick(AjaxRequestTarget target) {
         final List<DataAccessRule> selection = rules.getSelection();
-        if (selection.size() == 0) return;
+        if (selection.isEmpty()) return;
 
         dialog.setTitle(new ParamResourceModel("confirmRemoval", this));
 
@@ -45,6 +50,7 @@ public class SelectionDataRuleRemovalLink extends AjaxLink {
                 target,
                 delegate =
                         new GeoServerDialog.DialogDelegate() {
+                            @Override
                             protected Component getContents(String id) {
                                 // show a confirmation panel for all the objects we have to remove
                                 return removePanel =
@@ -58,6 +64,7 @@ public class SelectionDataRuleRemovalLink extends AjaxLink {
                                         };
                             }
 
+                            @Override
                             protected boolean onSubmit(
                                     AjaxRequestTarget target, Component contents) {
                                 // cascade delete the whole selection
@@ -68,7 +75,7 @@ public class SelectionDataRuleRemovalLink extends AjaxLink {
                                 try {
                                     dao.storeRules();
                                 } catch (IOException e) {
-                                    e.printStackTrace();
+                                    LOGGER.log(Level.WARNING, "", e);
                                 }
 
                                 // the deletion will have changed what we see in the page

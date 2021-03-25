@@ -17,7 +17,7 @@ public class ReflectiveRegionatingStrategyFactory implements RegionatingStrategy
 
     String myName;
     String myClassName;
-    Class myStrategyClass;
+    Class<?> myStrategyClass;
     GeoServer gs;
 
     public ReflectiveRegionatingStrategyFactory(String name, String className, GeoServer gs) {
@@ -26,23 +26,26 @@ public class ReflectiveRegionatingStrategyFactory implements RegionatingStrategy
         this.gs = gs;
     }
 
-    public ReflectiveRegionatingStrategyFactory(String name, Class strategy, GeoServer gs) {
+    public ReflectiveRegionatingStrategyFactory(String name, Class<?> strategy, GeoServer gs) {
         myName = name;
         myStrategyClass = strategy;
         this.gs = gs;
     }
 
+    @Override
     public boolean canHandle(String strategyName) {
         return (myName != null) && myName.equalsIgnoreCase(strategyName);
     }
 
+    @Override
     public String getName() {
         return myName;
     }
 
+    @Override
     public RegionatingStrategy createStrategy() {
         try {
-            Class clazz = getStrategyClass();
+            Class<?> clazz = getStrategyClass();
             Constructor c = clazz.getConstructor(GeoServer.class);
             if (c != null) {
                 return (RegionatingStrategy) c.newInstance(gs);
@@ -54,7 +57,7 @@ public class ReflectiveRegionatingStrategyFactory implements RegionatingStrategy
         }
     }
 
-    protected Class getStrategyClass() {
+    protected Class<?> getStrategyClass() {
         if (myStrategyClass != null) return myStrategyClass;
 
         try {

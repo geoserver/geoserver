@@ -24,6 +24,7 @@ import org.geoserver.platform.resource.Resources;
 public class GeneralizationInfosProviderImpl
         extends org.geotools.data.gen.info.GeneralizationInfosProviderImpl {
 
+    @Override
     protected URL deriveURLFromSourceObject(Object source) throws IOException {
         if (source == null) {
             throw new IOException("Cannot read from null");

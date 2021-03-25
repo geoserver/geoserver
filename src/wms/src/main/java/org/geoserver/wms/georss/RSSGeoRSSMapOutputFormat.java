@@ -32,7 +32,7 @@ public class RSSGeoRSSMapOutputFormat implements GetMapOutputFormat {
 
     static {
         String[] FORMATS = {"application/rss+xml", "rss", "application/rss xml"};
-        Set<String> names = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        Set<String> names = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
         names.addAll(Arrays.asList(FORMATS));
         FORMAT_NAMES = Collections.unmodifiableSet(names);
     }
@@ -44,16 +44,19 @@ public class RSSGeoRSSMapOutputFormat implements GetMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#getMimeType() */
+    @Override
     public String getMimeType() {
         return MIME_TYPE;
     }
 
     /** @see GetMapProducer#getOutputFormatNames() */
+    @Override
     public Set<String> getOutputFormatNames() {
         return FORMAT_NAMES;
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
+    @Override
     public XMLTransformerMap produceMap(WMSMapContent map) throws ServiceException, IOException {
 
         RSSGeoRSSTransformer tx = new RSSGeoRSSTransformer(wms);
@@ -79,6 +82,7 @@ public class RSSGeoRSSMapOutputFormat implements GetMapOutputFormat {
         return result;
     }
 
+    @Override
     public MapProducerCapabilities getCapabilities(String format) {
         return RSS_CAPABILITIES;
     }

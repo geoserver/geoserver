@@ -103,6 +103,7 @@ public class Log4JFormatter extends Formatter {
      * @return a formatted log record
      * @throws AssertionError Should never occur.
      */
+    @Override
     public synchronized String format(final LogRecord record) {
         final String recordLevel = record.getLevel().getLocalizedName();
 
@@ -159,7 +160,7 @@ public class Log4JFormatter extends Formatter {
     private String getStackTrace(Throwable t) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        t.printStackTrace(pw);
+        t.printStackTrace(pw); // NOPMD
         pw.close();
 
         return sw.toString();
@@ -207,14 +208,14 @@ public class Log4JFormatter extends Formatter {
             final Handler[] handlers = parent.getHandlers();
 
             if (handlers != null) {
-                for (int i = 0; i < handlers.length; i++) {
+                for (Handler value : handlers) {
                     /*
                      * Search for a ConsoleHandler. Search is performed in the target
                      * handler and all its parent loggers. When a ConsoleHandler is
                      * found, it will be replaced by the Stdout handler for 'logger'
                      * only.
                      */
-                    Handler handler = handlers[i];
+                    Handler handler = value;
 
                     if (handler.getClass().equals(ConsoleHandler.class)) {
                         final Formatter formatter = handler.getFormatter();
@@ -228,9 +229,7 @@ public class Log4JFormatter extends Formatter {
                                 logger.removeHandler(handler);
                                 handler = new Stdout(handler, log4j);
                                 handler.setLevel(filterLevel);
-                            } catch (UnsupportedEncodingException exception) {
-                                unexpectedException(exception);
-                            } catch (SecurityException exception) {
+                            } catch (UnsupportedEncodingException | SecurityException exception) {
                                 unexpectedException(exception);
                             }
                         }
@@ -314,6 +313,7 @@ public class Log4JFormatter extends Formatter {
          *
          * @param record the log record to publish.
          */
+        @Override
         public void publish(final LogRecord record) {
             super.publish(record);
             flush();
@@ -323,6 +323,7 @@ public class Log4JFormatter extends Formatter {
          * Override {@link StreamHandler#close} to do a flush but not to close the output stream.
          * That is, we do <b>not</b> close {@link System#out}.
          */
+        @Override
         public void close() {
             flush();
         }

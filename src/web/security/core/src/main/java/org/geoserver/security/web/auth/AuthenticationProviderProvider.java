@@ -21,7 +21,7 @@ public class AuthenticationProviderProvider
 
     @Override
     protected List<SecurityAuthProviderConfig> getItems() {
-        List<SecurityAuthProviderConfig> result = new ArrayList<SecurityAuthProviderConfig>();
+        List<SecurityAuthProviderConfig> result = new ArrayList<>();
         try {
             for (String name : getSecurityManager().listAuthenticationProviders()) {
                 result.add(getSecurityManager().loadAuthenticationProviderConfig(name));

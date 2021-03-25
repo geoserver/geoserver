@@ -38,7 +38,7 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
             return new StructuredSingleGridCoverage2DReader(
                     (StructuredGridCoverage2DReader) delegate, coverageName);
         } else {
-            return new SingleGridCoverage2DReader((GridCoverage2DReader) delegate, coverageName);
+            return new SingleGridCoverage2DReader(delegate, coverageName);
         }
     }
 
@@ -64,98 +64,119 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
         }
     }
 
+    @Override
     public Format getFormat() {
         return delegate.getFormat();
     }
 
+    @Override
     public Object getSource() {
         return delegate.getSource();
     }
 
+    @Override
     public String[] getMetadataNames() throws IOException {
         return delegate.getMetadataNames(coverageName);
     }
 
+    @Override
     public String[] getMetadataNames(String coverageName) throws IOException {
         checkCoverageName(coverageName);
         return delegate.getMetadataNames(coverageName);
     }
 
+    @Override
     public String getMetadataValue(String name) throws IOException {
         return delegate.getMetadataValue(coverageName, name);
     }
 
+    @Override
     public String getMetadataValue(String coverageName, String name) throws IOException {
         checkCoverageName(coverageName);
         return delegate.getMetadataValue(coverageName, name);
     }
 
+    @Override
     public void dispose() throws IOException {
         delegate.dispose();
     }
 
+    @Override
     public GeneralEnvelope getOriginalEnvelope() {
         return delegate.getOriginalEnvelope(coverageName);
     }
 
+    @Override
     public GeneralEnvelope getOriginalEnvelope(String coverageName) {
         checkCoverageName(coverageName);
         return delegate.getOriginalEnvelope(coverageName);
     }
 
+    @Override
     public GridEnvelope getOriginalGridRange() {
         return delegate.getOriginalGridRange(coverageName);
     }
 
+    @Override
     public GridEnvelope getOriginalGridRange(String coverageName) {
         checkCoverageName(coverageName);
         return delegate.getOriginalGridRange(coverageName);
     }
 
+    @Override
     public MathTransform getOriginalGridToWorld(PixelInCell pixInCell) {
         return delegate.getOriginalGridToWorld(coverageName, pixInCell);
     }
 
+    @Override
     public MathTransform getOriginalGridToWorld(String coverageName, PixelInCell pixInCell) {
         checkCoverageName(coverageName);
         return delegate.getOriginalGridToWorld(coverageName, pixInCell);
     }
 
+    @Override
     public GridCoverage2D read(GeneralParameterValue[] parameters)
             throws IllegalArgumentException, IOException {
         return delegate.read(coverageName, parameters);
     }
 
+    @Override
     public GridCoverage2D read(String coverageName, GeneralParameterValue[] parameters)
             throws IllegalArgumentException, IOException {
         checkCoverageName(coverageName);
         return delegate.read(coverageName, parameters);
     }
 
+    @Override
     public CoordinateReferenceSystem getCoordinateReferenceSystem() {
         return delegate.getCoordinateReferenceSystem(this.coverageName);
     }
 
+    @Override
     public CoordinateReferenceSystem getCoordinateReferenceSystem(String coverageName) {
         checkCoverageName(coverageName);
         return delegate.getCoordinateReferenceSystem(coverageName);
     }
 
+    @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters() throws IOException {
         return delegate.getDynamicParameters(this.coverageName);
     }
 
+    @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName)
             throws IOException {
         checkCoverageName(coverageName);
         return delegate.getDynamicParameters(coverageName);
     }
 
+    @Override
     public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution)
             throws IOException {
         return delegate.getReadingResolutions(this.coverageName, policy, requestedResolution);
     }
 
+    @Override
     public double[] getReadingResolutions(
             String coverageName, OverviewPolicy policy, double[] requestedResolution)
             throws IOException {
@@ -163,29 +184,35 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
         return delegate.getReadingResolutions(coverageName, policy, requestedResolution);
     }
 
+    @Override
     public String[] getGridCoverageNames() throws IOException {
         return new String[] {
             coverageName
         }; // Being a singleGridCoverage reader, I can return the only coverage
     }
 
+    @Override
     public int getGridCoverageCount() throws IOException {
         return delegate.getGridCoverageCount();
     }
 
+    @Override
     public ImageLayout getImageLayout() throws IOException {
         return delegate.getImageLayout(coverageName);
     }
 
+    @Override
     public ImageLayout getImageLayout(String coverageName) throws IOException {
         checkCoverageName(coverageName);
         return delegate.getImageLayout(coverageName);
     }
 
+    @Override
     public double[][] getResolutionLevels() throws IOException {
         return delegate.getResolutionLevels(coverageName);
     }
 
+    @Override
     public double[][] getResolutionLevels(String coverageName) throws IOException {
         checkCoverageName(coverageName);
         return delegate.getResolutionLevels(coverageName);

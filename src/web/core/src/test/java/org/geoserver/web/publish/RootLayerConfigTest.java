@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.feedback.ErrorLevelFeedbackMessageFilter;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.model.Model;
@@ -32,12 +31,7 @@ public class RootLayerConfigTest extends GeoServerWicketTestSupport {
         polygons = getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
         page =
                 new FormTestPage(
-                        new ComponentBuilder() {
-
-                            public Component buildComponent(String id) {
-                                return new RootLayerConfig(id, new Model(polygons));
-                            }
-                        });
+                        (ComponentBuilder) id -> new RootLayerConfig(id, new Model<>(polygons)));
         tester.startPage(page);
     }
 

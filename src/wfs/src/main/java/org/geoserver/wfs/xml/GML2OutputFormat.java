@@ -16,7 +16,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -36,6 +35,7 @@ import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
+import org.geoserver.wfs.response.ComplexFeatureAwareFormat;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.gml.producer.FeatureTransformer;
 import org.geotools.gml.producer.FeatureTransformer.FeatureTypeNamespaces;
@@ -55,15 +55,16 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Gabriel Rold?n
  * @version $Id$
  */
-public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
+public class GML2OutputFormat extends WFSGetFeatureOutputFormat
+        implements ComplexFeatureAwareFormat {
     private static final int NO_FORMATTING = -1;
     private static final int INDENT_SIZE = 2;
     public static final String formatName = "GML2";
     public static final String MIME_TYPE = "text/xml; subtype=gml/2.1.2";
 
     /**
-     * This is a "magic" class provided by Geotools that writes out GML for an array of
-     * FeatureResults.
+     * This is a "magic" class provided by GeoTools that writes out GML for an array of
+     * FeatureCollections.
      *
      * <p>This class seems to do all the work, if you have a problem with GML you will need to hunt
      * it down. We supply all of the header information in the execute method, and work through the
@@ -81,7 +82,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
 
     /** Creates the producer with a reference to the GetFeature operation using it. */
     public GML2OutputFormat(GeoServer geoServer) {
-        super(geoServer, new HashSet(Arrays.asList(new String[] {"GML2", MIME_TYPE})));
+        super(geoServer, new HashSet<>(Arrays.asList(new String[] {"GML2", MIME_TYPE})));
 
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
@@ -92,6 +93,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
         return MIME_TYPE;
     }
 
+    @Override
     public String getCapabilitiesElementName() {
         return "GML2";
     }
@@ -114,7 +116,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
         boolean forcedDecimal = false;
         for (int i = 0; i < results.getFeature().size(); i++) {
             // FeatureResults features = (FeatureResults) f.next();
-            FeatureCollection features = (FeatureCollection) results.getFeature().get(i);
+            FeatureCollection features = results.getFeature().get(i);
             SimpleFeatureType featureType = (SimpleFeatureType) features.getSchema();
 
             ResourceInfo meta =
@@ -204,8 +206,8 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
             transformer.addSchemaLocation(WFS.NAMESPACE, wfsSchemaloc);
         }
 
-        for (Iterator it = ftNamespaces.keySet().iterator(); it.hasNext(); ) {
-            String uri = (String) it.next();
+        for (Object o : ftNamespaces.keySet()) {
+            String uri = (String) o;
             transformer.addSchemaLocation(uri, (String) ftNamespaces.get(uri));
         }
 
@@ -234,10 +236,9 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
         // including the lockID
         //
         // execute should also fail if all of the locks could not be aquired
-        List resultsList = results.getFeature();
+        List<FeatureCollection> resultsList = results.getFeature();
         FeatureCollection[] featureResults =
-                (FeatureCollection[])
-                        resultsList.toArray(new FeatureCollection[resultsList.size()]);
+                resultsList.toArray(new FeatureCollection[resultsList.size()]);
 
         try {
             transformer.transform(featureResults, output);
@@ -247,6 +248,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
         }
     }
 
+    @Override
     protected void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
@@ -281,5 +283,10 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat {
                         "typeName",
                         meta.prefixedName());
         return buildURL(baseUrl, "wfs", params, URLType.SERVICE);
+    }
+
+    @Override
+    public boolean supportsComplexFeatures(Object value, Operation operation) {
+        return true;
     }
 }

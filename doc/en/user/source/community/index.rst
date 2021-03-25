@@ -15,17 +15,15 @@ officially part of the GeoServer releases. They are however built along with the
 .. toctree::
    :maxdepth: 1
 
-   arcsde/index
    oauth2/index
    keycloak/index
+   keycloak/keycloak_role_service
    dds/index
-   scripting/index
    colormap/index
    jdbcconfig/index
    mbtiles/index
    geopkg/index
    pgraster/pgraster
-   wps-download/index
    jms-cluster/index
    solr/index
    elasticsearch/index
@@ -33,16 +31,13 @@ officially part of the GeoServer releases. They are however built along with the
    gwc-distributed/index
    flatgeobuf/index
    gdal/index
-   gwc-s3/index
    gwc-azure-blob/index
    gwc-sqlite/index
-   params-extractor/index
    remote-wps/index
    jdbcstore/index
    ncwms/index
    backuprestore/index
    saml/index
-   wmts-multidimensional/index
    notification/index
    opensearch-eo/index
    s3-geotiff/index
@@ -53,11 +48,14 @@ officially part of the GeoServer releases. They are however built along with the
    metadata/index
    qose-module/index
    ogr-store/index
-   mapml/index
    geostyler/index
    csw-iso/index
    importer-jdbc/index
    hana/index
-   json-ld/index
+   features-templating/index
    ogc-api/index
    gsr/index
+   imagemosaic-jdbc/index
+   cog/index
+   cov-json/index
+   smart-data-loader/index

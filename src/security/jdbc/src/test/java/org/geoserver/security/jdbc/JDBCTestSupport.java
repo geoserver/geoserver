@@ -32,18 +32,10 @@ public class JDBCTestSupport {
             org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
 
     public static void dropExistingTables(AbstractJDBCService service) throws IOException {
-        Connection con = null;
-        try {
-            con = service.getDataSource().getConnection();
+        try (Connection con = service.getDataSource().getConnection()) {
             dropExistingTables(service, con);
         } catch (SQLException ex) {
             throw new IOException(ex);
-        } finally {
-            try {
-                if (con != null) con.close();
-            } catch (SQLException ex) {
-            }
-            ;;
         }
     }
 
@@ -57,7 +49,6 @@ public class JDBCTestSupport {
                     ps.execute();
                     ps.close();
                 } catch (SQLException ex) {
-                    // ex.printStackTrace();
                 }
             }
             con.commit();
@@ -68,7 +59,6 @@ public class JDBCTestSupport {
                 if (ps != null) ps.close();
             } catch (SQLException ex) {
             }
-            ;
         }
     }
 

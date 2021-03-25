@@ -88,11 +88,13 @@ public class RemoteProcessFactory implements ProcessFactory, RemoteProcessFactor
     }
 
     /** The Title of the {@link RemoteProcessFactory} */
+    @Override
     public InternationalString getTitle() {
         return new SimpleInternationalString("Remote");
     }
 
     /** The currently available {@link RemoteProcess} stubs on the {@link RemoteProcessFactory} */
+    @Override
     public Set<Name> getNames() {
         return descriptors.keySet();
     }
@@ -114,6 +116,7 @@ public class RemoteProcessFactory implements ProcessFactory, RemoteProcessFactor
     }
 
     /** Creates a new {@link RemoteProcess} stub */
+    @Override
     public Process create(Name name) throws IllegalArgumentException {
         synchronized (remoteInstances) {
             if (checkName(name)) {
@@ -135,6 +138,7 @@ public class RemoteProcessFactory implements ProcessFactory, RemoteProcessFactor
     }
 
     /** Get the {@link RemoteProcess} textual description */
+    @Override
     public InternationalString getDescription(Name name) {
         synchronized (descriptors) {
             if (checkName(name)) return Text.text(descriptors.get(name).getDescription());
@@ -143,6 +147,7 @@ public class RemoteProcessFactory implements ProcessFactory, RemoteProcessFactor
     }
 
     /** Get the {@link RemoteProcess} title */
+    @Override
     public InternationalString getTitle(Name name) {
         synchronized (descriptors) {
             if (checkName(name)) return Text.text(descriptors.get(name).getTitle());
@@ -159,16 +164,19 @@ public class RemoteProcessFactory implements ProcessFactory, RemoteProcessFactor
     }
 
     /** */
+    @Override
     public boolean supportsProgress(Name name) {
         return true;
     }
 
     /** */
+    @Override
     public String getVersion(Name name) {
         return WPS_VERSION;
     }
 
     /** Get the {@link RemoteProcess} textual description */
+    @Override
     public Map<String, Parameter<?>> getParameterInfo(Name name) {
         synchronized (descriptors) {
             if (checkName(name)) return descriptors.get(name).getParamInfo();
@@ -177,6 +185,7 @@ public class RemoteProcessFactory implements ProcessFactory, RemoteProcessFactor
     }
 
     /** Get the {@link RemoteProcess} textual description */
+    @Override
     public Map<String, Parameter<?>> getResultInfo(Name name, Map<String, Object> inputs)
             throws IllegalArgumentException {
         synchronized (descriptors) {
@@ -191,13 +200,15 @@ public class RemoteProcessFactory implements ProcessFactory, RemoteProcessFactor
     }
 
     /** */
+    @Override
     public boolean isAvailable() {
         return true;
     }
 
     /** */
+    @Override
     public Map<Key, ?> getImplementationHints() {
-        return Collections.EMPTY_MAP;
+        return Collections.emptyMap();
     }
 
     /** Registers a new remote service */

@@ -4,8 +4,11 @@
  */
 package org.geoserver.kml.iterator;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.junit.Assert.assertNull;
 
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import java.util.Iterator;

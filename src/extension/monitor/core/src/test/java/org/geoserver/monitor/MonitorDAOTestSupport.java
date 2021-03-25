@@ -10,6 +10,7 @@ import static org.geoserver.monitor.MonitorTestData.assertCoveredInOrder;
 import static org.geoserver.monitor.MonitorTestData.toDate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -67,22 +68,17 @@ public abstract class MonitorDAOTestSupport {
 
     @Test
     public void testGetRequestsVisitor() throws Exception {
-        final List<RequestData> datas = new ArrayList();
+        final List<RequestData> datas = new ArrayList<>();
         dao.getRequests(
                 new Query().filter("path", "/seven", Comparison.EQ),
-                new RequestDataVisitor() {
-
-                    public void visit(RequestData data, Object... aggregates) {
-                        datas.add(data);
-                    }
-                });
+                (data, aggregates) -> datas.add(data));
 
         assertCoveredInOrder(datas, 7);
     }
 
     @Test
     public void testGetRequestById() throws Exception {
-        assertTrue(dao.getRequest(8) != null);
+        assertNotNull(dao.getRequest(8));
         assertEquals("/eight", dao.getRequest(8).getPath());
     }
 

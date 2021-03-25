@@ -164,8 +164,8 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
         // Configure aliases and converters
         xStream.omitField(RestoreExecutionAdapter.class, "restoreCatalog");
 
-        Class synchronizedListType =
-                Collections.synchronizedList(Collections.EMPTY_LIST).getClass();
+        Class<?> synchronizedListType =
+                Collections.synchronizedList(Collections.emptyList()).getClass();
         xStream.alias("synchList", synchronizedListType);
 
         ClassAliasingMapper optionsMapper = new ClassAliasingMapper(xStream.getMapper());
@@ -176,7 +176,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
                 new CollectionConverter(optionsMapper) {
 
                     @Override
-                    public boolean canConvert(Class type) {
+                    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
                         return Collection.class.isAssignableFrom(type);
                     }
                 });
@@ -190,12 +190,12 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
                 new CollectionConverter(warningsMapper) {
 
                     @Override
-                    public boolean canConvert(Class type) {
+                    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
                         return Collection.class.isAssignableFrom(type);
                     }
                 });
 
-        Class resourceAdaptorType = Files.asResource(new File("/")).getClass();
+        Class<? extends Resource> resourceAdaptorType = Files.asResource(new File("/")).getClass();
         xStream.alias("resource", resourceAdaptorType);
         xStream.registerLocalConverter(
                 AbstractExecutionAdapter.class, "archiveFile", new ArchiveFileResourceConverter());
@@ -240,7 +240,7 @@ public abstract class AbstractBackupRestoreController extends RestBaseController
                 new CollectionConverter(stepExecutionsMapper) {
 
                     @Override
-                    public boolean canConvert(Class type) {
+                    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
                         return CopyOnWriteArraySet.class.isAssignableFrom(type);
                     }
 

@@ -33,6 +33,5 @@ public class BufferedRequestStreamTest {
         int amountRead = myBRS.readLine(b, off, len);
         String s = new String(b, 0, amountRead);
         assertEquals(s, myTestString);
-        ;
     }
 }

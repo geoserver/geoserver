@@ -7,7 +7,8 @@ package org.geoserver.kml;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -15,7 +16,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.xml.namespace.QName;
@@ -24,7 +30,11 @@ import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -34,7 +44,10 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -80,10 +93,9 @@ public class KMLTest extends WMSTestSupport {
         testData.addStyle("scaleRange", "scaleRange.sld", getClass(), catalog);
         testData.addStyle("outputMode", "outputMode.sld", getClass(), catalog);
         testData.addVectorLayer(
-                STORM_OBS, Collections.EMPTY_MAP, "storm_obs.properties", getClass(), catalog);
+                STORM_OBS, Collections.emptyMap(), "storm_obs.properties", getClass(), catalog);
 
-        Map<SystemTestData.LayerProperty, Object> properties =
-                new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<SystemTestData.LayerProperty, Object> properties = new HashMap<>();
         properties.put(
                 LayerProperty.LATLON_ENVELOPE,
                 new ReferencedEnvelope(-105.336, -105.112, 39.9, 40.116, CRS.decode("EPSG:4326")));
@@ -828,7 +840,7 @@ public class KMLTest extends WMSTestSupport {
                         .getFirstChild()
                         .getTextContent()
                         .split(",");
-        double[] p = new double[] {Double.parseDouble(coords[0]), Double.parseDouble(coords[1])};
+        double[] p = {Double.parseDouble(coords[0]), Double.parseDouble(coords[1])};
 
         assertEquals(-105.2, p[0], 0.1);
         assertEquals(40.0, p[1], 0.1);

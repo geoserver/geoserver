@@ -35,7 +35,7 @@ public class SimpleResourceNotificationDispatcherTest
 
         assertEquals(6, events.size());
 
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         set.add("DirB");
         set.add("DirB/FileA1");
         set.add("DirB/FileA2");
@@ -65,7 +65,7 @@ public class SimpleResourceNotificationDispatcherTest
 
         assertEquals(6, events.size());
 
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         set.add("DirA");
         set.add("DirA/FileA1");
         set.add("DirA/FileA2");
@@ -90,7 +90,7 @@ public class SimpleResourceNotificationDispatcherTest
 
         assertEquals(4, events.size());
 
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         set.add("DirD");
         set.add("DirD/DirE");
         set.add("DirD/DirE/DirF");
@@ -110,15 +110,7 @@ public class SimpleResourceNotificationDispatcherTest
 
         AtomicReference<ResourceNotification> dirEvent = new AtomicReference<>();
 
-        dispatch.addListener(
-                "DirB",
-                new ResourceListener() {
-
-                    @Override
-                    public void changed(ResourceNotification notify) {
-                        dirEvent.set(notify);
-                    }
-                });
+        dispatch.addListener("DirB", notify -> dirEvent.set(notify));
 
         dispatch.changed(
                 new ResourceNotification(

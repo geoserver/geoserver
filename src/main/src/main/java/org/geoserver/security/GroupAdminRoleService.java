@@ -30,10 +30,12 @@ public class GroupAdminRoleService extends AuthorizingRoleService {
         this.groups = groups;
     }
 
+    @Override
     public boolean canCreateStore() {
         return false;
     }
 
+    @Override
     public GeoServerRoleStore createStore() throws IOException {
         return null;
     }

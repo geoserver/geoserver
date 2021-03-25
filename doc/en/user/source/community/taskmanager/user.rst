@@ -151,7 +151,7 @@ hard drive.
 
 .. code:: xml
 
-    <bean class="org.geoserver.taskmanager.fileservice.impl.FileServiceImpl">
+    <bean class="org.geoserver.taskmanager.external.impl.FileServiceImpl">
         <property name="rootFolder" value="/tmp"/>
         <property name="name" value="Temporary Directory"/>
         <property name="roles">
@@ -177,7 +177,7 @@ compatible server.
 They do not need to be configured via the application context, but are
 taken from the properties file provided via the property
 ``s3.properties.location`` (see `S3
-DataStore <https://github.com/geotools/geotools/tree/master/modules/unsupported/s3-geotiff#geotiffs-hosted-on-other-amazon-s3-compatible-services>`__).
+DataStore <https://github.com/geotools/geotools/tree/main/modules/unsupported/s3-geotiff#geotiffs-hosted-on-other-amazon-s3-compatible-services>`__).
 
 A service will be created for each service and each bucket. We must add
 one line per alias to the ``s3.properties`` file:
@@ -190,6 +190,28 @@ alias-separated, alias-list, alias-of and alias-buckets.
 Roles can optionally be specified for `security <#security>`__ purposes as follows:
 
 ``alias.bucket.s3.roles=comma,separated,list,of,roles``
+
+AWS File Service
+^^^^^^^^^^^^^^^^
+
+Amazon AWS S3 buckets are also supported.
+
+.. code:: xml
+
+    <bean class="org.geoserver.taskmanager.external.impl.AWSFileServiceImpl">
+        <property name="rootFolder" value="/tmp"/>
+        <property name="anonymous" value="false"/>
+        <property name="awsRegion" value="us-west-1"/>
+        <property name="roles">
+          <list>
+           <value>ROLE1</value>
+           <value>ROLE2</value>
+          </list>
+        </property>
+    </bean>
+
+Unless anonymous is set to true, the `default AWS client credential chain <https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html#using-the-default-credential-provider-chain>`__ is used.
+
 
 Prepare script
 ^^^^^^^^^^^^^^^

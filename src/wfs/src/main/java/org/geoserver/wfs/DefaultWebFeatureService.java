@@ -59,6 +59,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
         this.filterFactory = filterFactory;
     }
 
+    @Override
     public WFSInfo getServiceInfo() {
         return geoServer.getService(WFSInfo.class);
     }
@@ -70,6 +71,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      * @return A transformer instance capable of serializing a wfs capabilities document.
      * @throws WFSException Any service exceptions.
      */
+    @Override
     public TransformerBase getCapabilities(GetCapabilitiesType request) throws WFSException {
         return new GetCapabilities(
                         getServiceInfo(),
@@ -85,6 +87,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      * @return A set of feature type metadata objects.
      * @throws WFSException Any service exceptions.
      */
+    @Override
     public FeatureTypeInfo[] describeFeatureType(DescribeFeatureTypeType request)
             throws WFSException {
         return new DescribeFeatureType(getServiceInfo(), catalog)
@@ -98,6 +101,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      * @return A feature collection type instance.
      * @throws WFSException Any service exceptions.
      */
+    @Override
     public FeatureCollectionResponse getFeature(GetFeatureType request) throws WFSException {
         GetFeature getFeature = new GetFeature(getServiceInfo(), catalog);
         getFeature.setFilterFactory(filterFactory);
@@ -112,6 +116,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      * @return A feature collection type instance.
      * @throws WFSException Any service exceptions.
      */
+    @Override
     public FeatureCollectionResponse getFeatureWithLock(GetFeatureWithLockType request)
             throws WFSException {
         return getFeature(request);
@@ -124,6 +129,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      * @return A lock feature response type.
      * @throws WFSException An service exceptions.
      */
+    @Override
     public LockFeatureResponseType lockFeature(LockFeatureType request) throws WFSException {
         LockFeature lockFeature = new LockFeature(getServiceInfo(), catalog);
         lockFeature.setFilterFactory(filterFactory);
@@ -139,6 +145,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      * @return A transaction response instance.
      * @throws WFSException Any service exceptions.
      */
+    @Override
     public TransactionResponseType transaction(TransactionType request) throws WFSException {
         Transaction transaction = new Transaction(getServiceInfo(), catalog, context);
         transaction.setFilterFactory(filterFactory);
@@ -154,6 +161,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
      * @return The gml object request.
      * @throws WFSException Any service exceptions.
      */
+    @Override
     public Object getGmlObject(GetGmlObjectType request) throws WFSException {
 
         GetGmlObject getGmlObject = new GetGmlObject(getServiceInfo(), catalog);
@@ -163,6 +171,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
     }
 
     // the following operations are not part of the spec
+    @Override
     public void releaseLock(String lockId) throws WFSException {
         new LockFeature(getServiceInfo(), catalog).release(lockId);
     }
@@ -171,6 +180,7 @@ public class DefaultWebFeatureService implements WebFeatureService, ApplicationC
         new LockFeature(getServiceInfo(), catalog).releaseAll();
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         this.context = context;
     }

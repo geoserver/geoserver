@@ -18,19 +18,18 @@ public class NetCDFOutSettingsPanel extends SettingsPluginPanel {
     public NetCDFOutSettingsPanel(String id, IModel<SettingsInfo> model) {
         super(id, model);
         // Model associated to the metadata map
-        final PropertyModel<MetadataMap> metadata =
-                new PropertyModel<MetadataMap>(model, "metadata");
+        final PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "metadata");
 
         // Getting the NetcdfSettingsContainer model from MetadataMap
         IModel<NetCDFSettingsContainer> netcdfModel =
-                new MetadataMapModel(
+                new MetadataMapModel<>(
                         metadata,
                         NetCDFSettingsContainer.NETCDFOUT_KEY,
                         NetCDFSettingsContainer.class);
 
         // New Container
         // container for ajax updates
-        NetCDFPanel panel = new NetCDFPanel("panel", netcdfModel);
+        NetCDFPanel panel = new NetCDFPanel<>("panel", netcdfModel);
         add(panel);
     }
 }

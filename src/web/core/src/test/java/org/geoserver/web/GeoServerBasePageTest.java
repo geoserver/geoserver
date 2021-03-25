@@ -5,8 +5,9 @@
  */
 package org.geoserver.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.core.util.string.ComponentRenderer;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.util.tester.TagTester;
@@ -18,15 +19,14 @@ public class GeoServerBasePageTest extends GeoServerWicketTestSupport {
         logout();
         tester.startPage(GeoServerHomePage.class);
         tester.assertVisible("loginforms");
-        tester.assertVisible("logoutforms");
         tester.assertVisible("loginforms:0:loginform");
-        tester.assertInvisible("logoutforms:0:logoutform");
-        ListView logoutforms = (ListView) tester.getLastRenderedPage().get("logoutforms");
-        assertEquals(1, logoutforms.getList().size());
+        tester.assertInvisible("logoutform");
         ListView loginForms = (ListView) tester.getLastRenderedPage().get("loginforms");
         String responseTxt = ComponentRenderer.renderComponent(loginForms).toString();
         TagTester tagTester = TagTester.createTagByName(responseTxt, "form");
-        assertEquals("../j_spring_security_check", tagTester.getAttribute("action"));
+        assertEquals(
+                "http://localhost/context/j_spring_security_check",
+                tagTester.getAttribute("action"));
     }
 
     @Test
@@ -34,15 +34,16 @@ public class GeoServerBasePageTest extends GeoServerWicketTestSupport {
         login();
         tester.startPage(GeoServerHomePage.class);
         tester.assertVisible("loginforms");
-        tester.assertVisible("logoutforms");
         tester.assertInvisible("loginforms:0:loginform");
-        tester.assertVisible("logoutforms:0:logoutform");
+        tester.assertVisible("logoutform");
         ListView loginForms = (ListView) tester.getLastRenderedPage().get("loginforms");
         assertEquals(1, loginForms.getList().size());
-        ListView logoutforms = (ListView) tester.getLastRenderedPage().get("logoutforms");
+        Component logoutforms = tester.getLastRenderedPage().get("logoutform");
         String responseTxt = ComponentRenderer.renderComponent(logoutforms).toString();
         TagTester tagTester = TagTester.createTagByName(responseTxt, "form");
-        assertEquals("../j_spring_security_logout", tagTester.getAttribute("action"));
+        assertEquals(
+                "http://localhost/context/j_spring_security_logout",
+                tagTester.getAttribute("action"));
     }
 
     @Test

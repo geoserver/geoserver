@@ -49,6 +49,7 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
         super(catalog);
     }
 
+    @Override
     public String getId() {
         return delegate.getId();
     }
@@ -57,298 +58,370 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     // SECURED METHODS
     // -------------------------------------------------------------------
 
+    @Override
     public CoverageInfo getCoverage(String id) {
-        return (CoverageInfo) checkAccess(delegate.getCoverage(id));
+        return checkAccess(delegate.getCoverage(id));
     }
 
+    @Override
     public CoverageInfo getCoverageByName(String ns, String name) {
-        return (CoverageInfo) checkAccess(delegate.getCoverageByName(ns, name));
+        return checkAccess(delegate.getCoverageByName(ns, name));
     }
 
+    @Override
     public CoverageInfo getCoverageByName(NamespaceInfo ns, String name) {
-        return (CoverageInfo) checkAccess(delegate.getCoverageByName(ns, name));
+        return checkAccess(delegate.getCoverageByName(ns, name));
     }
 
+    @Override
     public CoverageInfo getCoverageByName(Name name) {
-        return (CoverageInfo) checkAccess(delegate.getCoverageByName(name));
+        return checkAccess(delegate.getCoverageByName(name));
     }
 
+    @Override
     public CoverageInfo getCoverageByName(String name) {
-        return (CoverageInfo) checkAccess(delegate.getCoverageByName(name));
+        return checkAccess(delegate.getCoverageByName(name));
     }
 
+    @Override
     public List<CoverageInfo> getCoverages() {
         return filterResources(delegate.getCoverages());
     }
 
+    @Override
     public List<CoverageInfo> getCoveragesByNamespace(NamespaceInfo namespace) {
         return filterResources(delegate.getCoveragesByNamespace(namespace));
     }
 
+    @Override
     public List<CoverageInfo> getCoveragesByCoverageStore(CoverageStoreInfo store) {
         return filterResources(delegate.getCoveragesByCoverageStore(store));
     }
 
+    @Override
     public CoverageInfo getCoverageByCoverageStore(CoverageStoreInfo coverageStore, String name) {
         return checkAccess(delegate.getCoverageByCoverageStore(coverageStore, name));
     }
 
+    @Override
     public List<CoverageInfo> getCoveragesByStore(CoverageStoreInfo store) {
         return filterResources(delegate.getCoveragesByStore(store));
     }
 
+    @Override
     public CoverageStoreInfo getCoverageStore(String id) {
         return checkAccess(delegate.getCoverageStore(id));
     }
 
+    @Override
     public CoverageStoreInfo getCoverageStoreByName(String name) {
         return checkAccess(delegate.getCoverageStoreByName(name));
     }
 
+    @Override
     public CoverageStoreInfo getCoverageStoreByName(String workspaceName, String name) {
         return checkAccess(delegate.getCoverageStoreByName(workspaceName, name));
     }
 
+    @Override
     public CoverageStoreInfo getCoverageStoreByName(WorkspaceInfo workspace, String name) {
         return checkAccess(delegate.getCoverageStoreByName(workspace, name));
     }
 
+    @Override
     public List<CoverageStoreInfo> getCoverageStoresByWorkspace(String workspaceName) {
         return filterStores(delegate.getCoverageStoresByWorkspace(workspaceName));
     }
 
+    @Override
     public List<CoverageStoreInfo> getCoverageStoresByWorkspace(WorkspaceInfo workspace) {
         return filterStores(delegate.getCoverageStoresByWorkspace(workspace));
     }
 
+    @Override
     public List<CoverageStoreInfo> getCoverageStores() {
         return filterStores(delegate.getCoverageStores());
     }
 
+    @Override
     public DataStoreInfo getDataStore(String id) {
         return checkAccess(delegate.getDataStore(id));
     }
 
+    @Override
     public DataStoreInfo getDataStoreByName(String name) {
         return checkAccess(delegate.getDataStoreByName(name));
     }
 
+    @Override
     public DataStoreInfo getDataStoreByName(String workspaceName, String name) {
         return checkAccess(delegate.getDataStoreByName(workspaceName, name));
     }
 
+    @Override
     public DataStoreInfo getDataStoreByName(WorkspaceInfo workspace, String name) {
         return checkAccess(delegate.getDataStoreByName(workspace, name));
     }
 
+    @Override
     public List<DataStoreInfo> getDataStoresByWorkspace(String workspaceName) {
         return filterStores(delegate.getDataStoresByWorkspace(workspaceName));
     }
 
+    @Override
     public List<DataStoreInfo> getDataStoresByWorkspace(WorkspaceInfo workspace) {
         return filterStores(delegate.getDataStoresByWorkspace(workspace));
     }
 
+    @Override
     public List<DataStoreInfo> getDataStores() {
         return filterStores(delegate.getDataStores());
     }
 
+    @Override
     public NamespaceInfo getDefaultNamespace() {
         return delegate.getDefaultNamespace();
     }
 
+    @Override
     public WorkspaceInfo getDefaultWorkspace() {
         return delegate.getDefaultWorkspace();
     }
 
+    @Override
     public FeatureTypeInfo getFeatureType(String id) {
         return checkAccess(delegate.getFeatureType(id));
     }
 
+    @Override
     public FeatureTypeInfo getFeatureTypeByName(String ns, String name) {
         return checkAccess(delegate.getFeatureTypeByName(ns, name));
     }
 
+    @Override
     public FeatureTypeInfo getFeatureTypeByName(NamespaceInfo ns, String name) {
         return checkAccess(delegate.getFeatureTypeByName(ns, name));
     }
 
+    @Override
     public FeatureTypeInfo getFeatureTypeByName(Name name) {
         return checkAccess(delegate.getFeatureTypeByName(name));
     }
 
+    @Override
     public FeatureTypeInfo getFeatureTypeByName(String name) {
         return checkAccess(delegate.getFeatureTypeByName(name));
     }
 
+    @Override
     public List<FeatureTypeInfo> getFeatureTypes() {
         return filterResources(delegate.getFeatureTypes());
     }
 
+    @Override
     public List<FeatureTypeInfo> getFeatureTypesByNamespace(NamespaceInfo namespace) {
         return filterResources(delegate.getFeatureTypesByNamespace(namespace));
     }
 
+    @Override
     public FeatureTypeInfo getFeatureTypeByDataStore(DataStoreInfo dataStore, String name) {
         return checkAccess(delegate.getFeatureTypeByDataStore(dataStore, name));
     }
 
+    @Override
     public List<FeatureTypeInfo> getFeatureTypesByDataStore(DataStoreInfo store) {
         return filterResources(delegate.getFeatureTypesByDataStore(store));
     }
 
+    @Override
     public LayerInfo getLayer(String id) {
         return checkAccess(delegate.getLayer(id));
     }
 
+    @Override
     public LayerInfo getLayerByName(String name) {
         return checkAccess(delegate.getLayerByName(name));
     }
 
+    @Override
     public LayerInfo getLayerByName(Name name) {
         return checkAccess(delegate.getLayerByName(name));
     }
 
+    @Override
     public LayerGroupInfo getLayerGroup(String id) {
         return checkAccess(delegate.getLayerGroup(id));
     }
 
+    @Override
     public LayerGroupInfo getLayerGroupByName(String name) {
         return checkAccess(delegate.getLayerGroupByName(name));
     }
 
+    @Override
     public LayerGroupInfo getLayerGroupByName(String workspaceName, String name) {
         return checkAccess(delegate.getLayerGroupByName(workspaceName, name));
     }
 
+    @Override
     public LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace, String name) {
         return checkAccess(delegate.getLayerGroupByName(workspace, name));
     }
 
+    @Override
     public List<LayerGroupInfo> getLayerGroups() {
         return filterGroups(delegate.getLayerGroups());
     }
 
+    @Override
     public List<LayerGroupInfo> getLayerGroupsByWorkspace(String workspaceName) {
         return filterGroups(delegate.getLayerGroupsByWorkspace(workspaceName));
     }
 
+    @Override
     public List<LayerGroupInfo> getLayerGroupsByWorkspace(WorkspaceInfo workspace) {
         return filterGroups(delegate.getLayerGroupsByWorkspace(workspace));
     }
 
+    @Override
     public List<LayerInfo> getLayers() {
         return filterLayers(delegate.getLayers());
     }
 
+    @Override
     public List<LayerInfo> getLayers(ResourceInfo resource) {
         return filterLayers(delegate.getLayers(resource));
     }
 
+    @Override
     public List<LayerInfo> getLayers(StyleInfo style) {
         return filterLayers(delegate.getLayers(style));
     }
 
+    @Override
     public NamespaceInfo getNamespace(String id) {
         return checkAccess(delegate.getNamespace(id));
     }
 
+    @Override
     public NamespaceInfo getNamespaceByPrefix(String prefix) {
         return checkAccess(delegate.getNamespaceByPrefix(prefix));
     }
 
+    @Override
     public NamespaceInfo getNamespaceByURI(String uri) {
         return checkAccess(delegate.getNamespaceByURI(uri));
     }
 
+    @Override
     public List<NamespaceInfo> getNamespaces() {
         return filterNamespaces(delegate.getNamespaces());
     }
 
+    @Override
     public <T extends ResourceInfo> T getResource(String id, Class<T> clazz) {
         return checkAccess(delegate.getResource(id, clazz));
     }
 
+    @Override
     public <T extends ResourceInfo> T getResourceByName(Name name, Class<T> clazz) {
         return checkAccess(delegate.getResourceByName(name, clazz));
     }
 
+    @Override
     public <T extends ResourceInfo> T getResourceByName(String name, Class<T> clazz) {
         return checkAccess(delegate.getResourceByName(name, clazz));
     }
 
+    @Override
     public <T extends ResourceInfo> T getResourceByName(
             NamespaceInfo ns, String name, Class<T> clazz) {
         return checkAccess(delegate.getResourceByName(ns, name, clazz));
     }
 
+    @Override
     public <T extends ResourceInfo> T getResourceByName(String ns, String name, Class<T> clazz) {
         return checkAccess(delegate.getResourceByName(ns, name, clazz));
     }
 
+    @Override
     public <T extends ResourceInfo> List<T> getResources(Class<T> clazz) {
         return filterResources(delegate.getResources(clazz));
     }
 
+    @Override
     public <T extends ResourceInfo> List<T> getResourcesByNamespace(
             NamespaceInfo namespace, Class<T> clazz) {
         return filterResources(delegate.getResourcesByNamespace(namespace, clazz));
     }
 
+    @Override
     public <T extends ResourceInfo> List<T> getResourcesByNamespace(
             String namespace, Class<T> clazz) {
         return filterResources(delegate.getResourcesByNamespace(namespace, clazz));
     }
 
+    @Override
     public <T extends ResourceInfo> T getResourceByStore(
             StoreInfo store, String name, Class<T> clazz) {
         return checkAccess(delegate.getResourceByStore(store, name, clazz));
     }
 
+    @Override
     public <T extends ResourceInfo> List<T> getResourcesByStore(StoreInfo store, Class<T> clazz) {
         return filterResources(delegate.getResourcesByStore(store, clazz));
     }
 
+    @Override
     public <T extends StoreInfo> T getStore(String id, Class<T> clazz) {
         return checkAccess(delegate.getStore(id, clazz));
     }
 
+    @Override
     public <T extends StoreInfo> T getStoreByName(String name, Class<T> clazz) {
         return checkAccess(delegate.getStoreByName(name, clazz));
     }
 
+    @Override
     public <T extends StoreInfo> T getStoreByName(
             String workspaceName, String name, Class<T> clazz) {
         return checkAccess(delegate.getStoreByName(workspaceName, name, clazz));
     }
 
+    @Override
     public <T extends StoreInfo> T getStoreByName(
             WorkspaceInfo workspace, String name, Class<T> clazz) {
         return checkAccess(delegate.getStoreByName(workspace, name, clazz));
     }
 
+    @Override
     public <T extends StoreInfo> List<T> getStores(Class<T> clazz) {
         return filterStores(delegate.getStores(clazz));
     }
 
+    @Override
     public <T extends StoreInfo> List<T> getStoresByWorkspace(
             String workspaceName, Class<T> clazz) {
         return filterStores(delegate.getStoresByWorkspace(workspaceName, clazz));
     }
 
+    @Override
     public <T extends StoreInfo> List<T> getStoresByWorkspace(
             WorkspaceInfo workspace, Class<T> clazz) {
         return filterStores(delegate.getStoresByWorkspace(workspace, clazz));
     }
 
+    @Override
     public WorkspaceInfo getWorkspace(String id) {
         return checkAccess(delegate.getWorkspace(id));
     }
 
+    @Override
     public WorkspaceInfo getWorkspaceByName(String name) {
         return checkAccess(delegate.getWorkspaceByName(name));
     }
 
+    @Override
     public List<WorkspaceInfo> getWorkspaces() {
         return filterWorkspaces(delegate.getWorkspaces());
     }
@@ -458,278 +531,352 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     // is still undefined)
     // -------------------------------------------------------------------
 
+    @Override
     public MapInfo getMap(String id) {
         return delegate.getMap(id);
     }
 
+    @Override
     public MapInfo getMapByName(String name) {
         return delegate.getMapByName(name);
     }
 
+    @Override
     public List<MapInfo> getMaps() {
         return delegate.getMaps();
     }
 
+    @Override
     public void add(LayerGroupInfo layerGroup) {
         delegate.add(layerGroup);
     }
 
+    @Override
     public ValidationResult validate(LayerGroupInfo layerGroup, boolean isNew) {
         return delegate.validate(layerGroup, isNew);
     }
 
+    @Override
     public LayerGroupInfo detach(LayerGroupInfo layerGroup) {
         return delegate.detach(layerGroup);
     }
 
+    @Override
     public void add(LayerInfo layer) {
         delegate.add(layer);
     }
 
+    @Override
     public LayerInfo detach(LayerInfo layer) {
         return delegate.detach(layer);
     }
 
+    @Override
     public ValidationResult validate(LayerInfo layer, boolean isNew) {
         return delegate.validate(layer, isNew);
     }
 
+    @Override
     public void add(MapInfo map) {
         delegate.add(map);
     }
 
+    @Override
     public MapInfo detach(MapInfo map) {
         return delegate.detach(map);
     }
 
+    @Override
     public void add(NamespaceInfo namespace) {
         delegate.add(namespace);
     }
 
+    @Override
     public ValidationResult validate(NamespaceInfo namespace, boolean isNew) {
         return delegate.validate(namespace, isNew);
     }
 
+    @Override
     public NamespaceInfo detach(NamespaceInfo namespace) {
         return delegate.detach(namespace);
     }
 
+    @Override
     public void add(ResourceInfo resource) {
         delegate.add(resource);
     }
 
+    @Override
     public ValidationResult validate(ResourceInfo resource, boolean isNew) {
         return delegate.validate(resource, isNew);
     }
 
+    @Override
     public <T extends ResourceInfo> T detach(T resource) {
         return delegate.detach(resource);
     }
 
+    @Override
     public void add(StoreInfo store) {
         delegate.add(store);
     }
 
+    @Override
     public ValidationResult validate(StoreInfo store, boolean isNew) {
         return delegate.validate(store, isNew);
     }
 
+    @Override
     public <T extends StoreInfo> T detach(T store) {
         return delegate.detach(store);
     }
 
+    @Override
     public void add(StyleInfo style) {
         delegate.add(style);
     }
 
+    @Override
     public ValidationResult validate(StyleInfo style, boolean isNew) {
         return delegate.validate(style, isNew);
     }
 
+    @Override
     public StyleInfo detach(StyleInfo style) {
         return delegate.detach(style);
     }
 
+    @Override
     public void add(WorkspaceInfo workspace) {
         delegate.add(workspace);
     }
 
+    @Override
     public ValidationResult validate(WorkspaceInfo workspace, boolean isNew) {
         return delegate.validate(workspace, isNew);
     }
 
+    @Override
     public WorkspaceInfo detach(WorkspaceInfo workspace) {
         return delegate.detach(workspace);
     }
 
+    @Override
     public void addListener(CatalogListener listener) {
         delegate.addListener(listener);
     }
 
+    @Override
     public void dispose() {
         delegate.dispose();
     }
 
+    @Override
     public CatalogFacade getFacade() {
         return delegate.getFacade();
     }
 
+    @Override
     public CatalogFactory getFactory() {
         return delegate.getFactory();
     }
 
+    @Override
     public Collection<CatalogListener> getListeners() {
         return delegate.getListeners();
     }
 
+    @Override
     public void fireAdded(CatalogInfo object) {
         delegate.fireAdded(object);
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public void fireModified(
-            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         delegate.fireModified(object, propertyNames, oldValues, newValues);
     }
 
+    @Override
     public void firePostModified(
-            CatalogInfo object, List<String> propertyNames, List oldValues, List newValues) {
+            CatalogInfo object,
+            List<String> propertyNames,
+            List<Object> oldValues,
+            List<Object> newValues) {
         delegate.firePostModified(object, propertyNames, oldValues, newValues);
     }
 
+    @Override
     public void fireRemoved(CatalogInfo object) {
         delegate.fireRemoved(object);
     }
 
     // TODO: why is resource pool being exposed???
+    @Override
     public ResourcePool getResourcePool() {
         return delegate.getResourcePool();
     }
 
+    @Override
     public StyleInfo getStyle(String id) {
         return delegate.getStyle(id);
     }
 
+    @Override
     public StyleInfo getStyleByName(String name) {
         return checkAccess(delegate.getStyleByName(name));
     }
 
+    @Override
     public StyleInfo getStyleByName(String workspaceName, String name) {
         return checkAccess(delegate.getStyleByName(workspaceName, name));
     }
 
+    @Override
     public StyleInfo getStyleByName(WorkspaceInfo workspace, String name) {
         return checkAccess(delegate.getStyleByName(workspace, name));
     }
 
+    @Override
     public List<StyleInfo> getStyles() {
         return filterStyles(delegate.getStyles());
     }
 
+    @Override
     public List<StyleInfo> getStylesByWorkspace(String workspaceName) {
         return filterStyles(delegate.getStylesByWorkspace(workspaceName));
     }
 
+    @Override
     public List<StyleInfo> getStylesByWorkspace(WorkspaceInfo workspace) {
         return filterStyles(delegate.getStylesByWorkspace(workspace));
     }
 
+    @Override
     public void remove(LayerGroupInfo layerGroup) {
         delegate.remove(layerGroup);
     }
 
+    @Override
     public void remove(LayerInfo layer) {
         delegate.remove(layer);
     }
 
+    @Override
     public void remove(MapInfo map) {
         delegate.remove(map);
     }
 
+    @Override
     public void remove(NamespaceInfo namespace) {
         delegate.remove(namespace);
     }
 
+    @Override
     public void remove(ResourceInfo resource) {
         delegate.remove(resource);
     }
 
+    @Override
     public void remove(StoreInfo store) {
         delegate.remove(store);
     }
 
+    @Override
     public void remove(StyleInfo style) {
         delegate.remove(style);
     }
 
+    @Override
     public void remove(WorkspaceInfo workspace) {
         delegate.remove(workspace);
     }
 
+    @Override
     public void removeListener(CatalogListener listener) {
         delegate.removeListener(listener);
     }
 
+    @Override
     public void save(LayerGroupInfo layerGroup) {
         delegate.save(layerGroup);
     }
 
+    @Override
     public void save(LayerInfo layer) {
         delegate.save(layer);
     }
 
+    @Override
     public void save(MapInfo map) {
         delegate.save(map);
     }
 
+    @Override
     public void save(NamespaceInfo namespace) {
         delegate.save(namespace);
     }
 
+    @Override
     public void save(ResourceInfo resource) {
         delegate.save(resource);
     }
 
+    @Override
     public void save(StoreInfo store) {
         delegate.save(store);
     }
 
+    @Override
     public void save(StyleInfo style) {
         delegate.save(style);
     }
 
+    @Override
     public void save(WorkspaceInfo workspace) {
         delegate.save(workspace);
     }
 
+    @Override
     public void setDefaultNamespace(NamespaceInfo defaultNamespace) {
         delegate.setDefaultNamespace(defaultNamespace);
     }
 
+    @Override
     public void setDefaultWorkspace(WorkspaceInfo workspace) {
         delegate.setDefaultWorkspace(workspace);
     }
 
+    @Override
     public void setResourcePool(ResourcePool resourcePool) {
         delegate.setResourcePool(resourcePool);
     }
 
+    @Override
     public GeoServerResourceLoader getResourceLoader() {
         return delegate.getResourceLoader();
     }
 
+    @Override
     public void setResourceLoader(GeoServerResourceLoader resourceLoader) {
         delegate.setResourceLoader(resourceLoader);
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         delegate.accept(visitor);
     }
 
+    @Override
     public DataStoreInfo getDefaultDataStore(WorkspaceInfo workspace) {
         return checkAccess(delegate.getDefaultDataStore(workspace));
     }
 
+    @Override
     public void setDefaultDataStore(WorkspaceInfo workspace, DataStoreInfo defaultStore) {
         delegate.setDefaultDataStore(workspace, defaultStore);
     }
@@ -766,8 +913,8 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
 
         // create secured decorators on-demand
         final Function<T, T> securityWrapper = securityWrapper(of);
-        final CloseableIterator<T> filteredWrapped;
-        filteredWrapped = CloseableIteratorAdapter.transform(filtered, securityWrapper);
+        final CloseableIterator<T> filteredWrapped =
+                CloseableIteratorAdapter.transform(filtered, securityWrapper);
 
         return filteredWrapped;
     }
@@ -777,13 +924,9 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
      *     input
      */
     private <T extends CatalogInfo> Function<T, T> securityWrapper(final Class<T> forClass) {
-        return new Function<T, T>() {
-
-            @Override
-            public T apply(T input) {
-                T checked = checkAccess(input);
-                return checked;
-            }
+        return input -> {
+            T checked = checkAccess(input);
+            return checked;
         };
     }
 
@@ -796,8 +939,8 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     protected abstract <T extends CatalogInfo> Filter securityFilter(
             final Class<T> infoType, final Filter filter);
 
-    @SuppressWarnings("rawtypes")
-    public void removeListeners(Class listenerClass) {
+    @Override
+    public void removeListeners(Class<? extends CatalogListener> listenerClass) {
         delegate.removeListeners(listenerClass);
     }
 

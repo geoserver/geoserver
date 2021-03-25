@@ -17,10 +17,13 @@ import org.geotools.feature.NameImpl;
 import org.geotools.util.Version;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ComparisonFailure;
+import org.junit.Rule;
 import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.opengis.feature.type.Name;
 
 /**
@@ -63,6 +66,10 @@ import org.opengis.feature.type.Name;
  * @author Justin Deoliveira, OpenGeo
  * @param <T>
  */
+@SuppressWarnings({
+    "PMD.JUnit4TestShouldUseBeforeAnnotation",
+    "PMD.JUnit4TestShouldUseAfterAnnotation"
+})
 public abstract class GeoServerBaseTestSupport<T extends TestData> {
 
     /** Common logger for test cases */
@@ -87,18 +94,15 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
 
     @Rule
     public TestRule runSetup =
-            new TestRule() {
-                @Override
-                public Statement apply(Statement base, Description description) {
-                    if (description.getAnnotation(RunTestSetup.class) != null) {
-                        try {
-                            doTearDownClass();
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
+            (base, description) -> {
+                if (description.getAnnotation(RunTestSetup.class) != null) {
+                    try {
+                        doTearDownClass();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
                     }
-                    return base;
                 }
+                return base;
             };
 
     /** Checks for existence of a system property named "quietTests". */
@@ -127,6 +131,7 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
     }
 
     @Before
+    @SuppressWarnings("unchecked")
     public final void doSetup() throws Exception {
         if (testData == null) {
             test = this;
@@ -137,6 +142,7 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     protected T getTestData() {
         return (T) testData;
     }
@@ -168,8 +174,8 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
         }
     }
 
-    private TestSetupFrequency lookupTestSetupPolicy() {
-        Class clazz = getClass();
+    protected TestSetupFrequency lookupTestSetupPolicy() {
+        Class<?> clazz = getClass();
         while (clazz != null && !Object.class.equals(clazz)) {
             TestSetup testSetup = (TestSetup) clazz.getAnnotation(TestSetup.class);
             if (testSetup != null) {
@@ -181,6 +187,7 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
     }
 
     @AfterClass
+    @SuppressWarnings("unchecked")
     public static final void doTearDownClass() throws Exception {
         if (testData != null) {
             try {

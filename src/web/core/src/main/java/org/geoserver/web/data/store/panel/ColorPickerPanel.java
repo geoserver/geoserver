@@ -27,12 +27,13 @@ public class ColorPickerPanel extends Panel {
      * @param validators any extra validator that should be added to the input field, or {@code
      *     null}
      */
+    @SafeVarargs
     public ColorPickerPanel(
             final String id,
-            final IModel paramVale,
-            final IModel paramLabelModel,
+            final IModel<String> paramVale,
+            final IModel<String> paramLabelModel,
             final boolean required,
-            IValidator... validators) {
+            IValidator<String>... validators) {
         // make the value of the text field the model of this panel, for easy
         // value retriaval
         super(id, paramVale);
@@ -57,6 +58,7 @@ public class ColorPickerPanel extends Panel {
                                         private static final long serialVersionUID =
                                                 4343895199315509104L;
 
+                                        @Override
                                         public String convertToString(String input, Locale locale) {
                                             if (input.startsWith("#")) {
                                                 return input.substring(1);
@@ -65,6 +67,7 @@ public class ColorPickerPanel extends Panel {
                                             }
                                         }
 
+                                        @Override
                                         public String convertToObject(String value, Locale locale) {
                                             if (value.equals("")) return value;
                                             return "#" + value;
@@ -81,7 +84,7 @@ public class ColorPickerPanel extends Panel {
         textField.setLabel(paramLabelModel);
 
         if (validators != null) {
-            for (IValidator validator : validators) {
+            for (IValidator<String> validator : validators) {
                 textField.add(validator);
             }
         }

@@ -5,7 +5,10 @@
  */
 package org.geoserver.security.web.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import org.apache.wicket.extensions.markup.html.form.palette.component.Recorder;
@@ -108,7 +111,7 @@ public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSuppor
             if (s.equals(searchValue)) return index;
             index++;
         }
-        assertTrue(index != -1);
+        assertNotEquals(index, -1);
         return -1;
     }
 

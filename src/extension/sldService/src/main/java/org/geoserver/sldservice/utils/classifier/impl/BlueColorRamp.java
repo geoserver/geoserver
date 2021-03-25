@@ -5,7 +5,7 @@
  */
 package org.geoserver.sldservice.utils.classifier.impl;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Blue Color Ramp Implementation
@@ -14,6 +14,7 @@ import java.awt.*;
  */
 public class BlueColorRamp extends SingleColorRamp {
 
+    @Override
     protected Color getColorForIndex(double step, int idx) {
         return new Color(0, 0, (int) (step * idx + 30));
     }

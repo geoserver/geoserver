@@ -4,25 +4,36 @@
  */
 package org.geoserver.rest.catalog;
 
+import com.google.common.collect.Streams;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.apache.commons.collections4.iterators.NodeListIterator;
 import org.geoserver.rest.converters.BaseMessageConverter;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 @Component
 public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
@@ -42,18 +53,17 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
     @Override
     public Map<?, ?> readInternal(Class<? extends Map<?, ?>> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
-        Object result;
-        SAXBuilder builder = new SAXBuilder();
-        builder.setEntityResolver(catalog.getResourcePool().getEntityResolver());
-        Document doc;
+
+        Document dom;
         try {
-            doc = builder.build(inputMessage.getBody());
-        } catch (JDOMException e) {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            builder.setEntityResolver(catalog.getResourcePool().getEntityResolver());
+            dom = builder.parse(inputMessage.getBody());
+        } catch (SAXException | IOException | ParserConfigurationException e) {
             throw new IOException("Error building document", e);
         }
-
-        Element elem = doc.getRootElement();
-        result = convert(elem);
+        Element elem = dom.getDocumentElement();
+        Object result = convert(elem);
         return (Map<?, ?>) result;
     }
 
@@ -63,11 +73,27 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
     @Override
     public void writeInternal(Map<?, ?> map, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        Element root = new Element(getMapName(map));
-        final Document doc = new Document(root);
+
+        Element root;
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = builder.newDocument();
+            root = doc.createElement(getMapName(map));
+            doc.appendChild(root);
+        } catch (ParserConfigurationException e) {
+            throw new IOException("Error building document", e);
+        }
+
         insert(root, map);
-        XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-        outputter.output(doc, outputMessage.getBody());
+        try {
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            Result outputTarget = new StreamResult(outputMessage.getBody());
+            transformer.transform(new DOMSource(root), outputTarget);
+        } catch (TransformerException e) {
+            throw new IOException("Error writing document", e);
+        }
     }
 
     protected String getMapName(Map<?, ?> map) {
@@ -85,32 +111,41 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
      * @return the Object produced by interpreting the XML
      */
     protected Object convert(Element elem) {
-        List<?> children = elem.getChildren();
-        if (children.size() == 0) {
-            if (elem.getContent().size() == 0) {
+        final List<Element> children = getChildren(elem);
+        if (children.isEmpty()) {
+            String content = elem.getTextContent();
+            if (null == content || content.isEmpty()) {
                 return null;
-            } else {
-                return elem.getText();
             }
+            return content;
         } else if (children.get(0) instanceof Element) {
-            Element child = (Element) children.get(0);
-            if (child.getName().equals("entry")) {
+            final Element child = children.get(0);
+            if (child.getNodeName().equals("entry")) {
                 List<Object> l = new ArrayList<>();
-                for (Object o : elem.getChildren("entry")) {
-                    Element curr = (Element) o;
+                for (Node n : children) {
+                    if (!(n instanceof Element && "entry".equals(n.getNodeName()))) {
+                        continue;
+                    }
+                    Element curr = (Element) n;
                     l.add(convert(curr));
                 }
                 return l;
             } else {
-                Map<String, Object> m = new NamedMap<>(child.getName());
-                for (Object aChildren : children) {
-                    Element curr = (Element) aChildren;
-                    m.put(curr.getName(), convert(curr));
+                Map<String, Object> m = new NamedMap<>(child.getNodeName());
+                for (Element curr : children) {
+                    m.put(curr.getNodeName(), convert(curr));
                 }
                 return m;
             }
         }
         throw new RuntimeException("Unable to parse XML");
+    }
+
+    private List<Element> getChildren(Element elem) {
+        return Streams.stream(new NodeListIterator(elem))
+                .filter(Element.class::isInstance)
+                .map(Element.class::cast)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -125,20 +160,21 @@ public class MapXMLConverter extends BaseMessageConverter<Map<?, ?>> {
         if (object instanceof Map) {
             Map<?, ?> map = (Map<?, ?>) object;
             for (Map.Entry<?, ?> entry : map.entrySet()) {
-                Element newElem = new Element(entry.getKey().toString());
+                Element newElem = elem.getOwnerDocument().createElement(entry.getKey().toString());
                 insert(newElem, entry.getValue());
-                elem.addContent(newElem);
+                elem.appendChild(newElem);
             }
         } else if (object instanceof Collection) {
             Collection<?> collection = (Collection<?>) object;
 
             for (Object entry : collection) {
-                Element newElem = new Element("entry");
+                Element newElem = elem.getOwnerDocument().createElement("entry");
                 insert(newElem, entry);
-                elem.addContent(newElem);
+                elem.appendChild(newElem);
             }
         } else {
-            elem.addContent(object == null ? "" : object.toString());
+            String text = object == null ? "" : object.toString();
+            elem.setTextContent(text);
         }
     }
 }

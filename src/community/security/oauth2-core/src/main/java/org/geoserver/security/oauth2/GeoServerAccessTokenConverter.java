@@ -47,6 +47,7 @@ public class GeoServerAccessTokenConverter extends DefaultAccessTokenConverter {
      *
      * @param userTokenConverter the userTokenConverter to set
      */
+    @Override
     public final void setUserTokenConverter(UserAuthenticationConverter userTokenConverter) {
         this.userTokenConverter = userTokenConverter;
         super.setUserTokenConverter(userTokenConverter);
@@ -59,15 +60,22 @@ public class GeoServerAccessTokenConverter extends DefaultAccessTokenConverter {
         Authentication user = userTokenConverter.extractAuthentication(map);
         String clientId = (String) map.get(CLIENT_ID);
         parameters.put(CLIENT_ID, clientId);
-        Set<String> resourceIds =
-                new LinkedHashSet<>(
-                        map.containsKey(AUD)
-                                ? (Collection<String>) map.get(AUD)
-                                : Collections.<String>emptySet());
+        Set<String> resourceIds = new LinkedHashSet<>(getAud(map));
         OAuth2Request request =
                 new OAuth2Request(
                         parameters, clientId, null, true, scope, resourceIds, null, null, null);
         return new OAuth2Authentication(request, user);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Collection<String> getAud(Map<String, ?> map) {
+        if (!map.containsKey(AUD)) {
+            return Collections.emptySet();
+        }
+
+        Object aud = map.get(AUD);
+        if (aud instanceof Collection) return (Collection) aud;
+        else return Collections.singletonList(String.valueOf(aud));
     }
 
     private Set<String> parseScopes(Map<String, ?> map) {

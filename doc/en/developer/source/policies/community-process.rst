@@ -39,7 +39,7 @@ new feature:
 
 The determining factor for what release a feature should be included in is based on the estimate of the time to implement the feature, and the current :ref:`release_cycle`.
 
-New features may be back-ported to the stable series (if technically feasible) after being tried out on master for a month.
+New features may be back-ported to the stable series (if technically feasible) after being tried out on the main development branch for a month.
 
 Adding fixes
 ^^^^^^^^^^^^
@@ -47,10 +47,21 @@ Adding fixes
 During the release cycle community members contribute fixes to be included, and backported, to be included in subsequent releases. 
 
 #. Each fix requires an issue tracker entry, to be included in the release notes
-#. Each fix must be applied to the master branch, and then back ported.
+#. Each fix must be applied to the main development branch, and then back ported.
 #. While a release may be held for a "blocking" issue this is determined by discussion on the developer email list.
 
 Please respect our release volunteers. We stop back porting fixes the day before release so CITE tests can verify the release includes all the changes needed.
+
+Upgrading dependencies
+^^^^^^^^^^^^^^^^^^^^^^
+
+During both the development and release cycle, dependencies may be upgraded, either as part of a new feature or fix, or as a standalone change during general maintenance.
+
+When backporting changes that include dependency upgrades, keep in mind the guidelings for backporting fixes and features, as they apply to the dependency that changed:
+
+#. Upgrades for bug fixes or security issues can be backported immediately like any other fix. 
+#. Upgrades for new features that do not require an API change (either in the upgraded library or in GeoServer) can be backported after one month. Additive-only API changes may also be backported where technically feasible.
+#. In some cases, upgrading a dependency to fix a bug may also bring with it API changes in the dependency. Consider whether a backport is really necessary in such cases. Security fixes may need to force an api change.
 
 .. _release_cycle:
 
@@ -61,17 +72,17 @@ GeoServer follows a time-boxed release model, this allows new features to be dev
 
 The community maintains three active branches:
 
-* master: available for development of new functionality, documentation improvements and bug fixes
+* main development branch (main): available for development of new functionality, documentation improvements and bug fixes
 * stable: bug fixes and back-port of new functionality that do not affect the GeoServer API or significantly affect stability.
 * maintenance: bug fixes
 
-For each GeoServer release we spend six month "prerelease" in a development cycle on the master branch, followed by six months as the stable release, followed by six months as the maintenance release.
+For each GeoServer release we spend six month "prerelease" in a development cycle on the main development branch branch, followed by six months as the stable release, followed by six months as the maintenance release.
 
-..note:: The former beta release has been replaced with an earlier release candidate. There is no longer a "feature freeze" on master after this release. Instead, the new branch is created at this time, freeing up master for new features.
+..note:: The former beta release has been replaced with an earlier release candidate. There is no longer a "feature freeze" on the main development branch after this release. Instead, the new branch is created at this time, freeing up the main development branch for new features.
 
 **Prerelease**
 
-  * Month -6: master open for development
+  * Month -6: main development branch open for development
   * Month -1: month:  release candidate is made on new branch
   * Month 1: (start of month): second release candidate is made, if there are sufficient changes to warrant it.
 

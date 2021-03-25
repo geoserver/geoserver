@@ -22,8 +22,8 @@ import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.web.data.layer.NewLayerPage;
-import org.geotools.data.ows.HTTPClient;
-import org.geotools.data.ows.SimpleHttpClient;
+import org.geotools.http.HTTPClient;
+import org.geotools.http.HTTPClientFinder;
 import org.geotools.ows.ServiceException;
 import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.xml.DocumentFactory;
@@ -45,7 +45,7 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
                     GeoServerExtensions.bean(GeoServerEnvironment.class);
 
             // AF: Disable Binding if GeoServer Env Parametrization is enabled!
-            if (gsEnvironment == null || !GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+            if (gsEnvironment == null || !GeoServerEnvironment.allowEnvParametrization()) {
                 capabilitiesURL.getFormComponent().add(new WMTSCapabilitiesURLValidator());
             }
         } catch (IOException e) {
@@ -60,8 +60,7 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
          * Try saving a copy of it so if the process fails somehow the original "info" does not end
          * up with an id set
          */
-        WMTSStoreInfo expandedStore =
-                (WMTSStoreInfo) getCatalog().getResourcePool().clone(info, true);
+        WMTSStoreInfo expandedStore = getCatalog().getResourcePool().clone(info, true);
         WMTSStoreInfo savedStore = getCatalog().getFactory().createWebMapTileServer();
 
         // GR: this shouldn't fail, the Catalog.save(StoreInfo) API does not declare any action in
@@ -73,7 +72,7 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
             validate.throwIfInvalid();
 
             // GeoServer Env substitution; force to *AVOID* resolving env placeholders...
-            savedStore = (WMTSStoreInfo) getCatalog().getResourcePool().clone(info, false);
+            savedStore = getCatalog().getResourcePool().clone(info, false);
             // ... and save
             getCatalog().save(savedStore);
         } catch (RuntimeException e) {
@@ -107,13 +106,13 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
         setResponsePage(layerChooserPage);
     }
 
-    final class WMTSCapabilitiesURLValidator implements IValidator {
+    final class WMTSCapabilitiesURLValidator implements IValidator<String> {
 
         @Override
-        public void validate(IValidatable validatable) {
-            String url = (String) validatable.getValue();
+        public void validate(IValidatable<String> validatable) {
+            String url = validatable.getValue();
             try {
-                HTTPClient client = new SimpleHttpClient();
+                HTTPClient client = HTTPClientFinder.createClient();
                 usernamePanel.getFormComponent().processInput();
                 String user = usernamePanel.getFormComponent().getInput();
                 password.getFormComponent().processInput();
@@ -134,7 +133,7 @@ public class WMTSStoreNewPage extends AbstractWMTSStorePage {
                     }
                 }
 
-                WebMapTileServer server = new WebMapTileServer(new URL(url), client, null);
+                WebMapTileServer server = new WebMapTileServer(new URL(url), client);
                 server.getCapabilities();
             } catch (IOException | ServiceException e) {
                 IValidationError err =

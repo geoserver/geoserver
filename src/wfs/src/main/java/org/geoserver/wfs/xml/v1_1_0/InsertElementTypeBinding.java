@@ -127,6 +127,7 @@ public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.INSERTELEMENTTYPE;
     }
@@ -138,10 +139,12 @@ public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<InsertElementType> getType() {
         return InsertElementType.class;
     }
 
+    @Override
     public void initializeChildContext(
             ElementInstance childInstance, Node node, MutablePicoContainer context) {
         // if an srsName is set for this geometry, put it in the context for
@@ -165,6 +168,7 @@ public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         InsertElementType insertElement = wfsfactory.createInsertElementType();
@@ -209,6 +213,7 @@ public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
         return insertElement;
     }
 
+    @Override
     public Object getProperty(Object object, QName name) throws Exception {
         InsertElementType insert = (InsertElementType) object;
 

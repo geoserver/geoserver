@@ -4,7 +4,7 @@
  */
 package org.geoserver.wcs2_0.kvp;
 
-import static junit.framework.TestCase.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.util.logging.Level;

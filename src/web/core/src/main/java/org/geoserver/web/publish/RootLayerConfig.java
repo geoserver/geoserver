@@ -18,22 +18,21 @@ public class RootLayerConfig extends PublishedConfigurationPanel<PublishedInfo> 
     public RootLayerConfig(String id, IModel<? extends PublishedInfo> model) {
         super(id, model);
         IModel<Boolean> rootLayerModel =
-                new MetadataMapModel<Boolean>(
-                        new PropertyModel(model, "metadata"),
+                new MetadataMapModel<>(
+                        new PropertyModel<>(model, "metadata"),
                         PublishedInfo.ROOT_IN_CAPABILITIES,
                         Boolean.class);
 
-        RadioGroup<Boolean> rootLayer = new RadioGroup<Boolean>("rootLayer", rootLayerModel);
+        RadioGroup<Boolean> rootLayer = new RadioGroup<>("rootLayer", rootLayerModel);
         add(rootLayer);
 
-        IModel<Boolean> rootLayerGlobalModel = new Model<Boolean>(null);
-        IModel<Boolean> rootLayerYesModel = new Model<Boolean>(Boolean.TRUE);
-        IModel<Boolean> rootLayerNoModel = new Model<Boolean>(Boolean.FALSE);
+        IModel<Boolean> rootLayerGlobalModel = new Model<>(null);
+        IModel<Boolean> rootLayerYesModel = new Model<>(Boolean.TRUE);
+        IModel<Boolean> rootLayerNoModel = new Model<>(Boolean.FALSE);
 
-        Radio<Boolean> rootLayerGlobal =
-                new Radio<Boolean>("rootLayerGlobal", rootLayerGlobalModel);
-        Radio<Boolean> rootLayerYes = new Radio<Boolean>("rootLayerYes", rootLayerYesModel);
-        Radio<Boolean> rootLayerNo = new Radio<Boolean>("rootLayerNo", rootLayerNoModel);
+        Radio<Boolean> rootLayerGlobal = new Radio<>("rootLayerGlobal", rootLayerGlobalModel);
+        Radio<Boolean> rootLayerYes = new Radio<>("rootLayerYes", rootLayerYesModel);
+        Radio<Boolean> rootLayerNo = new Radio<>("rootLayerNo", rootLayerNoModel);
 
         rootLayer.add(rootLayerGlobal);
         rootLayer.add(rootLayerYes);

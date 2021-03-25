@@ -68,8 +68,8 @@ public class GetCapabilities {
         String baseUrl = request.getBaseUrl();
         if (WMS.VERSION_1_1_1.equals(version)) {
             Set<String> mapFormats = wms.getAllowedMapFormatNames();
-            List<ExtendedCapabilitiesProvider> extCapsProviders;
-            extCapsProviders = wms.getAvailableExtendedCapabilitiesProviders();
+            List<ExtendedCapabilitiesProvider> extCapsProviders =
+                    wms.getAvailableExtendedCapabilitiesProviders();
             transformer =
                     new GetCapabilitiesTransformer(
                             wms, baseUrl, mapFormats, legendFormats, extCapsProviders);

@@ -8,9 +8,9 @@ Manual Install
 
 To download and install the required extensions by hand:
 
-#. Download the geoserver-2.15-SNAPSHOT-backup-restore-plugin.zip from:
+#. Download the geoserver-|release|-backup-restore-plugin.zip from:
 
-   * `Community Builds <https://build.geoserver.org/geoserver/master/community-latest/>`_ (GeoServer WebSite)
+   * `Community Builds <https://build.geoserver.org/geoserver/main/community-latest/>`_ (GeoServer WebSite)
    
    It is important to download the version that matches the GeoServer you are running.
 
@@ -20,7 +20,7 @@ To download and install the required extensions by hand:
 
    These files make up the running GeoServer application.
 
-#. Unzip the contents of the three zip files into the :file:`lib` folder.
+#. Unzip the contents of the zip file into the :file:`lib` folder.
 
 #. Restart the Application Server.
    

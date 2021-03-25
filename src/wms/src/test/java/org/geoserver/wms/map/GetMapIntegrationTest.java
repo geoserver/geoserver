@@ -6,14 +6,20 @@
 package org.geoserver.wms.map;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.RenderedImage;
-import java.io.*;
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -268,7 +274,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         byte[][] bankData11 = db11.getBankData();
         byte[][] bankData13 = db13.getBankData();
         for (int i = 0; i < bankData11.length; i++) {
-            assertTrue(Arrays.equals(bankData11[i], bankData13[i]));
+            assertArrayEquals(bankData11[i], bankData13[i]);
         }
     }
 
@@ -276,7 +282,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     public void testOpenLayersProxy() throws Exception {
         NamespaceContext oldContext = XMLUnit.getXpathNamespaceContext();
         try {
-            Map<String, String> namespaces = new HashMap<String, String>();
+            Map<String, String> namespaces = new HashMap<>();
             namespaces.put("xhtml", "http://www.w3.org/1999/xhtml");
             registerNamespaces(namespaces);
             XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
@@ -395,7 +401,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         WMS wms = new WMS(getGeoServer());
         GetMapKvpRequestReader reader = new GetMapKvpRequestReader(wms);
         // asserts the a layerGroup can be created with null layer and a styleGroup sld
-        HashMap kvp = new HashMap();
+        HashMap<String, Object> kvp = new HashMap<>();
         kvp.put("layers", "BasicStyleGroup");
         kvp.put("styles", "");
 
@@ -412,20 +418,21 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         GetMapXmlReader reader = new GetMapXmlReader(wms);
 
         GetMapRequest request = reader.createRequest();
-        InputStream resourceStream =
-                getClass().getResource("WMSPostLayerGroupWithStyleGroup.xml").openStream();
-        BufferedReader input = new BufferedReader(new InputStreamReader(resourceStream));
+        try (InputStream resourceStream =
+                        getClass().getResource("WMSPostLayerGroupWithStyleGroup.xml").openStream();
+                BufferedReader input = new BufferedReader(new InputStreamReader(resourceStream))) {
 
-        request = (GetMapRequest) reader.read(request, input, new HashMap());
+            request = (GetMapRequest) reader.read(request, input, new HashMap());
 
-        String layer = MockData.BASIC_POLYGONS.getLocalPart();
-        assertEquals(1, request.getLayers().size());
-        assertTrue(request.getLayers().get(0).getName().endsWith(layer));
+            String layer = MockData.BASIC_POLYGONS.getLocalPart();
+            assertEquals(1, request.getLayers().size());
+            assertTrue(request.getLayers().get(0).getName().endsWith(layer));
 
-        assertEquals(1, request.getStyles().size());
-        Style expected = getCatalog().getStyleByName("BasicStyleGroup").getStyle();
-        Style style = request.getStyles().get(0);
-        assertEquals(expected, style);
+            assertEquals(1, request.getStyles().size());
+            Style expected = getCatalog().getStyleByName("BasicStyleGroup").getStyle();
+            Style style = request.getStyles().get(0);
+            assertEquals(expected, style);
+        }
     }
 
     @Test

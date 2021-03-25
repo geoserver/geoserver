@@ -32,7 +32,7 @@ public class GetPropertyValueTest extends AbstractAppSchemaTestSupport {
         LOGGER.info("WFS GetPropertyValue response:\n" + prettyString(doc));
 
         assertXpathEvaluatesTo("GUNTHORPE FORMATION", "//wfs:member[1]/gml:name", doc);
-        assertXpathCount(4, "//gml:name", doc);
+        assertXpathCount(5, "//gml:name", doc);
         assertXpathCount(0, "//gsml:shape", doc);
         assertXpathCount(0, "//gsml:specification", doc);
     }

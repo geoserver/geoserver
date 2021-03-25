@@ -5,7 +5,8 @@
  */
 package org.geoserver.wcs2_0;
 
-import static org.geoserver.wcs2_0.util.RequestUtils.*;
+import static org.geoserver.wcs2_0.util.RequestUtils.checkService;
+import static org.geoserver.wcs2_0.util.RequestUtils.checkVersion;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -105,9 +106,9 @@ public class DefaultWebCoverageService20 implements WebCoverageService20 {
         }
 
         // check coverages are legit
-        List<String> badCoverageIds = new ArrayList<String>();
+        List<String> badCoverageIds = new ArrayList<>();
 
-        for (String encodedCoverageId : (List<String>) request.getCoverageId()) {
+        for (String encodedCoverageId : request.getCoverageId()) {
             String newCoverageID = encodedCoverageId;
             // Extension point for encoding the coverageId
             if (availableDescribeCovExtensions) {

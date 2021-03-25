@@ -96,7 +96,7 @@ public class StreamingSVGMap extends WebMap {
 
     private void writeDefs(SimpleFeatureType layer) throws IOException {
         GeometryDescriptor gtype = layer.getGeometryDescriptor();
-        Class geometryClass = gtype.getType().getBinding();
+        Class<?> geometryClass = gtype.getType().getBinding();
 
         if ((geometryClass == MultiPoint.class) || (geometryClass == Point.class)) {
             writePointDefs();
@@ -111,15 +111,11 @@ public class StreamingSVGMap extends WebMap {
     /** @task TODO: respect layer filtering given by their Styles */
     private void writeLayers() throws IOException {
         List<Layer> layers = mapContent.layers();
-        int nLayers = layers.size();
-
         FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
-        for (int i = 0; i < nLayers; i++) {
-            Layer layer = layers.get(i);
+        for (Layer layer : layers) {
             SimpleFeatureIterator featureReader = null;
-            SimpleFeatureSource fSource;
-            fSource = (SimpleFeatureSource) layer.getFeatureSource();
+            SimpleFeatureSource fSource = (SimpleFeatureSource) layer.getFeatureSource();
             SimpleFeatureType schema = fSource.getSchema();
 
             try {
@@ -140,12 +136,9 @@ public class StreamingSVGMap extends WebMap {
                 featureReader = fSource.getFeatures(finalQuery).features();
                 LOGGER.fine("got FeatureReader, now writing");
 
-                String groupId = null;
-                String styleName = null;
+                String groupId = schema.getTypeName();
 
-                groupId = schema.getTypeName();
-
-                styleName = layer.getStyle().getName();
+                String styleName = layer.getStyle().getName();
 
                 writer.write("<g id=\"" + groupId + "\"");
 

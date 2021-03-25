@@ -8,10 +8,19 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +32,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogFacade;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PropertyStyleHandler;
+import org.geoserver.catalog.SLDHandler;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.Styles;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -480,6 +496,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         JSONObject styleJson = ((JSONObject) json).getJSONObject("style");
         assertEquals("Ponds", styleJson.get("name"));
         assertEquals("Ponds.sld", styleJson.get("filename"));
+        @SuppressWarnings("unchecked")
         Collection<JSONObject> entryCollection =
                 JSONArray.toCollection(
                         styleJson.getJSONObject("metadata").getJSONArray("entry"),
@@ -522,7 +539,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertEquals("Forests.sld", style.getFilename());
         MetadataMap metadata = style.getMetadata();
         assertNotNull(metadata);
-        assertTrue(metadata.size() == 1);
+        assertEquals(1, metadata.size());
         assertEquals("300", metadata.get("cacheAgeMax"));
         assertNotNull(style.getDateModified());
     }
@@ -552,7 +569,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertEquals("Ponds.sld", style.getFilename());
         MetadataMap metadata = style.getMetadata();
         assertNotNull(metadata);
-        assertTrue(metadata.size() == 2);
+        assertEquals(2, metadata.size());
         assertEquals("300", metadata.get("cacheAgeMax"));
         assertEquals("test1", metadata.get("surename"));
         assertNotNull(style.getDateModified());
@@ -1053,6 +1070,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     @Ignore
+    @SuppressWarnings("PMD.CloseResource")
     public void testPostAsPSL() throws Exception {
         Properties props = new Properties();
         props.put("type", "point");
@@ -1097,6 +1115,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     @Ignore
+    @SuppressWarnings("PMD.CloseResource")
     public void testPostAsPSLRaw() throws Exception {
         Properties props = new Properties();
         props.put("type", "point");
@@ -1135,6 +1154,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     @Ignore
+    @SuppressWarnings("PMD.CloseResource")
     public void testPutAsPSL() throws Exception {
         testPostAsPSL();
 
@@ -1174,6 +1194,7 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     @Ignore
+    @SuppressWarnings("PMD.CloseResource")
     public void testPutAsPSLRaw() throws Exception {
         testPostAsPSL();
 

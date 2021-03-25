@@ -32,7 +32,7 @@ public class ClassProperties {
     Multimap<String, Method> getters;
     Multimap<String, Method> setters;
 
-    public ClassProperties(Class clazz) {
+    public ClassProperties(Class<?> clazz) {
         methods =
                 Multimaps.newListMultimap(
                         new TreeMap<>(String.CASE_INSENSITIVE_ORDER), () -> new ArrayList<>());
@@ -69,7 +69,7 @@ public class ClassProperties {
      * @return A list of string.
      */
     public List<String> properties() {
-        ArrayList<String> properties = new ArrayList<String>();
+        ArrayList<String> properties = new ArrayList<>();
         for (String key : getters.keySet()) {
             if (key.equals("Resource")) {
                 properties.add(0, key);
@@ -89,13 +89,13 @@ public class ClassProperties {
      * @param type The type of the property.
      * @return The setter for the property, or null if it does not exist.
      */
-    public Method setter(String property, Class type) {
+    public Method setter(String property, Class<?> type) {
         Collection<Method> methods = setters.get(property);
         for (Method setter : methods) {
             if (type == null) {
                 return setter;
             } else {
-                Class target = setter.getParameterTypes()[0];
+                Class<?> target = setter.getParameterTypes()[0];
                 if (target.isAssignableFrom(type)
                         || (target.isPrimitive() && type == wrapper(target))
                         || (type.isPrimitive() && target == wrapper(type))) {
@@ -122,14 +122,14 @@ public class ClassProperties {
      * @param type The type of the property.
      * @return The getter for the property, or null if it does not exist.
      */
-    public Method getter(String property, Class type) {
+    public Method getter(String property, Class<?> type) {
         Collection<Method> methods = getters.get(property);
         if (methods != null) {
             for (Method getter : methods) {
                 if (type == null) {
                     return getter;
                 } else {
-                    Class target = getter.getReturnType();
+                    Class<?> target = getter.getReturnType();
                     if (type.isAssignableFrom(target)
                             || (target.isPrimitive() && type == wrapper(target))
                             || (type.isPrimitive() && target == wrapper(type))) {
@@ -162,7 +162,7 @@ public class ClassProperties {
      *
      * @param primitive A primtive class, like int.class, double.class, etc...
      */
-    static Class wrapper(Class primitive) {
+    static Class<?> wrapper(Class<?> primitive) {
         if (boolean.class == primitive) {
             return Boolean.class;
         }

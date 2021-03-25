@@ -69,7 +69,6 @@ import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -149,7 +148,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
         // check the style to see what's active
         final List<Rule> rules = getActiveRules(style, params.getScaleDenominator());
-        if (rules.size() == 0) {
+        if (rules.isEmpty()) {
             return null;
         }
         GetMapRequest getMap = params.getGetMapRequest();
@@ -260,7 +259,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             protected void onBeforeRender(StreamingRenderer renderer) {
                 // force the renderer into serial painting mode, as we need to check what
                 // was painted to decide which features to include in the results
-                Map hints = renderer.getRendererHints();
+                Map<Object, Object> hints = renderer.getRendererHints();
                 hints.put(StreamingRenderer.OPTIMIZE_FTS_RENDERING_KEY, Boolean.FALSE);
                 // disable antialiasing to speed up rendering
                 hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
@@ -274,7 +273,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
     }
 
     private void rescaleRules(List<Rule> rules, FeatureInfoRequestParameters params) {
-        Map<Object, Object> rendererParams = new HashMap<Object, Object>();
+        Map<Object, Object> rendererParams = new HashMap<>();
         Integer requestedDpi = ((Integer) params.getGetMapRequest().getFormatOptions().get("dpi"));
         if (requestedDpi != null) {
             rendererParams.put(StreamingRenderer.DPI_KEY, requestedDpi);
@@ -317,27 +316,26 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             List<? extends Feature> features, CoordinateReferenceSystem targetcrs) {
         // group by feature type (rendering transformations might cause us to get more
         // than one type from the original layer)
-        Map<FeatureType, List<Feature>> map = new HashMap<FeatureType, List<Feature>>();
+        Map<FeatureType, List<Feature>> map = new HashMap<>();
         for (Feature f : features) {
             FeatureType type = f.getType();
             List<Feature> list = map.get(type);
             if (list == null) {
-                list = new ArrayList<Feature>();
+                list = new ArrayList<>();
                 map.put(type, list);
             }
             list.add(f);
         }
 
         // build a feature collection for each group
-        List<FeatureCollection> result = new ArrayList<FeatureCollection>();
+        List<FeatureCollection> result = new ArrayList<>();
         for (Map.Entry<FeatureType, List<Feature>> entry : map.entrySet()) {
             FeatureType type = entry.getKey();
             List<Feature> list = entry.getValue();
             if (type instanceof SimpleFeatureType) {
-                result.add(
-                        new ListFeatureCollection(
-                                (SimpleFeatureType) type,
-                                new ArrayList<SimpleFeature>((List) list)));
+                @SuppressWarnings("unchecked")
+                List<SimpleFeature> sf = new ArrayList<>((List) list);
+                result.add(new ListFeatureCollection((SimpleFeatureType) type, sf));
             } else {
                 result.add(new ListComplexFeatureCollection(type, list));
             }
@@ -410,7 +408,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
         FeatureLayer result =
                 new FeatureLayer(
-                        new FeatureInfoFeatureSource(featureSource, params.getPropertyNames()),
+                        new FeatureInfoFeatureSource<>(featureSource, params.getPropertyNames()),
                         style);
         result.setQuery(definitionQuery);
 
@@ -459,7 +457,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             // ok, so we have an estimate based on the static portion of the style,
             // let's extract the dynamic one
             DynamicSizeStyleExtractor extractor = new DynamicSizeStyleExtractor();
-            final List<Rule> dynamicRules = new ArrayList<Rule>();
+            final List<Rule> dynamicRules = new ArrayList<>();
             for (Rule rule : rules) {
                 rule.accept(extractor);
                 Rule copy = (Rule) extractor.getCopy();
@@ -470,7 +468,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
             // this can happen, the meta buffer estimator can get tripped by
             // graphic fills using dynamic sizes for their strokes
-            if (dynamicRules.size() == 0) {
+            if (dynamicRules.isEmpty()) {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     LOGGER.fine(
                             "No dynamic rules found, even if the estimator initially though so, "
@@ -512,14 +510,10 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             final DynamicBufferEstimator dbe = new DynamicBufferEstimator();
             fs.getFeatures(query)
                     .accepts(
-                            new FeatureVisitor() {
-
-                                @Override
-                                public void visit(Feature feature) {
-                                    dbe.setFeature(feature);
-                                    for (Rule rule : dynamicRules) {
-                                        rule.accept(dbe);
-                                    }
+                            feature -> {
+                                dbe.setFeature(feature);
+                                for (Rule rule : dynamicRules) {
+                                    rule.accept(dbe);
                                 }
                             },
                             null);
@@ -555,7 +549,7 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
 
         private Rectangle hitArea;
 
-        List<SimpleFeature> features = new ArrayList<SimpleFeature>();
+        List<SimpleFeature> features = new ArrayList<>();
 
         String[] propertyNames;
 
@@ -703,17 +697,18 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
      * @param <T> FeatureType
      * @param <F> Feature
      */
-    static class FeatureInfoFeatureSource extends DecoratingFeatureSource<FeatureType, Feature> {
+    static class FeatureInfoFeatureSource<T extends FeatureType, F extends Feature>
+            extends DecoratingFeatureSource<T, F> {
 
         String[] propertyNames;
 
-        public FeatureInfoFeatureSource(FeatureSource delegate, String[] propertyNames) {
+        public FeatureInfoFeatureSource(FeatureSource<T, F> delegate, String[] propertyNames) {
             super(delegate);
             this.propertyNames = propertyNames;
         }
 
         @Override
-        public FeatureCollection getFeatures(Query query) throws IOException {
+        public FeatureCollection<T, F> getFeatures(Query query) throws IOException {
             Query q = new Query(query);
             // we made the renderer believe we support the screenmap, but we don't want
             // it really be applied, so remove it
@@ -746,9 +741,9 @@ public class VectorRenderingLayerIdentifier extends AbstractVectorLayerIdentifie
             Set<Key> hints = delegate.getSupportedHints();
             Set<Key> result;
             if (hints == null) {
-                result = new HashSet<RenderingHints.Key>();
+                result = new HashSet<>();
             } else {
-                result = new HashSet<RenderingHints.Key>(hints);
+                result = new HashSet<>(hints);
             }
             result.remove(Hints.FEATURE_DETACHED);
             result.add(Hints.SCREENMAP);

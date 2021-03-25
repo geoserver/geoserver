@@ -37,8 +37,10 @@ public class MaxErrorEnforcer {
             renderer.addRenderListener(
                     new RenderListener() {
 
+                        @Override
                         public void featureRenderer(SimpleFeature feature) {}
 
+                        @Override
                         public void errorOccurred(Exception e) {
                             errors++;
                             lastException = e;

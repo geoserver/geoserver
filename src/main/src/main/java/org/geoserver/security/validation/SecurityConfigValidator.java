@@ -6,7 +6,36 @@
 
 package org.geoserver.security.validation;
 
-import static org.geoserver.security.validation.SecurityConfigException.*;
+import static org.geoserver.security.validation.SecurityConfigException.AUTH_FILTER_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.SecurityConfigException.AUTH_FILTER_NOT_FOUND_$1;
+import static org.geoserver.security.validation.SecurityConfigException.AUTH_PROVIDER_ACTIVE_$1;
+import static org.geoserver.security.validation.SecurityConfigException.AUTH_PROVIDER_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.SecurityConfigException.AUTH_PROVIDER_NOT_FOUND_$1;
+import static org.geoserver.security.validation.SecurityConfigException.CLASSNAME_REQUIRED;
+import static org.geoserver.security.validation.SecurityConfigException.CLASS_NOT_FOUND;
+import static org.geoserver.security.validation.SecurityConfigException.CLASS_NOT_FOUND_$1;
+import static org.geoserver.security.validation.SecurityConfigException.CLASS_WRONG_TYPE_$2;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_CONFIG_PASSWORD_ENCODER_$1;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_MAX_LENGTH;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_MIN_LENGTH;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_PASSWORD_ENCODER_$1;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_STRONG_CONFIG_PASSWORD_ENCODER;
+import static org.geoserver.security.validation.SecurityConfigException.INVALID_STRONG_PASSWORD_ENCODER;
+import static org.geoserver.security.validation.SecurityConfigException.NAME_REQUIRED;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_ENCODER_REQUIRED_$1;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_ACTIVE_$2;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_MASTER_DELETE;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_NOT_FOUND_$1;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWD_POLICY_REQUIRED_$1;
+import static org.geoserver.security.validation.SecurityConfigException.PASSWORD_ENCODER_REQUIRED;
+import static org.geoserver.security.validation.SecurityConfigException.RESERVED_ROLE_NAME;
+import static org.geoserver.security.validation.SecurityConfigException.ROLE_SERVICE_ACTIVE_$1;
+import static org.geoserver.security.validation.SecurityConfigException.ROLE_SERVICE_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.SecurityConfigException.ROLE_SERVICE_NOT_FOUND_$1;
+import static org.geoserver.security.validation.SecurityConfigException.USERGROUP_SERVICE_ACTIVE_$2;
+import static org.geoserver.security.validation.SecurityConfigException.USERGROUP_SERVICE_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.SecurityConfigException.USERGROUP_SERVICE_NOT_FOUND_$1;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -137,7 +166,7 @@ public class SecurityConfigValidator extends AbstractSecurityValidator {
         }
         // check for unique chain names
         for (RequestFilterChain requestChain : chain.getRequestChains()) {
-            Set<String> chainNames = new HashSet<String>();
+            Set<String> chainNames = new HashSet<>();
             // valid name
             if (isNotEmpty(requestChain.getName()) == false) {
                 throw createSecurityException(SecurityConfigException.FILTER_CHAIN_NAME_MANDATORY);

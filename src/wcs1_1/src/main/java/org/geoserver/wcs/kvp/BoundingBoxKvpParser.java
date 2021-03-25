@@ -29,6 +29,7 @@ public class BoundingBoxKvpParser extends KvpParser {
         super("BoundingBox", BoundingBoxType.class);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         List unparsed = KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER);
 

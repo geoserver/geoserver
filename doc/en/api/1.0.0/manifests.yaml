@@ -24,6 +24,8 @@ paths:
   /about/manifest:
     get:
       operationId: getManifest
+      tags:
+       - "Manifests"
       description: |
         This endpoint retrieves details on all loaded JARs. All the GeoServer manifest JARs are marked with the property GeoServerModule and classified by type, so you can use filtering capabilities to search for a set of manifests using regular expressions (see the manifest parameter) or a type category (see the key and value parameter).
 
@@ -184,6 +186,8 @@ paths:
         'This endpoint shows only the details for the high-level components: GeoServer, GeoTools, and GeoWebCache.'
 
         Use the "Accept:" header to specify format or append an extension to the endpoint (example "/about/manifest.xml" for XML).'
+      tags:
+       - "Manifests"
       parameters:
         - name: manifest
           type: string 
@@ -242,6 +246,8 @@ paths:
         This endpoint shows the status details of all installed and configured modules. Status details always include human readable name, and module name. Optional details include version, availability, status message, and links to documentation.
 
         Use the "Accept:" header to specify format or append an extension to the endpoint (example "/about/manifest.xml" for XML).
+      tags:
+       - "Manifests"
       parameters:
         - name: manifest
           type: string 
@@ -425,7 +431,7 @@ definitions:
                 name:
                   type: string
                   description:  |
-                    Human readable name (from GeoServer documentation), or as defined in the extension pom.xml, ie. <name>ArcSDE DataStore Extensions</name>
+                    Human readable name (from GeoServer documentation), or as defined in the extension pom.xml.
                 component:
                   type: string
                   description: |

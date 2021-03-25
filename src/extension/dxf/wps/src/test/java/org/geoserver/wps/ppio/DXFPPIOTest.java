@@ -5,6 +5,7 @@
 package org.geoserver.wps.ppio;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -106,7 +107,7 @@ public class DXFPPIOTest extends WPSTestSupport {
     private void checkSequence(String dxf, String[] sequence, int pos) {
         for (String item : sequence) {
             pos = dxf.indexOf(item, pos + 1);
-            assertTrue(pos != -1);
+            assertNotEquals(pos, -1);
         }
     }
 }

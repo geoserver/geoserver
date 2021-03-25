@@ -7,7 +7,9 @@ package org.geoserver.geopkg;
 
 import static org.geoserver.data.test.MockData.LAKES;
 import static org.geoserver.data.test.MockData.WORLD;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -130,6 +132,7 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
         //        })[0]);
     }
 
+    @Override
     protected GetMapRequest createGetMapRequest(QName[] layerNames) {
         GetMapRequest request = super.createGetMapRequest(layerNames);
         request.setBbox(new Envelope(-180, 180, -90, 90));

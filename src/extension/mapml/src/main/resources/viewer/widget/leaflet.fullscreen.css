@@ -1,0 +1,60 @@
+/* (c) 2019 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ * Leaflet 1.7.1, a JS library for interactive maps. http://leafletjs.com
+ * (c) 2010-2019 Vladimir Agafonkin, (c) 2010-2011 CloudMade
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are
+permitted provided that the following conditions are met:
+
+   1. Redistributions of source code must retain the above copyright notice, this list of
+      conditions and the following disclaimer.
+
+   2. Redistributions in binary form must reproduce the above copyright notice, this list
+      of conditions and the following disclaimer in the documentation and/or other materials
+      provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+.leaflet-control-fullscreen a {
+  background:#fff no-repeat 0 0;
+  background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg version='1.1' viewBox='0 0 26 52' width='26' height='52' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cg display='none'%3E%3Crect width='26' height='52' color='%23000000' display='inline' fill='%23f2f2f2'/%3E%3Crect y='26' width='26' height='26' color='%23000000' display='inline' fill='%23e6e6e6'/%3E%3C/g%3E%3Cg transform='translate(0 -1000.4)'%3E%3Cuse transform='translate(0,26)' width='100%25' height='100%25' xlink:href='%23rect15634'/%3E%3Cuse transform='translate(0,26)' width='100%25' height='100%25' xlink:href='%23path15639'/%3E%3Cuse transform='translate(0,26)' width='100%25' height='100%25' xlink:href='%23path16061'/%3E%3Cuse transform='translate(0,26)' width='100%25' height='100%25' xlink:href='%23path16059'/%3E%3Cpath id='rect15634' transform='translate(0 1000.4)' d='m5 15v6h6v-2h-4v-4z' color='%23000000' fill='%23404040'/%3E%3Cpath id='path15639' transform='translate(0 1000.4)' d='m21 15v6h-6v-2h4v-4z' color='%23000000' fill='%23404040'/%3E%3Cpath d='m10 1037.4v4l1 1h4l1-1v-4l-1-1h-4z' color='%23000000' fill='%23404040'/%3E%3Cpath id='path16059' d='m5 1011.4v-6h6v2h-4v4z' color='%23000000' fill='%23404040'/%3E%3Cpath id='path16061' d='m21 1011.4v-6h-6v2h4v4z' color='%23000000' fill='%23404040'/%3E%3C/g%3E%3C/svg%3E%0A");
+  background-size:26px 52px;
+  }
+  .leaflet-touch .leaflet-control-fullscreen a {
+    background-position: 2px 2px;
+    }
+  .leaflet-fullscreen-on .leaflet-control-fullscreen a {
+    background-position:0 -26px;
+    }
+  .leaflet-touch.leaflet-fullscreen-on .leaflet-control-fullscreen a {
+    background-position: 2px -24px;
+    }
+
+/* Do not combine these two rules; IE will break. */
+.leaflet-container:-webkit-full-screen {
+  width:100%!important;
+  height:100%!important;
+  }
+.leaflet-container.leaflet-fullscreen-on {
+  width:100%!important;
+  height:100%!important;
+  }
+
+.leaflet-pseudo-fullscreen {
+  position:fixed!important;
+  width:100%!important;
+  height:100%!important;
+  top:0!important;
+  left:0!important;
+  z-index:99999;
+  }

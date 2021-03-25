@@ -18,32 +18,13 @@ public interface LayerGroupVisibilityPolicy {
     boolean hideLayerGroup(LayerGroupInfo group, List<PublishedInfo> filteredLayers);
 
     /** Never hide a LayerGroup */
-    public static final LayerGroupVisibilityPolicy HIDE_NEVER =
-            new LayerGroupVisibilityPolicy() {
-                @Override
-                public boolean hideLayerGroup(
-                        LayerGroupInfo group, List<PublishedInfo> filteredLayers) {
-                    return false;
-                }
-            };
+    public static final LayerGroupVisibilityPolicy HIDE_NEVER = (group, filteredLayers) -> false;
 
     /** Hide a LayerGroup if it doesn't contain Layers or if its Layers are all hidden */
     public static final LayerGroupVisibilityPolicy HIDE_EMPTY =
-            new LayerGroupVisibilityPolicy() {
-                @Override
-                public boolean hideLayerGroup(
-                        LayerGroupInfo group, List<PublishedInfo> filteredLayers) {
-                    return filteredLayers.size() == 0;
-                }
-            };
+            (group, filteredLayers) -> filteredLayers.isEmpty();
 
     /** Hide a LayerGroup if its Layers are all hidden */
     public static final LayerGroupVisibilityPolicy HIDE_IF_ALL_HIDDEN =
-            new LayerGroupVisibilityPolicy() {
-                @Override
-                public boolean hideLayerGroup(
-                        LayerGroupInfo group, List<PublishedInfo> filteredLayers) {
-                    return filteredLayers.size() == 0 && group.getLayers().size() > 0;
-                }
-            };
+            (group, filteredLayers) -> filteredLayers.isEmpty() && group.getLayers().size() > 0;
 }

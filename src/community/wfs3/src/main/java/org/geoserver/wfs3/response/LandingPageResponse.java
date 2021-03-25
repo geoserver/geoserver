@@ -14,6 +14,7 @@ public class LandingPageResponse extends JacksonResponse {
         super(gs, LandingPageDocument.class);
     }
 
+    @Override
     protected String getFileName(Object value, Operation operation) {
         return "landingPage";
     }

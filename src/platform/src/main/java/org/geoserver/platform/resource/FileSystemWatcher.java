@@ -112,7 +112,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
         /** Path to use during notification */
         final String path;
 
-        final List<ResourceListener> listeners = new CopyOnWriteArrayList<ResourceListener>();
+        final List<ResourceListener> listeners = new CopyOnWriteArrayList<>();
 
         /** When last notification was sent */
         long last = 0;
@@ -166,6 +166,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
             return listeners;
         }
 
+        @Override
         public int hashCode() {
             final int prime = 31;
             int result = 1;
@@ -315,7 +316,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
 
     protected long lastmodified;
 
-    CopyOnWriteArrayList<Watch> watchers = new CopyOnWriteArrayList<Watch>();
+    CopyOnWriteArrayList<Watch> watchers = new CopyOnWriteArrayList<>();
 
     /**
      * Note we have a single runnable here to review all outstanding Watch instances. The focus is
@@ -446,6 +447,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
         return null; // not found
     }
 
+    @Override
     public synchronized void addListener(String path, ResourceListener listener) {
         Objects.requireNonNull(path, "Path for notification is required");
         File file = fileExtractor.apply(path);
@@ -461,6 +463,7 @@ public class FileSystemWatcher implements ResourceNotificationDispatcher, Dispos
         watch.addListener(listener);
     }
 
+    @Override
     public synchronized boolean removeListener(String path, ResourceListener listener) {
         Objects.requireNonNull(path, "Path for notification is required");
         File file = fileExtractor.apply(path);

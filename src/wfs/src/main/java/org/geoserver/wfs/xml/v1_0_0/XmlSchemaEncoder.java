@@ -65,10 +65,12 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
         this.catalog = gs.getCatalog();
     }
 
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return "text/xml";
     }
 
+    @Override
     protected void write(
             FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)
             throws IOException {
@@ -161,11 +163,10 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
             tempResponse.append(XS_NAMESPACE);
             tempResponse.append(ELEMENT_FORM_DEFAULT + ATTR_FORM_DEFAULT);
 
-            Set prefixes = new HashSet();
+            Set<String> prefixes = new HashSet<>();
 
             // iterate through the types, and make a set of their prefixes.
-            for (int i = 0; i < infos.length; i++) {
-                FeatureTypeInfo ftInfo = infos[i];
+            for (FeatureTypeInfo ftInfo : infos) {
                 prefixes.add(ftInfo.getNamespace().getPrefix());
             }
 
@@ -207,14 +208,13 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
         String namespace = catalog.getNamespaceByPrefix(prefix).getURI();
         retBuffer.append(namespace + "\"");
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         params.put("request", "DescribeFeatureType");
         params.put("service", "wfs");
         params.put("version", "1.0.0");
 
         StringBuilder typeNames = new StringBuilder();
-        for (int i = 0; i < infos.length; i++) {
-            FeatureTypeInfo info = infos[i];
+        for (FeatureTypeInfo info : infos) {
             String typeName = info.prefixedName();
 
             if (typeName.startsWith(prefix + ":")) {
@@ -261,12 +261,10 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
         String tempResponse = "";
 
         String generatedType = "";
-        Set validTypes = new HashSet();
+        Set<FeatureTypeInfo> validTypes = new HashSet<>();
 
         // Loop through requested tables to add element types
-        for (int i = 0; i < infos.length; i++) {
-            FeatureTypeInfo ftInfo = (FeatureTypeInfo) infos[i];
-
+        for (FeatureTypeInfo ftInfo : infos) {
             if (!validTypes.contains(ftInfo)) {
                 // TODO: ressurect this
                 File schemaFile = null; /*ftInfo.getSchemaFile();*/
@@ -300,9 +298,9 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
         // Loop through requested tables again to add elements
         // NOT VERY EFFICIENT - PERHAPS THE MYSQL ABSTRACTION CAN FIX THIS;
         //  STORE IN HASH?
-        for (Iterator i = validTypes.iterator(); i.hasNext(); ) {
+        for (FeatureTypeInfo validType : validTypes) {
             // Print element representation of table
-            tempResponse = tempResponse + printElement((FeatureTypeInfo) i.next());
+            tempResponse = tempResponse + printElement(validType);
         }
 
         tempResponse = tempResponse + "\n\n";
@@ -399,9 +397,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
 
         FeatureTypeInfo first = infos[0];
 
-        for (int i = 0; i < infos.length; i++) {
-            FeatureTypeInfo ftInfo = infos[i];
-
+        for (FeatureTypeInfo ftInfo : infos) {
             if (!first.getNamespace().equals(ftInfo.getNamespace())) {
                 return false;
             }

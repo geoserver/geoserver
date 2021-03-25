@@ -25,6 +25,7 @@ public class TestFullWMSBeans extends GeoServerSystemTestSupport {
     @Test
     public void testBeanSelection() {
         // Selection of the test application context
+        @SuppressWarnings("PMD.CloseResource")
         ApplicationContext context = applicationContext;
         // Check that the initializer is present
         Object obj = context.getBean("ioInitializer");
@@ -35,7 +36,7 @@ public class TestFullWMSBeans extends GeoServerSystemTestSupport {
         ImageIOInitializer init = (ImageIOInitializer) obj;
         List<String> excluded = init.getExcludedSpis();
         Assert.assertNotNull(excluded);
-        Assert.assertTrue(excluded.size() > 0);
+        Assert.assertFalse(excluded.isEmpty());
 
         // Ensure that a decoder is present
         Object obj2 = context.getBean("TIFFDecoder");

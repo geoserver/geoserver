@@ -49,12 +49,11 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
     // 'f',
     //        '(', '4', ']' };
 
-    static final char[] BASE =
-            new char[] {
-                'U', 'n', '6', 'd', 'I', 'l', 'X', 'T', 'Q', 'c', 'L', ')', '$', '#', 'q', 'J', 'U',
-                'l', 'X', 'Q', 'U', '!', 'n', 'n', 'p', '%', 'U', 'r', '5', 'U', 'u', '3', '5', 'H',
-                '`', 'x', 'P', 'F', 'r', 'X'
-            };
+    static final char[] BASE = {
+        'U', 'n', '6', 'd', 'I', 'l', 'X', 'T', 'Q', 'c', 'L', ')', '$', '#', 'q', 'J', 'U',
+        'l', 'X', 'Q', 'U', '!', 'n', 'n', 'p', '%', 'U', 'r', '5', 'U', 'u', '3', '5', 'H',
+        '`', 'x', 'P', 'F', 'r', 'X'
+    };
 
     /**
      * permutation indices, this permutation has a cycle of 169 --> more than 168 iterations have no
@@ -63,11 +62,10 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
     //    static final int[] PERM = new int[]{25, 10, 5, 21, 14, 27, 23, 4, 3, 31, 16, 29, 20, 11,
     // 0, 26,
     //        24, 22, 13, 12, 1, 8, 18, 19, 7, 2, 17, 6, 9, 28, 30, 15};
-    static final int[] PERM =
-            new int[] {
-                32, 19, 30, 11, 34, 26, 3, 21, 9, 37, 38, 13, 23, 2, 18, 4, 20, 1, 29, 17, 0, 31,
-                14, 36, 12, 24, 15, 35, 16, 39, 25, 5, 10, 8, 7, 6, 33, 27, 28, 22
-            };
+    static final int[] PERM = {
+        32, 19, 30, 11, 34, 26, 3, 21, 9, 37, 38, 13, 23, 2, 18, 4, 20, 1, 29, 17, 0, 31, 14, 36,
+        12, 24, 15, 35, 16, 39, 25, 5, 10, 8, 7, 6, 33, 27, 28, 22
+    };
 
     URLMasterPasswordProviderConfig config;
 
@@ -80,15 +78,12 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
     @Override
     protected char[] doGetMasterPassword() throws Exception {
         try {
-            InputStream in = input(config.getURL(), getConfigDir());
-            try {
+            try (InputStream in = input(config.getURL(), getConfigDir())) {
                 // JD: for some reason the decrypted passwd comes back sometimes with null chars
                 // tacked on
                 // MCR, was a problem with toBytes and toChar in SecurityUtils
                 // return trimNullChars(toChars(decode(IOUtils.toByteArray(in))));
                 return toChars(decode(IOUtils.toByteArray(in)));
-            } finally {
-                in.close();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -97,11 +92,8 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
 
     @Override
     protected void doSetMasterPassword(char[] passwd) throws Exception {
-        OutputStream out = output(config.getURL(), getConfigDir());
-        try {
+        try (OutputStream out = output(config.getURL(), getConfigDir())) {
             out.write(encode(passwd));
-        } finally {
-            out.close();
         }
     }
 
@@ -205,12 +197,9 @@ public final class URLMasterPasswordProvider extends MasterPasswordProvider {
             if (config.isReadOnly()) {
                 // read-only, assure we can read from url
                 try {
-                    InputStream in =
-                            input(url, manager.masterPasswordProvider().get(config.getName()));
-                    try {
+                    try (InputStream in =
+                            input(url, manager.masterPasswordProvider().get(config.getName()))) {
                         in.read();
-                    } finally {
-                        in.close();
                     }
                 } catch (IOException ex) {
                     throw new URLMasterPasswordProviderException(URL_LOCATION_NOT_READABLE, url);

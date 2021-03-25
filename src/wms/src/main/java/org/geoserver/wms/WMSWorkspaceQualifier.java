@@ -24,7 +24,7 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     @Override
     protected void qualifyRequest(
             WorkspaceInfo ws, PublishedInfo l, Service service, Request request) {
-        if (WebMapService.class.isInstance(service.getService())) {
+        if (WebMapService.class.isInstance(service.getService()) && request.getRawKvp() != null) {
             String layers = (String) request.getRawKvp().get("LAYERS");
             if (layers != null) {
                 request.getRawKvp().put("LAYERS", qualifyLayerNamesKVP(layers, ws));
@@ -52,6 +52,7 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
         }
     }
 
+    @Override
     protected void qualifyRequest(
             WorkspaceInfo ws, PublishedInfo l, Operation operation, Request request) {
         GetCapabilitiesRequest gc = parameter(operation, GetCapabilitiesRequest.class);
@@ -71,6 +72,7 @@ public class WMSWorkspaceQualifier extends WorkspaceQualifyingCallback {
     /**
      * Overriding the base class behavior as we want to avoid qualifying global layer group names
      */
+    @Override
     protected void qualifyLayerNames(List<String> names, WorkspaceInfo ws) {
         for (int i = 0; i < names.size(); i++) {
             String baseName = names.get(i);

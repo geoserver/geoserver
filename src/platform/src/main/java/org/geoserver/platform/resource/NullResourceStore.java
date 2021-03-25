@@ -82,6 +82,7 @@ final class NullResourceStore implements ResourceStore {
                 return ResourceStore.EMPTY.get(Paths.parent(path));
             }
 
+            @Override
             public Resource get(String resourcePath) {
                 return ResourceStore.EMPTY.get(Paths.path(this.path, resourcePath));
             }
@@ -133,6 +134,7 @@ final class NullResourceStore implements ResourceStore {
         };
     }
 
+    @Override
     public String toString() {
         return "NullResourceStore";
     }

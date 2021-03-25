@@ -60,7 +60,7 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
             List<DimensionDescriptor> dimensionDescriptors) {
         this.reader = reader;
         this.feature = feature;
-        this.dimensionDescriptors = new HashMap<String, DimensionDescriptor>();
+        this.dimensionDescriptors = new HashMap<>();
         for (DimensionDescriptor descriptor : dimensionDescriptors) {
             this.dimensionDescriptors.put(descriptor.getName().toUpperCase(), descriptor);
         }
@@ -76,41 +76,50 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
         return (Geometry) feature.getDefaultGeometry();
     }
 
+    @Override
     public Format getFormat() {
         return reader.getFormat();
     }
 
+    @Override
     public Object getSource() {
         return reader.getSource();
     }
 
+    @Override
     public String[] getMetadataNames() throws IOException {
         return reader.getMetadataNames();
     }
 
+    @Override
     public GranuleSource getGranules(String coverageName, boolean readOnly)
             throws IOException, UnsupportedOperationException {
         return reader.getGranules(coverageName, readOnly);
     }
 
+    @Override
     public String[] getMetadataNames(String coverageName) throws IOException {
         return reader.getMetadataNames(coverageName);
     }
 
+    @Override
     public boolean isReadOnly() {
         return reader.isReadOnly();
     }
 
+    @Override
     public void createCoverage(String coverageName, SimpleFeatureType schema)
             throws IOException, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean removeCoverage(String coverageName, boolean delete)
             throws IOException, UnsupportedOperationException {
         return reader.removeCoverage(coverageName, delete);
     }
 
+    @Override
     public String getMetadataValue(String name) throws IOException {
         if (name.endsWith("_DOMAIN_MINIMUM")
                 || name.endsWith("_DOMAIN_MAXIMUM")
@@ -153,100 +162,123 @@ public class SingleGranuleGridCoverageReader implements StructuredGridCoverage2D
         return reader.getMetadataValue(name);
     }
 
+    @Override
     public List<HarvestedSource> harvest(String defaultTargetCoverage, Object source, Hints hints)
             throws IOException, UnsupportedOperationException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String getMetadataValue(String coverageName, String name) throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public GeneralEnvelope getOriginalEnvelope() {
         return granuleEnvelope;
     }
 
+    @Override
     public GeneralEnvelope getOriginalEnvelope(String coverageName) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public String[] getGridCoverageNames() throws IOException {
         return reader.getGridCoverageNames();
     }
 
+    @Override
     public CoordinateReferenceSystem getCoordinateReferenceSystem() {
         return reader.getCoordinateReferenceSystem();
     }
 
+    @Override
     public int getGridCoverageCount() throws IOException {
         return reader.getGridCoverageCount();
     }
 
+    @Override
     public CoordinateReferenceSystem getCoordinateReferenceSystem(String coverageName) {
         return reader.getCoordinateReferenceSystem(coverageName);
     }
 
+    @Override
     public GridEnvelope getOriginalGridRange() {
         return reader.getOriginalGridRange();
     }
 
+    @Override
     public GridEnvelope getOriginalGridRange(String coverageName) {
         return reader.getOriginalGridRange(coverageName);
     }
 
+    @Override
     public MathTransform getOriginalGridToWorld(PixelInCell pixInCell) {
         return reader.getOriginalGridToWorld(pixInCell);
     }
 
+    @Override
     public MathTransform getOriginalGridToWorld(String coverageName, PixelInCell pixInCell) {
         return reader.getOriginalGridToWorld(coverageName, pixInCell);
     }
 
+    @Override
     public GridCoverage2D read(GeneralParameterValue[] parameters) throws IOException {
         return reader.read(parameters);
     }
 
+    @Override
     public GridCoverage2D read(String coverageName, GeneralParameterValue[] parameters)
             throws IOException {
         return reader.read(coverageName, parameters);
     }
 
+    @Override
     public void dispose() throws IOException {
         reader.dispose();
     }
 
+    @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters() throws IOException {
         return reader.getDynamicParameters();
     }
 
+    @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName)
             throws IOException {
         return reader.getDynamicParameters(coverageName);
     }
 
+    @Override
     public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution)
             throws IOException {
         return reader.getReadingResolutions(policy, requestedResolution);
     }
 
+    @Override
     public double[] getReadingResolutions(
             String coverageName, OverviewPolicy policy, double[] requestedResolution)
             throws IOException {
         return reader.getReadingResolutions(coverageName, policy, requestedResolution);
     }
 
+    @Override
     public ImageLayout getImageLayout() throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public ImageLayout getImageLayout(String coverageName) throws IOException {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public double[][] getResolutionLevels() throws IOException {
         return reader.getResolutionLevels();
     }
 
+    @Override
     public double[][] getResolutionLevels(String coverageName) throws IOException {
         return reader.getResolutionLevels(coverageName);
     }

@@ -20,7 +20,7 @@ public class URIValidator implements IValidator<String> {
 
     @Override
     public void validate(IValidatable<String> validatable) {
-        String uri = (String) validatable.getValue();
+        String uri = validatable.getValue();
         try {
             new URI(uri);
         } catch (Exception e) {

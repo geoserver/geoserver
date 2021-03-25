@@ -177,7 +177,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
      *
      * @return A list of MIME types
      */
-    public static List<String> getAvailableFormats(Class responseType) {
+    public static List<String> getAvailableFormats(Class<?> responseType) {
         Set<String> formatNames = new LinkedHashSet<>();
         Collection responses = GeoServerExtensions.extensions(Response.class);
         for (Iterator i = responses.iterator(); i.hasNext(); ) {
@@ -227,6 +227,7 @@ public class DefaultWebFeatureService30 implements WebFeatureService30, Applicat
         return new TilingSchemeDescriptionDocument(request.getGridSet());
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         extensions = GeoServerExtensions.extensions(WFS3Extension.class, context);
     }

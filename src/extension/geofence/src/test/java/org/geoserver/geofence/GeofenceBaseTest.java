@@ -50,7 +50,7 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
 
         namespaces.put("html", "http://www.w3.org/1999/xhtml");
         namespaces.put("sld", "http://www.opengis.net/sld");
@@ -119,7 +119,7 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
             IS_GEOFENCE_AVAILABLE = true;
             System.setProperty("IS_GEOFENCE_AVAILABLE", "True");
         } else {
-            System.out.println(
+            LOGGER.warning(
                     "Skipping test in "
                             + getClass().getSimpleName()
                             + " as GeoFence service is down: "
@@ -172,7 +172,7 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
             final RuleFilter ruleFilter = new RuleFilter();
             ruleFilter.setService("WMS");
             final List<ShortRule> matchingRules = geofenceService.getMatchingRules(ruleFilter);
-            if (geofenceService != null && matchingRules != null && matchingRules.size() > 0) {
+            if (geofenceService != null && matchingRules != null && !matchingRules.isEmpty()) {
                 LOGGER.log(Level.WARNING, "GeoFence is active");
                 return true;
             }
@@ -187,7 +187,7 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
 
     protected Authentication getUser(String username, String password, String... roles) {
 
-        List<GrantedAuthority> l = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> l = new ArrayList<>();
         for (String role : roles) {
             l.add(new SimpleGrantedAuthority(role));
         }

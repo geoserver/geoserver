@@ -27,8 +27,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 public abstract class AbstractUserGroupService extends AbstractGeoServerSecurityService
         implements GeoServerUserGroupService {
 
-    protected Set<UserGroupLoadedListener> listeners =
-            Collections.synchronizedSet(new HashSet<UserGroupLoadedListener>());
+    protected Set<UserGroupLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
     protected String passwordEncoderName, passwordValidatorName;
     protected UserGroupStoreHelper helper;
 
@@ -55,6 +54,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupService#registerUserGroupChangedListener(org.geoserver.security.event.UserGroupChangedListener)
      */
+    @Override
     public void registerUserGroupLoadedListener(UserGroupLoadedListener listener) {
         listeners.add(listener);
     }
@@ -62,6 +62,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupService#unregisterUserGroupChangedListener(org.geoserver.security.event.UserGroupChangedListener)
      */
+    @Override
     public void unregisterUserGroupLoadedListener(UserGroupLoadedListener listener) {
         listeners.remove(listener);
     }
@@ -69,10 +70,12 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupService#getUserByUsername(java.lang.String)
      */
+    @Override
     public GeoServerUser getUserByUsername(String username) throws IOException {
         return helper.getUserByUsername(username);
     }
 
+    @Override
     public GeoServerUserGroup getGroupByGroupname(String groupname) throws IOException {
         return helper.getGroupByGroupname(groupname);
     }
@@ -80,6 +83,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupService#getUsers()
      */
+    @Override
     public SortedSet<GeoServerUser> getUsers() throws IOException {
         return helper.getUsers();
     }
@@ -87,6 +91,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupService#getUserGroups()
      */
+    @Override
     public SortedSet<GeoServerUserGroup> getUserGroups() throws IOException {
         return helper.getUserGroups();
     }
@@ -94,6 +99,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupService#createUserObject(java.lang.String, java.lang.String, boolean)
      */
+    @Override
     public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
             throws IOException {
         GeoServerUser user = new GeoServerUser(username);
@@ -105,6 +111,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupService#createGroupObject(java.lang.String, boolean)
      */
+    @Override
     public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled)
             throws IOException {
         GeoServerUserGroup group = new GeoServerUserGroup(groupname);
@@ -115,6 +122,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupService#getGroupsForUser(org.geoserver.security.impl.GeoserverUser)
      */
+    @Override
     public SortedSet<GeoServerUserGroup> getGroupsForUser(GeoServerUser user) throws IOException {
         return helper.getGroupsForUser(user);
     }
@@ -122,6 +130,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupService#getUsersForGroup(org.geoserver.security.impl.GeoserverUserGroup)
      */
+    @Override
     public SortedSet<GeoServerUser> getUsersForGroup(GeoServerUserGroup group) throws IOException {
         return helper.getUsersForGroup(group);
     }
@@ -132,6 +141,7 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoserverUserGroupService#load()
      */
+    @Override
     public void load() throws IOException {
         LOGGER.info("Start reloading user/groups for service named " + getName());
         // prevent concurrent write from store and
@@ -185,10 +195,12 @@ public abstract class AbstractUserGroupService extends AbstractGeoServerSecurity
         return "User  " + username + " not found in usergroupservice: " + getName();
     }
 
+    @Override
     public int getUserCount() throws IOException {
         return helper.getUserCount();
     }
 
+    @Override
     public int getGroupCount() throws IOException {
         return helper.getGroupCount();
     }

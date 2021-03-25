@@ -7,6 +7,7 @@ package org.geoserver.web.data.store.shape;
 
 import static org.geotools.data.shapefile.ShapefileDataStoreFactory.URLP;
 
+import java.util.Map;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -28,14 +29,15 @@ public class ShapefileDirectoryEditPanel extends ShapefileStoreEditPanel {
         super(componentId, storeEditForm);
     }
 
-    protected Panel buildFileParamPanel(final IModel paramsModel) {
+    @Override
+    protected Panel buildFileParamPanel(final IModel<Map<String, Object>> paramsModel) {
         DirectoryParamPanel file =
                 new DirectoryParamPanel(
                         "url",
-                        new MapModel(paramsModel, URLP.key),
+                        new MapModel<>(paramsModel, URLP.key),
                         new ParamResourceModel("shapefile", this),
                         true);
-        file.setFileFilter(new Model<ExtensionFileFilter>(new ExtensionFileFilter(".shp")));
+        file.setFileFilter(new Model<>(new ExtensionFileFilter(".shp")));
         return file;
     }
 }

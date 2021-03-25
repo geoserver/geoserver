@@ -22,6 +22,6 @@ public class DescribeCoverageHandler extends RequestObjectHandler {
     public List<String> getLayers(Object request) {
         @SuppressWarnings("unchecked")
         List<String> l = (List<String>) EMFUtils.get((EObject) request, "coverage");
-        return l != null ? new ArrayList<String>(l) : null;
+        return l != null ? new ArrayList<>(l) : null;
     }
 }

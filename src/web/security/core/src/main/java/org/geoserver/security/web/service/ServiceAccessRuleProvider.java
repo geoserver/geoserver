@@ -15,10 +15,8 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 @SuppressWarnings("serial")
 public class ServiceAccessRuleProvider extends GeoServerDataProvider<ServiceAccessRule> {
 
-    public static final Property<ServiceAccessRule> RULEKEY =
-            new BeanProperty<ServiceAccessRule>("key", "key");
-    public static final Property<ServiceAccessRule> ROLES =
-            new BeanProperty<ServiceAccessRule>("roles", "value");
+    public static final Property<ServiceAccessRule> RULEKEY = new BeanProperty<>("key", "key");
+    public static final Property<ServiceAccessRule> ROLES = new BeanProperty<>("roles", "value");
 
     @Override
     protected List<ServiceAccessRule> getItems() {

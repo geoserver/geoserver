@@ -45,6 +45,7 @@ public class ResourceAccessManagerWCSTest extends WCSTestSupport {
     protected static final String UNITS = "foot";
     protected static final String UNIT_SYMBOL = "ft";
 
+    @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
         springContextLocations.add(

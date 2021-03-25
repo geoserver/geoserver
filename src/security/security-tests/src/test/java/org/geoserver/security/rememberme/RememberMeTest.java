@@ -5,7 +5,9 @@
  */
 package org.geoserver.security.rememberme;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -105,8 +107,7 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
 
     @Override
     protected List<Filter> getFilters() {
-        return Arrays.asList(
-                (Filter) applicationContext.getBean(GeoServerSecurityFilterChainProxy.class));
+        return Arrays.asList(applicationContext.getBean(GeoServerSecurityFilterChainProxy.class));
     }
 
     @Test
@@ -129,7 +130,7 @@ public class RememberMeTest extends GeoServerSecurityTestSupport {
         assertLoginOk(response);
         assertEquals(1, response.getCookies().length);
 
-        Cookie cookie = (Cookie) response.getCookies()[0];
+        Cookie cookie = response.getCookies()[0];
 
         request = createRequest("/web/");
         request.setMethod("POST");

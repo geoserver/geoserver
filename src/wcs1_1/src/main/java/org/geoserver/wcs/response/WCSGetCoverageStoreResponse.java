@@ -112,7 +112,7 @@ public class WCSGetCoverageStoreResponse extends Response {
 
         // store the coverage
         try (OutputStream os = new BufferedOutputStream(coverageFile.out())) {
-            delegate.encode(coverage, outputFormat, Collections.EMPTY_MAP, os);
+            delegate.encode(coverage, outputFormat, Collections.emptyMap(), os);
             os.flush();
         }
         if (LOGGER.isLoggable(Level.FINE)) {

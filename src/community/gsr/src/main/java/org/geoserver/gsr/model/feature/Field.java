@@ -22,7 +22,6 @@ public class Field implements GSRModel {
     private Integer length;
     private Boolean editable;
     private Boolean nullable;
-    private String domain = null;
 
     private String defaultValue = null;
 
@@ -60,10 +59,6 @@ public class Field implements GSRModel {
 
     public Boolean getNullable() {
         return nullable;
-    }
-
-    public String getDomain() {
-        return domain;
     }
 
     public Field(String name, FieldTypeEnum type, String alias) {

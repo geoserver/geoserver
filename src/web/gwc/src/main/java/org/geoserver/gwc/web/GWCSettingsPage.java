@@ -40,9 +40,9 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
         // use a detached copy of gwc config to support the tabbed pane
         final GWCConfig gwcConfig = gwc.getConfig().clone();
 
-        IModel<GWCConfig> formModel = new Model<GWCConfig>(gwcConfig);
+        IModel<GWCConfig> formModel = new Model<>(gwcConfig);
 
-        final Form<GWCConfig> form = new Form<GWCConfig>("form", formModel);
+        final Form<GWCConfig> form = new Form<>("form", formModel);
         add(form);
 
         final GWCServicesPanel gwcServicesPanel =
@@ -109,7 +109,9 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
             @Override
             protected void onSubmitInternal(AjaxRequestTarget target, Form<?> form) {
                 try {
-                    save((Form<GWCConfig>) form, false);
+                    @SuppressWarnings("unchecked")
+                    Form<GWCConfig> cast = (Form<GWCConfig>) form;
+                    save(cast, false);
                 } catch (IllegalArgumentException e) {
                     form.error(e.getMessage());
                     target.add(form);
@@ -136,8 +138,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
         CheckBox checkBox = new CheckBox(id, model);
         if (null != titleKey) {
             AttributeModifier attributeModifier =
-                    new AttributeModifier(
-                            "title", new StringResourceModel(titleKey, (Component) null, null));
+                    new AttributeModifier("title", new StringResourceModel(titleKey, null, null));
             checkBox.add(attributeModifier);
         }
         return checkBox;

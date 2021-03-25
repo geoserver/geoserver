@@ -37,7 +37,7 @@ public class MetadataMap implements Map<String, Serializable>, Serializable {
     protected Map<String, Serializable> map;
 
     public MetadataMap() {
-        this(new HashMap());
+        this(new HashMap<>());
     }
 
     public MetadataMap(Map<String, Serializable> map) {
@@ -72,58 +72,72 @@ public class MetadataMap implements Map<String, Serializable>, Serializable {
         return Converters.convert(obj, clazz);
     }
 
+    @Override
     public int size() {
         return map.size();
     }
 
+    @Override
     public boolean isEmpty() {
         return map.isEmpty();
     }
 
+    @Override
     public boolean containsKey(Object key) {
         return map.containsKey(key);
     }
 
+    @Override
     public boolean containsValue(Object value) {
         return map.containsValue(value);
     }
 
+    @Override
     public Serializable get(Object key) {
         return map.get(key);
     }
 
+    @Override
     public Serializable put(String key, Serializable value) {
         return map.put(key, value);
     }
 
+    @Override
     public void putAll(Map<? extends String, ? extends Serializable> t) {
         map.putAll(t);
     }
 
+    @Override
     public Serializable remove(Object key) {
         return map.remove(key);
     }
 
+    @Override
     public void clear() {
         map.clear();
     }
 
+    @Override
     public Set<String> keySet() {
         return map.keySet();
     }
 
+    @Override
     public Collection<Serializable> values() {
         return map.values();
     }
 
+    @Override
     public Set<java.util.Map.Entry<String, Serializable>> entrySet() {
         return map.entrySet();
     }
 
+    @Override
     public boolean equals(Object o) {
         return map.equals(o);
     }
 
+    @Override
     public int hashCode() {
         return map.hashCode();
     }

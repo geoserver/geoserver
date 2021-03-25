@@ -6,6 +6,7 @@ package org.geoserver.wcs2_0.kvp;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -476,18 +477,17 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         // one
         // across X and Y
         // //
-        MockHttpServletResponse response = null;
-        byte[] tiffContents = null;
 
         // Reading native resolution
-        response =
+        MockHttpServletResponse response =
                 getAsServletResponse(
                         "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&overviewPolicy=IGNORE&scalesize=http://www.opengis.net/def/axis/OGC/1/i(180),"
+                                + "&coverageId=wcs__BlueMarble&overviewPolicy=IGNORE&scalesize=http://www"
+                                + ".opengis.net/def/axis/OGC/1/i(180),"
                                 + "http://www.opengis.net/def/axis/OGC/1/j(180)");
 
         assertEquals("image/tiff", response.getContentType());
-        tiffContents = getBinary(response);
+        byte[] tiffContents = getBinary(response);
         File fileNative = File.createTempFile("native", "native.tiff", new File("./target"));
         FileUtils.writeByteArrayToFile(fileNative, tiffContents);
 
@@ -518,19 +518,16 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
         TIFFImageReader readerNative = null;
         TIFFImageReader readerOverviewTS = null;
         TIFFImageReader readerOverviewSF = null;
-        FileImageInputStream streamNative = null;
-        FileImageInputStream streamOverviewTS = null;
-        FileImageInputStream streamOverviewSF = null;
-        try {
-            streamNative = new FileImageInputStream(fileNative);
+        try (FileImageInputStream streamNative = new FileImageInputStream(fileNative);
+                FileImageInputStream streamOverviewTS = new FileImageInputStream(fileOverviewTS);
+                FileImageInputStream streamOverviewSF =
+                        new FileImageInputStream(fileOverviewSF); ) {
             readerNative = (TIFFImageReader) spi.createReaderInstance();
             readerNative.setInput(streamNative);
 
-            streamOverviewTS = new FileImageInputStream(fileOverviewTS);
             readerOverviewTS = (TIFFImageReader) spi.createReaderInstance();
             readerOverviewTS.setInput(streamOverviewTS);
 
-            streamOverviewSF = new FileImageInputStream(fileOverviewSF);
             readerOverviewSF = (TIFFImageReader) spi.createReaderInstance();
             readerOverviewSF.setInput(streamOverviewSF);
 
@@ -567,18 +564,15 @@ public class GeoTiffKvpTest extends WCSKVPTestSupport {
             final int b3 = rasterOverviewSF.getSample(refX, refY, 2);
 
             // Checking the pixels are different
-            assertTrue(r1 != r2);
-            assertTrue(g1 != g2);
-            assertTrue(b1 != b2);
+            assertNotEquals(r1, r2);
+            assertNotEquals(g1, g2);
+            assertNotEquals(b1, b2);
 
             // Checking the pixels from quality overviews using same layout are equals
             assertEquals(r2, r3);
             assertEquals(g2, g3);
             assertEquals(b2, b3);
         } finally {
-            org.geoserver.util.IOUtils.closeQuietly(streamOverviewTS);
-            org.geoserver.util.IOUtils.closeQuietly(streamOverviewSF);
-            org.geoserver.util.IOUtils.closeQuietly(streamNative);
             if (readerOverviewTS != null) {
                 try {
                     readerOverviewTS.dispose();

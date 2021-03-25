@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.TransformerException;
-import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -69,12 +68,8 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         final ModalWindow xmlWindow = new ModalWindow("xmlWindow");
         add(xmlWindow);
         xmlWindow.setPageCreator(
-                new ModalWindow.PageCreator() {
-
-                    public Page createPage() {
-                        return new PlainCodePage(xmlWindow, responseWindow, getRequestXML());
-                    }
-                });
+                (ModalWindow.PageCreator)
+                        () -> new PlainCodePage(xmlWindow, responseWindow, getRequestXML()));
 
         // the output response window
         responseWindow = new ModalWindow("responseWindow");
@@ -84,27 +79,23 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(
-                new ModalWindow.PageCreator() {
-
-                    @SuppressWarnings("unchecked")
-                    public Page createPage() {
-                        DemoRequest request = new DemoRequest(null);
-                        HttpServletRequest http =
-                                (HttpServletRequest)
-                                        WPSRequestBuilder.this.getRequest().getContainerRequest();
-                        String url =
-                                ResponseUtils.buildURL(
-                                        ResponseUtils.baseURL(http),
-                                        "ows",
-                                        Collections.singletonMap("strict", "true"),
-                                        URLType.SERVICE);
-                        request.setRequestUrl(url);
-                        request.setRequestBody((String) responseWindow.getDefaultModelObject());
-                        request.setUserName(builder.username);
-                        request.setPassword(builder.password);
-                        return new DemoRequestResponse(new Model(request));
-                    }
-                });
+                (ModalWindow.PageCreator)
+                        () -> {
+                            DemoRequest request = new DemoRequest(null);
+                            HttpServletRequest http =
+                                    (HttpServletRequest) getRequest().getContainerRequest();
+                            String url =
+                                    ResponseUtils.buildURL(
+                                            ResponseUtils.baseURL(http),
+                                            "ows",
+                                            Collections.singletonMap("strict", "true"),
+                                            URLType.SERVICE);
+                            request.setRequestUrl(url);
+                            request.setRequestBody((String) responseWindow.getDefaultModelObject());
+                            request.setUserName(builder.username);
+                            request.setPassword(builder.password);
+                            return new DemoRequestResponse(new Model<>(request));
+                        });
 
         form.add(
                 new AjaxSubmitLink("execute") {

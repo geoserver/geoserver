@@ -37,53 +37,54 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
         super(pageParams);
     }
 
+    @Override
     protected Class<WPSInfo> getServiceClass() {
         return WPSInfo.class;
     }
 
+    @Override
     protected String getServiceName() {
         return "WPS";
     }
 
     @Override
     protected void build(IModel info, final Form form) {
-        TextField<Integer> connectionTimeout =
-                new TextField<Integer>("connectionTimeout", Integer.class);
+        TextField<Integer> connectionTimeout = new TextField<>("connectionTimeout", Integer.class);
         connectionTimeout.add(RangeValidator.minimum(-1));
         form.add(connectionTimeout);
 
         TextField<Integer> maxSynchProcesses =
-                new TextField<Integer>("maxSynchronousProcesses", Integer.class);
+                new TextField<>("maxSynchronousProcesses", Integer.class);
         maxSynchProcesses.add(RangeValidator.minimum(1));
         form.add(maxSynchProcesses);
 
         TextField<Integer> maxSynchExecutionTime =
-                new TextField<Integer>("maxSynchronousExecutionTime", Integer.class);
+                new TextField<>("maxSynchronousExecutionTime", Integer.class);
         maxSynchExecutionTime.add(RangeValidator.minimum(-1));
         form.add(maxSynchExecutionTime);
 
         TextField<Integer> maxSynchTotalTime =
-                new TextField<Integer>("maxSynchronousTotalTime", Integer.class);
+                new TextField<>("maxSynchronousTotalTime", Integer.class);
         maxSynchTotalTime.add(RangeValidator.minimum(-1));
         form.add(maxSynchTotalTime);
 
         TextField<Integer> maxAsynchProcesses =
-                new TextField<Integer>("maxAsynchronousProcesses", Integer.class);
+                new TextField<>("maxAsynchronousProcesses", Integer.class);
         maxAsynchProcesses.add(RangeValidator.minimum(1));
         form.add(maxAsynchProcesses);
 
         TextField<Integer> maxAsynchExecutionTime =
-                new TextField<Integer>("maxAsynchronousExecutionTime", Integer.class);
+                new TextField<>("maxAsynchronousExecutionTime", Integer.class);
         maxAsynchExecutionTime.add(RangeValidator.minimum(-1));
         form.add(maxAsynchExecutionTime);
 
         TextField<Integer> maxAsynchTotalTime =
-                new TextField<Integer>("maxAsynchronousTotalTime", Integer.class);
+                new TextField<>("maxAsynchronousTotalTime", Integer.class);
         maxAsynchTotalTime.add(RangeValidator.minimum(-1));
         form.add(maxAsynchTotalTime);
 
         TextField<Integer> resourceExpirationTimeout =
-                new TextField<Integer>("resourceExpirationTimeout", Integer.class);
+                new TextField<>("resourceExpirationTimeout", Integer.class);
         resourceExpirationTimeout.add(RangeValidator.minimum(0));
         form.add(resourceExpirationTimeout);
 
@@ -92,7 +93,7 @@ public class WPSAdminPage extends BaseServiceAdminPage<WPSInfo> {
         DirectoryParamPanel chooser =
                 new DirectoryParamPanel(
                         "storageDirectory",
-                        new PropertyModel<String>(info, "storageDirectory"),
+                        new PropertyModel<>(info, "storageDirectory"),
                         new ParamResourceModel("storageDirectory", this),
                         false);
         form.add(chooser);

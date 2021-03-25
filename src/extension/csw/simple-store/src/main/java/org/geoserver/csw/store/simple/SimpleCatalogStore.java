@@ -55,12 +55,13 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
         }
     }
 
-    public FeatureCollection getRecords(Query q, Transaction t) throws IOException {
+    public FeatureCollection<FeatureType, Feature> getRecords(Query q, Transaction t)
+            throws IOException {
         return getRecords(q, t, null);
     }
 
     @Override
-    public FeatureCollection getRecordsInternal(
+    public FeatureCollection<FeatureType, Feature> getRecordsInternal(
             RecordDescriptor rd, RecordDescriptor outputRd, Query q, Transaction t)
             throws IOException {
 
@@ -68,7 +69,8 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
         if (q.getStartIndex() != null) {
             startIndex = q.getStartIndex();
         }
-        FeatureCollection records = new RecordsFeatureCollection(root, startIndex);
+        FeatureCollection<FeatureType, Feature> records =
+                new RecordsFeatureCollection(root, startIndex);
 
         // filtering
         if (q.getFilter() != null && q.getFilter() != Filter.INCLUDE) {
@@ -76,12 +78,12 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
             CSWAnyExpander expander = new CSWAnyExpander();
             Filter expanded = (Filter) filter.accept(expander, null);
 
-            records = new FilteringFeatureCollection<FeatureType, Feature>(records, expanded);
+            records = new FilteringFeatureCollection<>(records, expanded);
         }
 
         // sorting
         if (q.getSortBy() != null && q.getSortBy().length > 0) {
-            Feature[] features = (Feature[]) records.toArray(new Feature[records.size()]);
+            Feature[] features = records.toArray(new Feature[records.size()]);
             Comparator<Feature> comparator =
                     ComplexComparatorFactory.buildComparator(q.getSortBy());
             Arrays.sort(features, comparator);
@@ -91,14 +93,12 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
 
         // max features
         if (q.getMaxFeatures() < Query.DEFAULT_MAX) {
-            records =
-                    new MaxFeaturesFeatureCollection<FeatureType, Feature>(
-                            records, q.getMaxFeatures());
+            records = new MaxFeaturesFeatureCollection<>(records, q.getMaxFeatures());
         }
 
         // reducing attributes
         if (q.getProperties() != null && q.getProperties().size() > 0) {
-            records = new RetypingFeatureCollection(records, q.getProperties());
+            records = new RetypingFeatureCollection<>(records, q.getProperties());
         }
 
         return records;

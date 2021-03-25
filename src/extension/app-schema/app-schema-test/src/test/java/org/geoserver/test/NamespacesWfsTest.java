@@ -128,7 +128,7 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
             checkWfs20StationsGetFeatureResult(document);
         } finally {
             storedQueryProvider.removeAll();
-            assertTrue(storedQueryProvider.listStoredQueries().size() == 1);
+            assertEquals(1, storedQueryProvider.listStoredQueries().size());
         }
     }
 
@@ -145,7 +145,7 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
             checkWfs20StationsGetFeatureResult(document);
         } finally {
             storedQueryProvider.removeAll();
-            assertTrue(storedQueryProvider.listStoredQueries().size() == 1);
+            assertEquals(1, storedQueryProvider.listStoredQueries().size());
         }
     }
 
@@ -162,7 +162,7 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
             checkWfs11StationsGetFeatureResult(document);
         } finally {
             storedQueryProvider.removeAll();
-            assertTrue(storedQueryProvider.listStoredQueries().size() == 1);
+            assertEquals(1, storedQueryProvider.listStoredQueries().size());
         }
     }
 
@@ -180,7 +180,7 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
             checkWfs11StationsGetFeatureResult(document);
         } finally {
             storedQueryProvider.removeAll();
-            assertTrue(storedQueryProvider.listStoredQueries().size() == 1);
+            assertEquals(1, storedQueryProvider.listStoredQueries().size());
         }
     }
 
@@ -191,7 +191,7 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
                 createTestStoredQueryDefinition(parameters);
         StoredQuery result = storedQueryProvider.createStoredQuery(storedQueryDescriptionType);
 
-        assertTrue(storedQueryProvider.listStoredQueries().size() == 2);
+        assertEquals(2, storedQueryProvider.listStoredQueries().size());
         assertThat(result.getName(), is(TEST_STORED_QUERY_ID));
         assertThat(
                 storedQueryProvider.getStoredQuery(TEST_STORED_QUERY_ID).getName(),
@@ -204,11 +204,8 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
         p.setRootElementType(WFS.StoredQueryDescriptionType);
 
         String queryDefinition = substitutePlaceHolders(TEST_STORED_QUERY_DEFINITION, parameters);
-        StringReader reader = new StringReader(queryDefinition);
-        try {
+        try (StringReader reader = new StringReader(queryDefinition)) {
             return (StoredQueryDescriptionType) p.parse(reader);
-        } finally {
-            reader.close();
         }
     }
 
@@ -310,7 +307,7 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
         assertTrue(output.indexOf("ms_gml32:Measurement_gml32") > -1);
         assertTrue(output.indexOf("st_gml32:Station_gml32") > -1);
         // check test1 namespace not injected:
-        assertTrue(output.indexOf("xmlns:test1=\"http://www.test1.org/test1\"") == -1);
+        assertEquals(output.indexOf("xmlns:test1=\"http://www.test1.org/test1\""), -1);
     }
 
     /**
@@ -345,7 +342,7 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
         assertTrue(output.indexOf("ms_gml31:Measurement_gml31") > -1);
         assertTrue(output.indexOf("st_gml31:Station_gml31") > -1);
         // check test1 namespace not injected:
-        assertTrue(output.indexOf("xmlns:test1=\"http://www.test1.org/test1\"") == -1);
+        assertEquals(output.indexOf("xmlns:test1=\"http://www.test1.org/test1\""), -1);
     }
 
     @Test

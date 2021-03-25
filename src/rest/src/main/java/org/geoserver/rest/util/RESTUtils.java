@@ -215,7 +215,7 @@ public class RESTUtils {
         return Files.asResource(inputFile);
     }
 
-    static Set<String> ZIP_MIME_TYPES = new HashSet();
+    static Set<String> ZIP_MIME_TYPES = new HashSet<>();
 
     static {
         ZIP_MIME_TYPES.add("application/zip");
@@ -310,14 +310,13 @@ public class RESTUtils {
             String workspaceName, String storeName, Catalog catalog, String key) {
         // Initialization of a null String containing the root directory to use for the input store
         // config
-        String item;
 
         // ////////////////////////////////////
         //
         // Check Store info if present
         //
         // ////////////////////////////////////
-        item = extractMapItem(loadMapfromStore(storeName, catalog), key);
+        String item = extractMapItem(loadMapfromStore(storeName, catalog), key);
 
         // ////////////////////////////////////
         //

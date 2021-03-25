@@ -62,12 +62,12 @@ public class TransactionListenerTest extends WFSTestSupport {
 
         postAsDOM("wfs", delete);
         assertEquals(1, listener.events.size());
-        TransactionEvent event = (TransactionEvent) listener.events.get(0);
+        TransactionEvent event = listener.events.get(0);
         assertTrue(event.getSource() instanceof DeleteElementType);
         assertEquals(TransactionEventType.PRE_DELETE, event.getType());
         assertEquals(CiteTestData.POINTS, event.getLayerName());
         assertEquals(1, listener.features.size());
-        Feature deleted = (Feature) listener.features.get(0);
+        Feature deleted = listener.features.get(0);
         assertEquals("t0000", deleted.getProperty("id").getValue());
     }
 
@@ -97,7 +97,7 @@ public class TransactionListenerTest extends WFSTestSupport {
         postAsDOM("wfs", insert);
         assertEquals(2, listener.events.size());
 
-        TransactionEvent firstEvent = (TransactionEvent) listener.events.get(0);
+        TransactionEvent firstEvent = listener.events.get(0);
         assertTrue(firstEvent.getSource() instanceof InsertElementType);
         assertEquals(TransactionEventType.PRE_INSERT, firstEvent.getType());
         assertEquals(CiteTestData.LINES, firstEvent.getLayerName());
@@ -131,10 +131,10 @@ public class TransactionListenerTest extends WFSTestSupport {
                         .item(0)
                         .getNodeValue();
 
-        TransactionEvent secondEvent = (TransactionEvent) listener.events.get(1);
+        TransactionEvent secondEvent = listener.events.get(1);
         assertTrue(secondEvent.getSource() instanceof InsertElementType);
         assertEquals(TransactionEventType.POST_INSERT, secondEvent.getType());
-        Feature inserted = (Feature) listener.features.get(1);
+        Feature inserted = listener.features.get(1);
         assertEquals(fid, inserted.getIdentifier().getID());
     }
 
@@ -163,18 +163,18 @@ public class TransactionListenerTest extends WFSTestSupport {
 
         postAsDOM("wfs", insert);
         assertEquals(2, listener.events.size());
-        TransactionEvent firstEvent = (TransactionEvent) listener.events.get(0);
+        TransactionEvent firstEvent = listener.events.get(0);
         assertTrue(firstEvent.getSource() instanceof UpdateElementType);
         assertEquals(TransactionEventType.PRE_UPDATE, firstEvent.getType());
         assertEquals(CiteTestData.POLYGONS, firstEvent.getLayerName());
-        Feature updatedBefore = (Feature) listener.features.get(0);
+        Feature updatedBefore = listener.features.get(0);
         assertEquals("t0002", updatedBefore.getProperty("id").getValue());
 
-        TransactionEvent secondEvent = (TransactionEvent) listener.events.get(1);
+        TransactionEvent secondEvent = listener.events.get(1);
         assertTrue(secondEvent.getSource() instanceof UpdateElementType);
         assertEquals(TransactionEventType.POST_UPDATE, secondEvent.getType());
         assertEquals(CiteTestData.POLYGONS, secondEvent.getLayerName());
-        Feature updatedAfter = (Feature) listener.features.get(1);
+        Feature updatedAfter = listener.features.get(1);
         assertEquals("t0003", updatedAfter.getProperty("id").getValue());
 
         assertEquals(2, listener.features.size());

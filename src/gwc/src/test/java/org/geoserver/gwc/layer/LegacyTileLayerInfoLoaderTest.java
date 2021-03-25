@@ -66,8 +66,7 @@ public class LegacyTileLayerInfoLoaderTest {
 
         LegacyTileLayerInfoLoader.save(info, layer.getMetadata());
 
-        GeoServerTileLayerInfo actual;
-        actual = LegacyTileLayerInfoLoader.load(layer);
+        GeoServerTileLayerInfo actual = LegacyTileLayerInfoLoader.load(layer);
 
         info.setId(layer.getId());
         info.setName(tileLayerName(layer));
@@ -93,8 +92,7 @@ public class LegacyTileLayerInfoLoaderTest {
 
         LegacyTileLayerInfoLoader.save(info, layer.getMetadata());
 
-        GeoServerTileLayerInfo actual;
-        actual = LegacyTileLayerInfoLoader.load(layer);
+        GeoServerTileLayerInfo actual = LegacyTileLayerInfoLoader.load(layer);
 
         TileLayerInfoUtil.setCachedStyles(info, "default", ImmutableSet.of("style1", "style2"));
 
@@ -124,8 +122,7 @@ public class LegacyTileLayerInfoLoaderTest {
 
         LegacyTileLayerInfoLoader.save(info, lg.getMetadata());
 
-        GeoServerTileLayerInfo actual;
-        actual = LegacyTileLayerInfoLoader.load(lg);
+        GeoServerTileLayerInfo actual = LegacyTileLayerInfoLoader.load(lg);
 
         info.setId(lg.getId());
         info.setName(GWC.tileLayerName(lg));
@@ -147,8 +144,7 @@ public class LegacyTileLayerInfoLoaderTest {
 
         LegacyTileLayerInfoLoader.save(info, lg.getMetadata());
 
-        GeoServerTileLayerInfo actual;
-        actual = LegacyTileLayerInfoLoader.load(lg);
+        GeoServerTileLayerInfo actual = LegacyTileLayerInfoLoader.load(lg);
         assertNotNull(actual);
 
         LegacyTileLayerInfoLoader.clear(lg.getMetadata());

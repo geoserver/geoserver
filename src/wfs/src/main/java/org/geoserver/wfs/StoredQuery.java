@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.xml.namespace.QName;
@@ -65,7 +64,7 @@ public class StoredQuery {
 
         QueryExpressionTextType text = factory.createQueryExpressionTextType();
         text.setIsPrivate(true);
-        text.setReturnFeatureTypes(new ArrayList());
+        text.setReturnFeatureTypes(new ArrayList<>());
         text.setLanguage(StoredQueryProvider.LANGUAGE_20);
 
         String xml =
@@ -107,7 +106,7 @@ public class StoredQuery {
 
     /** The feature types the stored query returns result for. */
     public List<QName> getFeatureTypes() {
-        List<QName> types = new ArrayList();
+        List<QName> types = new ArrayList<>();
         for (QueryExpressionTextType qe : queryDef.getQueryExpressionText()) {
             types.addAll(qe.getReturnFeatureTypes());
         }
@@ -139,7 +138,7 @@ public class StoredQuery {
 
         for (QueryExpressionTextType qe : queryDef.getQueryExpressionText()) {
             // verify that the return feature types matched the ones specified by the actual query
-            Set<QName> queryTypes = new HashSet();
+            Set<QName> queryTypes = new HashSet<>();
             try {
                 Document doc = db.parse(new InputSource(new StringReader(qe.getValue())));
                 NodeList queries = doc.getElementsByTagName("wfs:Query");
@@ -155,17 +154,19 @@ public class StoredQuery {
                     String[] typeNames = query.getAttribute("typeNames").split(" ");
                     for (String typeName : typeNames) {
                         typeName = unmapLocalPrefixes(typeName, query, catalog);
-                        queryTypes.addAll((List) new QNameKvpParser(null, catalog).parse(typeName));
+                        @SuppressWarnings("unchecked")
+                        List<QName> parse =
+                                (List) new QNameKvpParser(null, catalog).parse(typeName);
+                        queryTypes.addAll(parse);
                     }
                 }
             } catch (Exception e) {
                 throw new IOException(e);
             }
 
-            Set<QName> returnTypes = new HashSet(qe.getReturnFeatureTypes());
+            Set<QName> returnTypes = new HashSet<>(qe.getReturnFeatureTypes());
             boolean allowAnyReturnType = returnTypes.equals(Collections.singleton(new QName("")));
-            for (Iterator<QName> it = queryTypes.iterator(); it.hasNext(); ) {
-                QName qName = it.next();
+            for (QName qName : queryTypes) {
                 if (!returnTypes.contains(qName)
                         && !allowAnyReturnType
                         && !isParameter(qName.getLocalPart(), queryDef.getParameter())) {
@@ -239,7 +240,7 @@ public class StoredQuery {
     }
 
     public List<QueryType> compile(StoredQueryType query) {
-        List list = new ArrayList();
+        List<QueryType> list = new ArrayList<>();
 
         for (QueryExpressionTextType qe : queryDef.getQueryExpressionText()) {
 

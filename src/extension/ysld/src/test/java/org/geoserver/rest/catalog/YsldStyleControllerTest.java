@@ -4,7 +4,10 @@
  */
 package org.geoserver.rest.catalog;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -42,7 +45,7 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
 
         catalog = getCatalog();
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("html", "http://www.w3.org/1999/xhtml");
         namespaces.put("sld", "http://www.opengis.net/sld");
         namespaces.put("ogc", "http://www.opengis.net/ogc");

@@ -34,54 +34,67 @@ public class CoverageAccessInfoImpl implements Serializable, CoverageAccessInfo 
         threadPoolExecutor = null;
     }
 
+    @Override
     public ThreadPoolExecutor getThreadPoolExecutor() {
         return threadPoolExecutor;
     }
 
+    @Override
     public void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor) {
         this.threadPoolExecutor = threadPoolExecutor;
     }
 
+    @Override
     public int getCorePoolSize() {
         return corePoolSize;
     }
 
+    @Override
     public void setCorePoolSize(int corePoolSize) {
         this.corePoolSize = corePoolSize;
     }
 
+    @Override
     public int getMaxPoolSize() {
         return maxPoolSize;
     }
 
+    @Override
     public void setMaxPoolSize(int maxPoolSize) {
         this.maxPoolSize = maxPoolSize;
     }
 
+    @Override
     public int getKeepAliveTime() {
         return keepAliveTime;
     }
 
+    @Override
     public void setKeepAliveTime(int keepAliveTime) {
         this.keepAliveTime = keepAliveTime;
     }
 
+    @Override
     public QueueType getQueueType() {
         return queueType;
     }
 
+    @Override
     public void setQueueType(QueueType queueType) {
         this.queueType = queueType;
     }
 
+    @Override
     public void setImageIOCacheThreshold(long imageIOCacheThreshold) {
         this.imageIOCacheThreshold = imageIOCacheThreshold;
     }
 
+    @Override
     public long getImageIOCacheThreshold() {
         return imageIOCacheThreshold;
     }
 
+    @Override
     public void dispose() {}
 
     @Override
@@ -112,6 +125,7 @@ public class CoverageAccessInfoImpl implements Serializable, CoverageAccessInfo 
         return true;
     }
 
+    @Override
     public CoverageAccessInfoImpl clone() {
         try {
             return (CoverageAccessInfoImpl) super.clone();

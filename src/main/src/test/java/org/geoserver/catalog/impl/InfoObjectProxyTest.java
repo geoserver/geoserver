@@ -5,7 +5,8 @@
  */
 package org.geoserver.catalog.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -57,32 +58,37 @@ public class InfoObjectProxyTest {
 
         void setBar(Integer bar);
 
-        List getScratch();
+        List<Object> getScratch();
     }
 
     static class BeanImpl implements Bean {
 
         String foo;
         Integer bar;
-        List scratch = new ArrayList();
+        List<Object> scratch = new ArrayList<>();
 
+        @Override
         public String getFoo() {
             return foo;
         }
 
+        @Override
         public void setFoo(String foo) {
             this.foo = foo;
         }
 
+        @Override
         public Integer getBar() {
             return bar;
         }
 
+        @Override
         public void setBar(Integer bar) {
             this.bar = bar;
         }
 
-        public List getScratch() {
+        @Override
+        public List<Object> getScratch() {
             return scratch;
         }
     }

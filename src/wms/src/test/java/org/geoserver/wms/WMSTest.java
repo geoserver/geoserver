@@ -5,13 +5,22 @@
  */
 package org.geoserver.wms;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.sql.Date;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
@@ -43,7 +52,7 @@ public class WMSTest extends WMSTestSupport {
         super.onSetUp(testData);
         testData.addVectorLayer(
                 TIME_WITH_START_END,
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 "TimeElevationWithStartEnd.properties",
                 getClass(),
                 getCatalog());
@@ -126,12 +135,12 @@ public class WMSTest extends WMSTestSupport {
         doTimeElevationFilter(null, 3, 1, 2);
         doTimeElevationFilter(null, 4);
 
-        doTimeElevationFilter(null, new NumberRange(Integer.class, -1, 0));
-        doTimeElevationFilter(null, new NumberRange(Integer.class, -1, 1), 0, 2);
-        doTimeElevationFilter(null, new NumberRange(Integer.class, 1, 3), 0, 1, 2);
-        doTimeElevationFilter(null, new NumberRange(Integer.class, -1, 4), 0, 1, 2);
-        doTimeElevationFilter(null, new NumberRange(Integer.class, 3, 4), 1, 2);
-        doTimeElevationFilter(null, new NumberRange(Integer.class, 4, 5));
+        doTimeElevationFilter(null, new NumberRange<>(Integer.class, -1, 0));
+        doTimeElevationFilter(null, new NumberRange<>(Integer.class, -1, 1), 0, 2);
+        doTimeElevationFilter(null, new NumberRange<>(Integer.class, 1, 3), 0, 1, 2);
+        doTimeElevationFilter(null, new NumberRange<>(Integer.class, -1, 4), 0, 1, 2);
+        doTimeElevationFilter(null, new NumberRange<>(Integer.class, 3, 4), 1, 2);
+        doTimeElevationFilter(null, new NumberRange<>(Integer.class, 4, 5));
 
         // combined date/elevation - this should be an 'and' filter
         doTimeElevationFilter(Date.valueOf("2012-02-12"), 2, 0, 1, 2);
@@ -146,20 +155,17 @@ public class WMSTest extends WMSTestSupport {
                 getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
         FeatureSource fs = timeWithStartEnd.getFeatureSource(null, null);
 
-        List times = time == null ? null : Arrays.asList(time);
-        List elevations = elevation == null ? null : Arrays.asList(elevation);
+        List<Object> times = time == null ? null : Arrays.asList(time);
+        List<Object> elevations = elevation == null ? null : Arrays.asList(elevation);
 
         Filter filter = wms.getTimeElevationToFilter(times, elevations, timeWithStartEnd);
         FeatureCollection features = fs.getFeatures(filter);
 
-        Set<Integer> results = new HashSet<Integer>();
-        FeatureIterator it = features.features();
-        try {
+        Set<Integer> results = new HashSet<>();
+        try (FeatureIterator it = features.features()) {
             while (it.hasNext()) {
                 results.add((Integer) it.next().getProperty("id").getValue());
             }
-        } finally {
-            it.close();
         }
         assertTrue(
                 "expected " + Arrays.toString(expectedIds) + " but got " + results,
@@ -180,7 +186,9 @@ public class WMSTest extends WMSTestSupport {
             if (egf instanceof ImageGraphicFactory) {
                 Field cache = egf.getClass().getDeclaredField("imageCache");
                 cache.setAccessible(true);
-                imageCache = (Map) cache.get(egf);
+                @SuppressWarnings("unchecked")
+                Map<URL, BufferedImage> cast = (Map) cache.get(egf);
+                imageCache = cast;
                 URL u = new URL("http://boundless.org");
                 BufferedImage b = new BufferedImage(6, 6, 8);
                 imageCache.put(u, b);

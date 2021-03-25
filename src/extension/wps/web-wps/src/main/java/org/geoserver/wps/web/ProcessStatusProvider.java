@@ -52,34 +52,29 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
                 }
             };
 
-    static final Property<ExecutionStatus> NODE =
-            new BeanProperty<ExecutionStatus>("node", "nodeId");
+    static final Property<ExecutionStatus> NODE = new BeanProperty<>("node", "nodeId");
 
-    static final Property<ExecutionStatus> USER =
-            new BeanProperty<ExecutionStatus>("user", "userName");
+    static final Property<ExecutionStatus> USER = new BeanProperty<>("user", "userName");
 
     static final Property<ExecutionStatus> PROCESS =
-            new BeanProperty<ExecutionStatus>("processName", "processName");
+            new BeanProperty<>("processName", "processName");
 
     static final Property<ExecutionStatus> CREATED =
-            new BeanProperty<ExecutionStatus>("creationTime", "creationTime");
+            new BeanProperty<>("creationTime", "creationTime");
 
-    static final Property<ExecutionStatus> PHASE =
-            new BeanProperty<ExecutionStatus>("phase", "phase");
+    static final Property<ExecutionStatus> PHASE = new BeanProperty<>("phase", "phase");
 
-    static final Property<ExecutionStatus> PROGRESS =
-            new BeanProperty<ExecutionStatus>("progress", "progress");
+    static final Property<ExecutionStatus> PROGRESS = new BeanProperty<>("progress", "progress");
 
     static final Property<ExecutionStatus> EXPIRATION =
-            new BeanProperty<ExecutionStatus>("expirationDate", "expirationDate");
+            new BeanProperty<>("expirationDate", "expirationDate");
 
     static final Property<ExecutionStatus> COMPLETION =
-            new BeanProperty<ExecutionStatus>("estimatedCompletion", "estimatedCompletion");
+            new BeanProperty<>("estimatedCompletion", "estimatedCompletion");
 
-    static final Property<ExecutionStatus> NEXT_POLL =
-            new BeanProperty<ExecutionStatus>("nextPoll", "nextPoll");
+    static final Property<ExecutionStatus> NEXT_POLL = new BeanProperty<>("nextPoll", "nextPoll");
 
-    static final Property<ExecutionStatus> TASK = new BeanProperty<ExecutionStatus>("task", "task");
+    static final Property<ExecutionStatus> TASK = new BeanProperty<>("task", "task");
 
     static final List<Property<ExecutionStatus>> PROPERTIES =
             Arrays.asList(
@@ -145,7 +140,7 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
             }
         } else {
             if (keywords.length > 0) {
-                List<Filter> likes = new ArrayList<Filter>();
+                List<Filter> likes = new ArrayList<>();
                 for (String word : keywords) {
                     for (Property<?> prop : getProperties()) {
                         if (prop.isSearchable()) {
@@ -185,9 +180,10 @@ public class ProcessStatusProvider extends GeoServerDataProvider<ExecutionStatus
         if (sort != null) {
             final Property<?> property = getProperty(sort);
             if (property.isSearchable()) { // we really need another flag
+                @SuppressWarnings("unchecked")
                 final String sortProperty = ((BeanProperty<StoreInfo>) property).getPropertyPath();
                 sortOrder = sortBy(sortProperty, sort.isAscending());
-                query.setSortBy(new SortBy[] {sortOrder});
+                query.setSortBy(sortOrder);
             }
         }
         LOGGER.fine("built query " + query + " to filter statuses");

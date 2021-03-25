@@ -28,11 +28,12 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
     }
 
     public DescribeFeatureTypeKvpRequestReader(
-            final Catalog catalog, Class requestBean, EFactory factory) {
+            final Catalog catalog, Class<?> requestBean, EFactory factory) {
         super(requestBean, factory);
         this.catalog = catalog;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
         // let super do its thing
@@ -84,7 +85,7 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
         }
         if (namespaces != null) {
             List<QName> typeNames = req.getTypeNames();
-            List<QName> newList = new ArrayList<QName>(typeNames.size());
+            List<QName> newList = new ArrayList<>(typeNames.size());
             for (QName name : typeNames) {
                 String localPart = name.getLocalPart();
                 String prefix = name.getPrefix();

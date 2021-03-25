@@ -40,7 +40,7 @@ public class TreeView<T> extends Panel {
 
     /** Behaviour for selected node */
     protected static final AttributeAppender SELECTED_BEHAVIOR =
-            new ClassAppender(new Model<String>("selected"));
+            new ClassAppender(new Model<>("selected"));
 
     /** Implement this to listen to selection events */
     public static interface SelectionListener<T> extends Serializable {
@@ -48,13 +48,13 @@ public class TreeView<T> extends Panel {
     }
 
     /** The selection listeners */
-    protected List<SelectionListener<T>> selectionListeners = new ArrayList<SelectionListener<T>>();
+    protected List<SelectionListener<T>> selectionListeners = new ArrayList<>();
 
     /** Model for selected node */
     protected IModel<Collection<TreeNode<T>>> selectedNodeModel;
 
     /** Custom marked items */
-    protected Map<String, Mark> marks = new HashMap<String, Mark>();
+    protected Map<String, Mark> marks = new HashMap<>();
 
     /**
      * Constructor
@@ -63,7 +63,7 @@ public class TreeView<T> extends Panel {
      * @param root the root node (creates model automatically)
      */
     public TreeView(String id, TreeNode<T> root) {
-        this(id, new Model<TreeNode<T>>(root));
+        this(id, new Model<>(root));
     }
 
     /**
@@ -73,7 +73,7 @@ public class TreeView<T> extends Panel {
      * @param rootModel model of the root node
      */
     public TreeView(String id, IModel<TreeNode<T>> rootModel) {
-        this(id, rootModel, new CollectionModel<TreeNode<T>>(new HashSet<TreeNode<T>>()));
+        this(id, rootModel, new CollectionModel<>(new HashSet<>()));
     }
 
     /**
@@ -125,7 +125,7 @@ public class TreeView<T> extends Panel {
      * tree.
      */
     public Panel[] getSelectedViews() {
-        List<Panel> views = new ArrayList<Panel>();
+        List<Panel> views = new ArrayList<>();
         if (!selectedNodeModel.getObject().isEmpty()) {
             for (TreeNode<T> selectedNode : selectedNodeModel.getObject()) {
                 views.add(getNearestViewInternal(selectedNode));
@@ -360,8 +360,7 @@ public class TreeView<T> extends Panel {
                                                             .toBoolean();
 
                                             if (ctrl) { // toggle selection of this node
-                                                Set<TreeNode<T>> newSelectedNodes =
-                                                        new HashSet<TreeNode<T>>();
+                                                Set<TreeNode<T>> newSelectedNodes = new HashSet<>();
                                                 if (isSelected(getNode())) {
                                                     for (TreeNode<T> selectedNode :
                                                             getSelectedNodes()) {
@@ -378,8 +377,7 @@ public class TreeView<T> extends Panel {
                                                 boolean select = false;
                                                 boolean moveOn = false;
                                                 Set<TreeNode<T>> newSelectedNodes =
-                                                        new HashSet<TreeNode<T>>(
-                                                                getSelectedNodes());
+                                                        new HashSet<>(getSelectedNodes());
                                                 for (TreeNode<T> sibling :
                                                         getNode().getParent().getChildren()) {
                                                     if (!select
@@ -469,7 +467,7 @@ public class TreeView<T> extends Panel {
                             if (!getModelObject() && !selectedNodeModel.getObject().isEmpty()) {
                                 // if any nodes in the current selection become hidden, we unselect
                                 // them automatically
-                                Set<TreeNode<T>> newSelectedNodes = new HashSet<TreeNode<T>>();
+                                Set<TreeNode<T>> newSelectedNodes = new HashSet<>();
                                 for (TreeNode<T> selectedNode : selectedNodeModel.getObject()) {
                                     TreeNode<T> node = selectedNode.getParent();
                                     boolean selectionHidden = false;
@@ -505,14 +503,14 @@ public class TreeView<T> extends Panel {
             final RepeatingView children = (RepeatingView) get("children");
             children.removeAll();
             for (TreeNode<T> child : getNode().getChildren()) {
-                children.add(
-                        createTreeNodeView(child.getUniqueId(), new Model<TreeNode<T>>(child)));
+                children.add(createTreeNodeView(child.getUniqueId(), new Model<>(child)));
             }
         }
 
+        @Override
         @SuppressWarnings("unchecked")
         public TreeNodeView getChildView(String id) {
-            return (TreeNodeView) ((RepeatingView) get("children")).get(id);
+            return (TreeNodeView) get("children").get(id);
         }
     }
 
@@ -532,10 +530,10 @@ public class TreeView<T> extends Panel {
         private static final long serialVersionUID = -827616908801489309L;
 
         private AttributeAppender behaviour;
-        private Set<String> marked = new HashSet<String>();
+        private Set<String> marked = new HashSet<>();
 
         public Mark(String behaviourName) {
-            this.behaviour = new AttributeAppender("class", new Model<String>(behaviourName), " ");
+            this.behaviour = new AttributeAppender("class", new Model<>(behaviourName), " ");
         }
 
         public AttributeAppender getBehaviour() {

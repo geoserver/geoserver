@@ -85,10 +85,7 @@ public class DirectDownload {
                         }
                     }
                 }
-            } catch (NoSuchAlgorithmException e) {
-                throw new ServiceException(
-                        "Exception occurred while looking for raw files for :" + fileId, e);
-            } catch (IOException e) {
+            } catch (NoSuchAlgorithmException | IOException e) {
                 throw new ServiceException(
                         "Exception occurred while looking for raw files for :" + fileId, e);
             }
@@ -135,7 +132,7 @@ public class DirectDownload {
 
     /** Prepare the list of files to be downloaded from the current request. */
     public List<File> run(DirectDownloadType request) {
-        List<File> result = new ArrayList<File>();
+        List<File> result = new ArrayList<>();
         String resourceId = request.getResourceId();
         String fileId = request.getFile();
 
@@ -192,7 +189,7 @@ public class DirectDownload {
         ServiceInfo info = reader.getInfo();
         if (info instanceof FileServiceInfo) {
             FileServiceInfo fileInfo = (FileServiceInfo) info;
-            FileGroupProvider provider = (FileGroupProvider) fileInfo;
+            FileGroupProvider provider = fileInfo;
             FilesCollector collector = new FilesCollector(provider);
             collector.collectFull(result);
         } else {
@@ -213,7 +210,7 @@ public class DirectDownload {
             FileResourceInfo fileResourceInfo = (FileResourceInfo) resourceInfo;
 
             // Get the resource files
-            FileGroupProvider fileGroupProvider = (FileGroupProvider) fileResourceInfo;
+            FileGroupProvider fileGroupProvider = fileResourceInfo;
             FilesCollector collector = new FilesCollector(fileGroupProvider);
 
             // Only structuredReaders can support multiple coverages

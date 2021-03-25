@@ -13,10 +13,10 @@ import org.geoserver.importer.ImportContext;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
 public class ImportContextProvider extends GeoServerDataProvider<ImportContext> {
-    public static Property<ImportContext> ID = new BeanProperty("id", "id");
-    public static Property<ImportContext> STATE = new BeanProperty("state", "state");
-    public static Property<ImportContext> CREATED = new BeanProperty("created", "created");
-    public static Property<ImportContext> UPDATED = new BeanProperty("updated", "updated");
+    public static Property<ImportContext> ID = new BeanProperty<>("id", "id");
+    public static Property<ImportContext> STATE = new BeanProperty<>("state", "state");
+    public static Property<ImportContext> CREATED = new BeanProperty<>("created", "created");
+    public static Property<ImportContext> UPDATED = new BeanProperty<>("updated", "updated");
 
     boolean sortByUpdated = false;
 
@@ -40,6 +40,6 @@ public class ImportContextProvider extends GeoServerDataProvider<ImportContext> 
 
     @Override
     protected IModel<ImportContext> newModel(ImportContext object) {
-        return new ImportContextModel((ImportContext) object);
+        return new ImportContextModel(object);
     }
 }

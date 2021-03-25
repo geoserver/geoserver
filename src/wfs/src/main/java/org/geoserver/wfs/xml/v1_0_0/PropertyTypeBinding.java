@@ -61,6 +61,7 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.PROPERTYTYPE;
     }
@@ -72,7 +73,8 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<PropertyType> getType() {
         return PropertyType.class;
     }
 
@@ -83,6 +85,7 @@ public class PropertyTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         PropertyType property = wfsfactory.createPropertyType();
 

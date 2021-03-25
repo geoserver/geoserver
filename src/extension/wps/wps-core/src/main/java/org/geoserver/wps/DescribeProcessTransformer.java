@@ -49,6 +49,7 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
             super(wps);
         }
 
+        @Override
         public Translator createTranslator(ContentHandler handler) {
             return new DescribeProcessTranslator1_0(handler);
         }
@@ -64,6 +65,7 @@ public abstract class DescribeProcessTransformer extends TransformerBase {
                 super(handler, null, null);
             }
 
+            @Override
             public void encode(Object object) throws IllegalArgumentException {
                 this.request = (DescribeProcessType) object;
 

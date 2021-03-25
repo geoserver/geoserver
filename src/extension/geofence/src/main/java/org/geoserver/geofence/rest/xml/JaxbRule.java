@@ -17,6 +17,7 @@ import org.geoserver.geofence.core.model.enums.AccessType;
 import org.geoserver.geofence.core.model.enums.CatalogMode;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.core.model.enums.LayerType;
+import org.geoserver.geofence.core.model.enums.SpatialFilterType;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
@@ -31,13 +32,17 @@ public class JaxbRule {
 
         private String catalogMode;
 
+        private String spatialFilterType;
+
         @XmlElement
         public String getAllowedArea() {
             return convertAny(allowedArea);
         }
 
         public void setAllowedArea(MultiPolygon allowedArea) {
-            this.allowedArea = allowedArea.toText();
+            int srid = allowedArea.getSRID();
+            String wktSRID = "SRID=" + (srid == 0 ? "4326" : String.valueOf(srid));
+            this.allowedArea = wktSRID + ";" + allowedArea.toText();
         }
 
         @XmlElement
@@ -47,6 +52,15 @@ public class JaxbRule {
 
         public void setCatalogMode(String catalogMode) {
             this.catalogMode = catalogMode;
+        }
+
+        @XmlElement
+        public String getSpatialFilterType() {
+            return convertAny(spatialFilterType);
+        }
+
+        public void setSpatialFilterType(String spatialFilterType) {
+            this.spatialFilterType = spatialFilterType;
         }
 
         public RuleLimits toRuleLimits(RuleLimits ruleLimits) {
@@ -70,6 +84,9 @@ public class JaxbRule {
             }
             if (getCatalogMode() != null) {
                 ruleLimits.setCatalogMode(CatalogMode.valueOf(getCatalogMode().toUpperCase()));
+            }
+            if (getSpatialFilterType() != null) {
+                ruleLimits.setSpatialFilterType(SpatialFilterType.valueOf(getSpatialFilterType()));
             }
             return ruleLimits;
         }
@@ -142,11 +159,13 @@ public class JaxbRule {
 
         private String allowedArea;
 
+        private String spatialFilterType;
+
         private String catalogMode;
 
-        private Set<String> allowedStyles = new HashSet<String>();
+        private Set<String> allowedStyles = new HashSet<>();
 
-        private Set<LayerAttribute> layerAttributes = new HashSet<LayerAttribute>();
+        private Set<LayerAttribute> layerAttributes = new HashSet<>();
 
         @XmlElement
         public String getLayerType() {
@@ -190,7 +209,22 @@ public class JaxbRule {
         }
 
         public void setAllowedArea(MultiPolygon allowedArea) {
-            this.allowedArea = allowedArea != null ? allowedArea.toText() : null;
+            String strAllowedArea = null;
+            if (allowedArea != null) {
+                int srid = allowedArea.getSRID();
+                String wktSRID = "SRID=" + (srid == 0 ? "4326" : String.valueOf(srid));
+                strAllowedArea = wktSRID + ";" + allowedArea.toText();
+            }
+            this.allowedArea = strAllowedArea;
+        }
+
+        @XmlElement
+        public String getSpatialFilterType() {
+            return convertAny(spatialFilterType);
+        }
+
+        public void setSpatialFilterType(String spatialFilterType) {
+            this.spatialFilterType = spatialFilterType;
         }
 
         @XmlElement
@@ -269,6 +303,9 @@ public class JaxbRule {
             if (convertAny(defaultStyle) != null) {
                 details.setDefaultStyle(defaultStyle);
             }
+            if (convertAny(spatialFilterType) != null) {
+                details.setSpatialFilterType(SpatialFilterType.valueOf(spatialFilterType));
+            }
             return details;
         }
     }
@@ -319,11 +356,24 @@ public class JaxbRule {
             } else {
                 limits.setCatalogMode(null);
             }
+            SpatialFilterType spatialFilterType = rule.getRuleLimits().getSpatialFilterType();
+            if (spatialFilterType != null) {
+                limits.setSpatialFilterType(spatialFilterType.toString());
+            } else {
+                limits.setSpatialFilterType(null);
+            }
         }
         if (rule.getLayerDetails() != null) {
             layerDetails = new LayerDetails();
             layerDetails.setAllowedArea(rule.getLayerDetails().getArea());
             layerDetails.getAllowedStyles().addAll(rule.getLayerDetails().getAllowedStyles());
+            SpatialFilterType spatialFilterType = rule.getLayerDetails().getSpatialFilterType();
+            if (spatialFilterType != null) {
+                layerDetails.setSpatialFilterType(spatialFilterType.toString());
+            } else {
+                layerDetails.setSpatialFilterType(null);
+            }
+
             if (rule.getLayerDetails().getCatalogMode() != null) {
                 layerDetails.setCatalogMode(rule.getLayerDetails().getCatalogMode().toString());
             } else {

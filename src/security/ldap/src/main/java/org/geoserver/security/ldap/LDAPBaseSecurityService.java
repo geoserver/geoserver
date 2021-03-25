@@ -9,14 +9,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.naming.directory.DirContext;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.AbstractGeoServerSecurityService;
 import org.springframework.ldap.core.AuthenticatedLdapEntryContextCallback;
 import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.ldap.core.LdapEntryIdentification;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.ldap.support.LdapUtils;
 import org.springframework.security.ldap.SpringSecurityLdapTemplate;
@@ -211,28 +209,23 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
     }
 
     protected String getUserNameFromMembership(final String user) {
-        final AtomicReference<String> userName = new AtomicReference<String>(user);
+        final AtomicReference<String> userName = new AtomicReference<>(user);
 
         if (lookupUserForDn) {
             authenticateIfNeeded(
-                    new AuthenticatedLdapEntryContextCallback() {
-
-                        @Override
-                        public void executeWithContext(
-                                DirContext ctx, LdapEntryIdentification ldapEntryIdentification) {
-                            DirContextOperations obj =
-                                    (DirContextOperations)
-                                            LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                                    .lookup(user);
-                            Object attribute = obj.getObjectAttribute(userNameAttribute);
-                            if (attribute != null) {
-                                String name = attribute.toString();
-                                Matcher m = userNamePattern.matcher(name);
-                                if (m.matches()) {
-                                    name = m.group(1);
-                                }
-                                userName.set(name);
+                    (ctx, ldapEntryIdentification) -> {
+                        DirContextOperations obj =
+                                (DirContextOperations)
+                                        LDAPUtils.getLdapTemplateInContext(ctx, template)
+                                                .lookup(user);
+                        Object attribute = obj.getObjectAttribute(userNameAttribute);
+                        if (attribute != null) {
+                            String name = attribute.toString();
+                            Matcher m = userNamePattern.matcher(name);
+                            if (m.matches()) {
+                                name = m.group(1);
                             }
+                            userName.set(name);
                         }
                     });
         }
@@ -240,24 +233,19 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
     }
 
     protected String lookupDn(String username) {
-        final AtomicReference<String> dn = new AtomicReference<String>(username);
+        final AtomicReference<String> dn = new AtomicReference<>(username);
         if (lookupUserForDn) {
             authenticateIfNeeded(
-                    new AuthenticatedLdapEntryContextCallback() {
-
-                        @Override
-                        public void executeWithContext(
-                                DirContext ctx, LdapEntryIdentification ldapEntryIdentification) {
-                            try {
-                                dn.set(
-                                        LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                                .searchForSingleEntry(
-                                                        "", userNameFilter, new String[] {username})
-                                                .getDn()
-                                                .toString());
-                            } catch (Exception e) {
-                                // not found, let's use username instead
-                            }
+                    (ctx, ldapEntryIdentification) -> {
+                        try {
+                            dn.set(
+                                    LDAPUtils.getLdapTemplateInContext(ctx, template)
+                                            .searchForSingleEntry(
+                                                    "", userNameFilter, new String[] {username})
+                                            .getDn()
+                                            .toString());
+                        } catch (Exception e) {
+                            // not found, let's use username instead
                         }
                     });
         }
@@ -265,7 +253,7 @@ public abstract class LDAPBaseSecurityService extends AbstractGeoServerSecurityS
         return dn.get();
     }
 
-    protected ContextMapper counter(AtomicInteger count) {
+    protected ContextMapper<Object> counter(AtomicInteger count) {
         return ctx -> {
             count.set(count.get() + 1);
             return null;

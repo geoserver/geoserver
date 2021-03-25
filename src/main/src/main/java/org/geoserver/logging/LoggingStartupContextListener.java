@@ -34,8 +34,10 @@ import org.geotools.util.logging.Logging;
 public class LoggingStartupContextListener implements ServletContextListener {
     private static Logger LOGGER;
 
+    @Override
     public void contextDestroyed(ServletContextEvent event) {}
 
+    @Override
     public void contextInitialized(ServletContextEvent event) {
         // setup GeoTools logging redirection (to log4j by default, but so that it can be
         // overridden)

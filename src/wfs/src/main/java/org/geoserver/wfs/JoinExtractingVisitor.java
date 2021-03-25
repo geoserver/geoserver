@@ -50,8 +50,8 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
 
     boolean hadAliases;
 
-    List<Filter> joinFilters = new ArrayList<Filter>();
-    List<Filter> filters = new ArrayList<Filter>();
+    List<Filter> joinFilters = new ArrayList<>();
+    List<Filter> filters = new ArrayList<>();
     private List<QName> queriedTypes;
 
     public JoinExtractingVisitor(List<FeatureTypeInfo> featureTypes, List<String> aliases) {
@@ -61,7 +61,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
         if (aliases == null || aliases.isEmpty()) {
             hadAliases = false;
             // assign prefixes
-            aliases = new ArrayList<String>();
+            aliases = new ArrayList<>();
             for (int j = 0, i = 0; i < featureTypes.size(); i++) {
                 String alias;
                 boolean conflictFound;
@@ -81,25 +81,30 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
             hadAliases = true;
         }
 
-        this.aliases = new ArrayList(aliases);
+        this.aliases = new ArrayList<>(aliases);
     }
 
+    @Override
     public Object visitNullFilter(Object extraData) {
         return null;
     }
 
+    @Override
     public Object visit(ExcludeFilter filter, Object extraData) {
         return handleOther(filter, extraData);
     }
 
+    @Override
     public Object visit(IncludeFilter filter, Object extraData) {
         return handleOther(filter, extraData);
     }
 
+    @Override
     public Object visit(Id filter, Object extraData) {
         return handleOther(filter, extraData);
     }
 
+    @Override
     public Object visit(Not filter, Object extraData) {
         if (isJoinFilter(filter.getFilter(), extraData)) {
             checkValidJoinFilter(filter);
@@ -122,6 +127,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
         }
     }
 
+    @Override
     public Object visit(PropertyIsBetween filter, Object extraData) {
         return handle(
                 filter,
@@ -131,14 +137,17 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
                 filter.getUpperBoundary());
     }
 
+    @Override
     public Object visit(PropertyIsLike filter, Object extraData) {
         return handleOther(filter, extraData);
     }
 
+    @Override
     public Object visit(PropertyIsNull filter, Object extraData) {
         return handleOther(filter, extraData);
     }
 
+    @Override
     public Object visit(PropertyIsNil filter, Object extraData) {
         return handleOther(filter, extraData);
     }
@@ -212,7 +221,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
             Set<String> localAttributes = fae.getAttributeNameSet();
             Set<String> localPrefixes = getPrefixes(localAttributes);
             if (!localPrefixes.isEmpty()) {
-                if (prefixes.size() == 0) {
+                if (prefixes.isEmpty()) {
                     // accumulate the prefixes, to see how many tables we're joining
                     prefixes.addAll(localPrefixes);
                 } else if (prefixes.size() > 1) {
@@ -253,7 +262,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
     }
 
     public List<Join> getJoins() {
-        List<Join> joins = new ArrayList();
+        List<Join> joins = new ArrayList<>();
 
         setupPrimary();
 

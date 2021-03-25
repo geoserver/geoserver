@@ -62,9 +62,7 @@ public final class Files {
 
         @Override
         public Lock lock() {
-            return new Lock() {
-                public void release() {}
-            };
+            return () -> {};
         }
 
         @Override
@@ -208,7 +206,7 @@ public final class Files {
             if (!file.isDirectory()) {
                 return Collections.emptyList();
             }
-            List<Resource> result = new ArrayList<Resource>();
+            List<Resource> result = new ArrayList<>();
             for (File child : Optional.ofNullable(file.listFiles()).orElse(new File[0])) {
                 result.add(new ResourceAdaptor(child));
             }
@@ -510,13 +508,12 @@ public final class Files {
         boolean allClean = true;
         File[] files = directory.listFiles();
         if (files != null) {
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isDirectory()) {
-                    allClean &= delete(files[i]);
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    allClean &= delete(file);
                 } else {
-                    if (!files[i].delete()) {
-                        LOGGER.log(
-                                Level.WARNING, "Could not delete {0}", files[i].getAbsolutePath());
+                    if (!file.delete()) {
+                        LOGGER.log(Level.WARNING, "Could not delete {0}", file.getAbsolutePath());
                         allClean = false;
                     }
                 }

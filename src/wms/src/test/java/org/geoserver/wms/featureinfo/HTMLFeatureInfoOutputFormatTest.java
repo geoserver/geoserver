@@ -6,14 +6,11 @@
 
 package org.geoserver.wms.featureinfo;
 
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import freemarker.template.TemplateException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -50,11 +47,11 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.data.DataUtilities;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.hamcrest.Matchers;
+import org.hamcrest.CoreMatchers;
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -71,8 +68,6 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
     private static final String templateFolder = "/org/geoserver/wms/featureinfo/";
 
     private String currentTemplate;
-
-    @Rule public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() throws URISyntaxException, IOException {
@@ -108,11 +103,11 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
 
         // test request with some parameters to use in templates
         Request request = new Request();
-        parameters = new HashMap<String, Object>();
+        parameters = new HashMap<>();
         parameters.put("LAYER", "testLayer");
         parameters.put("NUMBER1", 10);
         parameters.put("NUMBER2", 100);
-        Map<String, String> env = new HashMap<String, String>();
+        Map<String, String> env = new HashMap<>();
         env.put("TEST1", "VALUE1");
         env.put("TEST2", "VALUE2");
         parameters.put("ENV", env);
@@ -122,11 +117,10 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
 
         final FeatureTypeInfo featureType = getFeatureTypeInfo(MockData.PRIMITIVEGEOFEATURE);
 
-        fcType = WfsFactory.eINSTANCE.createFeatureCollectionType();
-        fcType.getFeature().add(featureType.getFeatureSource(null, null).getFeatures());
+        initFeatureType(featureType);
 
         // fake layer list
-        List<MapLayerInfo> queryLayers = new ArrayList<MapLayerInfo>();
+        List<MapLayerInfo> queryLayers = new ArrayList<>();
         LayerInfo layerInfo = new LayerInfoImpl();
         layerInfo.setType(PublishedType.VECTOR);
         ResourceInfo resourceInfo = new FeatureTypeInfoImpl(null);
@@ -139,6 +133,12 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         queryLayers.add(mapLayerInfo);
         getFeatureInfoRequest = new GetFeatureInfoRequest();
         getFeatureInfoRequest.setQueryLayers(queryLayers);
+    }
+
+    @SuppressWarnings("unchecked") // EMF model without generics
+    private void initFeatureType(FeatureTypeInfo featureType) throws IOException {
+        fcType = WfsFactory.eINSTANCE.createFeatureCollectionType();
+        fcType.getFeature().add(featureType.getFeatureSource(null, null).getFeatures());
     }
 
     /** Test request values are inserted in processed template */
@@ -214,19 +214,14 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
 
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
-        exception.expect(
-                allOf(
-                        instanceOf(IOException.class),
-                        hasProperty(
-                                "cause",
-                                allOf(
-                                        instanceOf(TemplateException.class),
-                                        hasProperty(
-                                                "message",
-                                                Matchers.containsString(
-                                                        "freemarker.template.utility.Execute"))))));
-
-        outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+        IOException e =
+                Assert.assertThrows(
+                        IOException.class,
+                        () -> outputFormat.write(fcType, getFeatureInfoRequest, outStream));
+        assertThat(
+                e.getMessage(),
+                CoreMatchers.containsString(
+                        "Error occurred processing content template content.ftl"));
     }
 
     /**
@@ -266,7 +261,7 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         assertEquals("text/html", response.getContentType());
 
         // Check if the character encoding is the one expected
-        assertTrue("UTF-8".equals(response.getCharacterEncoding()));
+        assertEquals("UTF-8", response.getCharacterEncoding());
     }
 
     @SuppressWarnings("unchecked")
@@ -317,13 +312,10 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
             request.setQueryLayers(((i % 2) == 0) ? layers1 : layers2);
             final FeatureCollectionType type = (((i % 2) == 0) ? type1 : type2);
             tasks.add(
-                    new Callable<String>() {
-                        @Override
-                        public String call() throws Exception {
-                            ByteArrayOutputStream output = new ByteArrayOutputStream();
-                            format.write(type, request, output);
-                            return new String(output.toByteArray());
-                        }
+                    () -> {
+                        ByteArrayOutputStream output = new ByteArrayOutputStream();
+                        format.write(type, request, output);
+                        return new String(output.toByteArray());
                     });
         }
         ExecutorService executor = Executors.newFixedThreadPool(8);
@@ -349,5 +341,65 @@ public class HTMLFeatureInfoOutputFormatTest extends WMSTestSupport {
         outputFormat.write(fcType, getFeatureInfoRequest, outStream);
         String result = new String(outStream.toByteArray());
         assertEquals(String.valueOf(Math.max(10, 100)), result);
+    }
+
+    /** Verifies calls to static methods are possible in unrestricted case. */
+    @Test
+    public void testStaticMethodsUnrestrictedInTemplate() throws IOException {
+        activateStaticsAccessRules("*");
+        currentTemplate = "test_custom_static_content.ftl";
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+        String result = new String(outStream.toByteArray());
+        assertEquals(String.format("Amount: %.2f €", 47.11), result);
+    }
+
+    /** Verifies calls to static methods are disabled by default. */
+    @Test(expected = IOException.class)
+    public void testStaticMethodsDisabledInTemplate() throws IOException {
+        activateStaticsAccessRules(null);
+        currentTemplate = "test_custom_static_content.ftl";
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+    }
+
+    // for test below: Name has to be duplicate of existing class
+    public static final class Locale {
+        public static String m() {
+            return "Hello world";
+        }
+    }
+
+    /** Verifies calls to static methods for are enabled for specified classes. */
+    @Test(expected = IOException.class)
+    public void testSpecifiedStaticMethodsInTemplateAvailable() throws IOException {
+        activateStaticsAccessRules(java.util.Locale.class.getName() + "," + Locale.class.getName());
+        currentTemplate = "test_custom_static_content_specified.ftl";
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        outputFormat.write(fcType, getFeatureInfoRequest, outStream);
+        String result = new String(outStream.toByteArray());
+        assertEquals("Hello world from de", result);
+    }
+
+    /** Restore FreeMarkerTemplateManager default state */
+    @After
+    @Before
+    public void tearDownStaticAccessKey() {
+        activateStaticsAccessRules(null);
+    }
+
+    /**
+     * Activates the rule for the given pattern by re-initializing the {@link
+     * FreeMarkerTemplateManager}.
+     *
+     * @param aPattern
+     */
+    private void activateStaticsAccessRules(String aPattern) {
+        if (aPattern == null) {
+            System.clearProperty(FreeMarkerTemplateManager.KEY_STATIC_MEMBER_ACCESS);
+        } else {
+            System.setProperty(FreeMarkerTemplateManager.KEY_STATIC_MEMBER_ACCESS, aPattern);
+        }
+        FreeMarkerTemplateManager.initStaticsAccessRule();
     }
 }

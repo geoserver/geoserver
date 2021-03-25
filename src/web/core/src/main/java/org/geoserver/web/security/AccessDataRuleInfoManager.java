@@ -7,9 +7,19 @@ package org.geoserver.web.security;
 import static org.geoserver.security.impl.GeoServerRole.ADMIN_ROLE;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.SecureCatalogImpl;
@@ -194,7 +204,7 @@ public class AccessDataRuleInfoManager {
         }
         for (AccessMode key : modeRoleMap.keySet()) {
             Set<String> roles = modeRoleMap.get(key);
-            if (roles != null && roles.size() > 0) {
+            if (roles != null && !roles.isEmpty()) {
                 DataAccessRule rule = new DataAccessRule();
                 if (!globalLayerGroup) {
                     rule.setRoot(wsName);

@@ -70,10 +70,9 @@ public class WPSResourceManager extends ProcessListenerAdapter
                 ApplicationContextAware {
     private static final Logger LOGGER = Logging.getLogger(WPSResourceManager.class);
 
-    ConcurrentHashMap<String, ExecutionResources> resourceCache =
-            new ConcurrentHashMap<String, ExecutionResources>();
+    ConcurrentHashMap<String, ExecutionResources> resourceCache = new ConcurrentHashMap<>();
 
-    ThreadLocal<String> executionId = new InheritableThreadLocal<String>();
+    ThreadLocal<String> executionId = new InheritableThreadLocal<>();
 
     private ProcessArtifactsStore artifactsStore;
 
@@ -92,7 +91,7 @@ public class WPSResourceManager extends ProcessListenerAdapter
 
         public ExecutionResources(boolean synchronouos) {
             this.synchronouos = synchronouos;
-            this.temporary = new ArrayList<WPSResource>();
+            this.temporary = new ArrayList<>();
         }
     }
 
@@ -187,7 +186,7 @@ public class WPSResourceManager extends ProcessListenerAdapter
     public String getOutputResourceUrl(
             String executionId, String name, String baseUrl, String mimeType) {
         // create the link
-        Map<String, String> kvp = new LinkedHashMap<String, String>();
+        Map<String, String> kvp = new LinkedHashMap<>();
         kvp.put("service", "WPS");
         kvp.put("version", "1.0.0");
         kvp.put("request", "GetExecutionResult");
@@ -263,6 +262,7 @@ public class WPSResourceManager extends ProcessListenerAdapter
     // DispatcherCallback methods
     // -----------------------------------------------------------------
 
+    @Override
     public void finished(Request request) {
         // if we did not generate any process id, no resources have been added
         if (executionId.get() == null) {
@@ -320,23 +320,28 @@ public class WPSResourceManager extends ProcessListenerAdapter
         }
     }
 
+    @Override
     public Request init(Request request) {
         return null;
     }
 
+    @Override
     public Operation operationDispatched(Request request, Operation operation) {
         return null;
     }
 
+    @Override
     public Object operationExecuted(Request request, Operation operation, Object result) {
         return null;
     }
 
+    @Override
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         return null;
     }
 
+    @Override
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
         return null;
     }
@@ -345,6 +350,7 @@ public class WPSResourceManager extends ProcessListenerAdapter
     // ApplicationListener methods
     // -----------------------------------------------------------------
 
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextClosedEvent || event instanceof ContextStoppedEvent) {
             // we are shutting down, remove all temp resources!

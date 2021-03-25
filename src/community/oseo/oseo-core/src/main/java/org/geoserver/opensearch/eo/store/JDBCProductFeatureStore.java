@@ -39,10 +39,9 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
 
     String granuleForeignKey;
 
-    public JDBCProductFeatureStore(
-            JDBCOpenSearchAccess openSearchAccess, FeatureType collectionFeatureType)
+    public JDBCProductFeatureStore(JDBCOpenSearchAccess openSearchAccess, FeatureType schema)
             throws IOException {
-        super(openSearchAccess, collectionFeatureType);
+        super(openSearchAccess, schema);
 
         for (AttributeDescriptor ad :
                 getFeatureStoreForTable("granule").getSchema().getAttributeDescriptors()) {
@@ -56,6 +55,7 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
         }
     }
 
+    @Override
     protected SimpleFeatureSource getDelegateCollectionSource() throws IOException {
         return openSearchAccess.getDelegateStore().getFeatureSource(JDBCOpenSearchAccess.PRODUCT);
     }

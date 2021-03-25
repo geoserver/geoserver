@@ -34,6 +34,7 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
             return Arrays.asList(NAME);
         }
 
+        @Override
         public IModel<StyleInfo> newModel(StyleInfo object) {
             return new StyleDetachableModel(object);
         }
@@ -41,7 +42,7 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
 
     private static final long serialVersionUID = -811883647153309626L;
 
-    static Property<StyleInfo> NAME = new BeanProperty<StyleInfo>("name", "name");
+    static Property<StyleInfo> NAME = new BeanProperty<>("name", "name");
 
     public StyleListPanel(String id, StyleListProvider styleProvider) {
         super(id, styleProvider);
@@ -56,7 +57,7 @@ public abstract class StyleListPanel extends GeoServerTablePanel<StyleInfo> {
     @Override
     protected Component getComponentForProperty(
             String id, IModel<StyleInfo> itemModel, Property<StyleInfo> property) {
-        final StyleInfo style = (StyleInfo) itemModel.getObject();
+        final StyleInfo style = itemModel.getObject();
         if (property == NAME) {
             return new SimpleAjaxLink<String>(id, (IModel<String>) NAME.getModel(itemModel)) {
                 private static final long serialVersionUID = -2537227506881638001L;

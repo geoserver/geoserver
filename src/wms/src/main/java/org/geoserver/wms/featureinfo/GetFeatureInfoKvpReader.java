@@ -170,9 +170,9 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
         }
 
         // make sure they are a subset of layers
-        List<MapLayerInfo> queryLayers = new ArrayList<MapLayerInfo>(request.getQueryLayers());
+        List<MapLayerInfo> queryLayers = new ArrayList<>(request.getQueryLayers());
         queryLayers.removeAll(getMapLayers);
-        if (queryLayers.size() > 0) {
+        if (!queryLayers.isEmpty()) {
             // we've already expanded base layers so let's avoid list the names, they are not
             // the original ones anymore
             throw new ServiceException(

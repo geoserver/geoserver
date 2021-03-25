@@ -14,22 +14,27 @@ public class GMLInfoImpl implements GMLInfo {
 
     private String mimeTypeToForce;
 
+    @Override
     public SrsNameStyle getSrsNameStyle() {
         return srsNameStyle;
     }
 
+    @Override
     public void setSrsNameStyle(SrsNameStyle srsNameStyle) {
         this.srsNameStyle = srsNameStyle;
     }
 
+    @Override
     public Boolean getOverrideGMLAttributes() {
         return overrideGMLAttributes;
     }
 
+    @Override
     public void setOverrideGMLAttributes(Boolean overrideGMLAttributes) {
         this.overrideGMLAttributes = overrideGMLAttributes;
     }
 
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -37,6 +42,7 @@ public class GMLInfoImpl implements GMLInfo {
         return result;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;

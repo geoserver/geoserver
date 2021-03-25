@@ -150,7 +150,7 @@ public class ReaderUtils {
      */
     public static Element[] getChildElements(Element root, String name, boolean mandatory)
             throws Exception {
-        final List<Element> elements = new ArrayList<Element>();
+        final List<Element> elements = new ArrayList<>();
         Node child = root.getFirstChild();
         while (child != null) {
             if (child.getNodeType() == Node.ELEMENT_NODE) {
@@ -167,7 +167,7 @@ public class ReaderUtils {
                     root.getNodeName() + " does not contains a child element named " + name);
         }
 
-        return (Element[]) elements.toArray(new Element[0]);
+        return elements.toArray(new Element[0]);
     }
 
     /**
@@ -459,11 +459,11 @@ public class ReaderUtils {
      */
     public static List getKeyWords(Element keywordsElem) {
         if (keywordsElem == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         NodeList klist = keywordsElem.getElementsByTagName("keyword");
         int kCount = klist.getLength();
-        List keywords = new ArrayList(kCount);
+        List<String> keywords = new ArrayList<>(kCount);
         String kword;
         Element kelem;
 
@@ -476,15 +476,15 @@ public class ReaderUtils {
             }
         }
 
-        Object[] s = (Object[]) keywords.toArray();
+        Object[] s = keywords.toArray();
 
         if (s == null) {
             return new ArrayList();
         }
 
-        ArrayList ss = new ArrayList(s.length);
+        List<Object> ss = new ArrayList<>(s.length);
 
-        for (int i = 0; i < s.length; i++) ss.add(s[i]);
+        for (Object o : s) ss.add(o);
 
         return ss;
     }
@@ -674,7 +674,7 @@ public class ReaderUtils {
         // corresponding list.
         //
         /////
-        final List<String> elements = new ArrayList<String>();
+        final List<String> elements = new ArrayList<>();
         int index = -1;
         while ((index = keywords.indexOf(delimiter)) >= 0) {
             if (index > 0) elements.add(keywords.substring(0, index));

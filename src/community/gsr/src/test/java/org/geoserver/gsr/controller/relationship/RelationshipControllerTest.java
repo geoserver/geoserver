@@ -9,7 +9,8 @@
  */
 package org.geoserver.gsr.controller.relationship;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -64,6 +65,7 @@ public class RelationshipControllerTest extends ControllerTest {
      * @param contentType
      * @return the servlet response
      */
+    @Override
     protected MockHttpServletResponse putAsServletResponse(
             String path, String body, String contentType) throws Exception {
         MockHttpServletRequest request = createRequest(path);

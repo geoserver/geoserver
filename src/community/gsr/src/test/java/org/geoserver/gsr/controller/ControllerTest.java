@@ -9,7 +9,7 @@
  */
 package org.geoserver.gsr.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -39,6 +39,7 @@ public class ControllerTest extends GeoServerSystemTestSupport {
         testData.setUpDefault();
     }
 
+    @Override
     public void onSetUp(SystemTestData testData) throws Exception {
         catalog = getCatalog();
         CatalogFactory catalogFactory = catalog.getFactory();

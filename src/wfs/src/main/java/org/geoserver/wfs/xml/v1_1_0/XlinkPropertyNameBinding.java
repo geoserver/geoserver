@@ -82,6 +82,7 @@ public class XlinkPropertyNameBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.XLINKPROPERTYNAME;
     }
@@ -93,10 +94,12 @@ public class XlinkPropertyNameBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<XlinkPropertyNameType> getType() {
         return XlinkPropertyNameType.class;
     }
 
+    @Override
     public int getExecutionMode() {
         return OVERRIDE;
     }
@@ -108,6 +111,7 @@ public class XlinkPropertyNameBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
 
         XlinkPropertyNameType property = factory.createXlinkPropertyNameType();

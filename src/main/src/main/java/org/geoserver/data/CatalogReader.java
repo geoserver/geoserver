@@ -8,6 +8,7 @@ package org.geoserver.data;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,12 +47,9 @@ public class CatalogReader {
      * @throws IOException In event of a parser error.
      */
     public void read(File file) throws IOException {
-        FileReader reader = new FileReader(file);
 
-        try {
+        try (FileReader reader = new FileReader(file)) {
             catalog = ReaderUtils.parse(reader);
-        } finally {
-            reader.close();
         }
     }
 
@@ -63,17 +61,17 @@ public class CatalogReader {
      * @return A list of Map objects containg the datastore connection parameters.
      * @throws Exception If error processing "datastores" element.
      */
-    public List /*<Map>*/ dataStores() throws Exception {
+    public List<Map<String, String>> dataStores() throws Exception {
         Element dataStoresElement = ReaderUtils.getChildElement(catalog, "datastores", true);
 
         NodeList dataStoreElements = dataStoresElement.getElementsByTagName("datastore");
-        ArrayList dataStores = new ArrayList();
+        List<Map<String, String>> dataStores = new ArrayList<>();
 
         for (int i = 0; i < dataStoreElements.getLength(); i++) {
             Element dataStoreElement = (Element) dataStoreElements.item(i);
 
             try {
-                Map params = dataStoreParams(dataStoreElement);
+                Map<String, String> params = dataStoreParams(dataStoreElement);
                 dataStores.add(params);
             } catch (Exception e) {
                 // TODO: log this
@@ -93,17 +91,17 @@ public class CatalogReader {
      * @return A map containing <prefix,uri> tuples.
      * @throws Exception If error processing "namespaces" element.
      */
-    public Map namespaces() throws Exception {
+    public Map<String, String> namespaces() throws Exception {
         Element namespacesElement = ReaderUtils.getChildElement(catalog, "namespaces", true);
 
         NodeList namespaceElements = namespacesElement.getElementsByTagName("namespace");
-        Map namespaces = new HashMap();
+        Map<String, String> namespaces = new HashMap<>();
 
         for (int i = 0; i < namespaceElements.getLength(); i++) {
             Element namespaceElement = (Element) namespaceElements.item(i);
 
             try {
-                Map.Entry tuple = namespaceTuple(namespaceElement);
+                Map.Entry<String, String> tuple = namespaceTuple(namespaceElement);
                 namespaces.put(tuple.getKey(), tuple.getValue());
 
                 // check for default
@@ -126,12 +124,12 @@ public class CatalogReader {
      * @return The map of connection paramters.
      * @throws Exception If problem parsing any parameters.
      */
-    protected Map dataStoreParams(Element dataStoreElement) throws Exception {
+    protected Map<String, String> dataStoreParams(Element dataStoreElement) throws Exception {
         Element paramsElement =
                 ReaderUtils.getChildElement(dataStoreElement, "connectionParameters", true);
         NodeList paramList = paramsElement.getElementsByTagName("parameter");
 
-        Map params = new HashMap();
+        Map<String, String> params = new HashMap<>();
 
         for (int i = 0; i < paramList.getLength(); i++) {
             Element paramElement = (Element) paramList.item(i);
@@ -151,22 +149,10 @@ public class CatalogReader {
      * @return A <prefix,uri> tuple.
      * @throws Exception If problem parsing any parameters.
      */
-    protected Map.Entry namespaceTuple(Element namespaceElement) throws Exception {
+    protected Map.Entry<String, String> namespaceTuple(Element namespaceElement) throws Exception {
         final String pre = namespaceElement.getAttribute("prefix");
         final String uri = namespaceElement.getAttribute("uri");
 
-        return new Map.Entry() {
-            public Object getKey() {
-                return pre;
-            }
-
-            public Object getValue() {
-                return uri;
-            }
-
-            public Object setValue(Object value) {
-                throw new UnsupportedOperationException();
-            }
-        };
+        return new AbstractMap.SimpleEntry<>(pre, uri);
     }
 }

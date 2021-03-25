@@ -58,6 +58,7 @@ public class FilterKvpParser extends KvpParser {
      * @return a {@code List<Filter>} with the parsed filters from the {@code FILTER=} request
      *     parameter
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Object parse(String value) throws Exception {
         // seperate the individual filter strings

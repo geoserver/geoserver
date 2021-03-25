@@ -10,7 +10,7 @@ package org.geoserver.wms.decoration;
  * application directory.
  */
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -29,7 +29,7 @@ public class DecorationTestSupport {
         GetMapRequest request = new GetMapRequest();
         request.setWidth(1000);
         request.setHeight(1000);
-        request.setRawKvp(new HashMap<String, String>());
+        request.setRawKvp(new HashMap<>());
 
         if (dpi > 0) {
             request.getFormatOptions().put("dpi", dpi);

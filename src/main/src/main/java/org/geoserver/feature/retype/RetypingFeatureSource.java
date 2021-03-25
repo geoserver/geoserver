@@ -5,6 +5,7 @@
  */
 package org.geoserver.feature.retype;
 
+import java.awt.RenderingHints;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
 
     RetypingDataStore store;
 
-    Map listeners = new HashMap();
+    Map<FeatureListener, FeatureListener> listeners = new HashMap<>();
 
     /**
      * Builds a retyping wrapper
@@ -98,10 +99,8 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
                     @Override
                     public String[] getTypeNames() throws IOException {
                         // Populate local hashmaps with new values.
-                        Map<String, FeatureTypeMap> forwardMapLocal =
-                                new ConcurrentHashMap<String, FeatureTypeMap>();
-                        Map<String, FeatureTypeMap> backwardsMapLocal =
-                                new ConcurrentHashMap<String, FeatureTypeMap>();
+                        Map<String, FeatureTypeMap> forwardMapLocal = new ConcurrentHashMap<>();
+                        Map<String, FeatureTypeMap> backwardsMapLocal = new ConcurrentHashMap<>();
 
                         forwardMapLocal.put(typeMap.getOriginalName(), typeMap);
                         backwardsMapLocal.put(typeMap.getName(), typeMap);
@@ -123,52 +122,61 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
      * @since 1.7
      * @see FeatureSource#getName()
      */
+    @Override
     public Name getName() {
         return getSchema().getName();
     }
 
+    @Override
     public void addFeatureListener(FeatureListener listener) {
         FeatureListener wrapper = new WrappingFeatureListener(this, listener);
         listeners.put(listener, wrapper);
         wrapped.addFeatureListener(wrapper);
     }
 
+    @Override
     public void removeFeatureListener(FeatureListener listener) {
-        FeatureListener wrapper = (FeatureListener) listeners.get(listener);
+        FeatureListener wrapper = listeners.get(listener);
         if (wrapper != null) {
             wrapped.removeFeatureListener(wrapper);
             listeners.remove(listener);
         }
     }
 
+    @Override
     public ReferencedEnvelope getBounds() throws IOException {
         // not fully correct if we use this to shave attributes too, but this is
         // not in the scope now
         return wrapped.getBounds();
     }
 
+    @Override
     public ReferencedEnvelope getBounds(Query query) throws IOException {
         // not fully correct if we use this to shave attributes too, but this is
         // not in the scope now
         return wrapped.getBounds(store.retypeQuery(query, typeMap));
     }
 
+    @Override
     public int getCount(Query query) throws IOException {
         return wrapped.getCount(store.retypeQuery(query, typeMap));
     }
 
+    @Override
     public DataStore getDataStore() {
         return store;
     }
 
+    @Override
     public SimpleFeatureCollection getFeatures() throws IOException {
         return getFeatures(Query.ALL);
     }
 
+    @Override
     public SimpleFeatureCollection getFeatures(Query query) throws IOException {
         if (query.getTypeName() == null) {
             query = new Query(query);
-            ((Query) query).setTypeName(typeMap.getName());
+            query.setTypeName(typeMap.getName());
         } else if (!typeMap.getName().equals(query.getTypeName())) {
             throw new IOException(
                     "Cannot query this feature source with "
@@ -184,22 +192,27 @@ public class RetypingFeatureSource implements SimpleFeatureSource {
                 wrapped.getFeatures(store.retypeQuery(query, typeMap)), target);
     }
 
+    @Override
     public SimpleFeatureCollection getFeatures(Filter filter) throws IOException {
         return getFeatures(new Query(typeMap.getName(), filter));
     }
 
+    @Override
     public SimpleFeatureType getSchema() {
         return typeMap.getFeatureType();
     }
 
-    public Set getSupportedHints() {
+    @Override
+    public Set<RenderingHints.Key> getSupportedHints() {
         return wrapped.getSupportedHints();
     }
 
+    @Override
     public ResourceInfo getInfo() {
         return wrapped.getInfo();
     }
 
+    @Override
     public QueryCapabilities getQueryCapabilities() {
         return wrapped.getQueryCapabilities();
     }

@@ -77,11 +77,11 @@ public class InMemoryBlobStorePanel extends Panel {
 
         super(id, gwcConfigModel);
         // Initialize the map
-        values = new HashMap<String, String>();
+        values = new HashMap<>();
 
         // Creation of the Checbox for enabling disabling inmemory caching
         IModel<Boolean> innerCachingEnabled =
-                new PropertyModel<Boolean>(gwcConfigModel, "innerCachingEnabled");
+                new PropertyModel<>(gwcConfigModel, "innerCachingEnabled");
         final CheckBox innerCachingEnabledChoice =
                 new CheckBox("innerCachingEnabled", innerCachingEnabled);
 
@@ -100,7 +100,7 @@ public class InMemoryBlobStorePanel extends Panel {
 
         // Avoid Persistence checkbox
         IModel<Boolean> persistenceEnabled =
-                new PropertyModel<Boolean>(gwcConfigModel, "persistenceEnabled");
+                new PropertyModel<>(gwcConfigModel, "persistenceEnabled");
         final CheckBox persistenceEnabledChoice =
                 new CheckBox("persistenceEnabled", persistenceEnabled);
         boolean visible =
@@ -115,13 +115,13 @@ public class InMemoryBlobStorePanel extends Panel {
         if (store != null) {
             final Map<String, String> cacheProviders = store.getCacheProvidersNames();
             final IModel<String> providerClass =
-                    new PropertyModel<String>(gwcConfigModel, "cacheProviderClass");
+                    new PropertyModel<>(gwcConfigModel, "cacheProviderClass");
             ChoiceRenderer<String> renderer = new CacheProviderRenderer(cacheProviders);
             choice =
-                    new DropDownChoice<String>(
+                    new DropDownChoice<>(
                             "caches",
                             providerClass,
-                            new ArrayList<String>(cacheProviders.keySet()),
+                            new ArrayList<>(cacheProviders.keySet()),
                             renderer);
             choice.add(
                     new AjaxFormComponentUpdatingBehavior("change") {
@@ -156,7 +156,7 @@ public class InMemoryBlobStorePanel extends Panel {
             cacheConfigContainer.setEnabled(
                     !store.getCacheProviders().get(providerClass.getObject()).isImmutable());
         } else {
-            choice = new DropDownChoice<String>("caches", new ArrayList<String>());
+            choice = new DropDownChoice<>("caches", new ArrayList<>());
         }
         // Adding cache choice to the container
         container.add(choice);
@@ -205,15 +205,15 @@ public class InMemoryBlobStorePanel extends Panel {
 
         // Container for the statistics
         final Label totalCountLabel =
-                new Label("totalCount", new MapModel(values, KEY_TOTAL_COUNT));
-        final Label hitCountLabel = new Label("hitCount", new MapModel(values, KEY_HIT_COUNT));
-        final Label missCountLabel = new Label("missCount", new MapModel(values, KEY_MISS_COUNT));
-        final Label missRateLabel = new Label("missRate", new MapModel(values, KEY_MISS_RATE));
-        final Label hitRateLabel = new Label("hitRate", new MapModel(values, KEY_HIT_RATE));
-        final Label evictedLabel = new Label("evicted", new MapModel(values, KEY_EVICTED));
+                new Label("totalCount", new MapModel<>(values, KEY_TOTAL_COUNT));
+        final Label hitCountLabel = new Label("hitCount", new MapModel<>(values, KEY_HIT_COUNT));
+        final Label missCountLabel = new Label("missCount", new MapModel<>(values, KEY_MISS_COUNT));
+        final Label missRateLabel = new Label("missRate", new MapModel<>(values, KEY_MISS_RATE));
+        final Label hitRateLabel = new Label("hitRate", new MapModel<>(values, KEY_HIT_RATE));
+        final Label evictedLabel = new Label("evicted", new MapModel<>(values, KEY_EVICTED));
         final Label currentMemoryLabel =
-                new Label("currentMemory", new MapModel(values, KEY_CURRENT_MEM));
-        final Label cacheSizeLabel = new Label("cacheSize", new MapModel(values, KEY_SIZE));
+                new Label("currentMemory", new MapModel<>(values, KEY_CURRENT_MEM));
+        final Label cacheSizeLabel = new Label("cacheSize", new MapModel<>(values, KEY_SIZE));
 
         statsContainer.add(totalCountLabel);
         statsContainer.add(hitCountLabel);
@@ -377,32 +377,28 @@ public class InMemoryBlobStorePanel extends Panel {
             removeAll();
             // get the CacheConfigurations Model
             IModel<Map<String, CacheConfiguration>> cacheConfigurations =
-                    new PropertyModel<Map<String, CacheConfiguration>>(
-                            gwcConfigModel, "cacheConfigurations");
+                    new PropertyModel<>(gwcConfigModel, "cacheConfigurations");
 
             // Get CacheConfiguration model
-            MapModel cacheConfiguration = new MapModel(cacheConfigurations, key);
+            MapModel cacheConfiguration = new MapModel<>(cacheConfigurations, key);
 
             // Cache configuration parameters
             IModel<Long> hardMemoryLimit =
-                    new PropertyModel<Long>(cacheConfiguration, "hardMemoryLimit");
+                    new PropertyModel<>(cacheConfiguration, "hardMemoryLimit");
 
             IModel<Long> evictionTimeValue =
-                    new PropertyModel<Long>(cacheConfiguration, "evictionTime");
+                    new PropertyModel<>(cacheConfiguration, "evictionTime");
 
-            IModel<EvictionPolicy> policy =
-                    new PropertyModel<EvictionPolicy>(cacheConfiguration, "policy");
+            IModel<EvictionPolicy> policy = new PropertyModel<>(cacheConfiguration, "policy");
 
             IModel<Integer> concurrencyLevel =
-                    new PropertyModel<Integer>(cacheConfiguration, "concurrencyLevel");
+                    new PropertyModel<>(cacheConfiguration, "concurrencyLevel");
 
-            final TextField<Long> hardMemory =
-                    new TextField<Long>("hardMemoryLimit", hardMemoryLimit);
+            final TextField<Long> hardMemory = new TextField<>("hardMemoryLimit", hardMemoryLimit);
             hardMemory.setType(Long.class).setOutputMarkupId(true).setEnabled(true);
             hardMemory.add(new MinimumLongValidator("BlobStorePanel.invalidHardMemory"));
 
-            final TextField<Long> evictionTime =
-                    new TextField<Long>("evictionTime", evictionTimeValue);
+            final TextField<Long> evictionTime = new TextField<>("evictionTime", evictionTimeValue);
             evictionTime.setType(Long.class).setOutputMarkupId(true).setEnabled(true);
 
             // by the default all available eviction policies are available
@@ -415,11 +411,11 @@ public class InMemoryBlobStorePanel extends Panel {
             }
 
             final DropDownChoice<EvictionPolicy> policyDropDown =
-                    new DropDownChoice<EvictionPolicy>("policy", policy, evictionPolicies);
+                    new DropDownChoice<>("policy", policy, evictionPolicies);
             policyDropDown.setOutputMarkupId(true).setEnabled(true);
 
             final TextField<Integer> textConcurrency =
-                    new TextField<Integer>("concurrencyLevel", concurrencyLevel);
+                    new TextField<>("concurrencyLevel", concurrencyLevel);
             textConcurrency.setType(Integer.class).setOutputMarkupId(true).setEnabled(true);
             textConcurrency.add(new MinimumConcurrencyValidator());
 

@@ -31,6 +31,7 @@ public class WPSLifecycleHandler implements GeoServerLifecycleHandler {
         lookupNewProcessGroups(getWPS(), geoServer);
     }
 
+    @Override
     public void beforeReload() {
         // nothing to do
     }

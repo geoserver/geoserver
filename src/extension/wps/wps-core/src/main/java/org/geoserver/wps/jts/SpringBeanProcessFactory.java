@@ -45,17 +45,17 @@ public class SpringBeanProcessFactory
         extends org.geotools.process.factory.AnnotationDrivenProcessFactory
         implements ApplicationContextAware, ApplicationListener {
 
-    Map<String, Class> classMap;
+    Map<String, Class<?>> classMap;
 
     Map<String, String> beanMap;
 
-    Class markerInterface;
+    Class<?> markerInterface;
 
     ApplicationContext applicationContext;
 
     FactoryIteratorProvider iterator;
 
-    public SpringBeanProcessFactory(String title, String namespace, Class markerInterface) {
+    public SpringBeanProcessFactory(String title, String namespace, Class<?> markerInterface) {
         super(new SimpleInternationalString(title), namespace);
         this.markerInterface = markerInterface;
 
@@ -63,14 +63,19 @@ public class SpringBeanProcessFactory
         iterator =
                 new FactoryIteratorProvider() {
 
+                    @Override
                     public <T> Iterator<T> iterator(Class<T> category) {
                         if (ProcessFactory.class.isAssignableFrom(category)) {
-                            return (Iterator<T>)
-                                    Collections.singletonList(SpringBeanProcessFactory.this)
-                                            .iterator();
+                            return getFactoryIterator();
                         } else {
                             return null;
                         }
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    private <T> Iterator<T> getFactoryIterator() {
+                        return (Iterator<T>)
+                                Collections.singletonList(SpringBeanProcessFactory.this).iterator();
                     }
                 };
 
@@ -84,16 +89,17 @@ public class SpringBeanProcessFactory
         }
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
 
         // loads all of the beans implementing the marker interface
         String[] beanNames = applicationContext.getBeanNamesForType(markerInterface, true, true);
         // build a name to class and name to bean name maps
-        classMap = new HashMap<String, Class>();
-        beanMap = new HashMap<String, String>();
+        classMap = new HashMap<>();
+        beanMap = new HashMap<>();
         for (String beanName : beanNames) {
-            Class c = applicationContext.getType(beanName);
+            Class<?> c = applicationContext.getType(beanName);
             if (c != null) {
                 String name = c.getSimpleName();
                 if (name.endsWith("Process")) {
@@ -107,17 +113,17 @@ public class SpringBeanProcessFactory
 
     @Override
     protected DescribeProcess getProcessDescription(Name name) {
-        Class c = classMap.get(name.getLocalPart());
+        Class<?> c = classMap.get(name.getLocalPart());
         if (c == null) {
             return null;
         } else {
-            return (DescribeProcess) c.getAnnotation(DescribeProcess.class);
+            return c.getAnnotation(DescribeProcess.class);
         }
     }
 
     @Override
     protected Method method(String className) {
-        Class c = classMap.get(className);
+        Class<?> c = classMap.get(className);
         Method lastExecute = null;
         if (c != null) {
             for (Method m : c.getMethods()) {
@@ -136,9 +142,10 @@ public class SpringBeanProcessFactory
         return lastExecute;
     }
 
+    @Override
     public Set<Name> getNames() {
-        Set<Name> result = new LinkedHashSet<Name>();
-        List<String> names = new ArrayList<String>(classMap.keySet());
+        Set<Name> result = new LinkedHashSet<>();
+        List<String> names = new ArrayList<>(classMap.keySet());
         Collections.sort(names);
         for (String name : names) {
             result.add(new NameImpl(namespace, name));
@@ -155,6 +162,7 @@ public class SpringBeanProcessFactory
         return applicationContext.getBean(beanName);
     }
 
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
         // add and remove the process factory as necessary
         if (event instanceof ContextRefreshedEvent) {

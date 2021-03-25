@@ -15,7 +15,6 @@ import org.geoserver.monitor.Query;
 import org.geoserver.monitor.Query.Comparison;
 import org.geoserver.monitor.Query.SortOrder;
 import org.geoserver.monitor.RequestData;
-import org.geoserver.monitor.RequestDataVisitor;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
@@ -25,7 +24,13 @@ import org.geotools.util.Converters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(
@@ -98,13 +103,7 @@ public class MonitorRequestController extends RestBaseController {
         } else {
             final List<RequestData> requests = new ArrayList<>();
             BaseMonitorConverter.handleRequests(
-                    object,
-                    new RequestDataVisitor() {
-                        public void visit(RequestData data, Object... aggregates) {
-                            requests.add(data);
-                        }
-                    },
-                    monitor);
+                    object, (data, aggregates) -> requests.add(data), monitor);
             return wrapList(requests, RequestData.class);
         }
     }
@@ -114,6 +113,7 @@ public class MonitorRequestController extends RestBaseController {
      *
      * @param o The object being serialized.
      */
+    @Override
     protected String getTemplateName(Object o) {
         if (o instanceof RequestData) {
             return "request.html";
@@ -221,7 +221,7 @@ public class MonitorRequestController extends RestBaseController {
             String left = split[0];
             Object right = split[2];
             if (right.toString().contains(",")) {
-                List list = new ArrayList();
+                List<Object> list = new ArrayList<>();
                 for (String t : right.toString().split(",")) {
                     list.add(parseProperty(left, t));
                 }

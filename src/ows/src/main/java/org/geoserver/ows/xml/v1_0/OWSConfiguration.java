@@ -23,6 +23,7 @@ public class OWSConfiguration extends Configuration {
         addDependency(new XLINKConfiguration());
     }
 
+    @Override
     protected void registerBindings(MutablePicoContainer container) {
         // Types
         container.registerComponentImplementation(
@@ -79,6 +80,7 @@ public class OWSConfiguration extends Configuration {
      *   <li>{@link Ows10Factory}
      * </ul>
      */
+    @Override
     protected void configureContext(MutablePicoContainer container) {
         super.configureContext(container);
 

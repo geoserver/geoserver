@@ -9,16 +9,15 @@
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
       <includes>
-        <include>gs-wps*</include>
+        <include>gs-wps-core*</include>
         <include>gs-web-wps*</include>
         <include>gt-process-geometry*</include>
         <include>gt-xsd-wps*</include>
         <include>net.opengis.wps*</include>
         <include>serializer*</include>
+        <include>gt-csv*</include>
+        <include>opencsv*</include>
       </includes>
-      <excludes>
-        <exclude>gs-wps-cluster-hazelcast*</exclude>
-      </excludes>
     </fileSet>
     <fileSet>
       <directory>release</directory>

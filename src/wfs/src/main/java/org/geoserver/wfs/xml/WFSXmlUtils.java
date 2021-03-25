@@ -7,8 +7,6 @@ package org.geoserver.wfs.xml;
 
 import java.io.Reader;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.xml.namespace.QName;
@@ -84,8 +82,7 @@ public class WFSXmlUtils {
                 WFSException exception =
                         new WFSException("Invalid request", "InvalidParameterValue");
 
-                for (Iterator e = parser.getValidationErrors().iterator(); e.hasNext(); ) {
-                    Exception error = (Exception) e.next();
+                for (Exception error : parser.getValidationErrors()) {
                     exception.getExceptionText().add(error.getLocalizedMessage());
                 }
 
@@ -103,8 +100,8 @@ public class WFSXmlUtils {
         FeatureTypeCache featureTypeCache = new FeatureTypeCache();
 
         Collection featureTypes = gs.getCatalog().getFeatureTypes();
-        for (Iterator f = featureTypes.iterator(); f.hasNext(); ) {
-            FeatureTypeInfo meta = (FeatureTypeInfo) f.next();
+        for (Object type : featureTypes) {
+            FeatureTypeInfo meta = (FeatureTypeInfo) type;
             if (!meta.enabled()) {
                 continue;
             }
@@ -125,7 +122,7 @@ public class WFSXmlUtils {
     }
 
     public static void registerAbstractGeometryTypeBinding(
-            final Configuration config, Map bindings, QName qName) {
+            final Configuration config, Map<QName, Object> bindings, QName qName) {
         // use setter injection for AbstractGeometryType bindign to allow an
         // optional crs to be set in teh binding context for parsing, this crs
         // is set by the binding of a parent element.
@@ -144,7 +141,7 @@ public class WFSXmlUtils {
     }
 
     public static SrsSyntax getSrsSyntax(Configuration obj) {
-        for (Configuration dep : ((List<Configuration>) obj.getDependencies())) {
+        for (Configuration dep : obj.getDependencies()) {
             if (dep instanceof org.geotools.gml2.GMLConfiguration) {
                 return ((org.geotools.gml2.GMLConfiguration) dep).getSrsSyntax();
             }
@@ -156,7 +153,7 @@ public class WFSXmlUtils {
     }
 
     public static void setSrsSyntax(Configuration obj, SrsSyntax srsSyntax) {
-        for (Configuration dep : ((List<Configuration>) obj.getDependencies())) {
+        for (Configuration dep : obj.getDependencies()) {
             if (dep instanceof org.geotools.gml2.GMLConfiguration) {
                 ((org.geotools.gml2.GMLConfiguration) dep).setSrsSyntax(srsSyntax);
             }
@@ -179,16 +176,19 @@ public class WFSXmlUtils {
 
     static class DirectObjectParameter extends BasicComponentParameter {
         Object obj;
-        Class clazz;
+        Class<?> clazz;
 
-        public DirectObjectParameter(Object obj, Class clazz) {
+        public DirectObjectParameter(Object obj, Class<?> clazz) {
             super(clazz);
             this.obj = obj;
             this.clazz = clazz;
         }
 
+        @Override
         public boolean isResolvable(
-                PicoContainer container, ComponentAdapter adapter, Class expectedType) {
+                PicoContainer container,
+                ComponentAdapter adapter,
+                @SuppressWarnings("rawtypes") Class expectedType) {
             if (clazz.isAssignableFrom(expectedType)) {
                 return true;
             }
@@ -197,7 +197,9 @@ public class WFSXmlUtils {
 
         @Override
         public Object resolveInstance(
-                PicoContainer container, ComponentAdapter adapter, Class expectedType) {
+                PicoContainer container,
+                ComponentAdapter adapter,
+                @SuppressWarnings("rawtypes") Class expectedType) {
             if (clazz.isAssignableFrom(expectedType)) {
                 return obj;
             }

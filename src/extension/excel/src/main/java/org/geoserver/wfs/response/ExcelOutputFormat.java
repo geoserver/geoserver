@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.RichTextString;
@@ -21,7 +20,6 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.opengis.feature.simple.SimpleFeature;
@@ -61,11 +59,8 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     @Override
-    public String getAttachmentFileName(Object value, Operation operation) {
-        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
-        String outputFileName = request.getQueries().get(0).getTypeNames().get(0).getLocalPart();
-
-        return outputFileName + "." + fileExtension;
+    protected String getExtension(FeatureCollectionResponse response) {
+        return fileExtension;
     }
 
     @Override
@@ -84,8 +79,9 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
             CreationHelper helper = wb.getCreationHelper();
             ExcelCellStyles styles = new ExcelCellStyles(wb);
 
-            for (Iterator it = featureCollection.getFeature().iterator(); it.hasNext(); ) {
-                SimpleFeatureCollection fc = (SimpleFeatureCollection) it.next();
+            for (org.geotools.feature.FeatureCollection collection :
+                    featureCollection.getFeature()) {
+                SimpleFeatureCollection fc = (SimpleFeatureCollection) collection;
 
                 // create the sheet for this feature collection
                 Sheet sheet = wb.createSheet(fc.getSchema().getTypeName());
@@ -94,9 +90,8 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
                 Row header = sheet.createRow(0);
 
                 SimpleFeatureType ft = fc.getSchema();
-                Cell cell;
 
-                cell = header.createCell(0);
+                Cell cell = header.createCell(0);
                 cell.setCellValue(helper.createRichTextString("FID"));
                 for (int i = 0; i < ft.getAttributeCount() && i < colLimit; i++) {
                     AttributeDescriptor ad = ft.getDescriptor(i);
@@ -106,9 +101,8 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
                 }
 
                 // write out the features
-                SimpleFeatureIterator i = fc.features();
-                int r = 0; // row index
-                try {
+                try (SimpleFeatureIterator i = fc.features()) {
+                    int r = 0; // row index
                     Row row;
                     while (i.hasNext()) {
                         r++; // start at 1, since header is at 0
@@ -170,8 +164,6 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
                             }
                         }
                     }
-                } finally {
-                    i.close();
                 }
             }
 

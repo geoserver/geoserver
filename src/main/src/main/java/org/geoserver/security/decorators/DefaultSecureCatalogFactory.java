@@ -28,7 +28,7 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
     private static final Logger LOGGER = Logging.getLogger(DefaultSecureCatalogFactory.class);
 
     @Override
-    public boolean canSecure(Class clazz) {
+    public boolean canSecure(Class<?> clazz) {
         return CoverageInfo.class.isAssignableFrom(clazz)
                 || CoverageStoreInfo.class.isAssignableFrom(clazz)
                 || DataStoreInfo.class.isAssignableFrom(clazz)
@@ -43,7 +43,7 @@ public class DefaultSecureCatalogFactory implements SecuredObjectFactory {
         // null safe
         if (object == null) return null;
 
-        Class clazz = object.getClass();
+        Class<?> clazz = object.getClass();
         // for each supported Info type, log a warning if the object to be secured is already
         // secured. If this happens,
         // it could lead to a StackOverflowError if the object is re-wrapped, over time, over and

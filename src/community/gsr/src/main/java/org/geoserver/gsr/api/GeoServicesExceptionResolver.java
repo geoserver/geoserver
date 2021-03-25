@@ -51,6 +51,7 @@ public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolv
         return "/gsr".equals(request.getServletPath());
     }
 
+    @Override
     protected ModelAndView doResolveException(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -75,7 +76,6 @@ public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolv
             converter.writeToOutputStream(response.getOutputStream(), exception);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error writing exception response", e);
-            e.printStackTrace();
         }
         return new ModelAndView();
     }

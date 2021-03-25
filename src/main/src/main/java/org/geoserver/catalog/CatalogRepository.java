@@ -38,6 +38,7 @@ public class CatalogRepository implements Repository, Serializable {
         this.catalog = catalog;
     }
 
+    @Override
     public DataStore dataStore(Name name) {
         DataAccess da = access(name);
         if (da instanceof DataStore) {
@@ -50,6 +51,7 @@ public class CatalogRepository implements Repository, Serializable {
         return null;
     }
 
+    @Override
     public DataAccess<?, ?> access(Name name) {
         String workspace = name.getNamespaceURI();
         String localName = name.getLocalPart();
@@ -68,8 +70,9 @@ public class CatalogRepository implements Repository, Serializable {
         }
     }
 
+    @Override
     public List<DataStore> getDataStores() {
-        List<DataStore> dataStores = new ArrayList<DataStore>();
+        List<DataStore> dataStores = new ArrayList<>();
         for (DataStoreInfo ds : getCatalog().getDataStores()) {
             if (!ds.isEnabled()) {
                 continue;

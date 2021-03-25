@@ -14,7 +14,6 @@ import java.util.zip.ZipOutputStream;
 import org.geoserver.monitor.Monitor;
 import org.geoserver.monitor.Query;
 import org.geoserver.monitor.RequestData;
-import org.geoserver.monitor.RequestDataVisitor;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
@@ -44,19 +43,17 @@ public class ZIPMonitorConverter extends BaseMonitorConverter {
 
         // create the csv entry
         zout.putNextEntry(new ZipEntry("requests.csv"));
-        String[] csvFields = (String[]) fields.toArray(new String[fields.size()]);
+        String[] csvFields = fields.toArray(new String[fields.size()]);
         csv.writeCSVfile(object, csvFields, monitor, zout);
 
         if (object instanceof Query) {
             monitor.query(
                     (Query) object,
-                    new RequestDataVisitor() {
-                        public void visit(RequestData data, Object... aggregates) {
-                            try {
-                                writeBodyAndError(data, zout, body, error, true);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+                    (data, aggregates) -> {
+                        try {
+                            writeBodyAndError(data, zout, body, error, true);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
                     });
         } else if (object instanceof List) {

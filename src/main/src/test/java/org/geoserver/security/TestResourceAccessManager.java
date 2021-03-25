@@ -7,7 +7,12 @@ package org.geoserver.security;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -18,8 +23,7 @@ import org.springframework.security.core.Authentication;
  */
 public class TestResourceAccessManager extends AbstractResourceAccessManager {
 
-    Map<String, Map<String, AccessLimits>> limits =
-            new HashMap<String, Map<String, AccessLimits>>();
+    Map<String, Map<String, AccessLimits>> limits = new HashMap<>();
 
     WorkspaceAccessLimits defaultWorkspaceAccessLimits = null;
 
@@ -32,6 +36,7 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
         this.defaultWorkspaceAccessLimits = defaultWorkspaceAccessLimits;
     }
 
+    @Override
     public WorkspaceAccessLimits getAccessLimits(Authentication user, WorkspaceInfo workspace) {
         if (user == null) {
             return null;
@@ -46,6 +51,7 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
         }
     }
 
+    @Override
     public DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer) {
         if (user == null) {
             return null;
@@ -59,6 +65,7 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
         return limits;
     }
 
+    @Override
     public DataAccessLimits getAccessLimits(Authentication user, ResourceInfo resource) {
         if (user == null) {
             return null;
@@ -68,6 +75,7 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
         return (DataAccessLimits) getUserMap(name).get(resource.getId());
     }
 
+    @Override
     public StyleAccessLimits getAccessLimits(Authentication user, StyleInfo style) {
         if (user == null) {
             return null;
@@ -99,7 +107,7 @@ public class TestResourceAccessManager extends AbstractResourceAccessManager {
     Map<String, AccessLimits> getUserMap(String userName) {
         Map<String, AccessLimits> userMap = limits.get(userName);
         if (userMap == null) {
-            userMap = new HashMap<String, AccessLimits>();
+            userMap = new HashMap<>();
             limits.put(userName, userMap);
         }
         return userMap;

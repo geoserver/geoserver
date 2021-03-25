@@ -24,6 +24,7 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogEvent;
@@ -124,7 +125,8 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
 
     @Override
     protected void expectationTestStoreDelete(
-            DataStoreInfo info, String storeName, String storeId, Class clazz) throws Exception {
+            DataStoreInfo info, String storeName, String storeId, Class<? extends StoreInfo> clazz)
+            throws Exception {
         expect(getCatalog().getStore(storeId, clazz))
                 .andStubReturn(null); // It's been deleted so return null
         expectCatalogFire(info, storeId, Type.REMOVE);
@@ -132,7 +134,7 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
 
     @Override
     protected void expectationTestFTDelete(
-            FeatureTypeInfo info, String ftName, String ftId, String dsId, Class clazz)
+            FeatureTypeInfo info, String ftName, String ftId, String dsId, Class<?> clazz)
             throws Exception {
         expect(getCatalog().getFeatureType(ftId))
                 .andStubReturn(null); // It's been deleted so return null

@@ -453,10 +453,11 @@ public class SecureXStream extends XStream {
     private void registerConverterDynamically(
             String className,
             int priority,
-            Class[] constructorParamTypes,
+            Class<?>[] constructorParamTypes,
             Object[] constructorParamValues) {
         try {
-            Class type = Class.forName(className, false, getClassLoaderReference().getReference());
+            Class<?> type =
+                    Class.forName(className, false, getClassLoaderReference().getReference());
             Constructor constructor = type.getConstructor(constructorParamTypes);
             Object instance = constructor.newInstance(constructorParamValues);
             if (instance instanceof Converter) {
@@ -464,10 +465,7 @@ public class SecureXStream extends XStream {
             } else if (instance instanceof SingleValueConverter) {
                 registerConverter((SingleValueConverter) instance, priority);
             }
-        } catch (Exception e) {
-            throw new com.thoughtworks.xstream.InitializationException(
-                    "Could not instantiate converter : " + className, e);
-        } catch (LinkageError e) {
+        } catch (Exception | LinkageError e) {
             throw new com.thoughtworks.xstream.InitializationException(
                     "Could not instantiate converter : " + className, e);
         }
@@ -485,7 +483,7 @@ public class SecureXStream extends XStream {
         }
 
         @Override
-        public Class realClass(String elementName) {
+        public Class<?> realClass(String elementName) {
             try {
                 return super.realClass(elementName);
             } catch (ForbiddenClassException e) {

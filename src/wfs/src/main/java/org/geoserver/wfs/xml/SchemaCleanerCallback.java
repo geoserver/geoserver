@@ -19,7 +19,7 @@ import org.geotools.xsd.Schemas;
  */
 public class SchemaCleanerCallback extends AbstractDispatcherCallback {
 
-    static final ThreadLocal<List<XSDSchema>> schemas = new ThreadLocal<List<XSDSchema>>();
+    static final ThreadLocal<List<XSDSchema>> schemas = new ThreadLocal<>();
 
     /** Schedules a XSDSchema for removal at the end of the request */
     public static void addSchema(XSDSchema schema) {
@@ -29,7 +29,7 @@ public class SchemaCleanerCallback extends AbstractDispatcherCallback {
 
         List<XSDSchema> list = schemas.get();
         if (list == null) {
-            list = new ArrayList<XSDSchema>();
+            list = new ArrayList<>();
             schemas.set(list);
         }
         list.add(schema);

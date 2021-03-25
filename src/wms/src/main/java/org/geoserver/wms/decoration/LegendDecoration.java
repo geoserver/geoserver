@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.decoration;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -12,7 +13,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,11 +22,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LegendInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.KvpParser;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.CaseInsensitiveMap;
+import org.geoserver.ows.util.KvpUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
@@ -45,13 +52,16 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
 
     private final WMS wms;
     private Map<String, String> options;
-    private ThreadLocal<List<LayerLegend>> legends = new ThreadLocal<List<LayerLegend>>();
+    private ThreadLocal<List<LayerLegend>> legends = new ThreadLocal<>();
     private List<String> layers;
     private boolean useSldTitle;
 
+    private Map<String, String> legendOptionsMap;
+    private float opacityOption = 1.0f;
+
     public LegendDecoration(WMS wms) {
         this.wms = wms;
-        this.layers = new ArrayList<String>();
+        this.layers = new ArrayList<>();
     }
 
     @Override
@@ -59,8 +69,9 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         this.legends.remove();
     }
 
+    @Override
     public void loadOptions(Map<String, String> options) {
-        this.options = new HashMap(options);
+        this.options = new HashMap<>(options);
         String layers = this.options.remove("layers");
         if (layers != null) {
             String[] splittedLayers = layers.split(",");
@@ -71,8 +82,24 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         if ("true".equalsIgnoreCase(sldTitle) || "on".equalsIgnoreCase(sldTitle)) {
             useSldTitle = true;
         }
+
+        String legendOptions = this.options.remove("legend_options");
+        if (legendOptions != null && !legendOptions.isEmpty()) {
+            legendOptionsMap = new HashMap<>();
+            String[] splittedLegendOptions = legendOptions.split(";");
+            for (String lop : splittedLegendOptions) {
+                String[] kvp = lop.split(":");
+                legendOptionsMap.put(kvp[0], kvp[1]);
+            }
+        }
+
+        String opacity = this.options.remove("opacity");
+        if (opacity != null && !opacity.isEmpty()) {
+            opacityOption = Float.parseFloat(opacity);
+        }
     }
 
+    @Override
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContext) {
         double dpi = RendererUtilities.getDpi(mapContext.getRequest().getFormatOptions());
         double standardDpi = RendererUtilities.getDpi(Collections.emptyMap());
@@ -120,6 +147,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         return new Dimension(width, height);
     }
 
+    @Override
     public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContext)
             throws Exception {
         // check if LayerLegends have been computed in the above method; if not
@@ -160,14 +188,13 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
 
             // output image
             BufferedImage finalLegend =
-                    ImageUtils.createImage(
-                            strokeWidth, strokeHeight, (IndexColorModel) null, false);
+                    ImageUtils.createImage(strokeWidth, strokeHeight, null, false);
             Graphics2D finalGraphics =
                     ImageUtils.prepareTransparency(
                             false,
                             LegendUtils.getBackgroundColor(legend.request),
                             finalLegend,
-                            new HashMap<RenderingHints.Key, Object>());
+                            new HashMap<>());
 
             // title
             int titleHeightOffset = 0;
@@ -236,15 +263,12 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         StyleInfo defaultStyle = info.getDefaultStyle();
 
         Predicate<StyleInfo> predicate =
-                new Predicate<StyleInfo>() {
-                    @Override
-                    public boolean test(StyleInfo s) {
-                        try {
-                            return s.getName().equals(layer.getStyle().getName())
-                                    && s.getStyle() != null;
-                        } catch (IOException e) {
-                            return false;
-                        }
+                s -> {
+                    try {
+                        return s.getName().equals(layer.getStyle().getName())
+                                && s.getStyle() != null;
+                    } catch (IOException e) {
+                        return false;
                     }
                 };
         StyleInfo sInfo =
@@ -286,6 +310,11 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         public GetLegendGraphicRequest request;
     }
 
+    public List<LayerLegend> getLayerLegends(Graphics2D g2d, WMSMapContent mapContext) {
+        return this.getLayerLegend(g2d, mapContext, null);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private List<LayerLegend> getLayerLegend(
             Graphics2D g2d, WMSMapContent mapContext, Rectangle size) {
         List<LayerLegend> legendLayers = new ArrayList<>();
@@ -311,15 +340,27 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
             final Request dispatcherRequest = Dispatcher.REQUEST.get();
             if (dispatcherRequest != null) {
                 request.setKvp(dispatcherRequest.getKvp());
-                request.setRawKvp(dispatcherRequest.getRawKvp());
+                request.setRawKvp(KvpUtils.toStringKVP(dispatcherRequest.getRawKvp()));
             }
             setLegendInfo(layer, request, size);
 
-            Map legendOptions = new CaseInsensitiveMap(options);
+            Map<String, Object> legendOptions = getLegendOptions();
             legendOptions.putAll(mapContext.getRequest().getFormatOptions());
+
+            // add legend_options defined by layout
+            if (legendOptionsMap != null) {
+                legendOptions.putAll(legendOptionsMap);
+            }
+            // set opacity defined by layout
+            float opacity = opacityOption;
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+
             if (dispatcherRequest != null
                     && dispatcherRequest.getKvp().get("legend_options") != null) {
-                legendOptions.putAll((Map) dispatcherRequest.getKvp().get("legend_options"));
+                @SuppressWarnings("unchecked")
+                Map<String, Object> requestOptions =
+                        (Map) dispatcherRequest.getKvp().get("legend_options");
+                legendOptions.putAll(requestOptions);
             }
             request.setLegendOptions(legendOptions);
 
@@ -353,5 +394,34 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
             legendLayers.add(legend);
         }
         return legendLayers;
+    }
+
+    private Map<String, Object> getLegendOptions() {
+        CaseInsensitiveMap<String, Object> result = new CaseInsensitiveMap<>(new HashMap<>());
+        List parsers = GeoServerExtensions.extensions(KvpParser.class);
+        for (Map.Entry<String, String> entry : options.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            Object parsed = null;
+
+            for (Object o : parsers) {
+                KvpParser parser = (KvpParser) o;
+                if (key.equalsIgnoreCase(parser.getKey())) {
+                    try {
+                        parsed = parser.parse(value);
+                        if (parsed != null) {
+                            break;
+                        }
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException("Failed to parse key " + key, e);
+                    }
+                }
+            }
+            if (parsed == null) {
+                parsed = value;
+            }
+            result.put(key, parsed);
+        }
+        return result;
     }
 }

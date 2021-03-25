@@ -5,7 +5,8 @@
  */
 package org.geoserver.web.data.layergroup;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -32,7 +33,7 @@ public class LayerGroupPageTest extends LayerGroupBaseTest {
                 (DataView<LayerGroupInfo>)
                         tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(getCatalog().getLayerGroups().size(), dv.size());
-        LayerGroupInfo lg = (LayerGroupInfo) dv.getDataProvider().iterator(0, 1).next();
+        LayerGroupInfo lg = dv.getDataProvider().iterator(0, 1).next();
         assertEquals(getCatalog().getLayerGroups().get(0), lg);
     }
 

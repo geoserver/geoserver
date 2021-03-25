@@ -7,13 +7,13 @@ package org.geoserver.wfs.v1_1;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -60,7 +60,7 @@ public class GetFeatureTest extends WFSTestSupport {
     protected void setUpInternal(SystemTestData data) throws Exception {
         data.addVectorLayer(
                 new QName(SystemTestData.SF_URI, "WithGMLProperties", SystemTestData.SF_PREFIX),
-                Collections.EMPTY_MAP,
+                Collections.emptyMap(),
                 getClass(),
                 getCatalog());
     }
@@ -87,7 +87,7 @@ public class GetFeatureTest extends WFSTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         NodeList features = doc.getElementsByTagName("cdf:Fifteen");
-        assertFalse(features.getLength() == 0);
+        assertNotEquals(0, features.getLength());
 
         for (int i = 0; i < features.getLength(); i++) {
             Element feature = (Element) features.item(i);
@@ -100,10 +100,10 @@ public class GetFeatureTest extends WFSTestSupport {
     @RunTestSetup
     public void testGetWithFeatureId() throws Exception {
 
-        Document doc;
-        doc =
+        Document doc =
                 getAsDOM(
-                        "wfs?request=GetFeature&typeName=cdf:Fifteen&version=1.1.0&service=wfs&featureid=Fifteen.2");
+                        "wfs?request=GetFeature&typeName=cdf:Fifteen&version=1.1"
+                                + ".0&service=wfs&featureid=Fifteen.2");
 
         // super.print(doc);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
@@ -129,8 +129,7 @@ public class GetFeatureTest extends WFSTestSupport {
     @Test
     public void testGetWithTwoFeatureId() throws Exception {
 
-        Document doc;
-        doc =
+        Document doc =
                 getAsDOM(
                         "wfs?request=GetFeature&&version=1.1.0&service=wfs&featureid=Fifteen.1,Fifteen.2");
 
@@ -165,7 +164,7 @@ public class GetFeatureTest extends WFSTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         NodeList features = doc.getElementsByTagName("cdf:Other");
-        assertFalse(features.getLength() == 0);
+        assertNotEquals(0, features.getLength());
 
         for (int i = 0; i < features.getLength(); i++) {
             Element feature = (Element) features.item(i);
@@ -249,7 +248,7 @@ public class GetFeatureTest extends WFSTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         NodeList features = doc.getElementsByTagName("cdf:Other");
-        assertFalse(features.getLength() == 0);
+        assertNotEquals(0, features.getLength());
 
         for (int i = 0; i < features.getLength(); i++) {
             Element feature = (Element) features.item(i);
@@ -472,7 +471,7 @@ public class GetFeatureTest extends WFSTestSupport {
             assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
             NodeList features = doc.getElementsByTagName("cdf:Other");
-            assertFalse(features.getLength() == 0);
+            assertNotEquals(0, features.getLength());
 
             for (int i = 0; i < features.getLength(); i++) {
                 Element feature = (Element) features.item(i);
@@ -499,7 +498,7 @@ public class GetFeatureTest extends WFSTestSupport {
         getTestData()
                 .addVectorLayer(
                         new QName(SystemTestData.SF_URI, "new", SystemTestData.SF_PREFIX),
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         getClass(),
                         getCatalog());
 
@@ -837,7 +836,7 @@ public class GetFeatureTest extends WFSTestSupport {
                                     assertEquals(
                                             "wfs:FeatureCollection",
                                             doc.getDocumentElement().getNodeName());
-                                    return (Void) null;
+                                    return null;
                                 });
                 futures.add(future);
             }

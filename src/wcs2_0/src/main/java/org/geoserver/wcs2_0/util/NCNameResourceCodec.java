@@ -87,7 +87,7 @@ public class NCNameResourceCodec {
             return null;
         }
 
-        List<LayerInfo> ret = new ArrayList<LayerInfo>();
+        List<LayerInfo> ret = new ArrayList<>();
 
         LOGGER.info(" Examining encoded name " + encodedResourceId);
 
@@ -135,17 +135,17 @@ public class NCNameResourceCodec {
      */
     public static List<MapEntry<String, String>> decode(String qualifiedName) {
         int lastPos = qualifiedName.lastIndexOf(DELIMITER);
-        List<MapEntry<String, String>> ret = new ArrayList<MapEntry<String, String>>();
+        List<MapEntry<String, String>> ret = new ArrayList<>();
 
         if (lastPos == -1) {
-            ret.add(new MapEntry<String, String>(null, qualifiedName));
+            ret.add(new MapEntry<>(null, qualifiedName));
             return ret;
         }
 
         while (lastPos > -1) {
             String ws = qualifiedName.substring(0, lastPos);
             String name = qualifiedName.substring(lastPos + DELIMITER.length());
-            ret.add(new MapEntry<String, String>(ws, name));
+            ret.add(new MapEntry<>(ws, name));
             lastPos = qualifiedName.lastIndexOf(DELIMITER, lastPos - 1);
         }
         return ret;

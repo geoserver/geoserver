@@ -13,6 +13,7 @@ public class WMTSFactoryExtension extends ServiceFactoryExtension<WMTSInfo> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T create(Class<T> clazz) {
         return (T) new WMTSInfoImpl();
     }

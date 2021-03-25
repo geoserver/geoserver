@@ -36,16 +36,15 @@ public class GeoServerRole implements GrantedAuthority, Comparable<GeoServerRole
     public static final GeoServerRole ANONYMOUS_ROLE = new GeoServerRole("ROLE_ANONYMOUS");
 
     /** Geoserver system roles */
-    public static final GeoServerRole[] SystemRoles =
-            new GeoServerRole[] {ADMIN_ROLE, GROUP_ADMIN_ROLE, AUTHENTICATED_ROLE, ANONYMOUS_ROLE};
+    public static final GeoServerRole[] SystemRoles = {
+        ADMIN_ROLE, GROUP_ADMIN_ROLE, AUTHENTICATED_ROLE, ANONYMOUS_ROLE
+    };
 
     /** Mappable system roles */
-    public static final GeoServerRole[] MappedRoles =
-            new GeoServerRole[] {ADMIN_ROLE, GROUP_ADMIN_ROLE};
+    public static final GeoServerRole[] MappedRoles = {ADMIN_ROLE, GROUP_ADMIN_ROLE};
 
     /** Roles which cannot be assigned to a user or a group */
-    public static final GeoServerRole[] UnAssignableRoles =
-            new GeoServerRole[] {AUTHENTICATED_ROLE, ANONYMOUS_ROLE};
+    public static final GeoServerRole[] UnAssignableRoles = {AUTHENTICATED_ROLE, ANONYMOUS_ROLE};
 
     private static final long serialVersionUID = 1L;
 
@@ -80,6 +79,7 @@ public class GeoServerRole implements GrantedAuthority, Comparable<GeoServerRole
         return properties;
     }
 
+    @Override
     public int compareTo(GeoServerRole o) {
         if (o == null) return 1;
         if (getAuthority().equals(o.getAuthority())) {
@@ -93,6 +93,7 @@ public class GeoServerRole implements GrantedAuthority, Comparable<GeoServerRole
 
     // not sure why the equals would compare against types that are not a GeoServerRole
     // suppressing for the moment...
+    @Override
     @SuppressFBWarnings("EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS")
     public boolean equals(Object obj) {
         if (obj == null) return false;
@@ -118,12 +119,14 @@ public class GeoServerRole implements GrantedAuthority, Comparable<GeoServerRole
         return this.role.equals(((GrantedAuthority) obj).getAuthority());
     }
 
+    @Override
     public int hashCode() {
         int hash = getAuthority().hashCode();
         if (getUserName() != null) hash += getUserName().hashCode();
         return hash;
     }
 
+    @Override
     public String toString() {
         if (getUserName() != null) {
             StringBuffer buff = new StringBuffer(role);

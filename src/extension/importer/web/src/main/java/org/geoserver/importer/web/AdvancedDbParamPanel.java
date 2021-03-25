@@ -49,7 +49,7 @@ class AdvancedDbParamPanel extends Panel {
 
         WebMarkupContainer looseBBoxContainer = new WebMarkupContainer("looseBBoxContainer");
         looseBBoxContainer.setVisible(showLooseBBox);
-        CheckBox fastBBoxCheck = new CheckBox("looseBBox", new PropertyModel(this, "looseBBox"));
+        CheckBox fastBBoxCheck = new CheckBox("looseBBox", new PropertyModel<>(this, "looseBBox"));
         looseBBoxContainer.add(fastBBoxCheck);
         advancedPanel.add(looseBBoxContainer);
 
@@ -57,11 +57,12 @@ class AdvancedDbParamPanel extends Panel {
                 new WebMarkupContainer("excludeGeometrylessContainer");
         excludeGeomlessContainer.setVisible(showLooseBBox);
         CheckBox excludeGeomlessCheck =
-                new CheckBox("excludeGeometryless", new PropertyModel(this, "excludeGeometryless"));
+                new CheckBox(
+                        "excludeGeometryless", new PropertyModel<>(this, "excludeGeometryless"));
         excludeGeomlessContainer.add(excludeGeomlessCheck);
         advancedPanel.add(excludeGeomlessContainer);
 
-        advancedPanel.add(new TextField("pkMetadata", new PropertyModel(this, "pkMetadata")));
+        advancedPanel.add(new TextField<>("pkMetadata", new PropertyModel<>(this, "pkMetadata")));
         advancedContainer.add(advancedPanel);
         add(advancedContainer);
     }

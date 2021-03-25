@@ -9,7 +9,12 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -114,9 +119,7 @@ public class RetypingDataStoreTest {
         assertTrue(fc.size() > 0);
 
         // make sure the feature schema is good as well
-        FeatureIterator<SimpleFeature> it = fc.features();
-        SimpleFeature sf = it.next();
-        it.close();
+        SimpleFeature sf = DataUtilities.first(fc);
 
         assertEquals(RENAMED, sf.getFeatureType().getName().getLocalPart());
 
@@ -128,17 +131,16 @@ public class RetypingDataStoreTest {
 
     @Test
     public void testGetFeaturesReader() throws Exception {
-        FeatureReader<SimpleFeatureType, SimpleFeature> fr;
-        fr = rts.getFeatureReader(new Query(RENAMED), Transaction.AUTO_COMMIT);
-        SimpleFeature sf = fr.next();
-        fr.close();
+        try (FeatureReader<SimpleFeatureType, SimpleFeature> fr =
+                rts.getFeatureReader(new Query(RENAMED), Transaction.AUTO_COMMIT)) {
+            SimpleFeature sf = fr.next();
+            assertEquals(RENAMED, sf.getFeatureType().getName().getLocalPart());
 
-        assertEquals(RENAMED, sf.getFeatureType().getName().getLocalPart());
-
-        // check the feature ids have been renamed as well
-        assertTrue(
-                "Feature id has not been renamed, it's still " + sf.getID(),
-                sf.getID().startsWith(RENAMED));
+            // check the feature ids have been renamed as well
+            assertTrue(
+                    "Feature id has not been renamed, it's still " + sf.getID(),
+                    sf.getID().startsWith(RENAMED));
+        }
     }
 
     @Test
@@ -154,32 +156,31 @@ public class RetypingDataStoreTest {
         SimpleFeatureCollection fc = fs.getFeatures(new Query(RENAMED, fidFilter));
         assertEquals(RENAMED, fc.getSchema().getName().getLocalPart());
         assertEquals(1, fc.size());
-        FeatureIterator<SimpleFeature> it = fc.features();
-        assertTrue(it.hasNext());
-        SimpleFeature sf = it.next();
-        assertFalse(it.hasNext());
-        it.close();
-        assertEquals(fid, sf.getID());
+        try (FeatureIterator<SimpleFeature> it = fc.features()) {
+            assertTrue(it.hasNext());
+            SimpleFeature sf = it.next();
+            assertFalse(it.hasNext());
+            assertEquals(fid, sf.getID());
+        }
     }
 
     @Test
     public void testFeautureReaderFidFilter() throws Exception {
-        FeatureReader<SimpleFeatureType, SimpleFeature> fr;
-        fr = rts.getFeatureReader(new Query(RENAMED, fidFilter), Transaction.AUTO_COMMIT);
-        assertEquals(RENAMED, fr.getFeatureType().getName().getLocalPart());
-        assertTrue(fr.hasNext());
-        SimpleFeature sf = fr.next();
-        assertFalse(fr.hasNext());
-        fr.close();
-        assertEquals(fid, sf.getID());
+        try (FeatureReader<SimpleFeatureType, SimpleFeature> fr =
+                rts.getFeatureReader(new Query(RENAMED, fidFilter), Transaction.AUTO_COMMIT)) {
+            assertEquals(RENAMED, fr.getFeatureType().getName().getLocalPart());
+            assertTrue(fr.hasNext());
+            SimpleFeature sf = fr.next();
+            assertFalse(fr.hasNext());
+            assertEquals(fid, sf.getID());
+        }
     }
 
     @Test
     public void testDelete() throws Exception {
         final Query queryAll = new Query(RENAMED);
 
-        SimpleFeatureStore store;
-        store = (SimpleFeatureStore) rts.getFeatureSource(RENAMED);
+        SimpleFeatureStore store = (SimpleFeatureStore) rts.getFeatureSource(RENAMED);
         int count = store.getCount(queryAll);
         store.removeFeatures(fidFilter);
 
@@ -188,12 +189,9 @@ public class RetypingDataStoreTest {
 
     @Test
     public void testModify() throws Exception {
-        final Query queryAll = new Query(RENAMED);
-
-        SimpleFeatureStore store;
-        store = (SimpleFeatureStore) rts.getFeatureSource(RENAMED);
+        SimpleFeatureStore store = (SimpleFeatureStore) rts.getFeatureSource(RENAMED);
         SimpleFeature original = store.getFeatures(fidFilter).features().next();
-        String newAddress = ((String) original.getAttribute("ADDRESS")) + " xxx";
+        String newAddress = original.getAttribute("ADDRESS") + " xxx";
 
         store.modifyFeatures(new NameImpl("ADDRESS"), newAddress, fidFilter);
         SimpleFeature modified = store.getFeatures(fidFilter).features().next();
@@ -240,53 +238,52 @@ public class RetypingDataStoreTest {
         SimpleFeatureStore store = (SimpleFeatureStore) rts.getFeatureSource("oaks");
         List<FeatureId> ids = store.addFeatures(fc);
         assertEquals(1, ids.size());
-        String id = ((FeatureId) ids.iterator().next()).getID();
+        String id = ids.iterator().next().getID();
         assertTrue("Id does not start with " + "oaks" + " it's " + id, id.startsWith("oaks"));
     }
 
     @Test
     public void testLockUnlockFilter() throws Exception {
-        SimpleFeatureLocking fl;
-        fl = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
+        SimpleFeatureLocking fl = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
         final FeatureLock lock = new FeatureLock("abc", 10 * 60 * 1000);
-        Transaction t = new DefaultTransaction();
-        t.addAuthorization(lock.getAuthorization());
-        fl.setTransaction(t);
-        fl.setFeatureLock(lock);
+        try (Transaction t = new DefaultTransaction()) {
+            t.addAuthorization(lock.getAuthorization());
+            fl.setTransaction(t);
+            fl.setFeatureLock(lock);
 
-        SimpleFeatureLocking fl2;
-        fl2 = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
-        fl.setFeatureLock(lock);
-        fl2.setTransaction(new DefaultTransaction());
+            SimpleFeatureLocking fl2 = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
+            fl.setFeatureLock(lock);
+            fl2.setTransaction(new DefaultTransaction());
 
-        assertEquals(1, fl.lockFeatures(fidFilter));
-        assertEquals(0, fl2.lockFeatures(fidFilter));
+            assertEquals(1, fl.lockFeatures(fidFilter));
+            assertEquals(0, fl2.lockFeatures(fidFilter));
 
-        fl.unLockFeatures(fidFilter);
-        assertEquals(1, fl2.lockFeatures(fidFilter));
+            fl.unLockFeatures(fidFilter);
+            assertEquals(1, fl2.lockFeatures(fidFilter));
+        }
     }
 
     @Test
     public void testLockUnlockQuery() throws Exception {
-        SimpleFeatureLocking fl;
-        fl = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
+        SimpleFeatureLocking fl = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
         final FeatureLock lock = new FeatureLock("abc", 10 * 60 * 1000);
-        Transaction t = new DefaultTransaction();
-        t.addAuthorization(lock.getAuthorization());
-        fl.setTransaction(t);
-        fl.setFeatureLock(lock);
+        try (Transaction t = new DefaultTransaction()) {
+            t.addAuthorization(lock.getAuthorization());
+            fl.setTransaction(t);
+            fl.setFeatureLock(lock);
 
-        SimpleFeatureLocking fl2;
-        fl2 = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
-        fl.setFeatureLock(lock);
-        fl2.setTransaction(new DefaultTransaction());
+            SimpleFeatureLocking fl2;
+            fl2 = (SimpleFeatureLocking) rts.getFeatureSource(RENAMED);
+            fl.setFeatureLock(lock);
+            fl2.setTransaction(new DefaultTransaction());
 
-        Query q = new Query(RENAMED, fidFilter);
-        assertEquals(1, fl.lockFeatures(q));
-        assertEquals(0, fl2.lockFeatures(q));
+            Query q = new Query(RENAMED, fidFilter);
+            assertEquals(1, fl.lockFeatures(q));
+            assertEquals(0, fl2.lockFeatures(q));
 
-        fl.unLockFeatures(q);
-        assertEquals(1, fl2.lockFeatures(q));
+            fl.unLockFeatures(q);
+            assertEquals(1, fl2.lockFeatures(q));
+        }
     }
 
     @Test
@@ -298,9 +295,7 @@ public class RetypingDataStoreTest {
         assertEquals(1, fc.getSchema().getAttributeCount());
 
         // make sure the feature schema is good as well
-        FeatureIterator<SimpleFeature> it = fc.features();
-        SimpleFeature sf = it.next();
-        it.close();
+        SimpleFeature sf = DataUtilities.first(fc);
 
         assertEquals(1, sf.getAttributeCount());
         assertNull(sf.getAttribute("FID"));

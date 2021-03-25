@@ -5,7 +5,10 @@
  */
 package org.geoserver.security.web.role;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -54,7 +57,9 @@ public class NewRolePageTest extends AbstractSecurityWicketTestSupport {
         form.setValue("name", "ROLE_TEST");
 
         int index = -1;
-        for (String name : ((DropDownChoice<String>) page.get("form:parent")).getChoices()) {
+        @SuppressWarnings("unchecked")
+        DropDownChoice<String> ddc = (DropDownChoice<String>) page.get("form:parent");
+        for (String name : ddc.getChoices()) {
             index++;
             if ("ROLE_AUTHENTICATED".equals(name)) break;
         }

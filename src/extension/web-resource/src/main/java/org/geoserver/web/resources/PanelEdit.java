@@ -25,7 +25,7 @@ public class PanelEdit extends Panel {
         super(id);
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
         add(
-                new TextField<String>("resource", new Model<String>(resource)) {
+                new TextField<String>("resource", new Model<>(resource)) {
                     private static final long serialVersionUID = 1019950718780805835L;
 
                     @Override
@@ -37,7 +37,7 @@ public class PanelEdit extends Panel {
                     }
                 });
         add(new WebMarkupContainer("createDirectory").setVisible(isNew));
-        add(new TextArea<String>("contents", new Model<String>(contents)));
+        add(new TextArea<>("contents", new Model<>(contents)));
     }
 
     public String getContents() {

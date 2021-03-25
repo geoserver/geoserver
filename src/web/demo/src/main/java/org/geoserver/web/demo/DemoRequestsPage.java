@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
@@ -56,11 +55,11 @@ public class DemoRequestsPage extends GeoServerBasePage {
 
     final Resource demoDir;
 
-    private TextField urlTextField;
+    private TextField<String> urlTextField;
 
     private CodeMirrorEditor body;
 
-    private TextField username;
+    private TextField<String> username;
 
     private PasswordTextField password;
 
@@ -72,8 +71,8 @@ public class DemoRequestsPage extends GeoServerBasePage {
             throw new WicketRuntimeException(
                     "Can't access demo requests directory: " + e.getMessage());
         }
-        DemoRequest model = new DemoRequest(demoDir.path());
-        setDefaultModel(new Model(model));
+        DemoRequest request = new DemoRequest(demoDir.path());
+        setDefaultModel(new Model<>(request));
 
         setUpDemoRequestsForm(demoDir);
     }
@@ -82,7 +81,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
     DemoRequestsPage(final Resource demoDir) {
         this.demoDir = Resources.serializable(demoDir);
         DemoRequest model = new DemoRequest(demoDir.path());
-        setDefaultModel(new Model(model));
+        setDefaultModel(new Model<>(model));
         setUpDemoRequestsForm(demoDir);
     }
 
@@ -97,42 +96,41 @@ public class DemoRequestsPage extends GeoServerBasePage {
     private String getFileContents(final String reqFileName) throws IOException {
         final Resource file = demoDir.get(reqFileName);
         final StringBuilder sb = new StringBuilder();
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(file.in()));
-        String line;
-        try {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.in()))) {
+            String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
                 sb.append("\n");
             }
-        } finally {
-            reader.close();
         }
         return sb.toString();
     }
 
     private void setUpDemoRequestsForm(final Resource demoDir) {
-        final IModel requestModel = getDefaultModel();
+        @SuppressWarnings("unchecked")
+        final IModel<DemoRequest> requestModel = (IModel<DemoRequest>) getDefaultModel();
 
-        final Form demoRequestsForm;
-        demoRequestsForm = new Form("demoRequestsForm");
+        final Form<DemoRequest> demoRequestsForm = new Form<>("demoRequestsForm");
         demoRequestsForm.setOutputMarkupId(true);
         demoRequestsForm.setModel(requestModel);
         add(demoRequestsForm);
 
         final List<String> demoList = getDemoList(demoDir);
-        final DropDownChoice demoRequestsList;
-        final IModel reqFileNameModel = new PropertyModel(requestModel, "requestFileName");
-        demoRequestsList =
-                new Select2DropDownChoice(
+        final IModel<String> reqFileNameModel =
+                new PropertyModel<>(requestModel, "requestFileName");
+        final DropDownChoice<String> demoRequestsList =
+                new Select2DropDownChoice<>(
                         "demoRequestsList",
                         reqFileNameModel,
                         demoList,
-                        new ChoiceRenderer() {
-                            public String getIdValue(Object obj, int index) {
-                                return String.valueOf(obj);
+                        new ChoiceRenderer<String>() {
+                            @Override
+                            public String getIdValue(String obj, int index) {
+                                return obj;
                             }
 
-                            public Object getDisplayValue(Object obj) {
+                            @Override
+                            public Object getDisplayValue(String obj) {
                                 return obj;
                             }
                         });
@@ -205,12 +203,12 @@ public class DemoRequestsPage extends GeoServerBasePage {
                     }
                 });
 
-        urlTextField = new TextField("url", new PropertyModel(requestModel, "requestUrl"));
+        urlTextField = new TextField<>("url", new PropertyModel<>(requestModel, "requestUrl"));
         urlTextField.setMarkupId("requestUrl");
         urlTextField.setOutputMarkupId(true);
         demoRequestsForm.add(urlTextField);
 
-        body = new CodeMirrorEditor("body", new PropertyModel(requestModel, "requestBody"));
+        body = new CodeMirrorEditor("body", new PropertyModel<>(requestModel, "requestBody"));
         // force the id otherwise this blasted thing won't be usable from other forms
         // body.setMarkupId("requestBody");
         // body.setOutputMarkupId(true);
@@ -218,28 +216,21 @@ public class DemoRequestsPage extends GeoServerBasePage {
         // body.add(new EditAreaBehavior());
         demoRequestsForm.add(body);
 
-        username = new TextField("username", new PropertyModel(requestModel, "userName"));
+        username = new TextField<>("username", new PropertyModel<>(requestModel, "userName"));
         demoRequestsForm.add(username);
 
-        password = new PasswordTextField("password", new PropertyModel(requestModel, "password"));
+        password = new PasswordTextField("password", new PropertyModel<>(requestModel, "password"));
         password.setRequired(false);
         demoRequestsForm.add(password);
 
-        final ModalWindow responseWindow;
-
-        responseWindow = new ModalWindow("responseWindow");
+        final ModalWindow responseWindow = new ModalWindow("responseWindow");
         add(responseWindow);
 
         // responseWindow.setPageMapName("demoResponse");
         responseWindow.setCookieName("demoResponse");
 
         responseWindow.setPageCreator(
-                new ModalWindow.PageCreator() {
-
-                    public Page createPage() {
-                        return new DemoRequestResponse(requestModel);
-                    }
-                });
+                (ModalWindow.PageCreator) () -> new DemoRequestResponse(requestModel));
 
         demoRequestsForm.add(
                 new AjaxSubmitLink("submit", demoRequestsForm) {
@@ -271,7 +262,7 @@ public class DemoRequestsPage extends GeoServerBasePage {
     }
 
     private List<String> getDemoList(final Resource demoDir) {
-        final List<String> demoList = new ArrayList<String>();
+        final List<String> demoList = new ArrayList<>();
         for (Resource file : demoDir.list()) {
             if (file.getType() != Type.DIRECTORY) {
                 final String name = file.name();

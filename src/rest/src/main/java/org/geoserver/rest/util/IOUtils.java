@@ -56,10 +56,9 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
     /** Background to perform file deletions. */
     private static final FileCleaner FILE_CLEANER = new FileCleaner();
 
-    private static final Set<String> FILES_PATH =
-            Collections.synchronizedSet(new HashSet<String>());
+    private static final Set<String> FILES_PATH = Collections.synchronizedSet(new HashSet<>());
     private static final Map<String, Integer> FILE_ATTEMPTS_COUNTS =
-            Collections.synchronizedMap(new HashMap<String, Integer>());
+            Collections.synchronizedMap(new HashMap<>());
 
     /** 30 seconds is the default period beteen two checks. */
     private static long DEFAULT_PERIOD = 5L;
@@ -150,6 +149,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
          *   <li>if not successful increase the attempts count for the file and call the gc. If the
          *       maximum number was exceeded drop the file and warn the user
          */
+        @Override
         public void run() {
             while (true) {
                 try {
@@ -406,10 +406,8 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
         if (destinationFile.getAbsolutePath().equalsIgnoreCase(sourceFile.getAbsolutePath()))
             throw new IllegalArgumentException("Cannot copy a file on itself");
 
-        FileChannel source;
-        FileChannel destination;
-        source = new RandomAccessFile(sourceFile, "r").getChannel();
-        destination = new RandomAccessFile(destinationFile, "rw").getChannel();
+        FileChannel source = new RandomAccessFile(sourceFile, "r").getChannel();
+        FileChannel destination = new RandomAccessFile(destinationFile, "rw").getChannel();
         try {
             copyFileChannel(size, source, destination);
         } finally {
@@ -498,7 +496,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
             try {
                 channel = new FileInputStream(source).getChannel();
             } catch (Exception e) {
-                channel = null;
+                // continue
             }
         }
         return channel;

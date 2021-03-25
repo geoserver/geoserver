@@ -4,10 +4,11 @@
  */
 package org.geoserver.wcs2_0.xml;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
 import static org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode.InvalidSubsetting;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -95,13 +96,7 @@ public class GetCoverageTest extends WCSTestSupport {
         Resource watertemp = dataDirectory.getResourceLoader().get("watertemp");
         File data = watertemp.dir();
         FilenameFilter groundElevationFilter =
-                new FilenameFilter() {
-
-                    @Override
-                    public boolean accept(File dir, String name) {
-                        return name.matches(".*_000_.*tiff") || name.matches("watertemp\\..*");
-                    }
-                };
+                (dir, name) -> name.matches(".*_000_.*tiff") || name.matches("watertemp\\..*");
         for (File file : data.listFiles(groundElevationFilter)) {
             file.delete();
         }
@@ -473,8 +468,8 @@ public class GetCoverageTest extends WCSTestSupport {
             // 1 dimensional slice along latitude
             final GeneralEnvelope expectedEnvelope =
                     new GeneralEnvelope(
-                            new double[] {146.49999999999477, -43.5},
-                            new double[] {146.99999999999477, -43.49583333333119});
+                            new double[] {146.49999999999477, -43.504166666664524},
+                            new double[] {146.99999999999477, -43.49999999999786});
             expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
 
             final double scale = getScale(targetCoverage);
@@ -515,6 +510,7 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
     public void testCoverageTrimmingBordersOverlap() throws Exception {
         final File xml =
                 new File(
@@ -534,6 +530,7 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
     public void testCoverageTrimmingBordersOverlapVertical() throws Exception {
         final File xml =
                 new File(
@@ -553,6 +550,7 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
     public void testCoverageTrimmingBordersOverlapOutside() throws Exception {
         final File xml =
                 new File(
@@ -574,11 +572,11 @@ public class GetCoverageTest extends WCSTestSupport {
     }
 
     @FunctionalInterface
-    public interface GridTester {
+    public interface GridChecker {
         void test(GridCoverage2D coverage) throws Exception;
     }
 
-    void testCoverageResult(File xml, GridTester tester) throws Exception {
+    void testCoverageResult(File xml, GridChecker tester) throws Exception {
         final String request = FileUtils.readFileToString(xml, "UTF-8");
         MockHttpServletResponse response = postAsServletResponse("wcs", request);
 
@@ -684,8 +682,8 @@ public class GetCoverageTest extends WCSTestSupport {
             // 1 dimensional slice along latitude
             final GeneralEnvelope expectedEnvelope =
                     new GeneralEnvelope(
-                            new double[] {146.49999999999477, -43.499999999997854},
-                            new double[] {147.99999999999474, -43.49583333333119});
+                            new double[] {146.49999999999477, -43.504166666664524},
+                            new double[] {147.99999999999474, -43.49999999999786});
             expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
 
             final double scale = getScale(targetCoverage);
@@ -975,7 +973,7 @@ public class GetCoverageTest extends WCSTestSupport {
 
         if (expectedValue == null) {
             // we expect a WCS Exception
-            assertTrue(response.getStatus() != 200);
+            assertNotEquals(response.getStatus(), 200);
             assertEquals("application/xml", response.getContentType());
             return;
         }

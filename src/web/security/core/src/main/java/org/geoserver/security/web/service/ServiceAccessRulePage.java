@@ -73,8 +73,9 @@ public class ServiceAccessRulePage extends AbstractSecurityPage {
         return header;
     }
 
-    Component editRuleLink(String id, IModel itemModel, Property<ServiceAccessRule> property) {
-        return new SimpleAjaxLink(id, itemModel, property.getModel(itemModel)) {
+    Component editRuleLink(
+            String id, IModel<ServiceAccessRule> itemModel, Property<ServiceAccessRule> property) {
+        return new SimpleAjaxLink<ServiceAccessRule>(id, itemModel, property.getModel(itemModel)) {
 
             @Override
             protected void onClick(AjaxRequestTarget target) {

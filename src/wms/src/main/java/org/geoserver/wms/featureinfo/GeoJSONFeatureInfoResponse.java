@@ -5,7 +5,8 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;

@@ -19,6 +19,7 @@ public class SrsNameKvpParser extends KvpParser {
         super("srsName", URI.class);
     }
 
+    @Override
     public Object parse(String token) throws Exception {
         return new URI(token);
     }

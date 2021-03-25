@@ -59,10 +59,7 @@ public class ResumableUploadResourceCleaner extends TimerTask {
         return expirationDelay;
     }
 
-    /**
-     * Sets the file expiration delay
-     *
-     */
+    /** Sets the file expiration delay */
     public void setExpirationDelay(long expirationDelay) {
         this.expirationDelay = expirationDelay;
     }

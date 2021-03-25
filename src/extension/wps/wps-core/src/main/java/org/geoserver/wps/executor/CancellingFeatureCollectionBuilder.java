@@ -27,11 +27,11 @@ class CancellingFeatureCollectionBuilder {
         InvocationHandler cancellingInvocationHandler =
                 new CancellingInvocationHandler(listener, delegate);
 
-        Class[] interfaces;
+        Class<?>[] interfaces;
         if (delegate instanceof SimpleFeatureCollection) {
-            interfaces = new Class[] {SimpleFeatureCollection.class};
+            interfaces = new Class<?>[] {SimpleFeatureCollection.class};
         } else {
-            interfaces = new Class[] {FeatureCollection.class};
+            interfaces = new Class<?>[] {FeatureCollection.class};
         }
         SimpleFeatureCollection proxy =
                 (SimpleFeatureCollection)
@@ -64,11 +64,11 @@ class CancellingFeatureCollectionBuilder {
 
             // wrap feature iterators into cancelling bits too
             if (result instanceof FeatureIterator<?>) {
-                Class[] interfaces;
+                Class<?>[] interfaces;
                 if (result instanceof SimpleFeatureIterator) {
-                    interfaces = new Class[] {SimpleFeatureIterator.class};
+                    interfaces = new Class<?>[] {SimpleFeatureIterator.class};
                 } else {
-                    interfaces = new Class[] {FeatureIterator.class};
+                    interfaces = new Class<?>[] {FeatureIterator.class};
                 }
                 result =
                         Proxy.newProxyInstance(

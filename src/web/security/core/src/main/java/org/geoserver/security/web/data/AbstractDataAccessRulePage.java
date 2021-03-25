@@ -104,7 +104,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
 
     public AbstractDataAccessRulePage(final DataAccessRule rule) {
         // build the form
-        Form form = new Form<DataAccessRule>("form", new CompoundPropertyModel(rule));
+        Form<DataAccessRule> form = new Form<>("form", new CompoundPropertyModel<>(rule));
         add(form);
         form.add(new EmptyRolesValidator());
 
@@ -125,7 +125,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
 
         form.add(rootLabel = new Label("rootLabel", new RootLabelModel()));
         rootLabel.setOutputMarkupId(true);
-        form.add(rootChoice = new DropDownChoice<String>("root", new RootsModel()));
+        form.add(rootChoice = new DropDownChoice<>("root", new RootsModel()));
         rootChoice.setRequired(true);
         rootChoice.setOutputMarkupId(true);
         rootChoice.add(
@@ -133,8 +133,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         layerChoice.setChoices(
-                                new Model<ArrayList<String>>(
-                                        getLayerNames(rootChoice.getConvertedInput())));
+                                new Model<>(getLayerNames(rootChoice.getConvertedInput())));
                         layerChoice.modelChanged();
                         target.add(layerChoice);
                     }
@@ -144,20 +143,19 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
         layerContainer.setOutputMarkupId(true);
         layerContainer.add(layerAndLabel = new WebMarkupContainer("layerAndLabel"));
         layerAndLabel.add(
-                layerChoice = new DropDownChoice<String>("layer", getLayerNames(rule.getRoot())));
+                layerChoice = new DropDownChoice<>("layer", getLayerNames(rule.getRoot())));
         layerAndLabel.setVisible(!rule.isGlobalGroupRule());
         layerChoice.setRequired(true);
         layerChoice.setOutputMarkupId(true);
 
         form.add(
                 accessModeChoice =
-                        new DropDownChoice<AccessMode>(
-                                "accessMode", MODES, new AccessModeRenderer()));
+                        new DropDownChoice<>("accessMode", MODES, new AccessModeRenderer()));
         accessModeChoice.setRequired(true);
 
         form.add(
                 rolesFormComponent =
-                        new RuleRolesFormComponent("roles", new PropertyModel(rule, "roles"))
+                        new RuleRolesFormComponent("roles", new PropertyModel<>(rule, "roles"))
                                 .setHasAnyRole(
                                         rule.getRoles()
                                                 .contains(GeoServerRole.ANY_ROLE.getAuthority())));
@@ -189,7 +187,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
      * Returns a sorted list of layer names in the specified workspace (or * if the workspace is *)
      */
     ArrayList<String> getLayerNames(String rootName) {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         if (!rootName.equals("*")) {
             Filter wsResources = Predicates.equal("store.workspace.name", rootName);
             try (CloseableIterator<ResourceInfo> it =
@@ -218,10 +216,12 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
     /** Makes sure we see translated text, by the raw name is used for the model */
     class AccessModeRenderer extends ChoiceRenderer<AccessMode> {
 
+        @Override
         public Object getDisplayValue(AccessMode object) {
-            return (String) new ParamResourceModel(object.name(), getPage()).getObject();
+            return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
+        @Override
         public String getIdValue(AccessMode object, int index) {
             return object.name();
         }

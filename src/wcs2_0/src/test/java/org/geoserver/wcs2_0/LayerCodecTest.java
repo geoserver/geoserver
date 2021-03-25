@@ -19,6 +19,7 @@ import org.junit.Test;
 public class LayerCodecTest extends GeoServerSystemTestSupport {
 
     /** Only setup coverages */
+    @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         testData.setUpDefaultRasterLayers();

@@ -37,8 +37,8 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
     protected boolean padWithZeros;
     protected boolean forcedDecimal;
 
-    protected List<AttributeTypeInfo> attributes = new ArrayList<AttributeTypeInfo>();
-    protected List<String> responseSRS = new ArrayList<String>();
+    protected List<AttributeTypeInfo> attributes = new ArrayList<>();
+    protected List<String> responseSRS = new ArrayList<>();
 
     boolean overridingServiceSRS;
     boolean skipNumberMatched = false;
@@ -47,10 +47,12 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
     // we don't use the primitive because we need to detect the situation where no value was set
     Boolean encodeMeasures;
 
+    @Override
     public boolean isCircularArcPresent() {
         return circularArcPresent;
     }
 
+    @Override
     public void setCircularArcPresent(boolean curveGeometryEnabled) {
         this.circularArcPresent = curveGeometryEnabled;
     }
@@ -67,6 +69,7 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
         super(catalog, id);
     }
 
+    @Override
     public DataStoreInfo getStore() {
         StoreInfo storeInfo = super.getStore();
         if (!(storeInfo instanceof DataStoreInfo)) {
@@ -76,6 +79,7 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
         return (DataStoreInfo) super.getStore();
     }
 
+    @Override
     public List<AttributeTypeInfo> getAttributes() {
         return attributes;
     }
@@ -87,6 +91,7 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
     /*
      * The filter is computed by current cqlFilter
      */
+    @Override
     public Filter filter() {
         try {
             if (filter == null && cqlFilter != null && !cqlFilter.isEmpty()) {
@@ -99,39 +104,48 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
         return filter;
     }
 
+    @Override
     public int getMaxFeatures() {
         return maxFeatures;
     }
 
+    @Override
     public void setMaxFeatures(int maxFeatures) {
         this.maxFeatures = maxFeatures;
     }
 
+    @Override
     public int getNumDecimals() {
         return numDecimals;
     }
 
+    @Override
     public void setNumDecimals(int numDecimals) {
         this.numDecimals = numDecimals;
     }
 
+    @Override
     public List<AttributeTypeInfo> attributes() throws IOException {
         return catalog.getResourcePool().getAttributes(this);
     }
 
+    @Override
     public FeatureType getFeatureType() throws IOException {
         return catalog.getResourcePool().getFeatureType(this);
     }
 
+    @Override
     public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
             ProgressListener listener, Hints hints) throws IOException {
         return catalog.getResourcePool().getFeatureSource(this, hints);
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
 
+    @Override
     public List<String> getResponseSRS() {
         return responseSRS;
     }
@@ -140,10 +154,12 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
         this.responseSRS = otherSrs;
     }
 
+    @Override
     public boolean isOverridingServiceSRS() {
         return overridingServiceSRS;
     }
 
+    @Override
     public void setOverridingServiceSRS(boolean overridingServiceSRS) {
         this.overridingServiceSRS = overridingServiceSRS;
     }
@@ -176,6 +192,7 @@ public class FeatureTypeInfoImpl extends ResourceInfoImpl implements FeatureType
      * Mind, this method cannot be auto-generated, it has to compare against the interface,
      * not the implementation
      */
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof FeatureTypeInfo)) {
             return false;

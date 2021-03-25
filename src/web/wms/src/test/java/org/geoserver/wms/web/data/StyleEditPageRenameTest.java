@@ -4,17 +4,17 @@
  */
 package org.geoserver.wms.web.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.event.*;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -31,7 +31,6 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
 
     private static final String STYLE_TO_MOVE_NAME = "testStyle";
     private static final String STYLE_TO_MOVE_FILENAME = "testMoveStyle.sld";
-    private static final String STYLE_TO_MOVE_FILENAME_UPDATED = "testMoveStyleUpdated.sld";
     StyleInfo styleInfoToMove;
 
     @Before
@@ -90,11 +89,6 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("styleForm", false);
 
         // Update the workspace (select "sf" from the dropdown)
-        DropDownChoice<WorkspaceInfo> typeDropDown =
-                (DropDownChoice<WorkspaceInfo>)
-                        tester.getComponentFromLastRenderedPage(
-                                "styleForm:context:panel:workspace");
-
         form.setValue("context:panel:workspace", "");
 
         // Submit the form and verify that both the new workspace and new rawStyle saved.

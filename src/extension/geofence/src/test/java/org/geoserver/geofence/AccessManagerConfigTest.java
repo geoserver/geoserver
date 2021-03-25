@@ -4,6 +4,9 @@
  */
 package org.geoserver.geofence;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +48,7 @@ public class AccessManagerConfigTest extends GeoServerTestSupport {
                     e);
         }
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("wfs", "http://www.opengis.net/wfs");
         namespaces.put("wcs", "http://www.opengis.net/wcs/1.1.1");
@@ -102,6 +105,6 @@ public class AccessManagerConfigTest extends GeoServerTestSupport {
         String content = GeofenceTestUtils.readConfig(configFile);
         assertTrue(content.contains("fakeservice"));
         assertTrue(content.contains("TEST_INSTANCE"));
-        assertTrue(!content.contains("custom_property_value"));
+        assertFalse(content.contains("custom_property_value"));
     }
 }

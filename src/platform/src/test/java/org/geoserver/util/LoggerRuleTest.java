@@ -6,14 +6,21 @@
 
 package org.geoserver.util;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
+import static org.easymock.EasyMock.verify;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -23,16 +30,15 @@ import org.easymock.Capture;
 import org.easymock.CaptureType;
 import org.easymock.IAnswer;
 import org.geotools.util.logging.LoggerAdapter;
-import org.junit.Rule;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.internal.AssumptionViolatedException;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 public class LoggerRuleTest {
 
-    @Rule public ExpectedException exception = ExpectedException.none();
+    // @Rule public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void testDoNothingUntilRun() {
@@ -61,22 +67,19 @@ public class LoggerRuleTest {
         base.evaluate();
         expectLastCall()
                 .andAnswer(
-                        new IAnswer<Void>() {
+                        (IAnswer<Void>)
+                                () -> {
+                                    verify(log);
+                                    reset(log);
 
-                            @Override
-                            public Void answer() throws Throwable {
-                                verify(log);
-                                reset(log);
+                                    log.removeHandler(handlerCap.getValue());
+                                    expectLastCall().once();
+                                    log.setLevel(Level.OFF);
+                                    expectLastCall().once();
 
-                                log.removeHandler(handlerCap.getValue());
-                                expectLastCall().once();
-                                log.setLevel(Level.OFF);
-                                expectLastCall().once();
-
-                                replay(log);
-                                return null;
-                            }
-                        });
+                                    replay(log);
+                                    return null;
+                                });
         replay(log, desc, base);
         LoggerRule rule = new LoggerRule(log, Level.FINE);
         Statement s = rule.apply(base, desc);
@@ -100,29 +103,25 @@ public class LoggerRuleTest {
         base.evaluate();
         expectLastCall()
                 .andAnswer(
-                        new IAnswer<Void>() {
+                        (IAnswer<Void>)
+                                () -> {
+                                    verify(log);
+                                    reset(log);
 
-                            @Override
-                            public Void answer() throws Throwable {
-                                verify(log);
-                                reset(log);
+                                    log.removeHandler(handlerCap.getValue());
+                                    expectLastCall().once();
+                                    log.setLevel(Level.OFF);
+                                    expectLastCall().once();
 
-                                log.removeHandler(handlerCap.getValue());
-                                expectLastCall().once();
-                                log.setLevel(Level.OFF);
-                                expectLastCall().once();
-
-                                replay(log);
-                                throw ex;
-                            }
-                        });
+                                    replay(log);
+                                    throw ex;
+                                });
         replay(log, desc, base);
         LoggerRule rule = new LoggerRule(log, Level.FINE);
         Statement s = rule.apply(base, desc);
 
-        exception.expect(sameInstance(ex));
         try {
-            s.evaluate();
+            Assert.assertThrows(IllegalArgumentException.class, () -> s.evaluate());
         } finally {
             verify(log, desc, base);
         }
@@ -138,7 +137,6 @@ public class LoggerRuleTest {
         log.setLevel(Level.FINE);
         expectLastCall().once();
         final Capture<Handler> handlerCap = Capture.newInstance(CaptureType.LAST);
-        final Exception ex = new IllegalArgumentException();
 
         final LogRecord record = createMock("record1", LogRecord.class);
 
@@ -147,26 +145,23 @@ public class LoggerRuleTest {
         base.evaluate();
         expectLastCall()
                 .andAnswer(
-                        new IAnswer<Void>() {
+                        (IAnswer<Void>)
+                                () -> {
+                                    verify(log);
+                                    reset(log);
 
-                            @Override
-                            public Void answer() throws Throwable {
-                                verify(log);
-                                reset(log);
+                                    log.removeHandler(handlerCap.getValue());
+                                    expectLastCall().once();
+                                    log.setLevel(Level.OFF);
+                                    expectLastCall().once();
 
-                                log.removeHandler(handlerCap.getValue());
-                                expectLastCall().once();
-                                log.setLevel(Level.OFF);
-                                expectLastCall().once();
-
-                                handlerCap.getValue().publish(record);
-                                assertThat(
-                                        ((LoggerRule) handlerCap.getValue()).records(),
-                                        contains(record));
-                                replay(log);
-                                return null;
-                            }
-                        });
+                                    handlerCap.getValue().publish(record);
+                                    assertThat(
+                                            ((LoggerRule) handlerCap.getValue()).records(),
+                                            contains(record));
+                                    replay(log);
+                                    return null;
+                                });
         replay(log, desc, base);
         LoggerRule rule = new LoggerRule(log, Level.FINE);
         Statement s = rule.apply(base, desc);
@@ -193,26 +188,24 @@ public class LoggerRuleTest {
         base.evaluate();
         expectLastCall()
                 .andAnswer(
-                        new IAnswer<Void>() {
+                        (IAnswer<Void>)
+                                () -> {
+                                    verify(log);
+                                    reset(log);
 
-                            @Override
-                            public Void answer() throws Throwable {
-                                verify(log);
-                                reset(log);
+                                    log.removeHandler(handlerCap.getValue());
+                                    expectLastCall().once();
+                                    log.setLevel(Level.OFF);
+                                    expectLastCall().once();
+                                    replay(log);
 
-                                log.removeHandler(handlerCap.getValue());
-                                expectLastCall().once();
-                                log.setLevel(Level.OFF);
-                                expectLastCall().once();
-                                replay(log);
-
-                                handlerCap.getValue().publish(record);
-                                ((LoggerRule) handlerCap.getValue())
-                                        .assertLogged(sameInstance(record));
-                                ((LoggerRule) handlerCap.getValue()).assertLogged(not(anything()));
-                                return null;
-                            }
-                        });
+                                    handlerCap.getValue().publish(record);
+                                    ((LoggerRule) handlerCap.getValue())
+                                            .assertLogged(sameInstance(record));
+                                    ((LoggerRule) handlerCap.getValue())
+                                            .assertLogged(not(anything()));
+                                    return null;
+                                });
         replay(log, desc, base);
         LoggerRule rule = new LoggerRule(log, Level.FINE);
         Statement s = rule.apply(base, desc);
@@ -245,25 +238,22 @@ public class LoggerRuleTest {
         base.evaluate();
         expectLastCall()
                 .andAnswer(
-                        new IAnswer<Void>() {
+                        (IAnswer<Void>)
+                                () -> {
+                                    verify(log);
+                                    reset(log);
 
-                            @Override
-                            public Void answer() throws Throwable {
-                                verify(log);
-                                reset(log);
+                                    log.removeHandler(handlerCap.getValue());
+                                    expectLastCall().once();
+                                    log.setLevel(Level.OFF);
+                                    expectLastCall().once();
+                                    replay(log);
 
-                                log.removeHandler(handlerCap.getValue());
-                                expectLastCall().once();
-                                log.setLevel(Level.OFF);
-                                expectLastCall().once();
-                                replay(log);
-
-                                handlerCap.getValue().publish(record);
-                                ((LoggerRule) handlerCap.getValue())
-                                        .assertLogged(sameInstance(record));
-                                return null;
-                            }
-                        });
+                                    handlerCap.getValue().publish(record);
+                                    ((LoggerRule) handlerCap.getValue())
+                                            .assertLogged(sameInstance(record));
+                                    return null;
+                                });
         replay(log, desc, base);
         LoggerRule rule = new LoggerRule(log, Level.FINE);
         Statement s = rule.apply(base, desc);
@@ -293,25 +283,22 @@ public class LoggerRuleTest {
         base.evaluate();
         expectLastCall()
                 .andAnswer(
-                        new IAnswer<Void>() {
+                        (IAnswer<Void>)
+                                () -> {
+                                    verify(log);
+                                    reset(log);
 
-                            @Override
-                            public Void answer() throws Throwable {
-                                verify(log);
-                                reset(log);
+                                    log.removeHandler(handlerCap.getValue());
+                                    expectLastCall().once();
+                                    log.setLevel(Level.OFF);
+                                    expectLastCall().once();
+                                    replay(log);
 
-                                log.removeHandler(handlerCap.getValue());
-                                expectLastCall().once();
-                                log.setLevel(Level.OFF);
-                                expectLastCall().once();
-                                replay(log);
-
-                                handlerCap.getValue().publish(record);
-                                ((LoggerRule) handlerCap.getValue())
-                                        .assertLogged(sameInstance(record));
-                                return null;
-                            }
-                        });
+                                    handlerCap.getValue().publish(record);
+                                    ((LoggerRule) handlerCap.getValue())
+                                            .assertLogged(sameInstance(record));
+                                    return null;
+                                });
         replay(log, desc, base);
         LoggerRule rule = new LoggerRule(log, Level.FINE);
         Statement s = rule.apply(base, desc);
@@ -322,8 +309,9 @@ public class LoggerRuleTest {
             if (!ex.getMessage().equals("LoggerRule can't capture logs for LoggerAdapter")) {
                 throw ex;
             }
-            // Eventually hopefully we can handle this case and we can fail if this particular
-            // assumption failure occurs.  For now it's a pass rather than an ignore.
+            // Eventually hopefully we can handle this case and we can fail if this
+            // particular
+            // assumption failure occurs. For now it's a pass rather than an ignore.
         } finally {
             verify(log, desc, base);
         }

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -32,7 +33,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Comparable<?>>> {
+public abstract class AbstractAclController<
+        R extends Comparable<R>, DAO extends AbstractAccessRuleDAO<R>> {
 
     public static final String ANY = "*";
 
@@ -73,7 +75,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
             MediaType.TEXT_XML_VALUE
         }
     )
-    public void rulesPost(@RequestBody RuleMap map) throws IOException {
+    public void rulesPost(@RequestBody RuleMap<String, String> map) throws IOException {
         checkUserIsAdmin();
 
         try {
@@ -91,7 +93,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
             MediaType.TEXT_XML_VALUE
         }
     )
-    public void rulesPut(@RequestBody RuleMap map) throws IOException {
+    public void rulesPut(@RequestBody RuleMap<String, String> map) throws IOException {
         checkUserIsAdmin();
 
         try {
@@ -112,8 +114,8 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         String msg = validateRuleKey(ruleString);
         if (msg != null) throw new RestException(msg, HttpStatus.UNPROCESSABLE_ENTITY);
 
-        Comparable<?> rule = null;
-        for (Comparable<?> ruleCandidate : ruleDAO.getRules()) {
+        R rule = null;
+        for (R ruleCandidate : ruleDAO.getRules()) {
             if (ruleString.equals(keyFor(ruleCandidate))) {
                 rule = ruleCandidate;
                 break;
@@ -138,16 +140,16 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
 
     protected void checkUserIsAdmin() {
         if (!getManager().checkAuthenticationForAdminRole()) {
-            throw new RestException("Amdinistrative priveleges required", HttpStatus.FORBIDDEN);
+            throw new RestException("Administrative privileges required", HttpStatus.FORBIDDEN);
         }
     }
 
     /** Adds a rule to a map */
-    protected abstract void addRuleToMap(Comparable rule, Map<String, String> map);
+    protected abstract void addRuleToMap(R rule, Map<String, String> map);
 
     public RuleMap<String, String> getMap() throws Exception {
         RuleMap<String, String> result = new RuleMap<>();
-        for (Comparable<?> rule : ruleDAO.getRules()) {
+        for (R rule : ruleDAO.getRules()) {
             addRuleToMap(rule, result);
         }
         return result;
@@ -159,7 +161,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         Set<Object> result = new HashSet<>();
 
         Set<Object> ruleKeys = new HashSet<>();
-        for (Comparable<?> rule : ruleDAO.getRules()) {
+        for (R rule : ruleDAO.getRules()) {
             ruleKeys.add(keyFor(rule));
         }
 
@@ -172,15 +174,15 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
     }
 
     /** Calculate the keys not contained in the rule data access object */
-    protected Set<Object> nonExistingKeys(Map map) {
+    protected Set<Object> nonExistingKeys(Map<?, ?> map) {
 
-        List<Comparable<?>> rules = ruleDAO.getRules();
+        List<R> rules = ruleDAO.getRules();
 
-        if (rules.isEmpty()) return map.keySet();
+        if (rules.isEmpty()) return map.keySet().stream().collect(Collectors.toSet());
 
         Set<Object> result = new HashSet<>();
         Set<Object> ruleKeys = new HashSet<>();
-        for (Comparable<?> rule : rules) {
+        for (R rule : rules) {
             ruleKeys.add(keyFor(rule));
         }
         for (Object key : map.keySet()) {
@@ -190,7 +192,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
     }
 
     /** Returns the key string for a rule */
-    protected abstract String keyFor(Comparable<?> rule);
+    protected abstract String keyFor(R rule);
 
     /**
      * Validate a rule, return an error message or <code>null</code> if the rule is ok
@@ -210,7 +212,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
     protected abstract String validateRuleKey(String ruleKey);
 
     /** Convert an {@link Entry} to a rule object */
-    protected abstract Comparable convertEntryToRule(Entry<String, String> entry);
+    protected abstract R convertEntryToRule(Entry<String, String> entry);
 
     /** Validates the string representation of rule keys and values */
     protected void validateMap(Map<String, String> ruleMap) {
@@ -222,7 +224,7 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
         }
     }
 
-    protected void postMap(Map map) throws Exception {
+    protected void postMap(Map<String, String> map) throws Exception {
 
         validateMap(map);
 
@@ -233,14 +235,14 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
             throw new RestException(msg, HttpStatus.CONFLICT);
         }
 
-        for (Object entry : map.entrySet()) {
-            Comparable rule = convertEntryToRule((Entry<String, String>) entry);
+        for (Entry<String, String> entry : map.entrySet()) {
+            R rule = convertEntryToRule(entry);
             ruleDAO.addRule(rule);
         }
         ruleDAO.storeRules();
     }
 
-    protected void putMap(Map map) throws Exception {
+    protected void putMap(Map<String, String> map) throws Exception {
         validateMap(map);
         Set<Object> nonExisting = nonExistingKeys(map);
 
@@ -249,8 +251,8 @@ public abstract class AbstractAclController<DAO extends AbstractAccessRuleDAO<Co
             throw new RestException(msg, HttpStatus.CONFLICT);
         }
 
-        for (Object entry : map.entrySet()) {
-            Comparable rule = convertEntryToRule((Entry<String, String>) entry);
+        for (Entry<String, String> entry : map.entrySet()) {
+            R rule = convertEntryToRule(entry);
             // TODO, will not work for REST
             ruleDAO.removeRule(rule);
             ruleDAO.addRule(rule);

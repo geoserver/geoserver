@@ -12,6 +12,7 @@ public class GeoServerExpiredPage extends GeoServerBasePage {
     public GeoServerExpiredPage() {
         add(
                 new Link("homeLink") {
+                    @Override
                     public void onClick() {
                         setResponsePage(GeoServerHomePage.class);
                     }

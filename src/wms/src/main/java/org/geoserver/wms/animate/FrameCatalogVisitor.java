@@ -59,12 +59,12 @@ public class FrameCatalogVisitor {
             String aparam,
             String avalue) {
         if (this.tasks == null) {
-            this.tasks = new LinkedList<Future<RenderedImage>>();
+            this.tasks = new LinkedList<>();
         }
 
         FrameLoader loader = new FrameLoader(request, wms, wmsConfiguration, aparam, avalue);
 
-        final FutureTask<RenderedImage> task = new FutureTask<RenderedImage>(loader);
+        final FutureTask<RenderedImage> task = new FutureTask<>(loader);
         this.tasks.add(task);
         this.framesNumber++;
 
@@ -74,7 +74,7 @@ public class FrameCatalogVisitor {
 
     /** Invokes the Executor service and produces the frames images. */
     public RenderedImageList produce(WMS wmsConfiguration) throws IOException {
-        List<RenderedImage> images = new ArrayList<RenderedImage>();
+        List<RenderedImage> images = new ArrayList<>();
 
         long gifAnimatedSize = 0;
 
@@ -82,10 +82,7 @@ public class FrameCatalogVisitor {
             RenderedImage image = null;
             try {
                 image = future.get();
-            } catch (InterruptedException e) {
-                dispose();
-                throw new IOException(e);
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 dispose();
                 throw new IOException(e);
             }
@@ -105,7 +102,7 @@ public class FrameCatalogVisitor {
             images.add(image);
         }
 
-        if (images == null || images.size() == 0) {
+        if (images == null || images.isEmpty()) {
             dispose();
             throw new IOException("Empty list of frames.");
         }
@@ -169,7 +166,6 @@ class FrameLoader implements Callable<RenderedImage> {
 
     @Override
     public RenderedImage call() throws Exception {
-        org.geoserver.wms.WebMap wmsResponse;
 
         // Making a shallow copy of the original request and replacing param's values
         GetMapRequest frameRequest = replaceRequestParams(this.request, this.aparam, this.avalue);
@@ -195,7 +191,7 @@ class FrameLoader implements Callable<RenderedImage> {
             }
         }
 
-        wmsResponse = this.wms.getMap(frameRequest);
+        org.geoserver.wms.WebMap wmsResponse = this.wms.getMap(frameRequest);
 
         return ((RenderedImageMap) wmsResponse).getImage();
     }
@@ -211,7 +207,7 @@ class FrameLoader implements Callable<RenderedImage> {
 
         // looking for composite parameters like env:color or viewparams:param ...
         Map<String, String> rawKvp =
-                new CaseInsensitiveMap(new HashMap<String, String>(theRequest.getRawKvp()));
+                new CaseInsensitiveMap<>(new HashMap<>(theRequest.getRawKvp()));
         if (param.contains(":")) {
             // going to replace composite param values for each frame in the KVP map
             String compositeParamKey = param.split(":")[0].toUpperCase();
@@ -228,7 +224,7 @@ class FrameLoader implements Callable<RenderedImage> {
                     }
                 }
             } else {
-                kvps = new ArrayList<String>();
+                kvps = new ArrayList<>();
             }
             // insert the right one
             kvps.add(simpleParamKey + ":" + value);
@@ -249,11 +245,11 @@ class FrameLoader implements Callable<RenderedImage> {
         request.setRawKvp(rawKvp);
 
         // building the request KVP map using the reflection
-        HashMap<String, String> kvp = new HashMap<String, String>(rawKvp);
+        HashMap<String, Object> kvp = new HashMap<>(rawKvp);
         KvpUtils.parse(kvp);
 
         // finally building the request
-        request = kvpRequestReader.read(new GetMapRequest(), kvp, rawKvp);
+        request = kvpRequestReader.read(new GetMapRequest(), kvp, KvpUtils.toObjectKVP(rawKvp));
 
         // add the param value for text decorations to use
         request.getEnv().put("avalue", value);

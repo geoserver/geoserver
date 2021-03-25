@@ -5,7 +5,9 @@
 
 package org.geoserver.rest.system.status;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
@@ -81,12 +83,9 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
         assertEquals(200, response.getStatus());
         assertEquals("application/json", response.getContentType());
         JSONArray metrics =
-                (JSONArray)
-                        ((JSONObject) json(response))
-                                .getJSONObject("metrics")
-                                .getJSONArray("metric");
-        for (int i = 0; i < metrics.size(); i++) {
-            assertNotNull(((JSONObject) metrics.get(i)).containsKey("value"));
+                ((JSONObject) json(response)).getJSONObject("metrics").getJSONArray("metric");
+        for (Object metric : metrics) {
+            assertNotNull(((JSONObject) metric).containsKey("value"));
         }
     }
 

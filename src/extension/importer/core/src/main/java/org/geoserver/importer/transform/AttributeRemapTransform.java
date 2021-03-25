@@ -26,9 +26,9 @@ public class AttributeRemapTransform extends AbstractTransform implements Inline
     protected String field;
 
     /** type to remap to */
-    protected Class type;
+    protected Class<?> type;
 
-    public AttributeRemapTransform(String field, Class type) {
+    public AttributeRemapTransform(String field, Class<?> type) {
         this.field = field;
         this.type = type;
     }
@@ -43,14 +43,15 @@ public class AttributeRemapTransform extends AbstractTransform implements Inline
         this.field = field;
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 
-    public void setType(Class type) {
+    public void setType(Class<?> type) {
         this.type = type;
     }
 
+    @Override
     public SimpleFeatureType apply(
             ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
         // remap the type
@@ -78,6 +79,7 @@ public class AttributeRemapTransform extends AbstractTransform implements Inline
         return builder.buildFeatureType();
     }
 
+    @Override
     public SimpleFeature apply(
             ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {

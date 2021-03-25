@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<layout>
+  <decoration type="legend" affinity="top,right" offset="0,0" size="auto"/>
+  <decoration type="text" affinity="top,left" offset="1,1" size="auto">
+    <option name="message">Ian's test map</option>
+  </decoration>
+  <decoration type="scaleline" affinity="bottom,left" offset="10,10" size="300,50" />
+    
+</layout>

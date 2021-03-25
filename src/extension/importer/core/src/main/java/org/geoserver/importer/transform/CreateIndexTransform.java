@@ -36,6 +36,7 @@ public class CreateIndexTransform extends AbstractTransform
         this.field = field;
     }
 
+    @Override
     public void apply(ImportTask task, ImportData data) throws Exception {
         DataStoreInfo storeInfo = (DataStoreInfo) task.getStore();
         DataAccess store = storeInfo.getDataStore(null);

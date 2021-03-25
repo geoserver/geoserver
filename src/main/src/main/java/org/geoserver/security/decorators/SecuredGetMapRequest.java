@@ -17,9 +17,9 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WrapperPolicy;
-import org.geotools.data.ows.HTTPResponse;
 import org.geotools.data.ows.Response;
 import org.geotools.filter.text.cql2.CQL;
+import org.geotools.http.HTTPResponse;
 import org.geotools.ows.ServiceException;
 import org.geotools.ows.wms.CRSEnvelope;
 import org.geotools.ows.wms.Layer;
@@ -37,8 +37,8 @@ public class SecuredGetMapRequest implements GetMapRequest {
     static final Logger LOGGER = Logging.getLogger(SecuredGetMapRequest.class);
 
     GetMapRequest delegate;
-    List<Layer> layers = new ArrayList<Layer>();
-    List<String> styles = new ArrayList<String>();
+    List<Layer> layers = new ArrayList<>();
+    List<String> styles = new ArrayList<>();
 
     // we should add layers to the delegate only once, also if
     // getFinalURL is called many times
@@ -48,6 +48,7 @@ public class SecuredGetMapRequest implements GetMapRequest {
         this.delegate = delegate;
     }
 
+    @Override
     public void addLayer(Layer layer, String styleName) {
         layers.add(layer);
         if (styleName != null) {
@@ -57,6 +58,7 @@ public class SecuredGetMapRequest implements GetMapRequest {
         }
     }
 
+    @Override
     public void addLayer(Layer layer, StyleImpl style) {
         layers.add(layer);
         if (style != null && style.getName() != null) {
@@ -66,21 +68,25 @@ public class SecuredGetMapRequest implements GetMapRequest {
         }
     }
 
+    @Override
     public void addLayer(Layer layer) {
         layers.add(layer);
         styles.add("");
     }
 
+    @Override
     public void addLayer(String layerName, String styleName) {
         throw new UnsupportedOperationException(
                 "The secured implementation only supports adding layers using Layer and StyleImpl objects");
     }
 
+    @Override
     public void addLayer(String layerName, StyleImpl style) {
         throw new UnsupportedOperationException(
                 "The secured implementation only supports adding layers using Layer and StyleImpl objects");
     }
 
+    @Override
     public URL getFinalURL() {
         String encodedFilter = buildCQLFilter();
         if (encodedFilter != null) {
@@ -92,7 +98,7 @@ public class SecuredGetMapRequest implements GetMapRequest {
 
     /** Checks security and build the eventual CQL filter to cascade */
     public String buildCQLFilter() {
-        List<Filter> layerFilters = new ArrayList<Filter>();
+        List<Filter> layerFilters = new ArrayList<>();
         // scan and check the layers
         boolean layerFiltersFound = false;
         for (int i = 0; i < layers.size(); i++) {
@@ -156,22 +162,27 @@ public class SecuredGetMapRequest implements GetMapRequest {
     // Purely delegated methods
     // -----------------------------------------------------------------------------------------
 
+    @Override
     public String getPostContentType() {
         return delegate.getPostContentType();
     }
 
+    @Override
     public Properties getProperties() {
         return delegate.getProperties();
     }
 
+    @Override
     public void performPostOutput(OutputStream outputStream) throws IOException {
         delegate.performPostOutput(outputStream);
     }
 
+    @Override
     public boolean requiresPost() {
         return delegate.requiresPost();
     }
 
+    @Override
     public void setBBox(org.opengis.geometry.Envelope box) {
         delegate.setBBox(box);
     }
@@ -180,70 +191,87 @@ public class SecuredGetMapRequest implements GetMapRequest {
         delegate.setBBox(box);
     }
 
+    @Override
     public void setBBox(String bbox) {
         delegate.setBBox(bbox);
     }
 
+    @Override
     public void setBGColour(String bgColour) {
         delegate.setBGColour(bgColour);
     }
 
+    @Override
     public void setDimensions(Dimension imageDimension) {
         delegate.setDimensions(imageDimension);
     }
 
+    @Override
     public void setDimensions(int width, int height) {
         delegate.setDimensions(width, height);
     }
 
+    @Override
     public void setDimensions(String width, String height) {
         delegate.setDimensions(width, height);
     }
 
+    @Override
     public void setElevation(String elevation) {
         delegate.setElevation(elevation);
     }
 
+    @Override
     public void setExceptions(String exceptions) {
         delegate.setExceptions(exceptions);
     }
 
+    @Override
     public void setFormat(String format) {
         delegate.setFormat(format);
     }
 
+    @Override
     public void setProperties(Properties p) {
         delegate.setProperties(p);
     }
 
+    @Override
     public void setProperty(String name, String value) {
         delegate.setProperty(name, value);
     }
 
+    @Override
     public void setSampleDimensionValue(String name, String value) {
         delegate.setSampleDimensionValue(name, value);
     }
 
+    @Override
     public void setSRS(String srs) {
         delegate.setSRS(srs);
     }
 
+    @Override
     public void setTime(String time) {
         delegate.setTime(time);
     }
 
+    @Override
     public void setTransparent(boolean transparent) {
         delegate.setTransparent(transparent);
     }
 
+    @Override
     public void setVendorSpecificParameter(String name, String value) {
         delegate.setVendorSpecificParameter(name, value);
     }
 
+    @Override
     public void setVersion(String version) {
         delegate.setVersion(version);
     }
 
+    @Override
     public Response createResponse(HTTPResponse response) throws ServiceException, IOException {
         return delegate.createResponse(response);
     }

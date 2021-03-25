@@ -5,7 +5,9 @@
  */
 package org.geoserver.wms.map.png;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
@@ -46,11 +48,12 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + "&srs=EPSG:4326");
         assertEquals("image/png", response.getContentType());
 
-        InputStream is = getBinaryInputStream(response);
-        BufferedImage bi = ImageIO.read(is);
-        ColorModel cm = bi.getColorModel();
-        assertFalse(cm.hasAlpha());
-        assertEquals(3, cm.getNumColorComponents());
+        try (InputStream is = getBinaryInputStream(response)) {
+            BufferedImage bi = ImageIO.read(is);
+            ColorModel cm = bi.getColorModel();
+            assertFalse(cm.hasAlpha());
+            assertEquals(3, cm.getNumColorComponents());
+        }
     }
 
     @Test
@@ -68,11 +71,12 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + "&srs=EPSG:4326&transparent=true");
         assertEquals("image/png", response.getContentType());
 
-        InputStream is = getBinaryInputStream(response);
-        BufferedImage bi = ImageIO.read(is);
-        ColorModel cm = bi.getColorModel();
-        assertTrue(cm.hasAlpha());
-        assertEquals(3, cm.getNumColorComponents());
+        try (InputStream is = getBinaryInputStream(response)) {
+            BufferedImage bi = ImageIO.read(is);
+            ColorModel cm = bi.getColorModel();
+            assertTrue(cm.hasAlpha());
+            assertEquals(3, cm.getNumColorComponents());
+        }
     }
 
     @Test
@@ -90,11 +94,12 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + "&srs=EPSG:4326");
         assertEquals("image/png; mode=8bit", response.getContentType());
 
-        InputStream is = getBinaryInputStream(response);
-        BufferedImage bi = ImageIO.read(is);
-        IndexColorModel cm = (IndexColorModel) bi.getColorModel();
-        assertEquals(Transparency.OPAQUE, cm.getTransparency());
-        assertEquals(-1, cm.getTransparentPixel());
+        try (InputStream is = getBinaryInputStream(response)) {
+            BufferedImage bi = ImageIO.read(is);
+            IndexColorModel cm = (IndexColorModel) bi.getColorModel();
+            assertEquals(Transparency.OPAQUE, cm.getTransparency());
+            assertEquals(-1, cm.getTransparentPixel());
+        }
     }
 
     @Test
@@ -112,11 +117,12 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + "&srs=EPSG:4326&transparent=true&format_options=quantizer:octree");
         assertEquals("image/png; mode=8bit", response.getContentType());
 
-        InputStream is = getBinaryInputStream(response);
-        BufferedImage bi = ImageIO.read(is);
-        IndexColorModel cm = (IndexColorModel) bi.getColorModel();
-        assertEquals(Transparency.BITMASK, cm.getTransparency());
-        assertTrue(cm.getTransparentPixel() >= 0);
+        try (InputStream is = getBinaryInputStream(response)) {
+            BufferedImage bi = ImageIO.read(is);
+            IndexColorModel cm = (IndexColorModel) bi.getColorModel();
+            assertEquals(Transparency.BITMASK, cm.getTransparency());
+            assertTrue(cm.getTransparentPixel() >= 0);
+        }
     }
 
     @Test
@@ -134,9 +140,10 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + "&srs=EPSG:4326&transparent=true");
         assertEquals("image/png; mode=8bit", response.getContentType());
 
-        InputStream is = getBinaryInputStream(response);
-        BufferedImage bi = ImageIO.read(is);
-        IndexColorModel cm = (IndexColorModel) bi.getColorModel();
-        assertEquals(Transparency.TRANSLUCENT, cm.getTransparency());
+        try (InputStream is = getBinaryInputStream(response)) {
+            BufferedImage bi = ImageIO.read(is);
+            IndexColorModel cm = (IndexColorModel) bi.getColorModel();
+            assertEquals(Transparency.TRANSLUCENT, cm.getTransparency());
+        }
     }
 }

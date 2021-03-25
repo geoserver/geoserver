@@ -96,14 +96,14 @@ public class AnimatorFilter implements GeoServerFilter {
         }
 
         @Override
-        public Enumeration getParameterNames() {
+        public Enumeration<String> getParameterNames() {
             return Collections.enumeration(getParameterMap().keySet());
         }
 
         @Override
         public Map<String, String[]> getParameterMap() {
             Map<String, String[]> original = super.getParameterMap();
-            Map filtered = new HashMap<String, String[]>();
+            Map<String, String[]> filtered = new HashMap<>();
             for (Map.Entry<String, String[]> entry : original.entrySet()) {
                 String key = entry.getKey();
                 if (!REQUEST.equalsIgnoreCase(key)) {

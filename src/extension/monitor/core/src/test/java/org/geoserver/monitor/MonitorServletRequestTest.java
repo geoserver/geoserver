@@ -31,6 +31,7 @@ public class MonitorServletRequestTest {
 
         AtomicBoolean called = new AtomicBoolean(false);
 
+        @Override
         public javax.servlet.ServletInputStream getInputStream() {
             checkCalled();
             final ByteArrayInputStream bis = new ByteArrayInputStream(BUFFER);
@@ -63,16 +64,17 @@ public class MonitorServletRequestTest {
         DelegatingServletInputStream mock =
                 new DelegatingServletInputStream(new ByteArrayInputStream(data));
 
-        MonitorInputStream in = new MonitorInputStream(mock, 0);
-        byte[] read = read(in);
+        try (MonitorInputStream in = new MonitorInputStream(mock, 0)) {
+            byte[] read = read(in);
 
-        assertEquals(data.length, read.length);
+            assertEquals(data.length, read.length);
 
-        byte[] buffer = in.getData();
-        assertEquals(0, buffer.length);
+            byte[] buffer = in.getData();
+            assertEquals(0, buffer.length);
 
-        // ? why does this report 1 off ?
-        assertEquals(data.length - 1, in.getBytesRead());
+            // ? why does this report 1 off ?
+            assertEquals(data.length - 1, in.getBytesRead());
+        }
     }
 
     @Test
@@ -81,25 +83,27 @@ public class MonitorServletRequestTest {
         DelegatingServletInputStream mock =
                 new DelegatingServletInputStream(new ByteArrayInputStream(data));
 
-        MonitorInputStream in = new MonitorInputStream(mock, 1024);
-        byte[] read = read(in);
+        try (MonitorInputStream in = new MonitorInputStream(mock, 1024)) {
+            byte[] read = read(in);
 
-        assertEquals(data.length, read.length);
+            assertEquals(data.length, read.length);
 
-        byte[] buffer = in.getData();
-        assertEquals(1024, buffer.length);
+            byte[] buffer = in.getData();
+            assertEquals(1024, buffer.length);
 
-        for (int i = 0; i < buffer.length; i++) {
-            assertEquals(data[i], buffer[i]);
+            for (int i = 0; i < buffer.length; i++) {
+                assertEquals(data[i], buffer[i]);
+            }
+
+            // ? why does this report 1 off ?
+            assertEquals(data.length - 1, in.getBytesRead());
         }
-
-        // ? why does this report 1 off ?
-        assertEquals(data.length - 1, in.getBytesRead());
     }
 
     static byte[] data() throws IOException {
-        InputStream in = MonitorServletRequest.class.getResourceAsStream("wms.xml");
-        return read(in);
+        try (InputStream in = MonitorServletRequest.class.getResourceAsStream("wms.xml")) {
+            return read(in);
+        }
     }
 
     static byte[] read(InputStream in) throws IOException {
@@ -122,7 +126,6 @@ public class MonitorServletRequestTest {
         try (BufferedReader reader = request.getReader()) {
             assertEquals(THE_REQUEST, reader.readLine());
         }
-        ;
         assertArrayEquals(THE_REQUEST.getBytes(), request.getBodyContent());
     }
 
@@ -134,7 +137,27 @@ public class MonitorServletRequestTest {
         try (InputStream is = request.getInputStream()) {
             assertEquals(THE_REQUEST, IOUtils.toString(is, "UTF-8"));
         }
-        ;
         assertArrayEquals(THE_REQUEST.getBytes(), request.getBodyContent());
+    }
+
+    @Test
+    public void testNPEIsNotThrownWithBufferSizeUnbounded() throws Exception {
+        byte[] data = data();
+        DelegatingServletInputStream mock =
+                new DelegatingServletInputStream(new ByteArrayInputStream(data));
+
+        try (MonitorInputStream in = new MonitorInputStream(mock, -1)) {
+            byte[] read = read(in);
+
+            assertEquals(data.length, read.length);
+
+            byte[] buffer = in.getData();
+
+            for (int i = 0; i < buffer.length; i++) {
+                assertEquals(data[i], buffer[i]);
+            }
+
+            assertEquals(data.length - 1, in.getBytesRead());
+        }
     }
 }

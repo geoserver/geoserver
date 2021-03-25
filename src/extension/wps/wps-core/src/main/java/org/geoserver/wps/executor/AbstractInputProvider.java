@@ -85,6 +85,7 @@ public abstract class AbstractInputProvider implements InputProvider {
         this.inputId = input.getIdentifier().getValue();
     }
 
+    @Override
     public String getInputId() {
         return inputId;
     }
@@ -108,18 +109,18 @@ public abstract class AbstractInputProvider implements InputProvider {
 
     /** Simulates what the Dispatcher is doing when parsing a KVP request */
     protected Object kvpParse(String href, KvpRequestReader reader) throws Exception {
-        Map original = new KvpMap(KvpUtils.parseQueryString(href));
+        Map<String, Object> original = new KvpMap<>(KvpUtils.parseQueryString(href));
         KvpUtils.normalize(original);
-        Map parsed = new KvpMap(original);
+        Map<String, Object> parsed = new KvpMap<>(original);
         List<Throwable> errors = KvpUtils.parse(parsed);
-        if (errors.size() > 0) {
+        if (!errors.isEmpty()) {
             throw new WPSException("Failed to parse KVP request", errors.get(0));
         }
 
         // hack to allow wcs filters to work... we should really upgrade the WCS models instead...
         Request r = Dispatcher.REQUEST.get();
         if (r != null) {
-            r.setKvp(new CaseInsensitiveMap(parsed));
+            r.setKvp(new CaseInsensitiveMap<>(parsed));
         }
 
         return reader.read(reader.createRequest(), parsed, original);
@@ -127,6 +128,6 @@ public abstract class AbstractInputProvider implements InputProvider {
 
     /** Returns the version from the kvp request */
     protected String getVersion(String href) {
-        return (String) new KvpMap(KvpUtils.parseQueryString(href)).get("VERSION");
+        return (String) new KvpMap<>(KvpUtils.parseQueryString(href)).get("VERSION");
     }
 }

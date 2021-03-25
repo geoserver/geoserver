@@ -21,12 +21,15 @@ public abstract class Lock extends RequestObject {
         super(adaptee);
     }
 
+    @Override
     public abstract QName getTypeName();
 
+    @Override
     public Filter getFilter() {
         return eGet(adaptee, "filter", Filter.class);
     }
 
+    @Override
     public void setFilter(Filter filter) {
         eSet(adaptee, "filter", filter);
     }
@@ -55,7 +58,7 @@ public abstract class Lock extends RequestObject {
             if (typeNames != null) {
                 if (typeNames.size() == 1) {
                     return (QName) typeNames.get(0);
-                } else if (typeNames.size() > 0) {
+                } else if (!typeNames.isEmpty()) {
                     throw new IllegalArgumentException(
                             "Multiple type names on single lock not supported");
                 }
@@ -66,7 +69,8 @@ public abstract class Lock extends RequestObject {
 
         @Override
         public void setTypeName(QName typeName) {
-            List typeNames = eGet(adaptee, "typeNames", List.class);
+            @SuppressWarnings("unchecked")
+            List<QName> typeNames = eGet(adaptee, "typeNames", List.class);
             if (typeNames != null) {
                 typeNames.clear();
                 typeNames.add(typeName);

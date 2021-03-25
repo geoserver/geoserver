@@ -141,11 +141,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
 
             if (!Double.isNaN(height) && height != 0) {
                 geom.apply(
-                        new CoordinateFilter() {
-                            public void filter(Coordinate c) {
-                                c.setCoordinate(new Coordinate(c.x, c.y, height));
-                            }
-                        });
+                        (CoordinateFilter) c -> c.setCoordinate(new Coordinate(c.x, c.y, height)));
                 geom.geometryChanged();
             }
 
@@ -157,8 +153,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             de.micromata.opengis.kml.v_2_2_0.Geometry kmlGeometry = toKmlGeometry(geometry);
             boolean isSinglePoint =
                     geometry instanceof Point
-                            || (geometry instanceof MultiPoint)
-                                    && ((MultiPoint) geometry).getNumPoints() == 1;
+                            || (geometry instanceof MultiPoint) && geometry.getNumPoints() == 1;
 
             // if is not a single point and is description enabled, we
             // add and extrude a centroid together with the geometry
@@ -232,10 +227,10 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
                 de.micromata.opengis.kml.v_2_2_0.Polygon kmlPolygon =
                         new de.micromata.opengis.kml.v_2_2_0.Polygon();
                 de.micromata.opengis.kml.v_2_2_0.LinearRing kmlOuterRing =
-                        convertLinearRing((LinearRing) polygon.getExteriorRing());
+                        convertLinearRing(polygon.getExteriorRing());
                 kmlPolygon.createAndSetOuterBoundaryIs().setLinearRing(kmlOuterRing);
                 for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
-                    LinearRing interior = (LinearRing) polygon.getInteriorRingN(i);
+                    LinearRing interior = polygon.getInteriorRingN(i);
                     de.micromata.opengis.kml.v_2_2_0.LinearRing kmlInterior =
                             convertLinearRing(interior);
                     kmlPolygon.createAndAddInnerBoundaryIs().setLinearRing(kmlInterior);
@@ -250,7 +245,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             de.micromata.opengis.kml.v_2_2_0.LinearRing kmlLine =
                     new de.micromata.opengis.kml.v_2_2_0.LinearRing();
             List<de.micromata.opengis.kml.v_2_2_0.Coordinate> kmlCoordinates =
-                    dumpCoordinateSequence(((LineString) geometry).getCoordinateSequence());
+                    dumpCoordinateSequence(geometry.getCoordinateSequence());
             kmlLine.setCoordinates(kmlCoordinates);
             if (!hasHeightTemplate) {
                 // allow the polygon to follow the ground, otherwise some polygons with long
@@ -262,8 +257,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
 
         private List<de.micromata.opengis.kml.v_2_2_0.Coordinate> dumpCoordinateSequence(
                 CoordinateSequence cs) {
-            List<de.micromata.opengis.kml.v_2_2_0.Coordinate> result =
-                    new ArrayList<de.micromata.opengis.kml.v_2_2_0.Coordinate>(cs.size());
+            List<de.micromata.opengis.kml.v_2_2_0.Coordinate> result = new ArrayList<>(cs.size());
             for (int i = 0; i < cs.size(); i++) {
                 double x = cs.getOrdinate(i, 0);
                 double y = cs.getOrdinate(i, 1);

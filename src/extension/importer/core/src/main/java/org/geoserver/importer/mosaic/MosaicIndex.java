@@ -5,7 +5,6 @@
  */
 package org.geoserver.importer.mosaic;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import java.io.File;
 import java.io.FileInputStream;
@@ -104,14 +103,10 @@ public class MosaicIndex {
         Granule first =
                 Iterators.find(
                         granules.iterator(),
-                        new Predicate<Granule>() {
-                            @Override
-                            public boolean apply(Granule input) {
-                                return input.getEnvelope() != null
+                        input ->
+                                input.getEnvelope() != null
                                         && input.getEnvelope().getCoordinateReferenceSystem()
-                                                != null;
-                            }
-                        });
+                                                != null);
         if (first == null) {
             throw new IOException("Unable to determine CRS for mosaic");
         }
@@ -145,15 +140,13 @@ public class MosaicIndex {
                 new DirectoryDataStore(
                         mosaic.getFile(),
                         new ShapefileDataStoreFactory.ShpFileStoreFactory(
-                                shpFactory, new HashMap()));
+                                shpFactory, new HashMap<>()));
 
         try {
             dir.createSchema(typeBuilder.buildFeatureType());
 
-            FeatureWriter<SimpleFeatureType, SimpleFeature> w =
-                    dir.getFeatureWriterAppend(mosaic.getName(), Transaction.AUTO_COMMIT);
-
-            try {
+            try (FeatureWriter<SimpleFeatureType, SimpleFeature> w =
+                    dir.getFeatureWriterAppend(mosaic.getName(), Transaction.AUTO_COMMIT)) {
                 for (Granule g : mosaic.granules()) {
                     if (g.getEnvelope() == null) {
                         LOGGER.warning(
@@ -171,9 +164,6 @@ public class MosaicIndex {
                     // track total bounds
                     envelope.include(g.getEnvelope());
                 }
-
-            } finally {
-                w.close();
             }
         } finally {
             dir.dispose();

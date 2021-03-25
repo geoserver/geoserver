@@ -5,15 +5,14 @@
 package org.geoserver.filters;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
 import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
-import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockServletContext;
 
 /** Simple test to make sure the XFrameOptions filter works and is configurable. */
 public class XFrameOptionsFilterTest {
@@ -31,7 +30,7 @@ public class XFrameOptionsFilterTest {
         System.setProperty(XFrameOptionsFilter.GEOSERVER_XFRAME_SHOULD_SET_POLICY, "false");
         String header = getXStreamHeader();
 
-        assertEquals("Expect default XFrameOption to be null", null, header);
+        assertNull("Expect default XFrameOption to be null", header);
 
         if (currentShouldSetProperty != null) {
             System.setProperty(
@@ -60,8 +59,6 @@ public class XFrameOptionsFilterTest {
                 new MockHttpServletRequest("GET", "http://www.geoserver.org");
         MockHttpServletResponse response = new MockHttpServletResponse();
         XFrameOptionsFilter filter = new XFrameOptionsFilter();
-        MockServletContext context = new MockServletContext();
-        MockFilterConfig config = new MockFilterConfig(context);
         MockFilterChain mockChain = new MockFilterChain();
 
         filter.doFilter(request, response, mockChain);

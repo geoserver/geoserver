@@ -5,11 +5,19 @@
  */
 package org.geoserver.security.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.security.PropertyFileWatcher;
 import org.junit.Before;
@@ -95,7 +103,7 @@ public class GeoServerUserDaoTest {
         assertEquals("wfs", user.getUsername());
         assertEquals("pwd", user.getPassword());
         assertEquals(2, user.getAuthorities().size());
-        Set<String> authorities = new HashSet<String>();
+        Set<String> authorities = new HashSet<>();
         for (GrantedAuthority ga : user.getAuthorities()) {
             authorities.add(ga.getAuthority());
         }

@@ -106,7 +106,7 @@ public class GroupPanel extends Panel {
         if (!canCreateStore) {
             h.add(
                     new Label("message", new StringResourceModel("noCreateStore", this, null))
-                            .add(new AttributeAppender("class", new Model("info-link"), " ")));
+                            .add(new AttributeAppender("class", new Model<>("info-link"), " ")));
         } else {
             h.add(new Label("message", new Model()));
         }
@@ -149,17 +149,20 @@ public class GroupPanel extends Panel {
         h.setEnabled(getService().getSecurityManager().checkAuthenticationForAdminRole());
     }
 
-    Component editGroupLink(String id, IModel itemModel, Property<GeoServerUserGroup> property) {
-        return new SimpleAjaxLink(id, itemModel, property.getModel(itemModel)) {
+    Component editGroupLink(
+            String id,
+            IModel<GeoServerUserGroup> itemModel,
+            Property<GeoServerUserGroup> property) {
+        return new SimpleAjaxLink<GeoServerUserGroup>(id, itemModel, property.getModel(itemModel)) {
             @Override
             protected void onClick(AjaxRequestTarget target) {
                 setResponsePage(
-                        new EditGroupPage(serviceName, (GeoServerUserGroup) getDefaultModelObject())
-                                .setReturnPage(getPage()));
+                        new EditGroupPage(serviceName, getModelObject()).setReturnPage(getPage()));
             }
         };
     }
 
+    @Override
     protected void onBeforeRender() {
         groups.clearSelection();
         removal.setEnabled(false);

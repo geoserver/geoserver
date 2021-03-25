@@ -347,8 +347,7 @@ public class ImportJSONWriter {
             throws IOException {
         json.key("attributes").array();
         List<AttributeTypeInfo> attributes = featureTypeInfo.attributes();
-        for (int i = 0; i < attributes.size(); i++) {
-            AttributeTypeInfo att = attributes.get(i);
+        for (AttributeTypeInfo att : attributes) {
             json.object();
             json.key("name").value(att.getName());
             json.key("binding").value(att.getBinding().getName());
@@ -396,10 +395,7 @@ public class ImportJSONWriter {
         json.key("type").value(txChain instanceof VectorTransformChain ? "vector" : "raster");
 
         transforms(
-                json,
-                task,
-                expand,
-                txChain != null ? txChain.getTransforms() : new ArrayList<ImportTransform>());
+                json, task, expand, txChain != null ? txChain.getTransforms() : new ArrayList<>());
         json.endObject();
 
         if (top) {
@@ -745,8 +741,7 @@ public class ImportJSONWriter {
         if (!records.isEmpty()) {
             json.key("messages");
             json.array();
-            for (int i = 0; i < records.size(); i++) {
-                LogRecord record = records.get(i);
+            for (LogRecord record : records) {
                 json.object();
                 json.key("level").value(record.getLevel().toString());
                 json.key("message").value(record.getMessage());

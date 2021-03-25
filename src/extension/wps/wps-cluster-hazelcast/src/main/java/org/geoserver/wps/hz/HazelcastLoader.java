@@ -4,7 +4,7 @@
  */
 package org.geoserver.wps.hz;
 
-import static org.geoserver.wps.hz.HazelcastStatusStore.*;
+import static org.geoserver.wps.hz.HazelcastStatusStore.EXECUTION_STATUS_MAP;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.MapConfig;

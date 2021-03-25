@@ -46,7 +46,7 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
 
     /** Constructor to be called if the exception is not for a particular service. */
     public OWS11ServiceExceptionHandler() {
-        super(Collections.EMPTY_LIST);
+        super(Collections.emptyList());
     }
 
     /**
@@ -54,7 +54,7 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
      *
      * @param services List of services this handler handles exceptions for.
      */
-    public OWS11ServiceExceptionHandler(List services) {
+    public OWS11ServiceExceptionHandler(List<Service> services) {
         super(services);
     }
 
@@ -68,6 +68,7 @@ public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
     }
 
     /** Writes out an OWS ExceptionReport document. */
+    @Override
     public void handleServiceException(ServiceException exception, Request request) {
         String version = null;
         if (useServiceVersion && request.getServiceDescriptor() != null) {

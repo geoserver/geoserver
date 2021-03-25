@@ -23,6 +23,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
 
     public IModel<GeoServer> getGeoServerModel() {
         return new LoadableDetachableModel<GeoServer>() {
+            @Override
             public GeoServer load() {
                 return getGeoServerApplication().getGeoServer();
             }
@@ -31,6 +32,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
 
     public IModel<GeoServerInfo> getGlobalInfoModel() {
         return new LoadableDetachableModel<GeoServerInfo>() {
+            @Override
             public GeoServerInfo load() {
                 return getGeoServerApplication().getGeoServer().getGlobal();
             }
@@ -50,7 +52,7 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
         // modificationproxy does not count it as a change.
 
         JAIInfo currJaiInfo = getGeoServerApplication().getGeoServer().getGlobal().getJAI().clone();
-        return new Model<JAIInfo>(currJaiInfo);
+        return new Model<>(currJaiInfo);
     }
 
     public IModel<CoverageAccessInfo> getCoverageAccessModel() {
@@ -67,11 +69,12 @@ public abstract class ServerAdminPage extends GeoServerSecuredPage {
 
         CoverageAccessInfo currCoverageAccessInfo =
                 getGeoServerApplication().getGeoServer().getGlobal().getCoverageAccess().clone();
-        return new Model<CoverageAccessInfo>(currCoverageAccessInfo);
+        return new Model<>(currCoverageAccessInfo);
     }
 
     public IModel<ContactInfo> getContactInfoModel() {
         return new LoadableDetachableModel<ContactInfo>() {
+            @Override
             public ContactInfo load() {
                 return getGeoServerApplication()
                         .getGeoServer()

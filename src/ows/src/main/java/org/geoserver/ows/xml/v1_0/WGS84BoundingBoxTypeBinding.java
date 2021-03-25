@@ -66,6 +66,7 @@ public class WGS84BoundingBoxTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return OWS.WGS84BOUNDINGBOXTYPE;
     }
@@ -77,7 +78,8 @@ public class WGS84BoundingBoxTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<?> getType() {
         return null;
     }
 
@@ -88,6 +90,7 @@ public class WGS84BoundingBoxTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         // TODO: implement
         return null;

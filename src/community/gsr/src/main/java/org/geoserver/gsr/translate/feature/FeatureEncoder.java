@@ -59,6 +59,10 @@ public class FeatureEncoder {
                     value = ((java.util.Date) prop.getValue()).getTime();
                 } else if (prop.getValue() instanceof java.lang.Boolean) {
                     value = ((Boolean) prop.getValue()) ? Integer.valueOf(1) : Integer.valueOf(0);
+                } else if (prop.getValue() instanceof java.lang.Integer) {
+                    value = ((Integer) prop.getValue());
+                } else if (prop.getValue() instanceof java.lang.Double) {
+                    value = ((Double) prop.getValue());
                 } else {
                     value = prop.getValue().toString();
                 }
@@ -233,17 +237,18 @@ public class FeatureEncoder {
             throws IOException {
         org.opengis.feature.Feature sampleFeature = null;
         String featureIdPrefix = "";
-        FeatureIterator i = targetFeature.getFeatureSource(null, null).getFeatures().features();
-        if (i.hasNext()) {
-            sampleFeature = i.next();
-            String fid = sampleFeature.getIdentifier().getID();
+        try (FeatureIterator i =
+                targetFeature.getFeatureSource(null, null).getFeatures().features()) {
+            if (i.hasNext()) {
+                sampleFeature = i.next();
+                String fid = sampleFeature.getIdentifier().getID();
 
-            Matcher matcher = FeatureEncoder.FEATURE_ID_PATTERN.matcher(fid);
-            if (matcher.matches()) {
-                featureIdPrefix = matcher.group(1);
+                Matcher matcher = FeatureEncoder.FEATURE_ID_PATTERN.matcher(fid);
+                if (matcher.matches()) {
+                    featureIdPrefix = matcher.group(1);
+                }
             }
         }
-        i.close();
         return featureIdPrefix;
     }
 

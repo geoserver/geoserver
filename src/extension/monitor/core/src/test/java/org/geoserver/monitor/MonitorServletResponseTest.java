@@ -23,10 +23,11 @@ public class MonitorServletResponseTest {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ServletOutputStream mock = new DelegatingServletOutputStream(bos);
-        MonitorOutputStream out = new MonitorOutputStream(mock);
-        out.write(data);
+        try (MonitorOutputStream out = new MonitorOutputStream(mock)) {
+            out.write(data);
 
-        assertEquals(data.length, bos.size());
-        assertEquals(data.length, out.getBytesWritten());
+            assertEquals(data.length, bos.size());
+            assertEquals(data.length, out.getBytesWritten());
+        }
     }
 }

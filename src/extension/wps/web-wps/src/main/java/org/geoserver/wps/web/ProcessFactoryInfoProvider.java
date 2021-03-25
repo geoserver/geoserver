@@ -36,16 +36,15 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
 
     @Override
     protected List<Property<ProcessGroupInfo>> getProperties() {
-        List<Property<ProcessGroupInfo>> props =
-                new ArrayList<GeoServerDataProvider.Property<ProcessGroupInfo>>();
-        props.add(new BeanProperty<ProcessGroupInfo>("enabled", "enabled"));
+        List<Property<ProcessGroupInfo>> props = new ArrayList<>();
+        props.add(new BeanProperty<>("enabled", "enabled"));
         props.add(
                 new AbstractProperty<ProcessGroupInfo>("prefix") {
 
                     @Override
                     public Object getPropertyValue(ProcessGroupInfo item) {
-                        Class factoryClass = item.getFactoryClass();
-                        Set<String> prefixes = new HashSet<String>();
+                        Class<?> factoryClass = item.getFactoryClass();
+                        Set<String> prefixes = new HashSet<>();
                         ProcessFactory pf =
                                 GeoServerProcessors.getProcessFactory(factoryClass, false);
                         if (pf != null) {
@@ -60,7 +59,7 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
                             return "";
                         } else {
                             // build a comma separated list with the prefixes
-                            List<String> pl = new ArrayList<String>(prefixes);
+                            List<String> pl = new ArrayList<>(prefixes);
                             Collections.sort(pl);
                             StringBuilder sb = new StringBuilder();
                             for (int i = 0; i < pl.size(); i++) {
@@ -79,7 +78,7 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
 
                     @Override
                     public Object getPropertyValue(ProcessGroupInfo item) {
-                        Class factoryClass = item.getFactoryClass();
+                        Class<?> factoryClass = item.getFactoryClass();
                         String title = null;
                         ProcessFactory pf =
                                 GeoServerProcessors.getProcessFactory(factoryClass, false);
@@ -110,11 +109,11 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
                                             .getString();
                                 }
 
-                                Class factoryClass = item.getFactoryClass();
+                                Class<?> factoryClass = item.getFactoryClass();
                                 ProcessFactory pf =
                                         GeoServerProcessors.getProcessFactory(factoryClass, false);
                                 if (pf != null) {
-                                    Set<Name> names = new HashSet<Name>(pf.getNames());
+                                    Set<Name> names = new HashSet<>(pf.getNames());
                                     int total = names.size();
                                     for (ProcessInfo toRemove : item.getFilteredProcesses()) {
                                         if (!toRemove.isEnabled()) {
@@ -153,7 +152,7 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
                         return new PropertyModel(itemModel, "roles");
                     }
                 });
-        props.add(new PropertyPlaceholder("edit"));
+        props.add(new PropertyPlaceholder<>("edit"));
 
         return props;
     }

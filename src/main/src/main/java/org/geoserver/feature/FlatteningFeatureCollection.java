@@ -46,7 +46,7 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
         SimpleFeatureType schema = collection.getSchema();
 
         // collect the attributes
-        List<AttributeDescriptor> attributeDescriptors = new ArrayList<AttributeDescriptor>();
+        List<AttributeDescriptor> attributeDescriptors = new ArrayList<>();
         scanAttributeDescriptors(attributeDescriptors, schema, null);
 
         // build the flattened feature type
@@ -76,8 +76,7 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
             SimpleFeatureType featureType,
             String attrAlias) {
         List<AttributeDescriptor> descriptors = featureType.getAttributeDescriptors();
-        for (int i = 0; i < descriptors.size(); i++) {
-            AttributeDescriptor ad = descriptors.get(i);
+        for (AttributeDescriptor ad : descriptors) {
             SimpleFeatureType joinedSchema =
                     (SimpleFeatureType) ad.getUserData().get(ContentDataStore.JOINED_FEATURE_TYPE);
             String name = (attrAlias != null ? attrAlias + "." : "") + ad.getLocalName();
@@ -99,6 +98,7 @@ public class FlatteningFeatureCollection extends DecoratingSimpleFeatureCollecti
         return flattenedType;
     }
 
+    @Override
     public SimpleFeatureIterator features() {
         return new FlatteningFeatureIterator(delegate.features(), flattenedType);
     }

@@ -41,7 +41,7 @@ public class GeoServerMultiplexingPasswordEncoder implements PasswordEncoder {
 
     public GeoServerMultiplexingPasswordEncoder(
             GeoServerSecurityManager secMgr, GeoServerUserGroupService service) {
-        encoders = new HashSet<GeoServerPasswordEncoder>();
+        encoders = new HashSet<>();
         for (GeoServerPasswordEncoder enc : secMgr.loadPasswordEncoders()) {
             if (StringUtils.hasLength(enc.getPrefix())) {
                 if (service != null) {

@@ -99,7 +99,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                 (GridCoverage2DReader) catalog.getResourcePool().getGridCoverageReader(store, null);
         String[] coverageNames = reader.getGridCoverageNames();
         if (availableCoverages == null) {
-            availableCoverages = new ArrayList<String>();
+            availableCoverages = new ArrayList<>();
         }
         for (String coverage : coverageNames) {
             ImageLayout layout = reader.getImageLayout(coverage);
@@ -136,7 +136,7 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                 throw new IllegalArgumentException(
                         "The specified coverage does not have a coverage view attached to it");
             }
-            outputBands = new ArrayList<CoverageBand>(coverageView.getCoverageBands());
+            outputBands = new ArrayList<>(coverageView.getCoverageBands());
             name = coverageView.getName();
             envelopeCompositionType =
                     Optional.ofNullable(coverageView.getEnvelopeCompositionType())
@@ -145,13 +145,13 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
                     Optional.ofNullable(coverageView.getSelectedResolution())
                             .orElse(SelectedResolution.BEST);
         } else {
-            outputBands = new ArrayList<CoverageBand>();
+            outputBands = new ArrayList<>();
             newCoverage = true;
             coverageViewInfo = null;
             envelopeCompositionType = EnvelopeCompositionType.INTERSECTION;
             selectedResolution = SelectedResolution.BEST;
         }
-        selectedCoverages = new ArrayList<String>(availableCoverages);
+        selectedCoverages = new ArrayList<>(availableCoverages);
 
         // build the form and the text area
         Form<CoverageViewAbstractPage> form = new Form<>("form", new CompoundPropertyModel<>(this));

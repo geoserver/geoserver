@@ -221,6 +221,7 @@ public class BatchJobServiceImpl
         scheduler.getListenerManager().addTriggerListener(this);
     }
 
+    @Override
     @Transactional("tmTransactionManager")
     public void onApplicationEvent(ContextRefreshedEvent event) {
         // call only once at start-up, so not for child contexts.

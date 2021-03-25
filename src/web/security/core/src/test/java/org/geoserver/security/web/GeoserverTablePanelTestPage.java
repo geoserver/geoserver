@@ -34,7 +34,7 @@ public class GeoserverTablePanelTestPage extends WebPage {
     }
 
     public GeoserverTablePanelTestPage(ComponentBuilder builder) {
-        Form<Serializable> form = new Form<Serializable>(FORM);
+        Form<Serializable> form = new Form<>(FORM);
         Component c = builder.buildComponent(TABLE);
         componentId = c.getId();
         form.add(c);

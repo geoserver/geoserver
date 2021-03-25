@@ -106,7 +106,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                     @Override
                     public Component getComponentForProperty(
                             String id, IModel<LayerInfo> value, Property<LayerInfo> property) {
-                        final LayerInfo layer = (LayerInfo) value.getObject();
+                        final LayerInfo layer = value.getObject();
                         String text = property.getPropertyValue(layer).toString();
                         if (property == layerProvider.defaultStyle) {
                             IModel<Boolean> model =
@@ -114,10 +114,12 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                                         private static final long serialVersionUID =
                                                 -5895600269146950033L;
 
+                                        @Override
                                         public Boolean getObject() {
                                             return defaultEditedStyle(layer);
                                         }
 
+                                        @Override
                                         public void setObject(java.lang.Boolean b) {
                                             if (b) {
                                                 layer.setDefaultStyle(parent.getStyleInfo());
@@ -135,6 +137,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                                             parent.getCatalog().save(layer);
                                         }
 
+                                        @Override
                                         public void detach() {}
                                     };
 
@@ -148,6 +151,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                                         private static final long serialVersionUID =
                                                 3572882767660629935L;
 
+                                        @Override
                                         public void onUpdate(AjaxRequestTarget target) {}
                                     });
                             return fragment;
@@ -157,10 +161,12 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                                         private static final long serialVersionUID =
                                                 -5895600269146950033L;
 
+                                        @Override
                                         public Boolean getObject() {
                                             return usesEditedStyle(layer);
                                         }
 
+                                        @Override
                                         public void setObject(java.lang.Boolean b) {
                                             if (b) {
                                                 layer.getStyles().add(parent.getStyleInfo());
@@ -181,6 +187,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                                             parent.getCatalog().save(layer);
                                         }
 
+                                        @Override
                                         public void detach() {}
                                     };
 
@@ -194,6 +201,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                                         private static final long serialVersionUID =
                                                 3572882767660629935L;
 
+                                        @Override
                                         public void onUpdate(AjaxRequestTarget target) {}
                                     });
                             return fragment;

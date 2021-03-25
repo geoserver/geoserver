@@ -16,14 +16,16 @@ import org.apache.wicket.model.IModel;
 public class EnumAdapterModel<T extends Enum> implements IModel<T> {
 
     private final Class<T> binding;
-    IModel<T> delegate;
+    IModel<Object> delegate;
 
-    public EnumAdapterModel(IModel<T> delegate, Class<T> binding) {
+    @SuppressWarnings("unchecked")
+    public EnumAdapterModel(IModel delegate, Class<T> binding) {
         this.delegate = delegate;
         this.binding = binding;
     }
 
     @Override
+    @SuppressWarnings("unchecked") // casts to T
     public T getObject() {
         Object object = delegate.getObject();
         if (object instanceof String) {

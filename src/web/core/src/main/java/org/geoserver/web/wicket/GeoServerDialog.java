@@ -8,7 +8,6 @@ package org.geoserver.web.wicket;
 import java.io.Serializable;
 import java.util.Arrays;
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -103,19 +102,9 @@ public class GeoServerDialog extends Panel {
 
         // make sure close == cancel behavior wise
         window.setCloseButtonCallback(
-                new ModalWindow.CloseButtonCallback() {
-
-                    public boolean onCloseButtonClicked(AjaxRequestTarget target) {
-                        return delegate.onCancel(target);
-                    }
-                });
+                (ModalWindow.CloseButtonCallback) target12 -> delegate.onCancel(target12));
         window.setWindowClosedCallback(
-                new ModalWindow.WindowClosedCallback() {
-
-                    public void onClose(AjaxRequestTarget target) {
-                        delegate.onClose(target);
-                    }
-                });
+                (ModalWindow.WindowClosedCallback) target1 -> delegate.onClose(target1));
 
         // show the window
         this.delegate = delegate;
@@ -129,16 +118,12 @@ public class GeoServerDialog extends Panel {
      * @param messages A list of models, displayed each as a separate paragraphs, containing the
      *     information dialog content.
      */
-    public void showInfo(
+    @SafeVarargs
+    public final void showInfo(
             AjaxRequestTarget target,
             final IModel<String> heading,
-            @SuppressWarnings("unchecked") final IModel<String>... messages) {
-        window.setPageCreator(
-                new ModalWindow.PageCreator() {
-                    public Page createPage() {
-                        return new InfoPage(heading, messages);
-                    }
-                });
+            final IModel<String>... messages) {
+        window.setPageCreator((ModalWindow.PageCreator) () -> new InfoPage(heading, messages));
         window.show(target);
     }
 
@@ -180,7 +165,7 @@ public class GeoServerDialog extends Panel {
                         delegate.onError(target, form);
                     }
                 };
-        link.setDefaultModel(new Model<Component>(contents));
+        link.setDefaultModel(new Model<>(contents));
         return link;
     }
 

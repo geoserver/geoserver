@@ -54,6 +54,7 @@ public class JMSServiceModifyEvent extends JMSModifyEvent<ServiceInfo> {
         this.eventType = eventType;
     }
 
+    @Override
     public JMSEventType getEventType() {
         return eventType;
     }

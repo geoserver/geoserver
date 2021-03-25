@@ -7,8 +7,6 @@ package org.geoserver.security.ldap;
 
 import java.util.function.Supplier;
 import javax.naming.directory.DirContext;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
 import org.springframework.ldap.NamingException;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.support.AbstractContextSource;
@@ -39,13 +37,7 @@ public class LDAPUtils {
 
             DefaultTlsDirContextAuthenticationStrategy tls =
                     new DefaultTlsDirContextAuthenticationStrategy();
-            tls.setHostnameVerifier(
-                    new HostnameVerifier() {
-                        @Override
-                        public boolean verify(String hostname, SSLSession session) {
-                            return true;
-                        }
-                    });
+            tls.setHostnameVerifier((hostname, session) -> true);
 
             ldapContext.setAuthenticationStrategy(tls);
         }

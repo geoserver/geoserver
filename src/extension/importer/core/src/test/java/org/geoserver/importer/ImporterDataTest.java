@@ -7,16 +7,15 @@ package org.geoserver.importer;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,11 +23,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -52,7 +53,6 @@ import org.geoserver.importer.ImportTask.State;
 import org.geoserver.importer.transform.AbstractInlineVectorTransform;
 import org.geoserver.importer.transform.AttributesToPointGeometryTransform;
 import org.geoserver.importer.transform.PostScriptTransform;
-import org.geoserver.importer.transform.TransformChain;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
@@ -410,7 +410,7 @@ public class ImporterDataTest extends ImporterTestSupport {
     public void testImportDatabase() throws Exception {
         File dir = unpack("h2/cookbook.zip");
 
-        Map params = new HashMap();
+        Map<String, Serializable> params = new HashMap<>();
         params.put(H2DataStoreFactory.DBTYPE.key, "h2");
         params.put(H2DataStoreFactory.DATABASE.key, new File(dir, "cookbook").getAbsolutePath());
 
@@ -468,7 +468,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         // assertEquals(ImportTask.State.READY, context.getTasks().get(1).getState());
 
         // cannot ensure ordering of items
-        HashSet resources = new HashSet();
+        Set<String> resources = new HashSet<>();
         resources.add(task1.getLayer().getResource().getName());
         resources.add(task2.getLayer().getResource().getName());
         assertTrue(resources.contains("bugsites"));
@@ -508,16 +508,15 @@ public class ImporterDataTest extends ImporterTestSupport {
         FeatureSource<? extends FeatureType, ? extends Feature> fs =
                 info.getFeatureSource(null, null);
         FeatureCollection<? extends FeatureType, ? extends Feature> features = fs.getFeatures();
-        FeatureIterator<? extends Feature> it = features.features();
-        assertTrue(it.hasNext());
-        SimpleFeature next = (SimpleFeature) it.next();
-        // let's test some attributes to see if they were digested properly
-        String type_ch = (String) next.getAttribute("type_ch");
-        assertEquals("卫", type_ch);
-        String name_ch = (String) next.getAttribute("name_ch");
-        assertEquals("杭州前卫", name_ch);
-
-        it.close();
+        try (FeatureIterator<? extends Feature> it = features.features()) {
+            assertTrue(it.hasNext());
+            SimpleFeature next = (SimpleFeature) it.next();
+            // let's test some attributes to see if they were digested properly
+            String type_ch = (String) next.getAttribute("type_ch");
+            assertEquals("卫", type_ch);
+            String name_ch = (String) next.getAttribute("name_ch");
+            assertEquals("杭州前卫", name_ch);
+        }
     }
 
     @Test
@@ -661,7 +660,7 @@ public class ImporterDataTest extends ImporterTestSupport {
 
         DataStoreInfo ds = createH2DataStore("gs", "cookbook");
 
-        Map params = new HashMap();
+        Map<String, Serializable> params = new HashMap<>();
         params.put(H2DataStoreFactory.DBTYPE.key, "h2");
         params.put(H2DataStoreFactory.DATABASE.key, new File(dir, "cookbook").getAbsolutePath());
 
@@ -839,8 +838,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals(1, context.getTasks().size());
         ImportTask task = context.getTasks().get(0);
 
-        TransformChain transformChain = task.getTransform();
-        transformChain.add(new AttributesToPointGeometryTransform("LAT", "LON"));
+        task.addTransform(new AttributesToPointGeometryTransform("LAT", "LON"));
         assertEquals(ImportTask.State.NO_CRS, task.getState());
 
         LayerInfo layer = task.getLayer();
@@ -866,19 +864,19 @@ public class ImporterDataTest extends ImporterTestSupport {
         FeatureCollection<? extends FeatureType, ? extends Feature> features =
                 featureSource.getFeatures();
         assertEquals(9, features.size());
-        FeatureIterator<? extends Feature> featureIterator = features.features();
-        assertTrue("Expected features", featureIterator.hasNext());
-        SimpleFeature feature = (SimpleFeature) featureIterator.next();
-        assertNotNull(feature);
-        assertEquals("Invalid city attribute", "Trento", feature.getAttribute("CITY"));
-        assertEquals("Invalid number attribute", 140, feature.getAttribute("NUMBER"));
-        Object geomAttribute = feature.getAttribute("location");
-        assertNotNull("Expected geometry", geomAttribute);
-        Point point = (Point) geomAttribute;
-        Coordinate coordinate = point.getCoordinate();
-        assertEquals("Invalid x coordinate", 11.12, coordinate.x, 0.1);
-        assertEquals("Invalid y coordinate", 46.07, coordinate.y, 0.1);
-        featureIterator.close();
+        try (FeatureIterator<? extends Feature> featureIterator = features.features()) {
+            assertTrue("Expected features", featureIterator.hasNext());
+            SimpleFeature feature = (SimpleFeature) featureIterator.next();
+            assertNotNull(feature);
+            assertEquals("Invalid city attribute", "Trento", feature.getAttribute("CITY"));
+            assertEquals("Invalid number attribute", 140, feature.getAttribute("NUMBER"));
+            Object geomAttribute = feature.getAttribute("location");
+            assertNotNull("Expected geometry", geomAttribute);
+            Point point = (Point) geomAttribute;
+            Coordinate coordinate = point.getCoordinate();
+            assertEquals("Invalid x coordinate", 11.12, coordinate.x, 0.1);
+            assertEquals("Invalid y coordinate", 46.07, coordinate.y, 0.1);
+        }
     }
 
     @Test
@@ -896,19 +894,17 @@ public class ImporterDataTest extends ImporterTestSupport {
         assertEquals("Invalid srs", "EPSG:4326", resource.getSRS());
         ReferencedEnvelope emptyBounds = new ReferencedEnvelope();
         emptyBounds.setToNull();
-        assertTrue("Unexpected bounding box", emptyBounds.equals(resource.getNativeBoundingBox()));
+        assertEquals("Unexpected bounding box", emptyBounds, resource.getNativeBoundingBox());
         // transform chain to limit characters
         // otherwise we get a sql exception thrown
-        TransformChain transformChain = task.getTransform();
-        transformChain.add(new DescriptionLimitingTransform());
+        task.addTransform(new DescriptionLimitingTransform());
         importer.run(context);
         Exception error = task.getError();
         if (error != null) {
-            error.printStackTrace();
+            LOGGER.log(Level.WARNING, "", error);
             fail(error.getMessage());
         }
-        assertFalse(
-                "Bounding box not updated", emptyBounds.equals(resource.getNativeBoundingBox()));
+        assertNotEquals("Bounding box not updated", emptyBounds, resource.getNativeBoundingBox());
         FeatureTypeInfo fti = (FeatureTypeInfo) resource;
         assertEquals("Invalid type name", "sample", fti.getName());
         FeatureSource<? extends FeatureType, ? extends Feature> featureSource =
@@ -934,12 +930,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         ImportTask task =
                 Iterables.find(
                         context.getTasks(),
-                        new Predicate<ImportTask>() {
-                            @Override
-                            public boolean apply(ImportTask input) {
-                                return "archsites".equals(input.getLayer().getResource().getName());
-                            }
-                        });
+                        input -> "archsites".equals(input.getLayer().getResource().getName()));
         assertEquals(ImportTask.State.READY, task.getState());
         assertTrue(task.getData() instanceof SpatialFile);
         assertEquals("Shapefile", task.getData().getFormat().getName());
@@ -947,12 +938,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         task =
                 Iterables.find(
                         context.getTasks(),
-                        new Predicate<ImportTask>() {
-                            @Override
-                            public boolean apply(ImportTask input) {
-                                return "bugsites".equals(input.getLayer().getResource().getName());
-                            }
-                        });
+                        input -> "bugsites".equals(input.getLayer().getResource().getName()));
         assertEquals(ImportTask.State.READY, task.getState());
 
         assertTrue(task.getData() instanceof SpatialFile);
@@ -961,13 +947,9 @@ public class ImporterDataTest extends ImporterTestSupport {
         task =
                 Iterables.find(
                         context.getTasks(),
-                        new Predicate<ImportTask>() {
-                            @Override
-                            public boolean apply(ImportTask input) {
-                                return "EmissiveCampania"
-                                        .equals(input.getLayer().getResource().getName());
-                            }
-                        });
+                        input ->
+                                "EmissiveCampania"
+                                        .equals(input.getLayer().getResource().getName()));
         assertEquals(ImportTask.State.BAD_FORMAT, task.getState());
         assertTrue(task.getData() instanceof SpatialFile);
         assertEquals("GeoTIFF", task.getData().getFormat().getName());
@@ -1078,7 +1060,6 @@ public class ImporterDataTest extends ImporterTestSupport {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         for (File f : dir.listFiles()) {
             String ext = FilenameUtils.getExtension(f.getName());
-            String base = FilenameUtils.getBaseName(f.getName());
 
             f.renameTo(new File(dir, "1-." + ext));
         }
@@ -1241,8 +1222,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         ImportTask task = context.getTasks().get(0);
         assertEquals(ImportTask.State.READY, task.getState());
         assertEquals("archsites", task.getLayer().getResource().getName());
-        TransformChain transformChain = task.getTransform();
-        transformChain.add(new PostScriptTransform("test.sh", Collections.emptyList()));
+        task.addTransform(new PostScriptTransform("test.sh", Collections.emptyList()));
         importer.run(context);
 
         // check the import run normally

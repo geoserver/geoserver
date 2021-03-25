@@ -145,7 +145,7 @@ public class Animator {
             List requestedLayerInfos =
                     super.parseLayers(requestedLayerNames, remoteOwsUrl, remoteOwsType);
 
-            List<MapLayerInfo> layers = new ArrayList<MapLayerInfo>();
+            List<MapLayerInfo> layers = new ArrayList<>();
             for (Object o : requestedLayerInfos) {
                 if (o instanceof LayerInfo) {
                     layers.add(new MapLayerInfo((LayerInfo) o));

@@ -6,7 +6,7 @@ package org.geoserver.web.admin;
 
 import com.sun.media.imageioimpl.common.PackageUtil;
 import com.sun.media.jai.util.CacheDiagnostics;
-import java.awt.*;
+import java.awt.GraphicsEnvironment;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -85,42 +85,43 @@ public class StatusPanel extends Panel {
     }
 
     public void initUI() {
-        values = new HashMap<String, String>();
+        values = new HashMap<>();
         updateModel();
 
         // TODO: if we just provide the values directly as the models they won't
         // be refreshed on a page reload (ugh).
-        add(new Label("dataDir", new MapModel(values, KEY_DATA_DIR)));
-        add(new Label("locks", new MapModel(values, KEY_LOCKS)));
-        add(new Label("connections", new MapModel(values, KEY_CONNECTIONS)));
-        add(new Label("memory", new MapModel(values, KEY_MEMORY)));
-        add(new Label("jvm.version", new MapModel(values, KEY_JVM_VERSION)));
-        add(new Label("jai.available", new MapModel(values, KEY_JAI_AVAILABLE)));
-        add(new Label("jai.imageio.available", new MapModel(values, KEY_JAI_IMAGEIO_AVAILABLE)));
-        add(new Label("jai.memory.available", new MapModel(values, KEY_JAI_MAX_MEM)));
-        add(new Label("jai.memory.used", new MapModel(values, KEY_JAI_MEM_USAGE)));
-        add(new Label("jai.memory.threshold", new MapModel(values, KEY_JAI_MEM_THRESHOLD)));
-        add(new Label("jai.tile.threads", new MapModel(values, KEY_JAI_TILE_THREADS)));
-        add(new Label("jai.tile.priority", new MapModel(values, KEY_JAI_TILE_THREAD_PRIORITY)));
+        add(new Label("dataDir", new MapModel<>(values, KEY_DATA_DIR)));
+        add(new Label("locks", new MapModel<>(values, KEY_LOCKS)));
+        add(new Label("connections", new MapModel<>(values, KEY_CONNECTIONS)));
+        add(new Label("memory", new MapModel<>(values, KEY_MEMORY)));
+        add(new Label("jvm.version", new MapModel<>(values, KEY_JVM_VERSION)));
+        add(new Label("jai.available", new MapModel<>(values, KEY_JAI_AVAILABLE)));
+        add(new Label("jai.imageio.available", new MapModel<>(values, KEY_JAI_IMAGEIO_AVAILABLE)));
+        add(new Label("jai.memory.available", new MapModel<>(values, KEY_JAI_MAX_MEM)));
+        add(new Label("jai.memory.used", new MapModel<>(values, KEY_JAI_MEM_USAGE)));
+        add(new Label("jai.memory.threshold", new MapModel<>(values, KEY_JAI_MEM_THRESHOLD)));
+        add(new Label("jai.tile.threads", new MapModel<>(values, KEY_JAI_TILE_THREADS)));
+        add(new Label("jai.tile.priority", new MapModel<>(values, KEY_JAI_TILE_THREAD_PRIORITY)));
         add(
                 new Label(
                         "coverage.corepoolsize",
-                        new MapModel(values, KEY_COVERAGEACCESS_CORE_POOL_SIZE)));
+                        new MapModel<>(values, KEY_COVERAGEACCESS_CORE_POOL_SIZE)));
         add(
                 new Label(
                         "coverage.maxpoolsize",
-                        new MapModel(values, KEY_COVERAGEACCESS_MAX_POOL_SIZE)));
+                        new MapModel<>(values, KEY_COVERAGEACCESS_MAX_POOL_SIZE)));
         add(
                 new Label(
                         "coverage.keepalivetime",
-                        new MapModel(values, KEY_COVERAGEACCESS_KEEP_ALIVE_TIME)));
-        add(new Label("updateSequence", new MapModel(values, KEY_UPDATE_SEQUENCE)));
-        add(new Label("renderer", new MapModel(values, KEY_JAVA_RENDERER)));
+                        new MapModel<>(values, KEY_COVERAGEACCESS_KEEP_ALIVE_TIME)));
+        add(new Label("updateSequence", new MapModel<>(values, KEY_UPDATE_SEQUENCE)));
+        add(new Label("renderer", new MapModel<>(values, KEY_JAVA_RENDERER)));
         // serialization error here
         add(
                 new Link("free.locks") {
                     private static final long serialVersionUID = -2889353495319211391L;
 
+                    @Override
                     public void onClick() {
                         // TODO: see GEOS-2130
                         updateModel();
@@ -130,6 +131,7 @@ public class StatusPanel extends Panel {
                 new Link("free.memory") {
                     private static final long serialVersionUID = 3695369177295089346L;
 
+                    @Override
                     public void onClick() {
                         System.gc();
                         System.runFinalization();
@@ -141,6 +143,7 @@ public class StatusPanel extends Panel {
                 new Link("free.memory.jai") {
                     private static final long serialVersionUID = -3556725607958589003L;
 
+                    @Override
                     public void onClick() {
                         TileCache jaiCache =
                                 parent.getGeoServer().getGlobal().getJAI().getTileCache();
@@ -159,7 +162,7 @@ public class StatusPanel extends Panel {
                 new Label(
                         "fontCount",
                         new ParamResourceModel("StatusPage.fontCount", this, fontCount)));
-        add(new BookmarkablePageLink("show.fonts", JVMFontsPage.class));
+        add(new BookmarkablePageLink<>("show.fonts", JVMFontsPage.class));
 
         add(
                 new AjaxLink("clear.resourceCache") {
@@ -324,10 +327,9 @@ public class StatusPanel extends Panel {
     private synchronized int getLockCount() {
         int count = 0;
 
-        CloseableIterator<DataStoreInfo> i = getDataStores();
-        try {
+        try (CloseableIterator<DataStoreInfo> i = getDataStores()) {
             while (i.hasNext()) {
-                DataStoreInfo meta = (DataStoreInfo) i.next();
+                DataStoreInfo meta = i.next();
 
                 if (!meta.isEnabled()) {
                     // Don't count locks from disabled datastores.
@@ -349,8 +351,6 @@ public class StatusPanel extends Panel {
                 //    continue;
                 // }
             }
-        } finally {
-            i.close();
         }
         return count;
     }
@@ -358,8 +358,7 @@ public class StatusPanel extends Panel {
     private synchronized int getConnectionCount() {
         int count = 0;
 
-        CloseableIterator<DataStoreInfo> i = getDataStores();
-        try {
+        try (CloseableIterator<DataStoreInfo> i = getDataStores()) {
             while (i.hasNext()) {
                 DataStoreInfo meta = i.next();
 
@@ -377,8 +376,6 @@ public class StatusPanel extends Panel {
 
                 count += 1;
             }
-        } finally {
-            i.close();
         }
 
         return count;

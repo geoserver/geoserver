@@ -5,10 +5,10 @@
  */
 package org.geoserver.web.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.List;
-import org.apache.wicket.Component;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
@@ -36,13 +36,7 @@ public class ConfirmRemovalPanelTest extends GeoServerWicketTestSupport {
 
     void setupPanel(final CatalogInfo... roots) {
         tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-
-                            public Component buildComponent(String id) {
-                                return new ConfirmRemovalPanel(id, roots);
-                            }
-                        }));
+                new FormTestPage((ComponentBuilder) id -> new ConfirmRemovalPanel(id, roots)));
     }
 
     @Test

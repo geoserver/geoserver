@@ -27,7 +27,7 @@ public class ErrorHandler extends DefaultHandler {
 
     Level level;
 
-    public List errors = new ArrayList();
+    public List<SAXParseException> errors = new ArrayList<>();
 
     public ErrorHandler() {}
 
@@ -36,16 +36,19 @@ public class ErrorHandler extends DefaultHandler {
         this.level = level;
     }
 
+    @Override
     public void error(SAXParseException e) throws SAXException {
         e(e);
         super.error(e);
     }
 
+    @Override
     public void fatalError(SAXParseException e) throws SAXException {
         e(e);
         super.fatalError(e);
     }
 
+    @Override
     public void warning(SAXParseException e) throws SAXException {
         // ignore
     }

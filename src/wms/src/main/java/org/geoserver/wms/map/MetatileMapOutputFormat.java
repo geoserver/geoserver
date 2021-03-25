@@ -116,6 +116,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
+    @Override
     public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
         // get the key that identifies the meta tile. The cache will make sure
         // two threads asking
@@ -183,11 +184,13 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#getOutputFormatNames() */
+    @Override
     public Set<String> getOutputFormatNames() {
         return delegate.getOutputFormatNames();
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#getMimeType() */
+    @Override
     public String getMimeType() {
         return delegate.getMimeType();
     }
@@ -280,8 +283,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                                 tile =
                                         new BufferedImage(
                                                 pImage.getColorModel(),
-                                                (WritableRaster)
-                                                        wTile.createWritableTranslatedChild(0, 0),
+                                                wTile.createWritableTranslatedChild(0, 0),
                                                 pImage.getColorModel().isAlphaPremultiplied(),
                                                 null);
                             } else {
@@ -324,6 +326,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
         return tiles;
     }
 
+    @Override
     public MapProducerCapabilities getCapabilities(String format) {
         throw new RuntimeException("The meta-tile output format should never be invoked directly!");
     }

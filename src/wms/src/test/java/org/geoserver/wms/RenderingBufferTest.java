@@ -18,6 +18,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.data.test.SystemTestData.LayerProperty;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -39,8 +40,8 @@ public class RenderingBufferTest extends WMSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addStyle(LINE_WIDTH_STYLE, "linewidth.sld", getClass(), getCatalog());
-        Map properties = new HashMap();
-        properties.put(MockData.KEY_STYLE, LINE_WIDTH_STYLE);
+        Map<LayerProperty, Object> properties = new HashMap<>();
+        properties.put(LayerProperty.STYLE, LINE_WIDTH_STYLE);
         testData.addVectorLayer(
                 LINE_WIDTH_LAYER, properties, "LineWidth.properties", getClass(), getCatalog());
     }

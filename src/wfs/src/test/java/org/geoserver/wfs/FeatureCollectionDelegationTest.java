@@ -64,6 +64,7 @@ public class FeatureCollectionDelegationTest extends GeoServerSystemTestSupport 
 
         ListFeatureCollection visitorCollection =
                 new ListFeatureCollection(ft) {
+                    @Override
                     public void accepts(FeatureVisitor visitor, ProgressListener progress) {
                         lastVisitor = visitor;
                     };
@@ -91,7 +92,7 @@ public class FeatureCollectionDelegationTest extends GeoServerSystemTestSupport 
                         new FilteringSimpleFeatureCollection(visitorCollection, Filter.INCLUDE),
                         new RetypingFeatureCollection(
                                 visitorCollection, visitorCollection.getSchema()),
-                        (SimpleFeatureCollection) SecuredObjects.secure(visitorCollection, policy));
+                        SecuredObjects.secure(visitorCollection, policy));
     }
 
     @Test

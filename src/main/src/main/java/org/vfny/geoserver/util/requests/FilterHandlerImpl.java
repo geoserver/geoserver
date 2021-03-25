@@ -35,6 +35,7 @@ public class FilterHandlerImpl extends XMLFilterImpl implements ContentHandler, 
      *
      * @param filter (OGC WFS) Filter from (SAX) filter..
      */
+    @Override
     public void filter(Filter filter) {
         LOGGER.finest("found filter: " + filter.toString());
         currentFilter = filter;

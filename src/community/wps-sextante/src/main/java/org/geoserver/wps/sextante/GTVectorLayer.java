@@ -5,14 +5,6 @@
  */
 package org.geoserver.wps.sextante;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
 import es.unex.sextante.core.Sextante;
 import es.unex.sextante.dataObjects.AbstractVectorLayer;
 import es.unex.sextante.dataObjects.IFeature;
@@ -23,6 +15,9 @@ import es.unex.sextante.outputs.FileOutputChannel;
 import es.unex.sextante.outputs.IOutputChannel;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -31,6 +26,14 @@ import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeType;
@@ -38,7 +41,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class GTVectorLayer extends AbstractVectorLayer {
-
+    static final Logger LOGGER = Logging.getLogger(GTVectorLayer.class);
     private FeatureSource m_FeatureSource;
     private DefaultFeatureCollection m_FeatureCollection;
     private String m_sName;
@@ -257,7 +260,7 @@ public class GTVectorLayer extends AbstractVectorLayer {
                 create(featureSource);
             }
         } catch (final Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", e);
         }
     }
 

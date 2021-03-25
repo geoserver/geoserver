@@ -38,6 +38,7 @@ public class CoverageViewNewPage extends CoverageViewAbstractPage {
         super(workspaceName, storeName, coverageName, coverageInfo);
     }
 
+    @Override
     protected void onSave() {
         try {
             if (name.equalsIgnoreCase(COVERAGE_VIEW_NAME)) {
@@ -48,13 +49,13 @@ public class CoverageViewNewPage extends CoverageViewAbstractPage {
             final Catalog catalog = getCatalog();
             final CatalogBuilder builder = new CatalogBuilder(catalog);
             final CoverageStoreInfo coverageStoreInfo = catalog.getCoverageStore(storeId);
-            CoverageInfo coverageInfo = null;
             final CoverageView coverageView = buildCoverageView();
             List<CoverageBand> coverageBands = coverageView.getCoverageBands();
             if (coverageBands == null || coverageBands.isEmpty()) {
                 throw new IllegalArgumentException("No output bands have been specified ");
             }
-            coverageInfo = coverageView.createCoverageInfo(name, coverageStoreInfo, builder);
+            CoverageInfo coverageInfo =
+                    coverageView.createCoverageInfo(name, coverageStoreInfo, builder);
             final LayerInfo layerInfo = builder.buildLayer(coverageInfo);
             setResponsePage(new ResourceConfigurationPage(layerInfo, true));
         } catch (Exception e) {
@@ -65,6 +66,7 @@ public class CoverageViewNewPage extends CoverageViewAbstractPage {
         }
     }
 
+    @Override
     protected void onCancel() {
         doReturn(LayerPage.class);
     }

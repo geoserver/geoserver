@@ -24,7 +24,7 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
 
     static final Logger LOGGER = Logging.getLogger(CoverageCleanerCallback.class);
 
-    static final ThreadLocal<List<GridCoverage>> COVERAGES = new ThreadLocal<List<GridCoverage>>();
+    static final ThreadLocal<List<GridCoverage>> COVERAGES = new ThreadLocal<>();
 
     @Override
     public Object operationExecuted(Request request, Operation operation, Object result) {
@@ -48,7 +48,7 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
     public static void addCoverages(GridCoverage... coverages) {
         List<GridCoverage> list = COVERAGES.get();
         if (list == null) {
-            list = new ArrayList<GridCoverage>();
+            list = new ArrayList<>();
             COVERAGES.set(list);
         }
         list.addAll(Arrays.asList(coverages));

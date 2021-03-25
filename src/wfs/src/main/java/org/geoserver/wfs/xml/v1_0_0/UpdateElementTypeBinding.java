@@ -58,6 +58,7 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.UPDATEELEMENTTYPE;
     }
@@ -69,7 +70,8 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<UpdateElementType> getType() {
         return UpdateElementType.class;
     }
 
@@ -80,6 +82,8 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
+    @SuppressWarnings("unchecked") // EMF model without generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         UpdateElementType updateElement = wfsfactory.createUpdateElementType();
 
@@ -87,7 +91,7 @@ public class UpdateElementTypeBinding extends AbstractComplexEMFBinding {
         updateElement.getProperty().addAll(node.getChildValues(PropertyType.class));
 
         // &lt;xsd:element maxOccurs="1" minOccurs="0" ref="ogc:Filter"&gt;
-        updateElement.setFilter((Filter) node.getChildValue(Filter.class));
+        updateElement.setFilter(node.getChildValue(Filter.class));
 
         // &lt;xsd:attribute name="handle" type="xsd:string" use="optional"/&gt;
         if (node.hasAttribute("handle")) {

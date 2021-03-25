@@ -2,6 +2,13 @@
     <body>
         <wicket:extend>
             <li>
+                <label for="jwkURI"><span><wicket:message
+                        key="jwkURI"></wicket:message></span></label>
+                <input id="jwkURI" wicket:id="jwkURI" type="text"
+                       class="field text"/>
+                <a href="#" wicket:id="jwkURIHelp" class="help-link"></a>
+            </li>
+            <li>
                 <label for="principalKey"><span><wicket:message
                         key="principalKey"></wicket:message></span></label>
                 <input id="principalKey" wicket:id="principalKey" type="text"

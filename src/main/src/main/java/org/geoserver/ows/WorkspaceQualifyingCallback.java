@@ -33,10 +33,12 @@ public abstract class WorkspaceQualifyingCallback implements DispatcherCallback 
         this.catalog = catalog;
     }
 
+    @Override
     public Request init(Request request) {
         return null;
     }
 
+    @Override
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
         if (LocalWorkspace.get() != null) {
             qualifyRequest(LocalWorkspace.get(), LocalPublished.get(), service, request);
@@ -44,6 +46,7 @@ public abstract class WorkspaceQualifyingCallback implements DispatcherCallback 
         return service;
     }
 
+    @Override
     public Operation operationDispatched(Request request, Operation operation) {
         if (LocalWorkspace.get() != null) {
             qualifyRequest(LocalWorkspace.get(), LocalPublished.get(), operation, request);
@@ -52,19 +55,22 @@ public abstract class WorkspaceQualifyingCallback implements DispatcherCallback 
         return operation;
     }
 
+    @Override
     public Object operationExecuted(Request request, Operation operation, Object result) {
         return null;
     }
 
+    @Override
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
         return null;
     }
 
+    @Override
     public void finished(Request request) {}
 
     protected <T> T parameter(Operation op, Class<T> clazz) {
-        return (T) OwsUtils.parameter(op.getParameters(), clazz);
+        return OwsUtils.parameter(op.getParameters(), clazz);
     }
 
     protected abstract void qualifyRequest(

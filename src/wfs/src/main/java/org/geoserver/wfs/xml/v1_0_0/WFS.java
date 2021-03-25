@@ -197,17 +197,20 @@ public final class WFS extends XSD {
     }
 
     /** Adds dependencies on the filter and gml schemas. */
-    protected void addDependencies(Set dependencies) {
+    @Override
+    protected void addDependencies(Set<XSD> dependencies) {
         dependencies.add(OGC.getInstance());
         dependencies.add(GML.getInstance());
     }
 
     /** Returns 'http://www.opengis.net/wfs' */
+    @Override
     public String getNamespaceURI() {
         return NAMESPACE;
     }
 
     /** Returns the location of 'WFS-transaction.xsd' */
+    @Override
     public String getSchemaLocation() {
         return getClass().getResource("WFS-transaction.xsd").toString();
     }
@@ -216,6 +219,7 @@ public final class WFS extends XSD {
      * Suplements the schema built by the parent by adding hte aplication schema feature typs
      * defined in GeoServer.
      */
+    @Override
     protected XSDSchema buildSchema() throws IOException {
         XSDSchema wfsSchema = super.buildSchema();
         wfsSchema = schemaBuilder.addApplicationTypes(wfsSchema);

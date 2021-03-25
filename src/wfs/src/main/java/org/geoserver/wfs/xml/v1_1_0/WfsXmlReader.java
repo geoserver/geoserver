@@ -51,6 +51,7 @@ public class WfsXmlReader extends XmlRequestReader {
         this.entityResolverProvider = new EntityResolverProvider(geoServer);
     }
 
+    @Override
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         Parser parser = new Parser(configuration);
         parser.setStrict(false);

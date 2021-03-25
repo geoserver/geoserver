@@ -33,6 +33,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.importer.ImportTask;
 import org.geoserver.importer.transform.AttributeRemapTransform;
 import org.geoserver.importer.transform.DateFormatTransform;
+import org.geoserver.importer.transform.ImportTransform;
 import org.geoserver.importer.transform.NumberFormatTransform;
 import org.geoserver.importer.transform.ReprojectTransform;
 import org.geoserver.importer.transform.TransformChain;
@@ -52,10 +53,10 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
         Form form = new Form("form");
         add(form);
 
-        ReprojectTransform reprojectTx =
-                (ReprojectTransform) item.getTransform().get(ReprojectTransform.class);
+        @SuppressWarnings("unchecked")
+        ReprojectTransform reprojectTx = item.getTransform().get(ReprojectTransform.class);
 
-        reprojectCheckBox = new CheckBox("enableReprojection", new Model(reprojectTx != null));
+        reprojectCheckBox = new CheckBox("enableReprojection", new Model<>(reprojectTx != null));
         reprojectCheckBox.add(
                 new AjaxFormComponentUpdatingBehavior("click") {
                     @Override
@@ -84,18 +85,18 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         ImportTask task = model.getObject();
-                        TransformChain txChain = task.getTransform();
+                        TransformChain<? extends ImportTransform> txChain = task.getTransform();
 
                         // reprojection
                         txChain.removeAll(ReprojectTransform.class);
 
                         if (reprojectCheckBox.getModelObject()) {
-                            txChain.add(reprojectPanel.getTransform());
+                            task.addTransform(reprojectPanel.getTransform());
                         }
 
                         // remaps
                         txChain.removeAll(AttributeRemapTransform.class);
-                        txChain.getTransforms().addAll(remapPanel.remaps);
+                        remapPanel.remaps.forEach(m -> task.addTransform(m));
 
                         try {
                             ImporterWebUtils.importer().changed(task);
@@ -129,8 +130,8 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
 
             this.transform = transform;
 
-            add(new CRSPanel("from", new PropertyModel(transform, "source")));
-            add(new CRSPanel("to", new PropertyModel(transform, "target")));
+            add(new CRSPanel("from", new PropertyModel<>(transform, "source")));
+            add(new CRSPanel("to", new PropertyModel<>(transform, "target")));
         }
 
         public ReprojectTransform getTransform() {
@@ -149,12 +150,12 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
 
             FeatureTypeInfo featureType =
                     (FeatureTypeInfo) itemModel.getObject().getLayer().getResource();
-            final List atts = new ArrayList();
+            final List<String> atts = new ArrayList<>();
             for (AttributeTypeInfo at : featureType.getAttributes()) {
                 atts.add(at.getName());
             }
 
-            final List<Class> types = (List) Arrays.asList(Integer.class, Double.class, Date.class);
+            final List<Class<?>> types = Arrays.asList(Integer.class, Double.class, Date.class);
 
             final WebMarkupContainer remapContainer = new WebMarkupContainer("remapsContainer");
             remapContainer.setOutputMarkupId(true);
@@ -168,27 +169,28 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                         protected void populateItem(final ListItem<AttributeRemapTransform> item) {
 
                             final DropDownChoice<String> attChoice =
-                                    new DropDownChoice<String>(
+                                    new DropDownChoice<>(
                                             "att",
-                                            new PropertyModel(item.getModel(), "field"),
+                                            new PropertyModel<>(item.getModel(), "field"),
                                             atts);
                             item.add(attChoice);
 
-                            final DropDownChoice<Class> typeChoice =
-                                    new DropDownChoice<Class>(
+                            final DropDownChoice<Class<?>> typeChoice =
+                                    new DropDownChoice<>(
                                             "type",
-                                            new PropertyModel(item.getModel(), "type"),
+                                            new PropertyModel<>(item.getModel(), "type"),
                                             types,
-                                            new ChoiceRenderer<Class>() {
+                                            new ChoiceRenderer<Class<?>>() {
 
-                                                public Object getDisplayValue(Class object) {
+                                                @Override
+                                                public Object getDisplayValue(Class<?> object) {
                                                     return object.getSimpleName();
                                                 }
                                             });
                             item.add(typeChoice);
 
                             final TextField<String> dateFormatTextField =
-                                    new TextField<String>("dateFormat", new Model());
+                                    new TextField<>("dateFormat", new Model<>());
                             dateFormatTextField.setOutputMarkupId(true);
                             item.add(dateFormatTextField);
 
@@ -215,7 +217,7 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                                             AttributeRemapTransform tx = item.getModelObject();
 
                                             String field = tx.getField();
-                                            Class type = typeChoice.getModelObject();
+                                            Class<?> type = typeChoice.getModelObject();
 
                                             if (Date.class.equals(type)) {
                                                 String dateFormat =
@@ -227,8 +229,11 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
                                                 item.setModelObject(
                                                         new DateFormatTransform(field, dateFormat));
                                             } else if (Number.class.isAssignableFrom(type)) {
+                                                @SuppressWarnings("unchecked")
+                                                Class<? extends Number> nt =
+                                                        (Class<? extends Number>) type;
                                                 item.setModelObject(
-                                                        new NumberFormatTransform(field, type));
+                                                        new NumberFormatTransform(field, nt));
                                             }
 
                                             target.add(remapContainer);

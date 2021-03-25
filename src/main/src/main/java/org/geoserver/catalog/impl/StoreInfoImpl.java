@@ -35,7 +35,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
 
     protected transient Catalog catalog;
 
-    protected Map<String, Serializable> connectionParameters = new HashMap<String, Serializable>();
+    protected Map<String, Serializable> connectionParameters = new HashMap<>();
 
     protected MetadataMap metadata = new MetadataMap();
 
@@ -58,6 +58,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
         setId(id);
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -66,6 +67,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
         this.id = id;
     }
 
+    @Override
     public Catalog getCatalog() {
         return catalog;
     }
@@ -74,46 +76,57 @@ public abstract class StoreInfoImpl implements StoreInfo {
         this.catalog = catalog;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
+    @Override
     public String getType() {
         return type;
     }
 
+    @Override
     public void setType(String type) {
         this.type = type;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    @Override
     public WorkspaceInfo getWorkspace() {
         return workspace;
     }
 
+    @Override
     public void setWorkspace(WorkspaceInfo workspace) {
         this.workspace = workspace;
     }
 
+    @Override
     public Map<String, Serializable> getConnectionParameters() {
         return connectionParameters;
     }
@@ -122,6 +135,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
         this.connectionParameters = connectionParameters;
     }
 
+    @Override
     public synchronized MetadataMap getMetadata() {
         if (metadata == null) {
             metadata = new MetadataMap();
@@ -133,6 +147,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
         this.metadata = metadata;
     }
 
+    @Override
     public <T extends Object> T getAdapter(Class<T> adapterClass, Map<?, ?> hints) {
         // subclasses should override
         return null;
@@ -152,10 +167,12 @@ public abstract class StoreInfoImpl implements StoreInfo {
                 .toString();
     }
 
+    @Override
     public Throwable getError() {
         return error;
     }
 
+    @Override
     public void setError(Throwable error) {
         this.error = error;
     }
@@ -168,6 +185,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
         this._default = _default;
     }
 
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -182,6 +200,7 @@ public abstract class StoreInfoImpl implements StoreInfo {
         return result;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;

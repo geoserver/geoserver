@@ -6,8 +6,8 @@
 package org.geoserver.wms.wms_1_1_1;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
@@ -578,10 +578,11 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertEquals("image/gif", response.getContentType());
         // check it is a animated gif withthree frames
         ByteArrayInputStream bis = getBinaryInputStream(response);
-        ImageInputStream iis = ImageIO.createImageInputStream(bis);
-        ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
-        reader.setInput(iis);
-        assertEquals(3, reader.getNumImages(true));
+        try (ImageInputStream iis = ImageIO.createImageInputStream(bis)) {
+            ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
+            reader.setInput(iis);
+            assertEquals(3, reader.getNumImages(true));
+        }
     }
 
     @Test
@@ -603,34 +604,35 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertEquals("image/gif", response.getContentType());
 
         // check it is a animated gif with three frames
-        ByteArrayInputStream bis = getBinaryInputStream(response);
-        ImageInputStream iis = ImageIO.createImageInputStream(bis);
-        ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
-        reader.setInput(iis);
-        assertEquals(3, reader.getNumImages(true));
+        try (ByteArrayInputStream bis = getBinaryInputStream(response);
+                ImageInputStream iis = ImageIO.createImageInputStream(bis); ) {
+            ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
+            reader.setInput(iis);
+            assertEquals(3, reader.getNumImages(true));
 
-        // creating film strip to be able to test different frames of animated gif
-        // http://stackoverflow.com/questions/18908217/losing-transparency-when-using-imageinputstream-and-bufferedimage-to-create-png
-        int h = reader.getHeight(0);
-        int w = reader.getWidth(0);
-        int n = reader.getNumImages(true);
-        BufferedImage image = new BufferedImage(w * n, h, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = image.createGraphics();
-        for (int i = 0; i < n; i++) {
-            BufferedImage img = reader.read(i);
-            g.drawImage(img, w * i, 0, null);
-            // want to see the individual frame images and the filmstrip? uncomment below
-            // File outputfile = new File("/tmp/geoserveranimatednontransparentframe"+i+".gif");
-            // ImageIO.write(img, "gif", outputfile);
+            // creating film strip to be able to test different frames of animated gif
+            // http://stackoverflow.com/questions/18908217/losing-transparency-when-using-imageinputstream-and-bufferedimage-to-create-png
+            int h = reader.getHeight(0);
+            int w = reader.getWidth(0);
+            int n = reader.getNumImages(true);
+            BufferedImage image = new BufferedImage(w * n, h, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = image.createGraphics();
+            for (int i = 0; i < n; i++) {
+                BufferedImage img = reader.read(i);
+                g.drawImage(img, w * i, 0, null);
+                // want to see the individual frame images and the filmstrip? uncomment below
+                // File outputfile = new File("/tmp/geoserveranimatednontransparentframe"+i+".gif");
+                // ImageIO.write(img, "gif", outputfile);
+            }
+            // File outputfile = new File("/tmp/geoserveranimatedstripnontransparent.gif");
+            // ImageIO.write(image, "gif", outputfile);
+
+            // actual check for NON transparency and colored background
+            assertPixel(image, 20, 10, Color.RED);
+            assertPixel(image, 60, 10, Color.BLACK);
+            assertPixel(image, 100, 10, Color.RED);
+            assertPixel(image, 140, 30, Color.BLACK);
         }
-        // File outputfile = new File("/tmp/geoserveranimatedstripnontransparent.gif");
-        // ImageIO.write(image, "gif", outputfile);
-
-        // actual check for NON transparency and colored background
-        assertPixel(image, 20, 10, Color.RED);
-        assertPixel(image, 60, 10, Color.BLACK);
-        assertPixel(image, 100, 10, Color.RED);
-        assertPixel(image, 140, 30, Color.BLACK);
     }
 
     @Test
@@ -655,38 +657,39 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertEquals("image/gif", response.getContentType());
 
         // check it is a animated gif with three frames
-        ByteArrayInputStream bis = getBinaryInputStream(response);
-        ImageInputStream iis = ImageIO.createImageInputStream(bis);
-        ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
-        reader.setInput(iis);
-        assertEquals(3, reader.getNumImages(true));
+        try (ByteArrayInputStream bis = getBinaryInputStream(response);
+                ImageInputStream iis = ImageIO.createImageInputStream(bis); ) {
+            ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
+            reader.setInput(iis);
+            assertEquals(3, reader.getNumImages(true));
 
-        // creating film strip to be able to test different frames of animated gif
-        // http://stackoverflow.com/questions/18908217/losing-transparency-when-using-imageinputstream-and-bufferedimage-to-create-png
-        int h = reader.getHeight(0);
-        int w = reader.getWidth(0);
-        int n = reader.getNumImages(true);
-        BufferedImage image = new BufferedImage(w * n, h, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = image.createGraphics();
-        for (int i = 0; i < n; i++) {
-            BufferedImage img = reader.read(i);
-            g.drawImage(img, w * i, 0, null);
-            // want to see the individual frame images and the filmstrip? uncomment below
-            // File outputfile = new File("/tmp/geoserveranimatedtransparentframe"+i+".gif");
-            // ImageIO.write(img, "gif", outputfile);
+            // creating film strip to be able to test different frames of animated gif
+            // http://stackoverflow.com/questions/18908217/losing-transparency-when-using-imageinputstream-and-bufferedimage-to-create-png
+            int h = reader.getHeight(0);
+            int w = reader.getWidth(0);
+            int n = reader.getNumImages(true);
+            BufferedImage image = new BufferedImage(w * n, h, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = image.createGraphics();
+            for (int i = 0; i < n; i++) {
+                BufferedImage img = reader.read(i);
+                g.drawImage(img, w * i, 0, null);
+                // want to see the individual frame images and the filmstrip? uncomment below
+                // File outputfile = new File("/tmp/geoserveranimatedtransparentframe"+i+".gif");
+                // ImageIO.write(img, "gif", outputfile);
+            }
+            // File outputfile = new File("/tmp/geoserveranimatedstriptransparent.gif");
+            // ImageIO.write(image, "gif", outputfile);
+
+            ColorModel cm = image.getColorModel();
+            assertTrue(cm.hasAlpha());
+            assertEquals(3, cm.getNumColorComponents());
+
+            // actual check for transparency and color
+            assertPixelIsTransparent(image, 20, 10);
+            assertPixel(image, 60, 10, Color.BLACK);
+            assertPixelIsTransparent(image, 100, 10);
+            assertPixel(image, 140, 30, Color.BLACK);
         }
-        // File outputfile = new File("/tmp/geoserveranimatedstriptransparent.gif");
-        // ImageIO.write(image, "gif", outputfile);
-
-        ColorModel cm = image.getColorModel();
-        assertTrue(cm.hasAlpha());
-        assertEquals(3, cm.getNumColorComponents());
-
-        // actual check for transparency and color
-        assertPixelIsTransparent(image, 20, 10);
-        assertPixel(image, 60, 10, Color.BLACK);
-        assertPixelIsTransparent(image, 100, 10);
-        assertPixel(image, 140, 30, Color.BLACK);
     }
 
     @Test

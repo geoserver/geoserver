@@ -51,6 +51,7 @@ public class TypeNameListTypeBinding extends AbstractSimpleBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.TYPENAMELISTTYPE;
     }
@@ -62,7 +63,8 @@ public class TypeNameListTypeBinding extends AbstractSimpleBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<List> getType() {
         return List.class;
     }
 
@@ -73,6 +75,7 @@ public class TypeNameListTypeBinding extends AbstractSimpleBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(InstanceComponent instance, Object value) throws Exception {
         // TODO: implement list support in parser so that passed in value is a list
         // &lt;xsd:pattern value="((\w:)?\w(=\w)?){1,}"&gt;

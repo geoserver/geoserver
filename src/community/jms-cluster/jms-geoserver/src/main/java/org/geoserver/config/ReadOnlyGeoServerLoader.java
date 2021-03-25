@@ -39,6 +39,7 @@ public class ReadOnlyGeoServerLoader extends DefaultGeoServerLoader {
         enabled = ReadOnlyConfiguration.isReadOnly(config);
     }
 
+    @Override
     protected synchronized void loadCatalog(Catalog catalog, XStreamPersister xp) throws Exception {
         if (enabled) {
             catalog.setResourceLoader(resourceLoader);
@@ -48,6 +49,7 @@ public class ReadOnlyGeoServerLoader extends DefaultGeoServerLoader {
         }
     }
 
+    @Override
     protected synchronized void loadGeoServer(final GeoServer geoServer, XStreamPersister xp)
             throws Exception {
         if (enabled) {
@@ -82,8 +84,9 @@ public class ReadOnlyGeoServerLoader extends DefaultGeoServerLoader {
         } else {
             if (listener == null) {
                 // add event listener which persists changes
-                final List<XStreamServiceLoader> loaders =
-                        GeoServerExtensions.extensions(XStreamServiceLoader.class);
+                @SuppressWarnings("unchecked")
+                final List<XStreamServiceLoader<ServiceInfo>> loaders =
+                        (List) GeoServerExtensions.extensions(XStreamServiceLoader.class);
                 listener = new ServicePersister(loaders, geoserver);
                 geoserver.addListener(listener);
             }

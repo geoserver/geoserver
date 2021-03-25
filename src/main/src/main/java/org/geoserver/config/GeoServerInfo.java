@@ -18,6 +18,7 @@ import org.geoserver.platform.resource.LockProvider;
 public interface GeoServerInfo extends Info {
 
     /** Identifier. */
+    @Override
     String getId();
 
     /**

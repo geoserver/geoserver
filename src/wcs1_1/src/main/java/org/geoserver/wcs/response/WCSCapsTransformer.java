@@ -6,7 +6,9 @@
 package org.geoserver.wcs.response;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.geoserver.ows.util.ResponseUtils.*;
+import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
+import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
+import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,6 +79,7 @@ public class WCSCapsTransformer extends TransformerBase {
         setNamespaceDeclarationEnabled(false);
     }
 
+    @Override
     public Translator createTranslator(ContentHandler handler) {
         return new WCS111CapsTranslator(handler);
     }
@@ -99,6 +102,7 @@ public class WCSCapsTransformer extends TransformerBase {
          * @param o The Object to encode.
          * @throws IllegalArgumentException if the Object is not encodeable.
          */
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             if (!(o instanceof GetCapabilitiesType)) {
                 throw new IllegalArgumentException(
@@ -164,11 +168,13 @@ public class WCSCapsTransformer extends TransformerBase {
                 allSections = true;
                 sections = Collections.emptyList();
             } else {
-                sections = request.getSections().getSection();
+                @SuppressWarnings("unchecked")
+                List<String> cast = request.getSections().getSection();
+                sections = cast;
                 allSections = sections.contains("All");
             }
             final Set<String> knownSections =
-                    new HashSet<String>(
+                    new HashSet<>(
                             Arrays.asList(
                                     "ServiceIdentification",
                                     "ServiceProvider",
@@ -314,12 +320,12 @@ public class WCSCapsTransformer extends TransformerBase {
 
         /** */
         protected void handleKeywords(List kwords) {
-            if (kwords != null && kwords.size() > 0) {
+            if (kwords != null && !kwords.isEmpty()) {
                 start("ows:Keywords");
 
                 if (kwords != null) {
-                    for (Iterator it = kwords.iterator(); it.hasNext(); ) {
-                        element("ows:Keyword", it.next().toString());
+                    for (Object kword : kwords) {
+                        element("ows:Keyword", kword.toString());
                     }
                 }
 
@@ -383,11 +389,11 @@ public class WCSCapsTransformer extends TransformerBase {
             start("wcs:Contents");
 
             List<CoverageInfo> coverages =
-                    new ArrayList<CoverageInfo>(wcs.getGeoServer().getCatalog().getCoverages());
+                    new ArrayList<>(wcs.getGeoServer().getCatalog().getCoverages());
 
             // filter out disabled coverages
             for (Iterator<CoverageInfo> it = coverages.iterator(); it.hasNext(); ) {
-                CoverageInfo cv = (CoverageInfo) it.next();
+                CoverageInfo cv = it.next();
                 if (!cv.enabled()) {
                     it.remove();
                 }
@@ -403,8 +409,7 @@ public class WCSCapsTransformer extends TransformerBase {
             }
 
             Collections.sort(coverages, new CoverageInfoLabelComparator());
-            for (Iterator i = coverages.iterator(); i.hasNext(); ) {
-                CoverageInfo cv = (CoverageInfo) i.next();
+            for (CoverageInfo cv : coverages) {
                 try {
                     mark();
                     handleCoverageSummary(cv);

@@ -15,6 +15,8 @@ paths:
   /imports/{importId}/tasks/{taskId}/transforms:
     get:
       operationId: getTransforms
+      tags:
+       - "ImporterTransforms"
       summary: Retrieve transformation list
       description: Retrieve the list of transformations of a task with id {taskId} within import with id {importId}
       produces:
@@ -49,6 +51,8 @@ paths:
               }
     post:
       operationId: postTransform
+      tags:
+       - "ImporterTransforms"
       summary: Create a new transformation
       description: Create a new transormation and append it inside a task with id {taskId} within import with id {importId}
       consumes:
@@ -69,6 +73,8 @@ paths:
   /imports/{importId}/tasks/{taskId}/transforms/{transformId}:
     get:
       operationId: getTransform
+      tags:
+       - "ImporterTransforms"
       summary: Retrieve a transformation
       description: Retrieve a transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
       produces:
@@ -86,6 +92,8 @@ paths:
             $ref: "#/definitions/Transform"
     put:
       operationId: putTransform
+      tags:
+       - "ImporterTransforms"
       summary: Modifies a transformation
       description: Modifies the definition of a transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
       consumes:
@@ -107,6 +115,8 @@ paths:
             $ref: "#/definitions/Transform"
     delete:
       operationId: deleteTransform
+      tags:
+       - "ImporterTransforms"
       summary: Removes the transformation 
       description: Removes the transformation identified by {transformId} inside a task with id {taskId} within import with id {importId}
       parameters:

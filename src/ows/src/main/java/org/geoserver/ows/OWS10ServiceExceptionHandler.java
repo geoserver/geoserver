@@ -20,6 +20,7 @@ import net.opengis.ows10.Ows10Factory;
 import org.eclipse.xsd.XSDSchema;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.ows.xml.v1_0.OWSConfiguration;
+import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.xsd.Encoder;
 
@@ -41,7 +42,7 @@ public class OWS10ServiceExceptionHandler extends ServiceExceptionHandler {
 
     /** Constructor to be called if the exception is not for a particular service. */
     public OWS10ServiceExceptionHandler() {
-        super(Collections.EMPTY_LIST);
+        super(Collections.emptyList());
     }
 
     /**
@@ -49,11 +50,12 @@ public class OWS10ServiceExceptionHandler extends ServiceExceptionHandler {
      *
      * @param services List of services this handler handles exceptions for.
      */
-    public OWS10ServiceExceptionHandler(List services) {
+    public OWS10ServiceExceptionHandler(List<Service> services) {
         super(services);
     }
 
     /** Writes out an OWS ExceptionReport document. */
+    @Override
     public void handleServiceException(ServiceException exception, Request request) {
         Ows10Factory factory = Ows10Factory.eINSTANCE;
 

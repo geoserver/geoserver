@@ -13,10 +13,10 @@ import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
@@ -144,7 +144,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
 
         // make sure non-feature types don't appear in FeatureTypeList
         assertXpathCount(6, "//wfs:FeatureType", doc);
-        ArrayList<String> featureTypeNames = new ArrayList<String>(6);
+        ArrayList<String> featureTypeNames = new ArrayList<>(6);
         featureTypeNames.add(evaluate("//wfs:FeatureType[1]/wfs:Name", doc));
         featureTypeNames.add(evaluate("//wfs:FeatureType[2]/wfs:Name", doc));
         featureTypeNames.add(evaluate("//wfs:FeatureType[3]/wfs:Name", doc));
@@ -332,7 +332,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         int numberOfImports = getMatchingNodes("//xsd:import", doc).getLength();
         int numberOfIncludes = getMatchingNodes("//xsd:include", doc).getLength();
 
-        ArrayList<String> namespaces = new ArrayList<String>();
+        ArrayList<String> namespaces = new ArrayList<>();
         namespaces.add(AbstractAppSchemaMockData.GSML_URI);
         namespaces.add(FeatureChainingMockData.OM_URI);
         namespaces.add(FeatureChainingMockData.EX_URI);
@@ -352,7 +352,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
             // ensure expected schemaLocations are distinct
             assertEquals(numberOfIncludes, expectedExSchemaLocations.size());
             // check that found schemaLocations are as expected
-            Set<String> foundExSchemaLocations = new HashSet<String>();
+            Set<String> foundExSchemaLocations = new HashSet<>();
             for (int i = 1; i <= numberOfIncludes; i++) {
                 foundExSchemaLocations.add(
                         evaluate("//xsd:include[" + i + "]/@schemaLocation", doc));
@@ -523,6 +523,16 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
         validateGet(path);
     }
 
+    @Test
+    public void testGetFeatureEncodeIfEmpty() {
+        String path =
+                "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&featureID=mf5";
+        String newline = System.getProperty("line.separator");
+        Document doc = getAsDOM(path);
+        assertXpathCount(1, "//gsml:specification", doc);
+        LOGGER.info("Response for " + path + " :" + newline + prettyString(doc));
+    }
+
     /**
      * GeologicUnit mapping has mappingName specified, to override targetElementName when feature
      * chained to MappedFeature. This is to test that querying GeologicUnit as top level feature
@@ -598,7 +608,9 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
     /** Test content of GetFeature response. */
     @Test
     public void testGetFeatureContent() throws Exception {
-        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature");
+        Document doc =
+                getAsDOM(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&featureID=mf1,mf2,mf3,mf4");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         assertXpathEvaluatesTo("4", "/wfs:FeatureCollection/@numberOfFeatures", doc);
         assertXpathCount(4, "//gsml:MappedFeature", doc);
@@ -715,7 +727,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
         // multi-valued leaf attributes that are feature chained come in random order
         // when joining is used
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         names.add("Yaugher Volcanic Group");
         names.add("-Py");
         String name =
@@ -910,7 +922,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                 doc);
         // multi-valued leaf attributes that are feature chained come in random order
         // when joining is used
-        HashMap<String, String> names = new HashMap<String, String>();
+        HashMap<String, String> names = new HashMap<>();
         names.put("Yaugher Volcanic Group 1", "urn:ietf:rfc:2141");
         names.put("Yaugher Volcanic Group 2", "urn:ietf:rfc:2141");
         names.put("-Py", "");
@@ -1242,7 +1254,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                         + "']/gsml:specification"
                         + "/gsml:GeologicUnit/gml:name[@codeSpace='urn:ietf:rfc:2141']",
                 doc);
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         names.add("New Group");
         names.add("-Xy");
         String name =
@@ -1396,7 +1408,7 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
                         + "/gsml:ControlledConcept/gml:name",
                 doc);
         // Order depends on what the database returns in case of joining queries
-        names = new ArrayList<String>();
+        names = new ArrayList<>();
         names.add("name_a");
         names.add("name_b");
         names.add("name_c");
@@ -1555,7 +1567,9 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
     @Test
     public void testAnyTypeAndAnyElementGML() {
         final String OBSERVATION_ID_PREFIX = "observation:";
-        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=om:Observation");
+        Document doc =
+                getAsDOM(
+                        "wfs?request=GetFeature&version=1.1.0&typename=om:Observation&featureID=observation:mf1,observation:mf2,observation:mf3,observation:mf4");
         LOGGER.info("WFS GetFeature&typename=om:Observation response:\n" + prettyString(doc));
 
         assertXpathEvaluatesTo("4", "/wfs:FeatureCollection/@numberOfFeatures", doc);
@@ -1819,10 +1833,10 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
 
         checkSchemaLocation(doc);
 
-        assertXpathEvaluatesTo("7", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(4, "//gsml:MappedFeature", doc);
+        assertXpathEvaluatesTo("8", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+        assertXpathCount(5, "//gsml:MappedFeature", doc);
 
-        assertEquals(7, doc.getElementsByTagName("gml:featureMember").getLength());
+        assertEquals(8, doc.getElementsByTagName("gml:featureMember").getLength());
         assertEquals(0, doc.getElementsByTagName("gml:featureMembers").getLength());
 
         // mf1
@@ -1883,8 +1897,8 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
 
         checkSchemaLocation(doc);
 
-        assertXpathEvaluatesTo("7", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(4, "//gsml:MappedFeature", doc);
+        assertXpathEvaluatesTo("8", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+        assertXpathCount(5, "//gsml:MappedFeature", doc);
 
         assertEquals(1, doc.getElementsByTagName("gml:featureMembers").getLength());
         assertEquals(0, doc.getElementsByTagName("gml:featureMember").getLength());
@@ -2037,7 +2051,6 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
             assumeTrue(rootMapping.getSource().getDataStore() instanceof JDBCDataStore);
 
             JDBCDataStore store = (JDBCDataStore) rootMapping.getSource().getDataStore();
-            NestedFilterToSQL nestedFilterToSQL = createNestedFilterEncoder(rootMapping);
 
             FilterFactoryImplNamespaceAware ff = new FilterFactoryImplNamespaceAware();
             ff.setNamepaceContext(rootMapping.getNamespaces());
@@ -2168,13 +2181,14 @@ public class FeatureChainingWfsTest extends AbstractAppSchemaTestSupport {
     /** Helper method that just reads a JSON object from a resource file. */
     private JSONObject readJsonObject(String resourcePath) throws Exception {
         // read the JSON file content
-        InputStream input = this.getClass().getResourceAsStream(resourcePath);
-        assertThat(input, notNullValue());
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        IOUtils.copy(input, output);
-        // parse the JSON file
-        String jsonText = new String(output.toByteArray());
-        return JSONObject.fromObject(jsonText);
+        try (InputStream input = this.getClass().getResourceAsStream(resourcePath)) {
+            assertThat(input, notNullValue());
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            IOUtils.copy(input, output);
+            // parse the JSON file
+            String jsonText = new String(output.toByteArray());
+            return JSONObject.fromObject(jsonText);
+        }
     }
 
     private void assertImportExists(Document doc, String ns) {

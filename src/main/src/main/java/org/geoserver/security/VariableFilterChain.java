@@ -28,6 +28,7 @@ public abstract class VariableFilterChain extends RequestFilterChain {
                 GeoServerSecurityFilterChain.DYNAMIC_EXCEPTION_TRANSLATION_FILTER;
     }
 
+    @Override
     public boolean isConstant() {
         return false;
     }

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import org.apache.wicket.markup.html.form.Form;
 import org.geoserver.catalog.Catalog;
@@ -169,8 +168,8 @@ public class StoreExtensionPoints {
                 factoryClass = storeFactory.getClass();
             }
         } else if (storeInfo instanceof CoverageStoreInfo) {
-            AbstractGridFormat gridFormat;
-            gridFormat = resourcePool.getGridCoverageFormat((CoverageStoreInfo) storeInfo);
+            AbstractGridFormat gridFormat =
+                    resourcePool.getGridCoverageFormat((CoverageStoreInfo) storeInfo);
             if (gridFormat != null) {
                 factoryClass = gridFormat.getClass();
             }
@@ -185,7 +184,7 @@ public class StoreExtensionPoints {
 
         final List<DataStorePanelInfo> providers = app.getBeansOfType(DataStorePanelInfo.class);
 
-        List<DataStorePanelInfo> fallbacks = new ArrayList<DataStorePanelInfo>();
+        List<DataStorePanelInfo> fallbacks = new ArrayList<>();
         for (DataStorePanelInfo provider : providers) {
             Class<?> providerFactoryClass = provider.getFactoryClass();
             if (providerFactoryClass == null) {
@@ -204,21 +203,19 @@ public class StoreExtensionPoints {
             // sort by class hierarchy, pick the closest match
             Collections.sort(
                     fallbacks,
-                    new Comparator<DataStorePanelInfo>() {
-                        public int compare(DataStorePanelInfo o1, DataStorePanelInfo o2) {
-                            Class<?> c1 = o1.getFactoryClass();
-                            Class<?> c2 = o2.getFactoryClass();
+                    (o1, o2) -> {
+                        Class<?> c1 = o1.getFactoryClass();
+                        Class<?> c2 = o2.getFactoryClass();
 
-                            if (c1.equals(c2)) {
-                                return 0;
-                            }
-
-                            if (c1.isAssignableFrom(c2)) {
-                                return 1;
-                            }
-
-                            return -1;
+                        if (c1.equals(c2)) {
+                            return 0;
                         }
+
+                        if (c1.isAssignableFrom(c2)) {
+                            return 1;
+                        }
+
+                        return -1;
                     });
             // check first two and make sure bindings are not equal
             DataStorePanelInfo f1 = fallbacks.get(0);

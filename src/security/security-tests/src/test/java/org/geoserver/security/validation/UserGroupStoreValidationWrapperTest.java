@@ -5,7 +5,12 @@
  */
 package org.geoserver.security.validation;
 
-import static org.geoserver.security.validation.UserGroupServiceException.*;
+import static org.geoserver.security.validation.UserGroupServiceException.GROUPNAME_REQUIRED;
+import static org.geoserver.security.validation.UserGroupServiceException.GROUP_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.UserGroupServiceException.GROUP_NOT_FOUND_$1;
+import static org.geoserver.security.validation.UserGroupServiceException.USERNAME_REQUIRED;
+import static org.geoserver.security.validation.UserGroupServiceException.USER_ALREADY_EXISTS_$1;
+import static org.geoserver.security.validation.UserGroupServiceException.USER_NOT_FOUND_$1;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -50,10 +55,9 @@ public class UserGroupStoreValidationWrapperTest extends GeoServerSecurityTestSu
 
     @Test
     public void testUserGroupStoreWrapper() throws Exception {
-        boolean failed;
         UserGroupStoreValidationWrapper store = createStore("test");
 
-        failed = false;
+        boolean failed = false;
         try {
             store.addUser(store.createUserObject("", "", true));
         } catch (IOException ex) {

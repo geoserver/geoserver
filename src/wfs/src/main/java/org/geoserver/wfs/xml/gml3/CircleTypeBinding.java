@@ -39,6 +39,7 @@ import org.geotools.xsd.Node;
  */
 public class CircleTypeBinding extends AbstractComplexBinding {
     /** @generated */
+    @Override
     public QName getTarget() {
         return GML.CircleType;
     }
@@ -50,7 +51,8 @@ public class CircleTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<Circle> getType() {
         return Circle.class;
     }
 
@@ -61,6 +63,7 @@ public class CircleTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         throw new WFSException("Circle is not supported", "InvalidParameterValue");
     }

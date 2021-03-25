@@ -5,7 +5,7 @@
  */
 package org.geoserver.wfs.xml.v1_1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
@@ -65,7 +65,7 @@ public class XMLParsingTest extends WFSTestSupport {
         assertEquals("WFS", gf.getService());
         assertEquals("1.1.0", gf.getVersion());
         assertEquals("text/xml; subtype=gml/3.1.1", gf.getOutputFormat());
-        assertEquals(new BigInteger("10"), gf.getExpiry());
+        assertEquals(BigInteger.valueOf(10), gf.getExpiry());
     }
 
     @Test

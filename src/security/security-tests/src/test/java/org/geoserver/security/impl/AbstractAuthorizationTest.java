@@ -5,15 +5,41 @@
  */
 package org.geoserver.security.impl;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 import org.easymock.Capture;
 import org.easymock.CaptureType;
 import org.easymock.EasyMock;
-import org.easymock.IAnswer;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupHelper;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.ows.Dispatcher;
@@ -24,19 +50,16 @@ import org.geoserver.security.ResourceAccessManagerWrapper;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureStore;
-import org.geotools.util.factory.Hints;
 import org.junit.After;
 import org.junit.Before;
 import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.util.ProgressListener;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
 
-    private static final String NULL_STRING = (String) null;
+    private static final String NULL_STRING = null;
 
     protected Authentication rwUser;
 
@@ -167,7 +190,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                                 }));
 
         catalog = createNiceMock(Catalog.class);
-        expect(catalog.getWorkspace((String) anyObject()))
+        expect(catalog.getWorkspace(anyObject()))
                 .andReturn(createNiceMock(WorkspaceInfo.class))
                 .anyTimes();
         replay(catalog);
@@ -274,6 +297,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         return buildLayer(name, ws, resourceClass, true);
     }
 
+    @SuppressWarnings("unchecked") // mocking has trouble with FeatureSource generics, could not fix
     protected LayerInfo buildLayer(
             String name,
             WorkspaceInfo ws,
@@ -313,10 +337,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(resource.prefixedName()).andReturn(ws.getName() + ":" + name).anyTimes();
         expect(resource.getNamespace()).andReturn(ns).anyTimes();
         if (resource instanceof FeatureTypeInfo) {
-            expect(
-                            ((FeatureTypeInfo) resource)
-                                    .getFeatureSource(
-                                            (ProgressListener) anyObject(), (Hints) anyObject()))
+            expect(((FeatureTypeInfo) resource).getFeatureSource(anyObject(), anyObject()))
                     .andReturn(fs)
                     .anyTimes();
         }
@@ -377,7 +398,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                 .anyTimes();
         expect(layerGroup.getMode()).andReturn(type).anyTimes();
         expect(layerGroup.getLayers())
-                .andReturn(new ArrayList<PublishedInfo>(Arrays.asList(contents)))
+                .andReturn(new ArrayList<>(Arrays.asList(contents)))
                 .anyTimes();
         expect(layerGroup.getStyles()).andReturn(buildUniqueStylesForLayers(contents)).anyTimes();
         expect(layerGroup.getWorkspace()).andReturn(ws).anyTimes();
@@ -424,7 +445,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
         expect(layerGroup.getMode()).andReturn(Mode.EO).anyTimes();
         expect(layerGroup.getRootLayer()).andReturn(rootLayer).anyTimes();
         expect(layerGroup.getLayers())
-                .andReturn(new ArrayList<PublishedInfo>(Arrays.asList(contents)))
+                .andReturn(new ArrayList<>(Arrays.asList(contents)))
                 .anyTimes();
         expect(layerGroup.getStyles()).andReturn(Arrays.asList(style)).anyTimes();
         expect(layerGroup.getWorkspace()).andReturn(ws).anyTimes();
@@ -586,7 +607,7 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                             Filter f = (Filter) EasyMock.getCurrentArguments()[1];
                             Iterator<LayerGroupInfo> it =
                                     groups.stream().filter(lg -> f.evaluate(lg)).iterator();
-                            return new CloseableIteratorAdapter<LayerGroupInfo>(it);
+                            return new CloseableIteratorAdapter<>(it);
                         })
                 .anyTimes();
         replay(catalog);
@@ -597,27 +618,15 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
     <T extends CatalogInfo> void stubList(Catalog mock, Class<T> clazz, final List<T> source) {
         final Capture<Filter> cap = Capture.newInstance(CaptureType.LAST);
         expect(catalog.list(eq(clazz), capture(cap)))
-                .andStubAnswer(
-                        new IAnswer<CloseableIterator<T>>() {
-                            @Override
-                            public CloseableIterator<T> answer() throws Throwable {
-                                return makeCIterator(source, cap.getValue());
-                            }
-                        });
+                .andStubAnswer(() -> makeCIterator(source, cap.getValue()));
         expect(
                         catalog.list(
                                 eq(clazz),
                                 capture(cap),
                                 EasyMock.anyInt(),
                                 EasyMock.anyInt(),
-                                (SortBy) anyObject()))
-                .andStubAnswer(
-                        new IAnswer<CloseableIterator<T>>() {
-                            @Override
-                            public CloseableIterator<T> answer() throws Throwable {
-                                return makeCIterator(source, cap.getValue());
-                            }
-                        });
+                                anyObject()))
+                .andStubAnswer(() -> makeCIterator(source, cap.getValue()));
     }
 
     static <T> CloseableIterator<T> makeCIterator(List<T> source, Filter f) {

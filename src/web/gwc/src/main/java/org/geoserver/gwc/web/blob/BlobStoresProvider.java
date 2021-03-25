@@ -21,16 +21,13 @@ public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreInfo> {
 
     private static final long serialVersionUID = 4400431816195261839L;
 
-    public static final Property<BlobStoreInfo> ID = new BeanProperty<BlobStoreInfo>("id", "id");
+    public static final Property<BlobStoreInfo> ID = new BeanProperty<>("id", "id");
 
-    public static final Property<BlobStoreInfo> TYPE =
-            new BeanProperty<BlobStoreInfo>("type", "class");
+    public static final Property<BlobStoreInfo> TYPE = new BeanProperty<>("type", "class");
 
-    public static final Property<BlobStoreInfo> ENABLED =
-            new BeanProperty<BlobStoreInfo>("enabled", "enabled");
+    public static final Property<BlobStoreInfo> ENABLED = new BeanProperty<>("enabled", "enabled");
 
-    public static final Property<BlobStoreInfo> DEFAULT =
-            new BeanProperty<BlobStoreInfo>("default", "default");
+    public static final Property<BlobStoreInfo> DEFAULT = new BeanProperty<>("default", "default");
 
     @Override
     protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<BlobStoreInfo>>
@@ -42,16 +39,12 @@ public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreInfo> {
     protected Comparator<BlobStoreInfo> getComparator(final SortParam<?> sort) {
         if (sort != null && sort.getProperty().equals(TYPE.getName())) {
 
-            return new Comparator<BlobStoreInfo>() {
-                @Override
-                public int compare(BlobStoreInfo o1, BlobStoreInfo o2) {
-                    int r =
-                            BlobStoreTypes.getFromClass(o1.getClass())
-                                    .toString()
-                                    .compareTo(
-                                            BlobStoreTypes.getFromClass(o2.getClass()).toString());
-                    return sort.isAscending() ? r : -r;
-                }
+            return (o1, o2) -> {
+                int r =
+                        BlobStoreTypes.getFromClass(o1.getClass())
+                                .toString()
+                                .compareTo(BlobStoreTypes.getFromClass(o2.getClass()).toString());
+                return sort.isAscending() ? r : -r;
             };
 
         } else {
@@ -61,6 +54,6 @@ public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreInfo> {
 
     @Override
     protected List<BlobStoreInfo> getItems() {
-        return (List<BlobStoreInfo>) GWC.get().getBlobStores();
+        return GWC.get().getBlobStores();
     }
 }

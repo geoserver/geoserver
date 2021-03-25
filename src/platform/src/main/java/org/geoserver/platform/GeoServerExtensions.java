@@ -53,28 +53,24 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      * needed. We cache names instead of beans because doing the latter we would break the
      * "singleton=false" directive of some beans
      */
-    static SoftValueHashMap<Class, String[]> extensionsCache =
-            new SoftValueHashMap<Class, String[]>(40);
+    static SoftValueHashMap<Class<?>, String[]> extensionsCache = new SoftValueHashMap<>(40);
 
-    static ConcurrentHashMap<String, Object> singletonBeanCache =
-            new ConcurrentHashMap<String, Object>();
+    static ConcurrentHashMap<String, Object> singletonBeanCache = new ConcurrentHashMap<>();
 
     /**
      * Property cache maintained by GeoServerExtensionsHelper allowing temporary override of {@link
      * #getProperty(String)} results.
      */
-    static ConcurrentHashMap<String, String> propertyCache =
-            new ConcurrentHashMap<String, String>();
+    static ConcurrentHashMap<String, String> propertyCache = new ConcurrentHashMap<>();
 
     /**
      * File cache maintained by GeoServerExtensionsHelper allowing temporary override of {@link
      * #file(String)} results.
      */
-    static ConcurrentHashMap<String, File> fileCache = new ConcurrentHashMap<String, File>();
+    static ConcurrentHashMap<String, File> fileCache = new ConcurrentHashMap<>();
 
     /** SPI lookups are very expensive, we need to cache them */
-    static SoftValueHashMap<Class, List<Object>> spiCache =
-            new SoftValueHashMap<Class, List<Object>>(40);
+    static SoftValueHashMap<Class<?>, List<?>> spiCache = new SoftValueHashMap<>(40);
 
     /**
      * Flag to identify use of spring context via {@link #setApplicationContext(ApplicationContext)}
@@ -94,6 +90,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      *
      * @param context ApplicationContext used to lookup extensions
      */
+    @Override
     @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         isSpringContext = true;
@@ -113,8 +110,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     @SuppressWarnings("unchecked")
     public static final <T> List<T> extensions(
             Class<T> extensionPoint, ApplicationContext context) {
-        Collection<String> names;
-        names = extensionNames(extensionPoint, context);
+        Collection<String> names = extensionNames(extensionPoint, context);
 
         // lookup extension filters preventing recursion
         List<ExtensionFilter> filters;
@@ -125,7 +121,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         }
 
         // look up all the beans
-        List<T> result = new ArrayList<T>(names.size());
+        List<T> result = new ArrayList<>(names.size());
         for (String name : names) {
             Object bean = getBean(context, name);
             if (!excludeBean(name, bean, filters)) result.add((T) bean);
@@ -135,7 +131,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         if (!ExtensionProvider.class.isAssignableFrom(extensionPoint)
                 && !ExtensionFilter.class.isAssignableFrom(extensionPoint)) {
 
-            List<Object> secondary = new ArrayList<Object>();
+            List<T> secondary = new ArrayList<>();
             for (ExtensionProvider xp : extensions(ExtensionProvider.class, context)) {
                 try {
                     if (extensionPoint.isAssignableFrom(xp.getExtensionPoint())) {
@@ -149,9 +145,10 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         }
 
         // load from factory spi
-        List<Object> spiExtensions = spiCache.get(extensionPoint);
+        @SuppressWarnings("unchecked")
+        List<T> spiExtensions = (List<T>) spiCache.get(extensionPoint);
         if (spiExtensions == null) {
-            spiExtensions = new ArrayList<Object>();
+            spiExtensions = new ArrayList<>();
             new FactoryRegistry(extensionPoint)
                     .getFactories(extensionPoint, false)
                     .forEach(spiExtensions::add);
@@ -217,8 +214,8 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         return bean;
     }
 
-    private static void filter(List objects, List<ExtensionFilter> filters, List result) {
-        for (Object bean : objects) {
+    private static <T> void filter(List<T> objects, List<ExtensionFilter> filters, List<T> result) {
+        for (T bean : objects) {
             if (!excludeBean(null, bean, filters)) result.add(bean);
         }
     }
@@ -328,6 +325,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         }
     }
 
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextRefreshedEvent) {
             extensionsCache.clear();

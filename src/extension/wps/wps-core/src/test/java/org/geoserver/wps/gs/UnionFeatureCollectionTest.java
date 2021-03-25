@@ -32,6 +32,7 @@ public class UnionFeatureCollectionTest extends WPSTestSupport {
     GeometryFactory gf = new GeometryFactory();
 
     @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue") // JTS geometry equality
     public void testExecute() throws Exception {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("featureType");
@@ -82,12 +83,12 @@ public class UnionFeatureCollectionTest extends WPSTestSupport {
             union[i + 5] = secondArrayGeometry[i];
         }
         GeometryCollection unionCollection = new GeometryCollection(union, new GeometryFactory());
-        SimpleFeatureIterator iterator = output.features();
-
-        for (int h = 0; h < unionCollection.getNumGeometries(); h++) {
-            Geometry expected = (Geometry) unionCollection.getGeometryN(h);
-            SimpleFeature sf = iterator.next();
-            assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
+        try (SimpleFeatureIterator iterator = output.features()) {
+            for (int h = 0; h < unionCollection.getNumGeometries(); h++) {
+                Geometry expected = unionCollection.getGeometryN(h);
+                SimpleFeature sf = iterator.next();
+                assertTrue(expected.equals((Geometry) sf.getDefaultGeometry()));
+            }
         }
     }
 }

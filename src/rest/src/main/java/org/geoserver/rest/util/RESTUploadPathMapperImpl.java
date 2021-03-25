@@ -25,10 +25,12 @@ public abstract class RESTUploadPathMapperImpl implements RESTUploadPathMapper {
         this.catalog = catalog;
     }
 
+    @Override
     public void mapStorePath(
             StringBuilder rootDir, String workspace, String store, Map<String, String> storeParams)
             throws IOException {}
 
+    @Override
     public void mapItemPath(
             String workspace,
             String store,

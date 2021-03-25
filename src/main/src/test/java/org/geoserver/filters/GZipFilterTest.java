@@ -4,9 +4,9 @@
  */
 package org.geoserver.filters;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -43,6 +43,7 @@ public class GZipFilterTest {
         MockFilterChain chain =
                 new MockFilterChain() {
                     @Override
+                    @SuppressWarnings("PMD.CloseResource")
                     public void doFilter(ServletRequest request, ServletResponse response)
                             throws IOException, ServletException {
                         AlternativesResponseStream alternatives =
@@ -76,12 +77,12 @@ public class GZipFilterTest {
         MockFilterChain chain =
                 new MockFilterChain() {
                     @Override
+                    @SuppressWarnings("PMD.CloseResource")
                     public void doFilter(ServletRequest request, ServletResponse response)
                             throws IOException, ServletException {
                         response.setContentLength(1000);
                         AlternativesResponseStream alternatives =
                                 (AlternativesResponseStream) response.getOutputStream();
-
                         ServletOutputStream gzipStream = alternatives.getStream();
                         gzipStream.write(1);
                     }
@@ -108,6 +109,7 @@ public class GZipFilterTest {
         MockFilterChain chain =
                 new MockFilterChain() {
                     @Override
+                    @SuppressWarnings("PMD.CloseResource")
                     public void doFilter(ServletRequest request, ServletResponse response)
                             throws IOException, ServletException {
                         response.setContentLength(1000);
@@ -143,6 +145,7 @@ public class GZipFilterTest {
         MockFilterChain chain =
                 new MockFilterChain() {
                     @Override
+                    @SuppressWarnings("PMD.CloseResource")
                     public void doFilter(ServletRequest request, ServletResponse response)
                             throws IOException, ServletException {
                         response.setContentLength(1000);

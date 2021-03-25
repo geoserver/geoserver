@@ -20,7 +20,7 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
     protected transient AttributeDescriptor attribute;
     protected MetadataMap metadata = new MetadataMap();
     protected FeatureTypeInfo featureType;
-    protected Class binding;
+    protected Class<?> binding;
     protected Integer length;
 
     public String getId() {
@@ -31,54 +31,67 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public int getMaxOccurs() {
         return maxOccurs;
     }
 
+    @Override
     public void setMaxOccurs(int maxOccurs) {
         this.maxOccurs = maxOccurs;
     }
 
+    @Override
     public int getMinOccurs() {
         return minOccurs;
     }
 
+    @Override
     public void setMinOccurs(int minOccurs) {
         this.minOccurs = minOccurs;
     }
 
+    @Override
     public boolean isNillable() {
         return nillable;
     }
 
+    @Override
     public void setNillable(boolean nillable) {
         this.nillable = nillable;
     }
 
+    @Override
     public FeatureTypeInfo getFeatureType() {
         return featureType;
     }
 
+    @Override
     public void setFeatureType(FeatureTypeInfo featureType) {
         this.featureType = featureType;
     }
 
+    @Override
     public AttributeDescriptor getAttribute() {
         return attribute;
     }
 
+    @Override
     public void setAttribute(AttributeDescriptor attribute) {
         this.attribute = attribute;
     }
 
+    @Override
     public MetadataMap getMetadata() {
         return metadata;
     }
@@ -92,18 +105,22 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
         return name;
     }
 
-    public Class getBinding() {
+    @Override
+    public Class<?> getBinding() {
         return binding;
     }
 
-    public void setBinding(Class binding) {
+    @Override
+    public void setBinding(Class<?> binding) {
         this.binding = binding;
     }
 
+    @Override
     public Integer getLength() {
         return length;
     }
 
+    @Override
     public void setLength(Integer length) {
         this.length = length;
     }

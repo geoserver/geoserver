@@ -7,7 +7,7 @@ package org.geoserver.catalog;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.geotools.data.ows.HTTPClient;
+import org.geotools.http.HTTPClient;
 
 /**
  * Provides mock HTTP clients bound to the {@link #MOCKSERVER} address, to be used for testing.
@@ -18,7 +18,7 @@ public class TestHttpClientProvider {
 
     public static final String MOCKSERVER = "http://mock.test.geoserver.org";
 
-    static final Map<String, HTTPClient> CLIENTS = new ConcurrentHashMap<String, HTTPClient>();
+    static final Map<String, HTTPClient> CLIENTS = new ConcurrentHashMap<>();
 
     private static boolean TEST_MODE = false;
 
@@ -56,7 +56,7 @@ public class TestHttpClientProvider {
     }
 
     /** Used to check if any binding is associated into the mock server */
-    public static boolean testModeEnabled() {
+    public static boolean isTestModeEnabled() {
         return TEST_MODE;
     }
 

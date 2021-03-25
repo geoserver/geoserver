@@ -5,7 +5,9 @@
  */
 package org.geoserver.wms;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -128,7 +130,7 @@ public class GetMapTest {
     @Test
     public void testEnviroment() {
         final FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
-        EnvFunction.setLocalValues(Collections.singletonMap("myParam", (Object) 23));
+        EnvFunction.setLocalValues(Collections.singletonMap("myParam", 23));
 
         final DummyRasterMapProducer producer =
                 new DummyRasterMapProducer() {
@@ -156,7 +158,7 @@ public class GetMapTest {
                 };
 
         getMapOp = new GetMap(wms);
-        WebMap map = getMapOp.run(request);
+        getMapOp.run(request);
         assertTrue(producer.produceMapCalled);
         // there used to be a test that the values are reset right after
         // GetMap, but this is wrong, the producer can be streaming and thus

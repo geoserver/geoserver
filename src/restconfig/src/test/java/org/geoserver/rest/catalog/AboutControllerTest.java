@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
+import java.util.logging.Level;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -16,7 +17,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.rest.RestBaseController;
@@ -37,8 +37,8 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
         try {
             getAsDOM(BASEPATH + "/about/version?manifest=NOTEXISTS.*");
         } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "", e);
             Assert.fail(e.getLocalizedMessage());
-            e.printStackTrace();
         }
     }
 
@@ -104,13 +104,13 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetStatusAsJSON() throws Exception {
         // make the request, parsing the result into a Dom object
-        JSON dom = getAsJSON(BASEPATH + "/about/status.json");
+        getAsJSON(BASEPATH + "/about/status.json");
     }
 
     @Test
     public void testGetStatusAsXML() throws Exception {
         // make the request, parsing the result into a Dom object
-        Document dom = getAsDOM(BASEPATH + "/about/status.xml");
+        getAsDOM(BASEPATH + "/about/status.xml");
     }
 
     private void checkHTMLModel(Document dom) {
@@ -132,7 +132,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
         LOGGER.info("JSON model: " + json.toString(2));
 
         // make assertions
-        assertTrue(json != null);
+        assertNotNull(json);
         Object obj = json.get("about");
 
         assertTrue(obj instanceof JSONObject);
@@ -179,7 +179,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
 
             // System.out.println(sw.toString());
         } catch (TransformerFactoryConfigurationError | TransformerException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.WARNING, "", ex);
             throw ex;
         }
     }

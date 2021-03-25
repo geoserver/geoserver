@@ -16,6 +16,8 @@ paths:
   /styles:
     get:
       operationId: getStyles
+      tags:
+       - "Styles"
       summary: Get a list of styles
       description: Displays a list of all styles on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/styles.xml" for XML).
       produces:
@@ -49,12 +51,14 @@ paths:
 
     post:
       operationId: postStyles
+      tags:
+       - "Styles"
       summary: Add a new style
       description: |
           Adds a new style entry to the server. 
           Using POST with the `application/xml` or `application/json` content only adds the style info to the catalog and does not upload style content. PUT to `/styles/{style}` to upload the style in this case.
 
-          Use POST with a style file (`application/vnd.ogc.sld+xml` or `application/vnd.ogc.sld+xml` for SLD; additional style types are added by extensions) to generate a style info and upload the style all at once. Then seperately PUT the style info at `/styles/{style}` to make any desired changes to the generated catalog entry.
+          Use POST with a style file (`application/vnd.ogc.sld+xml` or `application/vnd.ogc.sld+xml` for SLD; additional style types are added by extensions) to generate a style info and upload the style all at once. Then separately PUT the style info at `/styles/{style}` to make any desired changes to the generated catalog entry.
           You can also use POST with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files, and then separately PUT the style info at /styles/{style}. POST with a ZIP file does not support any other style types.
       parameters:
         - $ref: "#/parameters/StyleInfoPost"
@@ -80,6 +84,8 @@ paths:
 
     put:
       operationId: putStyles
+      tags:
+       - "Styles"
       description: Invalid. Use POST for adding a new style, or use PUT with /styles/{style} to edit/upload an existing style.
       responses:
         405:
@@ -87,6 +93,8 @@ paths:
 
     delete:
       operationId: deleteStyles
+      tags:
+       - "Styles"
       description: Invalid. Use /styles/{style} instead.
       responses:
         405:
@@ -97,9 +105,11 @@ paths:
 
     get:
       operationId: getStyle
+      tags:
+       - "Styles"
       summary: Retrieve a style
       description: |
-        Retrieves a single style. Used to both request the style info and the style defintion body, depending on the media type requested. The media type can be specified either by using the "Accept:" header or by appending an extension to the endpoint. For example, a style info can be requested in XML format using "/styles/{style}.xml" or "Accept: application/xml". (Also available: "{style}.json", "Accept: application/json" "{style}.html", and "Accept: text/html").
+        Retrieves a single style. Used to both request the style info and the style definition body, depending on the media type requested. The media type can be specified either by using the "Accept:" header or by appending an extension to the endpoint. For example, a style info can be requested in XML format using "/styles/{style}.xml" or "Accept: application/xml". (Also available: "{style}.json", "Accept: application/json" "{style}.html", and "Accept: text/html").
         
         The style definition body can be requested by either appending the file extension of the style file (e.g., "{style}.sld" or "{style}.css") or by specifying the correct media type for the style definition in the "Accept" header. Below are common style formats and the corresponding media types that can be used in the Accept header to request the style definition body.
         
@@ -171,6 +181,8 @@ paths:
 
     post:
       operationId: postStyle
+      tags:
+       - "Styles"
       description: Invalid. Use PUT to edit a style, or POST with /styles to add a new style.
       parameters:
         - name: style
@@ -184,6 +196,8 @@ paths:
 
     put:
       operationId: putStyle
+      tags:
+       - "Styles"
       summary: Modify a single style
       description: |
         Modifies a single style. 
@@ -219,6 +233,8 @@ paths:
 
     delete:
       operationId: deleteStyle
+      tags:
+       - "Styles"
       summary: Delete style
       description: Deletes a style.
       parameters:
@@ -250,6 +266,8 @@ paths:
 
     get:
       operationId: getWorkspaceStyles
+      tags:
+       - "Styles"
       summary: Get a list of styles in a given workspace
       description: Displays a list of all styles in a given workspace. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/workspaces/{workspace}/styles.xml" for XML).
       parameters:
@@ -298,12 +316,14 @@ paths:
 
     post:
       operationId: postWorkspaceStyles
+      tags:
+       - "Styles"
       summary: Add a new style to a given workspace
       description:  |
           Adds a new style entry to the server. 
           Using POST with the `application/xml` or `application/json` content only adds the style info to the catalog and does not upload style content. PUT to `/workspaces/{workspace}/styles/{style}` to upload the style in this case.
 
-          Use POST with a style file (`application/vnd.ogc.sld+xml` or `application/vnd.ogc.sld+xml` for SLD; additional style types are added by extensions) to generate a style info and upload the style all at once. Then seperately PUT the style info at `/workspaces/{workspace}/styles/{style}` to make any desired changes to the generated catalog entry.
+          Use POST with a style file (`application/vnd.ogc.sld+xml` or `application/vnd.ogc.sld+xml` for SLD; additional style types are added by extensions) to generate a style info and upload the style all at once. Then separately PUT the style info at `/workspaces/{workspace}/styles/{style}` to make any desired changes to the generated catalog entry.
           You can also use POST with a ZIP file to upload a SLD 1.0 (`application/vnd.ogc.sld+xml`) file and any associated icon files, and then separately PUT the style info at /workspaces/{workspace}/styles/{style}. POST with a ZIP file does not support any other style types.
       parameters:
         - name: workspace
@@ -334,6 +354,8 @@ paths:
 
     put:
       operationId: putWorkspaceStyles
+      tags:
+       - "Styles"
       description: Invalid. Use POST for adding a new style, or use PUT with /workspaces/{workspace}/styles/{style} to edit/upload an existing style.
       parameters:
         - name: workspace
@@ -347,6 +369,8 @@ paths:
 
     delete:
       operationId: deleteWorkspaceStyles
+      tags:
+       - "Styles"
       description: Invalid. Use /workspaces/{workspace}/styles/{style} instead.
       parameters:
         - name: workspace
@@ -363,9 +387,11 @@ paths:
 
     get:
       operationId: getWorkspaceStyle
+      tags:
+       - "Styles"
       summary: Retrieve a style from a given workspace
       description: |
-        Retrieves a single style. Used to both request the style info and the style defintion body, depending on the media type requested. The media type can be specified either by using the "Accept:" header or by appending an extension to the endpoint. For example, a style info can be requested in XML format using "/styles/{style}.xml" or "Accept: application/xml". (Also available: "{style}.json", "Accept: application/json" "{style}.html", and "Accept: text/html").
+        Retrieves a single style. Used to both request the style info and the style definition body, depending on the media type requested. The media type can be specified either by using the "Accept:" header or by appending an extension to the endpoint. For example, a style info can be requested in XML format using "/styles/{style}.xml" or "Accept: application/xml". (Also available: "{style}.json", "Accept: application/json" "{style}.html", and "Accept: text/html").
         
         The style definition body can be requested by either appending the file extension of the style file (e.g., "{style}.sld" or "{style}.css") or by specifying the correct media type for the style definition in the "Accept" header. Below are common style formats and the corresponding media types that can be used in the Accept header to request the style definition body.
         
@@ -449,6 +475,8 @@ paths:
               </StyledLayerDescriptor>              
     post:
       operationId: postWorkspaceStyle
+      tags:
+       - "Styles"
       description: Invalid. Use PUT to edit a style, or POST with /workspaces/{workspace}/styles to add a new style.
       parameters:
         - name: workspace
@@ -467,6 +495,8 @@ paths:
 
     put:
       operationId: putWorkspaceStyle
+      tags:
+       - "Styles"
       summary: Modify a single style in a given workspace
       description: |
         Modifies a single style in a given workspace. 
@@ -506,6 +536,8 @@ paths:
 
     delete:
       operationId: deleteWorkspaceStyle
+      tags:
+       - "Styles"
       summary: Delete style in a given workspace
       description: Deletes a style in a given workspace.
       parameters:
@@ -542,6 +574,8 @@ paths:
 
     get:
       operationId: getLayerStyles
+      tags:
+       - "Styles"
       summary: Get a list of layer alternate styles
       description: Displays a list of all alternate styles for a given layer. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/layers/{layer}/styles.xml" for XML).
       parameters:
@@ -590,6 +624,8 @@ paths:
 
     post:
       operationId: postLayerStyles
+      tags:
+       - "Styles"
       summary: Add a new style
       description: Adds a new style entry to the layer. The style named in styleBody must already exist, and will not be altered by this request. 
       parameters:
@@ -619,6 +655,8 @@ paths:
 
     put:
       operationId: putLayerStyles
+      tags:
+       - "Styles"
       description: Invalid. Use POST to modify the styles for a layer.
       parameters:
         - name: layer
@@ -632,6 +670,8 @@ paths:
 
     delete:
       operationId: deleteLayerStyles
+      tags:
+       - "Styles"
       description: Invalid.
       parameters:
         - name: layer

@@ -39,7 +39,7 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
         final AjaxCheckBox configEnabledCheck =
                 new AjaxCheckBox(
                         "configEnabled",
-                        new PropertyModel<Boolean>(layerModel, "resource.serviceConfiguration")) {
+                        new PropertyModel<>(layerModel, "resource.serviceConfiguration")) {
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -106,8 +106,7 @@ public class ServiceLayerConfigurationPanel extends PublishedConfigurationPanel<
     }
 
     protected ServiceResourceProvider getServiceResourceUtil() {
-        return (ServiceResourceProvider)
-                GeoServerApplication.get().getBeanOfType(ServiceResourceProvider.class);
+        return GeoServerApplication.get().getBeanOfType(ServiceResourceProvider.class);
     }
 
     private LoadableDetachableModel<List<String>> servicesVotedModel(ResourceInfo resource) {

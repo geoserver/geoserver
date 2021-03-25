@@ -1,0 +1,34 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+    <fieldset>
+        <div><legend>
+            <wicket:message key="CogSettings.globalSettingsTitle">COG Settings</wicket:message>
+        </legend>
+        </div>
+        <div wicket:id="container">
+        <ul>
+            <!--li class="choiceItem">
+                <input id="useCachingStream" type="checkbox" wicket:id="useCachingStream" />
+                <label for="useCachingStream" class="checkbox">
+                    <wicket:message key="CogSettings.useCachingStream">use Caching Stream</wicket:message>
+                </label>
+            </li-->
+            <li>
+                <label for="rangeReaderSettings"><wicket:message key="CogSettings.rangeReaderSettings">Range Reader Settings</wicket:message></label>
+                <select id="rangeReaderSettings" class="field checkbox" wicket:id="rangeReaderSettings" />
+            </li>
+            <li>
+               <!-- div wicket:id="userNamePanel"></div -->
+               <div wicket:id="user"></div>
+            </li>
+            <li>
+                <div wicket:id="password"></div>
+            </li>
+        </ul>
+    </div>
+        </fieldset>
+</wicket:panel>
+</body>
+</html>

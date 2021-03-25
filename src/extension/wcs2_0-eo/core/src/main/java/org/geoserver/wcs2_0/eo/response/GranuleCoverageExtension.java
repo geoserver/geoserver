@@ -92,9 +92,8 @@ public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension 
                     StructuredGridCoverage2DReader reader =
                             (StructuredGridCoverage2DReader)
                                     ci.getGridCoverageReader(null, GeoTools.getDefaultHints());
-                    String name;
                     // Getting the coverage name
-                    name = codec.getCoverageName(ci);
+                    String name = codec.getCoverageName(ci);
                     // Query the reader
                     GranuleSource source = reader.getGranules(name, true);
                     Query q = new Query();
@@ -198,13 +197,12 @@ public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension 
             CoverageInfo ci, StructuredGridCoverage2DReader reader, String name)
             throws IOException {
         // map the source descriptors for easy retrieval
-        Map<String, DimensionDescriptor> sourceDescriptors =
-                new HashMap<String, DimensionDescriptor>();
+        Map<String, DimensionDescriptor> sourceDescriptors = new HashMap<>();
         for (DimensionDescriptor dimensionDescriptor : reader.getDimensionDescriptors(name)) {
             sourceDescriptors.put(dimensionDescriptor.getName().toUpperCase(), dimensionDescriptor);
         }
         // select only those that have been activated vai the GeoServer GUI
-        List<DimensionDescriptor> enabledDescriptors = new ArrayList<DimensionDescriptor>();
+        List<DimensionDescriptor> enabledDescriptors = new ArrayList<>();
         for (Entry<String, Serializable> entry : ci.getMetadata().entrySet()) {
             if (entry.getValue() instanceof DimensionInfo) {
                 DimensionInfo di = (DimensionInfo) entry.getValue();

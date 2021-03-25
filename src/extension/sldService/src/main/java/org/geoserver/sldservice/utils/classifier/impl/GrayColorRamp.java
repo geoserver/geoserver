@@ -5,7 +5,7 @@
  */
 package org.geoserver.sldservice.utils.classifier.impl;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Gray Color Ramp Implementation

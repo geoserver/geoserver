@@ -125,7 +125,7 @@ public class RemoteProcessTest extends WPSTestSupport {
 
             factory.deregisterProcess(name);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
             fail(e.getLocalizedMessage());
         } finally {
             assertTrue(names.size() == 0);
@@ -375,6 +375,7 @@ public class RemoteProcessTest extends WPSTestSupport {
             GeoTools.addFactoryIteratorProvider(
                     new FactoryIteratorProvider() {
 
+                        @Override
                         public <T> Iterator<T> iterator(Class<T> category) {
                             if (ProcessFactory.class.isAssignableFrom(category)) {
                                 return (Iterator<T>) Collections.singletonList(factory).iterator();

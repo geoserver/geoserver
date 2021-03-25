@@ -1,7 +1,7 @@
 Automatic Quality Assurance checks
 ----------------------------------
 
-The GeoServer builds on Travis and `https://build.geoserver.org/ <https://build.geoserver.org/>`_ apply
+The GeoServer builds on Github Actions and `https://build.geoserver.org/ <https://build.geoserver.org/>`_ apply
 `PMD <https://pmd.github.io/>`_ and `Error Prone <https://errorprone.info/>`_ checks on the code base
 and will fail the build in case of rule violation.
 
@@ -17,7 +17,7 @@ PMD checks
 
 The `PMD <https://pmd.github.io/>`_ checks are based on the basic PMD validation, but limited to priority 2 checks:
 
-https://github.com/geoserver/geoserver/blob/master/src/pmd-ruleset.xml
+https://github.com/geoserver/geoserver/blob/main/src/pmd-ruleset.xml
 
 In order to activate the PMD checks, use the "-Ppmd" profile.
 

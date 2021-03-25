@@ -49,7 +49,8 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
 
     Map<String, DefaultParameterDescriptor> parameterDescriptorMap;
 
-    public CoverageResourceConfigurationPanel(final String panelId, final IModel model) {
+    public CoverageResourceConfigurationPanel(
+            final String panelId, final IModel<CoverageInfo> model) {
         super(panelId, model);
         initParameterDescriptors();
 
@@ -60,9 +61,9 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
         addMissingParameters(keySet, coverage);
         List<String> keys = new ArrayList<>(keySet);
 
-        final IModel paramsModel = new PropertyModel(model, "parameters");
-        ListView paramsList =
-                new ListView("parameters", keys) {
+        final IModel paramsModel = new PropertyModel<>(model, "parameters");
+        ListView<String> paramsList =
+                new ListView<String>("parameters", keys) {
 
                     @Override
                     protected void populateItem(ListItem item) {
@@ -85,7 +86,7 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
 
                     @Override
                     public void onClick() {
-                        CoverageInfo coverageInfo = (CoverageInfo) model.getObject();
+                        CoverageInfo coverageInfo = model.getObject();
                         try {
                             CoverageStoreInfo store = coverageInfo.getStore();
                             WorkspaceInfo workspace = store.getWorkspace();
@@ -112,7 +113,7 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
         paramsList.setReuseItems(true);
         add(paramsList);
 
-        if (keys.size() == 0) setVisible(false);
+        if (keys.isEmpty()) setVisible(false);
     }
 
     /**
@@ -157,20 +158,21 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Component getInputComponent(String id, IModel paramsModel, String keyName) {
-        MapModel valueModel = new MapModel(paramsModel, keyName);
         ResourceModel labelModel = new ResourceModel(keyName, keyName);
         if (keyName.contains("Color")) {
-            return new ColorPickerPanel(id, valueModel, labelModel, false);
+            return new ColorPickerPanel(
+                    id, new MapModel<>(paramsModel, keyName), labelModel, false);
         }
 
         DefaultParameterDescriptor descriptor = parameterDescriptorMap.get(keyName);
         if (descriptor != null) {
-            Class valueClass = descriptor.getValueClass();
+            Class<?> valueClass = descriptor.getValueClass();
 
             // checkbox for booleans
             if (valueClass.equals(Boolean.class)) {
-                return new CheckBoxParamPanel(id, valueModel, labelModel);
+                return new CheckBoxParamPanel(id, new MapModel<>(paramsModel, keyName), labelModel);
             }
 
             // dropdown for enumerations (don't use the enum value but its name to avoid
@@ -180,7 +182,8 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
                         Arrays.stream(descriptor.getValueClass().getEnumConstants())
                                 .map(v -> ((Enum) v).name())
                                 .collect(Collectors.toList());
-                return new DropDownChoiceParamPanel(id, valueModel, labelModel, values, false);
+                return new DropDownChoiceParamPanel(
+                        id, new MapModel<>(paramsModel, keyName), labelModel, values, false);
             }
 
             // dropdown for cases in which there is a set of valid values
@@ -189,11 +192,13 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
                     && validValues != null
                     && !validValues.isEmpty()) {
                 List<? extends Serializable> values = new ArrayList<>(validValues);
-                return new DropDownChoiceParamPanel(id, valueModel, labelModel, values, false);
+                return new DropDownChoiceParamPanel(
+                        id, new MapModel<>(paramsModel, keyName), labelModel, values, false);
             }
 
             // anything else is a text, with some target type and eventual validation
-            TextParamPanel panel = new TextParamPanel(id, valueModel, labelModel, false);
+            TextParamPanel panel =
+                    new TextParamPanel(id, new MapModel<>(paramsModel, keyName), labelModel, false);
             if (Number.class.isAssignableFrom(valueClass)) {
                 panel.getFormComponent().setType(valueClass);
 
@@ -210,6 +215,6 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
             return panel;
         }
 
-        return new TextParamPanel(id, valueModel, labelModel, false);
+        return new TextParamPanel(id, new MapModel<>(paramsModel, keyName), labelModel, false);
     }
 }

@@ -7,11 +7,11 @@ package org.geoserver.gwc.layer;
 
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
 import static org.geoserver.gwc.layer.TileLayerInfoUtil.loadOrCreate;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 import com.thoughtworks.xstream.XStream;
 import java.beans.Introspector;
@@ -35,7 +35,6 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.web.context.WebApplicationContext;
 
 public class GeoServerTileLayerInfoPersistenceTest {
 
@@ -78,9 +77,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
 
     private GeoServerTileLayerInfo testMarshaling(GeoServerTileLayerInfo info) throws Exception {
 
-        XStream xstream =
-                XMLConfiguration.getConfiguredXStream(
-                        new SecureXStream(), (WebApplicationContext) null);
+        XStream xstream = XMLConfiguration.getConfiguredXStream(new SecureXStream(), null);
         xstream = new GWCGeoServerConfigurationProvider().getConfiguredXStream(xstream);
         xstream.allowTypes(new Class[] {GeoServerTileLayerInfo.class, SortedSet.class});
 
@@ -126,9 +123,8 @@ public class GeoServerTileLayerInfoPersistenceTest {
 
     @Test
     public void testMarshallingGridSubsets() throws Exception {
-        List<XMLGridSubset> subsets = new ArrayList<XMLGridSubset>();
-        XMLGridSubset subset;
-        subset = new XMLGridSubset();
+        List<XMLGridSubset> subsets = new ArrayList<>();
+        XMLGridSubset subset = new XMLGridSubset();
         subset.setGridSetName("EPSG:4326");
         subset.setZoomStart(1);
         subset.setZoomStop(10);

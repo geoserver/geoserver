@@ -6,12 +6,12 @@
 package org.geoserver.wps.web;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.util.tester.FormTester;
-import org.geoserver.config.GeoServer;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wps.ProcessGroupInfo;
-import org.geoserver.wps.WPSInfo;
 import org.junit.Test;
 
 public class WPSAccessRulePageTest extends WPSPagesTestSupport {
@@ -39,8 +39,9 @@ public class WPSAccessRulePageTest extends WPSPagesTestSupport {
         ft.setValue(
                 "selectionTable:listContainer:items:1:itemProperties:0:component:enabled", "false");
         ft.submit("apply");
+        @SuppressWarnings("unchecked")
         GeoServerTablePanel<ProcessGroupInfo> processFilterTable =
-                (GeoServerTablePanel<ProcessGroupInfo>)
+                (GeoServerTablePanel)
                         tester.getComponentFromLastRenderedPage("form:processFilterTable");
         ProcessFactoryInfoProvider dp =
                 (ProcessFactoryInfoProvider) processFilterTable.getDataProvider();
@@ -50,21 +51,20 @@ public class WPSAccessRulePageTest extends WPSPagesTestSupport {
     @Test
     public void testCheckGroup() throws Exception {
         login();
-        GeoServer gs = getGeoServer();
-        WPSInfo wps = gs.getService(WPSInfo.class);
 
         // start the page
         tester.startPage(new WPSAccessRulePage());
         tester.assertRenderedPage(WPSAccessRulePage.class);
 
         tester.assertComponent("form:processFilterTable", GeoServerTablePanel.class);
+        @SuppressWarnings("unchecked")
         GeoServerTablePanel<ProcessGroupInfo> processFilterTable =
-                (GeoServerTablePanel<ProcessGroupInfo>)
+                (GeoServerTablePanel)
                         tester.getComponentFromLastRenderedPage("form:processFilterTable");
         ProcessFactoryInfoProvider dp =
                 (ProcessFactoryInfoProvider) processFilterTable.getDataProvider();
         for (ProcessGroupInfo pgi : dp.getItems()) {
-            assertEquals(pgi.isEnabled(), true);
+            assertTrue(pgi.isEnabled());
         }
 
         FormTester ft = tester.newFormTester("form");
@@ -75,7 +75,7 @@ public class WPSAccessRulePageTest extends WPSPagesTestSupport {
                 "processFilterTable:listContainer:items:4:itemProperties:0:component:enabled",
                 "false");
         ft.submit();
-        assertEquals(dp.getItems().get(0).isEnabled(), false);
-        assertEquals(dp.getItems().get(3).isEnabled(), false);
+        assertFalse(dp.getItems().get(0).isEnabled());
+        assertFalse(dp.getItems().get(3).isEnabled());
     }
 }

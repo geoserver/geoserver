@@ -145,97 +145,90 @@ public abstract class CiteTestData implements TestData {
     public static QName GEOMETRYLESS = new QName(CITE_URI, "Geometryless", CITE_PREFIX);
 
     /** List of all cite types names */
-    public static QName[] TYPENAMES =
-            new QName[] {
-                // WMS 1.1.1
-                BASIC_POLYGONS,
-                BRIDGES,
-                BUILDINGS,
-                DIVIDED_ROUTES,
-                FORESTS,
-                LAKES,
-                MAP_NEATLINE,
-                NAMED_PLACES,
-                PONDS,
-                ROAD_SEGMENTS,
-                STREAMS,
-                GEOMETRYLESS,
-                // WFS 1.0
-                DELETES,
-                FIFTEEN,
-                INSERTS,
-                LOCKS,
-                NULLS,
-                OTHER,
-                SEVEN,
-                UPDATES,
-                LINES,
-                MLINES,
-                MPOINTS,
-                MPOLYGONS,
-                POINTS,
-                POLYGONS,
-                // WFS 1.1
-                PRIMITIVEGEOFEATURE,
-                AGGREGATEGEOFEATURE,
-                GENERICENTITY /* ENTIT\u00C9G\u00C9N\u00C9RIQUE */
-            };
+    public static QName[] TYPENAMES = {
+        // WMS 1.1.1
+        BASIC_POLYGONS,
+        BRIDGES,
+        BUILDINGS,
+        DIVIDED_ROUTES,
+        FORESTS,
+        LAKES,
+        MAP_NEATLINE,
+        NAMED_PLACES,
+        PONDS,
+        ROAD_SEGMENTS,
+        STREAMS,
+        GEOMETRYLESS,
+        // WFS 1.0
+        DELETES,
+        FIFTEEN,
+        INSERTS,
+        LOCKS,
+        NULLS,
+        OTHER,
+        SEVEN,
+        UPDATES,
+        LINES,
+        MLINES,
+        MPOINTS,
+        MPOLYGONS,
+        POINTS,
+        POLYGONS,
+        // WFS 1.1
+        PRIMITIVEGEOFEATURE,
+        AGGREGATEGEOFEATURE,
+        GENERICENTITY /* ENTIT\u00C9G\u00C9N\u00C9RIQUE */
+    };
 
     /** List of wms type names. */
-    public static QName[] WMS_TYPENAMES =
-            new QName[] {
-                BASIC_POLYGONS,
-                BRIDGES,
-                BUILDINGS,
-                DIVIDED_ROUTES,
-                FORESTS,
-                LAKES,
-                MAP_NEATLINE,
-                NAMED_PLACES,
-                PONDS,
-                ROAD_SEGMENTS,
-                STREAMS,
-                GEOMETRYLESS
-            };
+    public static QName[] WMS_TYPENAMES = {
+        BASIC_POLYGONS,
+        BRIDGES,
+        BUILDINGS,
+        DIVIDED_ROUTES,
+        FORESTS,
+        LAKES,
+        MAP_NEATLINE,
+        NAMED_PLACES,
+        PONDS,
+        ROAD_SEGMENTS,
+        STREAMS,
+        GEOMETRYLESS
+    };
 
     /** List of wcs type names. */
-    public static QName[] WCS_TYPENAMES =
-            new QName[] {TASMANIA_DEM, TASMANIA_BM, ROTATED_CAD, WORLD};
+    public static QName[] WCS_TYPENAMES = {TASMANIA_DEM, TASMANIA_BM, ROTATED_CAD, WORLD};
 
     /** List of wfs 1.0 type names. */
-    public static QName[] WFS10_TYPENAMES =
-            new QName[] {
-                DELETES, FIFTEEN, INSERTS, LOCKS, NULLS, OTHER, SEVEN, UPDATES, LINES, MLINES,
-                MPOINTS, MPOLYGONS, POINTS, POLYGONS
-            };
+    public static QName[] WFS10_TYPENAMES = {
+        DELETES, FIFTEEN, INSERTS, LOCKS, NULLS, OTHER, SEVEN, UPDATES, LINES, MLINES, MPOINTS,
+        MPOLYGONS, POINTS, POLYGONS
+    };
 
     /** List of wfs 1.1 type names. */
-    public static QName[] WFS11_TYPENAMES =
-            new QName[] {
-                PRIMITIVEGEOFEATURE,
-                AGGREGATEGEOFEATURE,
-                GENERICENTITY /* ENTIT\u00C9G\u00C9N\u00C9RIQUE */
-            };
+    public static QName[] WFS11_TYPENAMES = {
+        PRIMITIVEGEOFEATURE, AGGREGATEGEOFEATURE, GENERICENTITY /* ENTIT\u00C9G\u00C9N\u00C9RIQUE */
+    };
 
-    public static QName[] CDF_TYPENAMES =
-            new QName[] {DELETES, FIFTEEN, INSERTS, LOCKS, NULLS, OTHER, SEVEN, UPDATES};
+    public static QName[] CDF_TYPENAMES = {
+        DELETES, FIFTEEN, INSERTS, LOCKS, NULLS, OTHER, SEVEN, UPDATES
+    };
 
-    public static QName[] CGF_TYPENAMES =
-            new QName[] {LINES, MLINES, MPOINTS, MPOLYGONS, POINTS, POLYGONS};
+    public static QName[] CGF_TYPENAMES = {LINES, MLINES, MPOINTS, MPOLYGONS, POINTS, POLYGONS};
 
     public static QName[] SF_TYPENAMES = WFS11_TYPENAMES;
 
     public static QName[] CITE_TYPENAMES = WMS_TYPENAMES;
 
     /** map of qname to srs */
-    public static HashMap<QName, Integer> SRS = new HashMap<QName, Integer>();
+    public static HashMap<QName, Integer> SRS = new HashMap<>();
 
     static {
-        for (int i = 0; i < WFS10_TYPENAMES.length; i++) {
-            SRS.put(WFS10_TYPENAMES[i], 32615);
+        for (QName wfs10Typename : WFS10_TYPENAMES) {
+            SRS.put(wfs10Typename, 32615);
         }
-        for (int i = 0; i < WFS11_TYPENAMES.length; i++) {
-            SRS.put(WFS11_TYPENAMES[i], 4326);
+        for (QName wfs11Typename : WFS11_TYPENAMES) {
+            SRS.put(wfs11Typename, 4326);
         }
     }
 
@@ -243,7 +236,7 @@ public abstract class CiteTestData implements TestData {
     public static String DEFAULT_RASTER_STYLE = "raster";
 
     /** map of coverage qname to filename and format */
-    public static HashMap<QName, String[]> COVERAGES = new HashMap<QName, String[]>();
+    public static HashMap<QName, String[]> COVERAGES = new HashMap<>();
 
     static {
         COVERAGES.put(TASMANIA_DEM, new String[] {"tazdem.tiff", TIFF});

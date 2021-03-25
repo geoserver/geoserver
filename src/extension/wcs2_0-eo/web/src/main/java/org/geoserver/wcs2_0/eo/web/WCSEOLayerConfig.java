@@ -11,7 +11,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.wcs2_0.eo.WCSEOMetadata;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
@@ -29,10 +28,9 @@ public class WCSEOLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         setVisible(isStructuredCoverage(model));
 
         // add the checkbox to enable exposing a layer as a dataset
-        MapModel datasetModel =
-                new MapModel(
-                        new PropertyModel<MetadataMap>(model, "resource.metadata"),
-                        WCSEOMetadata.DATASET.key);
+        MapModel<Boolean> datasetModel =
+                new MapModel<>(
+                        new PropertyModel<>(model, "resource.metadata"), WCSEOMetadata.DATASET.key);
         CheckBox dataset = new CheckBox("dataset", datasetModel);
         add(dataset);
     }

@@ -36,7 +36,7 @@ The following table lists the default assumptions:
    * - ``srs``
      - ``EPSG:4326``
    * - ``format``
-     - ``applcation/vnd.google-earth.kmz+xml``
+     - ``application/vnd.google-earth.kml+xml``
    * - ``width``
      - ``2048``
    * - ``height``

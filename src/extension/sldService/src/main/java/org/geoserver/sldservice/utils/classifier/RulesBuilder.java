@@ -5,9 +5,12 @@
  */
 package org.geoserver.sldservice.utils.classifier;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.DoubleStream;
@@ -35,7 +38,7 @@ import org.opengis.filter.expression.PropertyName;
 
 /**
  * Creates a List of Rule using different classification methods Sets up only filter not Symbolyzer
- * Available Classification: Quantile,Unique Interval & Equal Interval
+ * Available Classification: Quantile,Unique Interval, Equal Interval & Standard Deviation
  *
  * @author kappu
  */
@@ -162,6 +165,17 @@ public class RulesBuilder {
             boolean normalize) {
         return getRules(
                 features, property, propertyType, intervals, open, normalize, "EqualInterval");
+    }
+
+    public List<Rule> standardDeviationClassification(
+            FeatureCollection features,
+            String property,
+            Class<?> propertyType,
+            int intervals,
+            boolean open,
+            boolean normalize) {
+        return getRules(
+                features, property, propertyType, intervals, open, normalize, "StandardDeviation");
     }
 
     /**
@@ -340,28 +354,33 @@ public class RulesBuilder {
 
         Rule r;
         Filter f;
-        List<Rule> list = new ArrayList();
+        List<Rule> list = new ArrayList<>();
         Expression att = normalizeProperty(FF.property(property), propertyType, normalize);
         PercentagesManager percMan = new PercentagesManager(groups.getPercentages());
         try {
             /* First class */
             r = SF.createRule();
-            if (groups.getMin(0).equals(groups.getMax(0))) {
-                f = FF.equals(att, FF.literal(groups.getMin(0)));
-                r.getDescription().setTitle((FF.literal(groups.getMin(0)).toString()));
+            Object min = groups.getMin(0);
+            Object max = groups.getMax(0);
+
+            if (min != null && min.equals(max)) {
+                f = FF.equals(att, FF.literal(min));
+                r.getDescription().setTitle((FF.literal(min).toString()));
             } else {
-                f = FF.less(att, FF.literal(groups.getMax(0)));
-                r.getDescription().setTitle(" < " + FF.literal(groups.getMax(0)));
+                f = FF.less(att, FF.literal(max));
+                r.getDescription().setTitle(" < " + FF.literal(max));
             }
             r.setFilter(f);
             list.add(r);
             percMan.collectRulePercentage(0);
             for (int i = 1; i < groups.getSize() - 1; i++) {
                 r = SF.createRule();
-                if (groups.getMin(i).equals(groups.getMax(i))) {
-                    f = FF.equals(att, FF.literal(groups.getMax(i)));
+                min = groups.getMin(i);
+                max = groups.getMax(i);
+                if (min.equals(max)) {
+                    f = FF.equals(att, FF.literal(max));
                     if (!isDuplicatedClass(list, f, percMan, i)) {
-                        r.getDescription().setTitle((FF.literal(groups.getMin(i)).toString()));
+                        r.getDescription().setTitle((FF.literal(min).toString()));
                         r.setFilter(f);
                         list.add(r);
                         percMan.collectRulePercentage(i);
@@ -370,14 +389,10 @@ public class RulesBuilder {
                     f =
                             FF.and(
                                     getNotOverlappingFilter(i, groups, att),
-                                    FF.less(att, FF.literal(groups.getMax(i))));
+                                    FF.less(att, FF.literal(max)));
                     if (!isDuplicatedClass(list, f, percMan, i)) {
                         r.getDescription()
-                                .setTitle(
-                                        (" >= "
-                                                + FF.literal(groups.getMin(i))
-                                                + " AND < "
-                                                + FF.literal(groups.getMax(i))));
+                                .setTitle((" >= " + FF.literal(min) + " AND < " + FF.literal(max)));
                         r.setFilter(f);
                         list.add(r);
                         percMan.collectRulePercentage(i);
@@ -386,9 +401,15 @@ public class RulesBuilder {
             }
             /* Last class */
             r = SF.createRule();
-            f = getNotOverlappingFilter(groups.getSize() - 1, groups, att);
+            int currentIdx = groups.getSize() - 1;
+            Object currMin = groups.getMin(currentIdx);
+            if (groups.getMax(currentIdx) == null) {
+                f = FF.greaterOrEqual(att, FF.literal(currMin));
+            } else {
+                f = getNotOverlappingFilter(currentIdx, groups, att);
+            }
             r.setFilter(f);
-            r.getDescription().setTitle((" >= " + FF.literal(groups.getMin(groups.getSize() - 1))));
+            r.getDescription().setTitle((" >= " + FF.literal(currMin)));
             list.add(r);
             percMan.collectRulePercentage(groups.getSize() - 1);
             percMan.appendPercentagesToLabels(list);
@@ -419,42 +440,55 @@ public class RulesBuilder {
 
         Rule r;
         Filter f;
-        List<Rule> list = new ArrayList();
+        List<Rule> list = new ArrayList<>();
         Expression att = normalizeProperty(FF.property(property), propertyType, normalize);
-        PercentagesManager percMan = null;
-        percMan = new PercentagesManager(groups.getPercentages());
+        PercentagesManager percMan = new PercentagesManager(groups.getPercentages());
         try {
             /* First class */
-            r = SF.createRule();
             for (int i = 0; i < groups.getSize(); i++) {
                 r = SF.createRule();
-                if (groups.getMin(i).equals(groups.getMax(i))) {
-                    f = FF.equals(att, FF.literal(groups.getMin(i)));
-                    if (!isDuplicatedClass(list, f, percMan, i)) {
-                        r.getDescription().setTitle((FF.literal(groups.getMin(i)).toString()));
-                        r.setFilter(f);
-                        list.add(r);
-                        percMan.collectRulePercentage(i);
+                Object min = groups.getMin(i);
+                Object max = groups.getMax(i);
+                boolean isDuplicated = false;
+
+                // stddev classification return null min for the first breaks since
+                // and null max for the last breaks since the computation add only 1 stddev below
+                // or above the mean till the number of requested class is reached,
+                // without knowing the min or max value.
+                if (min == null) {
+                    f = FF.less(att, FF.literal(max));
+                    r.getDescription().setTitle(" < " + FF.literal(max));
+                } else if (max == null) {
+                    f = FF.greaterOrEqual(att, FF.literal(min));
+                    r.getDescription().setTitle(" >= " + FF.literal(min));
+                } else if (min.equals(max)) {
+                    f = FF.equals(att, FF.literal(min));
+                    isDuplicated = isDuplicatedClass(list, f, percMan, i);
+                    if (!isDuplicated) {
+                        r.getDescription().setTitle((FF.literal(min).toString()));
                     }
                 } else {
                     f =
                             FF.and(
                                     getNotOverlappingFilter(i, groups, att),
                                     i == (groups.getSize() - 1)
-                                            ? FF.lessOrEqual(att, FF.literal(groups.getMax(i)))
-                                            : FF.less(att, FF.literal(groups.getMax(i))));
-                    if (!isDuplicatedClass(list, f, percMan, i)) {
+                                            ? FF.lessOrEqual(att, FF.literal(max))
+                                            : FF.less(att, FF.literal(max)));
+                    isDuplicated = isDuplicatedClass(list, f, percMan, i);
+                    if (!isDuplicated) {
                         r.getDescription()
                                 .setTitle(
                                         (" >= "
-                                                + FF.literal(groups.getMin(i))
+                                                + FF.literal(min)
                                                 + " AND "
                                                 + (i == (groups.getSize() - 1) ? "<=" : "<")
-                                                + FF.literal(groups.getMax(i))));
-                        r.setFilter(f);
-                        list.add(r);
-                        percMan.collectRulePercentage(i);
+                                                + FF.literal(max)));
                     }
+                }
+                if (!isDuplicated) {
+                    r.setFilter(f);
+                    list.add(r);
+                    percMan.collectRulePercentage(i);
                 }
             }
             percMan.appendPercentagesToLabels(list);
@@ -475,7 +509,7 @@ public class RulesBuilder {
 
         Rule r;
         Filter f;
-        List<Rule> list = new ArrayList();
+        List<Rule> list = new ArrayList<>();
         PropertyName att = FF.property(property);
         String szFilter = "";
         String szTitle = "";
@@ -559,7 +593,10 @@ public class RulesBuilder {
     private double[] computeCustomPercentages(int[][] bins, double totalSize) {
         double[] percentages = new double[bins.length];
         for (int i = 0; i < bins.length; i++) {
-            percentages[i] = ((double) bins[i][0] / totalSize) * 100;
+            double classMembers = bins[i][0];
+            if (classMembers != 0d && totalSize != 0d)
+                percentages[i] = (classMembers / totalSize) * 100;
+            else percentages[i] = 0d;
         }
         return percentages;
     }
@@ -587,14 +624,14 @@ public class RulesBuilder {
     private Filter getNotOverlappingFilter(
             int currentIdx, RangedClassifier groups, Expression att) {
         Filter f;
+        Object currMin = groups.getMin(currentIdx);
         if (currentIdx > 0) {
-            Object currMin = groups.getMin(currentIdx);
             Object prevMin = groups.getMin(currentIdx - 1);
-            if (!prevMin.equals(currMin))
-                f = FF.greaterOrEqual(att, FF.literal(groups.getMin(currentIdx)));
-            else f = FF.greater(att, FF.literal(groups.getMin(currentIdx)));
+            if (prevMin == null || !prevMin.equals(currMin))
+                f = FF.greaterOrEqual(att, FF.literal(currMin));
+            else f = FF.greater(att, FF.literal(currMin));
         } else {
-            f = FF.greaterOrEqual(att, FF.literal(groups.getMin(currentIdx)));
+            f = FF.greaterOrEqual(att, FF.literal(currMin));
         }
 
         return f;

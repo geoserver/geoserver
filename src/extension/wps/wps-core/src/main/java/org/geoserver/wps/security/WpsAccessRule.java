@@ -36,20 +36,20 @@ public class WpsAccessRule implements Comparable<WpsAccessRule>, Serializable {
         super();
         this.groupName = groupName;
         this.wpsName = wpsName;
-        if (roles == null) this.roles = new HashSet<String>();
-        else this.roles = new HashSet<String>(roles);
+        if (roles == null) this.roles = new HashSet<>();
+        else this.roles = new HashSet<>(roles);
     }
 
     /** Builds a new rule */
     public WpsAccessRule(String groupName, String wpsName, String... roles) {
-        this(groupName, wpsName, roles == null ? null : new HashSet<String>(Arrays.asList(roles)));
+        this(groupName, wpsName, roles == null ? null : new HashSet<>(Arrays.asList(roles)));
     }
 
     /** Copy constructor */
     public WpsAccessRule(WpsAccessRule other) {
         this.groupName = other.groupName;
         this.wpsName = other.wpsName;
-        this.roles = new HashSet<String>(other.roles);
+        this.roles = new HashSet<>(other.roles);
     }
 
     /** Builds the default rule: *.*.r=* */
@@ -105,6 +105,7 @@ public class WpsAccessRule implements Comparable<WpsAccessRule>, Serializable {
      * Comparison implemented so that generic rules get first, specific one are compared by name,
      * and if anything else is equal, read comes before write
      */
+    @Override
     public int compareTo(WpsAccessRule other) {
         int compareGroup = compareCatalogItems(groupName, other.groupName);
         if (compareGroup != 0) return compareGroup;

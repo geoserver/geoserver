@@ -38,7 +38,7 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
 
     @Override
     public Component getPageBodyComponent(String id) {
-        // do a check that the root password is not set
+        // do a check that the keystore password is not set
         GeoServerSecurityManager secMgr = GeoServerApplication.get().getSecurityManager();
         if (secMgr.checkAuthenticationForAdminRole()) {
             return new SecurityWarningsPanel(id);
@@ -64,7 +64,7 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
                 mpInfoLabel =
                         new Label(
                                 "mpfile",
-                                new StringResourceModel("masterPasswordFile", (Component) this)
+                                new StringResourceModel("masterPasswordFile", this)
                                         .setParameters(mpInfo.path()));
                 mpInfoLabel.setEscapeModelStrings(false);
                 add(mpInfoLabel);
@@ -81,7 +81,7 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
                 userpropsLabel =
                         new Label(
                                 "userpropsold",
-                                new StringResourceModel("userPropertiesOldFile", (Component) this)
+                                new StringResourceModel("userPropertiesOldFile", this)
                                         .setParameters(userprops.path()));
                 userpropsLabel.setEscapeModelStrings(false);
                 add(userpropsLabel);
@@ -96,8 +96,7 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
             Label label =
                     new Label(
                             "mpmessage",
-                            new StringResourceModel(
-                                    "changeMasterPassword", (Component) this, null));
+                            new StringResourceModel("changeMasterPassword", this, null));
             label.setEscapeModelStrings(false);
             add(label);
             Link link = null;
@@ -137,7 +136,7 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
             label =
                     new Label(
                             "adminmessage",
-                            new StringResourceModel("changeAdminPassword", (Component) this, null));
+                            new StringResourceModel("changeAdminPassword", this, null));
             label.setEscapeModelStrings(false);
             add(label);
             add(
@@ -160,7 +159,9 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
                                                 "strongEncryption",
                                                 new SecuritySettingsPage(),
                                                 null))
-                                .add(new AttributeAppender("class", new Model("info-link"), " ")));
+                                .add(
+                                        new AttributeAppender(
+                                                "class", new Model<>("info-link"), " ")));
             } else {
                 add(
                         new Label(
@@ -171,7 +172,7 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
                                                 null))
                                 .add(
                                         new AttributeAppender(
-                                                "class", new Model("warning-link"), " ")));
+                                                "class", new Model<>("warning-link"), " ")));
             }
 
             // check for password encoding in the default user group service
@@ -186,7 +187,7 @@ public class SecurityHomePageContentProvider implements GeoServerHomePageContent
             label =
                     new Label(
                             "digestEncoding",
-                            new StringResourceModel("digestEncoding", (Component) this, null));
+                            new StringResourceModel("digestEncoding", this, null));
             add(label);
             label.setVisible(visibility);
         }

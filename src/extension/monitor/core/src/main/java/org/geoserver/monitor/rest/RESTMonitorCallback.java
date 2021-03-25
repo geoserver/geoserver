@@ -30,6 +30,7 @@ public class RESTMonitorCallback extends DispatcherCallbackAdapter {
         this.monitor = monitor;
     }
 
+    @Override
     public void init(HttpServletRequest request, HttpServletResponse response) {
         RequestData data = monitor.current();
         if (data == null) {
@@ -46,6 +47,7 @@ public class RESTMonitorCallback extends DispatcherCallbackAdapter {
         monitor.update();
     }
 
+    @Override
     public void dispatched(
             HttpServletRequest request, HttpServletResponse response, Object handler) {
         RequestData data = monitor.current();

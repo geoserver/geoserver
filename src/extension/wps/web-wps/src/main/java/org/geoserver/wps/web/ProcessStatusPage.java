@@ -98,7 +98,7 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
         public void onClick(AjaxRequestTarget target) {
             // see if the user selected anything
             final List<ExecutionStatus> selection = table.getSelection();
-            if (selection.size() == 0) return;
+            if (selection.isEmpty()) return;
 
             dialog.setTitle(new ParamResourceModel("confirmDismissal", this));
 
@@ -108,6 +108,7 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
                     target,
                     new GeoServerDialog.DialogDelegate() {
 
+                        @Override
                         protected Component getContents(String id) {
                             // show a confirmation panel for all the objects we have to remove
                             return new Label(
@@ -116,6 +117,7 @@ public class ProcessStatusPage extends GeoServerSecuredPage {
                                             "confirmDismissProcesses", ProcessStatusPage.this));
                         }
 
+                        @Override
                         protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
                             // issue deletion on the specified processes
                             WPSExecutionManager executor =

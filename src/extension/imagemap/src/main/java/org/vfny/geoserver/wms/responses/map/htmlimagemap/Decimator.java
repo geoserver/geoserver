@@ -56,13 +56,12 @@ public final class Decimator {
      */
     public Decimator(MathTransform screenToWorld, Rectangle paintArea) {
         if (screenToWorld != null) {
-            double[] original =
-                    new double[] {
-                        paintArea.x + paintArea.width / 2.0,
-                        paintArea.y + paintArea.height / 2.0,
-                        paintArea.x + paintArea.width / 2.0 + 1,
-                        paintArea.y + paintArea.height / 2.0 + 1,
-                    };
+            double[] original = {
+                paintArea.x + paintArea.width / 2.0,
+                paintArea.y + paintArea.height / 2.0,
+                paintArea.x + paintArea.width / 2.0 + 1,
+                paintArea.y + paintArea.height / 2.0 + 1,
+            };
             double[] coords = new double[4];
             try {
                 screenToWorld.transform(original, 0, coords, 0, 2);
@@ -133,7 +132,7 @@ public final class Decimator {
 
         } else if (geom instanceof LineString) {
             LineString line = (LineString) geom;
-            CoordinateSequence seq = (CoordinateSequence) line.getCoordinateSequence();
+            CoordinateSequence seq = line.getCoordinateSequence();
             LiteCoordinateSequence lseq = new LiteCoordinateSequence(seq.toCoordinateArray());
 
             if (decimateOnEnvelope(line, lseq)) {
@@ -149,7 +148,7 @@ public final class Decimator {
                 LinearRing ring = gFac.createLinearRing(exterior);
 
                 final int numRings = line.getNumInteriorRing();
-                List<LinearRing> rings = new ArrayList<LinearRing>();
+                List<LinearRing> rings = new ArrayList<>();
 
                 for (int i = 0; i < numRings; i++) {
                     Coordinate[] interior = decimate(line.getInteriorRingN(i)).getCoordinates();

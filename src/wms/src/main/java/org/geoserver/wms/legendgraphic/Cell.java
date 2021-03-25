@@ -8,6 +8,7 @@ package org.geoserver.wms.legendgraphic;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Paint;
@@ -17,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.StringTokenizer;
+import org.apache.commons.text.WordUtils;
 import org.geoserver.wms.legendgraphic.LegendUtils.HAlign;
 import org.geoserver.wms.legendgraphic.LegendUtils.VAlign;
 import org.geotools.styling.ColorMapEntry;
@@ -49,6 +52,10 @@ public abstract class Cell {
 
     protected final Color borderColor;
 
+    protected final boolean wrap;
+    // TODO: parameterize this width
+    protected int WRAP_WIDTH = 150;
+
     protected Cell(
             final Color bkgColor,
             final double bkgOpacity,
@@ -59,7 +66,8 @@ public abstract class Cell {
             final Font labelFont,
             final Color labelFontColor,
             final boolean fontAntiAliasing,
-            final Color borderColor) {
+            final Color borderColor,
+            final boolean wrap) {
         this.bkgColor = bkgColor;
         this.bkgOpacity = bkgOpacity;
         this.text = text;
@@ -70,6 +78,7 @@ public abstract class Cell {
         this.labelFontColor = labelFontColor;
         this.fontAntiAliasing = fontAntiAliasing;
         this.borderColor = borderColor;
+        this.wrap = wrap;
     }
 
     public abstract void draw(
@@ -91,7 +100,7 @@ public abstract class Cell {
      * @author Simone Giannecchini, GeoSolutions SAS
      */
     public abstract static class Row {
-        private final List<Cell> cells = new ArrayList<Cell>();
+        private final List<Cell> cells = new ArrayList<>();
 
         Row() {}
 
@@ -175,7 +184,8 @@ public abstract class Cell {
                 final Color borderColor,
                 final String unit,
                 final int digits,
-                boolean formatQuantity) {
+                boolean formatQuantity,
+                boolean wrap) {
 
             final ColorMapEntry currentCME = cMapEntries.get(0);
             Color color = LegendUtils.color(currentCME);
@@ -188,7 +198,7 @@ public abstract class Cell {
                             (int) (255 * opacity));
             super.add(
                     new ColorManager.SimpleColorManager(
-                            color, opacity, requestedDimension, borderColor));
+                            color, opacity, requestedDimension, borderColor, wrap));
 
             final String label = LegendUtils.getLabel(currentCME);
             final double quantity = LegendUtils.getQuantity(currentCME);
@@ -213,7 +223,8 @@ public abstract class Cell {
                             labelFont,
                             labelFontColor,
                             fontAntiAliasing,
-                            borderColor));
+                            borderColor,
+                            wrap));
 
             // add the label the label to the rule so that we draw all text just once
             if (label != null) {
@@ -229,7 +240,8 @@ public abstract class Cell {
                                 labelFont,
                                 labelFontColor,
                                 fontAntiAliasing,
-                                borderColor));
+                                borderColor,
+                                wrap));
             } else super.add(null);
         }
 
@@ -245,7 +257,8 @@ public abstract class Cell {
                 final Font labelFont,
                 final Color labelFontColor,
                 final boolean fontAntiAliasing,
-                final Color borderColor) {
+                final Color borderColor,
+                final boolean wrap) {
             this(
                     cMapEntries,
                     hAlign,
@@ -260,7 +273,8 @@ public abstract class Cell {
                     borderColor,
                     null,
                     0,
-                    false);
+                    false,
+                    wrap);
         }
 
         @SuppressWarnings("deprecation")
@@ -277,7 +291,8 @@ public abstract class Cell {
                 final boolean fontAntiAliasing,
                 final Color borderColor,
                 final String unit,
-                final int digits) {
+                final int digits,
+                final boolean wrap) {
             this(
                     cMapEntries,
                     hAlign,
@@ -292,7 +307,8 @@ public abstract class Cell {
                     borderColor,
                     unit,
                     digits,
-                    true);
+                    true,
+                    wrap);
         }
     }
 
@@ -312,7 +328,8 @@ public abstract class Cell {
                 final Font labelFont,
                 final Color labelFontColor,
                 final boolean fontAntiAliasing,
-                final Color borderColor) {
+                final Color borderColor,
+                final boolean wrap) {
             this(
                     mapEntries,
                     hAlign,
@@ -327,39 +344,8 @@ public abstract class Cell {
                     borderColor,
                     null,
                     0,
-                    false);
-        }
-
-        @SuppressWarnings("deprecation")
-        public RampColorMapEntryLegendBuilder(
-                final List<ColorMapEntry> mapEntries,
-                final HAlign hAlign,
-                final VAlign vAling,
-                final Color bkgColor,
-                final double bkgOpacity,
-                final String text,
-                final Dimension requestedDimension,
-                final Font labelFont,
-                final Color labelFontColor,
-                final boolean fontAntiAliasing,
-                final Color borderColor,
-                final String unit,
-                final int digits) {
-            this(
-                    mapEntries,
-                    hAlign,
-                    vAling,
-                    bkgColor,
-                    bkgOpacity,
-                    text,
-                    requestedDimension,
-                    labelFont,
-                    labelFontColor,
-                    fontAntiAliasing,
-                    borderColor,
-                    unit,
-                    digits,
-                    true);
+                    false,
+                    wrap);
         }
 
         @SuppressWarnings("deprecation")
@@ -377,7 +363,42 @@ public abstract class Cell {
                 final Color borderColor,
                 final String unit,
                 final int digits,
-                boolean formatQuantity) {
+                final boolean wrap) {
+            this(
+                    mapEntries,
+                    hAlign,
+                    vAling,
+                    bkgColor,
+                    bkgOpacity,
+                    text,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    fontAntiAliasing,
+                    borderColor,
+                    unit,
+                    digits,
+                    true,
+                    wrap);
+        }
+
+        @SuppressWarnings("deprecation")
+        public RampColorMapEntryLegendBuilder(
+                final List<ColorMapEntry> mapEntries,
+                final HAlign hAlign,
+                final VAlign vAling,
+                final Color bkgColor,
+                final double bkgOpacity,
+                final String text,
+                final Dimension requestedDimension,
+                final Font labelFont,
+                final Color labelFontColor,
+                final boolean fontAntiAliasing,
+                final Color borderColor,
+                final String unit,
+                final int digits,
+                boolean formatQuantity,
+                boolean wrap) {
 
             final ColorMapEntry previousCME = mapEntries.get(0);
             final ColorMapEntry currentCME = mapEntries.get(1);
@@ -410,7 +431,7 @@ public abstract class Cell {
                             (int) (255 * opacity));
             super.add(
                     new ColorManager.SimpleColorManager.GradientColorManager(
-                            color, opacity, previousColor, requestedDimension, borderColor));
+                            color, opacity, previousColor, requestedDimension, borderColor, wrap));
 
             String label = LegendUtils.getLabel(currentCME);
             double quantity = LegendUtils.getQuantity(currentCME);
@@ -453,7 +474,8 @@ public abstract class Cell {
                             labelFont,
                             labelFontColor,
                             leftEdge,
-                            borderColor));
+                            borderColor,
+                            wrap));
             lastRuleManager =
                     new TextManager(
                             lastRuleText,
@@ -464,7 +486,8 @@ public abstract class Cell {
                             labelFont,
                             labelFontColor,
                             leftEdge,
-                            borderColor);
+                            borderColor,
+                            wrap);
 
             // add the label the label to the rule so that we draw all text just once
             if (label != null) {
@@ -480,7 +503,8 @@ public abstract class Cell {
                                 labelFont,
                                 labelFontColor,
                                 leftEdge,
-                                borderColor));
+                                borderColor,
+                                wrap));
             } else {
                 super.add(null);
             }
@@ -506,7 +530,8 @@ public abstract class Cell {
                 final Font labelFont,
                 final Color labelFontColor,
                 final boolean fontAntiAliasing,
-                final Color borderColor) {
+                final Color borderColor,
+                final boolean wrap) {
             this(
                     mapEntries,
                     hAlign,
@@ -521,39 +546,8 @@ public abstract class Cell {
                     borderColor,
                     null,
                     0,
-                    false);
-        }
-
-        @SuppressWarnings("deprecation")
-        public ClassesEntryLegendBuilder(
-                final List<ColorMapEntry> mapEntries,
-                final HAlign hAlign,
-                final VAlign vAling,
-                final Color bkgColor,
-                final double bkgOpacity,
-                final String text,
-                final Dimension requestedDimension,
-                final Font labelFont,
-                final Color labelFontColor,
-                final boolean fontAntiAliasing,
-                final Color borderColor,
-                final String unit,
-                final int digits) {
-            this(
-                    mapEntries,
-                    hAlign,
-                    vAling,
-                    bkgColor,
-                    bkgOpacity,
-                    text,
-                    requestedDimension,
-                    labelFont,
-                    labelFontColor,
-                    fontAntiAliasing,
-                    borderColor,
-                    unit,
-                    digits,
-                    true);
+                    false,
+                    wrap);
         }
 
         @SuppressWarnings("deprecation")
@@ -571,7 +565,42 @@ public abstract class Cell {
                 final Color borderColor,
                 final String unit,
                 final int digits,
-                boolean formatQuantity) {
+                final boolean wrap) {
+            this(
+                    mapEntries,
+                    hAlign,
+                    vAling,
+                    bkgColor,
+                    bkgOpacity,
+                    text,
+                    requestedDimension,
+                    labelFont,
+                    labelFontColor,
+                    fontAntiAliasing,
+                    borderColor,
+                    unit,
+                    digits,
+                    true,
+                    wrap);
+        }
+
+        @SuppressWarnings("deprecation")
+        public ClassesEntryLegendBuilder(
+                final List<ColorMapEntry> mapEntries,
+                final HAlign hAlign,
+                final VAlign vAling,
+                final Color bkgColor,
+                final double bkgOpacity,
+                final String text,
+                final Dimension requestedDimension,
+                final Font labelFont,
+                final Color labelFontColor,
+                final boolean fontAntiAliasing,
+                final Color borderColor,
+                final String unit,
+                final int digits,
+                boolean formatQuantity,
+                boolean wrap) {
 
             final ColorMapEntry previousCME = mapEntries.get(0);
             final ColorMapEntry currentCME = mapEntries.get(1);
@@ -589,7 +618,7 @@ public abstract class Cell {
                             (int) (255 * opacity));
             super.add(
                     new ColorManager.SimpleColorManager(
-                            color, opacity, requestedDimension, borderColor));
+                            color, opacity, requestedDimension, borderColor, wrap));
 
             String label = LegendUtils.getLabel(currentCME);
             double quantity1 =
@@ -641,7 +670,8 @@ public abstract class Cell {
                             labelFont,
                             labelFontColor,
                             leftEdge,
-                            borderColor));
+                            borderColor,
+                            wrap));
 
             // add the label the label to the rule so that we draw all text just once
             if (label != null) {
@@ -657,7 +687,8 @@ public abstract class Cell {
                                 labelFont,
                                 labelFontColor,
                                 leftEdge,
-                                borderColor));
+                                borderColor,
+                                wrap));
             } else super.add(null);
         }
     }
@@ -678,7 +709,8 @@ public abstract class Cell {
                 final Font labelFont,
                 final Color labelFontColor,
                 final boolean fontAntiAliasing,
-                final Color borderColor) {
+                final Color borderColor,
+                final boolean wrap) {
             super(
                     bkgColor,
                     1.0,
@@ -689,7 +721,8 @@ public abstract class Cell {
                     labelFont,
                     labelFontColor,
                     fontAntiAliasing,
-                    borderColor);
+                    borderColor,
+                    wrap);
         }
 
         @Override
@@ -702,23 +735,64 @@ public abstract class Cell {
             // computing label dimension and creating buffered image on which we can draw the label
             // on
             // it
+
             final int labelHeight =
                     (int)
                             Math.ceil(
                                     graphics.getFontMetrics()
                                             .getStringBounds(text, graphics)
                                             .getHeight());
-            final int labelWidth =
+            final int width =
                     (int)
                             Math.ceil(
                                     graphics.getFontMetrics()
                                             .getStringBounds(text, graphics)
                                             .getWidth());
+            final int labelWidth = wrap ? Math.min(WRAP_WIDTH, width) : width;
+
+            Rectangle2D bounds = new Rectangle2D.Double(0, 0, labelWidth, labelHeight);
             // restore the old font
             graphics.setFont(oldFont);
-            return new Dimension(labelWidth, labelHeight);
+            String nText;
+            if (!wrap) {
+                return new Dimension(labelWidth, labelHeight);
+            } else {
+                if (width > labelWidth) {
+                    FontMetrics fm = graphics.getFontMetrics();
+                    int widthChars = WRAP_WIDTH / fm.stringWidth("m");
+                    nText = WordUtils.wrap(text, widthChars, "\n", true);
+                } else {
+                    nText = text;
+                }
+            }
+            if ((nText.indexOf("\n") != -1) || (nText.indexOf("\\n") != -1)) {
+                // this is a label WITH line-breaks...we need to figure out it's height *and*
+                // width, and then adjust the legend size accordingly
+                ArrayList<Integer> lineHeight = new ArrayList<>();
+                // four backslashes... "\\" -> '\', so "\\\\n" -> '\' + '\' + 'n'
+                final String realLabel = nText.replaceAll("\\\\n", "\n");
+                StringTokenizer st = new StringTokenizer(realLabel, "\n\r\f");
+
+                while (st.hasMoreElements()) {
+                    final String token = st.nextToken();
+                    Rectangle2D thisLineBounds =
+                            graphics.getFontMetrics().getStringBounds(token, graphics);
+
+                    // if this is directly added as thisLineBounds.getHeight(), then there are
+                    // rounding
+                    // errors
+                    // because we can only DRAW fonts at discrete integer coords.
+                    final int thisLineHeight = (int) Math.ceil(thisLineBounds.getHeight());
+                    bounds.add(0, thisLineHeight + bounds.getHeight());
+                    bounds.add(thisLineBounds.getWidth(), 0);
+                    lineHeight.add((int) Math.ceil(thisLineBounds.getHeight()));
+                }
+            }
+            return new Dimension(
+                    (int) Math.ceil(bounds.getWidth()), (int) Math.ceil(bounds.getHeight()));
         }
 
+        @Override
         public void draw(
                 final Graphics2D graphics,
                 final Rectangle2D clipBox,
@@ -773,9 +847,56 @@ public abstract class Cell {
                 default:
                     throw new IllegalStateException("Unsupported vertical alignment " + vAlign);
             }
-            // draw
-            graphics.drawString(text, xText, yText);
 
+            if (wrap) {
+                Rectangle2D labelBounds =
+                        labelFont.getStringBounds(text, graphics.getFontRenderContext());
+
+                if (text.contains("\n")
+                        || text.contains("\\n")
+                        || labelBounds.getWidth() > dimension.getWidth()) {
+                    FontMetrics fm = graphics.getFontMetrics();
+                    int widthChars = (int) Math.floor(dimension.getWidth() / fm.stringWidth("m"));
+                    String realLabel;
+                    if (labelBounds.getWidth() > dimension.getWidth()) {
+                        realLabel = WordUtils.wrap(text, widthChars, "\n", true);
+                    } else {
+                        realLabel = text;
+                    }
+                    StringTokenizer st = new StringTokenizer(realLabel, "\n\r\f");
+                    int y = 0 - graphics.getFontMetrics().getDescent();
+                    int c = 0;
+                    Rectangle2D bounds = new Rectangle2D.Double(0, 0, 0, 0);
+                    ArrayList<Integer> lineHeight = new ArrayList<>();
+                    // four backslashes... "\\" -> '\', so "\\\\n" -> '\' + '\' + 'n'
+                    realLabel = realLabel.replaceAll("\\\\n", "\n");
+
+                    while (st.hasMoreElements()) {
+                        final String token = st.nextToken();
+                        Rectangle2D thisLineBounds =
+                                graphics.getFontMetrics().getStringBounds(token, graphics);
+
+                        // if this is directly added as thisLineBounds.getHeight(), then there are
+                        // rounding
+                        // errors
+                        // because we can only DRAW fonts at discrete integer coords.
+                        final int thisLineHeight = (int) Math.ceil(thisLineBounds.getHeight());
+                        bounds.add(0, thisLineHeight + bounds.getHeight());
+                        bounds.add(thisLineBounds.getWidth(), 0);
+                        lineHeight.add((int) Math.ceil(thisLineBounds.getHeight()));
+                    }
+                    st = new StringTokenizer(realLabel, "\n\r\f");
+                    while (st.hasMoreElements()) {
+                        y += lineHeight.get(c++).intValue();
+                        graphics.drawString(st.nextToken(), xText, y);
+                    }
+                } else {
+                    graphics.drawString(text, xText, yText);
+                }
+            } else {
+                // draw
+                graphics.drawString(text, xText, yText);
+            }
             // restore the old font
             graphics.setFont(oldFont);
         }
@@ -793,7 +914,8 @@ public abstract class Cell {
                 final Color color,
                 final double opacity,
                 final Dimension requestedDimension,
-                final Color borderColor) {
+                final Color borderColor,
+                final boolean wrap) {
             super(
                     color,
                     opacity,
@@ -804,9 +926,11 @@ public abstract class Cell {
                     null,
                     null,
                     false,
-                    borderColor);
+                    borderColor,
+                    wrap);
         }
 
+        @Override
         public abstract void draw(
                 final Graphics2D graphics, final Rectangle2D clipBox, final boolean completeBorder);
 
@@ -821,8 +945,9 @@ public abstract class Cell {
                     final Color color,
                     final double opacity,
                     final Dimension requestedDimension,
-                    final Color borderColor) {
-                super(color, opacity, requestedDimension, borderColor);
+                    final Color borderColor,
+                    final boolean wrap) {
+                super(color, opacity, requestedDimension, borderColor, wrap);
             }
 
             @Override
@@ -903,8 +1028,9 @@ public abstract class Cell {
                         final double opacity,
                         final Color previousColor,
                         final Dimension requestedDimension,
-                        final Color borderColor) {
-                    super(color, opacity, requestedDimension, borderColor);
+                        final Color borderColor,
+                        final boolean wrap) {
+                    super(color, opacity, requestedDimension, borderColor, wrap);
                     this.previousColor = previousColor;
                     if (previousColor == null) leftEdge = true;
                 }

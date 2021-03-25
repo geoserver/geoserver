@@ -5,7 +5,6 @@
  */
 package org.geoserver.importer;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.io.IOException;
 import java.io.Serializable;
@@ -25,7 +24,7 @@ public class Database extends ImportData {
     Map<String, Serializable> parameters;
 
     /** List of tables */
-    List<Table> tables = new ArrayList<Table>();
+    List<Table> tables = new ArrayList<>();
 
     public Database(Map<String, Serializable> parameters) {
         this.parameters = parameters;
@@ -53,7 +52,7 @@ public class Database extends ImportData {
     /** Loads the available tables from this database. */
     @Override
     public void prepare(ProgressMonitor m) throws IOException {
-        tables = new ArrayList<Table>();
+        tables = new ArrayList<>();
         DataStoreFactorySpi factory =
                 (DataStoreFactorySpi) DataStoreUtils.aquireFactory(parameters);
         if (factory == null) {
@@ -108,18 +107,11 @@ public class Database extends ImportData {
 
     @Override
     public Table part(final String name) {
-        return Iterables.find(
-                tables,
-                new Predicate<Table>() {
-                    @Override
-                    public boolean apply(Table input) {
-                        return name.equals(input.getName());
-                    }
-                });
+        return Iterables.find(tables, input -> name.equals(input.getName()));
     }
 
     private Object readResolve() {
-        tables = tables != null ? tables : new ArrayList();
+        tables = tables != null ? tables : new ArrayList<>();
         return this;
     }
 }

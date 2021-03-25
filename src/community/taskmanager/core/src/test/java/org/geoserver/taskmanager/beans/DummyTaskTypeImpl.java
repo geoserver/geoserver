@@ -53,6 +53,7 @@ public class DummyTaskTypeImpl implements TaskType {
                                 }
                             }
 
+                            @Override
                             public List<String> getActions() {
                                 return Lists.newArrayList("actionDummy");
                             }
@@ -83,6 +84,7 @@ public class DummyTaskTypeImpl implements TaskType {
                                         }
                                     }
 
+                                    @Override
                                     public List<String> getActions() {
                                         return Lists.newArrayList("actionDummy");
                                     }

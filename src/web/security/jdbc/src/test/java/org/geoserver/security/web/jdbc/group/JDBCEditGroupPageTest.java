@@ -17,16 +17,19 @@ public class JDBCEditGroupPageTest extends EditGroupPageTest {
         initializeForJDBC();
     }
 
+    @Override
     @Test
     public void testFill() throws Exception {
         doTestFill();
     }
 
+    @Override
     @Test
     public void testReadOnlyUserGroupService() throws Exception {
         doTestReadOnlyUserGroupService();
     }
 
+    @Override
     @Test
     public void testReadOnlyRoleService() throws Exception {
         doTestReadOnlyRoleService();

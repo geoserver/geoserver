@@ -4,10 +4,13 @@
  */
 package org.geoserver.importer.rest;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import java.util.NoSuchElementException;
-import org.geoserver.importer.*;
+import org.geoserver.importer.Directory;
+import org.geoserver.importer.ImportContext;
+import org.geoserver.importer.ImportData;
+import org.geoserver.importer.ImportTask;
+import org.geoserver.importer.Importer;
 import org.geoserver.importer.rest.converters.ImportJSONWriter;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
@@ -16,7 +19,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @ControllerAdvice
@@ -88,7 +96,7 @@ public class ImportDataController extends ImportBaseController {
         ImportData file = lookupFile(fileName, dir);
 
         if (dir.getFiles().remove(file)) {
-            return new ResponseEntity("", new HttpHeaders(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>("", new HttpHeaders(), HttpStatus.NO_CONTENT);
         } else {
             throw new RestException(
                     "Unable to remove file: " + file.getName(), HttpStatus.BAD_REQUEST);
@@ -103,7 +111,7 @@ public class ImportDataController extends ImportBaseController {
             response = lookupFile(fileName, dir);
             response.setParent((ImportContext) dir.getParent());
         }
-        return (ImportData) response;
+        return response;
     }
 
     Directory lookupDirectory(Long importId) {
@@ -121,13 +129,7 @@ public class ImportDataController extends ImportBaseController {
         try {
             if (file != null) {
                 return Iterators.find(
-                        dir.getFiles().iterator(),
-                        new Predicate<FileData>() {
-                            @Override
-                            public boolean apply(FileData input) {
-                                return input.getFile().getName().equals(file);
-                            }
-                        });
+                        dir.getFiles().iterator(), input -> input.getFile().getName().equals(file));
             }
         } catch (NoSuchElementException e) {
 

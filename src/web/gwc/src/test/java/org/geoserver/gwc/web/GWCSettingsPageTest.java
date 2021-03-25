@@ -78,6 +78,35 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    public void testEditRequireTiledParameter() {
+        GWC gwc = GWC.get();
+        boolean enabled = gwc.getConfig().isRequireTiledParameter();
+        testEditCheckboxOption(
+                "form:gwcServicesPanel:requireTiledParameter",
+                "gwcServicesPanel:requireTiledParameter",
+                enabled);
+        assertEquals(!enabled, gwc.getConfig().isRequireTiledParameter());
+    }
+
+    @Test
+    public void testRequireTiledParameterDefaultsTrue() {
+        GWC gwc = GWC.get();
+        boolean enabled = gwc.getConfig().isRequireTiledParameter();
+        assertTrue(enabled);
+        GWCSettingsPage page = new GWCSettingsPage();
+
+        tester.startPage(page);
+        // print(page, true, true);
+        tester.assertRenderedPage(GWCSettingsPage.class);
+
+        assertNotNull(
+                "form:gwcServicesPanel:requireTiledParameter",
+                tester.getComponentFromLastRenderedPage(
+                        "form:gwcServicesPanel:requireTiledParameter"));
+        tester.assertModelValue("form:gwcServicesPanel:requireTiledParameter", true);
+    }
+
+    @Test
     public void testEditEnableWMSC() {
         GWC gwc = GWC.get();
         boolean enabled = gwc.getConfig().isWMSCEnabled();
@@ -297,8 +326,8 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         String item = availableItems.getChoices().get(0);
         // Ensure the item is not null
         assertNotNull(item);
-        // Ensure the item is GlobalCRS84Pixel
-        assertTrue(item.equalsIgnoreCase("GlobalCRS84Pixel"));
+        // Ensure the item is EPSG:4326x2
+        assertEquals("EPSG:4326x2", item);
 
         // Selection of the form tests
         FormTester form = tester.newFormTester("form", false);
@@ -471,7 +500,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
                         tester.getComponentFromLastRenderedPage(
                                 "form:cachingOptionsPanel:container:configs:blobstores:container:cacheConfContainer:policy");
         List evictionPolicies = evictionPoliciesDropDown.getChoices();
-        assertTrue(evictionPolicies.size() == 3);
+        assertEquals(3, evictionPolicies.size());
         assertTrue(evictionPolicies.contains(CacheConfiguration.EvictionPolicy.NULL));
         assertTrue(
                 evictionPolicies.contains(CacheConfiguration.EvictionPolicy.EXPIRE_AFTER_ACCESS));

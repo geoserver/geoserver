@@ -3,7 +3,7 @@
 Container Considerations
 ========================
 
-Java web containers such as `Tomcat <http://tomcat.apache.org>`_ or `Jetty <http://www.mortbay.org/jetty/>`_ ship with configurations that allow for fast startup, but don't always deliver the best performance.
+Java web containers such as `Tomcat <http://tomcat.apache.org>`_ or `Jetty <https://www.eclipse.org/jetty/>`_ ship with configurations that allow for fast startup, but don't always deliver the best performance.
 
 Optimize your JVM
 -----------------
@@ -55,11 +55,11 @@ For more information about JVM configuration, see the article `Performance tunin
       uintx MaxHeapSize       := 4294967296    {product}
     
    The above results (from a 16 GB laptop) amount to initial heap size of 256m, and a max heap size of around 4 GB (or around 1/4 of system memory).
-   
+
+.. _production_container.marlin:
+
 Enable the Marlin rasterizer
 ----------------------------
-
-Before Java 9, OpenJDK and Oracle used the Pisces and Ductus renderers to rasterize vector data respectively.  In Java 9 onward they use Marlin which has better overall performance in most situations than either Pisces or Ductus.
 
 In order to enable Marlin on Java 8, or to use a newer version than that provided by your JVM, add the following to the JVM startup options::
 
@@ -75,19 +75,55 @@ The server status page shows which renderer is being used.
 Enable CORS
 -----------
 
-The standalone distributions of GeoServer include the Jetty application server. Enable Cross-Origin Resource Sharing (CORS) to allow JavaScript applications outside of your own domain to use GeoServer.
+The standalone distributions of GeoServer include the Jetty application server. `Enable Cross-Origin Resource Sharing (CORS) <https://enable-cors.org/>`_ to allow JavaScript applications outside of your own domain, or web browsers, to use GeoServer.
 
-For more information on what this does and other options see `Jetty Documentation <http://www.eclipse.org/jetty/documentation>`_
+For more information on what this does and other options see the `Jetty documentation <http://www.eclipse.org/jetty/documentation>`_ or the `Tomcat documentation <https://tomcat.apache.org/tomcat-9.0-doc/config/filter.html#CORS_Filter>`_.
 
-Uncomment the following <filter> and <filter-mapping> from :file:`webapps/geoserver/WEB-INF/web.xml`::
-  
-  <web-app>
-    <filter>
-        <filter-name>cross-origin</filter-name>
-        <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>cross-origin</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-   </web-app>
+Uncomment the following <filter> and <filter-mapping> from :file:`webapps/geoserver/WEB-INF/web.xml` if using Jetty::
+
+  <filter>
+    <filter-name>cross-origin</filter-name>
+    <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
+    <init-param>
+      <param-name>chainPreflight</param-name>
+      <param-value>false</param-value>
+    </init-param>
+    <init-param>
+      <param-name>allowedOrigins</param-name>
+      <param-value>*</param-value>
+    </init-param>
+    <init-param>
+      <param-name>allowedMethods</param-name>
+      <param-value>GET,POST,PUT,DELETE,HEAD,OPTIONS</param-value>
+    </init-param>
+    <init-param>
+      <param-name>allowedHeaders</param-name>
+      <param-value>*</param-value>
+    </init-param>
+  </filter>
+
+or Tomcat::
+
+  <filter>
+    <filter-name>cross-origin</filter-name>
+    <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+    <init-param>
+      <param-name>cors.allowed.origins</param-name>
+      <param-value>*</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.allowed.methods</param-name>
+      <param-value>GET,POST,PUT,DELETE,HEAD,OPTIONS</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.allowed.headers</param-name>
+      <param-value>*</param-value>
+    </init-param>
+  </filter>
+
+and regardless of application server choice uncomment::
+
+  <filter-mapping>
+    <filter-name>cross-origin</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>

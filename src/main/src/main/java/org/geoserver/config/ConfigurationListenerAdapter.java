@@ -17,43 +17,55 @@ import java.util.List;
  */
 public class ConfigurationListenerAdapter implements ConfigurationListener {
 
+    @Override
     public void handleGlobalChange(
             GeoServerInfo global,
             List<String> propertyNames,
             List<Object> oldValues,
             List<Object> newValues) {}
 
+    @Override
     public void handlePostGlobalChange(GeoServerInfo global) {}
 
+    @Override
     public void handleSettingsAdded(SettingsInfo settings) {}
 
+    @Override
     public void handleSettingsModified(
             SettingsInfo settings,
             List<String> propertyNames,
             List<Object> oldValues,
             List<Object> newValues) {}
 
+    @Override
     public void handleSettingsPostModified(SettingsInfo settings) {}
 
+    @Override
     public void handleSettingsRemoved(SettingsInfo settings) {}
 
+    @Override
     public void handleLoggingChange(
             LoggingInfo logging,
             List<String> propertyNames,
             List<Object> oldValues,
             List<Object> newValues) {}
 
+    @Override
     public void handlePostLoggingChange(LoggingInfo logging) {}
 
+    @Override
     public void handlePostServiceChange(ServiceInfo service) {}
 
+    @Override
     public void handleServiceChange(
             ServiceInfo service,
             List<String> propertyNames,
             List<Object> oldValues,
             List<Object> newValues) {}
 
+    @Override
     public void handleServiceRemove(ServiceInfo service) {}
 
+    @Override
     public void reloaded() {}
 }

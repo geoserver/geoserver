@@ -25,6 +25,7 @@ import org.geoserver.ows.ServiceStrategy;
  * @version $Revision: 1.23 $
  */
 public class FileStrategy implements ServiceStrategy {
+    @Override
     public String getId() {
         return "FILE";
     }
@@ -54,6 +55,7 @@ public class FileStrategy implements ServiceStrategy {
      * @return Outputstream for a temporary file
      * @throws IOException If temporary file could not be created.
      */
+    @Override
     public DispatcherOutputStream getDestination(HttpServletResponse response) throws IOException {
         // REVISIT: Should do more than sequence here
         // (In case we are running two GeoServers at once)
@@ -87,6 +89,7 @@ public class FileStrategy implements ServiceStrategy {
      * @throws IOException If temporay file or response is unavailable
      * @throws IllegalStateException if flush is called before getDestination
      */
+    @Override
     public void flush(HttpServletResponse response) throws IOException {
         if ((temp == null) || (response == null) || (safe == null) || !temp.exists()) {
             LOGGER.fine(
@@ -155,6 +158,7 @@ public class FileStrategy implements ServiceStrategy {
      *
      * @see org.geoserver.ows.ServiceStrategy#abort()
      */
+    @Override
     public void abort() {
         if (safe != null) {
             try {
@@ -172,6 +176,7 @@ public class FileStrategy implements ServiceStrategy {
         temp = null;
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return new FileStrategy();
     }

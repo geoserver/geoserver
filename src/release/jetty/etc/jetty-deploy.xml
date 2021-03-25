@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_0.dtd">
+<?xml version="1.0"?><!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
 
 <!-- =============================================================== -->
 <!-- Create the deployment manager                                   -->
@@ -39,8 +38,22 @@
         <Call id="webappprovider" name="addAppProvider">
           <Arg>
             <New class="org.eclipse.jetty.deploy.providers.WebAppProvider">
-              <Set name="monitoredDirName"><Property name="jetty.base" default="." />/<Property name="jetty.deploy.monitoredDirName" default="webapps"/></Set>
-              <Set name="defaultsDescriptor"><Property name="jetty.home" default="." />/etc/webdefault.xml</Set>
+              <Set name="monitoredDirName">
+                <Property>
+                  <Name>jetty.deploy.monitoredPath</Name>
+                  <Default>
+                    <Property name="jetty.base" default="." />/<Property name="jetty.deploy.monitoredDir" deprecated="jetty.deploy.monitoredDirName" default="webapps"/>
+                  </Default>
+                </Property>
+              </Set>
+              <Set name="defaultsDescriptor">
+                <Property>
+                  <Name>jetty.deploy.defaultsDescriptorPath</Name>
+                  <Default>
+                    <Property name="jetty.home" default="." />/etc/webdefault.xml
+                  </Default>
+                </Property>
+              </Set>
               <Set name="scanInterval"><Property name="jetty.deploy.scanInterval" default="1"/></Set>
               <Set name="extractWars"><Property name="jetty.deploy.extractWars" default="true"/></Set>
               <Set name="configurationManager">

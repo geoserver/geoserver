@@ -4,10 +4,12 @@
  */
 package org.geoserver.wms.featureinfo;
 
+import static org.junit.Assert.assertTrue;
+
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
-import junit.framework.Test;
+import java.util.Map;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -21,6 +23,7 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfoImpl;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
+import org.junit.Test;
 
 @SuppressWarnings("unchecked")
 public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupport {
@@ -36,11 +39,6 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
                     + "</Filter><PolygonSymbolizer><Fill><CssParameter name=\"fill\">#FF0000</CssParameter></Fill>"
                     + "</PolygonSymbolizer></Rule><Rule><LineSymbolizer><Stroke/></LineSymbolizer></Rule>"
                     + "</FeatureTypeStyle></UserStyle></UserLayer></StyledLayerDescriptor>";
-
-    /** This is a READ ONLY TEST so we can use one time setup */
-    public static Test suite() {
-        return new OneTimeTestSetup(new GetFeatureInfoKvpRequestReaderTest());
-    }
 
     @Override
     protected void oneTimeSetUp() throws Exception {
@@ -72,6 +70,7 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
         GeoServerLoader.setLegacy(false);
     }
 
+    @Override
     protected void setUpInternal() throws Exception {
         super.setUpInternal();
 
@@ -80,8 +79,9 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
         reader = new GetFeatureInfoKvpReader(wms);
     }
 
+    @Test
     public void testSldDisabled() throws Exception {
-        HashMap kvp = new HashMap();
+        Map<String, Object> kvp = new HashMap<>();
         URL url = GetMapKvpRequestReader.class.getResource("BasicPolygonsLibraryDefault.sld");
         String decoded = URLDecoder.decode(url.toExternalForm(), "UTF-8");
         kvp.put("sld", decoded);
@@ -108,8 +108,9 @@ public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupp
         assertTrue(error);
     }
 
+    @Test
     public void testSldBodyDisabled() throws Exception {
-        HashMap kvp = new HashMap();
+        Map<String, Object> kvp = new HashMap<>();
         kvp.put("sld_body", STATES_SLD);
         kvp.put(
                 "layers",

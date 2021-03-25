@@ -28,7 +28,8 @@ public class WCS20DescribeEOCoverageSetRequestReader extends EMFKvpRequestReader
     }
 
     @Override
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         SectionsType owsSections = (SectionsType) kvp.get("sections");
         if (owsSections != null) {
             Sections sections = Wcs20Factory.eINSTANCE.createSections();

@@ -5,6 +5,9 @@
  */
 package org.geoserver.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -17,7 +20,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -121,19 +123,19 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         return testData;
     }
 
-    /** Override runTest so that the test will be skipped if the TestData is not available */
-    protected void runTest() throws Throwable {
-        if (getTestData().isTestDataAvailable()) {
-            super.runTest();
-        } else {
-            LOGGER.warning(
-                    "Skipping "
-                            + getClass()
-                            + "."
-                            + getName()
-                            + " since test data is not available");
-        }
-    }
+    //    /** Override runTest so that the test will be skipped if the TestData is not available */
+    //    protected void runTest() throws Throwable {
+    //        if (getTestData().isTestDataAvailable()) {
+    //            super.runTest();
+    //        } else {
+    //            LOGGER.warning(
+    //                    "Skipping "
+    //                            + getClass()
+    //                            + "."
+    //                            + getName()
+    //                            + " since test data is not available");
+    //        }
+    //    }
 
     @Override
     protected void tearDownInternal() throws Exception {
@@ -462,6 +464,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      *
      * @param path The path for the request and optional the query string.
      */
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
     protected MockHttpServletRequest createRequest(String path) {
         MockHttpServletRequest request = new GeoServerMockHttpServletRequest();
 
@@ -517,8 +520,8 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      */
     protected MockHttpServletRequest createRequest(String path, Map kvp) {
         StringBuffer q = new StringBuffer();
-        for (Iterator e = kvp.entrySet().iterator(); e.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) e.next();
+        for (Object o : kvp.entrySet()) {
+            Map.Entry entry = (Map.Entry) o;
             q.append(entry.getKey()).append("=").append(entry.getValue());
             q.append("&");
         }
@@ -632,8 +635,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
 
     protected MockHttpServletResponse putAsServletResponse(
             String path, String body, String contentType) throws Exception {
-        return putAsServletResponse(
-                path, body != null ? body.getBytes() : (byte[]) null, contentType);
+        return putAsServletResponse(path, body != null ? body.getBytes() : null, contentType);
     }
 
     protected MockHttpServletResponse putAsServletResponse(
@@ -860,6 +862,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      * @author Andrea Aime - TOPP
      */
     static class EmptyResolver implements org.xml.sax.EntityResolver {
+        @Override
         public InputSource resolveEntity(String publicId, String systemId)
                 throws org.xml.sax.SAXException, IOException {
             StringReader reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -885,24 +888,27 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     protected void checkValidationErrors(Document dom, Schema schema)
             throws SAXException, IOException {
         final Validator validator = schema.newValidator();
-        final List<Exception> validationErrors = new ArrayList<Exception>();
+        final List<Exception> validationErrors = new ArrayList<>();
         validator.setErrorHandler(
                 new ErrorHandler() {
 
+                    @Override
                     public void warning(SAXParseException exception) throws SAXException {
-                        System.out.println(exception.getMessage());
+                        LOGGER.warning(exception.getMessage());
                     }
 
+                    @Override
                     public void fatalError(SAXParseException exception) throws SAXException {
                         validationErrors.add(exception);
                     }
 
+                    @Override
                     public void error(SAXParseException exception) throws SAXException {
                         validationErrors.add(exception);
                     }
                 });
         validator.validate(new DOMSource(dom));
-        if (validationErrors != null && validationErrors.size() > 0) {
+        if (validationErrors != null && !validationErrors.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (Exception ve : validationErrors) {
                 sb.append(ve.getMessage()).append("\n");
@@ -1003,6 +1009,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     }
 
     /** Utility method to print out the contents of an input stream. */
+    @SuppressWarnings("PMD.SystemPrintln")
     protected void print(InputStream in) throws Exception {
         BufferedReader r = new BufferedReader(new InputStreamReader(in));
         String line = null;
@@ -1012,6 +1019,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
     }
 
     /** Utility method to print out the contents of a json object. */
+    @SuppressWarnings("PMD.SystemPrintln")
     protected void print(JSON json) {
         System.out.println(json.toString(2));
     }
@@ -1065,6 +1073,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         if (charset == null) {
             response =
                     new MockHttpServletResponse() {
+                        @Override
                         public void setCharacterEncoding(String encoding) {}
                     };
         } else {
@@ -1108,8 +1117,8 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                             Collection interceptors =
                                     GeoServerExtensions.extensions(
                                             HandlerInterceptor.class, applicationContext);
-                            for (Iterator i = interceptors.iterator(); i.hasNext(); ) {
-                                HandlerInterceptor interceptor = (HandlerInterceptor) i.next();
+                            for (Object value : interceptors) {
+                                HandlerInterceptor interceptor = (HandlerInterceptor) value;
                                 interceptor.preHandle(request, response, dispatcher);
                             }
 
@@ -1118,15 +1127,11 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
                             dispatcher.service(request, response);
 
                             // execute the post handler step
-                            for (Iterator i = interceptors.iterator(); i.hasNext(); ) {
-                                HandlerInterceptor interceptor = (HandlerInterceptor) i.next();
+                            for (Object o : interceptors) {
+                                HandlerInterceptor interceptor = (HandlerInterceptor) o;
                                 interceptor.postHandle(request, response, dispatcher, null);
                             }
-                        } catch (RuntimeException e) {
-                            throw e;
-                        } catch (IOException e) {
-                            throw e;
-                        } catch (ServletException e) {
+                        } catch (RuntimeException | ServletException | IOException e) {
                             throw e;
                         } catch (Exception e) {
                             throw (IOException)
@@ -1137,9 +1142,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         List<Filter> filterList = getFilters();
         MockFilterChain chain;
         if (filterList != null) {
-            chain =
-                    new MockFilterChain(
-                            servlet, (Filter[]) filterList.toArray(new Filter[filterList.size()]));
+            chain = new MockFilterChain(servlet, filterList.toArray(new Filter[filterList.size()]));
         } else {
             chain = new MockFilterChain(servlet);
         }
@@ -1251,6 +1254,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             myBody = body;
         }
 
+        @Override
         public ServletInputStream getInputStream() {
             return new GeoServerDelegatingServletInputStream(myBody);
         }
@@ -1270,16 +1274,20 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             myBody = body;
         }
 
+        @Override
         public int available() {
             return myBody.length - myOffset;
         }
 
+        @Override
         public void close() {}
 
+        @Override
         public void mark(int readLimit) {
             myMark = myOffset;
         }
 
+        @Override
         public void reset() {
             if (myMark < 0 || myMark >= myBody.length) {
                 throw new IllegalStateException("Can't reset when no mark was set.");
@@ -1288,19 +1296,23 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             myOffset = myMark;
         }
 
+        @Override
         public boolean markSupported() {
             return true;
         }
 
+        @Override
         public int read() {
             byte[] b = new byte[1];
             return read(b, 0, 1) == -1 ? -1 : b[0];
         }
 
+        @Override
         public int read(byte[] b) {
             return read(b, 0, b.length);
         }
 
+        @Override
         public int read(byte[] b, int offset, int length) {
             int realOffset = offset + myOffset;
             int i;
@@ -1317,8 +1329,8 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             return i;
         }
 
+        @Override
         public int readLine(byte[] b, int offset, int length) {
-            int realOffset = offset + myOffset;
             int i;
 
             for (i = 0; (i < length) && (i + myOffset < myBody.length); i++) {

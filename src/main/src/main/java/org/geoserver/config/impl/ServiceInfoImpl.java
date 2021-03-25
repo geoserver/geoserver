@@ -15,6 +15,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
+import org.geotools.util.Version;
 
 public class ServiceInfoImpl implements ServiceInfo {
 
@@ -38,11 +39,11 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     protected String fees;
 
-    protected List versions = new ArrayList();
+    protected List<Version> versions = new ArrayList<>();
 
-    protected List<KeywordInfo> keywords = new ArrayList();
+    protected List<KeywordInfo> keywords = new ArrayList<>();
 
-    protected List exceptionFormats = new ArrayList();
+    protected List<String> exceptionFormats = new ArrayList<>();
 
     protected MetadataLinkInfo metadataLink;
 
@@ -58,8 +59,9 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     protected MetadataMap metadata = new MetadataMap();
 
-    protected Map clientProperties = new HashMap();
+    protected Map<Object, Object> clientProperties = new HashMap<>();
 
+    @Override
     public String getId() {
         return id;
     }
@@ -78,70 +80,87 @@ public class ServiceInfoImpl implements ServiceInfo {
         this.workspace = workspace;
     }
 
+    @Override
     public GeoServer getGeoServer() {
         return geoServer;
     }
 
+    @Override
     public void setGeoServer(GeoServer geoServer) {
         this.geoServer = geoServer;
     }
 
+    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
 
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
 
+    @Override
     public String getMaintainer() {
         return maintainer;
     }
 
+    @Override
     public void setMaintainer(String maintainer) {
         this.maintainer = maintainer;
     }
 
+    @Override
     public String getAbstract() {
         return abstrct;
     }
 
+    @Override
     public void setAbstract(String abstrct) {
         this.abstrct = abstrct;
     }
 
+    @Override
     public String getAccessConstraints() {
         return accessConstraints;
     }
 
+    @Override
     public void setAccessConstraints(String accessConstraints) {
         this.accessConstraints = accessConstraints;
     }
 
+    @Override
     public String getFees() {
         return fees;
     }
 
+    @Override
     public void setFees(String fees) {
         this.fees = fees;
     }
 
+    @Override
     public List<KeywordInfo> getKeywords() {
         return keywords;
     }
@@ -150,8 +169,9 @@ public class ServiceInfoImpl implements ServiceInfo {
         this.keywords = keywords;
     }
 
+    @Override
     public List<String> keywordValues() {
-        List<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
         if (keywords != null) {
             for (KeywordInfo kw : keywords) {
                 values.add(kw.getValue());
@@ -160,46 +180,55 @@ public class ServiceInfoImpl implements ServiceInfo {
         return values;
     }
 
-    public List getVersions() {
+    @Override
+    public List<Version> getVersions() {
         return versions;
     }
 
-    public void setVersions(List versions) {
+    public void setVersions(List<Version> versions) {
         this.versions = versions;
     }
 
-    public List getExceptionFormats() {
+    @Override
+    public List<String> getExceptionFormats() {
         return exceptionFormats;
     }
 
-    public void setExceptionFormats(List exceptionFormats) {
+    public void setExceptionFormats(List<String> exceptionFormats) {
         this.exceptionFormats = exceptionFormats;
     }
 
+    @Override
     public MetadataLinkInfo getMetadataLink() {
         return metadataLink;
     }
 
+    @Override
     public void setMetadataLink(MetadataLinkInfo metadataLink) {
         this.metadataLink = metadataLink;
     }
 
+    @Override
     public boolean isCiteCompliant() {
         return citeCompliant;
     }
 
+    @Override
     public void setCiteCompliant(boolean citeCompliant) {
         this.citeCompliant = citeCompliant;
     }
 
+    @Override
     public String getOnlineResource() {
         return onlineResource;
     }
 
+    @Override
     public void setOnlineResource(String onlineResource) {
         this.onlineResource = onlineResource;
     }
 
+    @Override
     public MetadataMap getMetadata() {
         if (metadata == null) {
             metadata = new MetadataMap();
@@ -211,38 +240,46 @@ public class ServiceInfoImpl implements ServiceInfo {
         this.metadata = metadata;
     }
 
-    public Map getClientProperties() {
+    @Override
+    public Map<Object, Object> getClientProperties() {
         return clientProperties;
     }
 
-    public void setClientProperties(Map clientProperties) {
+    public void setClientProperties(Map<Object, Object> clientProperties) {
         this.clientProperties = clientProperties;
     }
 
+    @Override
     public String getOutputStrategy() {
         return outputStrategy;
     }
 
+    @Override
     public void setOutputStrategy(String outputStrategy) {
         this.outputStrategy = outputStrategy;
     }
 
+    @Override
     public String getSchemaBaseURL() {
         return schemaBaseURL;
     }
 
+    @Override
     public void setSchemaBaseURL(String schemaBaseURL) {
         this.schemaBaseURL = schemaBaseURL;
     }
 
+    @Override
     public boolean isVerbose() {
         return verbose;
     }
 
+    @Override
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
     }
 
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -266,6 +303,7 @@ public class ServiceInfoImpl implements ServiceInfo {
         return result;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;

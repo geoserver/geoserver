@@ -63,6 +63,7 @@ public abstract class JDBCUserGroupServiceTest extends AbstractUserGroupServiceT
         }
     }
 
+    @Override
     public GeoServerUserGroupService createUserGroupService(String serviceName) throws Exception {
 
         return JDBCTestSupport.createUserGroupService(

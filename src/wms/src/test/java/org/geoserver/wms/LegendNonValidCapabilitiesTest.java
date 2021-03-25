@@ -58,8 +58,7 @@ public class LegendNonValidCapabilitiesTest extends WMSTestSupport {
 
         // add layer
         testData.addStyle(null, STYLE_NAME, STYLE_FILE, getClass(), getCatalog(), legend);
-        Map<SystemTestData.LayerProperty, Object> propertyMap =
-                new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, STYLE_NAME);
 
         testData.addRasterLayer(
@@ -74,7 +73,7 @@ public class LegendNonValidCapabilitiesTest extends WMSTestSupport {
         wms.getSRS().add("EPSG:4326");
         getGeoServer().save(wms);
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("", "http://www.opengis.net/wms");
         namespaces.put("wms", "http://www.opengis.net/wms");

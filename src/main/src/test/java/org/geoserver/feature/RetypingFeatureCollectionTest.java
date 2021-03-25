@@ -4,7 +4,7 @@
  */
 package org.geoserver.feature;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertSame;
 
 import java.io.IOException;
 import org.geotools.data.DataUtilities;
@@ -40,6 +40,7 @@ public class RetypingFeatureCollectionTest {
 
         collection =
                 new ListFeatureCollection(originalSchema) {
+                    @Override
                     public void accepts(FeatureVisitor visitor, ProgressListener progress)
                             throws java.io.IOException {
                         lastVisitor = visitor;

@@ -50,16 +50,11 @@ public class ImporterTestUtils {
 
     public static File file(String path, File dir) throws IOException {
         String filename = new File(path).getName();
-        InputStream in = ImporterTestSupport.class.getResourceAsStream("test-data/" + path);
-
         File file = new File(dir, filename);
-
-        FileOutputStream out = new FileOutputStream(file);
-        IOUtils.copy(in, out);
-        in.close();
-        out.flush();
-        out.close();
-
+        try (InputStream in = ImporterTestSupport.class.getResourceAsStream("test-data/" + path);
+                FileOutputStream out = new FileOutputStream(file)) {
+            IOUtils.copy(in, out);
+        }
         return file;
     }
 }

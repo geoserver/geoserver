@@ -154,7 +154,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
 
         @Override
         protected List<StoredQuery> load() {
-            List<StoredQuery> ret = new ArrayList<StoredQuery>();
+            List<StoredQuery> ret = new ArrayList<>();
 
             for (StoredQueryListItemType sqlit : listStoredQueries()) {
                 StoredQuery item = new StoredQuery();
@@ -211,7 +211,7 @@ public class CascadedWFSStoredQueryNewPage extends CascadedWFSStoredQueryAbstrac
 
         @Override
         public void validate(IValidatable<String> validatable) {
-            String csqName = (String) validatable.getValue();
+            String csqName = validatable.getValue();
 
             final DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
             List<FeatureTypeInfo> ftis =

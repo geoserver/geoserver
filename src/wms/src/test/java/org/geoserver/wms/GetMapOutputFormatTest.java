@@ -5,7 +5,9 @@
  */
 package org.geoserver.wms;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Set;
@@ -25,7 +27,7 @@ public class GetMapOutputFormatTest extends WMSTestSupport {
         for (GetMapOutputFormat producer : producers) {
             Set<String> outputFormats = producer.getOutputFormatNames();
             assertNotNull(outputFormats);
-            assertTrue(outputFormats.size() > 0);
+            assertFalse(outputFormats.isEmpty());
             for (String oformat : outputFormats) {
                 assertNotNull(oformat);
             }

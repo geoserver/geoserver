@@ -11,6 +11,7 @@ import net.opengis.wfs.GetFeatureWithLockType;
 import net.opengis.wfs.QueryType;
 import net.opengis.wfs.ResultTypeType;
 import net.opengis.wfs.WfsFactory;
+import org.eclipse.emf.common.util.EList;
 import org.geotools.xsd.AbstractComplexBinding;
 import org.geotools.xsd.ElementInstance;
 import org.geotools.xsd.Node;
@@ -108,6 +109,7 @@ public class GetFeatureWithLockTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.GETFEATUREWITHLOCKTYPE;
     }
@@ -119,7 +121,8 @@ public class GetFeatureWithLockTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<GetFeatureWithLockType> getType() {
         return GetFeatureWithLockType.class;
     }
 
@@ -130,11 +133,14 @@ public class GetFeatureWithLockTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         GetFeatureWithLockType getFeatureWithLock = wfsfactory.createGetFeatureWithLockType();
 
         // &lt;xsd:element maxOccurs="unbounded" ref="wfs:Query"/&gt;
-        getFeatureWithLock.getQuery().addAll(node.getChildValues(QueryType.class));
+        @SuppressWarnings("unchecked")
+        EList<QueryType> query = getFeatureWithLock.getQuery();
+        query.addAll(node.getChildValues(QueryType.class));
 
         // &lt;xsd:attribute default="5" name="expiry" type="xsd:positiveInteger" use="optional"&gt;
         if (node.hasAttribute("expiry")) {

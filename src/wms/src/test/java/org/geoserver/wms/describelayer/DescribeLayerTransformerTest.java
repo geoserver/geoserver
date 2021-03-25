@@ -5,13 +5,14 @@
  */
 package org.geoserver.wms.describelayer;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.StringWriter;
 import javax.xml.transform.TransformerException;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geoserver.catalog.impl.CoverageStoreInfoImpl;
@@ -48,8 +49,6 @@ public class DescribeLayerTransformerTest {
 
     private DescribeLayerTransformer transformer;
 
-    private XpathEngine XPATH;
-
     private CatalogImpl catalog;
 
     private FeatureTypeInfoImpl featureTypeInfo;
@@ -63,12 +62,6 @@ public class DescribeLayerTransformerTest {
     /** Sets up a base request with a mocked up geoserver and catalog for the tests */
     @Before
     public void setUp() throws Exception {
-        // Map<String, String> namespaces = new HashMap<String, String>();
-        // namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-        // namespaces.put(TEST_NS_PREFIX, TEST_NAMESPACE);
-        // XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
-        XPATH = XMLUnit.newXpathEngine();
-
         GeoServerImpl geoServerImpl = new GeoServerImpl();
         catalog = new CatalogImpl();
         geoServerImpl.setCatalog(catalog);
@@ -122,7 +115,6 @@ public class DescribeLayerTransformerTest {
         catalog.add(coverageLayerInfo);
 
         geoServerImpl.add(new WMSInfoImpl());
-        WMS wms = new WMS(geoServerImpl);
         request = new DescribeLayerRequest();
         request.setBaseUrl("http://localhost:8080/geoserver");
         request.setVersion(WMS.VERSION_1_1_1.toString());

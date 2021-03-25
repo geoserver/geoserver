@@ -28,6 +28,7 @@ public abstract class LiveCollectionModel<S, T extends Collection<S>> implements
         this.wrapped = wrapped;
     }
 
+    @Override
     public void setObject(T object) {
         Collection<S> collection = wrapped.getObject();
         collection.clear();
@@ -36,6 +37,7 @@ public abstract class LiveCollectionModel<S, T extends Collection<S>> implements
         }
     }
 
+    @Override
     public void detach() {
         wrapped.detach();
     }
@@ -47,8 +49,9 @@ public abstract class LiveCollectionModel<S, T extends Collection<S>> implements
 
             private static final long serialVersionUID = 3182237972594668864L;
 
+            @Override
             public List<S> getObject() {
-                return new ArrayList<S>(wrapped.getObject());
+                return new ArrayList<>(wrapped.getObject());
             }
         };
     }
@@ -59,8 +62,9 @@ public abstract class LiveCollectionModel<S, T extends Collection<S>> implements
 
             private static final long serialVersionUID = 7638792616781214296L;
 
+            @Override
             public Set<S> getObject() {
-                return new HashSet<S>(wrapped.getObject());
+                return new HashSet<>(wrapped.getObject());
             }
         };
     }

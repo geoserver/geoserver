@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.ows.util.KvpUtils;
-import org.geotools.data.ows.HTTPResponse;
+import org.geotools.http.HTTPResponse;
 
 /**
  * A simple mock http client, allows to set expectations on requests and provide canned responses on
@@ -25,8 +25,7 @@ import org.geotools.data.ows.HTTPResponse;
  */
 public class MockHttpClient extends AbstractHttpClient {
 
-    Map<Request, HTTPResponse> expectedRequests =
-            new LinkedHashMap<MockHttpClient.Request, HTTPResponse>();
+    Map<Request, HTTPResponse> expectedRequests = new LinkedHashMap<>();
 
     /**
      * Binds a certain URL to a response. The order of the query string parameters is not relevant,
@@ -99,7 +98,7 @@ public class MockHttpClient extends AbstractHttpClient {
             Map<String, Object> parsedQueryString = KvpUtils.parseQueryString(url.toExternalForm());
             // we use a treemap as it makes it easier to see what's missing when no bound url is
             // found
-            this.kvp = new TreeMap<String, Object>();
+            this.kvp = new TreeMap<>();
             for (Entry<String, Object> entry : parsedQueryString.entrySet()) {
                 this.kvp.put(entry.getKey().toUpperCase(), entry.getValue());
             }

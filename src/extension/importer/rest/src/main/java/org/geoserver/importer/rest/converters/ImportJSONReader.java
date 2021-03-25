@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
@@ -268,7 +269,8 @@ public class ImportJSONReader {
         return task;
     }
 
-    TransformChain transformChain(JSONObject json) throws IOException {
+    @SuppressWarnings("unchecked")
+    TransformChain<? extends ImportTransform> transformChain(JSONObject json) throws IOException {
         String type = json.getString("type");
         TransformChain chain = null;
         if ("vector".equalsIgnoreCase(type) || "VectorTransformChain".equalsIgnoreCase(type)) {
@@ -318,7 +320,7 @@ public class ImportJSONReader {
         } else if ("CreateIndexTransform".equalsIgnoreCase(type)) {
             transform = new CreateIndexTransform(json.getString("field"));
         } else if ("AttributeRemapTransform".equalsIgnoreCase(type)) {
-            Class clazz;
+            Class<?> clazz;
             try {
                 clazz = Class.forName(json.getString("target"));
             } catch (ClassNotFoundException cnfe) {
@@ -327,7 +329,7 @@ public class ImportJSONReader {
             }
             transform = new AttributeRemapTransform(json.getString("field"), clazz);
         } else if ("AttributeComputeTransform".equalsIgnoreCase(type)) {
-            Class clazz;
+            Class<?> clazz;
             try {
                 clazz = Class.forName(json.getString("fieldType"));
             } catch (ClassNotFoundException cnfe) {
@@ -469,7 +471,7 @@ public class ImportJSONReader {
             m.setName(json.getString("name"));
         }
         if (json.containsKey("time")) {
-            JSONObject time = json.getJSONObject("time");
+            Map<String, Object> time = jsonAsMap(json);
             if (!time.containsKey("mode")) {
                 throw new IllegalArgumentException(
                         "time object must specific mode property as "
@@ -477,10 +479,15 @@ public class ImportJSONReader {
                                 + Arrays.asList(TimeMode.values()));
             }
 
-            m.setTimeMode(TimeMode.valueOf(time.getString("mode").toUpperCase()));
+            m.setTimeMode(TimeMode.valueOf(((String) time.get("mode")).toUpperCase()));
             m.getTimeHandler().init(time);
         }
         return m;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> jsonAsMap(JSONObject json) {
+        return json.getJSONObject("time");
     }
 
     Archive archive(JSONObject json) throws IOException {

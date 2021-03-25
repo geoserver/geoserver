@@ -127,13 +127,12 @@ public class WFSReprojectionTest extends WFSTestSupport {
                     getFirstElementByTagName(envelope, "gml:upperCorner")
                             .getFirstChild()
                             .getNodeValue();
-            double[] c =
-                    new double[] {
-                        Double.parseDouble(lc.split(" ")[0]),
-                        Double.parseDouble(lc.split(" ")[1]),
-                        Double.parseDouble(uc.split(" ")[0]),
-                        Double.parseDouble(uc.split(" ")[1])
-                    };
+            double[] c = {
+                Double.parseDouble(lc.split(" ")[0]),
+                Double.parseDouble(lc.split(" ")[1]),
+                Double.parseDouble(uc.split(" ")[0]),
+                Double.parseDouble(uc.split(" ")[1])
+            };
 
             // use an equirectangular projection
             String targetCrsCode = "AUTO:42004,9001,0,33";
@@ -183,11 +182,10 @@ public class WFSReprojectionTest extends WFSTestSupport {
                     getFirstElementByTagName(envelope, "gml:upperCorner")
                             .getFirstChild()
                             .getNodeValue();
-            double[] c =
-                    new double[] {
-                        Double.parseDouble(lc.split(" ")[0]), Double.parseDouble(lc.split(" ")[1]),
-                        Double.parseDouble(uc.split(" ")[0]), Double.parseDouble(uc.split(" ")[1])
-                    };
+            double[] c = {
+                Double.parseDouble(lc.split(" ")[0]), Double.parseDouble(lc.split(" ")[1]),
+                Double.parseDouble(uc.split(" ")[0]), Double.parseDouble(uc.split(" ")[1])
+            };
             double[] cr = new double[4];
             tx.transform(c, 0, cr, 0, 2);
 
@@ -228,11 +226,10 @@ public class WFSReprojectionTest extends WFSTestSupport {
                     getFirstElementByTagName(envelope, "gml:upperCorner")
                             .getFirstChild()
                             .getNodeValue();
-            double[] c =
-                    new double[] {
-                        Double.parseDouble(lc.split(" ")[0]), Double.parseDouble(lc.split(" ")[1]),
-                        Double.parseDouble(uc.split(" ")[0]), Double.parseDouble(uc.split(" ")[1])
-                    };
+            double[] c = {
+                Double.parseDouble(lc.split(" ")[0]), Double.parseDouble(lc.split(" ")[1]),
+                Double.parseDouble(uc.split(" ")[0]), Double.parseDouble(uc.split(" ")[1])
+            };
             double[] cr = new double[4];
             tx.transform(c, 0, cr, 0, 2);
 

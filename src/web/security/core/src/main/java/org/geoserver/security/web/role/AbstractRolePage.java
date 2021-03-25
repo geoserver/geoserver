@@ -43,7 +43,7 @@ public abstract class AbstractRolePage extends AbstractSecurityPage {
 
         if (role == null) role = new GeoServerRole("");
 
-        Form form = new Form("form", new CompoundPropertyModel(role));
+        Form<GeoServerRole> form = new Form<>("form", new CompoundPropertyModel<>(role));
         add(form);
 
         StringResourceModel descriptionModel;
@@ -57,11 +57,12 @@ public abstract class AbstractRolePage extends AbstractSecurityPage {
         form.add(new Label("description", descriptionModel));
 
         form.add(
-                new TextField("name", new Model(role.getAuthority()))
+                new TextField<>("name", new Model<>(role.getAuthority()))
                         .setRequired(true)
                         .setEnabled(hasRoleStore));
         form.add(
-                new DropDownChoice("parent", new ParentRoleModel(role), new ParentRolesModel(role))
+                new DropDownChoice<>(
+                                "parent", new ParentRoleModel(role), new ParentRolesModel(role))
                         .setNullValid(true)
                         .setEnabled(hasRoleStore));
         form.add(new PropertyEditorFormComponent("properties").setEnabled(hasRoleStore));
@@ -130,14 +131,14 @@ public abstract class AbstractRolePage extends AbstractSecurityPage {
                 // filter out roles already used as parents
                 RoleHierarchyHelper helper = new RoleHierarchyHelper(parentMappings);
 
-                Set<String> parents = new HashSet<String>(parentMappings.keySet());
+                Set<String> parents = new HashSet<>(parentMappings.keySet());
                 parents.removeAll(helper.getDescendants(role.getAuthority()));
                 parents.remove(role.getAuthority());
-                return new ArrayList(parents);
+                return new ArrayList<>(parents);
 
             } else {
                 // no rolename given, we are creating a new one
-                return new ArrayList(parentMappings.keySet());
+                return new ArrayList<>(parentMappings.keySet());
             }
         }
 

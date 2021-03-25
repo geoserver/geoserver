@@ -47,91 +47,113 @@ public class VectorCustomDimensionEntry implements DimensionInfo {
         this.formerKey = entry.getFormerKey();
     }
 
+    @Override
     public boolean isEnabled() {
         return dimensionInfo.isEnabled();
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         dimensionInfo.setEnabled(enabled);
     }
 
+    @Override
     public String getAttribute() {
         return dimensionInfo.getAttribute();
     }
 
+    @Override
     public void setAttribute(String attribute) {
         dimensionInfo.setAttribute(attribute);
     }
 
+    @Override
     public String getEndAttribute() {
         return dimensionInfo.getEndAttribute();
     }
 
+    @Override
     public void setEndAttribute(String attribute) {
         dimensionInfo.setEndAttribute(attribute);
     }
 
+    @Override
     public DimensionPresentation getPresentation() {
         return dimensionInfo.getPresentation();
     }
 
+    @Override
     public void setPresentation(DimensionPresentation presentation) {
         dimensionInfo.setPresentation(presentation);
     }
 
+    @Override
     public BigDecimal getResolution() {
         return dimensionInfo.getResolution();
     }
 
+    @Override
     public void setResolution(BigDecimal resolution) {
         dimensionInfo.setResolution(resolution);
     }
 
+    @Override
     public String getUnits() {
         return dimensionInfo.getUnits();
     }
 
+    @Override
     public void setUnits(String units) {
         dimensionInfo.setUnits(units);
     }
 
+    @Override
     public String getUnitSymbol() {
         return dimensionInfo.getUnitSymbol();
     }
 
+    @Override
     public void setUnitSymbol(String unitSymbol) {
         dimensionInfo.setUnitSymbol(unitSymbol);
     }
 
+    @Override
     public DimensionDefaultValueSetting getDefaultValue() {
         return dimensionInfo.getDefaultValue();
     }
 
+    @Override
     public void setDefaultValue(DimensionDefaultValueSetting defaultValue) {
         dimensionInfo.setDefaultValue(defaultValue);
     }
 
+    @Override
     public boolean isNearestMatchEnabled() {
         return dimensionInfo.isNearestMatchEnabled();
     }
 
+    @Override
     public void setNearestMatchEnabled(boolean nearestMatch) {
         dimensionInfo.setNearestMatchEnabled(nearestMatch);
     }
 
+    @Override
     public String getAcceptableInterval() {
         return dimensionInfo.getAcceptableInterval();
     }
 
+    @Override
     public void setAcceptableInterval(String acceptableInterval) {
         dimensionInfo.setAcceptableInterval(acceptableInterval);
     }
 
+    @Override
     public boolean isRawNearestMatchEnabled() {
         // raw nearest match isn't implemented on vectors, yet.
         return false;
     }
 
+    @Override
     public void setRawNearestMatchEnabled(boolean rawNearestMatch) {
         // raw nearest match isn't implemented on vectors, yet.
         dimensionInfo.setRawNearestMatchEnabled(false);

@@ -55,11 +55,12 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.GeometryType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements FormatConverter {
+public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat
+        implements FormatConverter, ComplexFeatureAwareFormat {
 
     /** The types of geometries a shapefile can handle */
-    private static final Set<Class> SHAPEFILE_GEOM_TYPES =
-            new HashSet<Class>() {
+    private static final Set<Class<?>> SHAPEFILE_GEOM_TYPES =
+            new HashSet<Class<?>>() {
                 {
                     add(Point.class);
                     add(LineString.class);
@@ -90,14 +91,14 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
      * The output formats we can generate using ogr2ogr. Using a concurrent one so that it can be
      * reconfigured while the output format is working
      */
-    static Map<String, Format> formats = new ConcurrentHashMap<String, Format>();
+    static Map<String, Format> formats = new ConcurrentHashMap<>();
 
     public Ogr2OgrOutputFormat(GeoServer gs, ToolWrapperFactory wrapperFactory) {
         // initialize with the key set of formats, so that it will change as
         // we register new formats
         super(gs, formats.keySet());
         this.ogrWrapperFactory = wrapperFactory;
-        this.environment = new HashMap<String, String>();
+        this.environment = new HashMap<>();
     }
 
     /** Returns the ogr2ogr executable full path */
@@ -134,6 +135,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     }
 
     /** @see WFSGetFeatureOutputFormat#getMimeType(Object, Operation) */
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
         String outputFormat = request.getOutputFormat();
@@ -157,7 +159,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     @Override
     public boolean canHandle(Operation operation) {
         // we can't handle anything if the ogr2ogr configuration failed
-        if (formats.size() == 0) {
+        if (formats.isEmpty()) {
             return false;
         } else {
             return super.canHandle(operation);
@@ -190,12 +192,36 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
         if (format == null) {
             throw new WFSException("Unknown output format " + outputFormat);
         } else {
-            String outputFileName = queries.get(0).getTypeNames().get(0).getLocalPart();
+            String outputFileName;
+
+            if (request.getFormatOptions() != null
+                    && request.getFormatOptions().containsKey("FILENAME")) {
+                outputFileName = (String) request.getFormatOptions().get("FILENAME");
+                if (outputFileName.contains(".")) {
+                    return outputFileName; // includes extension
+                }
+            } else {
+                outputFileName = queries.get(0).getTypeNames().get(0).getLocalPart();
+            }
+
             if (!format.isSingleFile() || queries.size() > 1) {
                 return outputFileName + ".zip";
             } else {
                 return outputFileName + format.getFileExtension();
             }
+        }
+    }
+
+    @Override
+    protected String getExtension(FeatureCollectionResponse response) {
+        String outputFormat = response.getOutputFormat();
+        Format format = formats.get(outputFormat);
+        if (format == null) {
+            throw new WFSException("Unknown output format " + outputFormat);
+        } else if (!format.isSingleFile() || response.getTypeNames().size() > 1) {
+            return "zip";
+        } else {
+            return format.getFileExtension();
         }
     }
 
@@ -208,7 +234,7 @@ public class Ogr2OgrOutputFormat extends WFSGetFeatureOutputFormat implements Fo
     /** Get a list of supported ogr formats */
     @Override
     public List<Format> getFormats() {
-        return new ArrayList<Format>(formats.values());
+        return new ArrayList<>(formats.values());
     }
 
     @Override

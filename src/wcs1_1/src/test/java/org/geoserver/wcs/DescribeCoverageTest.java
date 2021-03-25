@@ -85,9 +85,6 @@ public class DescribeCoverageTest extends WCSTestSupport {
 
     @Test
     public void testDescribeByIdentifiers() throws Exception {
-        String queryString =
-                "&request=getcoverage&service=wcs&version=1.1.1&&format=image/geotiff"
-                        + "&BoundingBox=-45,146,-42,149,urn:ogc:def:crs:EPSG:6.6:4326";
         // Get identifiers from getCapabilities
         Document dom = getAsDOM("wcs?request=GetCapabilities&service=WCS");
         NodeList nodes =
@@ -142,7 +139,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
 
     @Test
     public void testDescribeUnknownCoverageXml() throws Exception {
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         String request =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
                         + //
@@ -203,7 +200,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
 
     @Test
     public void testDescribeDemCoverageXml() throws Exception {
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         String request =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
                         + //

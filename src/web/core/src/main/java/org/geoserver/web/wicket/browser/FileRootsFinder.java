@@ -96,7 +96,7 @@ public class FileRootsFinder implements Serializable {
 
     public FileRootsFinder(boolean hideFileSystem, boolean includeDataDir) {
         // build the roots
-        roots = new ArrayList<File>();
+        roots = new ArrayList<>();
         if (!hideFileSystem) {
             roots.addAll(Arrays.asList(File.listRoots()));
         }
@@ -134,11 +134,12 @@ public class FileRootsFinder implements Serializable {
      * file/directory starting with the same path as the input and containing the file name in a
      * case insensitive way)
      *
-     * @param input A partial path, can be a single name or a full path (can be relative, will be
-     *     matched against the data directory)
+     * @param input A partial path, can be a single name or a full path (can be relative, will
+     *     be24:14 matched against the data directory)
      * @param fileFilter An optional file filter to filter the returned files. The file filter
      *     should accept directories.
      */
+    @SuppressWarnings("PMD.CloseResource")
     public Stream<String> getMatches(String input, FileFilter fileFilter) {
         // check the data directory (which lives in its own *nix dream, so paths need conversion)
         PathSplitter ddSplitter = new PathSplitter(input, true);

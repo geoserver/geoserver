@@ -21,7 +21,7 @@ import org.geoserver.web.GeoServerApplication;
  * between the already registered resources for the datastore being edited and any other resource
  * configured for the workspace
  */
-public class CheckExistingResourcesInWorkspaceValidator implements IValidator {
+public class CheckExistingResourcesInWorkspaceValidator implements IValidator<WorkspaceInfo> {
     private static final long serialVersionUID = -3520867380372087997L;
 
     private String wsId;
@@ -34,13 +34,14 @@ public class CheckExistingResourcesInWorkspaceValidator implements IValidator {
         this.wsId = workspaceId;
     }
 
-    public void validate(final IValidatable validatable) {
+    @Override
+    public void validate(final IValidatable<WorkspaceInfo> validatable) {
 
         final Catalog catalog = GeoServerApplication.get().getCatalog();
         final StoreInfo store = catalog.getStore(storeId, StoreInfo.class);
         final WorkspaceInfo previousWorkspace = catalog.getWorkspace(wsId);
 
-        final WorkspaceInfo newWorkspace = (WorkspaceInfo) validatable.getValue();
+        final WorkspaceInfo newWorkspace = validatable.getValue();
         if (previousWorkspace.equals(newWorkspace)) {
             return;
         }

@@ -1,13 +1,14 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
- * (c) 2001 - 2013 OpenPlans
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
+/*
+ * (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved (c) 2001 - 2013 OpenPlans
+ * This code is licensed under the GPL 2.0 license, available at the root application directory.
  */
 package org.geoserver.wcs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.data.test.MockData.TASMANIA_BM;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -43,7 +44,8 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
         // make sure we got a multipart
         String contentType = response.getContentType();
         assertTrue(contentType.matches("multipart/related;\\s*boundary=\".*\""));
-        // Tomcat 7 does not like to have newlines in the http headers, and it's right, they are not
+        // Tomcat 7 does not like to have newlines in the http headers, and it's right,
+        // they are not
         // allowed
         assertFalse(contentType.contains("\n"));
         assertFalse(contentType.contains("\r"));
@@ -106,10 +108,10 @@ public class GetCoverageMultipartEncodingTest extends WCSTestSupport {
 
         // make sure we can read the coverage back
         ImageReader reader = ImageIO.getImageReadersByFormatName("tiff").next();
-        ImageInputStream iis = ImageIO.createImageInputStream(coveragePart.getInputStream());
-        reader.setInput(iis);
-        reader.read(0);
-        iis.close();
+        try (ImageInputStream iis = ImageIO.createImageInputStream(coveragePart.getInputStream())) {
+            reader.setInput(iis);
+            reader.read(0);
+        }
     }
 
     @Test

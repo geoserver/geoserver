@@ -60,6 +60,7 @@ public class CapabilitiesHomePagePanel extends Panel {
             return capsLink;
         }
 
+        @Override
         public boolean equals(Object o) {
             if (!(o instanceof CapsInfo)) {
                 return false;
@@ -84,19 +85,19 @@ public class CapabilitiesHomePagePanel extends Panel {
 
         super(id);
 
-        final Map<String, List<CapsInfo>> byService = new HashMap<String, List<CapsInfo>>();
+        final Map<String, List<CapsInfo>> byService = new HashMap<>();
         for (CapsInfo c : capsLinks) {
             final String key =
                     c.getService().toLowerCase(); // to avoid problems with uppercase definitions
             List<CapsInfo> serviceLinks = byService.get(key);
             if (serviceLinks == null) {
-                serviceLinks = new ArrayList<CapsInfo>();
+                serviceLinks = new ArrayList<>();
                 byService.put(key, serviceLinks);
             }
             serviceLinks.add(c);
         }
 
-        ArrayList<String> services = new ArrayList<String>(byService.keySet());
+        ArrayList<String> services = new ArrayList<>(byService.keySet());
         Collections.sort(services);
 
         ListView<String> view =

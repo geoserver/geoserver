@@ -4,17 +4,27 @@
  */
 package org.geoserver.rest.catalog;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.rest.converters.BaseMessageConverter;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -90,14 +100,33 @@ public class AvailableResourcesConverter extends BaseMessageConverter<AvailableR
 
     protected void writeXML(AvailableResources t, HttpOutputMessage outputMessage)
             throws IOException {
-        Element root = new Element("list");
-        final Document doc = new Document(root);
-        XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 
-        t.stream().map(name -> new Element(t.getName()).addContent(name)).forEach(root::addContent);
-
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            XMLOutputFactory factory = XMLOutputFactory.newFactory();
+            XMLStreamWriter writer = factory.createXMLStreamWriter(out, "UTF-8");
+            writer.writeStartDocument();
+            writer.writeStartElement("list");
+            for (String name : t) {
+                writer.writeStartElement(t.getName());
+                writer.writeCharacters(name);
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+            writer.writeEndDocument();
+        } catch (XMLStreamException | FactoryConfigurationError e) {
+            throw new IOException(e);
+        }
+        // indent and write. If we didn't indent, the above could just write to
+        // outputMessage.getBody()
+        Transformer transformer;
         try (OutputStream os = outputMessage.getBody()) {
-            outputter.output(doc, os);
+            transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            Source source = new StreamSource(new ByteArrayInputStream(out.toByteArray()));
+            transformer.transform(source, new StreamResult(os));
+        } catch (TransformerException | TransformerFactoryConfigurationError e) {
+            throw new IOException(e);
         }
     }
 }

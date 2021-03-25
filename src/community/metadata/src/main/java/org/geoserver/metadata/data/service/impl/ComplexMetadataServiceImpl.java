@@ -234,6 +234,7 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
         }
     }
 
+    @Override
     public void init(ComplexMetadataMap map, String typeName) {
         AttributeCollection attCollection = getAttributeCollection(typeName);
 

@@ -6,13 +6,14 @@
 package org.geoserver.web.demo;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Iterator;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.basic.Label;
@@ -28,7 +29,6 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wfs.WFSInfo;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -63,17 +63,15 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(MapPreviewPage.class);
 
         // move to next page
-        GeoServerTablePanel table =
-                (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
-        // System.out.println(table.getDataProvider().size());
         tester.clickLink("table:navigatorBottom:navigator:next", true);
 
-        DataView data =
+        @SuppressWarnings("unchecked")
+        DataView<Component> data =
                 (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         boolean exists = false;
-        for (Iterator it = data.iterator(); it.hasNext(); ) {
-            MarkupContainer c = (MarkupContainer) it.next();
+        for (org.apache.wicket.Component datum : data) {
+            MarkupContainer c = (MarkupContainer) datum;
             Label l = (Label) c.get("itemProperties:2:component");
             String model = l.getDefaultModelObjectAsString();
             if ("sf:foo".equals(model)) {
@@ -99,12 +97,13 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         // move to next page
         tester.clickLink("table:navigatorBottom:navigator:next", true);
 
-        DataView data =
+        @SuppressWarnings("unchecked")
+        DataView<Component> data =
                 (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         boolean exists = false;
-        for (Iterator it = data.iterator(); it.hasNext(); ) {
-            MarkupContainer c = (MarkupContainer) it.next();
+        for (org.apache.wicket.Component datum : data) {
+            MarkupContainer c = (MarkupContainer) datum;
             Label l = (Label) c.get("itemProperties:1:component");
             if (getLayerId(MockData.STREAMS).equals(l.getDefaultModelObjectAsString())) {
                 exists = true;
@@ -115,6 +114,7 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testMaxNumberOfFeaturesForPreview() throws Exception {
 
         GeoServer geoserver = getGeoServer();
@@ -128,7 +128,8 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(MapPreviewPage.class);
 
         assertMaxFeaturesInData(
-                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items"),
+                (DataView<Component>)
+                        tester.getComponentFromLastRenderedPage("table:listContainer:items"),
                 maxFeatures);
 
         maxFeatures = 0;
@@ -139,7 +140,8 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(MapPreviewPage.class);
 
         assertMaxFeaturesInData(
-                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items"),
+                (DataView<Component>)
+                        tester.getComponentFromLastRenderedPage("table:listContainer:items"),
                 maxFeatures);
     }
 
@@ -152,34 +154,30 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                 (Label)
                         tester.getComponentFromLastRenderedPage(
                                 "table:listContainer:items:4:itemProperties:4:component:menu:wfs:wfsFormats:3");
-        assertTrue(optionLabel.getDefaultModelObjectAsString().equals("GML3.2"));
-        for (Iterator<? extends Behavior> itBehaviors = optionLabel.getBehaviors().iterator();
-                itBehaviors.hasNext(); ) {
-            Behavior b = itBehaviors.next();
+        assertEquals("GML3.2", optionLabel.getDefaultModelObjectAsString());
+        for (Behavior b : optionLabel.getBehaviors()) {
             if (b instanceof AttributeModifier) {
                 AttributeModifier am = (AttributeModifier) b;
                 String url = am.toString();
-                assertTrue(!url.contains("gml+xml"));
+                assertFalse(url.contains("gml+xml"));
                 assertTrue(url.contains("gml%2Bxml"));
                 break;
             }
         }
     }
 
-    private void assertMaxFeaturesInData(DataView data, int maxFeatures) {
-        for (Iterator it = data.iterator(); it.hasNext(); ) {
-            MarkupContainer c = (MarkupContainer) it.next();
+    private void assertMaxFeaturesInData(DataView<Component> data, int maxFeatures) {
+        for (org.apache.wicket.Component datum : data) {
+            MarkupContainer c = (MarkupContainer) datum;
             MarkupContainer list = (MarkupContainer) c.get("itemProperties:4:component:menu");
-            for (Iterator<? extends Behavior> itBehaviors = list.getBehaviors().iterator();
-                    itBehaviors.hasNext(); ) {
-                Behavior b = itBehaviors.next();
+            for (Behavior b : list.getBehaviors()) {
                 if (b instanceof AttributeModifier) {
                     AttributeModifier am = (AttributeModifier) b;
                     String url = am.toString();
                     if (maxFeatures > 0) {
                         assertTrue(url.contains("&maxFeatures=" + maxFeatures));
                     } else {
-                        assertTrue(!url.contains("&maxFeatures="));
+                        assertFalse(url.contains("&maxFeatures="));
                     }
                 }
             }
@@ -198,13 +196,14 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
             tester.assertRenderedPage(MapPreviewPage.class);
             // print(tester.getLastRenderedPage(), true, true, true);
 
-            DataView data =
+            @SuppressWarnings("unchecked")
+            DataView<Component> data =
                     (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
             boolean exists = false;
             String path = null;
-            for (Iterator it = data.iterator(); it.hasNext(); ) {
-                MarkupContainer c = (MarkupContainer) it.next();
+            for (org.apache.wicket.Component datum : data) {
+                MarkupContainer c = (MarkupContainer) datum;
                 Label l = (Label) c.get("itemProperties:2:component");
                 String model = l.getDefaultModelObjectAsString();
                 if ("cite:Lakes + a plus".equals(model)) {
@@ -220,14 +219,27 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                             (ExternalLink)
                                     c.get("itemProperties:3:component:commonFormat:1")
                                             .getDefaultModelObject();
+                    ExternalLink kmlLink =
+                            (ExternalLink)
+                                    c.get("itemProperties:3:component:commonFormat:2")
+                                            .getDefaultModelObject();
 
                     assertEquals(
-                            "http://localhost/context/cite/wms?service=WMS&amp;version=1.1.0&amp;request=GetMap&amp;layers=cite%3ALakes%20%2B%20a%20plus&amp;bbox=-180.0%2C-90.0%2C180.0%2C90.0&amp;width=768&amp;height=384&amp;srs=EPSG%3A4326&amp;format=application/openlayers",
+                            "http://localhost/context/cite/wms?service=WMS&amp;version=1.1.0&amp;"
+                                    + "request=GetMap&amp;layers=cite%3ALakes%20%2B%20a%20plus&amp;"
+                                    + "bbox=-180.0%2C-90.0%2C180.0%2C90.0&amp;width=768&amp;"
+                                    + "height=384&amp;srs=EPSG%3A4326&amp;styles=&amp;"
+                                    + "format=application/openlayers",
                             olLink.getDefaultModelObjectAsString());
                     assertThat(
                             gmlLink.getDefaultModelObjectAsString(),
                             containsString(
-                                    "http://localhost/context/cite/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=cite%3ALakes%20%2B%20a%20plus"));
+                                    "http://localhost/context/cite/ows?service=WFS&amp;version=1"
+                                            + ".0.0&amp;request=GetFeature&amp;"
+                                            + "typeName=cite%3ALakes%20%2B%20a%20plus"));
+                    assertEquals(
+                            kmlLink.getDefaultModelObjectAsString(),
+                            "http://localhost/context/cite/wms/kml?layers=cite%3ALakes%20%2B%20a%20plus");
                 }
             }
             assertTrue("Could not find layer with expected name", exists);
@@ -242,7 +254,7 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
             assertThat(
                     onchange,
                     containsString(
-                            "http://localhost/context/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite%3ALakes%20%2B%20a%20plus&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&format="));
+                            "http://localhost/context/cite/wms?service=WMS&version=1.1.0&request=GetMap&layers=cite%3ALakes%20%2B%20a%20plus&bbox=-180.0%2C-90.0%2C180.0%2C90.0&width=768&height=384&srs=EPSG%3A4326&styles=&format="));
             assertThat(
                     onchange,
                     containsString(

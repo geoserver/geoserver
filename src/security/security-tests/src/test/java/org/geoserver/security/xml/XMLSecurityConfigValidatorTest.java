@@ -8,7 +8,13 @@ package org.geoserver.security.xml;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.geoserver.security.xml.XMLSecurityConfigException.*;
+import static org.geoserver.security.xml.XMLSecurityConfigException.CHECK_INTERVAL_INVALID;
+import static org.geoserver.security.xml.XMLSecurityConfigException.FILENAME_CHANGE_INVALID_$2;
+import static org.geoserver.security.xml.XMLSecurityConfigException.FILENAME_REQUIRED;
+import static org.geoserver.security.xml.XMLSecurityConfigException.FILE_CREATE_FAILED_$1;
+import static org.geoserver.security.xml.XMLSecurityConfigException.ROLE_SERVICE_NOT_EMPTY_$1;
+import static org.geoserver.security.xml.XMLSecurityConfigException.USERGROUP_SERVICE_NOT_EMPTY_$1;
+import static org.geoserver.security.xml.XMLSecurityConfigException.USERGROUP_SERVICE_REQUIRED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -25,7 +31,6 @@ import org.geoserver.security.auth.UsernamePasswordAuthenticationProvider;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
-import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.password.PasswordValidator;
 import org.geoserver.security.validation.SecurityConfigException;
 import org.geoserver.security.validation.SecurityConfigValidatorTest;
@@ -64,6 +69,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         return config;
     }
 
+    @Override
     @Test
     public void testRoleConfig() throws IOException {
 
@@ -163,7 +169,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         expect(secMgr.role()).andReturn(Files.asResource(tempFolder.getRoot())).anyTimes();
 
         expect(secMgr.listRoleServices())
-                .andReturn(new TreeSet<String>(Arrays.asList("test1", "test2", "test3", "test4")))
+                .andReturn(new TreeSet<>(Arrays.asList("test1", "test2", "test3", "test4")))
                 .anyTimes();
 
         replay(roleService1, roleService2, roleService3, roleService4, activeRoleService, secMgr);
@@ -252,6 +258,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         }
     }
 
+    @Override
     @Test
     public void testUserGroupConfig() throws IOException {
         super.testUserGroupConfig();
@@ -297,8 +304,6 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
                                 getPlainTextPasswordEncoder().getName(),
                                 PasswordValidator.DEFAULT_NAME,
                                 "test1.xml");
-
-        GeoServerUserGroup group = new GeoServerUserGroup("testgroup");
 
         try {
             validator.validateAddUserGroupService(xmlConfig);
@@ -356,7 +361,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         }
 
         GeoServerSecurityManager secMgr = createNiceMock(GeoServerSecurityManager.class);
-        expect(secMgr.listAuthenticationProviders()).andReturn(new TreeSet<String>()).anyTimes();
+        expect(secMgr.listAuthenticationProviders()).andReturn(new TreeSet<>()).anyTimes();
 
         GeoServerUserGroupService ugService1 = createNiceMock(GeoServerUserGroupService.class);
         expect(ugService1.getName()).andReturn("test1").anyTimes();
@@ -372,7 +377,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         expect(secMgr.loadUserGroupService("testModify")).andReturn(ugService2).anyTimes();
 
         expect(secMgr.listUserGroupServices())
-                .andReturn(new TreeSet<String>(Arrays.asList("test1", "test2", "testModify")))
+                .andReturn(new TreeSet<>(Arrays.asList("test1", "test2", "testModify")))
                 .anyTimes();
 
         expect(secMgr.userGroup()).andReturn(Files.asResource(tempFolder.getRoot())).anyTimes();
@@ -381,7 +386,7 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
                 .andReturn(getPlainTextPasswordEncoder())
                 .anyTimes();
         expect(secMgr.listPasswordValidators())
-                .andReturn(new TreeSet<String>(Arrays.asList(PasswordValidator.DEFAULT_NAME)))
+                .andReturn(new TreeSet<>(Arrays.asList(PasswordValidator.DEFAULT_NAME)))
                 .anyTimes();
         replay(ugService1, ugService2, ugServiceModify, secMgr);
 

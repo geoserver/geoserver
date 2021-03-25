@@ -6,19 +6,17 @@
 
 package org.geoserver.config.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import org.geoserver.config.util.SecureXStream.ForbiddenClassExceptionEx;
 import org.geoserver.util.PropertyRule;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class SecureXStreamTest {
-
-    @Rule public ExpectedException exception = ExpectedException.none();
 
     @Rule
     public PropertyRule whitelistProperty = PropertyRule.system("GEOSERVER_XSTREAM_WHITELIST");
@@ -36,8 +34,10 @@ public class SecureXStreamTest {
         assertThat(o, instanceOf(org.easymock.Capture.class));
 
         // Check that a class from elsewhere still causes an exception
-        exception.expect(ForbiddenClassExceptionEx.class);
-        xs.fromXML("<" + org.hamcrest.core.AllOf.class.getCanonicalName() + " />");
+
+        Assert.assertThrows(
+                ForbiddenClassExceptionEx.class,
+                () -> xs.fromXML("<" + org.hamcrest.core.AllOf.class.getCanonicalName() + " />"));
     }
 
     @Test
@@ -57,8 +57,10 @@ public class SecureXStreamTest {
         assertThat(o2, instanceOf(org.junit.rules.TestName.class));
 
         // Check that a class from elsewhere still causes an exception
-        exception.expect(ForbiddenClassExceptionEx.class);
-        xs.fromXML("<" + org.hamcrest.core.AllOf.class.getCanonicalName() + " />");
+
+        Assert.assertThrows(
+                ForbiddenClassExceptionEx.class,
+                () -> xs.fromXML("<" + org.hamcrest.core.AllOf.class.getCanonicalName() + " />"));
     }
 
     @Test

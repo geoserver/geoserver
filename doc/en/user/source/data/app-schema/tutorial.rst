@@ -80,7 +80,7 @@ For ``gsml:MappedFeature`` the file is ``workspaces/gsml/gsml_MappedFeature/data
         </connectionParameters>
     </dataStore>
 
-.. note:: Ensure that there is no whitespace inside an ``entry`` element.
+.. note:: Ensure that there is no blank-space inside an ``entry`` element.
 
 
 Mapping files

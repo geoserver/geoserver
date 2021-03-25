@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,9 +57,9 @@ public class RulesBuilderTest {
                         "classification.test1",
                         "id:0,name:string,foo:int,bar:double,geom:Point,group:String");
 
-        int iVal[] = new int[] {4, 90, 20, 43, 29, 61, 8, 12};
-        double dVal[] = new double[] {2.5, 80.433, 24.5, 9.75, 18, 53, 43.2, 16};
-        String[] names = new String[] {"foo", "bar", "bar", "foo", "foobar", "bar", "foo", "foo"};
+        int iVal[] = {4, 90, 20, 43, 29, 61, 8, 12};
+        double dVal[] = {2.5, 80.433, 24.5, 9.75, 18, 53, 43.2, 16};
+        String[] names = {"foo", "bar", "bar", "foo", "foobar", "bar", "foo", "foo"};
 
         testFeatures = new SimpleFeature[iVal.length];
         GeometryFactory fac = new GeometryFactory();

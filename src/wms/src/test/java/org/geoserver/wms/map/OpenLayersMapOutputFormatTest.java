@@ -8,8 +8,8 @@ package org.geoserver.wms.map;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
@@ -113,7 +113,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                 htmlDoc.replace("\\n", "")
                         .replace("\\r", "")
                         .indexOf(
-                                "\"</script\\><script\\>alert(\\'x-scripted\\');</script\\><script\\>\": 'foo'");
+                                "\"<\\/script><script>alert(\\'x-scripted\\');<\\/script><script>\": 'foo'");
         assertTrue(index > -1);
         index =
                 htmlDoc.replace("\\n", "")
@@ -300,7 +300,6 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         request.setFormat("application/openlayers");
 
         String htmlDoc = getAsHTML(map);
-        // System.out.println(htmlDoc);
         int index = htmlDoc.indexOf("yx : {'EPSG:4326' : true}");
 
         assertTrue(index > -1);
@@ -453,7 +452,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                 htmlDoc.replace("\\n", "")
                         .replace("\\r", "")
                         .indexOf(
-                                "\"</script\\><script\\>alert(\\'x-scripted\\');</script\\><script\\>\": 'foo'");
+                                "\"<\\/script><script>alert(\\'x-scripted\\');<\\/script><script>\": 'foo'");
         assertTrue(index > -1);
         index =
                 htmlDoc.replace("\\n", "")

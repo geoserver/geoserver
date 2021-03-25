@@ -69,7 +69,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         final CatalogIconFactory icons = CatalogIconFactory.get();
 
         if (property == StoreProvider.DATA_TYPE) {
-            final StoreInfo storeInfo = (StoreInfo) itemModel.getObject();
+            final StoreInfo storeInfo = itemModel.getObject();
 
             PackageResourceReference storeIcon = icons.getStoreIcon(storeInfo);
 
@@ -82,7 +82,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         } else if (property == NAME) {
             return storeNameLink(id, itemModel);
         } else if (property == ENABLED) {
-            final StoreInfo storeInfo = (StoreInfo) itemModel.getObject();
+            final StoreInfo storeInfo = itemModel.getObject();
             PackageResourceReference enabledIcon;
             if (storeInfo.isEnabled()) {
                 enabledIcon = icons.getEnabledIcon();
@@ -100,7 +100,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         return null;
     }
 
-    private Component storeNameLink(String id, final IModel itemModel) {
+    private Component storeNameLink(String id, final IModel<StoreInfo> itemModel) {
         String wsName = (String) WORKSPACE.getModel(itemModel).getObject();
         IModel storeNameModel = NAME.getModel(itemModel);
         String storeName = (String) storeNameModel.getObject();
@@ -146,7 +146,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         }
     }
 
-    private Component workspaceLink(String id, IModel itemModel) {
+    private Component workspaceLink(String id, IModel<StoreInfo> itemModel) {
         IModel nameModel = WORKSPACE.getModel(itemModel);
         return new SimpleBookmarkableLink(
                 id, WorkspaceEditPage.class, nameModel, "name", (String) nameModel.getObject());
@@ -160,8 +160,9 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
         ParamResourceModel confirmRemove =
                 new ParamResourceModel("confirmRemoveStoreX", this, info.getName());
 
-        SimpleAjaxLink linkPanel =
-                new ConfirmationAjaxLink(id, null, resRemove, confirmRemove) {
+        SimpleAjaxLink<Object> linkPanel =
+                new ConfirmationAjaxLink<Object>(id, null, resRemove, confirmRemove) {
+                    @Override
                     public void onClick(AjaxRequestTarget target) {
                         getCatalog().remove((StoreInfo) itemModel.getObject());
                         target.add(StorePanel.this);

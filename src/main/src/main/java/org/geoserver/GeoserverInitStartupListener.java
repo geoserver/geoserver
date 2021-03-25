@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -74,6 +74,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
 
     private static final double DEFAULT_COMPARISON_TOLERANCE = 1e-8;
 
+    @Override
     public void contextInitialized(ServletContextEvent sce) {
         // start up tctool - remove it before committing!!!!
         // new tilecachetool.TCTool().setVisible(true);
@@ -221,7 +222,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                         CoverageAccessInfoImpl.DEFAULT_MaxPoolSize,
                         CoverageAccessInfoImpl.DEFAULT_KeepAliveTime,
                         TimeUnit.MILLISECONDS,
-                        new LinkedBlockingQueue<Runnable>());
+                        new LinkedBlockingQueue<>());
         Hints.putSystemDefault(Hints.EXECUTOR_SERVICE, executor);
     }
 
@@ -250,6 +251,8 @@ public class GeoserverInitStartupListener implements ServletContextListener {
      * back reference to the classloader that loaded it). The same happens for any residual thread
      * launched by the web app.
      */
+    @Override
+    @SuppressWarnings("PMD.ForLoopCanBeForeach")
     public void contextDestroyed(ServletContextEvent sce) {
         try {
             LOGGER.info("Beginning GeoServer cleanup sequence");
@@ -260,7 +263,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             // unload all of the jdbc drivers we have loaded. We need to store them and unregister
             // later to avoid concurrent modification exceptions
             Enumeration<Driver> drivers = DriverManager.getDrivers();
-            Set<Driver> driversToUnload = new HashSet<Driver>();
+            Set<Driver> driversToUnload = new HashSet<>();
             while (drivers.hasMoreElements()) {
                 Driver driver = drivers.nextElement();
                 try {
@@ -272,7 +275,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                         driversToUnload.add(driver);
                     }
                 } catch (Throwable t) {
-                    t.printStackTrace();
+                    LOGGER.log(Level.SEVERE, "", t);
                 }
             }
             for (Driver driver : driversToUnload) {
@@ -284,7 +287,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 }
             }
             try {
-                Class h2Driver = Class.forName("org.h2.Driver");
+                Class<?> h2Driver = Class.forName("org.h2.Driver");
                 Method m = h2Driver.getMethod("unload");
                 m.invoke(null);
             } catch (Exception e) {
@@ -339,7 +342,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             // We need to store them and unregister later to avoid concurrent modification
             // exceptions
             final IIORegistry ioRegistry = IIORegistry.getDefaultInstance();
-            Set<IIOServiceProvider> providersToUnload = new HashSet();
+            Set<IIOServiceProvider> providersToUnload = new HashSet<>();
             for (Iterator<Class<?>> cats = ioRegistry.getCategories(); cats.hasNext(); ) {
                 Class<?> category = cats.next();
                 for (Iterator it = ioRegistry.getServiceProviders(category, false);
@@ -374,7 +377,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                         if (webappClassLoader.equals(factory.getClass().getClassLoader())) {
                             boolean unregistered = false;
                             // we need to scan against all "products" to unregister the factory
-                            Vector orderedProductList =
+                            List orderedProductList =
                                     opRegistry.getOrderedProductList(mode, red.getName());
                             if (orderedProductList != null) {
                                 for (Iterator products = orderedProductList.iterator();
@@ -423,12 +426,11 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 System.gc();
                 System.runFinalization();
             } catch (Throwable t) {
-                LOGGER.severe("Failed to perform closing up finalization");
-                t.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Failed to perform closing up finalization", t);
             }
         } catch (Throwable t) {
             // if anything goes south during the cleanup procedures I want to know what it is
-            t.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", t);
         }
     }
 

@@ -5,7 +5,7 @@
  */
 package org.geoserver.wfs.response;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Collections;
 import java.util.Set;
@@ -37,7 +37,7 @@ public class OGRWrapperTest {
         Set<String> formats = ogr.getSupportedFormats();
         // well, we can't know which formats ogr was complied with, but at least there will be one,
         // right?
-        assertTrue(formats.size() > 0);
+        assertFalse(formats.isEmpty());
 
         // these work on my machine, with fwtools 2.2.8
         // assertTrue(formats.contains("KML"));

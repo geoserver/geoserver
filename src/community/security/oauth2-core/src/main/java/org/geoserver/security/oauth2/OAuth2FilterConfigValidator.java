@@ -106,6 +106,7 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
         }
     }
 
+    @Override
     protected OAuth2FilterConfigException createFilterException(String errorid, Object... args) {
         return new OAuth2FilterConfigException(errorid, args);
     }

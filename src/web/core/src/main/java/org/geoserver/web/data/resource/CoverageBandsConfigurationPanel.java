@@ -66,6 +66,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                             Fragment f =
                                     new Fragment(
                                             id, "bandtext", CoverageBandsConfigurationPanel.this);
+                            @SuppressWarnings("unchecked")
                             Component text =
                                     new TextField<>(
                                             "bandtext",
@@ -77,6 +78,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                             Fragment f =
                                     new Fragment(
                                             id, "nulltext", CoverageBandsConfigurationPanel.this);
+                            @SuppressWarnings("unchecked")
                             Component text =
                                     new DecimalListTextField(
                                             "nulltext",
@@ -87,7 +89,10 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                         if ("unit".equals(property.getName())) {
                             Fragment f =
                                     new Fragment(id, "text", CoverageBandsConfigurationPanel.this);
-                            Component text = buildUnitField("text", property.getModel(itemModel));
+                            @SuppressWarnings("unchecked")
+                            Component text =
+                                    buildUnitField(
+                                            "text", (IModel<String>) property.getModel(itemModel));
                             f.add(text);
                             return f;
                         }
@@ -95,6 +100,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                             Fragment f =
                                     new Fragment(
                                             id, "minRange", CoverageBandsConfigurationPanel.this);
+                            @SuppressWarnings("unchecked")
                             Component min =
                                     new DecimalTextField(
                                             "minRange",
@@ -106,6 +112,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                             Fragment f =
                                     new Fragment(
                                             id, "maxRange", CoverageBandsConfigurationPanel.this);
+                            @SuppressWarnings("unchecked")
                             Component max =
                                     new DecimalTextField(
                                             "maxRange",
@@ -165,7 +172,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
         add(reload);
     }
 
-    protected Component buildUnitField(String id, IModel model) {
+    protected Component buildUnitField(String id, IModel<String> model) {
         return new AutoCompleteTextField<String>(id, model) {
             @Override
             protected Iterator<String> getChoices(String input) {
@@ -174,11 +181,11 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                     return emptyList.iterator();
                 }
 
-                List<Unit<?>> units = new ArrayList<Unit<?>>();
+                List<Unit<?>> units = new ArrayList<>();
                 units.addAll(SI.getInstance().getUnits());
                 units.addAll(NonSI.getInstance().getUnits());
 
-                List<String> unitNames = new ArrayList<String>();
+                List<String> unitNames = new ArrayList<>();
                 // adding radiance as it's the most common, but it's not part of the standard units
                 unitNames.add("W.m-2.Sr-1");
                 UnitFormat format = GeoToolsUnitFormat.getInstance();
@@ -186,7 +193,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                     unitNames.add(format.format(unit));
                 }
 
-                List<String> choices = new ArrayList<String>();
+                List<String> choices = new ArrayList<>();
                 for (String name : unitNames) {
                     if (name.toLowerCase().startsWith(input.toLowerCase())) {
                         choices.add(name);
@@ -202,9 +209,8 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
 
         @Override
         protected List<Property<CoverageDimensionInfo>> getProperties() {
-            List<Property<CoverageDimensionInfo>> result =
-                    new ArrayList<Property<CoverageDimensionInfo>>();
-            result.add(new BeanProperty<CoverageDimensionInfo>("band", "name"));
+            List<Property<CoverageDimensionInfo>> result = new ArrayList<>();
+            result.add(new BeanProperty<>("band", "name"));
             result.add(
                     new AbstractProperty<CoverageDimensionInfo>("dimensionType") {
 
@@ -323,7 +329,7 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                             };
                         }
                     });
-            result.add(new BeanProperty<CoverageDimensionInfo>("unit", "unit"));
+            result.add(new BeanProperty<>("unit", "unit"));
             return result;
         }
 

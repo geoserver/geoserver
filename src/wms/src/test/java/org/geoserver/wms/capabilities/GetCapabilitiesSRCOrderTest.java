@@ -6,20 +6,15 @@
 package org.geoserver.wms.capabilities;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
-import org.custommonkey.xmlunit.XMLUnit;
-import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.MetadataMap;
-import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSInfo;
@@ -36,20 +31,8 @@ import org.w3c.dom.Element;
  */
 public class GetCapabilitiesSRCOrderTest extends WMSTestSupport {
 
-    /** The xpath. */
-    private final XpathEngine xpath;
-
     /** The Constant BASE_URL. */
     private static final String BASE_URL = "http://localhost/geoserver";
-
-    /** Instantiates a new gets the capabilities SRC order test. */
-    public GetCapabilitiesSRCOrderTest() {
-        Map<String, String> namespaces = new HashMap<String, String>();
-        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-        namespaces.put("wms", "http://www.opengis.net/wms");
-        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
-        xpath = XMLUnit.newXpathEngine();
-    }
 
     /**
      * Test root layer.
@@ -71,7 +54,7 @@ public class GetCapabilitiesSRCOrderTest extends WMSTestSupport {
         Transformer transformer = tf.newTransformer();
         transformer.transform(domSource, result);
 
-        assertEquals(writer.toString().indexOf("22222") < writer.toString().indexOf("11111"), true);
+        assertTrue(writer.toString().indexOf("22222") < writer.toString().indexOf("11111"));
     }
 
     /**
@@ -93,10 +76,7 @@ public class GetCapabilitiesSRCOrderTest extends WMSTestSupport {
 
         Capabilities_1_3_0_Transformer tr =
                 new Capabilities_1_3_0_Transformer(
-                        wms,
-                        BASE_URL,
-                        wms.getAllowedMapFormats(),
-                        new HashSet<ExtendedCapabilitiesProvider>());
+                        wms, BASE_URL, wms.getAllowedMapFormats(), new HashSet<>());
         GetCapabilitiesRequest req = new GetCapabilitiesRequest();
         req.setBaseUrl(BASE_URL);
         req.setVersion(WMS.VERSION_1_3_0.toString());

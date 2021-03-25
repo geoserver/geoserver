@@ -67,7 +67,7 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
     /** Returns the mapper parameters. */
     public Map<String, String> getMapperParameters() {
         if (mapperParameters == null) {
-            mapperParameters = new HashMap<String, String>();
+            mapperParameters = new HashMap<>();
         }
         return mapperParameters;
     }
@@ -96,7 +96,7 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
                         Object value = param.getValue();
 
                         if (gsEnvironment != null
-                                && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                                && GeoServerEnvironment.allowEnvParametrization()) {
                             value = gsEnvironment.resolveValue(value);
                         }
 

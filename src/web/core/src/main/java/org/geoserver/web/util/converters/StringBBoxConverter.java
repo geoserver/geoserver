@@ -14,6 +14,7 @@ public class StringBBoxConverter implements Converter {
 
     private static String SEPARATOR = ",";
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T convert(Object source, Class<T> target) throws Exception {
         if (source instanceof ReferencedEnvelope) {

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,12 +50,15 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
     protected final QNameKvpParser qNameParser;
 
     public BaseFeatureKvpRequestReader(
-            Class requestBean, GeoServer geoServer, FilterFactory filterFactory) {
+            Class<?> requestBean, GeoServer geoServer, FilterFactory filterFactory) {
         this(requestBean, WfsFactory.eINSTANCE, geoServer, filterFactory);
     }
 
     public BaseFeatureKvpRequestReader(
-            Class requestBean, EFactory factory, GeoServer geoServer, FilterFactory filterFactory) {
+            Class<?> requestBean,
+            EFactory factory,
+            GeoServer geoServer,
+            FilterFactory filterFactory) {
         super(requestBean, factory);
         this.catalog = geoServer.getCatalog();
         this.geoServer = geoServer;
@@ -72,7 +74,9 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
      * Reads the commons elements to GetFeature, GetFeatureWithLock, LockFeature (typenames,
      * filters, namespaces)
      */
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    @Override
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         request = super.read(request, kvp, rawKvp);
 
         // get feature has some additional parsing requirements
@@ -106,24 +110,20 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
                 && !kvp.containsKey("STOREDQUERY_ID")) {
             // HACK, the kvp reader gives us a list of QName, need to wrap in
             // another
-            typeNames = (List) kvp.get("typeName");
-            if (typeNames == null) {
-                typeNames = (List) kvp.get("typeNames");
-            }
+            typeNames = getTypeNames(kvp);
             List<List<QName>> list = new ArrayList<>();
 
-            for (Iterator itr = typeNames.iterator(); itr.hasNext(); ) {
-                Object obj = itr.next();
-
+            for (Object obj : typeNames) {
                 // we might get a list of qname, or a list of list of qname
                 if (obj instanceof QName) {
                     QName qName = (QName) obj;
                     qName = checkTypeName(qName, namespaces, eObject);
 
-                    List l = new ArrayList();
+                    List<QName> l = new ArrayList<>();
                     l.add(qName);
                     list.add(l);
                 } else {
+                    @SuppressWarnings("unchecked")
                     List<QName> qNames = (List<QName>) obj;
                     for (int i = 0; i < qNames.size(); i++) {
                         qNames.set(i, checkTypeName(qNames.get(i), namespaces, eObject));
@@ -144,27 +144,21 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
                 List featureId = (List) kvp.get("featureId");
                 featureId = featureId != null ? featureId : (List) kvp.get("resourceId");
 
-                Set<List> hTypeNames = new HashSet<>();
-                for (int i = 0; i < featureId.size(); i++) {
-                    QName typeName = getTypeNameFromFeatureId((String) featureId.get(i));
+                Set<List<QName>> hTypeNames = new HashSet<>();
+                for (Object o : featureId) {
+                    QName typeName = getTypeNameFromFeatureId((String) o);
                     if (typeName != null) {
                         hTypeNames.add(Arrays.asList(typeName));
                     }
                 }
 
                 // remove duplicate typeNames from the list
-                List derivedTypeNames = new ArrayList<>(hTypeNames);
+                List<List<QName>> derivedTypeNames = new ArrayList<>(hTypeNames);
                 querySet(eObject, "typeName", derivedTypeNames);
             } else {
                 // check for stored query id, i have seen both storedQueryId and storedQuery_Id used
                 // so support both
-                List<URI> storedQueryId = null;
-                if (kvp.containsKey("storedQuery_Id")) {
-                    storedQueryId = (List<URI>) kvp.get("storedQuery_Id");
-                }
-                if (storedQueryId == null && kvp.containsKey("storedQueryId")) {
-                    storedQueryId = (List<URI>) kvp.get("storedQueryId");
-                }
+                List<URI> storedQueryId = getStoredQueryId(kvp);
                 if (storedQueryId != null) {
                     buildStoredQueries(eObject, storedQueryId, rawKvp);
                 } else {
@@ -179,18 +173,22 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
 
         // filter
         if (kvp.containsKey("filter")) {
-            querySet(eObject, "filter", (List) kvp.get("filter"));
+            @SuppressWarnings("unchecked")
+            List<Filter> filter = (List) kvp.get("filter");
+            querySet(eObject, "filter", filter);
         } else if (kvp.containsKey("cql_filter")) {
-            querySet(eObject, "filter", (List) kvp.get("cql_filter"));
+            @SuppressWarnings("unchecked")
+            List<Filter> filter = (List) kvp.get("cql_filter");
+            querySet(eObject, "filter", filter);
         } else if (kvp.containsKey("featureId") || kvp.containsKey("resourceId")) {
             // set filter from featureId
             List featureIdList = (List) kvp.get("featureId");
             boolean isFeatureId = featureIdList != null;
             featureIdList = isFeatureId ? featureIdList : (List) kvp.get("resourceId");
-            Set ids = new HashSet();
+            Set<FeatureId> ids = new HashSet<>();
 
-            for (Iterator i = featureIdList.iterator(); i.hasNext(); ) {
-                String fid = (String) i.next();
+            for (Object o : featureIdList) {
+                String fid = (String) o;
                 // check consistency between resourceId and typeName (per WFS 2.0 CITE tests)
                 if (getWFS().isCiteCompliant() && typeNames != null && !typeNames.isEmpty()) {
                     QName qName = getTypeNameFromFeatureId(fid);
@@ -214,7 +212,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
                 ids.add(featureId);
             }
             // build a single feature id filter
-            List filters = Collections.singletonList(filterFactory.id(ids));
+            List<Filter> filters = Collections.singletonList(filterFactory.id(ids));
 
             querySet(eObject, "filter", filters);
         } else if (kvp.containsKey("bbox")) {
@@ -224,23 +222,42 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
         return request;
     }
 
+    @SuppressWarnings("unchecked")
+    private List<URI> getStoredQueryId(Map<String, Object> kvp) {
+        List<URI> storedQueryId = null;
+        if (kvp.containsKey("storedQuery_Id")) {
+            storedQueryId = (List<URI>) kvp.get("storedQuery_Id");
+        }
+        if (storedQueryId == null && kvp.containsKey("storedQueryId")) {
+            storedQueryId = (List<URI>) kvp.get("storedQueryId");
+        }
+        return storedQueryId;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<List<QName>> getTypeNames(Map<String, Object> kvp) {
+        List<List<QName>> typeNames = (List) kvp.get("typeName");
+        if (typeNames == null) {
+            typeNames = (List) kvp.get("typeNames");
+        }
+        return typeNames;
+    }
+
     protected void handleBBOX(Map kvp, EObject eObject) throws Exception {
         // set filter from bbox
         Envelope bbox = (Envelope) kvp.get("bbox");
 
         List<Query> queries = getQueries(eObject);
-        List filters = new ArrayList();
+        List<Filter> filters = new ArrayList<>();
 
-        for (Iterator<Query> it = queries.iterator(); it.hasNext(); ) {
-            Query q = it.next();
-
+        for (Query q : queries) {
             List typeName = q.getTypeNames();
             Filter filter;
-            if (typeName.size() > 1) {
+            int typeNameSize = typeName.size();
+            if (typeNameSize > 1) {
                 // TODO: not sure what to do here, just going to and them up
-                List and = new ArrayList(typeName.size());
-
-                for (Iterator t = typeName.iterator(); t.hasNext(); ) {
+                List<Filter> and = new ArrayList<>(typeNameSize);
+                for (int i = 0; i < typeNameSize; i++) {
                     and.add(bboxFilter(bbox));
                 }
 
@@ -273,6 +290,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
             String typeName = fid.substring(0, fid.lastIndexOf("."));
 
             // add to a list to set on the query
+            @SuppressWarnings("unchecked")
             List<QName> parsed = (List) qNameParser.parse(typeName);
             return parsed.get(0);
         } else {
@@ -372,8 +390,8 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
                 name, bbox.getMinX(), bbox.getMinY(), bbox.getMaxX(), bbox.getMaxY(), epsgCode);
     }
 
-    protected abstract void querySet(EObject eObject, String filter, List filters);
+    protected abstract <T> void querySet(EObject eObject, String key, List<T> value);
 
     protected abstract void buildStoredQueries(
-            EObject eObject, List<URI> storedQueryId, Map rawKvp);
+            EObject eObject, List<URI> storedQueryId, Map<String, Object> rawKvp);
 }

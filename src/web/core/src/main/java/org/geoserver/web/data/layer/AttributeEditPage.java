@@ -17,7 +17,6 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.validation.IValidationError;
 import org.apache.wicket.validation.ValidationError;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.CRSPanel;
@@ -139,7 +138,7 @@ public class AttributeEditPage extends GeoServerSecuredPage {
     protected boolean validate() {
         boolean valid = true;
         if (attribute.getName() == null || attribute.getName().trim().equals("")) {
-            nameField.error((IValidationError) new ValidationError().addKey("Required"));
+            nameField.error(new ValidationError().addKey("Required"));
             valid = false;
         }
         if (String.class.equals(attribute.getBinding())) {
@@ -155,7 +154,7 @@ public class AttributeEditPage extends GeoServerSecuredPage {
             }
         }
         if (Geometry.class.isAssignableFrom(attribute.getBinding()) && attribute.getCrs() == null) {
-            crsField.error((IValidationError) new ValidationError().addKey("Required"));
+            crsField.error(new ValidationError().addKey("Required"));
             valid = false;
         }
 
@@ -164,10 +163,12 @@ public class AttributeEditPage extends GeoServerSecuredPage {
 
     static class BindingChoiceRenderer extends ChoiceRenderer<Class<?>> {
 
+        @Override
         public Object getDisplayValue(Class<?> object) {
-            return AttributeDescription.getLocalizedName((Class<?>) object);
+            return AttributeDescription.getLocalizedName(object);
         }
 
+        @Override
         public String getIdValue(Class<?> object, int index) {
             return object.getName();
         }

@@ -57,13 +57,13 @@ public class LegendDecoratorFactory implements KmlDecoratorFactory {
 
             // build the href
             Icon icon = go.createAndSetIcon();
-            String legendOptions = (String) context.getRequest().getRawKvp().get("LEGEND_OPTIONS");
+            String legendOptions = context.getRequest().getRawKvp().get("LEGEND_OPTIONS");
             String[] kvpArray = null;
             if (legendOptions != null) {
                 kvpArray = new String[] {"LEGEND_OPTIONS", legendOptions};
             }
             List<Layer> layerList = context.getMapContent().layers();
-            Layer[] layers = (Layer[]) layerList.toArray(new Layer[layerList.size()]);
+            Layer[] layers = layerList.toArray(new Layer[layerList.size()]);
             icon.setHref(
                     WMSRequests.getGetLegendGraphicUrl(context.getRequest(), layers, kvpArray));
 

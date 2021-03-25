@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+<suppressions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd"
+              xsi:schemaLocation="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
         <notes><![CDATA[file name: gt-swing]]></notes>
         <gav regex="true">^org\.geotools:gt-swing:.*$</gav>
         <cve>CVE-2015-6737</cve>
     </suppress>
     <suppress>
-        <notes><![CDATA[file name: gt-coverage]]></notes>
-        <gav regex="true">^org\.geotools:gt-coverage:.*$</gav>
-        <cve>CVE-2005-0406</cve>
+        <notes><![CDATA[file name: gt-coverage.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.geotools/gt\-coverage@.*$</packageUrl>
+        <cpe>cpe:/a:image_processing_software:image_processing_software</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: gt-http-commons-25-SNAPSHOT.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.geotools/gt\-http\-commons@.*$</packageUrl>
+        <cpe>cpe:/a:apache:commons-httpclient</cpe>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: imageio-ext-arcgrid-1.1.24.jar]]></notes>
         <gav regex="true">^it\.geosolutions\.imageio-ext:imageio-ext-arcgrid:.*$</gav>
-        <cpe>cpe:/a:arc:arc</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[file name: gs-arcsde.jar]]></notes>
-        <gav regex="true">^org\.geoserver\.extension:gs-arcsde:.*$</gav>
         <cpe>cpe:/a:arc:arc</cpe>
     </suppress>
     <suppress>

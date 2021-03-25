@@ -22,6 +22,7 @@ import org.geotools.util.Version;
 public interface ServiceInfo extends Info {
 
     /** Identifer. */
+    @Override
     String getId();
 
     /**

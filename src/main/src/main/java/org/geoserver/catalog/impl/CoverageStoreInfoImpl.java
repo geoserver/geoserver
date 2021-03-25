@@ -31,18 +31,22 @@ public class CoverageStoreInfoImpl extends StoreInfoImpl implements CoverageStor
         super(catalog, id);
     }
 
+    @Override
     public String getURL() {
         return url;
     }
 
+    @Override
     public void setURL(String url) {
         this.url = url;
     }
 
+    @Override
     public AbstractGridFormat getFormat() {
         return catalog.getResourcePool().getGridCoverageFormat(this);
     }
 
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }

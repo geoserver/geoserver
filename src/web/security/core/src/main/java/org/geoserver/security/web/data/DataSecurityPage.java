@@ -75,15 +75,15 @@ public class DataSecurityPage extends AbstractSecurityPage {
         setHeaderPanel(headerPanel());
 
         Form form =
-                new Form(
+                new Form<>(
                         "catalogModeForm",
-                        new CompoundPropertyModel(
+                        new CompoundPropertyModel<>(
                                 new CatalogModeModel(DataAccessRuleDAO.get().getMode())));
         add(form);
         form.add(new HelpLink("catalogModeHelp").setDialog(dialog));
 
         catalogModeChoice =
-                new RadioChoice("catalogMode", CATALOG_MODES, new CatalogModeRenderer());
+                new RadioChoice<>("catalogMode", CATALOG_MODES, new CatalogModeRenderer());
         catalogModeChoice.setSuffix(" ");
         form.add(catalogModeChoice);
 
@@ -103,16 +103,16 @@ public class DataSecurityPage extends AbstractSecurityPage {
                         }
                     }
                 });
-        form.add(new BookmarkablePageLink("cancel", GeoServerHomePage.class));
+        form.add(new BookmarkablePageLink<>("cancel", GeoServerHomePage.class));
     }
 
-    Component editRuleLink(String id, IModel itemModel, Property<DataAccessRule> property) {
-        return new SimpleAjaxLink(id, itemModel, property.getModel(itemModel)) {
+    Component editRuleLink(
+            String id, IModel<DataAccessRule> itemModel, Property<DataAccessRule> property) {
+        return new SimpleAjaxLink<DataAccessRule>(id, itemModel, property.getModel(itemModel)) {
 
             @Override
             protected void onClick(AjaxRequestTarget target) {
-                setResponsePage(
-                        new EditDataAccessRulePage((DataAccessRule) getDefaultModelObject()));
+                setResponsePage(new EditDataAccessRulePage(getModelObject()));
             }
         };
     }
@@ -133,15 +133,16 @@ public class DataSecurityPage extends AbstractSecurityPage {
         return header;
     }
 
-    class CatalogModeRenderer extends ChoiceRenderer {
+    class CatalogModeRenderer extends ChoiceRenderer<CatalogMode> {
 
-        public Object getDisplayValue(Object object) {
-            return (String)
-                    new ParamResourceModel(((CatalogMode) object).name(), getPage()).getObject();
+        @Override
+        public Object getDisplayValue(CatalogMode object) {
+            return new ParamResourceModel(object.name(), getPage()).getObject();
         }
 
-        public String getIdValue(Object object, int index) {
-            return ((CatalogMode) object).name();
+        @Override
+        public String getIdValue(CatalogMode object, int index) {
+            return object.name();
         }
     }
 }

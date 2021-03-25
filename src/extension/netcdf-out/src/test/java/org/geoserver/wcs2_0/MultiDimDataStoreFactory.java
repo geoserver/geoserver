@@ -5,10 +5,9 @@
  */
 package org.geoserver.wcs2_0;
 
-import java.awt.*;
+import java.awt.RenderingHints;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import org.geotools.data.DataStore;
@@ -17,7 +16,7 @@ import org.geotools.data.DataStoreFactorySpi;
 public class MultiDimDataStoreFactory implements DataStoreFactorySpi {
 
     @Override
-    public DataStore createDataStore(Map<String, Serializable> params) throws IOException {
+    public DataStore createDataStore(Map<String, ?> params) throws IOException {
         return new MultiDimDataStore((String) params.get("ParentLocation"));
     }
 
@@ -27,7 +26,7 @@ public class MultiDimDataStoreFactory implements DataStoreFactorySpi {
     }
 
     @Override
-    public DataStore createNewDataStore(Map<String, Serializable> params) throws IOException {
+    public DataStore createNewDataStore(Map<String, ?> params) throws IOException {
         File dir = new File((String) params.get("ParentLocation"));
 
         if (dir.exists()) {
@@ -48,7 +47,7 @@ public class MultiDimDataStoreFactory implements DataStoreFactorySpi {
     }
 
     @Override
-    public boolean canProcess(Map<String, Serializable> map) {
+    public boolean canProcess(Map<String, ?> map) {
         File dir = new File((String) map.get("ParentLocation"));
         return dir.exists();
     }

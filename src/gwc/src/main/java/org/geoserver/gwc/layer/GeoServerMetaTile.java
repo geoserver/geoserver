@@ -23,6 +23,7 @@ import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
+import org.geoserver.wms.map.RenderedImageTimeDecorator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
 import org.geotools.metadata.i18n.ErrorKeys;
@@ -71,11 +72,8 @@ public class GeoServerMetaTile extends MetaTile {
         checkNotNull(metaTileMap, "webMap is not set");
 
         if (metaTileMap instanceof RawMap) {
-            OutputStream outStream = target.getOutputStream();
-            try {
+            try (OutputStream outStream = target.getOutputStream()) {
                 ((RawMap) metaTileMap).writeTo(outStream);
-            } finally {
-                outStream.close();
             }
             return true;
         }
@@ -126,15 +124,12 @@ public class GeoServerMetaTile extends MetaTile {
             }
         }
 
-        OutputStream outStream = target.getOutputStream();
-        try {
+        try (OutputStream outStream = target.getOutputStream()) {
             // call formatImageOuputStream instead of write to avoid disposition of rendered images
             // when processing a tile from a metatile and instead defer it to this class' dispose()
             // method
             mapEncoder.formatImageOutputStream(tile, outStream, tileContext);
             return true;
-        } finally {
-            outStream.close();
         }
     }
 
@@ -238,6 +233,11 @@ public class GeoServerMetaTile extends MetaTile {
             metaTileMap.dispose();
             metaTileMap = null;
         }
+
+        if (metaTileImage instanceof RenderedImageTimeDecorator) {
+            metaTileImage = ((RenderedImageTimeDecorator) metaTileImage).getDelegate();
+        }
+
         super.dispose();
     }
 }

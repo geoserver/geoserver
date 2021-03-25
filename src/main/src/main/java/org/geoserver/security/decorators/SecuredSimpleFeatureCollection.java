@@ -43,11 +43,11 @@ public class SecuredSimpleFeatureCollection
             if (properties == null) {
                 this.readSchema = getSchema();
             } else {
-                List<String> names = new ArrayList<String>();
+                List<String> names = new ArrayList<>();
                 for (PropertyName property : properties) {
                     names.add(property.getPropertyName());
                 }
-                String[] nameArray = (String[]) names.toArray(new String[names.size()]);
+                String[] nameArray = names.toArray(new String[names.size()]);
                 try {
                     this.readSchema = DataUtilities.createSubType(getSchema(), nameArray);
                 } catch (SchemaException e) {
@@ -60,6 +60,7 @@ public class SecuredSimpleFeatureCollection
         }
     }
 
+    @Override
     public SimpleFeatureCollection sort(SortBy order) {
         return (SimpleFeatureCollection) super.sort(order);
     }
@@ -74,6 +75,7 @@ public class SecuredSimpleFeatureCollection
         return (SimpleFeatureIterator) super.features();
     }
 
+    @Override
     public void accepts(
             org.opengis.feature.FeatureVisitor visitor, org.opengis.util.ProgressListener progress)
             throws IOException {
@@ -84,6 +86,7 @@ public class SecuredSimpleFeatureCollection
         }
     }
 
+    @Override
     protected boolean canDelegate(FeatureVisitor visitor) {
         return ReTypingFeatureCollection.isTypeCompatible(visitor, readSchema);
     }

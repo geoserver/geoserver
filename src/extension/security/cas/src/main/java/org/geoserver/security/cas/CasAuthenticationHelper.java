@@ -68,7 +68,7 @@ public abstract class CasAuthenticationHelper {
     }
 
     protected List<String> getResponseHeaderValues(HttpURLConnection conn, String hName) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (int i = 0; ; i++) {
             String headerName = conn.getHeaderFieldKey(i);
             String headerValue = conn.getHeaderField(i);
@@ -85,7 +85,7 @@ public abstract class CasAuthenticationHelper {
     }
 
     protected List<HttpCookie> getCookies(HttpURLConnection conn) {
-        List<HttpCookie> result = new ArrayList<HttpCookie>();
+        List<HttpCookie> result = new ArrayList<>();
         List<String> cookieStrings = getResponseHeaderValues(conn, "Set-Cookie");
         for (String cookieString : cookieStrings) {
             result.addAll(HttpCookie.parse("Set-Cookie: " + cookieString));
@@ -138,8 +138,7 @@ public abstract class CasAuthenticationHelper {
         addCasCookies(conn);
         conn.getInputStream().close();
         extractCASCookies(getCookies(conn), conn);
-        return getTicketGrantingCookie() != null
-                && "\"\"".equals(getTicketGrantingCookie().getValue());
+        return getTicketGrantingCookie() != null && "".equals(getTicketGrantingCookie().getValue());
     }
 
     /** add Cas cookies to request */
@@ -180,7 +179,7 @@ public abstract class CasAuthenticationHelper {
     public String getServiceTicket(URL service) throws IOException {
 
         if (getTicketGrantingCookie() == null || getTicketGrantingCookie().getValue().isEmpty()) {
-            throw new IOException("na valid TGC ");
+            throw new IOException("not a valid TGC ");
         }
 
         URL loginUrl =
@@ -210,6 +209,6 @@ public abstract class CasAuthenticationHelper {
     /** extract Cas cookies from all received cookies */
     public void extractCASCookies(List<HttpCookie> cookies, HttpURLConnection conn) {
         warningCookie = getCookieNamed(cookies, "CASPRIVACY");
-        ticketGrantingCookie = getCookieNamed(cookies, "CASTGC");
+        ticketGrantingCookie = getCookieNamed(cookies, "TGC");
     }
 }

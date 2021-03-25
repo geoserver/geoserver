@@ -32,7 +32,6 @@ import org.geoserver.wcs2_0.util.RequestUtils;
 import org.geoserver.wcs2_0.util.WCS20DescribeCoverageExtension;
 import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.geometry.GeneralEnvelope;
@@ -89,6 +88,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 wcsDescribeCoverageExtensions != null && !wcsDescribeCoverageExtensions.isEmpty();
     }
 
+    @Override
     public WCS20DescribeCoverageTranslator createTranslator(ContentHandler handler) {
         return new WCS20DescribeCoverageTranslator(handler);
     }
@@ -112,10 +112,10 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
             this.request = (DescribeCoverageType) o;
 
             // collect coverages
-            List<CoverageInfo> coverages = new ArrayList<CoverageInfo>();
+            List<CoverageInfo> coverages = new ArrayList<>();
 
-            List<String> covIds = new ArrayList<String>();
-            for (String encodedCoverageId : (List<String>) request.getCoverageId()) {
+            List<String> covIds = new ArrayList<>();
+            for (String encodedCoverageId : request.getCoverageId()) {
                 String newCoverageID = encodedCoverageId;
                 // Extension point for encoding the coverageId
                 if (availableDescribeCoverageExtensions) {
@@ -261,7 +261,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 element("wcs:CoverageId", encodedId);
 
                 // handle coverage function
-                handleCoverageFunction((GridEnvelope2D) reader.getOriginalGridRange(), axisSwap);
+                handleCoverageFunction(reader.getOriginalGridRange(), axisSwap);
 
                 // metadata
                 handleMetadata(ci, dimensionsHelper);
@@ -368,7 +368,7 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
          * </gmlcov:rangeType>
          * }</pre>
          */
-        public void handleRangeType(final List<CoverageDimensionInfo> bands) {
+        private void handleRangeType(final List<CoverageDimensionInfo> bands) {
             start("gmlcov:rangeType");
             start("swe:DataRecord");
 

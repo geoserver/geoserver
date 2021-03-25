@@ -92,7 +92,7 @@ public class WriterHelper {
      * @throws ConfigurationException When an IO exception occurs.
      */
     public void openTag(String tagName) throws ConfigurationException {
-        openTag(tagName, Collections.EMPTY_MAP);
+        openTag(tagName, Collections.emptyMap());
     }
 
     /**
@@ -186,7 +186,7 @@ public class WriterHelper {
      * @throws ConfigurationException When an IO exception occurs.
      */
     public void textTag(String tagName, String data) throws ConfigurationException {
-        textTag(tagName, Collections.EMPTY_MAP, data);
+        textTag(tagName, Collections.emptyMap(), data);
     }
 
     /**
@@ -202,7 +202,7 @@ public class WriterHelper {
      */
     public void textTag(String tagName, Map attributes, String data) throws ConfigurationException {
         StringBuffer sb = new StringBuffer();
-        sb.append("<" + tagName + ((attributes.size() > 0) ? " " : ""));
+        sb.append("<" + tagName + ((attributes.isEmpty()) ? "" : " "));
 
         Iterator i = attributes.keySet().iterator();
 

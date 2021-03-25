@@ -26,16 +26,19 @@ public class RoleListPageTest extends AbstractTabbedListPageTest<GeoServerRole> 
 
     public static final String SECOND_COLUM_PATH = "itemProperties:1:component:link";
 
+    @Override
     protected String getServiceName() {
         return getRoleServiceName();
     }
 
+    @Override
     protected AbstractSecurityPage listPage(String roleServiceName) {
         AbstractSecurityPage result = initializeForRoleServiceNamed(roleServiceName);
         tester.clickLink(getTabbedPanelPath() + ":tabs-container:tabs:1:link", true);
         return result;
     }
 
+    @Override
     protected Page newPage(AbstractSecurityPage page, Object... params) {
         if (params.length == 0)
             return new NewRolePage(getSecurityManager().getActiveRoleService().getName())
@@ -43,6 +46,7 @@ public class RoleListPageTest extends AbstractTabbedListPageTest<GeoServerRole> 
         else return new NewRolePage((String) params[0]).setReturnPage(page);
     }
 
+    @Override
     protected Page editPage(AbstractSecurityPage page, Object... params) {
         if (params.length == 0) {
             return new EditRolePage(
@@ -60,10 +64,12 @@ public class RoleListPageTest extends AbstractTabbedListPageTest<GeoServerRole> 
                     .setReturnPage(page);
     }
 
+    @Override
     protected String getTabbedPanelPath() {
         return "panel:panel";
     };
 
+    @Override
     protected String getItemsPath() {
         return getTabbedPanelPath() + ":panel:table:listContainer:items";
     };

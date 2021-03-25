@@ -111,7 +111,7 @@ public class ProcessLimitsFilter
                     }
 
                     // setup the global size limits. non complex params will just ignore it
-                    Map<String, Object> metadataClone = new HashMap(param.metadata);
+                    Map<String, Object> metadataClone = new HashMap<>(param.metadata);
                     if (wps.getMaxComplexInputSize() > 0) {
                         metadataClone.put(
                                 MaxSizeValidator.PARAMETER_KEY, wps.getMaxComplexInputSize());
@@ -128,30 +128,7 @@ public class ProcessLimitsFilter
                                 metadataClone.put(MaxSizeValidator.PARAMETER_KEY, maxSizeMB);
                             } else if (validator instanceof NumberRangeValidator) {
                                 NumberRangeValidator rv = (NumberRangeValidator) validator;
-                                Range<?> range = rv.getRange();
-                                Comparable min = (Comparable) param.metadata.get(Parameter.MIN);
-                                Comparable max = (Comparable) param.metadata.get(Parameter.MAX);
-                                boolean restricting = false;
-                                if (range.getMinValue() != null
-                                        && (min == null
-                                                || min.compareTo(range.getMinValue()) < 0)) {
-                                    min = range.getMinValue();
-                                    restricting = true;
-                                }
-                                if (range.getMaxValue() != null
-                                        && (max == null
-                                                || max.compareTo(range.getMaxValue()) > 0)) {
-                                    max = range.getMaxValue();
-                                    restricting = true;
-                                }
-                                if (restricting) {
-                                    if (min != null) {
-                                        metadataClone.put(Parameter.MIN, min);
-                                    }
-                                    if (max != null) {
-                                        metadataClone.put(Parameter.MAX, max);
-                                    }
-                                }
+                                validate(param, metadataClone, rv);
                             } else if (validator instanceof MultiplicityValidator) {
                                 MultiplicityValidator mv = (MultiplicityValidator) validator;
                                 int max = mv.getMaxInstances();
@@ -163,6 +140,7 @@ public class ProcessLimitsFilter
                     }
 
                     // rebuild the param and put it in the params
+                    @SuppressWarnings("unchecked")
                     Parameter<?> substitute =
                             new Parameter(
                                     param.key,
@@ -178,6 +156,33 @@ public class ProcessLimitsFilter
                 }
 
                 return params;
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        private void validate(
+                Parameter<?> param, Map<String, Object> metadataClone, NumberRangeValidator rv) {
+            Range<?> range = rv.getRange();
+            Comparable min = (Comparable) param.metadata.get(Parameter.MIN);
+            Comparable max = (Comparable) param.metadata.get(Parameter.MAX);
+            boolean restricting = false;
+            if (range.getMinValue() != null
+                    && (min == null || min.compareTo(range.getMinValue()) < 0)) {
+                min = range.getMinValue();
+                restricting = true;
+            }
+            if (range.getMaxValue() != null
+                    && (max == null || max.compareTo(range.getMaxValue()) > 0)) {
+                max = range.getMaxValue();
+                restricting = true;
+            }
+            if (restricting) {
+                if (min != null) {
+                    metadataClone.put(Parameter.MIN, min);
+                }
+                if (max != null) {
+                    metadataClone.put(Parameter.MAX, max);
+                }
             }
         }
     }

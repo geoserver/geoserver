@@ -47,9 +47,9 @@ public class MultiPolygonAdapter extends XmlAdapter<Object, MultiPolygon> {
             if (geom instanceof Polygon) {
                 return new MultiPolygon(new Polygon[] {(Polygon) geom}, geom.getFactory());
             } else if (geom instanceof GeometryCollection) {
-                Polygon[] pols = new Polygon[((GeometryCollection) geom).getNumGeometries()];
+                Polygon[] pols = new Polygon[geom.getNumGeometries()];
                 for (int i = 0; i < pols.length; i++) {
-                    pols[i] = (Polygon) ((GeometryCollection) geom).getGeometryN(i);
+                    pols[i] = (Polygon) geom.getGeometryN(i);
                 }
                 return new MultiPolygon(pols, geom.getFactory());
             }

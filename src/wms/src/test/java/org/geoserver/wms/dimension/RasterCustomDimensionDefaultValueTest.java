@@ -5,7 +5,8 @@
  */
 package org.geoserver.wms.dimension;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Collections;
 import javax.xml.namespace.QName;
@@ -51,7 +52,7 @@ public class RasterCustomDimensionDefaultValueTest extends WMSTestSupport {
                         WATTEMP_CUSTOM,
                         "custwatertemp.zip",
                         null,
-                        Collections.EMPTY_MAP,
+                        Collections.emptyMap(),
                         getClass(),
                         getCatalog());
     }
@@ -67,8 +68,8 @@ public class RasterCustomDimensionDefaultValueTest extends WMSTestSupport {
         String def =
                 wms.getDefaultCustomDimensionValue(
                         COVERAGE_DIMENSION_NAME, customCoverage, String.class);
-        assertTrue("Default dimension value is null", def != null);
-        assertTrue("Default dimension value should be the smallest one", expected.equals(def));
+        assertNotNull("Default dimension value is null", def);
+        assertEquals("Default dimension value should be the smallest one", expected, def);
     }
 
     @Test
@@ -84,8 +85,8 @@ public class RasterCustomDimensionDefaultValueTest extends WMSTestSupport {
         String def =
                 wms.getDefaultCustomDimensionValue(
                         COVERAGE_DIMENSION_NAME, customCoverage, String.class);
-        assertTrue("Default dimension value is null", def != null);
-        assertTrue("Default dimension value should be the smallest one", expected.equals(def));
+        assertNotNull("Default dimension value is null", def);
+        assertEquals("Default dimension value should be the smallest one", expected, def);
     }
 
     @Test
@@ -101,8 +102,8 @@ public class RasterCustomDimensionDefaultValueTest extends WMSTestSupport {
         String def =
                 wms.getDefaultCustomDimensionValue(
                         COVERAGE_DIMENSION_NAME, customCoverage, String.class);
-        assertTrue("Default dimension value is null", def != null);
-        assertTrue("Default dimension value should be the biggest one", expected.equals(def));
+        assertNotNull("Default dimension value is null", def);
+        assertEquals("Default dimension value should be the biggest one", expected, def);
     }
 
     @Test
@@ -121,8 +122,8 @@ public class RasterCustomDimensionDefaultValueTest extends WMSTestSupport {
         String def =
                 wms.getDefaultCustomDimensionValue(
                         COVERAGE_DIMENSION_NAME, customCoverage, String.class);
-        assertTrue("Default dimension value is null", def != null);
-        assertTrue("Default dimension value should be the closest one", expected.equals(def));
+        assertNotNull("Default dimension value is null", def);
+        assertEquals("Default dimension value should be the closest one", expected, def);
     }
 
     protected void setupCoverageMyDimension(QName name, DimensionDefaultValueSetting defaultValue) {

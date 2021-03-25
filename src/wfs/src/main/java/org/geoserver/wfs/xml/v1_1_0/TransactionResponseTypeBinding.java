@@ -83,6 +83,7 @@ public class TransactionResponseTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.TRANSACTIONRESPONSETYPE;
     }
@@ -94,7 +95,8 @@ public class TransactionResponseTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<TransactionResponseType> getType() {
         return TransactionResponseType.class;
     }
 
@@ -105,6 +107,7 @@ public class TransactionResponseTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         // TODO: implement
         return null;

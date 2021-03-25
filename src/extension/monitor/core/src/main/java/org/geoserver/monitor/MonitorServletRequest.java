@@ -76,31 +76,37 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
         public MonitorInputStream(ServletInputStream delegate, long maxSize) {
             this.delegate = delegate;
             this.maxSize = maxSize;
-            if (maxSize > 0) {
+            if (maxSize > 0 || maxSize == BODY_SIZE_UNBOUNDED) {
                 buffer = new ByteArrayOutputStream();
             }
         }
 
+        @Override
         public int available() throws IOException {
             return delegate.available();
         }
 
+        @Override
         public void close() throws IOException {
             delegate.close();
         }
 
+        @Override
         public void mark(int readlimit) {
             delegate.mark(readlimit);
         }
 
+        @Override
         public boolean markSupported() {
             return delegate.markSupported();
         }
 
+        @Override
         public void reset() throws IOException {
             delegate.reset();
         }
 
+        @Override
         public long skip(long n) throws IOException {
             nbytes += n;
             return delegate.skip(n);
@@ -156,7 +162,8 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
         }
 
         boolean bufferIsFull() {
-            return maxSize == 0 || (buffer.size() >= maxSize && maxSize > 0);
+            return maxSize == 0
+                    || (buffer.size() >= maxSize && maxSize > 0 && maxSize != BODY_SIZE_UNBOUNDED);
         }
 
         public byte[] getData() {

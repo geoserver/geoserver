@@ -15,6 +15,8 @@ paths:
   /namespaces:
     get:
       operationId: getNamespaces
+      tags:
+       - "Namespaces"
       summary: Get a list of namespaces
       description: Displays a list of all namespaces on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/namespaces.xml" for XML)
       produces:
@@ -59,6 +61,8 @@ paths:
           
     post:
       operationId: postNamespaces
+      tags:
+       - "Namespaces"
       summary: Add a new namespace to GeoServer
       description: Adds a new namespace to the server
       parameters:
@@ -89,12 +93,16 @@ paths:
      
     put:
       operationId: putNamespaces
+      tags:
+       - "Namespaces"
       responses:
         405:
           description: Not permitted
     
     delete:
       operationId: deleteNamespaces
+      tags:
+       - "Namespaces"
       responses:
         405:
           description: Not permitted
@@ -102,6 +110,8 @@ paths:
   /namespaces/{namespaceName}:
     get:
       operationId: getNamespace
+      tags:
+       - "Namespaces"
       summary: Retrieve a namespace
       description: Retrieves a single namespace definition. Use the "Accept:" header to specify format or 
         append an extension to the endpoint (example "/namespaces/{namespace}.xml" for XML).
@@ -142,6 +152,8 @@ paths:
           description: namespace does not exist
     put:
       summary: Update a namespace
+      tags:
+       - "Namespaces"
       description: Takes the body of the put and modifies the namespace from it.
       operationId: putNamespace
       consumes:
@@ -162,12 +174,16 @@ paths:
           type: string
     post:
       operationId: postNamespace
+      tags:
+       - "Namespaces"
       responses:
         405:
           description: Forbidden to post to an existing namespace (use PUT)
           
     delete:
       operationId: deleteNamespace
+      tags:
+       - "Namespaces"
       summary: Delete a namespace
       parameters:
         - name: namespaceName

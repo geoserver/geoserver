@@ -13,11 +13,12 @@ import java.util.LinkedList;
  *
  * @author m.bartolomeoli
  */
-public class IndexableCyclicalLinkedList extends LinkedList {
+public class IndexableCyclicalLinkedList<T> extends LinkedList<T> {
 
     private static final long serialVersionUID = 6239225551852896282L;
 
-    public Object get(int index) {
+    @Override
+    public T get(int index) {
         // perform the index wrapping
         while (index < 0) index = size() + index;
         if (index >= size()) index %= size();

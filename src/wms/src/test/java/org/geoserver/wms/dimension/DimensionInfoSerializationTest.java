@@ -7,7 +7,8 @@ package org.geoserver.wms.dimension;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -74,14 +75,16 @@ public class DimensionInfoSerializationTest extends WMSTestSupport {
         }
 
         DimensionInfo di2 = unmarshallFromXML(diDOM);
-        assertTrue(
+        assertSame(
                 "Unmarshalled strategy does not match the original one",
-                di2.getDefaultValue().getStrategyType() == used);
+                di2.getDefaultValue().getStrategyType(),
+                used);
 
         if (referenceValue != null) {
-            assertTrue(
+            assertEquals(
                     "Unmarshalled referenceValue does not match the original one",
-                    di2.getDefaultValue().getReferenceValue().equals(referenceValue));
+                    di2.getDefaultValue().getReferenceValue(),
+                    referenceValue);
         }
     }
 

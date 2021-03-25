@@ -68,10 +68,11 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
         this.colorFunction = colorFunction;
     }
 
+    @Override
     public void visit(Style style) {
         super.visit(style);
         Style copy = (Style) pages.pop();
-        List<FeatureTypeStyle> featureTypeStyles = new ArrayList(copy.featureTypeStyles());
+        List<FeatureTypeStyle> featureTypeStyles = new ArrayList<>(copy.featureTypeStyles());
         for (Iterator<FeatureTypeStyle> it = featureTypeStyles.iterator(); it.hasNext(); ) {
             FeatureTypeStyle fts = it.next();
             if (fts.rules().isEmpty()) {
@@ -104,7 +105,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
         if (copy.getTransformation() instanceof Function) {
             transformations = true;
             Function f = (Function) fts.getTransformation();
-            Class returnType = getFunctionReturnType(f);
+            Class<?> returnType = getFunctionReturnType(f);
             if (Object.class.equals(returnType)
                     || FeatureCollection.class.isAssignableFrom(returnType)) {
                 vectorTransformations = true;
@@ -124,11 +125,12 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
         }
     }
 
+    @Override
     public void visit(Rule rule) {
         super.visit(rule);
         // clean up removed symbolizers
         Rule copy = (Rule) pages.pop();
-        List<Symbolizer> symbolizers = new ArrayList(copy.symbolizers());
+        List<Symbolizer> symbolizers = new ArrayList<>(copy.symbolizers());
         for (Iterator<Symbolizer> it = symbolizers.iterator(); it.hasNext(); ) {
             Symbolizer symbolizer = it.next();
             if (symbolizer == null) {
@@ -141,7 +143,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
     };
 
     /** Returns the function return type, or {@link Object} if it could not be determined */
-    Class getFunctionReturnType(Function f) {
+    Class<?> getFunctionReturnType(Function f) {
         FunctionName name = f.getFunctionName();
         if (name == null || name.getReturn() == null) {
             return Object.class;
@@ -151,7 +153,6 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
 
     @Override
     public void visit(Graphic gr) {
-        Graphic copy = null;
 
         Displacement displacementCopy = copy(gr.getDisplacement());
         Expression rotationCopy = copy(gr.getRotation());
@@ -191,7 +192,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
             }
         }
 
-        copy = sf.createDefaultGraphic();
+        Graphic copy = sf.createDefaultGraphic();
         copy.setDisplacement(displacementCopy);
         copy.setAnchorPoint(anchorCopy);
         copy.setOpacity(LITERAL_ONE);

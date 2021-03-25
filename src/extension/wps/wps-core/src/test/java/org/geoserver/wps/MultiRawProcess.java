@@ -58,7 +58,7 @@ public class MultiRawProcess {
             @DescribeParameter(name = "id") String id,
             @DescribeParameter(name = "binaryMimeType", min = 0) String binaryMimeType)
             throws Exception {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         result.put("literal", id);
         result.put("text", new StringRawData("This is the raw text", "text/plain"));
         result.put("binary", new ByteArrayRawData(new byte[100], binaryMimeType));

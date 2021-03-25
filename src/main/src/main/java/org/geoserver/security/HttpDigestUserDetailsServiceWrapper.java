@@ -63,7 +63,7 @@ public class HttpDigestUserDetailsServiceWrapper implements UserDetailsService {
     private GeoServerSecurityManager manager;
     protected GeoServerUserGroupService service;
     protected Charset charSet;
-    protected final char[] delimArray = new char[] {':'};
+    protected final char[] delimArray = {':'};
     protected MessageDigest digest;
     protected GeoServerMultiplexingPasswordEncoder enc;
 
@@ -100,7 +100,7 @@ public class HttpDigestUserDetailsServiceWrapper implements UserDetailsService {
         String a1 =
                 encodePasswordInA1Format(user.getUsername(), GeoServerSecurityManager.REALM, pw);
         manager.disposePassword(pw);
-        List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> roles = new ArrayList<>();
         roles.addAll(user.getAuthorities());
         roles.add(GeoServerRole.AUTHENTICATED_ROLE);
         return new DigestUserDetails(user, a1, roles);

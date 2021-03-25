@@ -4,6 +4,8 @@
  */
 package org.geoserver.importer.format;
 
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -15,6 +17,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
@@ -52,9 +58,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 /**
  * Supports reading GML simple features from a file with ".gml" extension
@@ -63,13 +66,14 @@ import org.xmlpull.v1.XmlPullParserFactory;
  */
 public class GMLFileFormat extends VectorFormat {
 
-    private static final Class[] TYPE_GUESS_TARGETS =
-            new Class[] {Integer.class, Long.class, Double.class, Boolean.class, Date.class};
+    private static final Class<?>[] TYPE_GUESS_TARGETS = {
+        Integer.class, Long.class, Double.class, Boolean.class, Date.class
+    };
 
-    private static final HashSet<Class> VALID_ATTRIBUTE_TYPES =
+    private static final HashSet<Class<?>> VALID_ATTRIBUTE_TYPES =
             new HashSet<>(
                     Arrays.asList(
-                            (Class) Geometry.class,
+                            (Class<?>) Geometry.class,
                             Number.class,
                             Date.class,
                             Boolean.class,
@@ -78,8 +82,8 @@ public class GMLFileFormat extends VectorFormat {
     private static final List<String> GML_ATTRIBUTES =
             Arrays.asList("name", "description", "boundedBy", "location");
 
-    private static final Map<Class, Class> TYPE_PROMOTIONS =
-            new HashMap<Class, Class>() {
+    private static final Map<Class<?>, Class<?>> TYPE_PROMOTIONS =
+            new HashMap<Class<?>, Class<?>>() {
                 {
                     put(Integer.class, Long.class);
                     put(Long.class, Double.class);
@@ -212,23 +216,25 @@ public class GMLFileFormat extends VectorFormat {
         GMLVersion version = GMLVersion.GML3;
         try (FileReader input = new FileReader(file)) {
             // create a pull parser
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            factory.setValidating(false);
-
-            // parse root element
-            XmlPullParser parser = factory.newPullParser();
-
-            // parser.setInput(input, "UTF-8");
-            parser.setInput(input);
-            parser.nextTag();
+            XMLInputFactory factory = XMLInputFactory.newFactory();
+            // disable DTDs
+            factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+            // disable external entities
+            factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+            XMLStreamReader parser = factory.createXMLStreamReader(input);
+            // position at root element
+            while (parser.hasNext()) {
+                if (START_ELEMENT == parser.next()) {
+                    break;
+                }
+            }
 
             String location =
                     parser.getAttributeValue(
                             "http://www.w3.org/2001/XMLSchema-instance", "schemaLocation");
             hasSchema = location != null;
 
-            String gmlNamespace = parser.getNamespace("gml");
+            String gmlNamespace = parser.getNamespaceURI("gml");
             if (GML.NAMESPACE.equals(gmlNamespace)) {
                 version = GMLVersion.GML32;
             } else {
@@ -236,11 +242,11 @@ public class GMLFileFormat extends VectorFormat {
                 // try to use some version detection based on heuristics (e.g., tags that
                 // we know are specific to a particular version). These could certainly use some
                 // improvement...
-                while (parser.next() != XmlPullParser.END_DOCUMENT) {
-                    if (parser.getEventType() != XmlPullParser.START_TAG) {
+                while (parser.next() != XMLStreamConstants.END_DOCUMENT) {
+                    if (parser.getEventType() != XMLStreamConstants.START_ELEMENT) {
                         continue;
                     }
-                    String tag = parser.getName();
+                    String tag = parser.getLocalName();
                     if ("outerBoundaryIs".equals(tag) || "innerBoundaryIs".equals(tag)) {
                         version = GMLVersion.GML2;
                         break;
@@ -248,7 +254,7 @@ public class GMLFileFormat extends VectorFormat {
                 }
             }
 
-        } catch (XmlPullParserException e) {
+        } catch (XMLStreamException e) {
             throw new IOException("Failed to parse the input file", e);
         }
 
@@ -257,10 +263,9 @@ public class GMLFileFormat extends VectorFormat {
         Map<String, AttributeDescriptor> guessedTypes = new HashMap<>();
         SimpleFeatureType result = null;
         try (FileInputStream fis = new FileInputStream(file)) {
-            SimpleFeature sf = null;
             PullParser parser =
                     new PullParser(version.getConfiguration(), fis, SimpleFeature.class);
-            sf = (SimpleFeature) parser.parse();
+            SimpleFeature sf = (SimpleFeature) parser.parse();
             while (sf != null) {
                 if (hasSchema) {
                     // we trust the feature type found by the parser then, but we still
@@ -306,7 +311,7 @@ public class GMLFileFormat extends VectorFormat {
                 String name = ad.getLocalName();
                 Class<?> binding = ad.getType().getBinding();
                 boolean valid = false;
-                for (Class validAttributeType : VALID_ATTRIBUTE_TYPES) {
+                for (Class<?> validAttributeType : VALID_ATTRIBUTE_TYPES) {
                     if (validAttributeType.isAssignableFrom(binding)) {
                         valid = true;
                         break;
@@ -347,11 +352,11 @@ public class GMLFileFormat extends VectorFormat {
 
         // if we have already established it's a string, bail out
         AttributeDescriptor ad = guessedTypes.get(name);
-        Class target = null;
+        Class<?> target = null;
         if (ad != null) {
             target = ad.getType().getBinding();
         }
-        Class originalTarget = target;
+        Class<?> originalTarget = target;
         if (String.class.equals(target) || Geometry.class.equals(target)) {
             return;
         }
@@ -379,7 +384,7 @@ public class GMLFileFormat extends VectorFormat {
         } else {
             Hints hints = new Hints(ConverterFactory.SAFE_CONVERSION, true);
             if (target == null) {
-                for (Class c : TYPE_GUESS_TARGETS) {
+                for (Class<?> c : TYPE_GUESS_TARGETS) {
                     Object converted = Converters.convert(value, c, hints);
                     if (converted != null) {
                         target = c;

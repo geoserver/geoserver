@@ -35,7 +35,6 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
-import org.springframework.security.web.authentication.preauth.x509.SubjectDnX509PrincipalExtractor;
 
 /**
  * Jetty starter, will run geoserver inside the Jetty web container.<br>
@@ -54,11 +53,10 @@ public class Start {
     public static void main(String[] args) {
         final Server jettyServer = new Server();
 
-        try {
-            HttpConfiguration httpConfig = new HttpConfiguration();
-
-            ServerConnector http =
-                    new ServerConnector(jettyServer, new HttpConnectionFactory(httpConfig));
+        HttpConfiguration httpConfig = new HttpConfiguration();
+        try (ServerConnector http =
+                        new ServerConnector(jettyServer, new HttpConnectionFactory(httpConfig));
+                ServerConnector https = getHTTPSConnector(jettyServer, httpConfig)) {
             http.setPort(Integer.getInteger("jetty.port", 8080));
             http.setAcceptQueueSize(100);
             http.setIdleTimeout(1000 * 60 * 60);
@@ -69,24 +67,6 @@ public class Start {
             // tp.setMinThreads(8);
             // tp.setMaxThreads(8);
             // conn.setThreadPool(tp);
-
-            // SSL host name given ?
-            String sslHost = System.getProperty("ssl.hostname");
-            ServerConnector https = null;
-            if (sslHost != null && sslHost.length() > 0) {
-                Security.addProvider(new BouncyCastleProvider());
-                SslContextFactory ssl = createSSLContextFactory(sslHost);
-
-                HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
-                httpsConfig.addCustomizer(new SecureRequestCustomizer());
-
-                https =
-                        new ServerConnector(
-                                jettyServer,
-                                new SslConnectionFactory(ssl, HttpVersion.HTTP_1_1.asString()),
-                                new HttpConnectionFactory(httpsConfig));
-                https.setPort(8443);
-            }
 
             jettyServer.setConnectors(
                     https != null ? new Connector[] {http, https} : new Connector[] {http});
@@ -140,10 +120,9 @@ public class Start {
                     new Thread() {
                         @Override
                         public void run() {
-                            BufferedReader reader =
-                                    new BufferedReader(new InputStreamReader(System.in));
                             String line;
-                            try {
+                            try (BufferedReader reader =
+                                    new BufferedReader(new InputStreamReader(System.in))) {
                                 while (true) {
                                     line = reader.readLine();
                                     if ("stop".equals(line)) {
@@ -152,7 +131,7 @@ public class Start {
                                     }
                                 }
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                e.printStackTrace(); // NOPMD
                                 System.exit(1);
                             }
                         }
@@ -180,16 +159,42 @@ public class Start {
         }
     }
 
-    private static SslContextFactory createSSLContextFactory(String hostname) {
-        String password = "changeit";
+    private static ServerConnector getHTTPSConnector(
+            Server jettyServer, HttpConfiguration httpConfig) {
+        // SSL host name given ?
+        String sslHost = System.getProperty("ssl.hostname");
+        ServerConnector https = null;
+        if (sslHost != null && sslHost.length() > 0) {
+            Security.addProvider(new BouncyCastleProvider());
+            SslContextFactory ssl = createSSLContextFactory(sslHost);
 
-        File userHome = new File(System.getProperty("user.home"));
-        File geoserverDir = new File(userHome, ".geoserver");
-        if (!geoserverDir.exists()) {
-            geoserverDir.mkdir();
+            HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
+            httpsConfig.addCustomizer(new SecureRequestCustomizer());
+
+            https =
+                    new ServerConnector(
+                            jettyServer,
+                            new SslConnectionFactory(ssl, HttpVersion.HTTP_1_1.asString()),
+                            new HttpConnectionFactory(httpsConfig));
+            https.setPort(Integer.getInteger("jetty.ssl.port", 8443));
+        }
+        return https;
+    }
+
+    private static SslContextFactory createSSLContextFactory(String hostname) {
+        String password = System.getProperty("jetty.keystore.password", "changeit");
+
+        String keyStoreLocation = System.getProperty("jetty.keystore");
+        if (keyStoreLocation == null) {
+            File userHome = new File(System.getProperty("user.home"));
+            File geoserverDir = new File(userHome, ".geoserver");
+            if (!geoserverDir.exists()) {
+                geoserverDir.mkdir();
+            }
+            keyStoreLocation = new File(geoserverDir, "keystore.jks").getPath();
         }
 
-        File keyStoreFile = new File(geoserverDir, "keystore.jks");
+        File keyStoreFile = new File(keyStoreLocation);
         try {
             assureSelfSignedServerCertificate(hostname, keyStoreFile, password);
         } catch (Exception e) {
@@ -218,9 +223,11 @@ public class Start {
 
         KeyStore privateKS = KeyStore.getInstance("JKS");
         if (keyStoreFile.exists()) {
-            FileInputStream fis = new FileInputStream(keyStoreFile);
-            privateKS.load(fis, password.toCharArray());
+            try (FileInputStream fis = new FileInputStream(keyStoreFile)) {
+                privateKS.load(fis, password.toCharArray());
+            }
             if (keyStoreContainsCertificate(privateKS, hostname)) return;
+
         } else {
             privateKS.load(null);
         }
@@ -257,9 +264,9 @@ public class Start {
         // store the certificate containing the public key,this file is needed
         // to import the public key in other key store.
         File certFile = new File(keyStoreFile.getParentFile(), hostname + ".cert");
-        FileOutputStream fos = new FileOutputStream(certFile.getAbsoluteFile());
-        fos.write(PKCertificate.getEncoded());
-        fos.close();
+        try (FileOutputStream fos = new FileOutputStream(certFile.getAbsoluteFile())) {
+            fos.write(PKCertificate.getEncoded());
+        }
 
         privateKS.setKeyEntry(
                 hostname + ".key",
@@ -274,15 +281,13 @@ public class Start {
 
     private static boolean keyStoreContainsCertificate(KeyStore ks, String hostname)
             throws Exception {
-        SubjectDnX509PrincipalExtractor ex = new SubjectDnX509PrincipalExtractor();
         Enumeration<String> e = ks.aliases();
         while (e.hasMoreElements()) {
             String alias = e.nextElement();
             if (ks.isCertificateEntry(alias)) {
                 Certificate c = ks.getCertificate(alias);
                 if (c instanceof X509Certificate) {
-                    X500Principal p =
-                            (X500Principal) ((X509Certificate) c).getSubjectX500Principal();
+                    X500Principal p = ((X509Certificate) c).getSubjectX500Principal();
                     if (p.getName().contains(hostname)) return true;
                 }
             }

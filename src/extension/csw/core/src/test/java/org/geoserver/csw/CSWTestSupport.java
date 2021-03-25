@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import javax.xml.transform.dom.DOMSource;
 import org.apache.commons.io.IOUtils;
@@ -38,7 +37,7 @@ public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
     @BeforeClass
     public static void configureXMLUnit() throws Exception {
         // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("csw", CSW.NAMESPACE);
         namespaces.put("dc", DC.NAMESPACE);
         namespaces.put("dct", DCT.NAMESPACE);
@@ -71,9 +70,9 @@ public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
         p.parse(new DOMSource(dom));
 
         if (!p.getValidationErrors().isEmpty()) {
-            for (Iterator e = p.getValidationErrors().iterator(); e.hasNext(); ) {
-                SAXParseException ex = (SAXParseException) e.next();
-                System.out.println(
+            for (Exception exception : p.getValidationErrors()) {
+                SAXParseException ex = (SAXParseException) exception;
+                LOGGER.severe(
                         ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }
             fail("Document did not validate.");

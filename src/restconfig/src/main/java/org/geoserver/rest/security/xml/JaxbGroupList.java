@@ -19,7 +19,7 @@ public class JaxbGroupList {
     public JaxbGroupList() {}
 
     public JaxbGroupList(Collection<GeoServerUserGroup> groups) {
-        groupNames = new ArrayList<String>();
+        groupNames = new ArrayList<>();
         for (GeoServerUserGroup group : groups) {
             groupNames.add(group.getGroupname());
         }

@@ -23,7 +23,8 @@ class NewWorkspacePanel extends Panel {
     public NewWorkspacePanel(String id) {
         super(id);
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
-        TextField wst = new TextField("workspace", new PropertyModel(this, "workspace"));
+        TextField<String> wst =
+                new TextField<>("workspace", new PropertyModel<>(this, "workspace"));
         wst.setRequired(true);
 
         wst.add(new WorkspaceDoesNotExistValidator());

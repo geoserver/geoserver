@@ -36,6 +36,7 @@ public class LocalWorkspaceURLMangler implements URLMangler {
         this.ows = ows;
     }
 
+    @Override
     public void mangleURL(
             StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
 

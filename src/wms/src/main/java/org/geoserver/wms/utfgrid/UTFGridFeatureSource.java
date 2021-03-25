@@ -20,17 +20,18 @@ import org.opengis.feature.type.FeatureType;
  *
  * @author Andrea Aime - GeoSolutions
  */
-class UTFGridFeatureSource extends DecoratingFeatureSource<FeatureType, Feature> {
+class UTFGridFeatureSource<T extends FeatureType, F extends Feature>
+        extends DecoratingFeatureSource<T, F> {
 
     String[] propertyNames;
 
-    public UTFGridFeatureSource(FeatureSource delegate, String[] propertyNames) {
+    public UTFGridFeatureSource(FeatureSource<T, F> delegate, String[] propertyNames) {
         super(delegate);
         this.propertyNames = propertyNames;
     }
 
     @Override
-    public FeatureCollection getFeatures(Query query) throws IOException {
+    public FeatureCollection<T, F> getFeatures(Query query) throws IOException {
         Query q = new Query(query);
         if (propertyNames == null || propertyNames.length == 0) {
             // no property selection, we return them all

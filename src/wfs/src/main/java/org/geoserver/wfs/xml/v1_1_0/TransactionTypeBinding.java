@@ -5,7 +5,6 @@
  */
 package org.geoserver.wfs.xml.v1_1_0;
 
-import java.util.Iterator;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.AllSomeType;
 import net.opengis.wfs.DeleteElementType;
@@ -110,11 +109,13 @@ public class TransactionTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.TRANSACTIONTYPE;
     }
 
     /** Sets execution mode to be before */
+    @Override
     public int getExecutionMode() {
         return BEFORE;
     }
@@ -126,7 +127,8 @@ public class TransactionTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<TransactionType> getType() {
         return TransactionType.class;
     }
 
@@ -137,6 +139,8 @@ public class TransactionTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
+    @Override
+    @SuppressWarnings("unchecked") // EMF model without generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         TransactionType transaction = wfsfactory.createTransactionType();
 
@@ -151,8 +155,7 @@ public class TransactionTypeBinding extends AbstractComplexEMFBinding {
         //  &lt;xsd:element ref="wfs:Delete"/&gt;
         //  &lt;xsd:element ref="wfs:Native"/&gt;
         // &lt;/xsd:choice&gt;
-        for (Iterator itr = node.getChildren().iterator(); itr.hasNext(); ) {
-            Node child = (Node) itr.next();
+        for (Node child : node.getChildren()) {
             Object cv = child.getValue();
 
             if (cv instanceof InsertElementType) {

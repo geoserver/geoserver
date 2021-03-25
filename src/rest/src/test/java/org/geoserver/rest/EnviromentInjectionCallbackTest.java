@@ -5,7 +5,8 @@
  */
 package org.geoserver.rest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -21,6 +22,7 @@ public class EnviromentInjectionCallbackTest extends GeoServerSystemTestSupport 
         // no test data needed
     }
 
+    @Override
     @Before
     public void logout() {
         SecurityContextHolder.getContext().setAuthentication(null);

@@ -4,7 +4,6 @@
  */
 package org.geoserver.wps.sextante;
 
-import org.locationtech.jts.geom.Geometry;
 import es.unex.sextante.dataObjects.AbstractTable;
 import es.unex.sextante.dataObjects.IRecordsetIterator;
 import es.unex.sextante.outputs.FileOutputChannel;
@@ -24,13 +23,17 @@ import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.AttributeType;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 
 public class GTTable extends AbstractTable {
-
+    static final Logger LOGGER = Logging.getLogger(GTTable.class);
     private String m_sName;
     private String m_sFilename;
     private int m_iCount;
@@ -42,7 +45,7 @@ public class GTTable extends AbstractTable {
             m_BaseDataObject = featureSource;
             m_iCount = featureSource.getFeatures().size();
         } catch (final Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", e);
         }
     }
 
@@ -64,7 +67,7 @@ public class GTTable extends AbstractTable {
                 store.addFeatures(collection);
                 m_iCount++;
             } catch (final Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "", e);
             }
         }
     }
@@ -93,7 +96,7 @@ public class GTTable extends AbstractTable {
             create(mds.getFeatureSource(mds.getTypeNames()[0]));
 
         } catch (final Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", e);
         }
     }
 
@@ -105,7 +108,7 @@ public class GTTable extends AbstractTable {
                         getFeatureSource().getFeatures();
                 return new GTRecordsetIterator(features);
             } catch (final Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
                 return null;
             }
         } else {
@@ -126,7 +129,7 @@ public class GTTable extends AbstractTable {
                 final AttributeType at = ft.getType(i);
                 return at.getName().getLocalPart();
             } catch (final Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
                 return null;
             }
         }
@@ -142,7 +145,7 @@ public class GTTable extends AbstractTable {
                 final AttributeType at = ft.getType(i);
                 return at.getBinding();
             } catch (final Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
                 return null;
             }
         }
@@ -157,7 +160,7 @@ public class GTTable extends AbstractTable {
                 final SimpleFeatureType ft = getFeatureSource().getSchema();
                 return ft.getAttributeCount();
             } catch (final Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
                 return 0;
             }
         }

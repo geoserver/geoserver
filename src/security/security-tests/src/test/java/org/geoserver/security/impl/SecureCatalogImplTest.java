@@ -5,18 +5,56 @@
  */
 package org.geoserver.security.impl;
 
-import static org.easymock.EasyMock.*;
-import static org.hamcrest.Matchers.*;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterators;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.Predicates;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractCatalogDecorator;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.util.CloseableIterator;
@@ -24,8 +62,20 @@ import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensionsHelper;
-import org.geoserver.security.*;
-import org.geoserver.security.decorators.*;
+import org.geoserver.security.AbstractCatalogFilter;
+import org.geoserver.security.CatalogFilterAccessManager;
+import org.geoserver.security.DisabledResourceFilter;
+import org.geoserver.security.ResourceAccessManager;
+import org.geoserver.security.SecureCatalogImpl;
+import org.geoserver.security.WrapperPolicy;
+import org.geoserver.security.decorators.ReadOnlyDataStoreTest;
+import org.geoserver.security.decorators.SecuredCoverageInfo;
+import org.geoserver.security.decorators.SecuredDataStoreInfo;
+import org.geoserver.security.decorators.SecuredFeatureTypeInfo;
+import org.geoserver.security.decorators.SecuredLayerGroupInfo;
+import org.geoserver.security.decorators.SecuredLayerInfo;
+import org.geoserver.security.decorators.SecuredWMSLayerInfo;
+import org.geoserver.security.decorators.SecuredWMTSLayerInfo;
 import org.geotools.util.logging.Logging;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -37,6 +87,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+@SuppressWarnings("unchecked") // the hamcrest assertions in here are a unchecked warning nightmare
 public class SecureCatalogImplTest extends AbstractAuthorizationTest {
 
     public static final Logger LOGGER = Logging.getLogger(SecureCatalogImplTest.class);
@@ -45,6 +96,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     public GeoServerExtensionsHelper.ExtensionsHelperRule extensions =
             new GeoServerExtensionsHelper.ExtensionsHelperRule();
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -438,7 +490,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
                             Integer offset,
                             Integer count,
                             SortBy sortBy) {
-                        return new CloseableIteratorAdapter<T>((Iterator<T>) layers.iterator());
+                        return new CloseableIteratorAdapter<>((Iterator<T>) layers.iterator());
                     }
                 };
         this.catalog = withLayers;
@@ -497,8 +549,8 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         buildManager("publicRead.properties");
 
         // get the CloseableIterator from SecureCatalogImpl and close it
-        CloseableIterator<LayerInfo> iterator;
-        iterator = sc.list(LayerInfo.class, Predicates.acceptAll());
+        @SuppressWarnings("PMD.CloseResource")
+        CloseableIterator<LayerInfo> iterator = sc.list(LayerInfo.class, Predicates.acceptAll());
         iterator.close();
 
         // verify that the mock CloseableIterator was closed
@@ -616,8 +668,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         expect(eoCatalog.getLayerGroups())
                 .andReturn(Arrays.asList(eoRoadsLayerGroup, eoStatesLayerGroup));
         expect(eoCatalog.list(eq(LayerGroupInfo.class), anyObject(Filter.class)))
-                .andReturn(
-                        new CloseableIteratorAdapter<LayerGroupInfo>(Collections.emptyIterator()))
+                .andReturn(new CloseableIteratorAdapter<>(Collections.emptyIterator()))
                 .anyTimes();
         replay(eoCatalog);
         this.catalog = eoCatalog;
@@ -964,7 +1015,6 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         List<LayerInfo> ly = catalog.getLayers();
         Iterator<LayerInfo> it1 = Iterators.filter(ly.iterator(), new PredicateFilter(security));
         // Checking if the roads layer is present
-        boolean hasRoadsLayer = false;
         // Ensure the base layer is present
         boolean hasBasesLayer = false;
         while (it1.hasNext()) {
@@ -974,7 +1024,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
             hasBasesLayer |= next.equals(basesLayer);
         }
         assertTrue(hasBasesLayer);
-        hasRoadsLayer = false;
+        boolean hasRoadsLayer = false;
         hasBasesLayer = false;
         it1 = Iterators.filter(ly.iterator(), new PredicateFilter(security2));
         while (it1.hasNext()) {
@@ -1086,8 +1136,22 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         assertNotSame(security2, Filter.EXCLUDE);
         assertNotSame(security3, Filter.INCLUDE);
         assertNotSame(security3, Filter.EXCLUDE);
-        // Checks on the layers
+        // Check the count does not include the groups. Since the catalog is just a mock, we
+        // extract the layers and groups, and do counts using the security filter
         List<LayerInfo> ly = catalog.getLayers();
+        List<LayerGroupInfo> lg = catalog.getLayerGroups();
+        List<PublishedInfo> publisheds = new ArrayList<>();
+        publisheds.addAll(ly);
+        publisheds.addAll(lg);
+        Collection<LayerInfo> filteredLayers =
+                Collections2.filter(ly, new PredicateFilter(security));
+        Collection<LayerGroupInfo> filteredGroups =
+                Collections2.filter(lg, new PredicateFilter(security));
+        Collection<PublishedInfo> filteredPublished =
+                Collections2.filter(publisheds, new PredicateFilter(security));
+        assertEquals(4, filteredLayers.size());
+        assertEquals(0, filteredGroups.size());
+        assertEquals(4, filteredPublished.size());
         // ANON
         Iterator<LayerInfo> it1 = Iterators.filter(ly.iterator(), new PredicateFilter(security));
         // Boolean checking the various layers
@@ -1329,7 +1393,7 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
     static <T> List<T> collectAndClose(CloseableIterator<T> it) throws IOException {
         if (it == null) return null;
         try {
-            LinkedList<T> list = new LinkedList<T>();
+            LinkedList<T> list = new LinkedList<>();
             while (it.hasNext()) {
                 list.add(it.next());
             }

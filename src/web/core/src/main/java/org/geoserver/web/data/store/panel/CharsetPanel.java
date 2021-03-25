@@ -16,7 +16,7 @@ import org.apache.wicket.model.IModel;
 
 /** A label + locale dropdown form panel */
 @SuppressWarnings("serial")
-public class CharsetPanel extends Panel implements ParamPanel {
+public class CharsetPanel extends Panel implements ParamPanel<String> {
 
     private DropDownChoice<String> choice;
 
@@ -35,9 +35,8 @@ public class CharsetPanel extends Panel implements ParamPanel {
         add(label);
 
         // the drop down field, with a decorator for validations
-        final ArrayList<String> charsets =
-                new ArrayList<String>(Charset.availableCharsets().keySet());
-        choice = new DropDownChoice<String>("paramValue", charsetModel, charsets);
+        final ArrayList<String> charsets = new ArrayList<>(Charset.availableCharsets().keySet());
+        choice = new DropDownChoice<>("paramValue", charsetModel, charsets);
         choice.setRequired(required);
         // set the label to be the paramLabelModel otherwise a validation error would look like
         // "Parameter 'paramValue' is required"
@@ -52,6 +51,7 @@ public class CharsetPanel extends Panel implements ParamPanel {
      * Returns the form component used in the panel in case it is needed for related form components
      * validation
      */
+    @Override
     public FormComponent<String> getFormComponent() {
         return choice;
     }

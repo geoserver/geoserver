@@ -5,11 +5,26 @@
  */
 package org.geoserver.security.validation;
 
-import static org.easymock.EasyMock.*;
 import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
-import static org.geoserver.security.validation.RoleServiceException.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.replay;
+import static org.geoserver.security.validation.RoleServiceException.ADMIN_ROLE_NOT_REMOVABLE_$1;
+import static org.geoserver.security.validation.RoleServiceException.ALREADY_EXISTS;
+import static org.geoserver.security.validation.RoleServiceException.ALREADY_EXISTS_IN;
+import static org.geoserver.security.validation.RoleServiceException.GROUPNAME_NOT_FOUND_$1;
+import static org.geoserver.security.validation.RoleServiceException.GROUPNAME_REQUIRED;
+import static org.geoserver.security.validation.RoleServiceException.GROUP_ADMIN_ROLE_NOT_REMOVABLE_$1;
+import static org.geoserver.security.validation.RoleServiceException.NAME_REQUIRED;
+import static org.geoserver.security.validation.RoleServiceException.NOT_FOUND;
+import static org.geoserver.security.validation.RoleServiceException.RESERVED_NAME;
+import static org.geoserver.security.validation.RoleServiceException.ROLE_IN_USE_$2;
+import static org.geoserver.security.validation.RoleServiceException.USERNAME_NOT_FOUND_$1;
+import static org.geoserver.security.validation.RoleServiceException.USERNAME_REQUIRED;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -19,7 +34,10 @@ import org.geoserver.data.test.MockTestData;
 import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupStore;
-import org.geoserver.security.impl.*;
+import org.geoserver.security.impl.DataAccessRule;
+import org.geoserver.security.impl.DataAccessRuleDAO;
+import org.geoserver.security.impl.GeoServerRole;
+import org.geoserver.security.impl.ServiceAccessRuleDAO;
 import org.geoserver.test.GeoServerMockTestSupport;
 import org.junit.Test;
 
@@ -53,7 +71,7 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
                                 createRoleStore("test1", secMgr, "duplicated");
 
                         expect(secMgr.listRoleServices())
-                                .andReturn(new TreeSet<String>(Arrays.asList("test", "test1")))
+                                .andReturn(new TreeSet<>(Arrays.asList("test", "test1")))
                                 .anyTimes();
 
                         replay(roleStore1, roleStore2, secMgr);
@@ -191,24 +209,23 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
                         expect(dataAccessRule.compareTo(dataAccessRule)).andReturn(0).anyTimes();
                         expect(dataAccessRule.getKey()).andReturn("foo").anyTimes();
                         expect(dataAccessRule.getRoles())
-                                .andReturn(new TreeSet<String>(Arrays.asList("role1")))
+                                .andReturn(new TreeSet<>(Arrays.asList("role1")))
                                 .anyTimes();
                         replay(dataAccessRule);
 
                         DataAccessRuleDAO dataAccessDAO = createNiceMock(DataAccessRuleDAO.class);
                         expect(dataAccessDAO.getRulesAssociatedWithRole("role1"))
-                                .andReturn(
-                                        new TreeSet<DataAccessRule>(Arrays.asList(dataAccessRule)))
+                                .andReturn(new TreeSet<>(Arrays.asList(dataAccessRule)))
                                 .anyTimes();
                         expect(dataAccessDAO.getRulesAssociatedWithRole("parent1"))
-                                .andReturn(new TreeSet<DataAccessRule>())
+                                .andReturn(new TreeSet<>())
                                 .anyTimes();
                         expect(secMgr.getDataAccessRuleDAO()).andReturn(dataAccessDAO).anyTimes();
 
                         ServiceAccessRuleDAO serviceAccessDAO =
                                 createNiceMock(ServiceAccessRuleDAO.class);
-                        expect(serviceAccessDAO.getRulesAssociatedWithRole((String) anyObject()))
-                                .andReturn(new TreeSet<ServiceAccessRule>())
+                        expect(serviceAccessDAO.getRulesAssociatedWithRole(anyObject()))
+                                .andReturn(new TreeSet<>())
                                 .anyTimes();
                         expect(secMgr.getServiceAccessRuleDAO())
                                 .andReturn(serviceAccessDAO)
@@ -254,7 +271,7 @@ public class RoleStoreValidationWrapperTest extends GeoServerMockTestSupport {
 
                         GeoServerRoleStore roleStore = createRoleStore("test", secMgr, "role1");
                         expect(roleStore.getGroupNamesForRole(new GeoServerRole("role1")))
-                                .andReturn(new TreeSet<String>(Arrays.asList("group1", "group2")))
+                                .andReturn(new TreeSet<>(Arrays.asList("group1", "group2")))
                                 .anyTimes();
 
                         replay(ugStore1, ugStore2, roleStore, secMgr);

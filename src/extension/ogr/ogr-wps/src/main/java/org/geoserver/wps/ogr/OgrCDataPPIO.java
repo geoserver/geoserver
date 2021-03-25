@@ -35,6 +35,7 @@ public class OgrCDataPPIO extends CDataPPIO {
     }
 
     @Override
+    @SuppressWarnings("unchecked") // EMF model without generics
     public void encode(Object value, OutputStream os) throws Exception {
         FeatureCollection<?, ?> features = (FeatureCollection<?, ?>) value;
         FeatureCollectionType fc = WfsFactory.eINSTANCE.createFeatureCollectionType();

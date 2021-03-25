@@ -23,7 +23,6 @@ import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.decorators.DecoratingLayerGroupInfo;
 import org.geotools.filter.expression.InternalVolatileFunction;
-import org.geotools.util.decorate.AbstractDecorator;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 
@@ -209,7 +208,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
 
     @Override
     protected <T extends ResourceInfo> List<T> filterResources(List<T> resources) {
-        List<T> filtered = new ArrayList<T>(resources.size());
+        List<T> filtered = new ArrayList<>(resources.size());
         for (T resource : resources) {
             resource = checkAccess(resource);
             if (resource != null) {
@@ -221,7 +220,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
 
     @Override
     protected List<LayerGroupInfo> filterGroups(List<LayerGroupInfo> groups) {
-        List<LayerGroupInfo> filtered = new ArrayList<LayerGroupInfo>(groups.size());
+        List<LayerGroupInfo> filtered = new ArrayList<>(groups.size());
         for (LayerGroupInfo group : groups) {
             group = checkAccess(group);
             if (group != null) {
@@ -233,7 +232,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
 
     @Override
     protected List<LayerInfo> filterLayers(List<LayerInfo> layers) {
-        List<LayerInfo> filtered = new ArrayList<LayerInfo>(layers.size());
+        List<LayerInfo> filtered = new ArrayList<>(layers.size());
         for (LayerInfo layer : layers) {
             layer = checkAccess(layer);
             if (layer != null) {
@@ -330,8 +329,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
     @Override
     public void save(LayerGroupInfo layerGroup) {
         if (layerGroup instanceof AdvertisedLayerGroup) {
-            AbstractDecorator<LayerGroupInfo> decorator =
-                    (AbstractDecorator<LayerGroupInfo>) layerGroup;
+            AdvertisedLayerGroup decorator = (AdvertisedLayerGroup) layerGroup;
             LayerGroupInfo unwrapped = decorator.unwrap(LayerGroupInfo.class);
             delegate.save(unwrapped);
         } else {

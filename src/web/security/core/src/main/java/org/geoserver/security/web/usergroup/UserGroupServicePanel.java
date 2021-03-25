@@ -76,7 +76,7 @@ public class UserGroupServicePanel<T extends SecurityUserGroupServiceConfig>
 
     @Override
     public List<ITab> createTabs(final IModel<T> model) {
-        List<ITab> tabs = new ArrayList<ITab>();
+        List<ITab> tabs = new ArrayList<>();
         tabs.add(
                 new AbstractTab(new StringResourceModel("users", this, null)) {
                     @Override
@@ -106,6 +106,7 @@ public class UserGroupServicePanel<T extends SecurityUserGroupServiceConfig>
         }
     }
 
+    @Override
     public void doLoad(T config) throws Exception {
         getSecurityManager().loadUserGroupServiceConfig(config.getName());
     }

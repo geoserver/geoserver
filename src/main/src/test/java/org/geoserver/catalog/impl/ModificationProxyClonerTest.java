@@ -4,7 +4,10 @@
  */
 package org.geoserver.catalog.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +26,7 @@ public class ModificationProxyClonerTest {
 
     @Test
     public void testCloneString() throws Exception {
-        String source = new String("abc");
+        String source = "abc";
         String copy = ModificationProxyCloner.clone(source);
         assertSame(source, copy);
     }

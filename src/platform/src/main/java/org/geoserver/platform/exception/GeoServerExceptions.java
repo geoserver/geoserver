@@ -58,7 +58,10 @@ public class GeoServerExceptions {
             // move up the hierarchy and try that
 
             if (IGeoServerException.class.isAssignableFrom(clazz.getSuperclass())) {
-                clazz = (Class<? extends IGeoServerException>) clazz.getSuperclass();
+                @SuppressWarnings("unchecked")
+                Class<? extends IGeoServerException> cast =
+                        (Class<? extends IGeoServerException>) clazz.getSuperclass();
+                clazz = cast;
             } else {
                 clazz = null;
             }
@@ -173,6 +176,7 @@ public class GeoServerExceptions {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public Enumeration<String> getKeys() {
             return (Enumeration) props.keys();
         }

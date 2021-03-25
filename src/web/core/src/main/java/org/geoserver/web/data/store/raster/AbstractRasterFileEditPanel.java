@@ -44,21 +44,21 @@ public abstract class AbstractRasterFileEditPanel extends StoreEditPanel {
             file =
                     new DirectoryParamPanel(
                             "url",
-                            new PropertyModel(model, "URL"),
+                            new PropertyModel<>(model, "URL"),
                             new ResourceModel("url", "URL"),
                             true);
         } else {
             file =
                     new FileParamPanel(
                             "url",
-                            new PropertyModel(model, "URL"),
+                            new PropertyModel<>(model, "URL"),
                             new ResourceModel("url", "URL"),
                             true);
         }
 
         file.getFormComponent().add(new FileExistsValidator());
         if (fileExtensions != null && fileExtensions.length > 0) {
-            file.setFileFilter(new Model(new ExtensionFileFilter(fileExtensions)));
+            file.setFileFilter(new Model<>(new ExtensionFileFilter(fileExtensions)));
         }
         add(file);
     }

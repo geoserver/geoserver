@@ -22,6 +22,7 @@ public class CustomGeoServerNodeIdTest extends GeoServerWicketTestSupport {
         GeoServerBasePage.NODE_INFO = null;
     }
 
+    @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
         springContextLocations.add("classpath*:/custom-gs-node-id-ctx.xml");
@@ -62,8 +63,7 @@ public class CustomGeoServerNodeIdTest extends GeoServerWicketTestSupport {
         @Override
         public void customize(WebMarkupContainer nodeInfoContainer) {
             if (STYLE != null) {
-                nodeInfoContainer.add(
-                        new AttributeAppender("style", new Model<String>(STYLE), ";"));
+                nodeInfoContainer.add(new AttributeAppender("style", new Model<>(STYLE), ";"));
             }
         }
     }

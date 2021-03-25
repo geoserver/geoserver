@@ -65,7 +65,7 @@ public class AliasStationsMockData extends StationsMockData {
     protected void writeInfoFileInternal(
             String namespacePrefix, String typeName, File featureTypeDir, String dataStoreName) {
         // prepare extra params default
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put(KEY_STYLE, "Default");
         params.put(KEY_SRS_HANDLINGS, 2);
         params.put(KEY_ALIAS, null);
@@ -76,51 +76,53 @@ public class AliasStationsMockData extends StationsMockData {
             File info = new File(featureTypeDir, "info.xml");
             info.delete();
             info.createNewFile();
-            FileWriter writer = new FileWriter(info);
-            writer.write("<featureType datastore=\"" + dataStoreName + "\">");
-            writer.write("<name>" + getLayerName(typeName) + "</name>");
-            writer.write("<nativeName>" + typeName + "</nativeName>");
-            if (params.get(KEY_ALIAS) != null)
-                writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
-            writer.write("<SRS>" + params.get(KEY_SRS_NUMBER) + "</SRS>");
-            // this mock type may have wrong SRS compared to the actual one in the property files...
-            // let's configure SRS handling not to alter the original one, and have 4326 used only
-            // for capabilities
-            writer.write("<SRSHandling>" + params.get(KEY_SRS_HANDLINGS) + "</SRSHandling>");
-            writer.write("<title>" + typeName + "</title>");
-            writer.write("<abstract>abstract about " + typeName + "</abstract>");
-            writer.write("<numDecimals value=\"8\"/>");
-            writer.write("<keywords>" + typeName + "</keywords>");
-            Envelope llEnvelope = (Envelope) params.get(KEY_LL_ENVELOPE);
-            if (llEnvelope == null) llEnvelope = DEFAULT_ENVELOPE;
-            writer.write(
-                    "<latLonBoundingBox dynamic=\"false\" minx=\""
-                            + llEnvelope.getMinX()
-                            + "\" miny=\""
-                            + llEnvelope.getMinY()
-                            + "\" maxx=\""
-                            + llEnvelope.getMaxX()
-                            + "\" maxy=\""
-                            + llEnvelope.getMaxY()
-                            + "\"/>");
-            Envelope nativeEnvelope = (Envelope) params.get(KEY_NATIVE_ENVELOPE);
-            if (nativeEnvelope != null)
+            try (FileWriter writer = new FileWriter(info)) {
+                writer.write("<featureType datastore=\"" + dataStoreName + "\">");
+                writer.write("<name>" + getLayerName(typeName) + "</name>");
+                writer.write("<nativeName>" + typeName + "</nativeName>");
+                if (params.get(KEY_ALIAS) != null)
+                    writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
+                writer.write("<SRS>" + params.get(KEY_SRS_NUMBER) + "</SRS>");
+                // this mock type may have wrong SRS compared to the actual one in the property
+                // files...
+                // let's configure SRS handling not to alter the original one, and have 4326 used
+                // only
+                // for capabilities
+                writer.write("<SRSHandling>" + params.get(KEY_SRS_HANDLINGS) + "</SRSHandling>");
+                writer.write("<title>" + typeName + "</title>");
+                writer.write("<abstract>abstract about " + typeName + "</abstract>");
+                writer.write("<numDecimals value=\"8\"/>");
+                writer.write("<keywords>" + typeName + "</keywords>");
+                Envelope llEnvelope = (Envelope) params.get(KEY_LL_ENVELOPE);
+                if (llEnvelope == null) llEnvelope = DEFAULT_ENVELOPE;
                 writer.write(
-                        "<nativeBBox dynamic=\"false\" minx=\""
-                                + nativeEnvelope.getMinX()
+                        "<latLonBoundingBox dynamic=\"false\" minx=\""
+                                + llEnvelope.getMinX()
                                 + "\" miny=\""
-                                + nativeEnvelope.getMinY()
+                                + llEnvelope.getMinY()
                                 + "\" maxx=\""
-                                + nativeEnvelope.getMaxX()
+                                + llEnvelope.getMaxX()
                                 + "\" maxy=\""
-                                + nativeEnvelope.getMaxY()
+                                + llEnvelope.getMaxY()
                                 + "\"/>");
-            String style = (String) params.get(KEY_STYLE);
-            if (style == null) style = "Default";
-            writer.write("<styles default=\"" + style + "\"/>");
-            writer.write("</featureType>");
-            writer.flush();
-            writer.close();
+                Envelope nativeEnvelope = (Envelope) params.get(KEY_NATIVE_ENVELOPE);
+                if (nativeEnvelope != null)
+                    writer.write(
+                            "<nativeBBox dynamic=\"false\" minx=\""
+                                    + nativeEnvelope.getMinX()
+                                    + "\" miny=\""
+                                    + nativeEnvelope.getMinY()
+                                    + "\" maxx=\""
+                                    + nativeEnvelope.getMaxX()
+                                    + "\" maxy=\""
+                                    + nativeEnvelope.getMaxY()
+                                    + "\"/>");
+                String style = (String) params.get(KEY_STYLE);
+                if (style == null) style = "Default";
+                writer.write("<styles default=\"" + style + "\"/>");
+                writer.write("</featureType>");
+                writer.flush();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

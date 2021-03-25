@@ -20,7 +20,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 /**
  * Bean used to register module installation in applicationContext.xml.
  *
- * <p>Bean completly defined by applicationContext.xml - no dynamic content.
+ * <p>Bean completely defined by applicationContext.xml - no dynamic content.
  *
  * <pre>
  * &lt!-- code example needed --&gt;>
@@ -83,6 +83,7 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     }
 
     /** @return the machine readable name */
+    @Override
     public String getModule() {
         return module;
     }
@@ -92,6 +93,7 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
         this.module = module;
     }
 
+    @Override
     public Optional<String> getComponent() {
         return Optional.ofNullable(component);
     }
@@ -102,6 +104,7 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     }
 
     /** @return the name */
+    @Override
     public String getName() {
         return name;
     }
@@ -112,6 +115,7 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     }
 
     /** @return the version */
+    @Override
     public Optional<String> getVersion() {
         return Optional.ofNullable(version);
     }
@@ -199,7 +203,9 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Error listing pom.properties", e);
         }
-        if (matches.size() >= 1) {
+        if (matches.isEmpty()) {
+            return null;
+        } else {
             if (matches.size() > 1) {
                 LOGGER.log(
                         Level.WARNING,
@@ -211,6 +217,5 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
             }
             return matches.get(0).getProperty("version");
         }
-        return null;
     }
 }

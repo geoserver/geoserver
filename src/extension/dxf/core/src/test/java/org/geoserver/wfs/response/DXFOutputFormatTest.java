@@ -6,7 +6,7 @@
 package org.geoserver.wfs.response;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -37,7 +37,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
     private void checkSequence(String dxf, String[] sequence, int pos) {
         for (String item : sequence) {
             pos = dxf.indexOf(item, pos + 1);
-            assertTrue(pos != -1);
+            assertNotEquals(pos, -1);
         }
     }
 
@@ -78,7 +78,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
                         "wfs?request=GetFeature&version=1.1.0&typeName=Points&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "Points");
         int pos = getGeometrySearchStart(sResponse);
-        assertTrue(pos != -1);
+        assertNotEquals(pos, -1);
         checkSequence(sResponse, new String[] {"POINT"}, pos);
     }
     /** Test a MultiPoint geometry. */
@@ -89,7 +89,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
                         "wfs?request=GetFeature&version=1.1.0&typeName=MPoints&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "MPoints");
         int pos = getGeometrySearchStart(sResponse);
-        assertTrue(pos != -1);
+        assertNotEquals(pos, -1);
         // has to insert two points
         checkSequence(sResponse, new String[] {"POINT", "POINT"}, pos);
     }
@@ -102,7 +102,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
                         "wfs?request=GetFeature&version=1.1.0&typeName=Lines&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "Lines");
         int pos = getGeometrySearchStart(sResponse);
-        assertTrue(pos != -1);
+        assertNotEquals(pos, -1);
         checkSequence(sResponse, new String[] {"LWPOLYLINE"}, pos);
     }
 
@@ -114,7 +114,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
                         "wfs?request=GetFeature&version=1.1.0&typeName=MLines&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "MLines");
         int pos = getGeometrySearchStart(sResponse);
-        assertTrue(pos != -1);
+        assertNotEquals(pos, -1);
         // has to insert two lwpolyline
         checkSequence(sResponse, new String[] {"LWPOLYLINE", "LWPOLYLINE"}, pos);
     }
@@ -127,7 +127,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
                         "wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "Polygons");
         int pos = getGeometrySearchStart(sResponse);
-        assertTrue(pos != -1);
+        assertNotEquals(pos, -1);
         // has to insert an lwpolyline
         checkSequence(sResponse, new String[] {"LWPOLYLINE"}, pos);
     }
@@ -140,7 +140,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
                         "wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf&format_options=withattributes:true");
         String sResponse = testBasicResult(resp, "Polygons");
         int pos = getGeometrySearchStart(sResponse);
-        assertTrue(pos != -1);
+        assertNotEquals(pos, -1);
         // has to insert an attribute
         checkSequence(sResponse, new String[] {"ATTRIB", "AcDbAttribute"}, pos);
     }
@@ -153,7 +153,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
                         "wfs?request=GetFeature&version=1.1.0&typeName=Polygons&outputFormat=dxf&format_options=withattributes:true");
         String sResponse = testBasicResult(resp, "Polygons");
         int pos = getGeometrySearchStart(sResponse);
-        assertTrue(pos != -1);
+        assertNotEquals(pos, -1);
         // has to insert an attribute
         checkSequence(
                 sResponse,
@@ -181,7 +181,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
                         "wfs?request=GetFeature&version=1.1.0&typeName=MPolygons&outputFormat=dxf");
         String sResponse = testBasicResult(resp, "MPolygons");
         int pos = getGeometrySearchStart(sResponse);
-        assertTrue(pos != -1);
+        assertNotEquals(pos, -1);
         // has to insert two lwpolyline
         checkSequence(sResponse, new String[] {"LWPOLYLINE", "LWPOLYLINE"}, pos);
     }
@@ -226,7 +226,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
             String sResponse = resp.getContentAsString();
             assertNotNull(sResponse);
             // no insert block generated
-            assertFalse(sResponse.indexOf("INSERT") != -1);
+            assertEquals(sResponse.indexOf("INSERT"), -1);
             // geometry as blocks true
             resp =
                     getAsServletResponse(
@@ -234,7 +234,7 @@ public class DXFOutputFormatTest extends WFSTestSupport {
             sResponse = resp.getContentAsString();
             assertNotNull(sResponse);
             // one insert block generated
-            assertTrue(sResponse.indexOf("INSERT") != -1);
+            assertNotEquals(sResponse.indexOf("INSERT"), -1);
         } catch (Throwable t) {
             fail(t.getMessage());
         }
@@ -258,14 +258,14 @@ public class DXFOutputFormatTest extends WFSTestSupport {
             sResponse = resp.getContentAsString();
             assertNotNull(sResponse);
             // has to return an exception
-            assertTrue(sResponse.indexOf("</ows:ExceptionReport>") != -1);
+            assertNotEquals(sResponse.indexOf("</ows:ExceptionReport>"), -1);
         } catch (Throwable t) {
             fail(t.getMessage());
         }
     }
 
     /** Test basic extension functionality: mime/type, headers, not empty output generation. */
-    public String testBasicResult(MockHttpServletResponse resp, String featureName)
+    protected String testBasicResult(MockHttpServletResponse resp, String featureName)
             throws Exception {
         // check mime type
         assertEquals("application/dxf", resp.getContentType());

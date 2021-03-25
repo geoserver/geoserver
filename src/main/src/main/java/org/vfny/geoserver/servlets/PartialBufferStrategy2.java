@@ -32,6 +32,7 @@ public class PartialBufferStrategy2 implements ServiceStrategy {
     private PartialBufferedOutputStream2 out = null;
     private int bufferSize;
 
+    @Override
     public String getId() {
         return "PARTIAL-BUFFER2";
     }
@@ -53,6 +54,7 @@ public class PartialBufferStrategy2 implements ServiceStrategy {
      *
      * @see org.vfny.geoserver.servlets.AbstractService.ServiceStrategy#getDestination(javax.servlet.http.HttpServletResponse)
      */
+    @Override
     public DispatcherOutputStream getDestination(HttpServletResponse response) throws IOException {
         out = new PartialBufferedOutputStream2(response, bufferedSize());
 
@@ -64,6 +66,7 @@ public class PartialBufferStrategy2 implements ServiceStrategy {
      *
      * @see org.vfny.geoserver.servlets.AbstractService.ServiceStrategy#flush()
      */
+    @Override
     public void flush(HttpServletResponse response) throws IOException {
         if (out != null) {
             out.forceFlush();
@@ -76,6 +79,7 @@ public class PartialBufferStrategy2 implements ServiceStrategy {
      *
      * @see org.vfny.geoserver.servlets.AbstractService.ServiceStrategy#abort()
      */
+    @Override
     public void abort() {
         if (out != null) {
             try {
@@ -87,11 +91,11 @@ public class PartialBufferStrategy2 implements ServiceStrategy {
                 }
             } catch (IOException e) {
                 LOGGER.warning("Error aborting OutputStream");
-                e.printStackTrace();
             }
         }
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         PartialBufferStrategy2 clone = new PartialBufferStrategy2();
         clone.bufferSize = bufferSize;

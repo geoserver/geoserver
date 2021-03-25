@@ -42,7 +42,7 @@ public class CssHandler extends StyleHandler {
 
     public static final String MIME_TYPE = "application/vnd.geoserver.geocss+css";
 
-    static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
+    static final Map<StyleType, String> TEMPLATES = new HashMap<>();
 
     static {
         try {

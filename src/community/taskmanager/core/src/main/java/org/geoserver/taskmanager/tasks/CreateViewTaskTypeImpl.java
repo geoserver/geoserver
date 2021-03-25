@@ -36,6 +36,7 @@ public class CreateViewTaskTypeImpl extends AbstractCreateViewTaskTypeImpl {
         paramInfo.put(PARAM_WHERE, new ParameterInfo(PARAM_WHERE, ParameterType.SQL, false));
     }
 
+    @Override
     public String buildQueryDefinition(TaskContext ctx, BatchContext.Dependency dependency)
             throws TaskException {
         final DbTable table =

@@ -8,7 +8,6 @@ package org.geoserver.wfs;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -109,8 +108,7 @@ public class LockFeature {
             // in order to allow for both "all" and "some" lock behaviour
             // TODO: if the lock is the default this default, lock the whole
             // query directly, should be a lot faster
-            for (int i = 0, n = locks.size(); i < n; i++) {
-                Lock lock = locks.get(i);
+            for (Lock lock : locks) {
                 LOGGER.info("curLock is " + lock);
 
                 QName typeName = lock.getTypeName();
@@ -194,7 +192,7 @@ public class LockFeature {
                             Query query =
                                     new Query(
                                             meta.getName(),
-                                            (Filter) fidFilter,
+                                            fidFilter,
                                             Query.DEFAULT_MAX,
                                             Query.ALL_NAMES,
                                             lock.getHandle());
@@ -308,8 +306,8 @@ public class LockFeature {
         try {
             List dataStores = catalog.getDataStores();
 
-            for (Iterator i = dataStores.iterator(); i.hasNext(); ) {
-                DataStoreInfo meta = (DataStoreInfo) i.next();
+            for (Object store : dataStores) {
+                DataStoreInfo meta = (DataStoreInfo) store;
                 DataStore dataStore = null;
 
                 // TODO: support locking for DataAccess
@@ -330,8 +328,7 @@ public class LockFeature {
                     continue; // locks not supported
                 }
 
-                org.geotools.data.Transaction t =
-                        new DefaultTransaction("Refresh " + meta.getWorkspace().getName());
+                Transaction t = new DefaultTransaction("Refresh " + meta.getWorkspace().getName());
 
                 try {
                     t.addAuthorization(lockId);
@@ -362,8 +359,8 @@ public class LockFeature {
         try {
             List dataStores = catalog.getDataStores();
 
-            for (Iterator i = dataStores.iterator(); i.hasNext(); ) {
-                DataStoreInfo meta = (DataStoreInfo) i.next();
+            for (Object store : dataStores) {
+                DataStoreInfo meta = (DataStoreInfo) store;
                 DataStore dataStore = null;
 
                 // TODO: support locking for DataAccess
@@ -396,8 +393,8 @@ public class LockFeature {
         try {
             List dataStores = catalog.getDataStores();
 
-            for (Iterator i = dataStores.iterator(); i.hasNext(); ) {
-                DataStoreInfo meta = (DataStoreInfo) i.next();
+            for (Object store : dataStores) {
+                DataStoreInfo meta = (DataStoreInfo) store;
                 DataStore dataStore = null;
 
                 // TODO: support locking for DataAccess
@@ -437,8 +434,8 @@ public class LockFeature {
 
             // check for lock existance
 
-            for (Iterator i = dataStores.iterator(); i.hasNext(); ) {
-                DataStoreInfo meta = (DataStoreInfo) i.next();
+            for (Object store : dataStores) {
+                DataStoreInfo meta = (DataStoreInfo) store;
                 DataStore dataStore = null;
 
                 // TODO: support locking for DataAccess
@@ -470,8 +467,7 @@ public class LockFeature {
                     }
                 }
 
-                org.geotools.data.Transaction t =
-                        new DefaultTransaction("Refresh " + meta.getWorkspace().getName());
+                Transaction t = new DefaultTransaction("Refresh " + meta.getWorkspace().getName());
 
                 try {
                     t.addAuthorization(lockId);
@@ -511,7 +507,7 @@ public class LockFeature {
     }
 
     private Id fidFilter(FeatureId fid) {
-        HashSet ids = new HashSet();
+        Set<FeatureId> ids = new HashSet<>();
         ids.add(fid);
 
         return filterFactory.id(ids);

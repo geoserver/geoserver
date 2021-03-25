@@ -5,7 +5,7 @@
  */
 package org.geoserver.ows.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,9 +15,9 @@ public class CaseInsensitiveMapTest {
 
     @Test
     public void testWholeMap() {
-        Map source = new HashMap();
+        Map<String, String> source = new HashMap<>();
         source.put("AbC", "test");
-        CaseInsensitiveMap cim = new CaseInsensitiveMap(source);
+        CaseInsensitiveMap<String, String> cim = new CaseInsensitiveMap<>(source);
         assertEquals("test", cim.get("abc"));
     }
 }

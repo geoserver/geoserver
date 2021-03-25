@@ -55,19 +55,18 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         final CoverageInfo coverage = (CoverageInfo) getPublishedInfo().getResource();
         add(
-                new ListMultipleChoice<String>(
+                new ListMultipleChoice<>(
                         "requestSRS",
                         new PropertyModel<List<String>>(this, "selectedRequestSRSs"),
                         coverage.getRequestSRS()));
 
-        add(
-                new TextField<String>(
-                        "newRequestSRS", new PropertyModel<String>(this, "newRequestSRS")));
+        add(new TextField<>("newRequestSRS", new PropertyModel<>(this, "newRequestSRS")));
 
         add(
                 new Button("deleteSelectedRequestSRSs") {
                     private static final long serialVersionUID = 8363252127939759315L;
 
+                    @Override
                     public void onSubmit() {
                         coverage.getRequestSRS().removeAll(selectedRequestSRSs);
                         selectedRequestSRSs.clear();
@@ -78,6 +77,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new Button("addNewRequestSRS") {
                     private static final long serialVersionUID = -3493317500980471055L;
 
+                    @Override
                     public void onSubmit() {
                         coverage.getRequestSRS().add(newRequestSRS);
                         newRequestSRS = "";
@@ -85,19 +85,18 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 });
 
         add(
-                new ListMultipleChoice<String>(
+                new ListMultipleChoice<>(
                         "responseSRS",
                         new PropertyModel<List<String>>(this, "selectedResponseSRSs"),
                         coverage.getResponseSRS()));
 
-        add(
-                new TextField<String>(
-                        "newResponseSRS", new PropertyModel<String>(this, "newResponseSRS")));
+        add(new TextField<>("newResponseSRS", new PropertyModel<>(this, "newResponseSRS")));
 
         add(
                 new Button("deleteSelectedResponseSRSs") {
                     private static final long serialVersionUID = -8727831157546262491L;
 
+                    @Override
                     public void onSubmit() {
                         coverage.getResponseSRS().removeAll(selectedResponseSRSs);
                         selectedResponseSRSs.clear();
@@ -108,6 +107,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 new Button("addNewResponseSRS") {
                     private static final long serialVersionUID = -2888152896129259019L;
 
+                    @Override
                     public void onSubmit() {
                         coverage.getResponseSRS().add(newResponseSRS);
                         newResponseSRS = "";
@@ -115,9 +115,9 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                 });
 
         add(
-                new DropDownChoice<String>(
+                new DropDownChoice<>(
                         "defaultInterpolationMethod",
-                        new PropertyModel<String>(coverage, "defaultInterpolationMethod"),
+                        new PropertyModel<>(coverage, "defaultInterpolationMethod"),
                         new WCSInterpolationModel()));
 
         Palette<String> interpolationMethods =
@@ -126,7 +126,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         LiveCollectionModel.list(
                                 new PropertyModel<List<String>>(coverage, "interpolationMethods")),
                         new WCSInterpolationModel(),
-                        new SimpleChoiceRenderer(),
+                        new SimpleChoiceRenderer<>(),
                         7,
                         false) {
                     private static final long serialVersionUID = 6815545819673802290L;
@@ -152,8 +152,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         // don't allow editing the native format
         TextField<String> nativeFormat =
-                new TextField<String>(
-                        "nativeFormat", new PropertyModel<String>(coverage, "nativeFormat"));
+                new TextField<>("nativeFormat", new PropertyModel<>(coverage, "nativeFormat"));
         nativeFormat.setEnabled(false);
         add(nativeFormat);
 
@@ -163,7 +162,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                         LiveCollectionModel.list(
                                 new PropertyModel<List<String>>(coverage, "supportedFormats")),
                         new WCSFormatsModel(),
-                        new SimpleChoiceRenderer(),
+                        new SimpleChoiceRenderer<>(),
                         10,
                         false) {
                     private static final long serialVersionUID = -2463012775305597908L;
@@ -191,12 +190,12 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         private static final long serialVersionUID = 1802421566341456007L;
 
         WCSFormatsModel() {
-            super(new ArrayList<String>(WCS_FORMATS));
+            super(new ArrayList<>(WCS_FORMATS));
         }
 
         @Override
         protected ArrayList<String> load() {
-            return new ArrayList<String>(WCS_FORMATS);
+            return new ArrayList<>(WCS_FORMATS);
         }
     }
 
@@ -205,12 +204,12 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         private static final long serialVersionUID = 7328612985196203413L;
 
         WCSInterpolationModel() {
-            super(new ArrayList<String>(INTERPOLATIONS));
+            super(new ArrayList<>(INTERPOLATIONS));
         }
 
         @Override
         protected ArrayList<String> load() {
-            return new ArrayList<String>(INTERPOLATIONS);
+            return new ArrayList<>(INTERPOLATIONS);
         }
     }
 }

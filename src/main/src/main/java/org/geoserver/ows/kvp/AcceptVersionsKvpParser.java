@@ -20,14 +20,16 @@ import org.geotools.xsd.EMFUtils;
  */
 public abstract class AcceptVersionsKvpParser extends KvpParser {
 
-    public AcceptVersionsKvpParser(Class clazz) {
+    public AcceptVersionsKvpParser(Class<?> clazz) {
         super("acceptversions", clazz);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
         EObject acceptVersions = createObject();
-        ((Collection) EMFUtils.get(acceptVersions, "version"))
-                .addAll(KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER));
+        @SuppressWarnings("unchecked")
+        Collection<String> versions = (Collection<String>) EMFUtils.get(acceptVersions, "version");
+        versions.addAll(KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER));
         return acceptVersions;
     }
 

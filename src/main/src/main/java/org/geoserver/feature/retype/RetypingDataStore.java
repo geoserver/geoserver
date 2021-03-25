@@ -49,11 +49,9 @@ public class RetypingDataStore extends DecoratingDataStore {
 
     private DataStore wrapped;
 
-    protected volatile Map<String, FeatureTypeMap> forwardMap =
-            new ConcurrentHashMap<String, FeatureTypeMap>();
+    protected volatile Map<String, FeatureTypeMap> forwardMap = new ConcurrentHashMap<>();
 
-    protected volatile Map<String, FeatureTypeMap> backwardsMap =
-            new ConcurrentHashMap<String, FeatureTypeMap>();
+    protected volatile Map<String, FeatureTypeMap> backwardsMap = new ConcurrentHashMap<>();
 
     public RetypingDataStore(DataStore wrapped) throws IOException {
         super(wrapped);
@@ -66,21 +64,25 @@ public class RetypingDataStore extends DecoratingDataStore {
         return unwrap(DataStore.class);
     }
 
+    @Override
     public void createSchema(SimpleFeatureType featureType) throws IOException {
         throw new UnsupportedOperationException(
                 "GeoServer does not support schema creation at the moment");
     }
 
+    @Override
     public void updateSchema(String typeName, SimpleFeatureType featureType) throws IOException {
         throw new UnsupportedOperationException(
                 "GeoServer does not support schema updates at the moment");
     }
 
+    @Override
     public void removeSchema(String typeName) throws IOException {
         throw new UnsupportedOperationException(
                 "GeoServer does not support schema removal at the moment");
     }
 
+    @Override
     public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(
             String typeName, Filter filter, Transaction transaction) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, true);
@@ -91,26 +93,29 @@ public class RetypingDataStore extends DecoratingDataStore {
         return new RetypingFeatureCollection.RetypingFeatureWriter(writer, map.getFeatureType());
     }
 
+    @Override
     public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(
             String typeName, Transaction transaction) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, true);
         updateMap(map, false);
-        FeatureWriter<SimpleFeatureType, SimpleFeature> writer;
-        writer = wrapped.getFeatureWriter(map.getOriginalName(), transaction);
+        FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
+                wrapped.getFeatureWriter(map.getOriginalName(), transaction);
         if (map.isUnchanged()) return writer;
         return new RetypingFeatureCollection.RetypingFeatureWriter(writer, map.getFeatureType());
     }
 
+    @Override
     public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriterAppend(
             String typeName, Transaction transaction) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, true);
         updateMap(map, false);
-        FeatureWriter<SimpleFeatureType, SimpleFeature> writer;
-        writer = wrapped.getFeatureWriterAppend(map.getOriginalName(), transaction);
+        FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
+                wrapped.getFeatureWriterAppend(map.getOriginalName(), transaction);
         if (map.isUnchanged()) return writer;
         return new RetypingFeatureCollection.RetypingFeatureWriter(writer, map.getFeatureType());
     }
 
+    @Override
     public SimpleFeatureType getSchema(String typeName) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, false);
         if (map == null) throw new IOException("Unknown type " + typeName);
@@ -118,21 +123,19 @@ public class RetypingDataStore extends DecoratingDataStore {
         return map.getFeatureType();
     }
 
+    @Override
     public String[] getTypeNames() throws IOException {
         // here we transform the names, and also refresh the type maps so that
         // they don't contain stale elements
         String[] names = wrapped.getTypeNames();
-        List<String> transformedNames = new ArrayList<String>();
-        Map<String, FeatureTypeMap> backup = new HashMap<String, FeatureTypeMap>(forwardMap);
+        List<String> transformedNames = new ArrayList<>();
+        Map<String, FeatureTypeMap> backup = new HashMap<>(forwardMap);
 
         // Populate local hashmaps with new values.
-        Map<String, FeatureTypeMap> forwardMapLocal =
-                new ConcurrentHashMap<String, FeatureTypeMap>();
-        Map<String, FeatureTypeMap> backwardsMapLocal =
-                new ConcurrentHashMap<String, FeatureTypeMap>();
+        Map<String, FeatureTypeMap> forwardMapLocal = new ConcurrentHashMap<>();
+        Map<String, FeatureTypeMap> backwardsMapLocal = new ConcurrentHashMap<>();
 
-        for (int i = 0; i < names.length; i++) {
-            String original = names[i];
+        for (String original : names) {
             String transformedName = transformFeatureTypeName(original);
             if (transformedName != null) {
                 transformedNames.add(transformedName);
@@ -150,20 +153,22 @@ public class RetypingDataStore extends DecoratingDataStore {
         forwardMap = forwardMapLocal;
         backwardsMap = backwardsMapLocal;
 
-        return (String[]) transformedNames.toArray(new String[transformedNames.size()]);
+        return transformedNames.toArray(new String[transformedNames.size()]);
     }
 
+    @Override
     public FeatureReader<SimpleFeatureType, SimpleFeature> getFeatureReader(
             Query query, Transaction transaction) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(query.getTypeName(), true);
         updateMap(map, false);
-        FeatureReader<SimpleFeatureType, SimpleFeature> reader;
-        reader = wrapped.getFeatureReader(retypeQuery(query, map), transaction);
+        FeatureReader<SimpleFeatureType, SimpleFeature> reader =
+                wrapped.getFeatureReader(retypeQuery(query, map), transaction);
         if (map.isUnchanged()) return reader;
         return new RetypingFeatureCollection.RetypingFeatureReader(
                 reader, map.getFeatureType(query));
     }
 
+    @Override
     public SimpleFeatureSource getFeatureSource(String typeName) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, true);
         updateMap(map, false);
@@ -179,6 +184,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return new RetypingFeatureSource(this, source, map);
     }
 
+    @Override
     public LockingManager getLockingManager() {
         return wrapped.getLockingManager();
     }
@@ -186,7 +192,7 @@ public class RetypingDataStore extends DecoratingDataStore {
     /** Returns the type map given the external type name */
     FeatureTypeMap getTypeMapBackwards(String externalTypeName, boolean checkMap)
             throws IOException {
-        FeatureTypeMap map = (FeatureTypeMap) backwardsMap.get(externalTypeName);
+        FeatureTypeMap map = backwardsMap.get(externalTypeName);
         if (map == null && checkMap)
             throw new IOException(
                     "Type mapping has not been established for type  "
@@ -246,6 +252,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return originalName.replaceAll(":", "_");
     }
 
+    @Override
     public void dispose() {
         wrapped.dispose();
     }
@@ -259,7 +266,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         if (!joins.isEmpty()) {
             modified.getJoins().clear();
             for (Join join : joins) {
-                FeatureTypeMap map = (FeatureTypeMap) backwardsMap.get(join.getTypeName());
+                FeatureTypeMap map = backwardsMap.get(join.getTypeName());
                 if (map == null) {
                     // nothing we can do about it
                     modified.getJoins().add(join);
@@ -285,6 +292,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return (Filter) filter.accept(visitor, null);
     }
 
+    @Override
     public ServiceInfo getInfo() {
         return wrapped.getInfo();
     }
@@ -295,6 +303,7 @@ public class RetypingDataStore extends DecoratingDataStore {
      * @since 2.5
      * @see DataAccess#getFeatureSource(Name)
      */
+    @Override
     public SimpleFeatureSource getFeatureSource(Name typeName) throws IOException {
         return getFeatureSource(typeName.getLocalPart());
     }
@@ -306,9 +315,10 @@ public class RetypingDataStore extends DecoratingDataStore {
      * @since 1.7
      * @see DataAccess#getNames()
      */
+    @Override
     public List<Name> getNames() throws IOException {
         String[] typeNames = getTypeNames();
-        List<Name> names = new ArrayList<Name>(typeNames.length);
+        List<Name> names = new ArrayList<>(typeNames.length);
         for (String typeName : typeNames) {
             names.add(new NameImpl(typeName));
         }
@@ -321,6 +331,7 @@ public class RetypingDataStore extends DecoratingDataStore {
      * @since 1.7
      * @see DataAccess#getSchema(Name)
      */
+    @Override
     public SimpleFeatureType getSchema(Name name) throws IOException {
         return getSchema(name.getLocalPart());
     }
@@ -332,11 +343,13 @@ public class RetypingDataStore extends DecoratingDataStore {
      * @since 1.7
      * @see DataAccess#getFeatureSource(Name)
      */
+    @Override
     public void updateSchema(Name typeName, SimpleFeatureType featureType) throws IOException {
         updateSchema(typeName.getLocalPart(), featureType);
     }
 
     /** Delegates to {@link #removeSchema(String)} with {@code name.getLocalPart()} */
+    @Override
     public void removeSchema(Name typeName) throws IOException {
         removeSchema(typeName.getLocalPart());
     }

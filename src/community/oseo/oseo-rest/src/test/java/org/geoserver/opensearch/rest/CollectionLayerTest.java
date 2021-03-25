@@ -5,12 +5,12 @@
 package org.geoserver.opensearch.rest;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.awt.image.BufferedImage;
@@ -194,9 +194,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         // ... its style is a gray one based on the RED band
         assertThat(layer.getDefaultStyle().prefixedName(), equalTo("gs:test123"));
         ChannelSelection cs = getChannelSelection(layer);
-        assertNull(cs.getRGBChannels()[0]);
-        assertNull(cs.getRGBChannels()[1]);
-        assertNull(cs.getRGBChannels()[2]);
+        assertNull(cs.getRGBChannels());
         assertEquals("1", cs.getGrayChannel().getChannelName().evaluate(null, String.class));
 
         BufferedImage image =
@@ -373,9 +371,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
         assertThat(layer.getDefaultStyle().prefixedName(), equalTo("gs:test123"));
         // ... and it uses only a gray band, the snow flag
         ChannelSelection cs = getChannelSelection(layer);
-        assertNull(cs.getRGBChannels()[0]);
-        assertNull(cs.getRGBChannels()[1]);
-        assertNull(cs.getRGBChannels()[2]);
+        assertNull(cs.getRGBChannels());
         assertEquals("7", cs.getGrayChannel().getChannelName().evaluate(null, String.class));
 
         // the image is almost black, but not fully

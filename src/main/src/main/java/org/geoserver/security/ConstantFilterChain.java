@@ -20,6 +20,7 @@ public class ConstantFilterChain extends RequestFilterChain {
         super(patterns);
     }
 
+    @Override
     public boolean isConstant() {
         return true;
     }

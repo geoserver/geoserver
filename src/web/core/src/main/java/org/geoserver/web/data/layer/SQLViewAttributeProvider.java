@@ -24,12 +24,12 @@ public class SQLViewAttributeProvider extends GeoServerDataProvider<SQLViewAttri
 
     static final Logger LOGGER = Logging.getLogger(SQLViewAttribute.class);
 
-    static final Property<SQLViewAttribute> NAME =
-            new BeanProperty<SQLViewAttribute>("name", "name");
+    static final Property<SQLViewAttribute> NAME = new BeanProperty<>("name", "name");
 
     static final Property<SQLViewAttribute> TYPE =
             new AbstractProperty<SQLViewAttribute>("type") {
 
+                @Override
                 public Object getPropertyValue(SQLViewAttribute item) {
                     if (item.getType() != null) {
                         return item.getType().getSimpleName();
@@ -38,12 +38,11 @@ public class SQLViewAttributeProvider extends GeoServerDataProvider<SQLViewAttri
                 }
             };
 
-    static final Property<SQLViewAttribute> SRID =
-            new BeanProperty<SQLViewAttribute>("srid", "srid");
+    static final Property<SQLViewAttribute> SRID = new BeanProperty<>("srid", "srid");
 
-    static final Property<SQLViewAttribute> PK = new BeanProperty<SQLViewAttribute>("pk", "pk");
+    static final Property<SQLViewAttribute> PK = new BeanProperty<>("pk", "pk");
 
-    List<SQLViewAttribute> attributes = new ArrayList<SQLViewAttribute>();
+    List<SQLViewAttribute> attributes = new ArrayList<>();
 
     public SQLViewAttributeProvider() {
         setEditable(true);
@@ -93,7 +92,7 @@ public class SQLViewAttributeProvider extends GeoServerDataProvider<SQLViewAttri
     /** Sets the geometries details and the primary key columns into the virtual table */
     @SuppressWarnings("unchecked")
     public void fillVirtualTable(VirtualTable vt) {
-        List<String> pks = new ArrayList<String>();
+        List<String> pks = new ArrayList<>();
         for (SQLViewAttribute att : attributes) {
             if (Geometry.class.isAssignableFrom(att.getType())) {
                 if (att.getSrid() == null) {
@@ -110,7 +109,7 @@ public class SQLViewAttributeProvider extends GeoServerDataProvider<SQLViewAttri
                 pks.add(att.getName());
             }
         }
-        if (pks.size() > 0) {
+        if (!pks.isEmpty()) {
             vt.setPrimaryKeyColumns(pks);
         }
     }

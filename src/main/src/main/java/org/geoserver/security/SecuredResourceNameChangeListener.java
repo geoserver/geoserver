@@ -9,7 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.catalog.*;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogException;
+import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
@@ -171,7 +177,7 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
 
     private List<DataAccessRule> getDataAccessRule(CatalogInfo catalogInfo, String oldName) {
         List<DataAccessRule> rules = this.dao.getRules();
-        List<DataAccessRule> rulesToUpdate = new ArrayList<DataAccessRule>();
+        List<DataAccessRule> rulesToUpdate = new ArrayList<>();
 
         for (DataAccessRule rule : rules) {
             if (catalogInfo instanceof WorkspaceInfo) {

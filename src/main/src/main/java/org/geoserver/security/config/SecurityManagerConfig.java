@@ -27,7 +27,7 @@ public class SecurityManagerConfig implements SecurityConfig {
     private static final long serialVersionUID = 1L;
 
     private String roleServiceName;
-    private List<String> authProviderNames = new ArrayList<String>();
+    private List<String> authProviderNames = new ArrayList<>();
     private String configPasswordEncrypterName;
     private boolean encryptingUrlParams;
 
@@ -41,7 +41,7 @@ public class SecurityManagerConfig implements SecurityConfig {
         this.roleServiceName = config.getRoleServiceName();
         this.authProviderNames =
                 config.getAuthProviderNames() != null
-                        ? new ArrayList<String>(config.getAuthProviderNames())
+                        ? new ArrayList<>(config.getAuthProviderNames())
                         : null;
         this.filterChain =
                 config.getFilterChain() != null
@@ -57,7 +57,7 @@ public class SecurityManagerConfig implements SecurityConfig {
     }
 
     private Object readResolve() {
-        authProviderNames = authProviderNames != null ? authProviderNames : new ArrayList<String>();
+        authProviderNames = authProviderNames != null ? authProviderNames : new ArrayList<>();
         filterChain = filterChain != null ? filterChain : new GeoServerSecurityFilterChain();
         rememberMeService =
                 rememberMeService != null ? rememberMeService : new RememberMeServicesConfig();
@@ -133,12 +133,12 @@ public class SecurityManagerConfig implements SecurityConfig {
         final GeoServerEnvironment gsEnvironment =
                 GeoServerExtensions.bean(GeoServerEnvironment.class);
 
-        SecurityManagerConfig target = (SecurityManagerConfig) SerializationUtils.clone(this);
+        SecurityManagerConfig target = SerializationUtils.clone(this);
 
         if (target != null) {
             if (allowEnvParametrization
                     && gsEnvironment != null
-                    && GeoServerEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+                    && GeoServerEnvironment.allowEnvParametrization()) {
                 target.setConfigPasswordEncrypterName(
                         (String) gsEnvironment.resolveValue(configPasswordEncrypterName));
                 target.setRoleServiceName((String) gsEnvironment.resolveValue(roleServiceName));

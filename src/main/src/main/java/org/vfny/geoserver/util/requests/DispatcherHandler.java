@@ -70,6 +70,7 @@ public class DispatcherHandler extends XMLFilterImpl implements ContentHandler {
      * @param rawName Raw name of element.
      * @param atts Element attributes.
      */
+    @Override
     public void startElement(String namespaceURI, String localName, String rawName, Attributes atts)
             throws SAXException {
         if (gotType) {

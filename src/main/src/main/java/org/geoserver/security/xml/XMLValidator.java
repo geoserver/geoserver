@@ -81,7 +81,7 @@ public class XMLValidator {
     protected void initializeSchemataUR() throws IOException {
         synchronized (lockUR) {
             if (versionMapUR != null) return; // another tread was faster
-            versionMapUR = new HashMap<String, Schema>();
+            versionMapUR = new HashMap<>();
             SchemaFactory factory =
                     SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
@@ -102,7 +102,7 @@ public class XMLValidator {
         synchronized (lockRR) {
             if (versionMapRR != null) return; // another tread was faster
 
-            versionMapRR = new HashMap<String, Schema>();
+            versionMapRR = new HashMap<>();
             SchemaFactory factory =
                     SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 

@@ -37,6 +37,7 @@ public class VersionTypeBinding extends AbstractSimpleBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return OWS.VERSIONTYPE;
     }
@@ -48,7 +49,8 @@ public class VersionTypeBinding extends AbstractSimpleBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<?> getType() {
         return null;
     }
 
@@ -59,6 +61,7 @@ public class VersionTypeBinding extends AbstractSimpleBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(InstanceComponent instance, Object value) throws Exception {
         // TODO: implement
         return value;

@@ -59,6 +59,7 @@ public class WCSMultipartResponse extends Response {
         return DISPOSITION_ATTACH;
     }
 
+    @Override
     public String getAttachmentFileName(Object value, Operation operation) {
         final GetCoverageType request = (GetCoverageType) operation.getParameters()[0];
         final String identifier = request.getIdentifier().getValue();
@@ -105,8 +106,7 @@ public class WCSMultipartResponse extends Response {
             // the actual coverage
             BodyPart coveragePart = new MimeBodyPart();
             CoverageEncoder encoder =
-                    new CoverageEncoder(
-                            delegate, coverage, outputFormat, new HashMap<String, String>());
+                    new CoverageEncoder(delegate, coverage, outputFormat, new HashMap<>());
             coveragePart.setDataHandler(new DataHandler(encoder, "geoserver/coverageDelegate"));
             coveragePart.setHeader("Content-ID", "<theCoverage>");
             coveragePart.setHeader("Content-Type", delegate.getMimeType(outputFormat));

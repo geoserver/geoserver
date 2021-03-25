@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 import java.util.List;
-import org.apache.wicket.Component;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
@@ -37,13 +36,10 @@ public class UniqueResourceIdentifiersEditorTest extends GeoServerWicketTestSupp
                         UniqueResourceIdentifiers.class);
         tester.startPage(
                 new FormTestPage(
-                        new ComponentBuilder() {
-
-                            public Component buildComponent(String id) {
-                                return new UniqueResourceIdentifiersEditor(
-                                        id, new Model(identifiers));
-                            }
-                        }));
+                        (ComponentBuilder)
+                                id ->
+                                        new UniqueResourceIdentifiersEditor(
+                                                id, new Model<>(identifiers))));
     }
 
     @Test

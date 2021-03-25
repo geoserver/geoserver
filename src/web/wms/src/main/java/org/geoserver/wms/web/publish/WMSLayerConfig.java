@@ -47,9 +47,7 @@ import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geoserver.web.wicket.SimpleChoiceRenderer;
-import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.type.Name;
 
 /** Configures {@link LayerInfo} WMS specific attributes */
 public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
@@ -61,23 +59,20 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
     public WMSLayerConfig(String id, IModel<LayerInfo> layerModel) {
         super(id, layerModel);
 
-        add(new CheckBox("queryableEnabled", new PropertyModel<Boolean>(layerModel, "queryable")));
-        add(new CheckBox("opaqueEnabled", new PropertyModel<Boolean>(layerModel, "opaque")));
+        add(new CheckBox("queryableEnabled", new PropertyModel<>(layerModel, "queryable")));
+        add(new CheckBox("opaqueEnabled", new PropertyModel<>(layerModel, "opaque")));
 
         // styles block container
         WebMarkupContainer styleContainer = new WebMarkupContainer("styles");
         add(styleContainer);
-        LayerInfo layerInfo = layerModel.getObject();
-        ResourceInfo resource = layerInfo.getResource();
+        ResourceInfo resource = layerModel.getObject().getResource();
         styleContainer.setVisible(
                 resource instanceof CoverageInfo || resource instanceof FeatureTypeInfo);
-        String prefix =
-                resource.getNamespace() != null ? resource.getNamespace().getPrefix() : null;
-        Name layerName = new NameImpl(prefix, layerInfo.getName());
+
         // default style chooser. A default style is required
         StylesModel styles = new StylesModel();
         final PropertyModel<StyleInfo> defaultStyleModel =
-                new PropertyModel<StyleInfo>(layerModel, "defaultStyle");
+                new PropertyModel<>(layerModel, "defaultStyle");
         final Select2DropDownChoice<StyleInfo> defaultStyle =
                 new Select2DropDownChoice<>(
                         "defaultStyle", defaultStyleModel, styles, new StyleChoiceRenderer());
@@ -91,9 +86,8 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         // the style name and layer name will be ws qualified instead
         String wmsURL = RequestCycle.get().getUrlRenderer().renderContextRelativeUrl("wms") + "?";
 
-        final LegendGraphicAjaxUpdater defaultStyleUpdater;
-        defaultStyleUpdater =
-                new LegendGraphicAjaxUpdater(wmsURL, defStyleImg, defaultStyleModel, layerName);
+        final LegendGraphicAjaxUpdater defaultStyleUpdater =
+                new LegendGraphicAjaxUpdater(wmsURL, defStyleImg, defaultStyleModel);
 
         defaultStyle.add(
                 new OnChangeAjaxBehavior() {
@@ -101,12 +95,12 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
-                        defaultStyleUpdater.updateStyleImage(target, layerName);
+                        defaultStyleUpdater.updateStyleImage(target);
                     }
                 });
 
         // build a palette with no reordering allowed, since order doesn't affect anything
-        LiveCollectionModel stylesModel =
+        LiveCollectionModel<StyleInfo, Set<StyleInfo>> stylesModel =
                 LiveCollectionModel.set(new PropertyModel<Set<StyleInfo>>(layerModel, "styles"));
         Palette<StyleInfo> extraStyles =
                 new Palette<StyleInfo>(
@@ -133,21 +127,22 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         styleContainer.add(extraStyles);
 
         TextField<Integer> renderingBuffer =
-                new TextField<Integer>(
+                new TextField<>(
                         "renderingBuffer",
-                        new MapModel(new PropertyModel(layerModel, "metadata"), LayerInfo.BUFFER),
+                        new MapModel<>(
+                                new PropertyModel<>(layerModel, "metadata"), LayerInfo.BUFFER),
                         Integer.class);
         renderingBuffer.add(RangeValidator.minimum(0));
         styleContainer.add(renderingBuffer);
 
-        add(new TextField<String>("wmsPath", new PropertyModel<String>(layerModel, "path")));
+        add(new TextField<>("wmsPath", new PropertyModel<>(layerModel, "path")));
 
         List<WMSInterpolation> interpolChoices = Arrays.asList(WMSInterpolation.values());
 
         PropertyModel<WMSInterpolation> defaultInterpolModel =
-                new PropertyModel<WMSInterpolation>(layerModel, "defaultWMSInterpolationMethod");
+                new PropertyModel<>(layerModel, "defaultWMSInterpolationMethod");
         DropDownChoice<WMSInterpolation> interpolDropDown =
-                new DropDownChoice<WMSInterpolation>(
+                new DropDownChoice<>(
                         "defaultInterpolationMethod",
                         defaultInterpolModel,
                         interpolChoices,
@@ -224,27 +219,27 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                     e);
         }
         // empty string to use whatever default remote server has
-        List<String> remoteSyles = new ArrayList<String>();
+        List<String> remoteSyles = new ArrayList<>();
         remoteSyles.add("");
         remoteSyles.addAll(getRemoteStyleNames(wmsLayerInfo.getAllAvailableRemoteStyles()));
         DropDownChoice<String> remotStyles =
-                new DropDownChoice<String>(
+                new DropDownChoice<>(
                         "remoteStylesDropDown",
-                        new PropertyModel<String>(wmsLayerInfo, "forcedRemoteStyle"),
+                        new PropertyModel<>(wmsLayerInfo, "forcedRemoteStyle"),
                         remoteSyles);
 
         styleContainer.add(remotStyles);
 
-        LiveCollectionModel stylesModel =
+        LiveCollectionModel<String, Set<String>> stylesModel =
                 LiveCollectionModel.set(
                         new PropertyModel<List<String>>(wmsLayerInfo, "selectedRemoteStyles"));
         Palette<String> extraRemoteStyles =
-                new Palette<String>(
+                new Palette<>(
                         "extraRemoteStyles",
                         stylesModel,
-                        new CollectionModel<String>(
+                        new CollectionModel<>(
                                 getRemoteStyleNames(wmsLayerInfo.getAllAvailableRemoteStyles())),
-                        new SimpleChoiceRenderer<String>(),
+                        new SimpleChoiceRenderer<>(),
                         10,
                         true);
 
@@ -252,24 +247,24 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         styleContainer.add(extraRemoteStyles);
 
         DropDownChoice<String> remoteForamts =
-                new DropDownChoice<String>(
+                new DropDownChoice<>(
                         "remoteFormatsDropDown",
-                        new PropertyModel<String>(wmsLayerInfo, "preferredFormat"),
+                        new PropertyModel<>(wmsLayerInfo, "preferredFormat"),
                         wmsLayerInfo.availableFormats());
 
         remoteForamtsContainer.add(remoteForamts);
         // add format pallete
 
-        LiveCollectionModel remoteFormatsModel =
+        LiveCollectionModel<String, Set<String>> remoteFormatsModel =
                 LiveCollectionModel.set(
                         new PropertyModel<List<String>>(wmsLayerInfo, "selectedRemoteFormats"));
 
         Palette<String> remoteFormatsPalette =
-                new Palette<String>(
+                new Palette<>(
                         "remoteFormatsPalette",
                         remoteFormatsModel,
-                        new CollectionModel<String>(wmsLayerInfo.availableFormats()),
-                        new SimpleChoiceRenderer<String>(),
+                        new CollectionModel<>(wmsLayerInfo.availableFormats()),
+                        new SimpleChoiceRenderer<>(),
                         10,
                         true);
 
@@ -278,19 +273,15 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         metaDataCheckBoxContainer.add(
                 new CheckBox(
                         "respectMetadataBBoxChkBox",
-                        new PropertyModel<Boolean>(wmsLayerInfo, "metadataBBoxRespected")));
+                        new PropertyModel<>(wmsLayerInfo, "metadataBBoxRespected")));
         // scale denominators
         TextField<Double> minScale =
-                new TextField(
-                        "minScale",
-                        new PropertyModel<Boolean>(wmsLayerInfo, "minScale"),
-                        Double.class);
+                new TextField<>(
+                        "minScale", new PropertyModel<>(wmsLayerInfo, "minScale"), Double.class);
         scaleDenominatorContainer.add(minScale);
         TextField<Double> maxScale =
-                new TextField(
-                        "maxScale",
-                        new PropertyModel<Boolean>(wmsLayerInfo, "maxScale"),
-                        Double.class);
+                new TextField<>(
+                        "maxScale", new PropertyModel<>(wmsLayerInfo, "maxScale"), Double.class);
         scaleDenominatorContainer.add(maxScale);
 
         minScale.add(new ScalesValidator(minScale, maxScale));
@@ -301,7 +292,7 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
     }
 
     // validator to make sure min scale smaller than max scale and vice-versa
-    private class ScalesValidator implements IValidator {
+    private class ScalesValidator implements IValidator<Double> {
 
         /** serialVersionUID */
         private static final long serialVersionUID = 1349568700386246273L;

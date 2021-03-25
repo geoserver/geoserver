@@ -37,7 +37,7 @@ public abstract class AbstractThreadLocalTransferTest {
         executor.shutdown();
     }
 
-    public void testThreadLocalTransfer(ThreadLocalTransferCallable callable)
+    protected void testThreadLocalTransfer(ThreadLocalTransferCallable callable)
             throws InterruptedException, ExecutionException {
         Future<Void> future = executor.submit(callable);
         future.get();
@@ -49,7 +49,7 @@ public abstract class AbstractThreadLocalTransferTest {
 
         ThreadLocalTransfer transfer;
 
-        Map<String, Object> storage = new HashMap<String, Object>();
+        Map<String, Object> storage = new HashMap<>();
 
         public ThreadLocalTransferCallable(ThreadLocalTransfer transfer) {
             this.originalThread = Thread.currentThread();

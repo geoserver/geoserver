@@ -14,6 +14,8 @@ paths:
   /imports:
     get:
       operationId: getImports
+      tags:
+       - "Importer"
       summary: Get a list of all imports
       produces:
         - application/json
@@ -40,6 +42,8 @@ paths:
               }
     post:
       operationId: postImports
+      tags:
+       - "Importer"
       summary: Create a new import
       description: Creates a new import. If the exec parameter is true, that import is immediately executed.
       produces:
@@ -61,6 +65,8 @@ paths:
               type: string
     delete:
       operationId: deleteImports
+      tags:
+       - "Importer"
       summary: Delete all imports
       description: Deletes all imports that are not in the COMPLETE state.
       responses:
@@ -69,6 +75,8 @@ paths:
   /imports/{importId}:
     get:
       operationId: getImport
+      tags:
+       - "Importer"
       summary: Retrieve import by id
       produces:
         - text/html
@@ -88,6 +96,8 @@ paths:
             $ref: "#/definitions/Context"
     post:
       operationId: postImport
+      tags:
+       - "Importer"
       summary: Create a new import, or execute an existing import
       description: If an import with the id {importId} exists and is not in the INIT state, it is executed. If an import with that id does not exist, a new import is created with that id. If the exec parameter is true, this new import is immediately executed.
       produces:
@@ -109,6 +119,8 @@ paths:
           description: Precondition Failed. Returned if the import already existed and was in the INIT state.
     put:
       operationId: putImport
+      tags:
+       - "Importer"
       summary: Tries to create a new import with the provided id.
       description: Creates a new import with the next unclaimed id >= {importId}. If the exec parameter is true, that import is immediately executed.
       consumes:
@@ -133,6 +145,8 @@ paths:
               type: string
     delete:
       operationId: deleteImport
+      tags:
+       - "Importer"
       summary: Delete an import
       description: Deletes the import with id {importId}, as long as it is not in the COMPLETE state.
       responses:

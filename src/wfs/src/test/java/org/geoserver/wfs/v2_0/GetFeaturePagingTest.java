@@ -5,9 +5,13 @@
  */
 package org.geoserver.wfs.v2_0;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.Serializable;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,11 +26,11 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ows.util.KvpMap;
 import org.geotools.data.DataStore;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.FeatureStore;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DefaultFeatureCollection;
-import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -34,7 +38,6 @@ import org.geotools.filter.v2_0.FESConfiguration;
 import org.geotools.xsd.Parser;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
@@ -53,23 +56,23 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         ds.setWorkspace(cat.getDefaultWorkspace());
         ds.setEnabled(true);
 
-        Map params = ds.getConnectionParameters();
+        Map<String, Serializable> params = ds.getConnectionParameters();
         params.put("dbtype", "h2");
         params.put("database", getTestData().getDataDirectoryRoot().getAbsolutePath());
         cat.add(ds);
 
-        FeatureSource fs1 = getFeatureSource(SystemTestData.FIFTEEN);
-        FeatureSource fs2 = getFeatureSource(SystemTestData.SEVEN);
+        SimpleFeatureSource fs1 = getFeatureSource(SystemTestData.FIFTEEN);
+        SimpleFeatureSource fs2 = getFeatureSource(SystemTestData.SEVEN);
 
         DataStore store = (DataStore) ds.getDataStore(null);
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
 
-        tb.init((SimpleFeatureType) fs1.getSchema());
+        tb.init(fs1.getSchema());
         tb.add("num", Integer.class);
         tb.remove("boundedBy");
         store.createSchema(tb.buildFeatureType());
 
-        tb.init((SimpleFeatureType) fs2.getSchema());
+        tb.init(fs2.getSchema());
         tb.add("num", Integer.class);
         tb.remove("boundedBy");
         store.createSchema(tb.buildFeatureType());
@@ -77,25 +80,24 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         CatalogBuilder cb = new CatalogBuilder(cat);
         cb.setStore(ds);
 
-        FeatureStore fs = (FeatureStore) store.getFeatureSource("Fifteen");
+        SimpleFeatureStore fs = (SimpleFeatureStore) store.getFeatureSource("Fifteen");
         addFeatures(fs, fs1.getFeatures());
 
         FeatureTypeInfo ft = cb.buildFeatureType(fs);
         cat.add(ft);
 
-        fs = (FeatureStore) store.getFeatureSource("Seven");
+        fs = (SimpleFeatureStore) store.getFeatureSource("Seven");
         addFeatures(fs, fs2.getFeatures());
 
         ft = cb.buildFeatureType(fs);
         cat.add(ft);
     }
 
-    void addFeatures(FeatureStore fs, FeatureCollection features) throws Exception {
-        SimpleFeatureBuilder b = new SimpleFeatureBuilder((SimpleFeatureType) fs.getSchema());
+    void addFeatures(SimpleFeatureStore fs, SimpleFeatureCollection features) throws Exception {
+        SimpleFeatureBuilder b = new SimpleFeatureBuilder(fs.getSchema());
 
         DefaultFeatureCollection toAdd = new DefaultFeatureCollection(null, null);
-        FeatureIterator it = features.features();
-        try {
+        try (FeatureIterator it = features.features()) {
             SimpleFeature f = null;
             int i = 0;
             while (it.hasNext()) {
@@ -105,8 +107,6 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
                 b.add(i++);
                 toAdd.add(b.buildFeature(null));
             }
-        } finally {
-            it.close();
         }
         fs.addFeatures(toAdd);
     }
@@ -374,7 +374,7 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         fti.setSkipNumberMatched(true);
         this.getCatalog().save(fti);
         try {
-            assertEquals(true, fti.getSkipNumberMatched());
+            assertTrue(fti.getSkipNumberMatched());
             doTestNextPreviousGET("gs:Fifteen");
             doTestNextPreviousGET("cdf:Fifteen");
         } finally {
@@ -506,9 +506,9 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         int actualStartIndex = -1;
         int actualCount = -1;
 
-        for (int i = 0; i < kvp.length; i++) {
-            String k = kvp[i].split("=")[0];
-            String v = kvp[i].split("=")[1];
+        for (String value : kvp) {
+            String k = value.split("=")[0];
+            String v = value.split("=")[1];
             if ("startIndex".equalsIgnoreCase(k)) {
                 actualStartIndex = Integer.parseInt(v);
             }
@@ -619,11 +619,11 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
                         new Parser(new FESConfiguration())
                                 .parse(new ByteArrayInputStream(filter.getBytes()));
         if (expected instanceof Id) {
-            Set s1 = new HashSet();
+            Set<String> s1 = new HashSet<>();
             for (Identifier id : ((Id) expected).getIdentifiers()) {
                 s1.add(id.toString());
             }
-            Set s2 = new HashSet();
+            Set<String> s2 = new HashSet<>();
             for (Identifier id : ((Id) f).getIdentifiers()) {
                 s2.add(id.toString());
             }
@@ -633,10 +633,10 @@ public class GetFeaturePagingTest extends WFS20TestSupport {
         }
     }
 
-    KvpMap toKvpMap(String url) {
+    KvpMap<String, String> toKvpMap(String url) {
         url = url.substring(url.indexOf('?') + 1);
         String[] kvps = url.split("\\&");
-        KvpMap map = new KvpMap();
+        KvpMap<String, String> map = new KvpMap<>();
         for (String kvp : kvps) {
             map.put(kvp.split("=")[0], kvp.split("=")[1]);
         }

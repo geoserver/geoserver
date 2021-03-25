@@ -163,8 +163,8 @@ The initial layer configuration panel for an Elasticsearch layer will include an
      - Indicates whether the field is analyzed
    * - ``SRID``
      - Native spatial reference ID of the geometries. Currently only EPSG:4326 is supported.
-   * - ``Date Format``
-     - Date format used for parsing field values and printing filter elements
+   * - ``Valid Date Formats``
+     - Possible valid date formats used for parsing field values and printing filter elements
 
 To return to the field table after it has been closed, click the "Configure Elasticsearch fields" button below the "Feature Type Details" panel on the layer configuration page.
 
@@ -561,7 +561,7 @@ FAQ
 - Geometry property name in the aggregation SLD RasterSymbolizer must be a valid geometry property in the layer
 - ``PropertyIsEqualTo`` maps to an Elasticsearch term query, which will return documents that contain the supplied term. When searching on an analyzed string field, ensure that the search values are consistent with the analyzer used in the index. For example, values may need to be lowercase when querying fields analyzed with the default analyzer. See the Elasticsearch term query documentation for more information.
 - ``PropertyIsLike`` maps to either a query string query or a regexp query, depending on whether the field is analyzed or not. Reserved characters should be escaped as applicable. Note case sensitive and insensitive searches may not be supported for analyzed and not analyzed fields, respectively. See Elasticsearch query string and regexp query documentation for more information.
-- Date conversions are handled using the date format from the associated type mapping, or ``date_optional_time`` if not found. Note that UTC timezone is used for both parsing and printing of dates.
+- Date conversions are handled using the valid date formats from the associated type mapping, or ``date_optional_time`` if not found. Note that UTC timezone is used for both parsing and printing of dates.
 - Filtering on Elasticsearch ``object`` types is supported. By default, field names will include the full path to the field (e.g. "parent.child.field_name"), but this can be changed in the GeoServer layer configuration.
 
   - When referencing fields with path elements using ``cql_filter``, it may be necessary to quote the name (e.g. ``cql_filter="parent.child.field_name"='value'``)

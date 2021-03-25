@@ -28,6 +28,7 @@ import org.geoserver.security.validation.SecurityConfigValidator;
 
 public class MemorySecurityProvider extends GeoServerSecurityProvider {
 
+    @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
         xp.getXStream().alias("memorygroupservice", MemoryUserGroupServiceConfigImpl.class);
@@ -36,9 +37,9 @@ public class MemorySecurityProvider extends GeoServerSecurityProvider {
 
     @Override
     public Map<Class<?>, Set<String>> getFieldsForEncryption() {
-        Map<Class<?>, Set<String>> map = new HashMap<Class<?>, Set<String>>();
+        Map<Class<?>, Set<String>> map = new HashMap<>();
 
-        Set<String> fields = new HashSet<String>();
+        Set<String> fields = new HashSet<>();
         fields.add("toBeEncrypted");
         map.put(MemoryRoleServiceConfigImpl.class, fields);
         map.put(MemoryUserGroupServiceConfigImpl.class, fields);

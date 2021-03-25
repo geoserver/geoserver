@@ -37,10 +37,12 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
         super(resourceLoader, "wms");
     }
 
+    @Override
     public Class<WMSInfo> getServiceClass() {
         return WMSInfo.class;
     }
 
+    @Override
     protected WMSInfo createServiceFromScratch(GeoServer gs) {
         WMSInfo wms = new WMSInfoImpl();
         wms.setName("WMS");
@@ -79,13 +81,13 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
             service.getVersions().add(version_1_3_0);
         }
         if (service.getSRS() == null) {
-            ((WMSInfoImpl) service).setSRS(new ArrayList<String>());
+            ((WMSInfoImpl) service).setSRS(new ArrayList<>());
         }
         if (service.getGetFeatureInfoMimeTypes() == null) {
-            ((WMSInfoImpl) service).setGetFeatureInfoMimeTypes(new HashSet<String>());
+            ((WMSInfoImpl) service).setGetFeatureInfoMimeTypes(new HashSet<>());
         }
         if (service.getGetMapMimeTypes() == null) {
-            ((WMSInfoImpl) service).setGetMapMimeTypes(new HashSet<String>());
+            ((WMSInfoImpl) service).setGetMapMimeTypes(new HashSet<>());
         }
         if (service.getInterpolation() == null) {
             service.setInterpolation(WMSInterpolation.Nearest);
@@ -106,7 +108,7 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
         }
 
         @Override
-        public boolean canConvert(Class type) {
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
             return WMSInfo.class.isAssignableFrom(type);
         }
 
@@ -150,7 +152,7 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
                 String serialized = metadata.get("authorityURLs", String.class);
                 List<AuthorityURLInfo> authorities;
                 if (serialized == null) {
-                    authorities = new ArrayList<AuthorityURLInfo>(1);
+                    authorities = new ArrayList<>(1);
                 } else {
                     authorities = AuthorityURLInfoInfoListConverter.fromString(serialized);
                 }
@@ -160,7 +162,7 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
                 String serialized = metadata.get("identifiers", String.class);
                 List<LayerIdentifierInfo> identifiers;
                 if (serialized == null) {
-                    identifiers = new ArrayList<LayerIdentifierInfo>(1);
+                    identifiers = new ArrayList<>(1);
                 } else {
                     identifiers = LayerIdentifierInfoListConverter.fromString(serialized);
                 }

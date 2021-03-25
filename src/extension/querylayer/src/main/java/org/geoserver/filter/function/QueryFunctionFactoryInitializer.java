@@ -26,14 +26,17 @@ public class QueryFunctionFactoryInitializer
 
     GeoServer geoServer;
 
+    @Override
     public void onDispose() {
         // nothing do to
     }
 
+    @Override
     public void beforeReload() {
         // nothing to do
     }
 
+    @Override
     public void onReload() {
         configure();
     }
@@ -59,6 +62,7 @@ public class QueryFunctionFactoryInitializer
         }
     }
 
+    @Override
     public void onReset() {
         configure();
     }
@@ -77,6 +81,7 @@ public class QueryFunctionFactoryInitializer
         return null;
     }
 
+    @Override
     public void initialize(GeoServer geoServer) throws Exception {
         this.geoServer = geoServer;
         configure();

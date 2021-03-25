@@ -94,12 +94,13 @@ public class GranuleStackImpl extends GridCoverage2D /*AbstractGridCoverage*/
             CharSequence name, CoordinateReferenceSystem crs, List<DimensionBean> dimensions) {
         super(name, new DummyGridCoverage2D(name, crs));
         this.dimensions = dimensions;
-        this.coverages = new ArrayList<GridCoverage2D>();
+        this.coverages = new ArrayList<>();
     }
 
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
 
+    @Override
     public RenderedImage getRenderedImage() {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine(

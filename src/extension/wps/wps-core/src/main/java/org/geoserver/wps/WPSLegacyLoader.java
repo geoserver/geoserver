@@ -12,10 +12,12 @@ import org.geotools.util.Version;
 
 public class WPSLegacyLoader extends LegacyServiceLoader<WPSInfo> {
 
+    @Override
     public Class<WPSInfo> getServiceClass() {
         return WPSInfo.class;
     }
 
+    @Override
     public WPSInfo load(LegacyServicesReader reader, GeoServer geoServer) throws Exception {
 
         WPSInfoImpl wps = new WPSInfoImpl();

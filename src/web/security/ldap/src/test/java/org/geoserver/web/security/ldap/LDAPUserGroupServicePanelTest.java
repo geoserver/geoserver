@@ -7,7 +7,6 @@ package org.geoserver.web.security.ldap;
 
 import static org.junit.Assert.assertNull;
 
-import java.io.Serializable;
 import org.apache.directory.server.annotations.CreateLdapServer;
 import org.apache.directory.server.annotations.CreateTransport;
 import org.apache.directory.server.core.annotations.ApplyLdifFiles;
@@ -34,13 +33,7 @@ import org.junit.Test;
  * @author Niels Charlier
  */
 @CreateLdapServer(
-    transports = {
-        @CreateTransport(
-            protocol = "LDAP",
-            address = "localhost",
-            port = LDAPTestUtils.LDAP_SERVER_PORT
-        )
-    },
+    transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
     allowAnonymousAccess = true
 )
 @CreateDS(
@@ -81,7 +74,7 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
         config = new LDAPUserGroupServiceConfig();
         config.setName("test");
         if (setRequiredFields) {
-            config.setServerURL(ldapServerUrl + "/" + basePath);
+            config.setServerURL(getServerURL());
             config.setGroupSearchBase(GROUPS_BASE);
             config.setUserSearchBase(USERS_BASE);
         }
@@ -90,6 +83,10 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
         config.setUser(AUTH_USER);
         config.setPassword(AUTH_PASSWORD);
         setupPanel();
+    }
+
+    private String getServerURL() {
+        return ldapServerUrl + ":" + serverRule.getLdapServer().getPort() + "/" + basePath;
     }
 
     @Override
@@ -107,14 +104,14 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
                         new ComponentBuilder() {
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             public Component buildComponent(String id) {
 
                                 return current =
-                                        new LDAPUserGroupServicePanel(
-                                                id, new Model<LDAPUserGroupServiceConfig>(config));
+                                        new LDAPUserGroupServicePanel(id, new Model<>(config));
                             };
                         },
-                        new CompoundPropertyModel<Object>(config)) {
+                        new CompoundPropertyModel<>(config)) {
 
                     private static final long serialVersionUID = -4090244876841730821L;
 
@@ -147,12 +144,11 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
         tester.newFormTester("form").submit();
 
         tester.assertErrorMessages(
-                (Serializable[])
-                        new String[] {
-                            "Field 'Server URL' is required.",
-                            "Field 'Group search base' is required.",
-                            "Field 'User search base' is required."
-                        });
+                new String[] {
+                    "Field 'Server URL' is required.",
+                    "Field 'Group search base' is required.",
+                    "Field 'User search base' is required."
+                });
     }
 
     @Test
@@ -186,7 +182,7 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
     }
 
     private void checkBaseConfig() {
-        tester.assertModelValue("form:panel:serverURL", ldapServerUrl + "/" + basePath);
+        tester.assertModelValue("form:panel:serverURL", getServerURL());
         tester.assertModelValue("form:panel:groupSearchBase", GROUPS_BASE);
         tester.assertModelValue("form:panel:groupSearchFilter", GROUP_SEARCH_FILTER);
         tester.assertModelValue(

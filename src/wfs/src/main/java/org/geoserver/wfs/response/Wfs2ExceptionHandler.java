@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.OWS11ServiceExceptionHandler;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.json.JSONType;
@@ -31,7 +32,7 @@ public class Wfs2ExceptionHandler extends OWS11ServiceExceptionHandler {
      * @param services services on offer.
      * @param gs server context
      */
-    public Wfs2ExceptionHandler(List services, GeoServer gs) {
+    public Wfs2ExceptionHandler(List<Service> services, GeoServer gs) {
         super(services);
         this.gs = gs;
     }

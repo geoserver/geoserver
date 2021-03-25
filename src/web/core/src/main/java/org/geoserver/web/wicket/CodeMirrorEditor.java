@@ -50,45 +50,37 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
     public static final PackageResourceReference REFERENCE =
             new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/codemirror.js");
 
-    public static final PackageResourceReference[] CSS_REFERENCE =
-            new PackageResourceReference[] {
-                new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/css/codemirror.css"),
-                new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/css/show-hint.css"),
-                new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/addon/dialog/dialog.css"),
-                new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/addon/search/matchesonscrollbar.css")
-            };
+    public static final PackageResourceReference[] CSS_REFERENCE = {
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/css/codemirror.css"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/css/show-hint.css"),
+        new PackageResourceReference(
+                CodeMirrorEditor.class, "js/codemirror/addon/dialog/dialog.css"),
+        new PackageResourceReference(
+                CodeMirrorEditor.class, "js/codemirror/addon/search/matchesonscrollbar.css")
+    };
 
-    public static final PackageResourceReference[] MODES =
-            new PackageResourceReference[] {
-                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/xml.js"),
-                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/clike.js"),
-                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/groovy.js"),
-                new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/js/javascript.js"),
-                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/python.js"),
-                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/ruby.js"),
-                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/css.js"),
-                new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/js/show-hint.js"),
-                new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/js/geocss-hint.js"),
-                new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/js/xml-hint.js"),
-                new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/addon/dialog/dialog.js"),
-                new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/addon/search/searchcursor.js"),
-                new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/addon/search/search.js"),
-                new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/addon/search/matchesonscrollbar.js"),
-                new PackageResourceReference(
-                        CodeMirrorEditor.class, "js/codemirror/addon/scroll/annotatescrollbar.js")
-            };
+    public static final PackageResourceReference[] MODES = {
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/xml.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/clike.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/groovy.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/javascript.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/python.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/ruby.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/css.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/show-hint.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/geocss-hint.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/xml-hint.js"),
+        new PackageResourceReference(
+                CodeMirrorEditor.class, "js/codemirror/addon/dialog/dialog.js"),
+        new PackageResourceReference(
+                CodeMirrorEditor.class, "js/codemirror/addon/search/searchcursor.js"),
+        new PackageResourceReference(
+                CodeMirrorEditor.class, "js/codemirror/addon/search/search.js"),
+        new PackageResourceReference(
+                CodeMirrorEditor.class, "js/codemirror/addon/search/matchesonscrollbar.js"),
+        new PackageResourceReference(
+                CodeMirrorEditor.class, "js/codemirror/addon/scroll/annotatescrollbar.js")
+    };
 
     private TextArea<String> editor;
 
@@ -123,7 +115,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
                             "style", "border: 1px solid black; padding-bottom: 3px"));
         }
         container.add(editorParent);
-        editor = new TextArea<String>("editor", model);
+        editor = new TextArea<>("editor", model);
         editorParent.add(editor);
         editor.setOutputMarkupId(true);
 
@@ -155,7 +147,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
 
     private boolean isCodeMirrorSupported() {
         boolean enableCodeMirror = true;
-        WebClientInfo clientInfo = (WebClientInfo) WebSession.get().getClientInfo();
+        WebClientInfo clientInfo = WebSession.get().getClientInfo();
         ClientProperties clientProperties = clientInfo.getProperties();
         if (clientProperties.isBrowserInternetExplorer()) {
             ClientProperties props = extractIEVersion(clientProperties.getNavigatorUserAgent());

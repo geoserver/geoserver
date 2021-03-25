@@ -40,7 +40,7 @@ public class GeoServerProcessors implements ApplicationContextAware {
      */
     public static Set<ProcessFactory> getProcessFactories() {
         Set<ProcessFactory> factories = Processors.getProcessFactories();
-        Set<ProcessFactory> result = new LinkedHashSet<ProcessFactory>();
+        Set<ProcessFactory> result = new LinkedHashSet<>();
 
         // scan filters and let them wrap and exclude as necessary
         for (ProcessFactory pf : factories) {
@@ -110,7 +110,7 @@ public class GeoServerProcessors implements ApplicationContextAware {
      * @param factoryClass The factory to look for
      * @param applyFilters Whether to apply the registered {@link ProcessFilter} instances, or not
      */
-    public static ProcessFactory getProcessFactory(Class factoryClass, boolean applyFilters) {
+    public static ProcessFactory getProcessFactory(Class<?> factoryClass, boolean applyFilters) {
         Set<ProcessFactory> factories = Processors.getProcessFactories();
         for (ProcessFactory pf : factories) {
             if (factoryClass.equals(pf.getClass())) {

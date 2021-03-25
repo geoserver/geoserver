@@ -12,13 +12,12 @@ OAuth2 Protocol and GeoServer OAuth2 core module
 
 This module allows GeoServer to authenticate against the `OAuth2 Protocol <https://tools.ietf.org/html/rfc6749>`_.
 
-In order to let the module work, it's mandatory to setup and configure both ``oauth2`` and ``oauth2-xxxx-extension``.
+In order to let the module work, it is mandatory to setup and configure both the ``oauth2`` and ``oauth2-xxxx-extension`` (where xxxx is the provider e.g. google, github, openid, geonode).
 
 The first one contains the necessary dependencies of the OAuth2 core module. This module contains the implementation of the 
 GeoServer security filter, the base classes for the OAuth2 Token services and the GeoServer GUI panel.
 
-Since in almost all cases the only thing different between OAuth2 Providers are the endpoint URIs and the client connection
-information (not only the keys - public and secret - but also the user profile representations), in order to allow GeoServer
+The second one provides the OAuth2 implementation for each provider.  Since in almost all cases the only thing different between OAuth2 Providers are the endpoint URIs and the client connection information (not only the keys - public and secret - but also the user profile representations), in order to allow GeoServer
 connecting to a specific OAuth2 provider it is sufficient to install the OAuth2 Core module plugin (and correctly configure
 the parameters through the GeoServer GUI - see next section for the details) and the concrete implementation of the OAuth2
 REST token template and resource details.
@@ -287,10 +286,21 @@ needed, and can be filled with two made up values (the validation just checks th
 but they will be used only in the "authorisation flow", but not when doing OGC requests
 where the client is supposed to have autonomously retrieved a valid bearer token).
 
-.. warning:: The oauth2-openid-connect does not implement the full protocol and has been tested
-   against a single server, more development and testing is needed before it can be consumed by
-   a wider audience. `Pull requests <https://github.com/geoserver/geoserver/blob/master/CONTRIBUTING.md>`_
-   to improve the module are welcomed.
+The configuration GUI supports OpenID Discovery documents.  If the server supports them
+it's sufficient to provide the path to the document, or to the authentication service root,
+and the GUI will auto-fill itself based on the document contents:
+
+   .. figure:: images/discovery.png
+      :align: center
+
+In addition, the OpenID connect authentication is able to extract the user roles from
+either the ID token or the Access Token:
+
+   .. figure:: images/openidconnect-roles.png
+      :align: center
+
+The chosen attribute must be present in either the Access Token or in the Id token, 
+and be either a string or an array of strings.
 
 
 SSL Trusted Certificates

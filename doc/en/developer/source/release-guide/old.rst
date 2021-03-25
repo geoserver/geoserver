@@ -61,7 +61,7 @@ Run the `geoserver-release <http://hudson.opengeo.org/hudson/job/geoserver-relea
 
 **BRANCH**
 
-  The branch to release from, "2.2.x", "2.1.x", etc... This must be a stable branch. Releases are not performed from master.
+  The branch to release from, "2.2.x", "2.1.x", etc... This must be a stable branch. Releases are not performed from the main development branch.
 
 **REV**
 
@@ -73,7 +73,7 @@ Run the `geoserver-release <http://hudson.opengeo.org/hudson/job/geoserver-relea
 
 **GT_VERSION**
 
-  The GeoTools version to include in the release. This may be specified as a version number such as "8.0" or "2.7.5". Alternatively the version may be specified as a Git branch/revision pair in the form ``<branch>@<revision>``. For example "master@36ba65jg53.....". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again if performing a non-beta release this version must be a version number corresponding to an official GeoTools release.
+  The GeoTools version to include in the release. This may be specified as a version number such as "8.0" or "2.7.5". Alternatively the version may be specified as a Git branch/revision pair in the form ``<branch>@<revision>``. For example "main@36ba65jg53.....". Finally this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again if performing a non-beta release this version must be a version number corresponding to an official GeoTools release.
 
 **GWC_VERSION**
 

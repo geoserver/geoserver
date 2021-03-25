@@ -28,6 +28,7 @@ public class SLDXmlRequestReader extends XmlRequestReader {
         this.wms = wms;
     }
 
+    @Override
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         if (request == null) {
             throw new IllegalArgumentException("request must be not null");

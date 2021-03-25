@@ -9,7 +9,6 @@ import it.geosolutions.jaiext.JAIExt;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -70,10 +69,10 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         this.availableCoverages = availableCoverages;
 
         coveragesChoice =
-                new ListMultipleChoice<String>(
+                new ListMultipleChoice<>(
                         "coveragesChoice",
                         new Model<>(),
-                        new ArrayList<String>((List<String>) coverages.getObject()),
+                        new ArrayList<>(coverages.getObject()),
                         new ChoiceRenderer<String>() {
                             @Override
                             public Object getDisplayValue(String coverage) {
@@ -85,10 +84,10 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
         new ArrayList<CoverageBand>();
         outputBandsChoice =
-                new ListMultipleChoice<CoverageBand>(
+                new ListMultipleChoice<>(
                         "outputBandsChoice",
                         new Model<>(),
-                        new ArrayList<CoverageBand>(outputBands.getObject()),
+                        new ArrayList<>(outputBands.getObject()),
                         new ChoiceRenderer<CoverageBand>() {
                             @Override
                             public Object getDisplayValue(CoverageBand vcb) {
@@ -98,7 +97,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
         outputBandsChoice.setOutputMarkupId(true);
         add(outputBandsChoice);
 
-        currentOutputBands = new ArrayList<CoverageBand>(outputBandsChoice.getChoices());
+        currentOutputBands = new ArrayList<>(outputBandsChoice.getChoices());
 
         add(addBandButton());
         definition = new TextField<>("definition", new Model<>());
@@ -168,9 +167,7 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
                         compositionType = compositionChoice.getModelObject();
                         List<CoverageBand> bandsList = new ArrayList<>();
                         int i = currentOutputBands.size();
-                        for (Iterator<String> it = selection.iterator(); it.hasNext(); ) {
-                            String coverage = it.next();
-
+                        for (String coverage : selection) {
                             final int bandIndexChar = coverage.indexOf(CoverageView.BAND_SEPARATOR);
                             String coverageName = coverage;
                             String bandIndex = null;
@@ -247,10 +244,12 @@ public class CoverageViewEditor extends FormComponentPanel<List<String>> {
 
     private class CompositionTypeRenderer extends ChoiceRenderer<CompositionType> {
 
+        @Override
         public Object getDisplayValue(CompositionType object) {
             return object.displayValue();
         }
 
+        @Override
         public String getIdValue(CompositionType object, int index) {
             return object.toValue();
         }

@@ -40,6 +40,7 @@ public class GeoserverWKTOperationFactory extends CoordinateOperationFactoryUsin
      *
      * @return The URL, or {@code null} if none.
      */
+    @Override
     protected URL getDefinitionsURL() {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         if (loader != null) { // not available for SystemTestData

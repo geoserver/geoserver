@@ -65,8 +65,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
 
         // add layer
         testData.addStyle(null, STYLE_NAME, STYLE_FILE, getClass(), getCatalog(), legend);
-        Map<SystemTestData.LayerProperty, Object> propertyMap =
-                new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, STYLE_NAME);
         testData.addRasterLayer(
                 LAYER_QNAME, LAYER_FILE, null, propertyMap, SystemTestData.class, getCatalog());
@@ -83,7 +82,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         wms.getSRS().add("EPSG:4326");
         getGeoServer().save(wms);
 
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
         namespaces.put("", "http://www.opengis.net/wms");
         namespaces.put("wms", "http://www.opengis.net/wms");
@@ -100,8 +99,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
 
         // add layer
         testData.addStyle(null, STYLE_NAME_HTTP, STYLE_FILE, getClass(), getCatalog(), legend);
-        Map<SystemTestData.LayerProperty, Object> propertyMap =
-                new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, STYLE_NAME);
         testData.addRasterLayer(
                 LAYER_QNAME_HTP_LEGND,
@@ -130,10 +128,18 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         // two
         // cases
         String expectedGetLegendGraphicRequestURL =
-                "/wms?request=GetLegendGraphic&format=image%2Fjpeg&width=20&height=20&layer=gs%3A"
+                "/wms?request=GetLegendGraphic&format=image%2Fjpeg&width="
+                        + LEGEND_WIDTH
+                        + "&height="
+                        + LEGEND_HEIGHT
+                        + "&layer=gs%3A"
                         + LAYER_NAME;
         String expectedGetLegendGraphicRequestURLHttp =
-                "/wms?request=GetLegendGraphic&format=image%2Fjpeg&width=20&height=20&layer=gs%3A"
+                "/wms?request=GetLegendGraphic&format=image%2Fjpeg&width="
+                        + LEGEND_WIDTH
+                        + "&height="
+                        + LEGEND_HEIGHT
+                        + "&layer=gs%3A"
                         + HTTP_LEGEND_LAYER;
 
         final String legendUrlPath = "//Layer[Name='gs:" + LAYER_NAME + "']/Style/LegendURL";

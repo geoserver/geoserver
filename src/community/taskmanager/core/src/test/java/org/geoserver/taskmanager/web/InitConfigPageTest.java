@@ -38,6 +38,7 @@ public class InitConfigPageTest extends AbstractWicketTaskManagerTest {
 
     private Configuration config;
 
+    @Override
     protected boolean setupDataDirectory() throws Exception {
         return true;
     }

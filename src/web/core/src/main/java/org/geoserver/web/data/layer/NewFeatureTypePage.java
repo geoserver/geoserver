@@ -94,7 +94,7 @@ public class NewFeatureTypePage extends GeoServerSecuredPage {
                             String id,
                             IModel<AttributeDescription> itemModel,
                             Property<AttributeDescription> property) {
-                        AttributeDescription att = (AttributeDescription) itemModel.getObject();
+                        AttributeDescription att = itemModel.getObject();
                         if (property == AttributesProvider.NAME) {
                             Fragment f = new Fragment(id, "nameFragment", NewFeatureTypePage.this);
                             f.add(editAttributeLink(itemModel));

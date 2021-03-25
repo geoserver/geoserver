@@ -32,7 +32,7 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
 
     private String acceptedRoles = "";
 
-    private List<String> roles = new ArrayList<String>();
+    private List<String> roles = new ArrayList<>();
 
     private String gwcContextSuffix;
 

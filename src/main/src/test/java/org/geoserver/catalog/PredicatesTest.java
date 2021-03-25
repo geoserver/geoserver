@@ -7,15 +7,14 @@ package org.geoserver.catalog;
 
 import static org.geoserver.catalog.Predicates.contains;
 import static org.geoserver.catalog.Predicates.equal;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import org.geoserver.catalog.impl.AuthorityURL;
-import org.geoserver.catalog.impl.CoverageInfoImpl;
-import org.geoserver.catalog.impl.CoverageStoreInfoImpl;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -36,11 +35,7 @@ public class PredicatesTest {
 
     private FeatureTypeInfoImpl featureType;
 
-    private CoverageStoreInfoImpl coverageStore;
-
-    private CoverageInfoImpl coverage;
-
-    private LayerInfoImpl vectorLayer, rasterLayer;
+    private LayerInfoImpl vectorLayer;
 
     private StyleInfoImpl defaultStyle;
 
@@ -112,7 +107,7 @@ public class PredicatesTest {
         assertTrue(equal("id", ws.getId()).evaluate(ws));
         assertFalse(equal("id", "somethingElse").evaluate(ws));
 
-        Set<StyleInfo> styles = new HashSet<StyleInfo>();
+        Set<StyleInfo> styles = new HashSet<>();
         styles.add(style1);
 
         assertFalse(equal("styles", styles, MatchAction.ALL).evaluate(vectorLayer));
@@ -151,9 +146,7 @@ public class PredicatesTest {
     @Test
     public void testPropertyEqualsConverters() {
 
-        Object expected;
-
-        expected = featureType.getMaxFeatures();
+        Object expected = featureType.getMaxFeatures();
         assertTrue(equal("resource.maxFeatures", expected).evaluate(vectorLayer));
 
         expected = String.valueOf(featureType.getMaxFeatures());

@@ -6,8 +6,8 @@ package org.geoserver.rest.security;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.text.MessageFormat;
@@ -650,9 +650,8 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
 
         // layer rules
         String[][] dataRules = {{"ws.layer1.w", TEST_ROLE1}, {"ws.layer1.r", TEST_ROLELIST}};
-        String[][] serviceRules =
-                new String[][] {{"ws.*", TEST_ROLE1}, {"ws2.GetFeature", TEST_ROLELIST}};
-        String[][] restRules = new String[][] {{"/myworkspace/**:GET", TEST_ROLELIST}}; // conflict
+        String[][] serviceRules = {{"ws.*", TEST_ROLE1}, {"ws2.GetFeature", TEST_ROLELIST}};
+        String[][] restRules = {{"/myworkspace/**:GET", TEST_ROLELIST}}; // conflict
 
         assertEquals(
                 403,

@@ -4,10 +4,10 @@
  */
 package org.geoserver.wfs.remote.v2_0;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -37,6 +37,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class WfsRemoteStoreTest extends WFS20TestSupport {
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testAddRemoteWfsLayer() throws Exception {
 
         // configure the test environment
@@ -116,6 +117,7 @@ public class WfsRemoteStoreTest extends WFS20TestSupport {
     }
 
     @Test
+    @SuppressWarnings("deprecation")
     public void testAddRemoteWfsLayerSpecialChars() throws Exception {
 
         // configure the test environment

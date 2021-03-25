@@ -34,6 +34,7 @@ public class PNGLegendOutputFormat implements GetLegendGraphicOutputFormat {
      *
      * @see GetLegendGraphicOutputFormat#produceLegendGraphic(GetLegendGraphicRequest)
      */
+    @Override
     public LegendGraphic produceLegendGraphic(GetLegendGraphicRequest request)
             throws ServiceException {
         LegendGraphicBuilder builder = new BufferedImageLegendGraphicBuilder();
@@ -46,6 +47,7 @@ public class PNGLegendOutputFormat implements GetLegendGraphicOutputFormat {
      * @return {@code "image/png"}
      * @see org.geoserver.wms.GetLegendGraphicOutputFormat#getContentType()
      */
+    @Override
     public String getContentType() throws IllegalStateException {
         return MIME_TYPE;
     }

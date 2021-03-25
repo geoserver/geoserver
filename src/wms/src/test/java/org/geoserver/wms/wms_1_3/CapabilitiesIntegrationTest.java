@@ -698,7 +698,6 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         for (LayerInfo l : getCatalog().getLayerGroupByName(OPAQUE_GROUP).layers()) {
             assertXpathNotExists("//wms:Layer[wms:Name='" + l.prefixedName() + "']", dom);
         }
-        ;
     }
 
     @Test
@@ -721,7 +720,6 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
             for (PublishedInfo p : getCatalog().getLayerGroupByName(OPAQUE_GROUP).getLayers()) {
                 assertXpathNotExists("//wms:Layer[wms:Name='" + p.prefixedName() + "']", dom);
             }
-            ;
 
             // now check the layer count too, we just hid everything in the container layer
             List<LayerInfo> nestedLayers = new LayerGroupHelper(container).allLayers();
@@ -982,7 +980,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
         // get the original layer group object
         while (layerGroup instanceof AbstractDecorator) {
             AbstractDecorator decorator = (AbstractDecorator) layerGroup;
-            layerGroup = (LayerGroupInfo) decorator.unwrap(LayerGroupInfo.class);
+            layerGroup = unwrap(decorator);
         }
         // catalog detach doesn't work for layer groups
         if (Proxy.isProxyClass(layerGroup.getClass())) {
@@ -992,6 +990,11 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
             layerGroup = (LayerGroupInfo) proxy.getProxyObject();
         }
         return layerGroup;
+    }
+
+    @SuppressWarnings("unchecked")
+    private LayerGroupInfo unwrap(AbstractDecorator decorator) {
+        return (LayerGroupInfo) decorator.unwrap(LayerGroupInfo.class);
     }
 
     /** Helper method that creates a layer group using the provided name and layers. */

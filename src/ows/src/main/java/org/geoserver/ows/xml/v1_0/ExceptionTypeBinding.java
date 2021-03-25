@@ -53,6 +53,7 @@ public class ExceptionTypeBinding extends AbstractComplexEMFBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return OWS.EXCEPTIONTYPE;
     }
@@ -64,7 +65,8 @@ public class ExceptionTypeBinding extends AbstractComplexEMFBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<ExceptionType> getType() {
         return ExceptionType.class;
     }
 }

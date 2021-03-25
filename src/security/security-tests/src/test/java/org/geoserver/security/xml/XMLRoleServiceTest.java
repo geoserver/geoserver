@@ -113,9 +113,8 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
 
             // obtain a lock
             store1.addRole(role_test1);
-            boolean fail;
             String failMessage = "Concurrent lock not allowed";
-            fail = true;
+            boolean fail = true;
             try {
                 store2.clear();
             } catch (IOException ex) {
@@ -246,7 +245,7 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
             // modifiy store1
             store1.addRole(role_test1);
             store1.store();
-            assertTrue(service1.getRoles().size() == 1);
+            assertEquals(1, service1.getRoles().size());
 
             // increment lastmodified adding a second manually, the test is too fast
             xmlFile.setLastModified(xmlFile.lastModified() + 1000);
@@ -261,7 +260,7 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
             assertTrue("notification expected", listener.notified > 0);
 
             // here comes the magic !!!
-            assertTrue(service2.getRoles().size() == 1);
+            assertEquals(1, service2.getRoles().size());
         } finally {
             Files.schedule(10, TimeUnit.SECONDS);
             xmlFile.delete();

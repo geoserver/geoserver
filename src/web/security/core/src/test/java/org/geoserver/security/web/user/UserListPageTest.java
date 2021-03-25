@@ -5,7 +5,8 @@
  */
 package org.geoserver.security.web.user;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.lang.reflect.Method;
 import java.util.SortedSet;
@@ -21,18 +22,21 @@ import org.junit.Test;
 public class UserListPageTest extends AbstractTabbedListPageTest<GeoServerUser> {
     protected boolean withRoles = false;
 
+    @Override
     protected AbstractSecurityPage listPage(String serviceName) {
         AbstractSecurityPage result = initializeForUGServiceNamed(serviceName);
         tester.clickLink(getTabbedPanelPath() + ":tabs-container:tabs:1:link", true);
         return result;
     }
 
+    @Override
     protected Page newPage(AbstractSecurityPage page, Object... params) {
         if (params.length == 0)
             return new NewUserPage(getUserGroupServiceName()).setReturnPage(page);
         else return new NewUserPage((String) params[0]).setReturnPage(page);
     }
 
+    @Override
     protected Page editPage(AbstractSecurityPage page, Object... params) {
         if (params.length == 0) {
             return new EditUserPage(getUserGroupServiceName(), new GeoServerUser("dummyuser"))
@@ -97,9 +101,9 @@ public class UserListPageTest extends AbstractTabbedListPageTest<GeoServerUser> 
         m.invoke(link.delegate, null, null);
 
         SortedSet<GeoServerUser> users = ugService.getUsers();
-        assertTrue(users.size() == 0);
-        if (withRoles) assertTrue(gaService.getRolesForUser("user1").size() == 0);
-        else assertTrue(gaService.getRolesForUser("user1").size() == 2);
+        assertEquals(0, users.size());
+        if (withRoles) assertEquals(0, gaService.getRolesForUser("user1").size());
+        else assertEquals(2, gaService.getRolesForUser("user1").size());
     }
 
     @Test

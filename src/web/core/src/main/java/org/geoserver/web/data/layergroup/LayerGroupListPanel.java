@@ -23,10 +23,9 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroupInfo> {
     private static final long serialVersionUID = -4906590200057066912L;
 
-    static Property<LayerGroupInfo> NAME = new BeanProperty<LayerGroupInfo>("name", "name");
+    static Property<LayerGroupInfo> NAME = new BeanProperty<>("name", "name");
 
-    static Property<LayerGroupInfo> WORKSPACE =
-            new BeanProperty<LayerGroupInfo>("workspace", "workspace.name");
+    static Property<LayerGroupInfo> WORKSPACE = new BeanProperty<>("workspace", "workspace.name");
 
     public LayerGroupListPanel(String id, WorkspaceInfo workspace) {
         super(
@@ -49,8 +48,9 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
                         return Arrays.asList(NAME, WORKSPACE);
                     }
 
+                    @Override
                     public IModel<LayerGroupInfo> newModel(LayerGroupInfo object) {
-                        return new LayerGroupDetachableModel((LayerGroupInfo) object);
+                        return new LayerGroupDetachableModel(object);
                     }
                 });
         getTopPager().setVisible(false);

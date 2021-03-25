@@ -16,7 +16,6 @@ import static org.geoserver.gwc.web.layer.CachedLayerProvider.TYPE;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -104,7 +103,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                                     (IModel<Quota>) property.getModel(itemModel);
                             return quotaLink(id, quotaUsageModel);
                         } else if (property == ENABLED) {
-                            TileLayer layerInfo = (TileLayer) itemModel.getObject();
+                            TileLayer layerInfo = itemModel.getObject();
                             boolean enabled = layerInfo.isEnabled();
                             PackageResourceReference icon;
                             if (enabled) {
@@ -198,7 +197,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
             final String id, IModel<TileLayer> tileLayerNameModel) {
 
         String layerName = tileLayerNameModel.getObject().getName();
-        IModel<String> model = new Model<String>(layerName);
+        IModel<String> model = new Model<>(layerName);
         IModel<String> labelModel = new ResourceModel("truncate");
 
         SimpleAjaxLink<String> link =
@@ -270,16 +269,9 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         if (!layer.isEnabled()) {
             return new Label(id, new ResourceModel("previewDisabled"));
         }
-        final Set<String> gridSubsets = new TreeSet<String>(layer.getGridSubsets());
-        final List<MimeType> mimeTypes = new ArrayList<MimeType>(layer.getMimeTypes());
-        Collections.sort(
-                mimeTypes,
-                new Comparator<MimeType>() {
-                    @Override
-                    public int compare(MimeType o1, MimeType o2) {
-                        return o1.getFormat().compareTo(o2.getFormat());
-                    }
-                });
+        final Set<String> gridSubsets = new TreeSet<>(layer.getGridSubsets());
+        final List<MimeType> mimeTypes = new ArrayList<>(layer.getMimeTypes());
+        Collections.sort(mimeTypes, (o1, o2) -> o1.getFormat().compareTo(o2.getFormat()));
 
         Fragment f = new Fragment(id, "menuFragment", this);
 
@@ -294,7 +286,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 // build option with text and value
                 Label format = new Label(String.valueOf(i++), label);
                 String value = "gridSet=" + gridSetId + "&format=" + mimeType.getFormat();
-                format.add(new AttributeModifier("value", new Model<String>(value)));
+                format.add(new AttributeModifier("value", new Model<>(value)));
                 previewLinks.add(format);
             }
         }
@@ -312,7 +304,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         menu.add(
                 new AttributeAppender(
                         "onchange",
-                        new Model<String>("window.open(" + demoURL + ");this.selectedIndex=0"),
+                        new Model<>("window.open(" + demoURL + ");this.selectedIndex=0"),
                         ";"));
 
         f.add(menu);
@@ -431,7 +423,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
 
         @Override
         protected byte[] getImageData(Attributes attributes) {
-            TileLayer layer = (TileLayer) itemModel.getObject();
+            TileLayer layer = itemModel.getObject();
             PackageResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
             try {
                 return IOUtils.toByteArray(
@@ -458,7 +450,7 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                 return;
             }
 
-            final List<String> selectedNames = new ArrayList<String>();
+            final List<String> selectedNames = new ArrayList<>();
             for (TileLayer layer : selection) {
                 selectedNames.add(layer.getName());
             }

@@ -100,7 +100,7 @@ public class StyleGenerator {
         GeometryDescriptor gd = nativeFeatureType.getGeometryDescriptor();
         if (gd == null) return catalog.getStyleByName(StyleInfo.DEFAULT_POINT);
 
-        Class gtype = gd.getType().getBinding();
+        Class<?> gtype = gd.getType().getBinding();
         StyleType st;
         if (LineString.class.isAssignableFrom(gtype)
                 || MultiLineString.class.isAssignableFrom(gtype)) {
@@ -238,7 +238,7 @@ public class StyleGenerator {
             }
         }
 
-        List<Entry> entries = new ArrayList<Entry>();
+        List<Entry> entries = new ArrayList<>();
         int position;
 
         /**

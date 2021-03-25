@@ -29,6 +29,7 @@ import org.geoserver.wfs.request.Query;
 import org.geoserver.wfs.response.dxf.DXFWriter;
 import org.geoserver.wfs.response.dxf.DXFWriterFinder;
 import org.geoserver.wfs.response.dxf.LineType;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -62,7 +63,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
 
     private static final Logger LOGGER = Logging.getLogger(DXFOutputFormat.class);
 
-    public static final Set<String> formats = new HashSet<String>();
+    public static final Set<String> formats = new HashSet<>();
 
     static {
         // list of supported output formats
@@ -72,6 +73,16 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
 
     public DXFOutputFormat(GeoServer gs) {
         super(gs, formats);
+    }
+
+    /** Sets the right extension for the response */
+    @Override
+    protected String getExtension(FeatureCollectionResponse response) {
+        String outputFormat = response.getOutputFormat().toUpperCase();
+        // DXF
+        if (outputFormat.equals("DXF")) return "dxf";
+        // DXF-ZIP
+        return "zip";
     }
 
     /** Gets current request extension (dxf or zip). */
@@ -109,7 +120,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
             return request.getHandle();
         }
 
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (Query query : request.getQueries()) {
             addLayerNames(names, query, false);
         }
@@ -137,6 +148,16 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
 
     @Override
     public String getAttachmentFileName(Object value, Operation operation) {
+        GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
+        if (request.getFormatOptions() != null
+                && request.getFormatOptions().containsKey("FILENAME")) {
+            String fileName = (String) request.getFormatOptions().get("FILENAME");
+            if (fileName.contains(".")) {
+                return fileName; // includes extension
+            } else {
+                return fileName + "." + getDxfExtension(operation);
+            }
+        }
         return getFileName(operation) + '.' + getDxfExtension(operation);
     }
 
@@ -173,13 +194,7 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
         String blocks = (String) gft.getFormatOptions().get("ASBLOCKS");
         String colors = (String) gft.getFormatOptions().get("COLORS");
         String ltypes = (String) gft.getFormatOptions().get("LTYPES");
-        String[] layers = null;
-        if (gft.getFormatOptions().get("LAYERS") instanceof String) {
-            layers = ((String) gft.getFormatOptions().get("LAYERS")).split(",");
-        } else if (gft.getFormatOptions().get("LAYERS") instanceof List) {
-            layers =
-                    (String[]) ((List) gft.getFormatOptions().get("LAYERS")).toArray(new String[0]);
-        }
+        String[] layers = getLayers(gft);
         if (layers != null) {
             for (int count = 0; count < layers.length; count++) {
                 layers[count] = layers[count].toUpperCase();
@@ -249,7 +264,9 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
             }
 
             // do the real job, please
-            dxfWriter.write(featureCollection.getFeature(), version);
+            @SuppressWarnings("unchecked") // only actually works with simple features
+            List<SimpleFeatureCollection> feature = (List) featureCollection.getFeature();
+            dxfWriter.write(feature, version);
 
             w.flush();
             if (zipStream != null) {
@@ -265,9 +282,21 @@ public class DXFOutputFormat extends WFSGetFeatureOutputFormat {
                     "Version " + version + " not supported by dxf output format");
     }
 
+    @SuppressWarnings("unchecked")
+    private String[] getLayers(GetFeatureRequest gft) {
+        String[] layers = null;
+        if (gft.getFormatOptions().get("LAYERS") instanceof String) {
+            layers = ((String) gft.getFormatOptions().get("LAYERS")).split(",");
+        } else if (gft.getFormatOptions().get("LAYERS") instanceof List) {
+            layers =
+                    (String[]) ((List) gft.getFormatOptions().get("LAYERS")).toArray(new String[0]);
+        }
+        return layers;
+    }
+
     /** Gets a list of names for layers, one for each query. */
     private String[] getLayerNames(List<Query> queries) {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (Query query : queries) {
             addLayerNames(names, query, true);
         }

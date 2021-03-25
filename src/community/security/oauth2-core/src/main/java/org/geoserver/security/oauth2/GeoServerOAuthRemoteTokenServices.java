@@ -68,22 +68,27 @@ public abstract class GeoServerOAuthRemoteTokenServices extends RemoteTokenServi
                         });
     }
 
+    @Override
     public void setRestTemplate(RestOperations restTemplate) {
         this.restTemplate = restTemplate;
     }
 
+    @Override
     public void setCheckTokenEndpointUrl(String checkTokenEndpointUrl) {
         this.checkTokenEndpointUrl = checkTokenEndpointUrl;
     }
 
+    @Override
     public void setClientId(String clientId) {
         this.clientId = clientId;
     }
 
+    @Override
     public void setClientSecret(String clientSecret) {
         this.clientSecret = clientSecret;
     }
 
+    @Override
     public void setAccessTokenConverter(AccessTokenConverter accessTokenConverter) {
         this.tokenConverter = accessTokenConverter;
     }

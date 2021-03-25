@@ -51,7 +51,7 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     Integer maxAsynchronousProcesses = DEFAULT_MAX_ASYNCH;
 
     /** List of process groups/factories. */
-    List<ProcessGroupInfo> processGroups = new ArrayList<ProcessGroupInfo>();
+    List<ProcessGroupInfo> processGroups = new ArrayList<>();
 
     /** Where to store the WPS artifacts (inputs, outputs, and so on) */
     String storageDirectory;
@@ -101,6 +101,7 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
      *
      * @return the timeout, or -1 if infinite timeout.
      */
+    @Override
     public double getConnectionTimeout() {
         if (connectionTimeout == null) {
             // check the metadata map for backwards compatibility with 2.1.x series
@@ -122,10 +123,12 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
      * Sets the connection timeout (in seconds) to be used in WPS execute requests. -1 for infinite
      * timeout
      */
+    @Override
     public void setConnectionTimeout(double connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
     }
 
+    @Override
     public int getResourceExpirationTimeout() {
         if (resourceExpirationTimeout == null) {
             // check the metadata map for backwards compatibility with 2.1.x series
@@ -143,10 +146,12 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
         return resourceExpirationTimeout;
     }
 
+    @Override
     public void setResourceExpirationTimeout(int resourceExpirationTimeout) {
         this.resourceExpirationTimeout = resourceExpirationTimeout;
     }
 
+    @Override
     public int getMaxSynchronousProcesses() {
         if (maxSynchronousProcesses == null) {
             // check the metadata map for backwards compatibility with 2.1.x series
@@ -164,10 +169,12 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
         return maxSynchronousProcesses;
     }
 
+    @Override
     public void setMaxSynchronousProcesses(int maxSynchronousProcesses) {
         this.maxSynchronousProcesses = maxSynchronousProcesses;
     }
 
+    @Override
     public int getMaxAsynchronousProcesses() {
         if (maxAsynchronousProcesses == null) {
             // check the metadata map for backwards compatibility with 2.1.x series
@@ -185,6 +192,7 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
         return maxAsynchronousProcesses;
     }
 
+    @Override
     public void setMaxAsynchronousProcesses(int maxAsynchronousProcesses) {
         this.maxAsynchronousProcesses = maxAsynchronousProcesses;
     }
@@ -221,10 +229,12 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
         this.catalogMode = catalogMode;
     }
 
+    @Override
     public int getMaxComplexInputSize() {
         return maxComplexInputSize;
     }
 
+    @Override
     public void setMaxComplexInputSize(int maxComplexInputSize) {
         this.maxComplexInputSize = maxComplexInputSize;
     }

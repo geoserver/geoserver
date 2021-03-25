@@ -38,9 +38,7 @@ public class LiveActivityPanel extends Panel {
                             String id,
                             IModel<RequestData> itemModel,
                             Property<RequestData> property) {
-                        Object prop =
-                                ((BeanProperty<RequestData>) property)
-                                        .getPropertyValue((RequestData) itemModel.getObject());
+                        Object prop = property.getPropertyValue(itemModel.getObject());
 
                         String value = prop != null ? prop.toString() : "";
                         return new Label(id, value);
@@ -53,10 +51,9 @@ public class LiveActivityPanel extends Panel {
 
         private static final long serialVersionUID = -5576324995486786071L;
 
-        static final Property<RequestData> ID = new BeanProperty<RequestData>("id", "id");
-        static final Property<RequestData> PATH = new BeanProperty<RequestData>("path", "path");
-        static final Property<RequestData> STATUS =
-                new BeanProperty<RequestData>("status", "status");
+        static final Property<RequestData> ID = new BeanProperty<>("id", "id");
+        static final Property<RequestData> PATH = new BeanProperty<>("path", "path");
+        static final Property<RequestData> STATUS = new BeanProperty<>("status", "status");
 
         @Override
         protected List<RequestData> getItems() {

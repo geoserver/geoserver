@@ -1,0 +1,25 @@
+{
+  "clientID": "kbyuFDidLLm280LIwVFiazOqjO3ty8KH",
+  "created_at": "2020-12-01T16:10:14.659Z",
+  "email": "andrea.aime@gmail.com",
+  "email_verified": true,
+  "family_name": "Aime",
+  "given_name": "Andrea",
+  "roles": [
+    "R1",
+    "R2"
+  ],
+  "locale": "it",
+  "name": "Andrea Aime",
+  "nickname": "andrea.aime",
+  "updated_at": "2020-12-14T16:27:04.884Z",
+  "user_id": "100301874944276879963462152",
+  "persistent": {},
+  "user_metadata": {},
+  "app_metadata": {},
+  "iss": "https://samples.auth0.com/",
+  "sub": "100301874944276879963462152",
+  "aud": "kbyuFDidLLm280LIwVFiazOqjO3ty8KH",
+  "iat": 1607963235,
+  "exp": 1607999235
+}

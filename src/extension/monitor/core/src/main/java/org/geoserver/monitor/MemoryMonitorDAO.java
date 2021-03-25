@@ -23,8 +23,8 @@ public class MemoryMonitorDAO implements MonitorDAO {
 
     public static final String NAME = "memory";
 
-    Queue<RequestData> live = new ConcurrentLinkedQueue<RequestData>();
-    Queue<RequestData> history = new ConcurrentLinkedQueue<RequestData>();
+    Queue<RequestData> live = new ConcurrentLinkedQueue<>();
+    Queue<RequestData> history = new ConcurrentLinkedQueue<>();
 
     AtomicLong REQUEST_ID_GEN = new AtomicLong(1);
 
@@ -36,17 +36,21 @@ public class MemoryMonitorDAO implements MonitorDAO {
     @Override
     public void init(MonitorConfig config) {}
 
+    @Override
     public RequestData init(RequestData data) {
         data.setId(REQUEST_ID_GEN.getAndIncrement());
         return data;
     }
 
+    @Override
     public void add(RequestData data) {
         live.add(data);
     }
 
+    @Override
     public void update(RequestData data) {}
 
+    @Override
     public void save(RequestData data) {
         live.remove(data);
         history.add(data);
@@ -56,6 +60,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
         }
     }
 
+    @Override
     public RequestData getRequest(long id) {
         for (RequestData r : getRequests()) {
             if (r.getId() == id) {
@@ -65,17 +70,19 @@ public class MemoryMonitorDAO implements MonitorDAO {
         return null;
     }
 
+    @Override
     public List<RequestData> getRequests() {
-        List<RequestData> requests = new LinkedList();
+        List<RequestData> requests = new LinkedList<>();
         requests.addAll(live);
         requests.addAll(history);
         return requests;
     }
 
+    @Override
     public List<RequestData> getRequests(Query q) {
         List<RequestData> requests = getRequests();
 
-        List<Predicate> predicates = new ArrayList();
+        List<Predicate> predicates = new ArrayList<>();
         if (q.getFilter() != null) {
             Filter f = q.getFilter();
             predicates.add(new PropertyCompare(f.getLeft(), f.getType(), f.getRight()));
@@ -115,16 +122,19 @@ public class MemoryMonitorDAO implements MonitorDAO {
         return requests;
     }
 
+    @Override
     public void getRequests(Query query, RequestDataVisitor visitor) {
         for (RequestData r : getRequests(query)) {
             visitor.visit(r);
         }
     }
 
+    @Override
     public long getCount(Query query) {
         return getRequests(query).size();
     }
 
+    @Override
     public Iterator<RequestData> getIterator(Query query) {
         return getRequests(query).iterator();
     }
@@ -149,20 +159,24 @@ public class MemoryMonitorDAO implements MonitorDAO {
 
     }
 
+    @Override
     public List<RequestData> getOwsRequests() {
         return null;
     }
 
+    @Override
     public java.util.List<RequestData> getOwsRequests(
             String service, String operation, String version) {
         return null;
     };
 
+    @Override
     public void clear() {
         live.clear();
         history.clear();
     }
 
+    @Override
     public void dispose() {
         live.clear();
         history.clear();
@@ -183,6 +197,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
             this.to = to;
         }
 
+        @Override
         public boolean matches(RequestData data) {
             Date time = data.getStartTime();
             if (time == null) {
@@ -216,6 +231,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
             this.compare = compare;
         }
 
+        @Override
         public boolean matches(RequestData data) {
             String property = null;
             Object value = null;
@@ -252,24 +268,29 @@ public class MemoryMonitorDAO implements MonitorDAO {
             }
 
             if (o instanceof Comparable) {
-                int c = ((Comparable) o).compareTo(value);
-                switch (compare) {
-                    case LT:
-                        return c < 0;
-                    case LTE:
-                        return c <= 0;
-                    case GT:
-                        return c > 0;
-                    case GTE:
-                        return c >= 0;
-                }
-                return false;
+                return compare(value, (Comparable) o);
             } else {
                 throw new UnsupportedOperationException(
                         "Values of type "
                                 + value.getClass().getName()
                                 + " only support equality and non-equality comparison.");
             }
+        }
+
+        @SuppressWarnings("unchecked")
+        private boolean compare(Object value, Comparable o) {
+            int c = o.compareTo(value);
+            switch (compare) {
+                case LT:
+                    return c < 0;
+                case LTE:
+                    return c <= 0;
+                case GT:
+                    return c > 0;
+                case GTE:
+                    return c >= 0;
+            }
+            return false;
         }
     }
 
@@ -283,11 +304,13 @@ public class MemoryMonitorDAO implements MonitorDAO {
             this.order = order;
         }
 
+        @Override
         public int compare(RequestData r1, RequestData r2) {
             int c = compareInternal(r1, r2);
             return order == SortOrder.ASC ? c : -1 * c;
         }
 
+        @SuppressWarnings("unchecked")
         public int compareInternal(RequestData r1, RequestData r2) {
             Object o1 = OwsUtils.get(r1, property);
             Object o2 = OwsUtils.get(r2, property);

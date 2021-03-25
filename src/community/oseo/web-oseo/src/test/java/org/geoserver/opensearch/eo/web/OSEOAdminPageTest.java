@@ -4,7 +4,7 @@
  */
 package org.geoserver.opensearch.eo.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.util.tester.FormTester;

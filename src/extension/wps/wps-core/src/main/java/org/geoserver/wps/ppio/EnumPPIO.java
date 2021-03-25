@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 /** A PPIO for handling input literals that are backed by an enum parameter. */
 public class EnumPPIO extends LiteralPPIO {
 
-    public EnumPPIO(Class type) {
+    public EnumPPIO(Class<?> type) {
         super(type);
     }
 

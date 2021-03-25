@@ -193,7 +193,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         if (undefined) {
             model.setEnabled(doCreateTileLayer);
         }
-        add(createLayer = new CheckBox("createTileLayer", new Model<Boolean>(doCreateTileLayer)));
+        add(createLayer = new CheckBox("createTileLayer", new Model<>(doCreateTileLayer)));
         createLayer.add(new AttributeModifier("title", new ResourceModel("createTileLayer.title")));
 
         container = new WebMarkupContainer("container");
@@ -204,7 +204,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         configs.setOutputMarkupId(true);
         container.add(configs);
 
-        add(enabled = new CheckBox("enabled", new PropertyModel<Boolean>(getModel(), "enabled")));
+        add(enabled = new CheckBox("enabled", new PropertyModel<>(getModel(), "enabled")));
         enabled.add(new AttributeModifier("title", new ResourceModel("enabled.title")));
         configs.add(enabled);
 
@@ -228,11 +228,11 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
                         return value;
                     }
                 };
-        PropertyModel<String> blobStoreModel = new PropertyModel<String>(getModel(), "blobStoreId");
+        PropertyModel<String> blobStoreModel = new PropertyModel<>(getModel(), "blobStoreId");
         List<String> blobStoreChoices = getBlobStoreIds();
         configs.add(
                 blobStoreId =
-                        new DropDownChoice<String>(
+                        new DropDownChoice<>(
                                 "blobStoreId",
                                 blobStoreModel,
                                 blobStoreChoices,
@@ -261,8 +261,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
         // CheckBox for enabling/disabling inner caching for the layer
         enableInMemoryCaching =
-                new CheckBox(
-                        "inMemoryCached", new PropertyModel<Boolean>(getModel(), "inMemoryCached"));
+                new CheckBox("inMemoryCached", new PropertyModel<>(getModel(), "inMemoryCached"));
         ConfigurableBlobStore store = GeoServerExtensions.bean(ConfigurableBlobStore.class);
         if (store != null && store.getCache() != null) {
             enableInMemoryCaching.setEnabled(
@@ -275,31 +274,28 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         List<Integer> metaTilingChoices =
                 Arrays.asList(
                         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
-        IModel<Integer> metaTilingXModel = new PropertyModel<Integer>(getModel(), "metaTilingX");
-        metaTilingX =
-                new DropDownChoice<Integer>("metaTilingX", metaTilingXModel, metaTilingChoices);
+        IModel<Integer> metaTilingXModel = new PropertyModel<>(getModel(), "metaTilingX");
+        metaTilingX = new DropDownChoice<>("metaTilingX", metaTilingXModel, metaTilingChoices);
         configs.add(metaTilingX);
 
-        IModel<Integer> metaTilingYModel = new PropertyModel<Integer>(getModel(), "metaTilingY");
-        metaTilingY =
-                new DropDownChoice<Integer>("metaTilingY", metaTilingYModel, metaTilingChoices);
+        IModel<Integer> metaTilingYModel = new PropertyModel<>(getModel(), "metaTilingY");
+        metaTilingY = new DropDownChoice<>("metaTilingY", metaTilingYModel, metaTilingChoices);
         configs.add(metaTilingY);
 
-        IModel<Integer> gutterModel = new PropertyModel<Integer>(getModel(), "gutter");
+        IModel<Integer> gutterModel = new PropertyModel<>(getModel(), "gutter");
         List<Integer> gutterChoices =
                 Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 50, 100);
-        gutter = new DropDownChoice<Integer>("gutter", gutterModel, gutterChoices);
+        gutter = new DropDownChoice<>("gutter", gutterModel, gutterChoices);
         configs.add(gutter);
 
-        IModel<Set<String>> mimeFormatsModel =
-                new PropertyModel<Set<String>>(getModel(), "mimeFormats");
+        IModel<Set<String>> mimeFormatsModel = new PropertyModel<>(getModel(), "mimeFormats");
 
-        cacheFormats = new CheckGroup<String>("cacheFormatsGroup", mimeFormatsModel);
+        cacheFormats = new CheckGroup<>("cacheFormatsGroup", mimeFormatsModel);
         cacheFormats.setLabel(new ResourceModel("cacheFormats"));
         configs.add(cacheFormats);
 
-        final List<String> formats;
-        formats = Lists.newArrayList(GWC.getAdvertisedCachedFormats(info.getType()));
+        final List<String> formats =
+                Lists.newArrayList(GWC.getAdvertisedCachedFormats(info.getType()));
         mergeExisting(formats, mimeFormatsModel.getObject());
 
         ListView<String> cacheFormatsList =
@@ -308,7 +304,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
                     @Override
                     protected void populateItem(ListItem<String> item) {
-                        item.add(new Check<String>("cacheFormatsOption", item.getModel()));
+                        item.add(new Check<>("cacheFormatsOption", item.getModel()));
                         item.add(new Label("name", item.getModel()));
                     }
                 };
@@ -316,23 +312,21 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         // submits
         cacheFormats.add(cacheFormatsList);
 
-        IModel<Integer> expireCacheModel = new PropertyModel<Integer>(getModel(), "expireCache");
-        expireCache = new TextField<Integer>("expireCache", expireCacheModel);
+        IModel<Integer> expireCacheModel = new PropertyModel<>(getModel(), "expireCache");
+        expireCache = new TextField<>("expireCache", expireCacheModel);
         configs.add(expireCache);
 
-        IModel<Integer> expireClientsModel =
-                new PropertyModel<Integer>(getModel(), "expireClients");
-        expireClients = new TextField<Integer>("expireClients", expireClientsModel);
+        IModel<Integer> expireClientsModel = new PropertyModel<>(getModel(), "expireClients");
+        expireClients = new TextField<>("expireClients", expireClientsModel);
         configs.add(expireClients);
 
-        IModel<Set<XMLGridSubset>> gridSubsetsModel;
-        gridSubsetsModel = new PropertyModel<Set<XMLGridSubset>>(getModel(), "gridSubsets");
+        IModel<Set<XMLGridSubset>> gridSubsetsModel =
+                new PropertyModel<>(getModel(), "gridSubsets");
         gridSubsets = new GridSubsetsEditor("cachedGridsets", gridSubsetsModel);
         configs.add(gridSubsets);
 
-        IModel<Set<ParameterFilter>> parameterFilterModel;
-        parameterFilterModel =
-                new PropertyModel<Set<ParameterFilter>>(getModel(), "parameterFilters");
+        IModel<Set<ParameterFilter>> parameterFilterModel =
+                new PropertyModel<>(getModel(), "parameterFilters");
         parameterFilters =
                 new ParameterFilterEditor("parameterFilters", parameterFilterModel, layerModel);
         configs.add(parameterFilters);
@@ -359,7 +353,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
     }
 
     private List<String> getBlobStoreIds() {
-        List<String> blobStoreIds = new ArrayList<String>();
+        List<String> blobStoreIds = new ArrayList<>();
         for (BlobStoreInfo blobStore : GWC.get().getBlobStores()) {
             blobStoreIds.add(blobStore.getName());
         }
@@ -457,7 +451,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
     private void confirmRemovalOfExistingTileLayer(final AjaxRequestTarget origTarget) {
         // show confirm cache removal dialog for this layer
-        confirmRemovalDialog.setTitle(new Model<String>("Confirm removal of cached contents?"));
+        confirmRemovalDialog.setTitle(new Model<>("Confirm removal of cached contents?"));
 
         // if there is something to cancel, let's warn the user about what
         // could go wrong, and if the user accepts, let's delete what's needed

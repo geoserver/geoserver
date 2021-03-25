@@ -59,7 +59,7 @@ public class LoggingUtils {
         // JD: before we wipe out the logging configuration, save any appenders that are not
         // console or file based. This allows for other types of appenders to remain in tact
         // when geoserver is reloaded.
-        List<Appender> appenders = new ArrayList();
+        List<Appender> appenders = new ArrayList<>();
         Enumeration a = LogManager.getRootLogger().getAllAppenders();
         while (a.hasMoreElements()) {
             Appender appender = (Appender) a.nextElement();
@@ -163,21 +163,20 @@ public class LoggingUtils {
 
             // now we copy in the various logging config files from the base repo location on the
             // classpath
-            final String[] lcfiles =
-                    new String[] {
-                        "DEFAULT_LOGGING.properties",
-                        "GEOSERVER_DEVELOPER_LOGGING.properties",
-                        "GEOTOOLS_DEVELOPER_LOGGING.properties",
-                        "PRODUCTION_LOGGING.properties",
-                        "QUIET_LOGGING.properties",
-                        "TEST_LOGGING.properties",
-                        "VERBOSE_LOGGING.properties"
-                    };
+            final String[] lcfiles = {
+                "DEFAULT_LOGGING.properties",
+                "GEOSERVER_DEVELOPER_LOGGING.properties",
+                "GEOTOOLS_DEVELOPER_LOGGING.properties",
+                "PRODUCTION_LOGGING.properties",
+                "QUIET_LOGGING.properties",
+                "TEST_LOGGING.properties",
+                "VERBOSE_LOGGING.properties"
+            };
 
-            for (int i = 0; i < lcfiles.length; i++) {
-                File target = new File(lcdir.getAbsolutePath(), lcfiles[i]);
+            for (String lcfile : lcfiles) {
+                File target = new File(lcdir.getAbsolutePath(), lcfile);
                 if (!target.exists()) {
-                    resourceLoader.copyFromClassPath(lcfiles[i], target);
+                    resourceLoader.copyFromClassPath(lcfile, target);
                 }
             }
 

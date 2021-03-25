@@ -63,7 +63,7 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
 
     FeatureType featureType;
 
-    List<RasterSymbolizer> symbolizers = new ArrayList<RasterSymbolizer>();
+    List<RasterSymbolizer> symbolizers = new ArrayList<>();
 
     boolean otherSymbolizers = false;
 
@@ -92,6 +92,7 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
         return rasterTransformation;
     }
 
+    @Override
     public void visit(StyledLayerDescriptor sld) {
         for (StyledLayer sl : sld.getStyledLayers()) {
             if (sl instanceof UserLayer) {
@@ -102,24 +103,29 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
         }
     }
 
+    @Override
     public void visit(NamedLayer layer) {
         for (Style s : layer.getStyles()) s.accept(this);
     }
 
+    @Override
     public void visit(UserLayer layer) {
         for (Style s : layer.getUserStyles()) s.accept(this);
     }
 
+    @Override
     public void visit(FeatureTypeConstraint ftc) {
         // nothing to do
     }
 
+    @Override
     public void visit(Style style) {
         for (FeatureTypeStyle fts : style.featureTypeStyles()) {
             fts.accept(this);
         }
     }
 
+    @Override
     public void visit(Rule rule) {
         if (rule.getMinScaleDenominator() < scaleDenominator
                 && rule.getMaxScaleDenominator() > scaleDenominator) {
@@ -127,6 +133,7 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
         }
     }
 
+    @Override
     public void visit(FeatureTypeStyle fts) {
         // use the same logic as streaming renderer to decide if a fts is active
         if (featureType == null
@@ -159,15 +166,18 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
         }
     }
 
+    @Override
     public void visit(Fill fill) {
         // nothing to do
 
     }
 
+    @Override
     public void visit(Stroke stroke) {
         // nothing to do
     }
 
+    @Override
     public void visit(Symbolizer sym) {
         if (sym instanceof RasterSymbolizer) {
             visit((RasterSymbolizer) sym);
@@ -176,90 +186,111 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
         }
     }
 
+    @Override
     public void visit(PointSymbolizer ps) {
         otherSymbolizers = true;
     }
 
+    @Override
     public void visit(LineSymbolizer line) {
         otherSymbolizers = true;
     }
 
+    @Override
     public void visit(PolygonSymbolizer poly) {
         otherSymbolizers = true;
     }
 
+    @Override
     public void visit(TextSymbolizer text) {
         otherSymbolizers = true;
     }
 
+    @Override
     public void visit(RasterSymbolizer raster) {
         this.symbolizers.add(raster);
     }
 
+    @Override
     public void visit(Graphic gr) {
         // nothing to do
 
     }
 
+    @Override
     public void visit(Mark mark) {
         // nothing to do
 
     }
 
+    @Override
     public void visit(ExternalGraphic exgr) {
         // nothing to do
 
     }
 
+    @Override
     public void visit(PointPlacement pp) {
         // nothing to do
 
     }
 
+    @Override
     public void visit(AnchorPoint ap) {
         // nothing to do
     }
 
+    @Override
     public void visit(Displacement dis) {
         // nothing to do
     }
 
+    @Override
     public void visit(LinePlacement lp) {
         // nothing to do
     }
 
+    @Override
     public void visit(Halo halo) {
         // nothing to do
     }
 
+    @Override
     public void visit(ColorMap colorMap) {
         // nothing to do
     }
 
+    @Override
     public void visit(ColorMapEntry colorMapEntry) {
         // nothing to do
     }
 
+    @Override
     public void visit(ContrastEnhancement contrastEnhancement) {
         // nothing to do
     }
 
+    @Override
     public void visit(ImageOutline outline) {
         // nothing to do
     }
 
+    @Override
     public void visit(ChannelSelection cs) {
         // nothing to do
     }
 
+    @Override
     public void visit(OverlapBehavior ob) {
         // nothing to do
     }
 
+    @Override
     public void visit(SelectedChannelType sct) {
         // nothing to do
     }
 
+    @Override
     public void visit(ShadedRelief sr) {
         // nothing to do
     }

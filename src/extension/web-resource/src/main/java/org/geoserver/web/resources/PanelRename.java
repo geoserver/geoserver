@@ -22,7 +22,7 @@ public class PanelRename extends Panel {
         super(id);
 
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
-        add(new TextField<String>("name", new Model<String>(name)));
+        add(new TextField<>("name", new Model<>(name)));
     }
 
     public String getName() {

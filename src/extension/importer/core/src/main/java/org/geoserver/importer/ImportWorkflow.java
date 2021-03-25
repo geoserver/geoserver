@@ -15,5 +15,5 @@ import java.util.List;
  */
 public class ImportWorkflow {
 
-    List<ImportStep> steps = new ArrayList<ImportStep>();
+    List<ImportStep> steps = new ArrayList<>();
 }

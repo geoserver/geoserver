@@ -87,6 +87,7 @@ public class BackupRestoreLayersIndexModel extends LoadableDetachableModel<List<
             //
         }
 
+        @Override
         public int compare(LayerInfo l1, LayerInfo l2) {
             return l1.getName().compareToIgnoreCase(l2.getName());
         }

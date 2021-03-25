@@ -46,6 +46,7 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
         this.gs = gs;
     }
 
+    @Override
     public CSWInfo getServiceInfo() {
         return gs.getService(CSWInfo.class);
     }
@@ -135,7 +136,7 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
         List<CatalogStore> storeCandidates =
                 GeoServerExtensions.extensions(CatalogStore.class, applicationContext);
 
-        if (storeCandidates != null && storeCandidates.size() > 0) {
+        if (storeCandidates != null && !storeCandidates.isEmpty()) {
             String defaultStore = System.getProperty("DefaultCatalogStore");
             if (defaultStore != null) {
                 for (CatalogStore store : storeCandidates) {

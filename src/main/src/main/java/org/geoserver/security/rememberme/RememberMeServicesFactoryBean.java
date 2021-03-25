@@ -97,6 +97,7 @@ public class RememberMeServicesFactoryBean implements FactoryBean<RememberMeServ
             RememberMeServicesConfig rmsConfig =
                     securityManager.getSecurityConfig().getRememberMeService();
             try {
+                @SuppressWarnings("unchecked")
                 Class<RememberMeServices> rmsClass =
                         (Class<RememberMeServices>) Class.forName(rmsConfig.getClassName());
                 rms =

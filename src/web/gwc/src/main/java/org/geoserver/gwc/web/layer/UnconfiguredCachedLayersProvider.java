@@ -53,20 +53,17 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
 
                 @Override
                 public Comparator<TileLayer> getComparator() {
-                    return new Comparator<TileLayer>() {
-                        @Override
-                        public int compare(TileLayer o1, TileLayer o2) {
-                            GWCIconFactory.CachedLayerType r1 = getPropertyValue(o1);
-                            GWCIconFactory.CachedLayerType r2 = getPropertyValue(o2);
-                            return r1.compareTo(r2);
-                        }
+                    return (o1, o2) -> {
+                        GWCIconFactory.CachedLayerType r1 = getPropertyValue(o1);
+                        GWCIconFactory.CachedLayerType r2 = getPropertyValue(o2);
+                        return r1.compareTo(r2);
                     };
                 }
             };
 
-    static final Property<TileLayer> NAME = new BeanProperty<TileLayer>("name", "name");
+    static final Property<TileLayer> NAME = new BeanProperty<>("name", "name");
 
-    static final Property<TileLayer> ENABLED = new BeanProperty<TileLayer>("enabled", "enabled");
+    static final Property<TileLayer> ENABLED = new BeanProperty<>("enabled", "enabled");
 
     static final List<Property<TileLayer>> PROPERTIES =
             Collections.unmodifiableList(Arrays.asList(TYPE, NAME, ENABLED));
@@ -114,7 +111,7 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
     @Override
     public Iterator<TileLayer> iterator(long first, long count) {
         final Stream<TileLayer> stream = tileLayerStream(first, count);
-        return new CloseableIteratorAdapter<TileLayer>(stream.iterator(), () -> stream.close());
+        return new CloseableIteratorAdapter<>(stream.iterator(), () -> stream.close());
     }
 
     private Stream<TileLayer> tileLayerStream(long first, long count) {
@@ -209,8 +206,9 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
     }
 
     /** @see org.geoserver.web.wicket.GeoServerDataProvider#newModel(java.lang.Object) */
+    @Override
     public IModel<TileLayer> newModel(final TileLayer tileLayer) {
-        return new UnconfiguredTileLayerDetachableModel(((TileLayer) tileLayer).getName());
+        return new UnconfiguredTileLayerDetachableModel(tileLayer.getName());
     }
 
     /** @see org.geoserver.web.wicket.GeoServerDataProvider#getComparator */

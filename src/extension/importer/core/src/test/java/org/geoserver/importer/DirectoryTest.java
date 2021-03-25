@@ -6,46 +6,57 @@
 package org.geoserver.importer;
 
 import static org.geoserver.importer.ImporterTestUtils.unpack;
-import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.importer.mosaic.Mosaic;
+import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-public class DirectoryTest extends TestCase {
+public class DirectoryTest {
 
-    public void testMosaicAuxillaryFiles() throws Exception {
+    @Before
+    public void setUp() {
+        GeoServerExtensionsHelper.singleton(
+                "spatialFileExtensionsProvider",
+                new SpatialFileExtensionsProvider(),
+                SupplementalFileExtensionsProvider.class);
+    }
+
+    @Test
+    public void testMosaicAuxiliaryFiles() throws Exception {
         File unpack = ImporterTestUtils.unpack("mosaic/bm.zip");
 
         // all types of junk!
-        String[] aux = new String[] {"aux", "rrd", "xml", "tif.aux.xml", "tfw"};
+        String[] aux = {"aux", "rrd", "xml", "tif.aux.xml", "tfw"};
         File[] tifs = unpack.listFiles();
-        for (int i = 0; i < tifs.length; i++) {
-            File file = tifs[i];
-            for (int j = 0; j < aux.length; j++) {
-                new File(unpack, file.getName().replace("tif", aux[j])).createNewFile();
+        for (File file : tifs) {
+            for (String s : aux) {
+                new File(unpack, file.getName().replace("tif", s)).createNewFile();
             }
         }
 
         Mosaic m = new Mosaic(unpack);
         m.prepare();
 
-        assertEquals(4, m.getFiles().size());
+        Assert.assertEquals(4, m.getFiles().size());
         for (int i = 0; i < m.getFiles().size(); i++) {
-            assertEquals("GeoTIFF", m.getFiles().get(1).getFormat().getName());
+            Assert.assertEquals("GeoTIFF", m.getFiles().get(1).getFormat().getName());
         }
         // make sure the junk was actually picked up
         for (FileData f : m.getFiles()) {
-            assertEquals(aux.length, ((SpatialFile) f).getSuppFiles().size());
+            Assert.assertEquals(aux.length, ((SpatialFile) f).getSuppFiles().size());
         }
     }
 
+    @Test
     public void testSingleSpatialFile() throws Exception {
         File dir = unpack("shape/archsites_epsg_prj.zip");
 
@@ -54,25 +65,26 @@ public class DirectoryTest extends TestCase {
 
         List<FileData> files = d.getFiles();
 
-        assertEquals(1, files.size());
-        assertTrue(files.get(0) instanceof SpatialFile);
+        Assert.assertEquals(1, files.size());
+        Assert.assertTrue(files.get(0) instanceof SpatialFile);
 
         SpatialFile spatial = (SpatialFile) files.get(0);
-        assertEquals("shp", FilenameUtils.getExtension(spatial.getFile().getName()));
+        Assert.assertEquals("shp", FilenameUtils.getExtension(spatial.getFile().getName()));
 
-        assertNotNull(spatial.getPrjFile().getName());
-        assertEquals("prj", FilenameUtils.getExtension(spatial.getPrjFile().getName()));
+        Assert.assertNotNull(spatial.getPrjFile().getName());
+        Assert.assertEquals("prj", FilenameUtils.getExtension(spatial.getPrjFile().getName()));
 
-        assertEquals(2, spatial.getSuppFiles().size());
+        Assert.assertEquals(2, spatial.getSuppFiles().size());
 
-        Set<String> exts = new HashSet<String>(Arrays.asList("shx", "dbf"));
+        Set<String> exts = new HashSet<>(Arrays.asList("shx", "dbf"));
         for (File supp : spatial.getSuppFiles()) {
             exts.remove(FilenameUtils.getExtension(supp.getName()));
         }
 
-        assertTrue(exts.isEmpty());
+        Assert.assertTrue(exts.isEmpty());
     }
 
+    @Test
     public void testShapefileWithMacOSXDirectory() throws Exception {
         File dir = unpack("shape/archsites_epsg_prj.zip");
 
@@ -85,13 +97,14 @@ public class DirectoryTest extends TestCase {
         Directory d = new Directory(dir);
         d.prepare();
 
-        assertNotNull(d.getFormat());
-        assertEquals(DataStoreFormat.class, d.getFormat().getClass());
+        Assert.assertNotNull(d.getFormat());
+        Assert.assertEquals(DataStoreFormat.class, d.getFormat().getClass());
         List<FileData> files = d.getFiles();
-        assertEquals(1, files.size());
-        assertEquals(DataStoreFormat.class, files.get(0).getFormat().getClass());
+        Assert.assertEquals(1, files.size());
+        Assert.assertEquals(DataStoreFormat.class, files.get(0).getFormat().getClass());
     }
 
+    @Test
     public void testShapefileWithExtraFiles() throws Exception {
         File dir = unpack("shape/archsites_epsg_prj.zip");
 
@@ -104,13 +117,14 @@ public class DirectoryTest extends TestCase {
         Directory d = new Directory(dir);
         d.prepare();
 
-        assertNotNull(d.getFormat());
-        assertEquals(DataStoreFormat.class, d.getFormat().getClass());
+        Assert.assertNotNull(d.getFormat());
+        Assert.assertEquals(DataStoreFormat.class, d.getFormat().getClass());
         List<FileData> files = d.getFiles();
-        assertEquals(1, files.size());
-        assertEquals(DataStoreFormat.class, files.get(0).getFormat().getClass());
+        Assert.assertEquals(1, files.size());
+        Assert.assertEquals(DataStoreFormat.class, files.get(0).getFormat().getClass());
     }
 
+    @Test
     public void testMultipleSpatialFile() throws Exception {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         unpack("shape/bugsites_esri_prj.tar.gz", dir);
@@ -118,11 +132,12 @@ public class DirectoryTest extends TestCase {
         Directory d = new Directory(dir);
         d.prepare();
 
-        assertEquals(2, d.getFiles().size());
-        assertTrue(d.getFiles().get(0) instanceof SpatialFile);
-        assertTrue(d.getFiles().get(1) instanceof SpatialFile);
+        Assert.assertEquals(2, d.getFiles().size());
+        Assert.assertTrue(d.getFiles().get(0) instanceof SpatialFile);
+        Assert.assertTrue(d.getFiles().get(1) instanceof SpatialFile);
     }
 
+    @Test
     public void testMultipleSpatialASpatialFile() throws Exception {
         File dir = unpack("shape/archsites_epsg_prj.zip");
         unpack("shape/bugsites_esri_prj.tar.gz", dir);
@@ -131,9 +146,9 @@ public class DirectoryTest extends TestCase {
         Directory d = new Directory(dir);
         d.prepare();
 
-        assertEquals(3, d.getFiles().size());
-        assertTrue(d.getFiles().get(0) instanceof SpatialFile);
-        assertTrue(d.getFiles().get(1) instanceof SpatialFile);
-        assertTrue(d.getFiles().get(2) instanceof ASpatialFile);
+        Assert.assertEquals(3, d.getFiles().size());
+        Assert.assertTrue(d.getFiles().get(0) instanceof SpatialFile);
+        Assert.assertTrue(d.getFiles().get(1) instanceof SpatialFile);
+        Assert.assertTrue(d.getFiles().get(2) instanceof ASpatialFile);
     }
 }

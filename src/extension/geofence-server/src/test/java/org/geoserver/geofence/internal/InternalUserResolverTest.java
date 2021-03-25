@@ -181,9 +181,9 @@ public class InternalUserResolverTest extends AbstractSecurityServiceTest {
         addTestUser("user2", Arrays.asList("adminRole"), service, store);
         addTestUser("user3", Arrays.asList("role1"), service, store);
 
-        assertTrue(service.getRoleCount() == 3);
-        assertTrue(
-                ((GeoServerRoleService) resolver.getDefaultSecurityService()).getRoleCount() == 3);
+        assertEquals(3, service.getRoleCount());
+        assertEquals(
+                3, ((GeoServerRoleService) resolver.getDefaultSecurityService()).getRoleCount());
         assertTrue(resolver.existsUser("user1"));
         assertTrue(resolver.existsUser("user2"));
         assertTrue(resolver.existsUser("user3"));

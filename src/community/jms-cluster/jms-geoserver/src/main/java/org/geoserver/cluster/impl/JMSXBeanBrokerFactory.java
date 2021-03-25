@@ -20,6 +20,7 @@ public class JMSXBeanBrokerFactory extends XBeanBrokerFactory implements Applica
 
     private ApplicationContext context;
 
+    @Override
     protected ApplicationContext createApplicationContext(String uri) throws MalformedURLException {
         Resource resource = Utils.resourceFromString(uri);
         try {

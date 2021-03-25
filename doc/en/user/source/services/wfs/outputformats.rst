@@ -130,6 +130,8 @@ JSON output ``format_options``:
 
 * ``format_options=callback:<parseResponse>`` applies only to the JSONP output format. See :ref:`wms_vendor_parameters` to change the callback name. Note that this format is disabled by default (See :ref:`wms_global_variables`).
 
+* ``format_option=filename:<file>``: if a file name is provided, the name is used as the output file name. The extension :file:`json` is optional, for example ``format_options=filename:export`` or ``format_options=features.json``
+
 JSON output ``system properties``:
 
 * ``json.maxDepth=<max_value>`` is used to determine the max number of allowed JSON nested objects on encoding phase.  By default the value is 100.

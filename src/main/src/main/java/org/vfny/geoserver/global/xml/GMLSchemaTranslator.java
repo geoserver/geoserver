@@ -31,7 +31,7 @@ import org.locationtech.jts.geom.Polygon;
  * @version $Id$
  */
 public class GMLSchemaTranslator extends NameSpaceTranslator {
-    private HashSet elements;
+    private Set<NameSpaceElement> elements;
 
     /**
      * XMLSchemaTranslator constructor.
@@ -40,7 +40,7 @@ public class GMLSchemaTranslator extends NameSpaceTranslator {
      */
     public GMLSchemaTranslator(String prefix) {
         super(prefix);
-        elements = new HashSet();
+        elements = new HashSet<>();
         /*elements.add(new PointElement(prefix));
         elements.add(new LineStringElement(prefix));
         elements.add(new LinearRingElement(prefix));
@@ -83,6 +83,7 @@ public class GMLSchemaTranslator extends NameSpaceTranslator {
      *
      * @see org.vfny.geoserver.global.xml.NameSpaceTranslator#getElements()
      */
+    @Override
     public Set getElements() {
         return elements;
     }
@@ -92,6 +93,7 @@ public class GMLSchemaTranslator extends NameSpaceTranslator {
      *
      * @see org.vfny.geoserver.global.xml.NameSpaceTranslator#getNameSpace()
      */
+    @Override
     public String getNameSpace() {
         return "http://www.opengis.net/gml";
     }
@@ -102,22 +104,27 @@ class AbstractFeatureElement extends NameSpaceElement {
         super(prefix);
     }
 
+    @Override
     public String getTypeDefName() {
         return "AbstractFeatureType";
     }
 
+    @Override
     public String getTypeRefName() {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeDefName() {
         return prefix + ":AbstractFeatureType";
     }
 
+    @Override
     public String getQualifiedTypeRefName() {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeDefName(String prefix) {
         if (prefix != null) {
             return prefix + ":AbstractFeatureType";
@@ -130,14 +137,17 @@ class AbstractFeatureElement extends NameSpaceElement {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeRefName(String prefix) {
         return null;
     }
 
-    public Class getJavaClass() {
+    @Override
+    public Class<Object> getJavaClass() {
         return Object.class;
     }
 
+    @Override
     public boolean isAbstract() {
         return true;
     }
@@ -148,22 +158,27 @@ class AbstractFeatureCollectionBaseElement extends NameSpaceElement {
         super(prefix);
     }
 
+    @Override
     public String getTypeDefName() {
         return "AbstractFeatureCollectionBaseType";
     }
 
+    @Override
     public String getTypeRefName() {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeDefName() {
         return prefix + ":AbstractFeatureCollectionBaseType";
     }
 
+    @Override
     public String getQualifiedTypeRefName() {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeDefName(String prefix) {
         if (prefix != null) {
             return prefix + ":AbstractFeatureCollectionBaseType";
@@ -176,14 +191,18 @@ class AbstractFeatureCollectionBaseElement extends NameSpaceElement {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeRefName(String prefix) {
         return null;
     }
 
-    public Class getJavaClass() {
+    @Override
+    @SuppressWarnings("rawtypes")
+    public Class<FeatureCollection> getJavaClass() {
         return FeatureCollection.class;
     }
 
+    @Override
     public boolean isAbstract() {
         return true;
     }
@@ -194,22 +213,27 @@ class AbstractFeatureCollectionElement extends NameSpaceElement {
         super(prefix);
     }
 
+    @Override
     public String getTypeDefName() {
         return "AbstractFeatureCollectionType";
     }
 
+    @Override
     public String getTypeRefName() {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeDefName() {
         return prefix + ":AbstractFeatureCollectionType";
     }
 
+    @Override
     public String getQualifiedTypeRefName() {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeDefName(String prefix) {
         if (prefix != null) {
             return prefix + ":AbstractFeatureCollectionType";
@@ -222,14 +246,18 @@ class AbstractFeatureCollectionElement extends NameSpaceElement {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeRefName(String prefix) {
         return null;
     }
 
-    public Class getJavaClass() {
+    @Override
+    @SuppressWarnings("rawtypes")
+    public Class<FeatureCollection> getJavaClass() {
         return FeatureCollection.class;
     }
 
+    @Override
     public boolean isAbstract() {
         return true;
     }
@@ -249,22 +277,27 @@ class GeometryPropertyElement extends NameSpaceElement {
         super(prefix);
     }
 
+    @Override
     public String getTypeDefName() {
         return "GeometryPropertyType";
     }
 
+    @Override
     public String getTypeRefName() {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeDefName() {
         return prefix + ":GeometryPropertyType";
     }
 
+    @Override
     public String getQualifiedTypeRefName() {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeDefName(String prefix) {
         if (prefix != null) {
             return prefix + ":GeometryPropertyType";
@@ -277,14 +310,17 @@ class GeometryPropertyElement extends NameSpaceElement {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeRefName(String prefix) {
         return null;
     }
 
-    public Class getJavaClass() {
+    @Override
+    public Class<Geometry> getJavaClass() {
         return Geometry.class;
     }
 
+    @Override
     public boolean isAbstract() {
         return true;
     }
@@ -739,22 +775,27 @@ class PointPropertyElement extends NameSpaceElement {
         super(prefix);
     }
 
+    @Override
     public String getTypeDefName() {
         return "PointPropertyType";
     }
 
+    @Override
     public String getTypeRefName() {
         return "pointProperty";
     }
 
+    @Override
     public String getQualifiedTypeDefName() {
         return prefix + ":PointPropertyType";
     }
 
+    @Override
     public String getQualifiedTypeRefName() {
         return prefix + ":pointProperty";
     }
 
+    @Override
     public String getQualifiedTypeDefName(String prefix) {
         if (prefix != null) {
             return prefix + ":PointPropertyType";
@@ -767,6 +808,7 @@ class PointPropertyElement extends NameSpaceElement {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeRefName(String prefix) {
         if (prefix != null) {
             return prefix + ":pointProperty";
@@ -779,14 +821,17 @@ class PointPropertyElement extends NameSpaceElement {
         return null;
     }
 
-    public Class getJavaClass() {
+    @Override
+    public Class<Point> getJavaClass() {
         return Point.class;
     }
 
+    @Override
     public boolean isAbstract() {
         return false;
     }
 
+    @Override
     public boolean isDefault() {
         return true;
     }
@@ -797,22 +842,27 @@ class PolygonPropertyElement extends NameSpaceElement {
         super(prefix);
     }
 
+    @Override
     public String getTypeDefName() {
         return "PolygonPropertyType";
     }
 
+    @Override
     public String getTypeRefName() {
         return "polygonProperty";
     }
 
+    @Override
     public String getQualifiedTypeDefName() {
         return prefix + ":PolygonPropertyType";
     }
 
+    @Override
     public String getQualifiedTypeRefName() {
         return prefix + ":polygonProperty";
     }
 
+    @Override
     public String getQualifiedTypeDefName(String prefix) {
         if (prefix != null) {
             return prefix + ":PolygonPropertyType";
@@ -825,6 +875,7 @@ class PolygonPropertyElement extends NameSpaceElement {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeRefName(String prefix) {
         if (prefix != null) {
             return prefix + ":polygonProperty";
@@ -837,14 +888,17 @@ class PolygonPropertyElement extends NameSpaceElement {
         return null;
     }
 
+    @Override
     public boolean isAbstract() {
         return false;
     }
 
-    public Class getJavaClass() {
+    @Override
+    public Class<Polygon> getJavaClass() {
         return Polygon.class;
     }
 
+    @Override
     public boolean isDefault() {
         return true;
     }
@@ -855,22 +909,27 @@ class LineStringPropertyElement extends NameSpaceElement {
         super(prefix);
     }
 
+    @Override
     public String getTypeDefName() {
         return "LineStringPropertyType";
     }
 
+    @Override
     public String getTypeRefName() {
         return "lineStringProperty";
     }
 
+    @Override
     public String getQualifiedTypeDefName() {
         return prefix + ":LineStringPropertyType";
     }
 
+    @Override
     public String getQualifiedTypeRefName() {
         return prefix + ":lineStringProperty";
     }
 
+    @Override
     public String getQualifiedTypeDefName(String prefix) {
         if (prefix != null) {
             return prefix + ":LineStringPropertyType";
@@ -883,6 +942,7 @@ class LineStringPropertyElement extends NameSpaceElement {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeRefName(String prefix) {
         if (prefix != null) {
             return prefix + ":lineStringProperty";
@@ -895,14 +955,17 @@ class LineStringPropertyElement extends NameSpaceElement {
         return null;
     }
 
-    public Class getJavaClass() {
+    @Override
+    public Class<LineString> getJavaClass() {
         return LineString.class;
     }
 
+    @Override
     public boolean isAbstract() {
         return false;
     }
 
+    @Override
     public boolean isDefault() {
         return true;
     }
@@ -913,22 +976,27 @@ class MultiPointPropertyElement extends NameSpaceElement {
         super(prefix);
     }
 
+    @Override
     public String getTypeDefName() {
         return "MultiPointPropertyType";
     }
 
+    @Override
     public String getTypeRefName() {
         return "multiPointProperty";
     }
 
+    @Override
     public String getQualifiedTypeDefName() {
         return prefix + ":MultiPointPropertyType";
     }
 
+    @Override
     public String getQualifiedTypeRefName() {
         return prefix + ":multiPointProperty";
     }
 
+    @Override
     public String getQualifiedTypeDefName(String prefix) {
         if (prefix != null) {
             return prefix + ":MultiPointPropertyType";
@@ -941,6 +1009,7 @@ class MultiPointPropertyElement extends NameSpaceElement {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeRefName(String prefix) {
         if (prefix != null) {
             return prefix + ":multiPointProperty";
@@ -953,14 +1022,17 @@ class MultiPointPropertyElement extends NameSpaceElement {
         return null;
     }
 
-    public Class getJavaClass() {
+    @Override
+    public Class<MultiPoint> getJavaClass() {
         return MultiPoint.class;
     }
 
+    @Override
     public boolean isAbstract() {
         return false;
     }
 
+    @Override
     public boolean isDefault() {
         return true;
     }
@@ -971,22 +1043,27 @@ class MultiLineStringPropertyElement extends NameSpaceElement {
         super(prefix);
     }
 
+    @Override
     public String getTypeDefName() {
         return "MultiLineStringPropertyType";
     }
 
+    @Override
     public String getTypeRefName() {
         return "multiLineStringProperty";
     }
 
+    @Override
     public String getQualifiedTypeDefName() {
         return prefix + ":MultiLineStringPropertyType";
     }
 
+    @Override
     public String getQualifiedTypeRefName() {
         return prefix + ":multiLineStringProperty";
     }
 
+    @Override
     public String getQualifiedTypeDefName(String prefix) {
         if (prefix != null) {
             return prefix + ":MultiLineStringPropertyType";
@@ -999,6 +1076,7 @@ class MultiLineStringPropertyElement extends NameSpaceElement {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeRefName(String prefix) {
         if (prefix != null) {
             return prefix + ":multiLineStringProperty";
@@ -1011,14 +1089,17 @@ class MultiLineStringPropertyElement extends NameSpaceElement {
         return null;
     }
 
-    public Class getJavaClass() {
+    @Override
+    public Class<MultiLineString> getJavaClass() {
         return MultiLineString.class;
     }
 
+    @Override
     public boolean isAbstract() {
         return false;
     }
 
+    @Override
     public boolean isDefault() {
         return true;
     }
@@ -1029,22 +1110,27 @@ class MultiPolygonPropertyElement extends NameSpaceElement {
         super(prefix);
     }
 
+    @Override
     public String getTypeDefName() {
         return "MultiPolygonPropertyType";
     }
 
+    @Override
     public String getTypeRefName() {
         return "multiPolygonProperty";
     }
 
+    @Override
     public String getQualifiedTypeDefName() {
         return prefix + ":MultiPolygonPropertyType";
     }
 
+    @Override
     public String getQualifiedTypeRefName() {
         return prefix + ":multiPolygonProperty";
     }
 
+    @Override
     public String getQualifiedTypeDefName(String prefix) {
         if (prefix != null) {
             return prefix + ":MultiPolygonPropertyType";
@@ -1057,6 +1143,7 @@ class MultiPolygonPropertyElement extends NameSpaceElement {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeRefName(String prefix) {
         if (prefix != null) {
             return prefix + ":multiPolygonProperty";
@@ -1069,14 +1156,17 @@ class MultiPolygonPropertyElement extends NameSpaceElement {
         return null;
     }
 
-    public Class getJavaClass() {
+    @Override
+    public Class<MultiPolygon> getJavaClass() {
         return MultiPolygon.class;
     }
 
+    @Override
     public boolean isAbstract() {
         return false;
     }
 
+    @Override
     public boolean isDefault() {
         return true;
     }
@@ -1087,22 +1177,27 @@ class MultiGeometryPropertyElement extends NameSpaceElement {
         super(prefix);
     }
 
+    @Override
     public String getTypeDefName() {
         return "MultiGeometryPropertyType";
     }
 
+    @Override
     public String getTypeRefName() {
         return "multiGeometryProperty";
     }
 
+    @Override
     public String getQualifiedTypeDefName() {
         return prefix + ":MultiGeometryPropertyType";
     }
 
+    @Override
     public String getQualifiedTypeRefName() {
         return prefix + ":multiGeometryProperty";
     }
 
+    @Override
     public String getQualifiedTypeDefName(String prefix) {
         if (prefix != null) {
             return prefix + ":MultiGeometryPropertyType";
@@ -1115,6 +1210,7 @@ class MultiGeometryPropertyElement extends NameSpaceElement {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeRefName(String prefix) {
         if (prefix != null) {
             return prefix + ":multiGeometryProperty";
@@ -1127,14 +1223,17 @@ class MultiGeometryPropertyElement extends NameSpaceElement {
         return null;
     }
 
-    public Class getJavaClass() {
+    @Override
+    public Class<GeometryCollection> getJavaClass() {
         return GeometryCollection.class;
     }
 
+    @Override
     public boolean isAbstract() {
         return false;
     }
 
+    @Override
     public boolean isDefault() {
         return true;
     }
@@ -1145,22 +1244,27 @@ class NullElement extends NameSpaceElement {
         super(prefix);
     }
 
+    @Override
     public String getTypeDefName() {
         return "NullType";
     }
 
+    @Override
     public String getTypeRefName() {
         return "null";
     }
 
+    @Override
     public String getQualifiedTypeDefName() {
         return prefix + ":NullType";
     }
 
+    @Override
     public String getQualifiedTypeRefName() {
         return prefix + ":null";
     }
 
+    @Override
     public String getQualifiedTypeDefName(String prefix) {
         if (prefix != null) {
             return prefix + ":NullType";
@@ -1173,6 +1277,7 @@ class NullElement extends NameSpaceElement {
         return null;
     }
 
+    @Override
     public String getQualifiedTypeRefName(String prefix) {
         if (prefix != null) {
             return prefix + ":null";
@@ -1185,11 +1290,13 @@ class NullElement extends NameSpaceElement {
         return null;
     }
 
+    @Override
     public boolean isAbstract() {
         return false;
     }
 
-    public Class getJavaClass() {
+    @Override
+    public Class<?> getJavaClass() {
         return null;
     }
 }

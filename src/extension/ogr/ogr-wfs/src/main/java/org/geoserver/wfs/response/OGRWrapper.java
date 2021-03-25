@@ -47,18 +47,19 @@ public class OGRWrapper extends AbstractToolWrapper {
     }
 
     /** Returns a list of the ogr2ogr supported formats */
+    @Override
     public Set<String> getSupportedFormats() {
         try {
             // this one works up to ogr2ogr 1.7
-            List<String> commands = new ArrayList<String>();
+            List<String> commands = new ArrayList<>();
             commands.add(getExecutable());
             commands.add("--help");
 
-            Set<String> formats = new HashSet<String>();
+            Set<String> formats = new HashSet<>();
             addFormats(commands, formats);
 
             // this one is required starting with ogr2ogr 1.8
-            commands = new ArrayList<String>();
+            commands = new ArrayList<>();
             commands.add(getExecutable());
             commands.add("--long-usage");
             addFormats(commands, formats);
@@ -92,8 +93,9 @@ public class OGRWrapper extends AbstractToolWrapper {
      * Returns true if ogr2ogr is available, that is, if executing "ogr2ogr --version" returns 0 as
      * the exit code
      */
+    @Override
     public boolean isAvailable() {
-        List<String> commands = new ArrayList<String>();
+        List<String> commands = new ArrayList<>();
         commands.add(getExecutable());
         commands.add("--version");
 

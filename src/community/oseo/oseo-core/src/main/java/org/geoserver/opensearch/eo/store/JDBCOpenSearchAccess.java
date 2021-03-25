@@ -70,7 +70,7 @@ import org.opengis.filter.PropertyIsEqualTo;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class JDBCOpenSearchAccess implements OpenSearchAccess {
+public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.OpenSearchAccess {
 
     protected static FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
@@ -81,6 +81,8 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     public static final String GRANULE = "granule";
 
     static final String EO_PREFIX = "eo";
+
+    static final String EOP_PREFIX = "eop";
 
     static final String SAR_PREFIX = "sar";
 
@@ -102,7 +104,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
     private GeoServer geoServer;
 
-    private LowercasingDataStore delegateStoreCache;
+    private org.geoserver.opensearch.eo.store.LowercasingDataStore delegateStoreCache;
     private SoftValueHashMap<Name, SimpleFeatureSource> featureSourceCache =
             new SoftValueHashMap<>();
 
@@ -132,19 +134,21 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     private FeatureType buildCollectionFeatureType(DataStore delegate) throws IOException {
         SimpleFeatureType flatSchema = delegate.getSchema(COLLECTION);
 
-        TypeBuilder typeBuilder = new OrderedTypeBuilder();
+        TypeBuilder typeBuilder = new org.geoserver.opensearch.eo.store.OrderedTypeBuilder();
 
         // map the source attributes
         for (AttributeDescriptor ad : flatSchema.getAttributeDescriptors()) {
             AttributeTypeBuilder ab = new AttributeTypeBuilder();
             String name = ad.getLocalName();
             String namespaceURI = this.namespaceURI;
+            String prefix = "";
             if (name.startsWith(EO_PREFIX)) {
                 name = name.substring(EO_PREFIX.length());
                 char c[] = name.toCharArray();
                 c[0] = Character.toLowerCase(c[0]);
                 name = new String(c);
                 namespaceURI = EO_NAMESPACE;
+                prefix = EO_PREFIX;
             }
             // get a more predictable name structure (will have to do something for oracle
             // like names too I guess)
@@ -155,6 +159,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
             ab.init(ad);
             ab.setMinOccurs(0);
             ab.name(name).namespaceURI(namespaceURI).userData(SOURCE_ATTRIBUTE, ad.getLocalName());
+            ab.userData(PREFIX, prefix);
             AttributeDescriptor mappedDescriptor;
             if (ad instanceof GeometryDescriptor) {
                 GeometryType at = ab.buildGeometryType();
@@ -170,20 +175,21 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
         // adding the metadata property
         AttributeDescriptor metadataDescriptor =
-                buildSimpleDescriptor(METADATA_PROPERTY_NAME, String.class);
+                buildSimpleDescriptor(METADATA_PROPERTY_NAME, EO_PREFIX, String.class);
         typeBuilder.add(metadataDescriptor);
 
         // adding the layer publishing property
-        Name layerPropertyName = new NameImpl(this.namespaceURI, OpenSearchAccess.LAYERS);
         AttributeDescriptor layerDescriptor =
                 buildFeatureListDescriptor(
-                        LAYERS_PROPERTY_NAME, delegate.getSchema("collection_ogclink"));
+                        LAYERS_PROPERTY_NAME, EO_PREFIX, delegate.getSchema("collection_ogclink"));
         typeBuilder.add(layerDescriptor);
 
         // map OGC links
         AttributeDescriptor linksDescriptor =
                 buildFeatureListDescriptor(
-                        OGC_LINKS_PROPERTY_NAME, delegate.getSchema("collection_ogclink"));
+                        OGC_LINKS_PROPERTY_NAME,
+                        EO_PREFIX,
+                        delegate.getSchema("collection_ogclink"));
         typeBuilder.add(linksDescriptor);
 
         typeBuilder.setName(COLLECTION);
@@ -191,24 +197,27 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         return typeBuilder.feature();
     }
 
-    private AttributeDescriptor buildSimpleDescriptor(Name name, Class binding) {
+    private AttributeDescriptor buildSimpleDescriptor(Name name, String prefix, Class<?> binding) {
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
         ab.name(name.getLocalPart()).namespaceURI(name.getNamespaceURI());
         ab.setBinding(binding);
+        ab.userData(PREFIX, prefix);
         AttributeDescriptor descriptor = ab.buildDescriptor(name, ab.buildType());
         return descriptor;
     }
 
-    private AttributeDescriptor buildFeatureListDescriptor(Name name, SimpleFeatureType schema) {
-        return buildFeatureDescriptor(name, schema, 0, Integer.MAX_VALUE);
+    private AttributeDescriptor buildFeatureListDescriptor(
+            Name name, String prefix, SimpleFeatureType schema) {
+        return buildFeatureDescriptor(name, prefix, schema, 0, Integer.MAX_VALUE);
     }
 
     private AttributeDescriptor buildFeatureDescriptor(
-            Name name, SimpleFeatureType schema, int minOccurs, int maxOccurs) {
+            Name name, String prefix, SimpleFeatureType schema, int minOccurs, int maxOccurs) {
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
         ab.name(name.getLocalPart()).namespaceURI(name.getNamespaceURI());
         ab.setMinOccurs(minOccurs);
         ab.setMaxOccurs(maxOccurs);
+        ab.userData(PREFIX, prefix);
         AttributeDescriptor descriptor = ab.buildDescriptor(name, schema);
         return descriptor;
     }
@@ -216,25 +225,28 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     private FeatureType buildProductFeatureType(DataStore delegate) throws IOException {
         SimpleFeatureType flatSchema = delegate.getSchema(PRODUCT);
 
-        TypeBuilder typeBuilder = new OrderedTypeBuilder();
+        TypeBuilder typeBuilder = new org.geoserver.opensearch.eo.store.OrderedTypeBuilder();
 
         // map the source attributes
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
         for (AttributeDescriptor ad : flatSchema.getAttributeDescriptors()) {
             String name = ad.getLocalName();
             String namespaceURI = this.namespaceURI;
+            String prefix = "";
             // hack to avoid changing the whole product attributes prefixes from eo to eop
             if (name.startsWith(EO_PREFIX)) {
                 name = "eop" + name.substring(2);
+                prefix = EOP_PREFIX;
             }
             for (ProductClass pc : ProductClass.getProductClasses(geoServer)) {
-                String prefix = pc.getPrefix();
-                if (name.startsWith(prefix)) {
-                    name = name.substring(prefix.length());
+                String pcPrefix = pc.getPrefix();
+                if (name.startsWith(pcPrefix)) {
+                    name = name.substring(pcPrefix.length());
                     char c[] = name.toCharArray();
                     c[0] = Character.toLowerCase(c[0]);
                     name = new String(c);
                     namespaceURI = pc.getNamespace();
+                    prefix = pcPrefix;
                     break;
                 }
             }
@@ -248,6 +260,7 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
             ab.init(ad);
             ab.setMinOccurs(0);
             ab.name(name).namespaceURI(namespaceURI).userData(SOURCE_ATTRIBUTE, ad.getLocalName());
+            ab.userData(PREFIX, prefix);
             AttributeDescriptor mappedDescriptor;
             if (ad instanceof GeometryDescriptor) {
                 GeometryType at = ab.buildGeometryType();
@@ -262,18 +275,18 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         }
         // adding the metadata property
         AttributeDescriptor metadataDescriptor =
-                buildSimpleDescriptor(METADATA_PROPERTY_NAME, String.class);
+                buildSimpleDescriptor(METADATA_PROPERTY_NAME, EO_PREFIX, String.class);
         typeBuilder.add(metadataDescriptor);
 
         // adding the quicklook property
         AttributeDescriptor quicklookDescriptor =
-                buildSimpleDescriptor(QUICKLOOK_PROPERTY_NAME, byte[].class);
+                buildSimpleDescriptor(QUICKLOOK_PROPERTY_NAME, EO_PREFIX, byte[].class);
         typeBuilder.add(quicklookDescriptor);
 
         // map OGC links
         AttributeDescriptor linksDescriptor =
                 buildFeatureListDescriptor(
-                        OGC_LINKS_PROPERTY_NAME, delegate.getSchema("product_ogclink"));
+                        OGC_LINKS_PROPERTY_NAME, EO_PREFIX, delegate.getSchema("product_ogclink"));
         typeBuilder.add(linksDescriptor);
 
         typeBuilder.setName(PRODUCT);
@@ -296,7 +309,8 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         if (delegateStoreCache != null && delegateStoreCache.wraps(store)) {
             return delegateStoreCache;
         }
-        LowercasingDataStore result = new LowercasingDataStore(store);
+        org.geoserver.opensearch.eo.store.LowercasingDataStore result =
+                new org.geoserver.opensearch.eo.store.LowercasingDataStore(store);
         this.delegateStoreCache = result;
         return result;
     }
@@ -339,7 +353,8 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
                 .forEach(
                         (name, layers) -> {
                             if (layers != null && !layers.isEmpty()) {
-                                for (CollectionLayer layer : layers) {
+                                for (org.geoserver.opensearch.eo.store.CollectionLayer layer :
+                                        layers) {
                                     setupLayerFeatureTypes(names, name, layer);
                                 }
                             } else {
@@ -351,7 +366,9 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     }
 
     private void setupLayerFeatureTypes(
-            LinkedHashSet<Name> names, String name, CollectionLayer layer) {
+            LinkedHashSet<Name> names,
+            String name,
+            org.geoserver.opensearch.eo.store.CollectionLayer layer) {
         if (layer != null
                 && layer.isSeparateBands()
                 && layer.getBands() != null
@@ -360,27 +377,34 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
             for (String band : layer.getBands()) {
                 names.add(
                         new NameImpl(
-                                namespaceURI, name + OpenSearchAccess.BAND_LAYER_SEPARATOR + band));
+                                namespaceURI,
+                                name
+                                        + org.geoserver.opensearch.eo.store.OpenSearchAccess
+                                                .BAND_LAYER_SEPARATOR
+                                        + band));
             }
         } else {
             names.add(new NameImpl(namespaceURI, name));
         }
     }
 
-    private Map<String, List<CollectionLayer>> getCollectionPublishingConfigurations()
-            throws IOException {
+    private Map<String, List<org.geoserver.opensearch.eo.store.CollectionLayer>>
+            getCollectionPublishingConfigurations() throws IOException {
         FeatureSource<FeatureType, Feature> collectionSource = getCollectionSource();
         Query query = new Query(collectionSource.getName().getLocalPart());
         query.setPropertyNames(new String[] {COLLECTION_NAME, LAYERS});
         FeatureCollection<FeatureType, Feature> features = collectionSource.getFeatures(query);
-        Map<String, List<CollectionLayer>> result = new LinkedHashMap<>();
+        Map<String, List<org.geoserver.opensearch.eo.store.CollectionLayer>> result =
+                new LinkedHashMap<>();
         features.accepts(
                 f -> {
                     Property p = f.getProperty(COLLECTION_NAME);
                     String name = (String) p.getValue();
-                    List<CollectionLayer> configs = null;
+                    List<org.geoserver.opensearch.eo.store.CollectionLayer> configs = null;
                     try {
-                        configs = CollectionLayer.buildCollectionLayersFromFeature(f);
+                        configs =
+                                org.geoserver.opensearch.eo.store.CollectionLayer
+                                        .buildCollectionLayersFromFeature(f);
                         result.put(name, configs);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -426,12 +450,18 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
     }
 
     public SimpleFeatureSource getCollectionGranulesSource(String typeName) throws IOException {
-        int idx = typeName.lastIndexOf(OpenSearchAccess.BAND_LAYER_SEPARATOR);
+        int idx =
+                typeName.lastIndexOf(
+                        org.geoserver.opensearch.eo.store.OpenSearchAccess.BAND_LAYER_SEPARATOR);
         String collection, band;
         // the two parts must be non empty in order to have a valid combination
         if (idx > 1 && idx < (typeName.length() - 3)) {
             collection = typeName.substring(0, idx);
-            band = typeName.substring(idx + OpenSearchAccess.BAND_LAYER_SEPARATOR.length());
+            band =
+                    typeName.substring(
+                            idx
+                                    + org.geoserver.opensearch.eo.store.OpenSearchAccess
+                                            .BAND_LAYER_SEPARATOR.length());
         } else {
             collection = typeName;
             band = null;
@@ -634,12 +664,16 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         }
     }
 
+    @Override
     public FeatureStore<FeatureType, Feature> getProductSource() throws IOException {
-        return new JDBCProductFeatureStore(this, productFeatureType);
+        return new org.geoserver.opensearch.eo.store.JDBCProductFeatureStore(
+                this, productFeatureType);
     }
 
+    @Override
     public FeatureStore<FeatureType, Feature> getCollectionSource() throws IOException {
-        return new JDBCCollectionFeatureStore(this, collectionFeatureType);
+        return new org.geoserver.opensearch.eo.store.JDBCCollectionFeatureStore(
+                this, collectionFeatureType);
     }
 
     @Override
@@ -708,7 +742,9 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
         final SimpleFeatureStore granulesStore =
                 (SimpleFeatureStore) delegate.getFeatureSource(granuleTableName);
         try {
-            return new WritableDataView(granulesStore, granulesQuery) {
+            return new org.geoserver.opensearch.eo.store.WritableDataView(
+                    granulesStore, granulesQuery) {
+                @Override
                 public java.util.List<org.opengis.filter.identity.FeatureId> addFeatures(
                         org.geotools.feature.FeatureCollection<SimpleFeatureType, SimpleFeature>
                                 featureCollection)
@@ -737,13 +773,16 @@ public class JDBCOpenSearchAccess implements OpenSearchAccess {
 
     @Override
     public SimpleFeatureType getCollectionLayerSchema() throws IOException {
-        return new JDBCCollectionFeatureStore(this, collectionFeatureType)
+        return new org.geoserver.opensearch.eo.store.JDBCCollectionFeatureStore(
+                        this, collectionFeatureType)
                 .getCollectionLayerSchema();
     }
 
     @Override
     public SimpleFeatureType getOGCLinksSchema() throws IOException {
-        return new JDBCCollectionFeatureStore(this, collectionFeatureType).getOGCLinksSchema();
+        return new org.geoserver.opensearch.eo.store.JDBCCollectionFeatureStore(
+                        this, collectionFeatureType)
+                .getOGCLinksSchema();
     }
 
     void clearFeatureSourceCaches() {

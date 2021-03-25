@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Level;
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -74,13 +73,11 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
             jdbcQuotaConfiguration = gwc.getJDBCDiskQuotaConfig();
         }
 
-        final Form<Map<String, Serializable>> form;
-        form = new Form<Map<String, Serializable>>("form");
+        final Form<Map<String, Serializable>> form = new Form<>("form");
         add(form);
 
-        final IModel<DiskQuotaConfig> diskQuotaModel = new Model<DiskQuotaConfig>(diskQuotaConfig);
-        final IModel<JDBCConfiguration> jdbcQuotaModel =
-                new Model<JDBCConfiguration>(jdbcQuotaConfiguration);
+        final IModel<DiskQuotaConfig> diskQuotaModel = new Model<>(diskQuotaConfig);
+        final IModel<JDBCConfiguration> jdbcQuotaModel = new Model<>(jdbcQuotaConfiguration);
 
         final DiskQuotaConfigPanel diskQuotaConfigPanel =
                 new DiskQuotaConfigPanel("diskQuotaPanel", diskQuotaModel, jdbcQuotaModel);
@@ -187,8 +184,7 @@ public class DiskQuotaSettingsPage extends GeoServerSecuredPage {
         CheckBox checkBox = new CheckBox(id, model);
         if (null != titleKey) {
             AttributeModifier attributeModifier =
-                    new AttributeModifier(
-                            "title", new StringResourceModel(titleKey, (Component) null, null));
+                    new AttributeModifier("title", new StringResourceModel(titleKey, null, null));
             checkBox.add(attributeModifier);
         }
         return checkBox;

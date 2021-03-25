@@ -1,0 +1,216 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: GeoServer Global Config
+  description: Global configuration settings
+
+security:
+  - basicAuth: []
+
+tags:
+  - name: settings
+    description: Global Settings API
+
+paths:
+  /settings:
+    get:
+      operationId: getSettings
+      tags:
+        - settings
+      summary: Get geoserver global settings
+      responses:
+        '200':
+          $ref: '#/components/responses/GeoServerInfoResponse'
+    put:
+      operationId: updateSettings
+      tags:
+        - settings
+      summary: Update the global configuration
+      description: Adds a new data store to the workspace.
+      requestBody:
+        $ref: '#/components/requestBodies/GlobalSettings'
+      responses:
+        '200':
+          description: Updated
+  /settings/contact:
+    get:
+      tags:
+        - settings
+      operationId: getGlobalContactInfo
+      summary: Get the global contact information
+      description: Displays a list of all global contact settings on the server. This is a
+        subset of what is available at the /settings endpoint.
+      responses:
+        "200":
+          $ref: '#/components/responses/ContactInfoResponse'
+    put:
+      tags:
+        - settings
+      operationId: updateGlobalContactInfo
+      summary: Update contact settings
+      description: Updates global contact settings on the server.
+      requestBody:
+        $ref: '#/components/requestBodies/ContactInfo'
+      responses:
+        "200":
+          description: OK
+  /workspaces/{workspace}/settings:
+    parameters:
+      - name: workspace
+        in: path
+        required: true
+        description: The workspace name
+        schema:
+          type: string
+    get:
+      tags:
+        - settings
+      operationId: getLocalSettings
+      summary: Get workspace-specific settings
+      description: Displays all workspace-specific settings.
+      responses:
+        "200":
+          $ref: '#/components/responses/WorkspaceSettings'
+    post:
+      tags:
+        - settings
+      operationId: createLocalSettings
+      summary: Create workspace-specific settings
+      description: Create new workspace-specific settings on the server.
+      requestBody:
+        $ref: "#/components/requestBodies/WorkspaceSettings"
+      responses:
+        "201":
+          description: Created
+        "500":
+          description: "Internal Server Error: Settings already exist for workspace"
+    put:
+      tags:
+        - settings
+      operationId: updateLocalSettings
+      summary: Update workspace-specific settings
+      description: Updates workspace-specific settings on the server.
+      requestBody:
+        $ref: "#/components/requestBodies/WorkspaceSettings"
+      responses:
+        "200":
+          description: OK
+    delete:
+      operationId: deleteWorkspaceSettings
+      description: Delete the settings for this workspace.
+      responses:
+        "200":
+          description: OK
+components:
+  securitySchemes:
+    basicAuth:     # <-- arbitrary name for the security scheme
+      type: http
+      scheme: basic
+
+  responses:
+    GeoServerInfoResponse:
+      description: Response for global config
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GeoServerInfoWrapper"
+  
+    ContactInfoResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ContactInfoWrapper"
+          examples:
+            response:
+              value: |
+                {
+                  "contact": {
+                    "addressCity": "Alexandria",
+                    "addressCountry": "Egypt",
+                    "addressType": "Work",
+                    "contactEmail": "claudius.ptolomaeus@gmail.com",
+                    "contactOrganization": "The Ancient Geographers",
+                    "contactPerson": "Claudius Ptolomaeus",
+                    "contactPosition": "Chief Geographer"
+                  }
+                }
+    WorkspaceSettings:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SettingsInfoWrapper"
+          examples:
+            response:
+              value: |
+                {
+                  "settings": {
+                    "contact": {
+                      "id": "contact"
+                    },
+                    "charset": "UTF-8",
+                    "numDecimals": 4,
+                    "verbose": false,
+                    "verboseExceptions": false,
+                    "localWorkspaceIncludesPrefix": false
+                  }
+                }
+  requestBodies:
+    GlobalSettings:
+      required: true
+      description: global settings upload request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GeoServerInfoWrapper'
+
+    ContactInfo:
+      description: The contact settings information to upload.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ContactInfoWrapper"
+            
+    SettingsInfo:
+      description: The contact settings information to upload.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ContactInfoWrapper"
+
+    WorkspaceSettings:
+      description: The workspace-specific settings information to upload.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SettingsInfoWrapper"
+
+  schemas:
+    GeoServerInfoWrapper:
+      title: wrapper object for GeoServerInfoResponse, in order to comply with current API encoding
+      type: object
+      required:
+        - global
+      properties:
+        global:
+          $ref: "config.yaml#/components/schemas/GeoServerInfo"
+    ContactInfoWrapper:
+      title: wrapper object for ContactInfoResponse, in order to comply with current API encoding
+      type: object
+      required:
+        - contact
+      properties:
+        contact:
+          $ref: "config.yaml#/components/schemas/ContactInfo"
+    SettingsInfoWrapper:
+      title: wrapper object for WorkspaceSettings, in order to comply with current API encoding
+      type: object
+      required:
+        - settings
+      properties:
+        settings:
+          $ref: "config.yaml#/components/schemas/SettingsInfo"

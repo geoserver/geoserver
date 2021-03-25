@@ -30,10 +30,12 @@ public class CSWXStreamLoader extends XStreamServiceLoader<CSWInfo> {
         return "csw";
     }
 
+    @Override
     public Class<CSWInfo> getServiceClass() {
         return CSWInfo.class;
     }
 
+    @Override
     protected CSWInfo createServiceFromScratch(GeoServer gs) {
         CSWInfoImpl csw = new CSWInfoImpl();
         csw.setName("CSW");
@@ -52,19 +54,19 @@ public class CSWXStreamLoader extends XStreamServiceLoader<CSWInfo> {
     protected CSWInfo initialize(CSWInfo service) {
         // TODO: move this code block to the parent class
         if (service.getKeywords() == null) {
-            ((CSWInfoImpl) service).setKeywords(new ArrayList());
+            ((CSWInfoImpl) service).setKeywords(new ArrayList<>());
         }
         if (service.getExceptionFormats() == null) {
-            ((CSWInfoImpl) service).setExceptionFormats(new ArrayList());
+            ((CSWInfoImpl) service).setExceptionFormats(new ArrayList<>());
         }
         if (service.getMetadata() == null) {
             ((CSWInfoImpl) service).setMetadata(new MetadataMap());
         }
         if (service.getClientProperties() == null) {
-            ((CSWInfoImpl) service).setClientProperties(new HashMap());
+            ((CSWInfoImpl) service).setClientProperties(new HashMap<>());
         }
         if (service.getVersions() == null) {
-            ((CSWInfoImpl) service).setVersions(new ArrayList());
+            ((CSWInfoImpl) service).setVersions(new ArrayList<>());
         }
         if (service.getVersions().isEmpty()) {
             service.getVersions().add(new Version("2.0.2"));

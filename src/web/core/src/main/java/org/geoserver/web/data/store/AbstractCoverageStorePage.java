@@ -36,25 +36,22 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
 
     protected WorkspacePanel workspacePanel;
 
-    private Form paramsForm;
+    private Form<CoverageStoreInfo> paramsForm;
 
     void initUI(final CoverageStoreInfo store) {
         AbstractGridFormat format = store.getFormat();
         if (format == null) {
             String msg = "Coverage Store factory not found";
             msg =
-                    (String)
-                            new ResourceModel(
-                                            "CoverageStoreEditPage.cantGetCoverageStoreFactory",
-                                            msg)
-                                    .getObject();
+                    new ResourceModel("CoverageStoreEditPage.cantGetCoverageStoreFactory", msg)
+                            .getObject();
             throw new IllegalArgumentException(msg);
         }
 
-        IModel<CoverageStoreInfo> model = new Model<CoverageStoreInfo>(store);
+        IModel<CoverageStoreInfo> model = new Model<>(store);
 
         // build the form
-        paramsForm = new Form("rasterStoreForm", model);
+        paramsForm = new Form<>("rasterStoreForm", model);
         add(paramsForm);
 
         // the format description labels
@@ -62,9 +59,9 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
         paramsForm.add(new Label("storeTypeDescription", format.getDescription()));
 
         // name
-        PropertyModel nameModel = new PropertyModel(model, "name");
-        final TextParamPanel namePanel =
-                new TextParamPanel(
+        PropertyModel<String> nameModel = new PropertyModel<>(model, "name");
+        final TextParamPanel<String> namePanel =
+                new TextParamPanel<>(
                         "namePanel",
                         nameModel,
                         new ResourceModel(
@@ -75,21 +72,21 @@ abstract class AbstractCoverageStorePage extends GeoServerSecuredPage {
 
         // description and enabled
         paramsForm.add(
-                new TextParamPanel(
+                new TextParamPanel<String>(
                         "descriptionPanel",
-                        new PropertyModel(model, "description"),
+                        new PropertyModel<>(model, "description"),
                         new ResourceModel("AbstractCoverageStorePage.description", "Description"),
                         false));
         paramsForm.add(
                 new CheckBoxParamPanel(
                         "enabledPanel",
-                        new PropertyModel(model, "enabled"),
+                        new PropertyModel<>(model, "enabled"),
                         new ResourceModel("enabled", "Enabled")));
         // a custom converter will turn this into a namespace url
         workspacePanel =
                 new WorkspacePanel(
                         "workspacePanel",
-                        new PropertyModel(model, "workspace"),
+                        new PropertyModel<>(model, "workspace"),
                         new ResourceModel("workspace", "Workspace"),
                         true);
         paramsForm.add(workspacePanel);

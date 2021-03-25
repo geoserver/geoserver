@@ -15,6 +15,7 @@ import org.geoserver.web.GeoServerBasePage;
 public class PrintDemoPage extends GeoServerBasePage implements IHeaderContributor {
     private static final long serialVersionUID = 2904825847695306563L;
 
+    @Override
     public void renderHead(IHeaderResponse response) {
         response.render(
                 CssHeaderItem.forUrl(

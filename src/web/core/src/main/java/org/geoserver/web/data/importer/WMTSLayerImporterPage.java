@@ -50,7 +50,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
 
         storeId = params.get("storeId").toString();
 
-        WMTSStoreInfo store = (WMTSStoreInfo) getCatalog().getStore(storeId, WMTSStoreInfo.class);
+        WMTSStoreInfo store = getCatalog().getStore(storeId, WMTSStoreInfo.class);
 
         // check if we have anything to import
         provider = new WMTSLayerProvider();
@@ -67,9 +67,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
         }
 
         // build the GUI
-        form =
-                new Form<WMTSLayerImporterPage>(
-                        "form", new CompoundPropertyModel<WMTSLayerImporterPage>(this));
+        form = new Form<>("form", new CompoundPropertyModel<>(this));
         form.setOutputMarkupId(true);
         add(form);
         layers =
@@ -90,7 +88,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
                             f.add(new Label("label", new StatusModel(itemModel)));
                             return f;
                         } else if (property == WMTSLayerProvider.ACTION) {
-                            final LayerResource resource = (LayerResource) itemModel.getObject();
+                            final LayerResource resource = itemModel.getObject();
                             final LayerStatus status = resource.getStatus();
                             if (status == LayerStatus.PUBLISHED
                                     || status == LayerStatus.NEWLY_PUBLISHED
@@ -161,7 +159,7 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
                     List<LayerResource> selection = layers.getSelection();
 
                     // if nothing was selected we need to go back
-                    if (selection.size() == 0) {
+                    if (selection.isEmpty()) {
                         error(
                                 new ParamResourceModel("selectionEmpty", WMTSLayerImporterPage.this)
                                         .getString());
@@ -289,8 +287,9 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
             this.layerResource = layerResource;
         }
 
+        @Override
         public String getObject() {
-            LayerResource resource = (LayerResource) layerResource.getObject();
+            LayerResource resource = layerResource.getObject();
             return new ParamResourceModel(
                             "WMTSLayerImporterPage.status." + resource.getStatus(),
                             WMTSLayerImporterPage.this,
@@ -298,10 +297,12 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
                     .getString();
         }
 
+        @Override
         public void setObject(String object) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void detach() {
             // nothing to do
         }
@@ -316,8 +317,9 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
             this.layerResource = layerResource;
         }
 
+        @Override
         public PackageResourceReference getObject() {
-            LayerResource resource = (LayerResource) layerResource.getObject();
+            LayerResource resource = layerResource.getObject();
             if (resource.getStatus() == LayerStatus.ERROR) {
                 return new PackageResourceReference(
                         GeoServerBasePage.class, "img/icons/silk/error.png");
@@ -336,10 +338,12 @@ public class WMTSLayerImporterPage extends GeoServerSecuredPage {
             }
         }
 
+        @Override
         public void setObject(PackageResourceReference object) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void detach() {
             // nothing to do
         }

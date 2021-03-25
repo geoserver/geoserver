@@ -10,12 +10,17 @@
  */
 package org.vfny.geoserver.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 public class SLDValidator {
@@ -26,7 +31,7 @@ public class SLDValidator {
     public SLDValidator() {}
 
     /** Validates against the SLD schema in the classpath */
-    public List validateSLD(InputStream xml) {
+    public List<SAXException> validateSLD(InputStream xml) {
         return validateSLD(new InputSource(xml));
     }
 
@@ -38,7 +43,7 @@ public class SLDValidator {
         this.entityResolver = entityResolver;
     }
 
-    public static String getErrorMessage(InputStream xml, List errors) {
+    public static String getErrorMessage(InputStream xml, List<? extends Exception> errors) {
         return getErrorMessage(new InputStreamReader(xml), errors);
     }
 
@@ -46,7 +51,7 @@ public class SLDValidator {
      * returns a better formated error message - suitable for framing. There's a more complex
      * version in StylesEditorAction. This will kick out a VERY LARGE errorMessage.
      */
-    public static String getErrorMessage(Reader xml, List errors) {
+    public static String getErrorMessage(Reader xml, List<? extends Exception> errors) {
         BufferedReader reader = null;
         StringBuffer result = new StringBuffer();
         result.append("Your SLD is not valid.\n");
@@ -66,7 +71,7 @@ public class SLDValidator {
             int exceptionNum = 0;
 
             // check for lineNumber -1 errors  --> invalid XML
-            if (errors.size() > 0) {
+            if (!errors.isEmpty() && errors.get(0) instanceof SAXParseException) {
                 SAXParseException sax = (SAXParseException) errors.get(0);
 
                 if (sax.getLineNumber() < 0) {
@@ -86,7 +91,8 @@ public class SLDValidator {
                 boolean keep_going = true;
 
                 while (keep_going) {
-                    if ((exceptionNum < errors.size())) {
+                    if ((exceptionNum < errors.size())
+                            && errors.get(exceptionNum) instanceof SAXParseException) {
                         SAXParseException sax = (SAXParseException) errors.get(exceptionNum);
 
                         if (sax.getLineNumber() <= linenumber) {
@@ -146,14 +152,14 @@ public class SLDValidator {
                                 + "\n");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", e);
         } finally {
             try {
                 if (reader != null) {
                     reader.close();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
             }
         }
 
@@ -166,7 +172,7 @@ public class SLDValidator {
      * @param xml input stream representing the .sld file
      * @return list of SAXExceptions (0 if the file's okay)
      */
-    public List validateSLD(InputSource xml) {
+    public List<SAXException> validateSLD(InputSource xml) {
         URL schemaURL = SLDValidator.class.getResource("/schemas/sld/StyledLayerDescriptor.xsd");
         return ResponseUtils.validate(xml, schemaURL, false, entityResolver);
     }

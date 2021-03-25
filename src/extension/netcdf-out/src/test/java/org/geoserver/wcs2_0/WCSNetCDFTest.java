@@ -62,6 +62,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
             new QName(CiteTestData.WCS_URI, "samplekm", CiteTestData.WCS_PREFIX);
 
     /** Only setup coverages */
+    @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
     }
@@ -80,6 +81,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
         field.set(null, value);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     protected GetCoverageType parse(String url) throws Exception {
         Map<String, Object> rawKvp = new CaseInsensitiveMap(KvpUtils.parseQueryString(url));

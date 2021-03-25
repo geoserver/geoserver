@@ -5,7 +5,7 @@
  */
 package org.geoserver.web.data.store.panel;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,9 +36,9 @@ public class FileModelTest {
         try {
             f.createNewFile();
 
-            FileModel model = new FileModel(new Model<String>(), root);
+            FileModel model = new FileModel(new Model<>(), root);
             model.setObject(f.getAbsolutePath());
-            String path = (String) model.getObject();
+            String path = model.getObject();
             assertEquals("file://" + f.getAbsolutePath(), path);
         } finally {
             f.delete();
@@ -53,27 +53,27 @@ public class FileModelTest {
         File cite = new File(data, MockData.CITE_PREFIX);
         File buildings = new File(cite, "Buildings.properties");
 
-        FileModel model = new FileModel(new Model<String>(), root);
+        FileModel model = new FileModel(new Model<>(), root);
         model.setObject(buildings.getAbsolutePath());
-        String path = (String) model.getObject();
+        String path = model.getObject();
         assertEquals("file:data/cite/Buildings.properties", path);
     }
 
     @Test
     public void testRelativeUnmodified() throws IOException {
-        FileModel model = new FileModel(new Model<String>(), root);
+        FileModel model = new FileModel(new Model<>(), root);
         model.setObject("file:data/cite/Buildings.properties");
-        String path = (String) model.getObject();
+        String path = model.getObject();
         assertEquals("file:data/cite/Buildings.properties", path);
     }
 
     @Test
     public void testURL() throws IOException {
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("url", new URL("file:data/cite/Buildings.properties"));
-        MapModel mapModel = new MapModel(map, "url");
+        MapModel<String> mapModel = new MapModel<>(map, "url");
         FileModel model = new FileModel(mapModel, root);
-        String path = (String) model.getObject();
+        String path = model.getObject();
         assertEquals("file:data/cite/Buildings.properties", path);
     }
 }

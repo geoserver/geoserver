@@ -65,7 +65,7 @@ public class InspireAdminPanel extends AdminPagePanel {
             }
         }
 
-        PropertyModel<MetadataMap> metadata = new PropertyModel<MetadataMap>(model, "metadata");
+        PropertyModel<MetadataMap> metadata = new PropertyModel<>(model, "metadata");
 
         final CheckBox createInspireExtendedCapabilities =
                 new CheckBox(
@@ -109,7 +109,7 @@ public class InspireAdminPanel extends AdminPagePanel {
                 new AttributeModifier(
                         "title", new ResourceModel("InspireAdminPanel.metadataURL.title")));
 
-        final Map<String, String> mdUrlTypes = new HashMap<String, String>();
+        final Map<String, String> mdUrlTypes = new HashMap<>();
         mdUrlTypes.put(
                 "application/vnd.ogc.csw.GetRecordByIdResponse_xml", "CSW GetRecordById Response");
         mdUrlTypes.put("application/vnd.iso.19139+xml", "ISO 19139 ServiceMetadata record");
@@ -136,9 +136,9 @@ public class InspireAdminPanel extends AdminPagePanel {
                         return key;
                     }
                 };
-        List<String> urlTypeChoices = new ArrayList<String>(mdUrlTypes.keySet());
+        List<String> urlTypeChoices = new ArrayList<>(mdUrlTypes.keySet());
         DropDownChoice<String> serviceMetadataRecordType =
-                new DropDownChoice<String>(
+                new DropDownChoice<>(
                         "metadataURLType", urlTypeModel, urlTypeChoices, urlTypeChoiceRenderer);
         serviceMetadataRecordType.setNullValid(true);
 

@@ -202,8 +202,8 @@ public class CatalogIconFactory implements Serializable {
      */
     public PackageResourceReference getStoreIcon(Class<?> factoryClass) {
         // look for the associated panel info if there is one
-        final List<DataStorePanelInfo> infos;
-        infos = GeoServerApplication.get().getBeansOfType(DataStorePanelInfo.class);
+        final List<DataStorePanelInfo> infos =
+                GeoServerApplication.get().getBeansOfType(DataStorePanelInfo.class);
 
         for (DataStorePanelInfo panelInfo : infos) {
             if (factoryClass.equals(panelInfo.getFactoryClass())) {

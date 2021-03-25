@@ -27,6 +27,7 @@ public class GeoPkgDataStoreFactoryInitializer
         this.resourceLoader = resourceLoader;
     }
 
+    @Override
     public void initialize(GeoPkgDataStoreFactory factory) {
         factory.setBaseDirectory(resourceLoader.getBaseDirectory());
     }

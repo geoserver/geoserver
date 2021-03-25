@@ -109,8 +109,7 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
         // camera, in radians
         double[] p1 = getRect(lon1, lat1, R_EARTH);
         double[] p2 = getRect(lon2, lat2, R_EARTH);
-        double[] midpoint =
-                new double[] {(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2, (p1[2] + p2[2]) / 2};
+        double[] midpoint = {(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2, (p1[2] + p2[2]) / 2};
 
         midpoint = getGeographic(midpoint[0], midpoint[1], midpoint[2]);
 
@@ -150,10 +149,9 @@ public class LookAtDecoratorFactory implements KmlDecoratorFactory {
     }
 
     private double[] getGeographic(double x, double y, double z) {
-        double theta, phi, radius;
-        radius = distance(new double[] {x, y, z}, new double[] {0, 0, 0});
-        theta = Math.atan2(Math.sqrt(x * x + y * y), z);
-        phi = Math.atan2(y, x);
+        double radius = distance(new double[] {x, y, z}, new double[] {0, 0, 0});
+        double theta = Math.atan2(Math.sqrt(x * x + y * y), z);
+        double phi = Math.atan2(y, x);
 
         double lat = 90 - (theta * 180 / Math.PI);
         double lon = 90 - (phi * 180 / Math.PI);

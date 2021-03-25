@@ -106,7 +106,7 @@ public class Icons {
                 while (i == null && it.hasNext()) {
                     try {
                         ExternalGraphicFactory fact = it.next();
-                        i = fact.getIcon((Feature) null, location, eg.getFormat(), -1);
+                        i = fact.getIcon(null, location, eg.getFormat(), -1);
                     } catch (Exception e) {
                         LOGGER.log(Level.FINE, "Error occurred evaluating external graphic", e);
                     }
@@ -161,7 +161,7 @@ public class Icons {
             if (gs instanceof ExternalGraphic) {
                 size = (double) getExternalSize((ExternalGraphic) gs, f);
             } else {
-                size = (double) DEFAULT_SYMBOL_SIZE;
+                size = DEFAULT_SYMBOL_SIZE;
             }
         }
 

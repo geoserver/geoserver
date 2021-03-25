@@ -5,8 +5,6 @@
  */
 package org.geoserver.security.cas;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpsConfigurator;
 import com.sun.net.httpserver.HttpsParameters;
 import com.sun.net.httpserver.HttpsServer;
@@ -160,11 +158,13 @@ public class LiveCasData extends LiveSystemTestData {
         return fixtureFile;
     }
 
+    @Override
     public boolean isTestDataAvailable() {
         return fixture != null;
     }
 
     @Override
+    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws Exception {
         // if the test was disabled we don't need to run the setup
         if (fixture == null) return;
@@ -198,8 +198,9 @@ public class LiveCasData extends LiveSystemTestData {
         KeyStore ks = KeyStore.getInstance("JKS");
         File base = new File(System.getProperty("user.home"), ".geoserver");
         File keystore = new File(base, "keystore.jks");
-        FileInputStream fis = new FileInputStream(keystore);
-        ks.load(fis, password);
+        try (FileInputStream fis = new FileInputStream(keystore)) {
+            ks.load(fis, password);
+        }
 
         // setup the key manager factory
 
@@ -216,6 +217,7 @@ public class LiveCasData extends LiveSystemTestData {
         sslContext.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
         httpsServer.setHttpsConfigurator(
                 new HttpsConfigurator(sslContext) {
+                    @Override
                     public void configure(HttpsParameters params) {
                         try {
                             // initialise the SSL context
@@ -236,14 +238,11 @@ public class LiveCasData extends LiveSystemTestData {
 
         httpsServer.createContext(
                 "/test",
-                new HttpHandler() {
-                    @Override
-                    public void handle(HttpExchange t) throws IOException {
-                        LOGGER.info("https server working");
-                        t.getRequestBody().close();
-                        t.sendResponseHeaders(200, 0);
-                        t.getResponseBody().close();
-                    }
+                t -> {
+                    LOGGER.info("https server working");
+                    t.getRequestBody().close();
+                    t.sendResponseHeaders(200, 0);
+                    t.getResponseBody().close();
                 });
 
         httpsServer.setExecutor(null); // creates a default executor

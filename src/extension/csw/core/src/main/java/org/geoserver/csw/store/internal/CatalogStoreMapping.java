@@ -98,8 +98,7 @@ public class CatalogStoreMapping {
 
     protected static final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
 
-    protected Map<String, CatalogStoreMappingElement> mappingElements =
-            new HashMap<String, CatalogStoreMappingElement>();
+    protected Map<String, CatalogStoreMappingElement> mappingElements = new HashMap<>();
 
     protected CatalogStoreMappingElement identifier = null;
 
@@ -143,7 +142,7 @@ public class CatalogStoreMapping {
      * @param rd Record Descriptor
      */
     public CatalogStoreMapping subMapping(List<PropertyName> properties, RecordDescriptor rd) {
-        Set<String> paths = new HashSet<String>();
+        Set<String> paths = new HashSet<>();
         for (PropertyName prop : properties) {
             paths.add(
                     toDotPath(
@@ -206,7 +205,7 @@ public class CatalogStoreMapping {
                 // can be used to avoid attribute @ being confused with id @
                 key = key.substring(1);
             }
-            List<Integer> splitIndexes = new ArrayList<Integer>();
+            List<Integer> splitIndexes = new ArrayList<>();
             while (key.contains("%.")) {
                 splitIndexes.add(
                         StringUtils.countMatches(key.substring(0, key.indexOf("%.")), "."));
@@ -253,7 +252,6 @@ public class CatalogStoreMapping {
                                 + ":\n"
                                 + formattedErrorMessage);
             } catch (Exception e) {
-                e.printStackTrace();
                 String msg = "parsing expression " + sourceExpr;
                 LOGGER.log(Level.SEVERE, msg, e);
                 throw new IllegalArgumentException(msg + ": " + e.getMessage(), e);
@@ -272,8 +270,8 @@ public class CatalogStoreMapping {
     public static String toDotPath(XPathUtil.StepList steps) {
 
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < steps.size(); i++) {
-            sb.append(steps.get(i).getName().getLocalPart());
+        for (XPathUtil.Step step : steps) {
+            sb.append(step.getName().getLocalPart());
             sb.append(".");
         }
         sb.deleteCharAt(sb.length() - 1);

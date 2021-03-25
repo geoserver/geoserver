@@ -5,7 +5,6 @@
  */
 package org.geoserver.filter.function;
 
-import java.util.Iterator;
 import java.util.List;
 import org.geotools.filter.FunctionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
@@ -42,9 +41,10 @@ public class CollectGeometriesFunction extends FunctionImpl {
         this.maxCoordinates = maxCoordinates;
     }
 
+    @Override
     public Object evaluate(Object object) {
         List geometries = getParameters().get(0).evaluate(object, List.class);
-        if (geometries == null || geometries.size() == 0) {
+        if (geometries == null || geometries.isEmpty()) {
             return new GeometryCollection(null, new GeometryFactory());
         }
 
@@ -53,8 +53,8 @@ public class CollectGeometriesFunction extends FunctionImpl {
         GeometryCollector collector = new GeometryCollector();
         collector.setFactory(null);
         collector.setMaxCoordinates(maxCoordinates);
-        for (Iterator it = geometries.iterator(); it.hasNext(); ) {
-            Geometry geometry = (Geometry) it.next();
+        for (Object o : geometries) {
+            Geometry geometry = (Geometry) o;
             collector.add(geometry);
         }
 

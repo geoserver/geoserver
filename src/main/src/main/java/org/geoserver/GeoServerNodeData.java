@@ -4,15 +4,24 @@
  */
 package org.geoserver;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Streams;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
@@ -41,6 +50,36 @@ public class GeoServerNodeData {
         this.nodeIdStyle = nodeIdStyle;
     }
 
+    static final Map<String, Function<InetAddress, String>> SUBSTITUTIONS;
+
+    static {
+        Map<String, Function<InetAddress, String>> subs = new HashMap<>();
+
+        subs.put("host_ip", InetAddress::getHostAddress);
+        subs.put("host_name", InetAddress::getHostName);
+        subs.put(
+                "host_short_name",
+                addr -> {
+                    String name = addr.getHostName();
+                    return name.split("\\.")[0];
+                });
+        subs.put(
+                "host_compact_name",
+                addr -> {
+                    String name = addr.getHostName();
+                    String[] parts = name.split("\\.");
+                    String hostName = parts[0];
+                    return Streams.concat(
+                                    Stream.of(hostName),
+                                    Arrays.stream(parts)
+                                            .skip(1)
+                                            .map((String p) -> p.substring(0, 1)))
+                            .collect(Collectors.joining("."));
+                });
+
+        SUBSTITUTIONS = Collections.unmodifiableMap(subs);
+    }
+
     /** Creates a node data from a format-options style string. */
     public static GeoServerNodeData createFromString(String nodeOpts) {
         String nodeId = null;
@@ -52,24 +91,26 @@ public class GeoServerNodeData {
         } else {
             try {
                 Map<String, String> options = parseProperties(nodeOpts);
-                String id = (String) options.get("id");
+                String id = options.get("id");
                 if (id != null) {
-                    if (id.contains("$host_ip")) {
-                        InetAddress address = getLocalHostLANAddress();
-                        id = id.replace("$host_ip", address.getHostAddress());
-                    } else if (id.contains("$host_name")) {
-                        InetAddress address = getLocalHostLANAddress();
-                        id = id.replace("$host_name", address.getHostName());
+                    if (SUBSTITUTIONS.keySet().stream().anyMatch(id::contains)) {
+                        final InetAddress address = getLocalHostLANAddress();
+                        for (Entry<String, Function<InetAddress, String>> e :
+                                SUBSTITUTIONS.entrySet()) {
+                            final String token = String.format("$%s", e.getKey());
+                            final String value = e.getValue().apply(address);
+                            id = id.replace(token, value);
+                        }
                     }
                 }
 
                 nodeId = id;
-                String bgcolor = (String) options.get("background");
+                String bgcolor = options.get("background");
                 if (bgcolor == null) {
                     bgcolor = "#dadada";
                 }
                 String style = DEFAULT_NODE_ID_TEMPLATE.replace("$background", bgcolor);
-                String color = (String) options.get("color");
+                String color = options.get("color");
                 if (color == null) {
                     color = "#0076a1";
                 }
@@ -96,7 +137,22 @@ public class GeoServerNodeData {
         return createFromString(GeoServerExtensions.getProperty(GEOSERVER_NODE_OPTS));
     }
 
+    private static InetAddress mockAddress;
+
+    @VisibleForTesting
+    static void setMockAddress(InetAddress mockAddress) {
+        GeoServerNodeData.mockAddress = mockAddress;
+    }
+
+    @VisibleForTesting
+    static void clearMockAddress() {
+        GeoServerNodeData.mockAddress = null;
+    }
+
     static InetAddress getLocalHostLANAddress() throws UnknownHostException {
+        if (Objects.nonNull(mockAddress)) {
+            return mockAddress;
+        }
         try {
             InetAddress candidateAddress = null;
             // Iterate all NICs (network interface cards)...
@@ -139,7 +195,7 @@ public class GeoServerNodeData {
      * key1:value1;key2=value2;..., using backslash as the escape char if needed
      */
     private static Map<String, String> parseProperties(String property) {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         List<String> kvps = KvpUtils.escapedTokens(property, ';');
 
         for (String kvp : kvps) {

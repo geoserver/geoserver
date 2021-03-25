@@ -22,7 +22,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 import org.apache.commons.lang3.ArrayUtils;
-import org.geoserver.jdbcstore.internal.JDBCDirectoryStructure.Entry;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.ResourceListener;
 import org.geoserver.platform.resource.ResourceNotification;
@@ -78,11 +77,9 @@ public class JDBCDirectoryStructure {
     public class Entry {
 
         private final ArrayList<String> path;
-        private EntryMetaData md;
 
         protected Entry(ArrayList<String> path) {
             this.path = new ArrayList<String>(path);
-            this.md = getMetadata(path);
         }
 
         @SuppressWarnings("unchecked")
@@ -93,7 +90,7 @@ public class JDBCDirectoryStructure {
         }
 
         public Integer getOid() {
-            return md.oid;
+            return getMetadata(path).oid;
         }
 
         public Entry getParent() {
@@ -103,7 +100,7 @@ public class JDBCDirectoryStructure {
         }
 
         public Boolean isDirectory() {
-            return md.dir;
+            return getMetadata(path).dir;
         }
 
         public String getName() {
@@ -115,8 +112,7 @@ public class JDBCDirectoryStructure {
         }
 
         public Timestamp getLastModified() {
-            this.md = getMetadata(path);
-            return md.lastModified;
+            return getMetadata(path).lastModified;
         }
 
         public List<Entry> getChildren() {
@@ -133,6 +129,8 @@ public class JDBCDirectoryStructure {
         }
 
         public boolean delete() {
+            EntryMetaData md = getMetadata(path);
+
             if (md.oid == null) {
                 LOGGER.warning("Attempting to delete undefined entry " + toString());
                 return false;
@@ -158,6 +156,8 @@ public class JDBCDirectoryStructure {
         }
 
         public boolean renameTo(Entry dest) {
+            EntryMetaData md = getMetadata(path);
+
             if (md.oid == null) {
                 LOGGER.warning("Attempted to rename undefined entry: " + toString());
                 return false;
@@ -206,9 +206,6 @@ public class JDBCDirectoryStructure {
                 return false;
             }
 
-            dest.md.oid = md.oid;
-            dest.md.dir = md.dir;
-            dest.md.lastModified = md.lastModified;
             md.oid = null;
             md.dir = null;
             md.lastModified = null;
@@ -227,6 +224,7 @@ public class JDBCDirectoryStructure {
         }
 
         public void setContent(InputStream is) {
+            EntryMetaData md = getMetadata(path);
             md.lastModified = new Timestamp(System.currentTimeMillis());
             if (helper.updateQuery(
                             TABLE_RESOURCES,
@@ -283,13 +281,15 @@ public class JDBCDirectoryStructure {
                 }
             }
 
+            EntryMetaData md = getMetadata(path);
             md.oid = parentOid;
             md.dir = true;
-
             entryCache.put(path, md);
         }
 
         public boolean createResource() {
+            EntryMetaData md = getMetadata(path);
+
             if (md.dir != null) {
                 if (md.dir) {
                     throw new IllegalStateException(
@@ -336,6 +336,7 @@ public class JDBCDirectoryStructure {
             return true;
         }
 
+        @Override
         public String toString() {
             return mergePath(path);
         }

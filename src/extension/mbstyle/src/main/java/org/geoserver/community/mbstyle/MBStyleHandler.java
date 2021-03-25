@@ -4,7 +4,7 @@
  */
 package org.geoserver.community.mbstyle;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -33,7 +33,7 @@ public class MBStyleHandler extends StyleHandler {
 
     public static final String MIME_TYPE = "application/vnd.geoserver.mbstyle+json";
 
-    static final Map<StyleType, String> TEMPLATES = new HashMap<StyleType, String>();
+    static final Map<StyleType, String> TEMPLATES = new HashMap<>();
 
     static {
         try {

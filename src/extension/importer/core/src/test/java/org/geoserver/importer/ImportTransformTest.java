@@ -6,11 +6,12 @@
 package org.geoserver.importer;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
@@ -47,7 +48,7 @@ public class ImportTransformTest extends ImporterTestSupport {
         store.setName("spearfish");
         store.setType("H2");
 
-        Map params = new HashMap();
+        Map<String, Serializable> params = new HashMap<>();
         params.put("database", getTestData().getDataDirectoryRoot().getPath() + "/spearfish");
         params.put("dbtype", "h2");
         store.getConnectionParameters().putAll(params);
@@ -77,7 +78,7 @@ public class ImportTransformTest extends ImporterTestSupport {
         context.setTargetStore(store);
 
         ImportTask task = context.getTasks().get(0);
-        task.getTransform().add(new NumberFormatTransform("cat", Integer.class));
+        task.addTransform(new NumberFormatTransform("cat", Integer.class));
         importer.run(context);
 
         assertEquals(ImportContext.State.COMPLETE, context.getState());
@@ -88,15 +89,12 @@ public class ImportTransformTest extends ImporterTestSupport {
         SimpleFeatureType schema = (SimpleFeatureType) ft.getFeatureType();
         assertEquals(Integer.class, schema.getDescriptor("cat").getType().getBinding());
 
-        FeatureIterator it = ft.getFeatureSource(null, null).getFeatures().features();
-        try {
+        try (FeatureIterator it = ft.getFeatureSource(null, null).getFeatures().features()) {
             assertTrue(it.hasNext());
             while (it.hasNext()) {
                 SimpleFeature f = (SimpleFeature) it.next();
                 assertTrue(f.getAttribute("cat") instanceof Integer);
             }
-        } finally {
-            it.close();
         }
     }
 
@@ -117,7 +115,7 @@ public class ImportTransformTest extends ImporterTestSupport {
         ImportTask task = context.getTasks().get(0);
         // this is a silly test - CAT_ID ranges from 1-25 and is not supposed to be a date
         // java date handling doesn't like dates in year 1
-        task.getTransform().add(new IntegerFieldToDateTransform("CAT_ID"));
+        task.addTransform(new IntegerFieldToDateTransform("CAT_ID"));
         importer.run(context);
 
         assertEquals(ImportContext.State.COMPLETE, context.getState());
@@ -128,11 +126,10 @@ public class ImportTransformTest extends ImporterTestSupport {
         SimpleFeatureType schema = (SimpleFeatureType) ft.getFeatureType();
         assertEquals(Timestamp.class, schema.getDescriptor("CAT_ID").getType().getBinding());
 
-        FeatureIterator it = ft.getFeatureSource(null, null).getFeatures().features();
         int year = 2;
         Calendar cal = Calendar.getInstance();
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-        try {
+        try (FeatureIterator it = ft.getFeatureSource(null, null).getFeatures().features()) {
             // make sure we have something
             assertTrue(it.hasNext());
             // the first date will be bogus due to java date limitation
@@ -143,8 +140,6 @@ public class ImportTransformTest extends ImporterTestSupport {
                 cal.setTime((Date) f.getAttribute("CAT_ID"));
                 assertEquals(year++, cal.get(Calendar.YEAR));
             }
-        } finally {
-            it.close();
         }
     }
 
@@ -163,7 +158,7 @@ public class ImportTransformTest extends ImporterTestSupport {
         context.setTargetStore(store);
 
         ImportTask task = context.getTasks().get(0);
-        task.getTransform().add(new DateFormatTransform("timestamp", "yyyy-MM-dd HH:mm:ss.S"));
+        task.addTransform(new DateFormatTransform("timestamp", "yyyy-MM-dd HH:mm:ss.S"));
 
         importer.run(context);
 
@@ -177,22 +172,17 @@ public class ImportTransformTest extends ImporterTestSupport {
                 Date.class.isAssignableFrom(
                         schema.getDescriptor("timestamp").getType().getBinding()));
 
-        FeatureIterator it = ft.getFeatureSource(null, null).getFeatures().features();
-        try {
+        try (FeatureIterator it = ft.getFeatureSource(null, null).getFeatures().features()) {
             assertTrue(it.hasNext());
             while (it.hasNext()) {
                 SimpleFeature f = (SimpleFeature) it.next();
                 assertTrue(f.getAttribute("timestamp") instanceof Date);
             }
-        } finally {
-            it.close();
         }
     }
 
     @Test
     public void testReprojectTransform() throws Exception {
-        Catalog cat = getCatalog();
-
         File dir = unpack("shape/archsites_epsg_prj.zip");
 
         SpatialFile file = new SpatialFile(new File(dir, "archsites.shp"));
@@ -216,7 +206,7 @@ public class ImportTransformTest extends ImporterTestSupport {
 
         context = importer.createContext(file, store);
         ImportTask item = context.getTasks().get(0);
-        item.getTransform().add(new ReprojectTransform(CRS.decode("EPSG:4326")));
+        item.addTransform(new ReprojectTransform(CRS.decode("EPSG:4326")));
         importer.run(context);
 
         assertEquals(ImportContext.State.COMPLETE, context.getState());
@@ -226,16 +216,13 @@ public class ImportTransformTest extends ImporterTestSupport {
                 CRS.equalsIgnoreMetadata(CRS.decode("EPSG:4326"), l2.getResource().getNativeCRS()));
         assertEquals("EPSG:4326", l2.getResource().getSRS());
 
-        assertFalse(
-                l1.getResource()
-                        .getNativeBoundingBox()
-                        .equals(l2.getResource().getNativeBoundingBox()));
+        assertNotEquals(
+                l1.getResource().getNativeBoundingBox(), l2.getResource().getNativeBoundingBox());
         assertTrue(
                 CRS.equalsIgnoreMetadata(
                         l2.getResource().getNativeCRS(),
                         l2.getResource().getNativeBoundingBox().getCoordinateReferenceSystem()));
 
-        LayerInfo l = cat.getLayer(l2.getId());
         assertTrue(
                 CRS.equalsIgnoreMetadata(CRS.decode("EPSG:4326"), l2.getResource().getNativeCRS()));
         assertEquals("EPSG:4326", l2.getResource().getSRS());

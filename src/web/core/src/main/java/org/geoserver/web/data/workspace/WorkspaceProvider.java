@@ -21,7 +21,7 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
 
     private static final long serialVersionUID = -2464073552094977958L;
 
-    public static Property<WorkspaceInfo> NAME = new BeanProperty<WorkspaceInfo>("name", "name");
+    public static Property<WorkspaceInfo> NAME = new BeanProperty<>("name", "name");
 
     public static Property<WorkspaceInfo> DEFAULT =
             new AbstractProperty<WorkspaceInfo>("default") {
@@ -74,6 +74,7 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
         return modifiedPropertiesList;
     }
 
+    @Override
     protected IModel<WorkspaceInfo> newModel(WorkspaceInfo object) {
         return new WorkspaceDetachableModel(object);
     }

@@ -13,7 +13,6 @@ import org.geotools.sld.bindings.SLD;
 import org.geotools.styling.NamedLayer;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
-import org.geotools.styling.StyledLayer;
 import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Encoder;
@@ -51,7 +50,7 @@ public class SLDStylePPIO extends XMLPPIO {
         NamedLayer nl = sf.createNamedLayer();
         nl.setName("");
         nl.styles().add((Style) obj);
-        sld.setStyledLayers(new StyledLayer[] {nl});
+        sld.setStyledLayers(nl);
 
         Encoder e = new Encoder(sldConfiguration);
         e.encode(sld, element, handler);

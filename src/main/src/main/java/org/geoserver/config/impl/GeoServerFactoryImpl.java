@@ -6,7 +6,6 @@
 package org.geoserver.config.impl;
 
 import java.util.Collection;
-import java.util.Iterator;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.config.ContactInfo;
@@ -30,44 +29,53 @@ public class GeoServerFactoryImpl implements GeoServerFactory, ApplicationContex
         this.gs = gs;
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
+    @Override
     public GeoServerInfo createGlobal() {
         return new GeoServerInfoImpl(gs);
     }
 
+    @Override
     public SettingsInfo createSettings() {
         return new SettingsInfoImpl();
     }
 
+    @Override
     public ContactInfo createContact() {
         return new ContactInfoImpl();
     }
 
+    @Override
     public JAIInfo createJAI() {
         return new JAIInfoImpl();
     }
 
+    @Override
     public MetadataLinkInfo createMetadataLink() {
         return new MetadataLinkInfoImpl();
     }
 
+    @Override
     public ServiceInfo createService() {
         return new ServiceInfoImpl();
     }
 
+    @Override
     public LoggingInfo createLogging() {
         return new LoggingInfoImpl();
     }
 
-    public Object create(Class clazz) {
+    @Override
+    public <T> T create(Class<T> clazz) {
         if (applicationContext != null) {
             Collection extensions =
                     applicationContext.getBeansOfType(GeoServerFactory.Extension.class).values();
-            for (Iterator e = extensions.iterator(); e.hasNext(); ) {
-                Extension extension = (Extension) e.next();
+            for (Object o : extensions) {
+                Extension extension = (Extension) o;
                 if (extension.canCreate(clazz)) {
                     return extension.create(clazz);
                 }

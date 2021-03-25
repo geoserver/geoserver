@@ -9,7 +9,6 @@ import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
 import static org.geoserver.ows.util.ResponseUtils.buildSchemaURL;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
-import java.util.Iterator;
 import java.util.List;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -52,6 +51,7 @@ public class DescribeLayerTransformer extends TransformerBase {
      * @param handler the content handler to send sax events to.
      * @return a new <code>DescribeLayerTranslator</code>
      */
+    @Override
     public Translator createTranslator(ContentHandler handler) {
         return new DescribeLayerTranslator(handler);
     }
@@ -66,6 +66,7 @@ public class DescribeLayerTransformer extends TransformerBase {
      * @return a Transformer propoerly configured to produce DescribeLayer responses.
      * @throws TransformerException if it is thrown by <code>super.createTransformer()</code>
      */
+    @Override
     public Transformer createTransformer() throws TransformerException {
         Transformer transformer = super.createTransformer();
         String dtdUrl = buildSchemaURL(baseURL, "wms/1.1.1/WMS_DescribeLayerResponse.dtd");
@@ -92,6 +93,7 @@ public class DescribeLayerTransformer extends TransformerBase {
          * @param o The {@link DescribeLayerRequest} to encode a DescribeLayer response for
          * @throws IllegalArgumentException if the Object is not encodeable.
          */
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             if (!(o instanceof DescribeLayerRequest)) {
                 throw new IllegalArgumentException();
@@ -126,8 +128,8 @@ public class DescribeLayerTransformer extends TransformerBase {
             AttributesImpl queryAtts = new AttributesImpl();
             queryAtts.addAttribute("", "typeName", "typeName", "", "");
 
-            for (Iterator it = layers.iterator(); it.hasNext(); ) {
-                layer = (MapLayerInfo) it.next();
+            for (Object o : layers) {
+                layer = (MapLayerInfo) o;
 
                 AttributesImpl layerAtts = new AttributesImpl();
                 layerAtts.addAttribute("", "name", "name", "", "");

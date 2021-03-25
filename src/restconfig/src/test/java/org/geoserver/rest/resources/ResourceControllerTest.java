@@ -4,6 +4,7 @@
  */
 package org.geoserver.rest.resources;
 
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -13,7 +14,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
 import net.sf.json.test.JSONAssert;
@@ -470,7 +475,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
 
         Resource newDir = getDataDirectory().get("/mynewdir");
         assertTrue(Resources.exists(newDir));
-        assertTrue(newDir.getType() == Type.DIRECTORY);
+        assertSame(newDir.getType(), Type.DIRECTORY);
         Assert.assertFalse(Resources.exists(myRes));
         assertTrue(Resources.exists(getDataDirectory().get("/mynewdir/myres")));
 
@@ -490,10 +495,10 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testErrorResponseCodes() throws Exception {
-        MockHttpServletResponse response;
 
         // get resource that doesn't exist
-        response = getAsServletResponse(RestBaseController.ROOT_PATH + "/resource/doesntexist");
+        MockHttpServletResponse response =
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/resource/doesntexist");
         Assert.assertEquals(404, response.getStatus());
 
         // delete resource that doesn't exist

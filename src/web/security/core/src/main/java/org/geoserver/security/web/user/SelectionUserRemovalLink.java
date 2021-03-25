@@ -57,7 +57,7 @@ public class SelectionUserRemovalLink extends AjaxLink<Object> {
     @Override
     public void onClick(AjaxRequestTarget target) {
         final List<GeoServerUser> selection = users.getSelection();
-        if (selection.size() == 0) return;
+        if (selection.isEmpty()) return;
 
         dialog.setTitle(new ParamResourceModel("confirmRemoval", this));
 
@@ -67,10 +67,11 @@ public class SelectionUserRemovalLink extends AjaxLink<Object> {
                 target,
                 delegate =
                         new GeoServerDialog.DialogDelegate() {
+                            @Override
                             protected Component getContents(String id) {
                                 // show a confirmation panel for all the objects we have to remove
                                 Model<Boolean> model =
-                                        new Model<Boolean>(
+                                        new Model<>(
                                                 SelectionUserRemovalLink.this.disassociateRoles);
                                 return removePanel =
                                         new ConfirmRemovalUserPanel(id, model, selection) {
@@ -82,6 +83,7 @@ public class SelectionUserRemovalLink extends AjaxLink<Object> {
                                         };
                             }
 
+                            @Override
                             protected boolean onSubmit(
                                     AjaxRequestTarget target, Component contents) {
                                 // cascade delete the whole selection
@@ -118,8 +120,7 @@ public class SelectionUserRemovalLink extends AjaxLink<Object> {
                                         gaStore = new RoleStoreValidationWrapper(gaStore);
 
                                         for (GeoServerUser user : removePanel.getRoots()) {
-                                            List<GeoServerRole> list =
-                                                    new ArrayList<GeoServerRole>();
+                                            List<GeoServerRole> list = new ArrayList<>();
                                             list.addAll(
                                                     gaStore.getRolesForUser(user.getUsername()));
                                             for (GeoServerRole role : list)

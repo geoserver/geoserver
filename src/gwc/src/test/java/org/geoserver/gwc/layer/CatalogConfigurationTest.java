@@ -8,25 +8,35 @@ package org.geoserver.gwc.layer;
 import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.gwc.GWCTestHelpers.mockGroup;
 import static org.geoserver.gwc.GWCTestHelpers.mockLayer;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -227,7 +237,7 @@ public class CatalogConfigurationTest {
 
         Set<GeoServerTileLayerInfo> expected =
                 ImmutableSet.of(layerInfo1, layerInfo2, groupInfo1, groupInfo2);
-        Set<GeoServerTileLayerInfo> actual = new HashSet<GeoServerTileLayerInfo>();
+        Set<GeoServerTileLayerInfo> actual = new HashSet<>();
 
         for (TileLayer layer : layers) {
             actual.add(((GeoServerTileLayer) layer).getInfo());
@@ -279,7 +289,7 @@ public class CatalogConfigurationTest {
         GeoServerTileLayerInfo newState = TileLayerInfoUtil.create(defaults);
         newState.setId(orig.getInfo().getId());
         newState.setName(orig.getInfo().getName());
-        assertFalse(orig.equals(newState));
+        assertNotEquals(orig, newState);
 
         final GeoServerTileLayer modified =
                 new GeoServerTileLayer(orig.getPublishedInfo(), gridSetBroker, newState);
@@ -335,9 +345,7 @@ public class CatalogConfigurationTest {
             assertTrue(true);
         }
 
-        String layerName;
-
-        layerName = tileLayerName(layer1);
+        String layerName = tileLayerName(layer1);
         assertNotNull(config.getLayer(layerName));
 
         final int initialCount = config.getLayerCount();
@@ -488,24 +496,16 @@ public class CatalogConfigurationTest {
         final int LOOPS = 1000;
         ExecutorService service = Executors.newFixedThreadPool(8);
         Runnable reloader =
-                new Runnable() {
-
-                    @Override
-                    public void run() {
-                        config.setGridSetBroker(gridSetBroker);
-                        config.afterPropertiesSet();
-                    }
+                () -> {
+                    config.setGridSetBroker(gridSetBroker);
+                    config.afterPropertiesSet();
                 };
         Runnable tileLayerFetcher =
-                new Runnable() {
-
-                    @Override
-                    public void run() {
-                        config.getLayer(layer1.getName());
-                        config.getLayer(layer2.getName());
-                        config.getLayer(group1.getName());
-                        config.getLayer(group2.getName());
-                    }
+                () -> {
+                    config.getLayer(layer1.getName());
+                    config.getLayer(layer2.getName());
+                    config.getLayer(group1.getName());
+                    config.getLayer(group2.getName());
                 };
         try {
             List<Future<?>> futures = new ArrayList<>();

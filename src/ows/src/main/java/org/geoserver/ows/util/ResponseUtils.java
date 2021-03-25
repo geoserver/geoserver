@@ -364,7 +364,7 @@ public class ResponseUtils {
         // prepare modifiable parameters
         StringBuilder baseURLBuffer = new StringBuilder(baseURL);
         StringBuilder pathBuffer = new StringBuilder(path != null ? path : "");
-        Map<String, String> kvpBuffer = new LinkedHashMap<String, String>();
+        Map<String, String> kvpBuffer = new LinkedHashMap<>();
         if (kvp != null) kvpBuffer.putAll(kvp);
 
         // run all of the manglers
@@ -425,7 +425,7 @@ public class ResponseUtils {
      * @param parameters sequence of keys and values
      */
     public static Map<String, String> params(String... parameters) {
-        Map<String, String> result = new LinkedHashMap<String, String>();
+        Map<String, String> result = new LinkedHashMap<>();
         if (parameters.length % 2 != 0)
             throw new IllegalArgumentException(
                     "The parameters sequence should be "

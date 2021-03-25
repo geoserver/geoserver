@@ -5,8 +5,10 @@
 package org.geoserver.security.oauth2;
 
 import java.util.Map;
+import java.util.logging.Logger;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.security.GeoServerSecurityManager;
+import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +22,11 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public class OAuth2AccessTokenURLMangler implements URLMangler {
+
+    public static final String ALLOW_OAUTH2_URL_MANGLER = "ALLOW_OAUTH2_URL_MANGLER";
+
+    /** logger */
+    private static final Logger LOGGER = Logging.getLogger(OAuth2AccessTokenURLMangler.class);
 
     GeoServerOAuth2SecurityConfiguration oauth2SecurityConfiguration;
 
@@ -72,15 +79,23 @@ public class OAuth2AccessTokenURLMangler implements URLMangler {
     @Override
     public void mangleURL(
             StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
+        Boolean OAUTH2_URL_MANGLER_ENABLED =
+                Boolean.valueOf(System.getProperty(ALLOW_OAUTH2_URL_MANGLER, "false"));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        OAuth2AccessToken token =
-                geoServerOauth2RestTemplate.getOAuth2ClientContext().getAccessToken();
-        if (authentication != null
-                && authentication.isAuthenticated()
-                && token != null
-                && token.getTokenType().equalsIgnoreCase(OAuth2AccessToken.BEARER_TYPE)) {
-            kvp.put("access_token", token.getValue());
+        try {
+            OAuth2AccessToken token =
+                    geoServerOauth2RestTemplate.getOAuth2ClientContext().getAccessToken();
+            if (OAUTH2_URL_MANGLER_ENABLED
+                    && authentication != null
+                    && authentication.isAuthenticated()
+                    && token != null
+                    && token.getTokenType().equalsIgnoreCase(OAuth2AccessToken.BEARER_TYPE)) {
+                kvp.put("access_token", token.getValue());
+            }
+        } catch (Exception e) {
+            // We are outside the session scope
+            LOGGER.warning(e.getMessage());
         }
     }
 }

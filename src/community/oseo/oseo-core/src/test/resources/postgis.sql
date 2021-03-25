@@ -16,6 +16,8 @@ drop table if exists collection;
 create table collection (
   "id" serial primary key,
   "name" varchar,
+  "title" varchar,
+  "description" varchar,
   "primary" boolean,
   "htmlDescription" text,
   "footprint" geometry(Polygon, 4326),
@@ -36,7 +38,8 @@ create table collection (
   "eoWavelength" int,
   "eoSecurityConstraints" boolean,
   "eoDissemination" varchar,
-  "eoAcquisitionStation" varchar
+  "eoAcquisitionStation" varchar,
+  "license" varchar
 );
 -- index all (really, this is a search engine)
 -- manually generated indexes
@@ -101,6 +104,7 @@ create table product (
   "eoTrack" int,
   "eoFrame" int,
   "eoSwathIdentifier" text,
+  "eoProductPlatform" varchar,
   "optCloudCover" int check ("optCloudCover" between 0 and 100),
   "optSnowCover" int check ("optSnowCover" between 0 and 100),
   "eoProductQualityStatus" varchar check ("eoProductQualityStatus" in ('NOMINAL', 'DEGRADED')),

@@ -9,7 +9,10 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.sldservice.utils.classifier.ColorRamp;
+import org.geotools.util.logging.Logging;
 
 /**
  * Custom Color Ramp Implementation
@@ -18,9 +21,11 @@ import org.geoserver.sldservice.utils.classifier.ColorRamp;
  */
 public class CustomColorRamp implements ColorRamp {
 
+    static final Logger LOGGER = Logging.getLogger(CustomColorRamp.class);
+
     private int classNum = 0;
 
-    private List<Color> colors = new ArrayList<Color>();
+    private List<Color> colors = new ArrayList<>();
 
     private Color startColor = null;
 
@@ -30,25 +35,29 @@ public class CustomColorRamp implements ColorRamp {
 
     private List<Color> inputColors = null;
 
+    @Override
     public int getNumClasses() {
         return classNum;
     }
 
+    @Override
     public List<Color> getRamp() throws Exception {
         if (colors == null) throw new Exception("Class num not setted, color ramp null");
         return colors;
     }
 
+    @Override
     public void revert() {
         Collections.reverse(colors);
     }
 
+    @Override
     public void setNumClasses(int numClass) {
         classNum = numClass + 1; // +1 for transparent
         try {
             createRamp();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", e);
         }
     }
 
@@ -76,7 +85,7 @@ public class CustomColorRamp implements ColorRamp {
             } else if (classes > inputColors.size()) {
                 int slices = inputColors.size() - 1;
                 int sliceSize = classes / slices;
-                colors = new ArrayList<Color>();
+                colors = new ArrayList<>();
                 int total = 0;
                 for (int i = 0; i < slices - 1; i++) {
                     total += sliceSize - 1;
@@ -139,12 +148,9 @@ public class CustomColorRamp implements ColorRamp {
         int red;
         int green;
         int blue;
-        double sRed;
-        double sGreen;
-        double sBlue;
-        sRed = ((double) end.getRed() - start.getRed()) / (double) (samples - 1);
-        sGreen = ((double) end.getGreen() - start.getGreen()) / (double) (samples - 1);
-        sBlue = ((double) end.getBlue() - start.getBlue()) / (double) (samples - 1);
+        double sRed = ((double) end.getRed() - start.getRed()) / (double) (samples - 1);
+        double sGreen = ((double) end.getGreen() - start.getGreen()) / (double) (samples - 1);
+        double sBlue = ((double) end.getBlue() - start.getBlue()) / (double) (samples - 1);
         for (int i = 0; i < samples; i++) {
             red = (int) (sRed * i + start.getRed());
             green = (int) (sGreen * i + start.getGreen());

@@ -63,6 +63,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         return provider.getResource();
     }
 
+    @Override
     public void reloadKeyStore() throws IOException {
         writeLock();
         try {
@@ -72,6 +73,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public Key getKey(String alias) throws IOException {
         readLock();
         try {
@@ -81,6 +83,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public byte[] getConfigPasswordKey() throws IOException {
         readLock();
         try {
@@ -90,6 +93,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public boolean hasConfigPasswordKey() throws IOException {
         readLock();
         try {
@@ -99,6 +103,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public boolean containsAlias(String alias) throws IOException {
         readLock();
         try {
@@ -108,6 +113,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public byte[] getUserGroupKey(String serviceName) throws IOException {
         readLock();
         try {
@@ -117,6 +123,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public boolean hasUserGroupKey(String serviceName) throws IOException {
         readLock();
         try {
@@ -126,6 +133,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public SecretKey getSecretKey(String name) throws IOException {
         readLock();
         try {
@@ -135,6 +143,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public PublicKey getPublicKey(String name) throws IOException {
         readLock();
         try {
@@ -144,6 +153,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public PrivateKey getPrivateKey(String name) throws IOException {
         readLock();
         try {
@@ -153,10 +163,12 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public String aliasForGroupService(String serviceName) {
         return provider.aliasForGroupService(serviceName);
     }
 
+    @Override
     public boolean isKeyStorePassword(char[] password) throws IOException {
         readLock();
         try {
@@ -166,6 +178,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public void setSecretKey(String alias, char[] key) throws IOException {
         writeLock();
         try {
@@ -175,6 +188,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public void setUserGroupKey(String serviceName, char[] password) throws IOException {
         writeLock();
         try {
@@ -184,6 +198,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public void removeKey(String alias) throws IOException {
         writeLock();
         try {
@@ -193,6 +208,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public void storeKeyStore() throws IOException {
         writeLock();
         try {
@@ -202,6 +218,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public void prepareForMasterPasswordChange(char[] oldPassword, char[] newPassword)
             throws IOException {
         writeLock();
@@ -212,6 +229,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public void abortMasterPasswordChange() {
         writeLock();
         try {
@@ -221,6 +239,7 @@ public class LockingKeyStoreProvider implements KeyStoreProvider {
         }
     }
 
+    @Override
     public void commitMasterPasswordChange() throws IOException {
         writeLock();
         try {

@@ -8,7 +8,6 @@ package org.geoserver.web.wicket.property;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -40,15 +39,15 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
 
     public PropertyEditorFormComponent(String id) {
         super(id);
-        init();
+        initComponents();
     }
 
     public PropertyEditorFormComponent(String id, IModel<Properties> model) {
         super(id, model);
-        init();
+        initComponents();
     }
 
-    void init() {
+    void initComponents() {
         final WebMarkupContainer container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         add(container);
@@ -59,7 +58,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
 
                     @Override
                     protected void populateItem(ListItem<Tuple> item) {
-                        item.setModel(new CompoundPropertyModel<Tuple>(item.getModelObject()));
+                        item.setModel(new CompoundPropertyModel<>(item.getModelObject()));
                         item.add(
                                 new TextField<String>("key")
                                         .add(
@@ -120,7 +119,7 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
             props = new Properties();
         }
 
-        List<Tuple> tuples = new ArrayList<Tuple>();
+        List<Tuple> tuples = new ArrayList<>();
         for (Map.Entry<Object, Object> e : props.entrySet()) {
             tuples.add(new Tuple((String) e.getKey(), (String) e.getValue()));
         }
@@ -131,14 +130,14 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
 
     @Override
     protected void onBeforeRender() {
-        listView.setModel(new ListModel<Tuple>(tuples()));
+        listView.setModel(new ListModel<>(tuples()));
         super.onBeforeRender();
     }
 
     @Override
     public void convertInput() {
-        for (Iterator<?> it = listView.iterator(); it.hasNext(); ) {
-            ListItem<?> item = (ListItem<?>) it.next();
+        for (org.apache.wicket.Component component : listView) {
+            ListItem<?> item = (ListItem<?>) component;
             ((FormComponent<?>) item.get("key")).updateModel();
             ((FormComponent<?>) item.get("value")).updateModel();
         }

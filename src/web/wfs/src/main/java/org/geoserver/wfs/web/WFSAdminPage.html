@@ -21,6 +21,10 @@
           <input wicket:id="hitsIgnoreMaxFeatures" type="checkbox"></input>
           <label for="hitsIgnoreMaxFeatures"><wicket:message key="hitsIgnoreMaxFeatures">Ignore maximum number of features when calculating hits</wicket:message></label>
         </li>
+        <li class="choiceItem">
+          <input wicket:id="simpleConversionEnabled" type="checkbox"></input>
+          <label for="simpleConversionEnabled"><wicket:message key="complexToSimple">Activate complex to simple features conversion</wicket:message></label>
+        </li>
       </ul>
     </fieldset>
   </li>
@@ -111,6 +115,10 @@
        <li>
           <input wicket:id="shapeZipPrjFormat" type="checkbox"></input>
           <label for="shapeZipPrjFormat"><wicket:message key="shapeZipPrjFormat">SHAPE-ZIP default prj is ESRI</wicket:message></label>
+        </li>
+        <li>
+          <input id="includeWFSRequestDumpFile" wicket:id="includeWFSRequestDumpFile" type="checkbox"></input>
+          <label for="includeWFSRequestDumpFile"><wicket:message key="includeWFSRequestDumpFile">Include WFS request dump file</wicket:message></label>
         </li>
       </ul>
     </fieldset>

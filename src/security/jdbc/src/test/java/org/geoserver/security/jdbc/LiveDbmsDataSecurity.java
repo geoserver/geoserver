@@ -34,6 +34,7 @@ public class LiveDbmsDataSecurity extends LiveDbmsData {
     }
 
     @Override
+    @SuppressWarnings("PMD.JUnit4TestShouldUseBeforeAnnotation")
     public void setUp() throws Exception {
         data = IOUtils.createRandomDirectory("./target", "live", "data");
         IOUtils.deepCopy(source, data);
@@ -90,11 +91,11 @@ public class LiveDbmsDataSecurity extends LiveDbmsData {
             return available;
         }
 
-        Connection con = null;
-        try {
-            if (user == null) con = DriverManager.getConnection(url);
-            else con = DriverManager.getConnection(url, user, password);
-            con.close();
+        try (Connection con =
+                user == null
+                        ? DriverManager.getConnection(url)
+                        : DriverManager.getConnection(url, user, password)) {
+            // nothing to do
         } catch (SQLException ex) {
             LOGGER.warning(msgPrefix + " an sql error:\n " + ex.getMessage());
             available = false;

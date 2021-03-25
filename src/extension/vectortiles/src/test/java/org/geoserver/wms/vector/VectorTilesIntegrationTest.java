@@ -5,8 +5,8 @@
 package org.geoserver.wms.vector;
 
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -24,7 +24,7 @@ public class VectorTilesIntegrationTest extends WMSTestSupport {
     protected DocumentContext getAsJSONPath(String path, int expectedHttpCode) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
         if (!isQuietTests()) {
-            System.out.println(response.getContentAsString());
+            LOGGER.info(response.getContentAsString());
         }
 
         assertEquals(expectedHttpCode, response.getStatus());

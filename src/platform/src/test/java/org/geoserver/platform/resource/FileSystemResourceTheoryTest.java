@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -38,7 +39,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 
@@ -48,12 +48,10 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
     @Rule public TemporaryFolder folder = new TemporaryFolder();
 
-    @Rule public ExpectedException expectedException = ExpectedException.none();
-
     @Rule public TestName testName = new TestName();
 
     @DataPoints
-    public static String[] testPaths() {
+    public static String[] getTestPaths() {
         return new String[] {
             "FileA",
             "FileB",
@@ -91,9 +89,8 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
     @Test
     public void invalid() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage("Contains invalid .. path");
-        store.get("..");
+
+        assertThrows(IllegalArgumentException.class, () -> store.get(".."));
     }
 
     @Test
@@ -168,17 +165,20 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         assertSame(notification, n);
 
         listener.reset();
-        expectedException.expect(ConditionTimeoutException.class);
-        listener.await(100, TimeUnit.MILLISECONDS); // expect timeout as no events will be sent!
+        // expectedException.expect(ConditionTimeoutException.class);
+        assertThrows(
+                ConditionTimeoutException.class,
+                () -> {
+                    listener.await(
+                            100,
+                            TimeUnit.MILLISECONDS); // expect timeout as no events will be sent!
+                });
     }
 
     @Test
     public void directoryEvents() throws Exception {
         File fileA = Paths.toFile(store.baseDirectory, "FileA");
         File fileB = Paths.toFile(store.baseDirectory, "FileB");
-        File dirC = Paths.toFile(store.baseDirectory, "DirC");
-        File fileD = Paths.toFile(store.baseDirectory, "DirC/FileD");
-        File dirE = Paths.toFile(store.baseDirectory, "DirE");
 
         AwaitResourceListener listener = new AwaitResourceListener();
         store.get(Paths.BASE).addListener(listener);
@@ -236,8 +236,9 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
 
         // empty directory create events are not raised since we're watching for
         // directory contents
-        exception.expect(ConditionTimeoutException.class);
-        listener.await(500, TimeUnit.MILLISECONDS);
+
+        assertThrows(
+                ConditionTimeoutException.class, () -> listener.await(500, TimeUnit.MILLISECONDS));
     }
 
     @Test

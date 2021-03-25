@@ -41,6 +41,7 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
 
     private final String EPSG_4283 = "urn:x-ogc:def:crs:EPSG:4283";
 
+    @Override
     protected BBoxMockData createTestData() {
         return new BBoxMockData();
     }
@@ -179,8 +180,8 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
         Document doc = getAsDOM(WFS_GET_FEATURE + LATLONG + "&srsName=urn:x-ogc:def:crs:EPSG:4283");
         LOGGER.info(WFS_GET_FEATURE_LOG + LONGLAT + prettyString(doc));
 
-        CoordinateReferenceSystem sourceCRS = (CoordinateReferenceSystem) CRS.decode(EPSG_4326);
-        CoordinateReferenceSystem targetCRS = (CoordinateReferenceSystem) CRS.decode(EPSG_4283);
+        CoordinateReferenceSystem sourceCRS = CRS.decode(EPSG_4326);
+        CoordinateReferenceSystem targetCRS = CRS.decode(EPSG_4283);
         MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
         GeometryFactory factory = new GeometryFactory();
         Point targetPoint =

@@ -82,17 +82,17 @@ public class UserPanel extends Panel {
         if (!canCreateStore) {
             h.add(
                     new Label("message", new StringResourceModel("noCreateStore", this, null))
-                            .add(new AttributeAppender("class", new Model("info-link"), " ")));
+                            .add(new AttributeAppender("class", new Model<>("info-link"), " ")));
         } else {
             h.add(
                     new Label("message", new Model())
-                            .add(new AttributeAppender("class", new Model("displayNone"), " ")));
+                            .add(new AttributeAppender("class", new Model<>("displayNone"), " ")));
         }
 
         // the add button
         h.add(
                 add =
-                        new Link("addNew") {
+                        new Link<NewUserPage>("addNew") {
                             @Override
                             public void onClick() {
                                 setResponsePage(
@@ -127,6 +127,7 @@ public class UserPanel extends Panel {
                                 .canCreateStore());
     }
 
+    @Override
     protected void onBeforeRender() {
         users.clearSelection();
         removal.setEnabled(false);

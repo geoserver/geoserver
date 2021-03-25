@@ -44,6 +44,7 @@ public class PriorityThreadBlocker implements ThreadBlocker {
         return queue.size();
     }
 
+    @Override
     public boolean requestIncoming(Request request, long timeout) throws InterruptedException {
         WaitToken token = null;
 
@@ -118,6 +119,7 @@ public class PriorityThreadBlocker implements ThreadBlocker {
         return result;
     }
 
+    @Override
     public void requestComplete(Request request) {
         // protect shared data structures from MT
         synchronized (this) {
@@ -132,8 +134,7 @@ public class PriorityThreadBlocker implements ThreadBlocker {
         // this needs to be called within a synchronized section
         assert Thread.holdsLock(this);
 
-        WaitToken token;
-        token = queue.poll();
+        WaitToken token = queue.poll();
         if (token != null) {
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.log(Level.FINER, "Releasing request with priority " + token.priority);

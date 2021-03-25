@@ -8,6 +8,7 @@ package org.geoserver.feature;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -66,7 +67,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
     CoordinateReferenceSystem defaultSource;
 
     /** MathTransform cache, keyed by source CRS */
-    HashMap /* <CoordinateReferenceSystem,GeometryCoordinateSequenceTransformer> */ transformers;
+    Map<CoordinateReferenceSystem, GeometryCoordinateSequenceTransformer> transformers;
 
     /** Transformation hints */
     Hints hints = new Hints(Hints.LENIENT_DATUM_SHIFT, Boolean.TRUE);
@@ -81,7 +82,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         this.schema = FeatureTypes.transform(delegate.getSchema(), target);
 
         // create transform cache
-        transformers = new HashMap();
+        transformers = new HashMap<>();
 
         // cache "default" transform
         CoordinateReferenceSystem source = delegate.getSchema().getCoordinateReferenceSystem();
@@ -104,13 +105,10 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
 
     @Override
     public void accepts(FeatureVisitor visitor, ProgressListener progress) {
-        SimpleFeatureIterator it = features();
-        try {
+        try (SimpleFeatureIterator it = features()) {
             while (it.hasNext()) {
                 visitor.visit(it.next());
             }
-        } finally {
-            it.close();
         }
     }
 
@@ -118,6 +116,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         this.defaultSource = defaultSource;
     }
 
+    @Override
     public SimpleFeatureIterator features() {
         return new ReprojectingFeatureIterator(delegate.features());
     }
@@ -126,10 +125,12 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         return schema;
     }
 
+    @Override
     public SimpleFeatureType getSchema() {
         return schema;
     }
 
+    @Override
     public SimpleFeatureCollection subCollection(Filter filter) {
         // reproject the filter to the delegate native crs
         CoordinateReferenceSystem crs = getSchema().getCoordinateReferenceSystem();
@@ -161,6 +162,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         return null;
     }
 
+    @Override
     public Object[] toArray() {
         Object[] array = delegate.toArray();
 
@@ -175,12 +177,15 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         return array;
     }
 
-    public Object[] toArray(Object[] a) {
-        Object[] array = delegate.toArray(a);
+    @Override
+    public <F> F[] toArray(F[] a) {
+        F[] array = delegate.toArray(a);
 
         for (int i = 0; i < array.length; i++) {
             try {
-                array[i] = reproject((SimpleFeature) array[i]);
+                @SuppressWarnings("unchecked")
+                F cast = (F) reproject((SimpleFeature) array[i]);
+                array[i] = cast;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -189,28 +194,26 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
         return array;
     }
 
+    @Override
     public ReferencedEnvelope getBounds() {
         ReferencedEnvelope bounds = null;
-        SimpleFeatureIterator i = features();
 
-        try {
+        try (SimpleFeatureIterator i = features()) {
             if (!i.hasNext()) {
                 bounds = new ReferencedEnvelope();
                 bounds.setToNull();
 
             } else {
-                SimpleFeature first = (SimpleFeature) i.next();
+                SimpleFeature first = i.next();
                 bounds = new ReferencedEnvelope(first.getBounds());
             }
 
             while (i.hasNext()) {
-                SimpleFeature f = (SimpleFeature) i.next();
+                SimpleFeature f = i.next();
                 bounds.include(f.getBounds());
             }
 
             return bounds;
-        } finally {
-            i.close();
         }
     }
 
@@ -240,8 +243,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
                 if (crs != null) {
                     // if equal, nothing to do
                     if (!crs.equals(target)) {
-                        GeometryCoordinateSequenceTransformer transformer =
-                                (GeometryCoordinateSequenceTransformer) transformers.get(crs);
+                        GeometryCoordinateSequenceTransformer transformer = transformers.get(crs);
 
                         if (transformer == null) {
                             transformer = new GeometryCoordinateSequenceTransformer();
@@ -300,10 +302,12 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
             return delegate;
         }
 
+        @Override
         public boolean hasNext() {
             return delegate.hasNext();
         }
 
+        @Override
         public SimpleFeature next() throws NoSuchElementException {
             SimpleFeature feature = delegate.next();
 
@@ -314,6 +318,7 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
             }
         }
 
+        @Override
         public void close() {
             if (delegate != null) delegate.close();
             delegate = null;
@@ -331,16 +336,19 @@ public class ReprojectingFeatureCollection extends DecoratingSimpleFeatureCollec
             return delegate;
         }
 
+        @Override
         public void remove() {
             delegate.remove();
         }
 
+        @Override
         public boolean hasNext() {
             return delegate.hasNext();
         }
 
+        @Override
         public SimpleFeature next() {
-            SimpleFeature feature = (SimpleFeature) delegate.next();
+            SimpleFeature feature = delegate.next();
 
             try {
                 return reproject(feature);

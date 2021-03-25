@@ -39,6 +39,7 @@ public abstract class LegacyServiceLoader<T extends ServiceInfo> implements Serv
      *
      * <p>This method calls through to {@link #load(LegacyServicesReader, GeoServer)}
      */
+    @Override
     public final T load(GeoServer gs) throws Exception {
         return load(reader, gs);
     }
@@ -91,6 +92,7 @@ public abstract class LegacyServiceLoader<T extends ServiceInfo> implements Serv
             service.setMetadataLink(ml);
         }
 
+        @SuppressWarnings("unchecked")
         List<String> keywords = (List<String>) properties.get("keywords");
         if (keywords != null) {
             for (String kw : keywords) {
@@ -106,6 +108,7 @@ public abstract class LegacyServiceLoader<T extends ServiceInfo> implements Serv
         service.setSchemaBaseURL((String) properties.get("SchemaBaseUrl"));
     }
 
+    @Override
     public void save(T service, GeoServer gs) throws Exception {
         // do nothing, saving implemented elsewhere
     }

@@ -9,7 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,7 +55,6 @@ import org.geotools.xml.styling.SLDTransformer;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;
@@ -148,9 +147,9 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
 
         CoverageInfo cInfo = getCatalog().getCoverageByName("world");
         assertNotNull(cInfo);
-        SimpleFeatureCollection feature;
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
-        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+        SimpleFeatureCollection feature =
+                FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
         GetLegendGraphicRequest req = getRequest(feature.getSchema(), multipleRulesStyle);
 
         req.setLegendOptions(new HashMap<String, String>());
@@ -253,7 +252,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
                         .getFeatureTypeByName(
                                 MockData.ROAD_SEGMENTS.getNamespaceURI(),
                                 MockData.ROAD_SEGMENTS.getLocalPart());
-        List<FeatureType> layers = new ArrayList<FeatureType>();
+        List<FeatureType> layers = new ArrayList<>();
         req.getLegends().clear();
         layers.add(ftInfo.getFeatureType());
 
@@ -261,8 +260,8 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         assertNotNull(cInfo);
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
-        SimpleFeatureCollection feature;
-        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+        SimpleFeatureCollection feature =
+                FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
         layers.add(feature.getSchema());
 
         layers.forEach(ft -> req.getLegends().add(new LegendRequest(ft)));
@@ -374,15 +373,13 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
         builder.setCRS(crs);
 
-        GeometryFactory geometryFactory = new GeometryFactory();
-
         AttributeType at =
                 new AttributeTypeImpl(
                         new NameImpl("ID"),
                         String.class,
                         false,
                         false,
-                        Collections.EMPTY_LIST,
+                        Collections.emptyList(),
                         null,
                         null);
         builder.add(new AttributeDescriptorImpl(at, new NameImpl("ID"), 0, 1, false, null));
@@ -394,7 +391,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
                         crs,
                         false,
                         false,
-                        Collections.EMPTY_LIST,
+                        Collections.emptyList(),
                         null,
                         null);
 
@@ -617,7 +614,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
     public void testProportionalSymbolSizePartialUOM() throws Exception {
         GetLegendGraphicRequest req = getRequest();
 
-        req.setScale(RendererUtilities.calculatePixelsPerMeterRatio(10, Collections.EMPTY_MAP));
+        req.setScale(RendererUtilities.calculatePixelsPerMeterRatio(10, Collections.emptyMap()));
 
         FeatureTypeInfo ftInfo =
                 getCatalog()
@@ -663,7 +660,7 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
     public void testInternationalizedLabels() throws Exception {
         GetLegendGraphicRequest req = getRequest();
 
-        Map<String, String> options = new HashMap<String, String>();
+        Map<String, String> options = new HashMap<>();
         options.put("forceLabels", "on");
         req.setLegendOptions(options);
         req.setFormat(JSONFormat);
@@ -728,8 +725,8 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         assertNotNull(cInfo);
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
-        SimpleFeatureCollection feature;
-        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+        SimpleFeatureCollection feature =
+                FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
         req.setLayer(feature.getSchema());
         req.setStyle(transformStyle);
         req.setLegendOptions(new HashMap<String, String>());
@@ -783,8 +780,8 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         assertNotNull(cInfo);
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
-        SimpleFeatureCollection feature;
-        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+        SimpleFeatureCollection feature =
+                FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
         req.setLayer(feature.getSchema());
         req.setStyle(style);
         req.setLegendOptions(new HashMap<String, String>());
@@ -1592,8 +1589,8 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
 
-        SimpleFeatureCollection feature;
-        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+        SimpleFeatureCollection feature =
+                FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
         req.setLayer(feature.getSchema());
         req.setStyle(multipleRulesStyle);
         req.setLegendOptions(new HashMap<String, String>());
@@ -1636,8 +1633,8 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
 
-        SimpleFeatureCollection feature;
-        feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+        SimpleFeatureCollection feature =
+                FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
         req.setLayer(feature.getSchema());
         req.setStyle(multipleRulesStyle);
         req.setLegendOptions(new HashMap<String, String>());
@@ -1681,7 +1678,8 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         Style style = readStyles[0];
         return style;
     }
-    /** */
+
+    @SuppressWarnings("PMD.SystemPrintln")
     private void printStyle(Style style) throws TransformerException {
         if (isQuietTests()) {
             return;

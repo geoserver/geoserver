@@ -14,7 +14,6 @@ import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.Transaction;
@@ -58,7 +57,7 @@ public class ReadOnlyDataStore extends org.geotools.data.store.DecoratingDataSto
         if (fs == null) return null;
 
         WrapperPolicy childPolicy = buildPolicyForFeatureSource();
-        return DataUtilities.simple((FeatureSource) SecuredObjects.secure(fs, childPolicy));
+        return DataUtilities.simple(SecuredObjects.secure(fs, childPolicy));
     }
 
     private WrapperPolicy buildPolicyForFeatureSource() {

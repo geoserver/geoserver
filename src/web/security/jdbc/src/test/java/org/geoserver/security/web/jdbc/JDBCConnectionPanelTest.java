@@ -5,7 +5,9 @@
  */
 package org.geoserver.security.web.jdbc;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import org.apache.wicket.Component;
@@ -55,11 +57,12 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
                         new ComponentBuilder() {
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             public Component buildComponent(String id) {
-                                return current = new JDBCConnectionPanel(id, new Model(config));
+                                return current = new JDBCConnectionPanel<>(id, new Model<>(config));
                             };
                         },
-                        new CompoundPropertyModel(config)));
+                        new CompoundPropertyModel<>(config)));
     }
 
     @Test

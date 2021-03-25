@@ -7,6 +7,7 @@ package org.geoserver.config.util;
 
 import java.util.List;
 import java.util.Map;
+import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
@@ -70,7 +71,8 @@ public abstract class ServiceLoader {
             service.setMetadataLink(ml);
         }
 
-        List keywords = (List) properties.get("keywords");
+        @SuppressWarnings("unchecked")
+        List<KeywordInfo> keywords = (List) properties.get("keywords");
         if (keywords != null) {
             service.getKeywords().addAll(keywords);
         }

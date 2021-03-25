@@ -9,10 +9,10 @@
  */
 package org.geoserver.gsr.api;
 
-import org.geoserver.api.APIService;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gsr.GSRServiceInfo;
+import org.geoserver.ogcapi.APIService;
 import org.geotools.factory.CommonFactoryFinder;
 import org.opengis.filter.FilterFactory2;
 

@@ -78,6 +78,7 @@ public class DataStoreFormat extends VectorFormat {
         }
     }
 
+    @Override
     public DataStoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog)
             throws IOException {
         Map<String, Serializable> params = createConnectionParameters(data, catalog);
@@ -108,7 +109,7 @@ public class DataStoreFormat extends VectorFormat {
             DataStoreInfo store = cb.buildDataStore("dummy");
             cb.setStore(store);
 
-            List<ImportTask> tasks = new ArrayList<ImportTask>();
+            List<ImportTask> tasks = new ArrayList<>();
             for (String typeName : dataStore.getTypeNames()) {
                 if (monitor.isCanceled()) {
                     break;
@@ -227,7 +228,7 @@ public class DataStoreFormat extends VectorFormat {
             }
 
             if (f != null) {
-                Map<String, Serializable> map = new HashMap<String, Serializable>();
+                Map<String, Serializable> map = new HashMap<>();
                 map.put("url", relativeDataFileURL(URLs.fileToUrl(f).toString(), catalog));
                 if (data.getCharsetEncoding() != null) {
                     // @todo this map only work for shapefile

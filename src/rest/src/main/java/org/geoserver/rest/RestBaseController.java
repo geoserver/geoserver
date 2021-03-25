@@ -5,7 +5,9 @@
 package org.geoserver.rest;
 
 import freemarker.core.ParseException;
-import freemarker.template.*;
+import freemarker.template.Configuration;
+import freemarker.template.ObjectWrapper;
+import freemarker.template.Template;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -100,7 +102,7 @@ public abstract class RestBaseController implements RequestBodyAdvice {
      * @param clazz Class of the object
      * @return Freemarker template
      */
-    protected Template getTemplate(Object o, Class clazz) {
+    protected Template getTemplate(Object o, Class<?> clazz) {
         Template template = null;
         Configuration configuration = createConfiguration(clazz);
 
@@ -319,6 +321,7 @@ public abstract class RestBaseController implements RequestBodyAdvice {
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         if (attributes == null) return Collections.emptyMap();
 
+        @SuppressWarnings("unchecked")
         Map<String, String> result =
                 (Map<String, String>)
                         attributes.getAttribute(

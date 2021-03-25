@@ -5,7 +5,12 @@
  */
 package org.geoserver.data.jdbc;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -30,6 +35,7 @@ public class GenericUnWrapperTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.CloseResource")
     public void testUnwrapConnection()
             throws SQLException, NoSuchMethodException, SecurityException {
         Connection connection = new TestConnection();
@@ -56,6 +62,7 @@ public class GenericUnWrapperTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.CloseResource")
     public void testSPIRegistration() throws Exception {
         Connection connection = new TestConnection();
         Connection wrapper = new WrapperConnection(connection);

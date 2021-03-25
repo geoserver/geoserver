@@ -177,14 +177,14 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
             List<T[][]> rings = new ArrayList<>();
             LineString shell = polygon.getExteriorRing();
             if (Orientation.isCCW(shell.getCoordinateSequence())) {
-                shell = (LineString) shell.reverse();
+                shell = (LineString) ((Geometry) shell).reverse();
             }
             rings.add(embeddedLineString(shell));
 
             for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
                 LineString hole = polygon.getInteriorRingN(i);
                 if (!Orientation.isCCW(hole.getCoordinateSequence())) {
-                    hole = (LineString) hole.reverse();
+                    hole = (LineString) ((Geometry) hole).reverse();
                 }
                 rings.add(embeddedLineString(hole));
             }
@@ -207,14 +207,14 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
                 // encode the outer ring
                 LineString outer = geometryN.getExteriorRing();
                 if (Orientation.isCCW(outer.getCoordinateSequence())) {
-                    outer = (LineString) outer.reverse();
+                    outer = (LineString) ((Geometry) outer).reverse();
                 }
                 rings.add(embeddedLineString(outer));
 
                 for (int j = 0; j < geometryN.getNumInteriorRing(); j++) {
                     LineString inner = geometryN.getInteriorRingN(j);
                     if (!Orientation.isCCW(inner.getCoordinateSequence())) {
-                        inner = (LineString) inner.reverse();
+                        inner = (LineString) ((Geometry) inner).reverse();
                     }
                     rings.add(embeddedLineString(inner));
                 }
@@ -499,7 +499,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
             Multipoint mp = (Multipoint) geometry;
 
             Number[][] points = mp.getPoints();
-            return geometries.createMultiPoint(arrayToCoordinates(points));
+            return geometries.createMultiPointFromCoords(arrayToCoordinates(points));
         } else if (geometry instanceof Polyline) {
 
             Polyline pl = (Polyline) geometry;
@@ -629,7 +629,7 @@ public abstract class AbstractGeometryEncoder<T extends Number> implements Conve
     }
 
     @Override
-    public boolean canConvert(Class clazz) {
+    public boolean canConvert(@SuppressWarnings("rawtypes") Class clazz) {
         return Geometry.class.isAssignableFrom(clazz) || Envelope.class.isAssignableFrom(clazz);
     }
 }

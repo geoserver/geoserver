@@ -5,14 +5,21 @@
  */
 package org.geoserver.web.demo;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import com.google.common.collect.Lists;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
@@ -35,6 +42,40 @@ public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
         } finally {
             layer.setAdvertised(true);
             getCatalog().save(layer);
+        }
+    }
+
+    @Test
+    public void testWmsLinkParametersOfLayer() throws Exception {
+        String layerId = getLayerId(MockData.BUILDINGS);
+
+        PreviewLayerProvider provider = new PreviewLayerProvider();
+        PreviewLayer pl = getPreviewLayer(provider, layerId);
+        assertNotNull(pl);
+
+        String wmsLink = pl.getWmsLink();
+        String[] wmsParams = wmsLink.substring(wmsLink.indexOf("?") + 1).split("&");
+        Set<String> wmsKeys = new HashSet<>();
+
+        for (String param : wmsParams) {
+            String[] wmsParam = param.split("=");
+
+            if (wmsParam.length > 0) {
+                wmsKeys.add(wmsParam[0]);
+            }
+        }
+
+        List<String> keysToCheck =
+                Arrays.asList(
+                        "service", "version", "request", "layers", "bbox", "width", "height", "srs",
+                        "styles");
+
+        for (String key : keysToCheck) {
+            if (!wmsKeys.contains(key)) {
+                Assert.fail(
+                        String.format(
+                                "Parameter '%s' not specified in WmsLink URL of Layer.", key));
+            }
         }
     }
 

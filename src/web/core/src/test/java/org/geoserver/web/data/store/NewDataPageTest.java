@@ -5,7 +5,7 @@
  */
 package org.geoserver.web.data.store;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListView;
@@ -52,7 +52,7 @@ public class NewDataPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(NewDataPageWithFakeCatalog.class);
 
         String expectedErrMsg =
-                (String) new ResourceModel("NewDataPage.noWorkspacesErrorMessage").getObject();
+                new ResourceModel("NewDataPage.noWorkspacesErrorMessage").getObject();
         assertNotNull(expectedErrMsg);
         tester.assertErrorMessages(new String[] {expectedErrMsg});
     }

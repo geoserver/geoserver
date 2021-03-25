@@ -56,7 +56,7 @@ public class DirectoryInput extends FileInput {
 
                     @Override
                     public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        gsDialog.setTitle(new Model<String>(windowTitle));
+                        gsDialog.setTitle(new Model<>(windowTitle));
                         gsDialog.showOkCancel(
                                 target,
                                 new GeoServerDialog.DialogDelegate() {
@@ -92,13 +92,13 @@ public class DirectoryInput extends FileInput {
                                     protected Component getContents(String id) {
                                         File file = null;
                                         textField.processInput();
-                                        String input = (String) textField.getConvertedInput();
+                                        String input = textField.getConvertedInput();
                                         if (input != null && !input.equals("")) {
                                             file = new File(input);
                                         }
 
                                         GeoServerFileChooser chooser =
-                                                new GeoServerFileChooser(id, new Model<File>(file));
+                                                new GeoServerFileChooser(id, new Model<>(file));
                                         chooser.setFilter(fileFilter);
 
                                         return chooser;

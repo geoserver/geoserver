@@ -32,7 +32,6 @@ import org.geotools.util.Converters;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -113,8 +112,6 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
         }
         try {
             return CRS.decode(srs);
-        } catch (NoSuchAuthorityCodeException e) {
-            LOGGER.log(Level.FINER, e.getMessage(), e);
         } catch (FactoryException e) {
             LOGGER.log(Level.FINER, e.getMessage(), e);
         }
@@ -137,9 +134,9 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
     public Set<String> getIgnorePostProcessors() {
         String list = props.getProperty("ignorePostProcessors");
 
-        if (list == null || list.isEmpty()) return Collections.EMPTY_SET;
+        if (list == null || list.isEmpty()) return Collections.emptySet();
 
-        return Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(list.split(","))));
+        return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(list.split(","))));
     }
 
     public boolean isEnabled() {
@@ -158,6 +155,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
         this.error = error;
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
     }

@@ -34,6 +34,7 @@ import org.eclipse.xsd.XSDSchema;
 import org.eclipse.xsd.XSDSchemaContent;
 import org.eclipse.xsd.XSDTypeDefinition;
 import org.eclipse.xsd.util.XSDConstants;
+import org.eclipse.xsd.util.XSDSchemaLocator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -80,7 +81,7 @@ public class ApplicationSchemaXSD extends XSD {
     TypeMappingProfile typeMappingProfile;
 
     public ApplicationSchemaXSD(NamespaceInfo ns, Catalog catalog, String baseURL, WFS wfs) {
-        this(ns, catalog, baseURL, wfs, Collections.EMPTY_LIST);
+        this(ns, catalog, baseURL, wfs, Collections.emptyList());
     }
 
     public ApplicationSchemaXSD(
@@ -96,7 +97,7 @@ public class ApplicationSchemaXSD extends XSD {
         this.types = types;
 
         if (this.types == null) {
-            types = Collections.EMPTY_LIST;
+            types = Collections.emptyList();
         }
 
         if (this.ns == null) {
@@ -119,7 +120,7 @@ public class ApplicationSchemaXSD extends XSD {
         }
 
         // set up type mapping profiles
-        Set<Schema> profiles = new LinkedHashSet<Schema>();
+        Set<Schema> profiles = new LinkedHashSet<>();
         for (XSD xsd : wfs.getAllDependencies()) {
             profiles.add(xsd.getTypeMappingProfile());
         }
@@ -127,7 +128,7 @@ public class ApplicationSchemaXSD extends XSD {
     }
 
     @Override
-    protected void addDependencies(Set dependencies) {
+    protected void addDependencies(Set<XSD> dependencies) {
         dependencies.add(wfs);
     }
 
@@ -179,7 +180,7 @@ public class ApplicationSchemaXSD extends XSD {
                 // build for all namespaces
                 buildSchemaImports(catalog.getNamespaces(), schema, factory);
             } else {
-                Set<NamespaceInfo> namespaces = new HashSet<NamespaceInfo>();
+                Set<NamespaceInfo> namespaces = new HashSet<>();
                 for (FeatureTypeInfo type : types) {
                     namespaces.add(type.getNamespace());
                 }
@@ -280,7 +281,7 @@ public class ApplicationSchemaXSD extends XSD {
 
         if (schemaFile.getType() == Type.RESOURCE) {
             // schema file found, parse it and lookup the complex type
-            List locators = new ArrayList();
+            List<XSDSchemaLocator> locators = new ArrayList<>();
             for (XSD xsd : wfs.getAllDependencies()) {
                 locators.add(xsd.createSchemaLocator());
             }
@@ -298,10 +299,9 @@ public class ApplicationSchemaXSD extends XSD {
             if (ftSchema != null) {
                 // add the contents of this schema to the schema being built
                 // look up the complex type
-                List contents = ftSchema.getContents();
+                List<XSDSchemaContent> contents = ftSchema.getContents();
 
-                for (Iterator i = contents.iterator(); i.hasNext(); ) {
-                    XSDSchemaContent content = (XSDSchemaContent) i.next();
+                for (XSDSchemaContent content : contents) {
                     content.setElement(null);
                 }
 
@@ -327,8 +327,8 @@ public class ApplicationSchemaXSD extends XSD {
 
         List attributes = featureType.getAttributeDescriptors();
 
-        for (int i = 0; i < attributes.size(); i++) {
-            AttributeDescriptor attribute = (AttributeDescriptor) attributes.get(i);
+        for (Object o : attributes) {
+            AttributeDescriptor attribute = (AttributeDescriptor) o;
             if (filterAttributeType(attribute)) {
                 continue;
             }
@@ -337,7 +337,7 @@ public class ApplicationSchemaXSD extends XSD {
             element.setName(attribute.getLocalName());
             element.setNillable(attribute.isNillable());
 
-            Class binding = attribute.getType().getBinding();
+            Class<?> binding = attribute.getType().getBinding();
             Name typeName = findTypeName(binding);
 
             if (typeName == null) {
@@ -389,7 +389,7 @@ public class ApplicationSchemaXSD extends XSD {
                 || "boundedBy".equals(attribute.getName().getLocalPart());
     }
 
-    Name findTypeName(Class binding) {
+    Name findTypeName(Class<?> binding) {
         return typeMappingProfile.name(binding);
     }
 }

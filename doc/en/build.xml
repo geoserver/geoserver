@@ -26,7 +26,7 @@
       <isset property="build.directory" />
     </condition>
 
-    <condition property="project.version" value="${project.version}" else="2.17-SNAPSHOT">
+    <condition property="project.version" value="${project.version}" else="2.20-SNAPSHOT">
       <isset property="project.version" />
     </condition>
 
@@ -99,7 +99,7 @@
   <target name="sphinx" if="sphinx.available">
                 <echo message="Running sphinx-build -D release=${project.version} -W -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/> 
     <exec executable="sphinx-build" failonerror="true" dir="${basedir}/${id}/source">
-      <arg line="-D release=${project.version} -j auto -q -W --keep-going -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
+      <arg line="-D release=${project.version} -q -W --keep-going -b ${build} -d &quot;${build.directory}/${id}/doctrees&quot; . &quot;${build.directory}/${id}/${build}&quot;"/>
     </exec>
   </target>
 

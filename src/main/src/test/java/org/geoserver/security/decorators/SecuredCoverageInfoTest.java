@@ -26,17 +26,17 @@ public class SecuredCoverageInfoTest
     }
 
     @Override
-    Class getDelegateClass() {
+    Class<CoverageInfo> getDelegateClass() {
         return CoverageInfo.class;
     }
 
     @Override
-    Class getSecuredDecoratorClass() {
+    Class<SecuredCoverageInfo> getSecuredDecoratorClass() {
         return SecuredCoverageInfo.class;
     }
 
     @Override
-    Class getSecuredStoreInfoClass() {
+    Class<SecuredCoverageStoreInfo> getSecuredStoreInfoClass() {
         return SecuredCoverageStoreInfo.class;
     }
 

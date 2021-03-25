@@ -5,7 +5,9 @@
  */
 package org.geoserver.wps.process;
 
-import static org.custommonkey.xmlunit.XMLAssert.*;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertEquals;
 
 import org.geoserver.data.test.MockData;
 import org.geoserver.wps.WPSTestSupport;

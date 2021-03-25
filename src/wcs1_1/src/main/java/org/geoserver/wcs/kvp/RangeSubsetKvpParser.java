@@ -8,7 +8,6 @@ package org.geoserver.wcs.kvp;
 import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParameterValue;
 
 import java.io.StringReader;
-import java.util.Iterator;
 import net.opengis.ows11.CodeType;
 import net.opengis.ows11.Ows11Factory;
 import net.opengis.wcs11.AxisSubsetType;
@@ -47,8 +46,8 @@ public class RangeSubsetKvpParser extends KvpParser {
         RangeSubsetType result =
                 (RangeSubsetType) root.jjtAccept(new RangeSubsetKvpParserVisitor(), null);
 
-        for (Iterator it = result.getFieldSubset().iterator(); it.hasNext(); ) {
-            FieldSubsetType type = (FieldSubsetType) it.next();
+        for (Object o : result.getFieldSubset()) {
+            FieldSubsetType type = (FieldSubsetType) o;
             String interpolationType = type.getInterpolationType();
             if (interpolationType != null) {
                 try {
@@ -69,10 +68,13 @@ public class RangeSubsetKvpParser extends KvpParser {
         Wcs111Factory wcsf = Wcs111Factory.eINSTANCE;
         Ows11Factory owsf = Ows11Factory.eINSTANCE;
 
+        @Override
         public Object visit(SimpleNode node, Object data) {
             throw new UnsupportedOperationException("This method should never be reached");
         }
 
+        @Override
+        @SuppressWarnings("unchecked") // EMF model without generics
         public Object visit(ASTRangeSubset node, Object data) {
             RangeSubsetType rs = wcsf.createRangeSubsetType();
             for (int i = 0; i < node.jjtGetNumChildren(); i++) {
@@ -83,6 +85,8 @@ public class RangeSubsetKvpParser extends KvpParser {
             return rs;
         }
 
+        @Override
+        @SuppressWarnings("unchecked") // EMF model without generics
         public Object visit(ASTFieldSubset node, Object data) {
             FieldSubsetType fs = wcsf.createFieldSubsetType();
 
@@ -101,6 +105,8 @@ public class RangeSubsetKvpParser extends KvpParser {
             return fs;
         }
 
+        @Override
+        @SuppressWarnings("unchecked") // EMF model without generics
         public Object visit(ASTAxisSubset node, Object data) {
             AxisSubsetType as = wcsf.createAxisSubsetType();
             as.setIdentifier(((SimpleNode) node.jjtGetChild(0)).getContent());
@@ -110,18 +116,22 @@ public class RangeSubsetKvpParser extends KvpParser {
             return as;
         }
 
+        @Override
         public Object visit(ASTFieldId node, Object data) {
             return node.getContent();
         }
 
+        @Override
         public Object visit(ASTAxisId node, Object data) {
             return node.getContent();
         }
 
+        @Override
         public Object visit(ASTInterpolation node, Object data) {
             return node.getContent();
         }
 
+        @Override
         public Object visit(ASTKey node, Object data) {
             return node.getContent();
         }

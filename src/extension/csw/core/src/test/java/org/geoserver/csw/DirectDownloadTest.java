@@ -4,8 +4,8 @@
  */
 package org.geoserver.csw;
 
-import static junit.framework.TestCase.assertEquals;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -57,7 +57,7 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
 
         System.clearProperty("DefaultCatalogStore");
 
-        TEST_NAMESPACES = new HashMap<String, String>();
+        TEST_NAMESPACES = new HashMap<>();
         TEST_NAMESPACES.put("csw", CSW.NAMESPACE);
         TEST_NAMESPACES.put("dc", DC.NAMESPACE);
         TEST_NAMESPACES.put("dct", DCT.NAMESPACE);
@@ -129,7 +129,7 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
         int size = nodes.getLength();
 
         // Get direct download links
-        Set<String> links = new HashSet<String>();
+        Set<String> links = new HashSet<>();
         for (int i = 0; i < size; i++) {
             Node node = nodes.item(i);
             String link = node.getTextContent();
@@ -142,14 +142,11 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
         final Catalog cat = getCatalog();
         String name = "watertemp";
         final CoverageInfo coverageInfo = cat.getCoverageByName(name);
-        GridCoverage2DReader reader = null;
-        CloseableLinksIterator<String> iterator = null;
-        Set<String> generatedLinks = new HashSet<String>();
-        try {
-            reader = (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
-            FileResourceInfo resourceInfo = (FileResourceInfo) reader.getInfo(name);
-            CloseableIterator<FileGroup> files = resourceInfo.getFiles(null);
-
+        Set<String> generatedLinks = new HashSet<>();
+        GridCoverage2DReader reader =
+                (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
+        FileResourceInfo resourceInfo = (FileResourceInfo) reader.getInfo(name);
+        try (CloseableIterator<FileGroup> files = resourceInfo.getFiles(null)) {
             String baseLink = DownloadLinkHandler.LINK;
             MockHttpServletRequest request = createRequest(baseLink);
             baseLink = request.getRequestURL() + "?" + request.getQueryString();
@@ -158,20 +155,10 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
                             .replace("${layerName}", coverageInfo.getName())
                             .replace("${version}", "2.0.2");
 
-            iterator = new CloseableLinksIterator<String>(baseLink, files);
-            while (iterator.hasNext()) {
-                generatedLinks.add(iterator.next());
-            }
-        } finally {
-            if (iterator != null) {
-                iterator.close();
-            }
-            if (reader != null) {
-                try {
-                    reader.dispose();
-                } catch (Throwable t) {
-                    // Ignore on disposal
-
+            try (CloseableLinksIterator<String> iterator =
+                    new CloseableLinksIterator<>(baseLink, files)) {
+                while (iterator.hasNext()) {
+                    generatedLinks.add(iterator.next());
                 }
             }
         }
@@ -245,7 +232,7 @@ public class DirectDownloadTest extends GeoServerSystemTestSupport {
     private XpathEngine getXpathEngine() {
         if (xpathEngine == null) {
             xpathEngine = XMLUnit.newXpathEngine();
-            Map<String, String> namespaces = new HashMap<String, String>();
+            Map<String, String> namespaces = new HashMap<>();
             namespaces.putAll(TEST_NAMESPACES);
             xpathEngine.setNamespaceContext(new SimpleNamespaceContext(namespaces));
         }

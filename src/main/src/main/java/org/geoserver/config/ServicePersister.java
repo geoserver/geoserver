@@ -19,11 +19,11 @@ public class ServicePersister extends ConfigurationListenerAdapter {
 
     static Logger LOGGER = Logging.getLogger("org.geoserver");
 
-    List<XStreamServiceLoader> loaders;
+    List<XStreamServiceLoader<ServiceInfo>> loaders;
     GeoServer geoServer;
     GeoServerResourceLoader resourceLoader;
 
-    public ServicePersister(List<XStreamServiceLoader> loaders, GeoServer geoServer) {
+    public ServicePersister(List<XStreamServiceLoader<ServiceInfo>> loaders, GeoServer geoServer) {
         this.loaders = loaders;
         this.geoServer = geoServer;
         this.resourceLoader = geoServer.getCatalog().getResourceLoader();
@@ -56,8 +56,9 @@ public class ServicePersister extends ConfigurationListenerAdapter {
         }
     }
 
+    @Override
     public void handlePostServiceChange(ServiceInfo service) {
-        XStreamServiceLoader loader = findServiceLoader(service);
+        XStreamServiceLoader<ServiceInfo> loader = findServiceLoader(service);
 
         try {
             // TODO: handle workspace move, factor this class out into
@@ -71,6 +72,7 @@ public class ServicePersister extends ConfigurationListenerAdapter {
         }
     }
 
+    @Override
     public void handleServiceRemove(ServiceInfo service) {
         XStreamServiceLoader loader = findServiceLoader(service);
         try {
@@ -84,7 +86,7 @@ public class ServicePersister extends ConfigurationListenerAdapter {
         }
     }
 
-    XStreamServiceLoader findServiceLoader(ServiceInfo service) {
+    <T extends ServiceInfo> XStreamServiceLoader<T> findServiceLoader(T service) {
         XStreamServiceLoader loader = null;
         for (XStreamServiceLoader<ServiceInfo> l : loaders) {
             if (l.getServiceClass().isInstance(service)) {
@@ -96,7 +98,9 @@ public class ServicePersister extends ConfigurationListenerAdapter {
         if (loader == null) {
             throw new IllegalArgumentException("No loader for " + service.getName());
         }
-        return loader;
+        @SuppressWarnings("unchecked")
+        XStreamServiceLoader<T> result = loader;
+        return result;
     }
 
     Resource dir(WorkspaceInfo ws) throws IOException {

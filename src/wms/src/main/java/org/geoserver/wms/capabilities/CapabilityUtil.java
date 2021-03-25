@@ -26,6 +26,12 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public final class CapabilityUtil {
 
+    protected static final String LAYER_GROUP_STYLE_NAME = "";
+    protected static final String LAYER_GROUP_STYLE_TITLE_PREFIX = "";
+    protected static final String LAYER_GROUP_STYLE_TITLE_SUFFIX = " style";
+    protected static final String LAYER_GROUP_STYLE_ABSTRACT_PREFIX = "Default style for ";
+    protected static final String LAYER_GROUP_STYLE_ABSTRACT_SUFFIX = " layer";
+
     private CapabilityUtil() {
         // utility class
     }
@@ -64,7 +70,7 @@ public final class CapabilityUtil {
         }
         assert minScaleDenominator <= maxScaleDenominator : "Min <= Max scale is expected";
 
-        return new NumberRange<Double>(Double.class, minScaleDenominator, maxScaleDenominator);
+        return new NumberRange<>(Double.class, minScaleDenominator, maxScaleDenominator);
     }
 
     /**
@@ -85,7 +91,7 @@ public final class CapabilityUtil {
         Set<StyleInfo> stylesCopy;
         StyleInfo defaultStyle;
         synchronized (layer) {
-            stylesCopy = new HashSet<StyleInfo>(layer.getStyles());
+            stylesCopy = new HashSet<>(layer.getStyles());
             defaultStyle = layer.getDefaultStyle();
         }
         if (!stylesCopy.contains(defaultStyle)) {
@@ -130,7 +136,7 @@ public final class CapabilityUtil {
     public static NumberRange<Double> searchMinMaxScaleDenominator(final LayerGroupInfo layerGroup)
             throws IOException {
 
-        Set<StyleInfo> stylesCopy = new HashSet<StyleInfo>();
+        Set<StyleInfo> stylesCopy = new HashSet<>();
         findLayerGroupStyles(layerGroup, stylesCopy);
 
         return searchMinMaxScaleDenominator(stylesCopy);

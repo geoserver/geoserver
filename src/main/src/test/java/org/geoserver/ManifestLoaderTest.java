@@ -5,6 +5,8 @@
  */
 package org.geoserver;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
@@ -34,16 +36,13 @@ import org.junit.experimental.categories.Category;
 @Category(SystemTest.class)
 public class ManifestLoaderTest extends GeoServerSystemTestSupport {
 
-    // singleton
-    private static ManifestLoader loader;
-
     // jar resource name to use for tests
     private static String resourceName = "freemarker-.*";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         try {
-            loader = new ManifestLoader(getResourceLoader());
+            new ManifestLoader(getResourceLoader());
         } catch (Exception e) {
             LOGGER.log(Level.FINER, e.getMessage(), e);
             org.junit.Assert.fail(e.getLocalizedMessage());
@@ -160,7 +159,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
             assertTrue(model.getEntries().containsKey(propertyKey));
             String value = model.getEntries().get(propertyKey);
             // check value
-            assertTrue(value.equals(propertyVal));
+            assertEquals(value, propertyVal);
         }
     }
 
@@ -177,7 +176,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
         // test remove
         resources.remove(mm.getName());
 
-        assertTrue(!resources.getManifests().contains(mm));
+        assertFalse(resources.getManifests().contains(mm));
     }
 
     /**
@@ -247,7 +246,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
 
             // rebuild loader with new configuration
             try {
-                loader = new ManifestLoader(getResourceLoader());
+                new ManifestLoader(getResourceLoader());
             } catch (Exception e) {
                 LOGGER.log(Level.FINER, e.getMessage(), e);
                 org.junit.Assert.fail(e.getLocalizedMessage());
@@ -272,7 +271,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
                 while (it.hasNext()) {
                     Entry<String, String> entry = it.next();
                     // the propertyKey should NOT be present
-                    assertTrue(!propertyKey.equals(entry.getKey()));
+                    assertFalse(propertyKey.equals(entry.getKey()));
                 }
             }
         }
@@ -290,7 +289,7 @@ public class ManifestLoaderTest extends GeoServerSystemTestSupport {
                 while (it.hasNext()) {
                     Entry<String, String> entry = it.next();
                     // the propertyKey MUST be present
-                    assertTrue(propertyKey.equals(entry.getKey()));
+                    assertEquals(propertyKey, entry.getKey());
                 }
             }
         }

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.xml.namespace.QName;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -44,7 +45,7 @@ public abstract class BaseRasterToVectorTest extends WPSTestSupport {
         addWcs11Coverages(testData);
         testData.addRasterLayer(DEM, "sfdem.tiff", TIFF, null, getClass(), getCatalog());
 
-        Map<LayerProperty, Object> props = new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<LayerProperty, Object> props = new HashMap<>();
         props.put(
                 LayerProperty.ENVELOPE,
                 new ReferencedEnvelope(
@@ -98,7 +99,7 @@ public abstract class BaseRasterToVectorTest extends WPSTestSupport {
 
         // real work
         final DataStoreFactorySpi dataStoreFactory = new ShapefileDataStoreFactory();
-        Map<String, Serializable> params = new HashMap<String, Serializable>();
+        Map<String, Serializable> params = new HashMap<>();
         params.put("url", destination.toURI().toURL());
         params.put("create spatial index", Boolean.TRUE);
 
@@ -114,7 +115,7 @@ public abstract class BaseRasterToVectorTest extends WPSTestSupport {
 
             featureStore.addFeatures(fc);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", e);
         } finally {
 
             if (transaction != null) {

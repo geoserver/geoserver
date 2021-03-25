@@ -93,6 +93,7 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
      * @param request the request to match against. The ant pattern will be matched against the
      *     {@code servletPath} + {@code pathInfo} of the request.
      */
+    @Override
     public boolean matches(HttpServletRequest request) {
         if (httpMethod != null && httpMethod != HttpMethod.valueOf(request.getMethod())) {
             if (logger.isDebugEnabled()) {
@@ -205,6 +206,7 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
             this.pattern = pattern;
         }
 
+        @Override
         public boolean matches(String path) {
             return antMatcher.match(pattern, path);
         }
@@ -232,6 +234,7 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
             return unparsed;
         }
 
+        @Override
         public boolean matches(String path) {
             if (pattern != null && path != null) {
                 return pattern.matcher(path).matches();
@@ -251,6 +254,7 @@ public final class IncludeQueryStringAntPathRequestMatcher implements RequestMat
             this.length = subpath.length();
         }
 
+        @Override
         public boolean matches(String path) {
             return path.startsWith(subpath)
                     && (path.length() == length || path.charAt(length) == '/');

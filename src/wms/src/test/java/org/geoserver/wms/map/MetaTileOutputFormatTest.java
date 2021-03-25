@@ -4,7 +4,11 @@
  */
 package org.geoserver.wms.map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -14,8 +18,12 @@ import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
+import java.awt.image.renderable.ParameterBlock;
+import javax.imageio.ImageReader;
 import javax.media.jai.Interpolation;
 import javax.media.jai.PlanarImage;
+import javax.media.jai.RenderedImageAdapter;
+import javax.media.jai.RenderedOp;
 import javax.media.jai.TiledImage;
 import org.geoserver.wms.RasterCleaner;
 import org.geoserver.wms.map.QuickTileCache.MapKey;
@@ -72,5 +80,27 @@ public class MetaTileOutputFormatTest {
         // java.lang.ClassCastException: java.awt.image.Raster cannot be cast to
         // java.awt.image.WritableRaster
         MetatileMapOutputFormat.split(key, source);
+    }
+
+    @Test
+    public void testReaderDisposeIsCalledForRenderedImageAdapter() {
+        Object reader = mock(ImageReader.class);
+
+        ParameterBlock parameterBlock = new ParameterBlock();
+        parameterBlock.add(reader);
+
+        RenderedOp image = mock(RenderedOp.class);
+        when(image.getParameterBlock()).thenReturn(parameterBlock);
+
+        RenderedImageTimeDecorator metaTile = mock(RenderedImageTimeDecorator.class);
+        when(metaTile.getDelegate()).thenReturn(image);
+
+        RenderedImageAdapter metaTileWrapped = mock(RenderedImageAdapter.class);
+        when(metaTileWrapped.getWrappedImage()).thenReturn(metaTile);
+
+        RasterCleaner.addImage(metaTileWrapped);
+        cleaner.finished(null);
+
+        verify((ImageReader) reader, times(1)).dispose();
     }
 }

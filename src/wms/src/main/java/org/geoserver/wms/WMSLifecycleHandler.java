@@ -5,7 +5,7 @@
  */
 package org.geoserver.wms;
 
-import java.awt.*;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,20 +45,24 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
         this.wmsConfig = wmsConfig;
     }
 
+    @Override
     public void onDispose() {
         // dispose the WMS Animator Executor Service
         shutdownAnimatorExecutorService();
     }
 
+    @Override
     public void beforeReload() {
         // nothing to do
     }
 
+    @Override
     public void onReload() {
         // clear the caches for good measure
         onReset();
     }
 
+    @Override
     public void onReset() {
         // kill the image caches
         Iterator<ExternalGraphicFactory> it =
@@ -87,11 +91,7 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
                         : Long.MAX_VALUE;
         ExecutorService animatorExecutorService =
                 new ThreadPoolExecutor(
-                        4,
-                        20,
-                        framesTimeout,
-                        TimeUnit.MILLISECONDS,
-                        new LinkedBlockingQueue<Runnable>());
+                        4, 20, framesTimeout, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
         this.wmsConfig.setAnimatorExecutorService(animatorExecutorService);
     }
@@ -114,7 +114,7 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
     }
 
     List<Font> loadFontsFromDataDirectory() {
-        List<Font> result = new ArrayList<Font>();
+        List<Font> result = new ArrayList<>();
         for (Resource file :
                 Resources.list(
                         data.getStyles(), new Resources.ExtensionFilter("TTF", "OTF"), true)) {
@@ -138,6 +138,7 @@ public class WMSLifecycleHandler implements GeoServerLifecycleHandler, Applicati
         return result;
     }
 
+    @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextRefreshedEvent) {
             reloadFontCache();

@@ -78,7 +78,7 @@ public class EditableUserDAO implements UserDetailsService {
      * If no user information is found, a default user will be created.
      */
     public EditableUserDAO() {
-        myDetailStorage = new HashMap<String, UserDetails>();
+        myDetailStorage = new HashMap<>();
         try {
             myWatcher = new PropertyFileWatcher(getUserFile());
         } catch (Exception e) {
@@ -99,7 +99,7 @@ public class EditableUserDAO implements UserDetailsService {
         String passwd =
                 (geoServer == null ? "geoserver" : geoServer.getGlobal().getAdminPassword());
 
-        Collection<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
+        Collection<GrantedAuthority> auths = new ArrayList<>();
         auths.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR"));
         myDetailStorage.put(name, new User(name, passwd, true, true, true, true, auths));
     }
@@ -110,9 +110,10 @@ public class EditableUserDAO implements UserDetailsService {
      * @param username the username for the desired user
      * @return a UserDetails object with the user's details, or null if no such user exists
      */
+    @Override
     public UserDetails loadUserByUsername(String username) {
         update();
-        return (UserDetails) myDetailStorage.get(username);
+        return myDetailStorage.get(username);
     }
 
     /**

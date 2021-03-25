@@ -5,9 +5,12 @@
  */
 package org.geoserver.web.wicket.browser;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,12 +56,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
     public void setupChooser(final File file) {
         tester.startPage(
                 new FormTestPage(
-                        new ComponentBuilder() {
-
-                            public Component buildComponent(String id) {
-                                return new GeoServerFileChooser(id, new Model(file));
-                            }
-                        }));
+                        (ComponentBuilder) id -> new GeoServerFileChooser(id, new Model<>(file))));
 
         // WicketHierarchyPrinter.print(tester.getLastRenderedPage(), true, true);
     }
@@ -95,14 +93,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testInDialog() throws Exception {
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-
-                            public Component buildComponent(String id) {
-                                return new GeoServerDialog(id);
-                            }
-                        }));
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> new GeoServerDialog(id)));
 
         tester.assertRenderedPage(FormTestPage.class);
 
@@ -117,7 +108,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
                 new DialogDelegate() {
                     @Override
                     protected Component getContents(String id) {
-                        return new GeoServerFileChooser(id, new Model(root));
+                        return new GeoServerFileChooser(id, new Model<>(root));
                     }
 
                     @Override
@@ -135,15 +126,13 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
     public void testHideFileSystem() throws Exception {
         tester.startPage(
                 new FormTestPage(
-                        new ComponentBuilder() {
-                            public Component buildComponent(String id) {
-                                return new GeoServerFileChooser(id, new Model(), true);
-                            }
-                        }));
+                        (ComponentBuilder)
+                                id -> new GeoServerFileChooser(id, new Model<>(), true)));
 
         tester.assertRenderedPage(FormTestPage.class);
         tester.assertNoErrorMessage();
 
+        @SuppressWarnings("unchecked")
         DropDownChoice<File> rootChoice =
                 (DropDownChoice<File>) tester.getComponentFromLastRenderedPage("form:panel:roots");
         assertEquals(1, rootChoice.getChoices().size());
@@ -153,7 +142,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
     @Test
     public void testAutocompleteDataDirectory() throws Exception {
         FileRootsFinder rootsFinder = new FileRootsFinder(true);
-        File dir = getDataDirectory().get("/").dir();
+        getDataDirectory().get("/").dir();
 
         // looking for a match on basic polygons
         List<String> values =
@@ -186,7 +175,7 @@ public class GeoServerFileChooserTest extends GeoServerWicketTestSupport {
         List<String> values =
                 rootsFinder.getMatches(rootPath, fileFilter).collect(Collectors.toList());
         assertThat(values.size(), greaterThan(0));
-        assertEquals(new HashSet(values).size(), values.size());
+        assertEquals(new HashSet<>(values).size(), values.size());
         assertThat(
                 values,
                 hasItem("file://" + new File(rootPath, MockData.CITE_PREFIX).getAbsolutePath()));

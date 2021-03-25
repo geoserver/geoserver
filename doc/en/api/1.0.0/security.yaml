@@ -17,9 +17,11 @@ paths:
 
     get:
       operationId: getMasterPW
-      summary: Get master password
+      tags:
+       - "Security"
+      summary: Get keystore password
       description: |
-        Displays the master password. HTTPS is strongly suggested, otherwise password will be sent in plain text. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/settings.xml" for XML).
+        Displays the keystore password. HTTPS is strongly suggested, otherwise password will be sent in plain text. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/settings.xml" for XML).
       produces:
         - application/xml
         - application/json
@@ -41,18 +43,22 @@ paths:
 
     post:
       operationId: postMasterPW
-      description: Invalid. Use PUT to change master password.
+      tags:
+       - "Security"
+      description: Invalid. Use PUT to change keystore password.
       responses:
         405:
           description: Method Not Allowed
 
     put:
       operationId: putMasterPW
-      summary: Update master password
-      description: Changes master password. Must supply current master password. HTTPS is strongly suggested, otherwise password will be sent in plain text.
+      tags:
+       - "Security"
+      summary: Update keystore password
+      description: Changes keystore password. Must supply current keystore password. HTTPS is strongly suggested, otherwise password will be sent in plain text.
       parameters:
         - name: MasterPWBody
-          description: The old and new master password information to upload.
+          description: The old and new keystore password information to upload.
           in: body
           required: true
           schema:
@@ -64,11 +70,13 @@ paths:
         200:
           description: OK
         422:
-          description: Unprocessable Entity. This error code will show when the current master password supplied is incorrect, or if the new master password is rejected by the password policy.
+          description: Unprocessable Entity. This error code will show when the current keystore password supplied is incorrect, or if the new keystore password is rejected by the password policy.
 
     delete:
       operationId: deleteMasterPW
-      description: Invalid. Use PUT to change master password.
+      tags:
+       - "Security"
+      description: Invalid. Use PUT to change keystore password.
       responses:
         405:
           description: Method Not Allowed
@@ -78,6 +86,8 @@ paths:
 
     get:
       operationId: getSelfPassword
+      tags:
+       - "Security"
       description: Invalid. Use PUT to change password.
       responses:
         405:
@@ -85,6 +95,8 @@ paths:
 
     post:
       operationId: postSelfPassword
+      tags:
+       - "Security"
       description: Invalid. Use PUT to change password
       responses:
         405:
@@ -92,6 +104,8 @@ paths:
 
     put:
       operationId: putSelfPassword
+      tags:
+       - "Security"
       summary: Update password
       description: Updates the password for the account used to issue the request.
       parameters:
@@ -112,6 +126,8 @@ paths:
 
     delete:
       operationId: deleteSelfPassword
+      tags:
+       - "Security"
       description: Invalid. Use PUT to change password.
       responses:
         405:
@@ -122,6 +138,8 @@ paths:
 
     get:
       operationId: getCatalogMode
+      tags:
+       - "Security"
       description: Gets the catalog mode, which specifies how GeoServer will advertise secured layers and behave when a secured layer is accessed without the necessary privileges.
       produces:
         - application/xml
@@ -143,13 +161,16 @@ paths:
             
     post:
       operationId: postCatalogMode
+      tags:
+       - "Security"
       description: Invalid. Use PUT to change catalog mode.
       responses:
         405:
           description: Method Not Allowed
 
     put:
-      operationId: putCatalogMode
+      tags:
+       - "Security"
       summary: Update catalog mode
       description: Changes catalog mode. The mode must be one of HIDE, MIXED, or CHALLENGE.
       parameters:
@@ -170,6 +191,8 @@ paths:
 
     delete:
       operationId: deleteCatalogMode
+      tags:
+       - "Security"
       description: Invalid. Use PUT to change catalog mode.
       responses:
         405:
@@ -180,6 +203,8 @@ paths:
 
     get:
       operationId: getACLLayers
+      tags:
+       - "Security"
       summary: Get layer rules
       description: Displays the current layer-based security rules.
       produces:
@@ -204,6 +229,8 @@ paths:
 
     post:
       operationId: postACLLayers
+      tags:
+       - "Security"
       summary: Add layer rule(s)
       description: |
         Adds one or more new layer-based rules to the list of security rules.
@@ -226,6 +253,8 @@ paths:
 
     put:
       operationId: putACLLayers
+      tags:
+       - "Security"
       summary: Edit layer rule(s)
       description: Edits one or more layer-based rules in the list of security rules.
       parameters:
@@ -246,6 +275,8 @@ paths:
 
     delete:
       operationId: deleteACLLayers
+      tags:
+       - "Security"
       summary: Delete layer rule(s)
       description: |
         Deletes one or more layer-based rules in the list of security rules.
@@ -262,6 +293,8 @@ paths:
 
     get:
       operationId: getACLLayer
+      tags:
+       - "Security"
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
         405:
@@ -269,6 +302,8 @@ paths:
 
     post:
       operationId: postACLLayer
+      tags:
+       - "Security"
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
         405:
@@ -276,6 +311,8 @@ paths:
 
     put:
       operationId: putACLLayer
+      tags:
+       - "Security"
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
         405:
@@ -283,6 +320,8 @@ paths:
 
     delete:
       operationId: deleteACLLayer
+      tags:
+       - "Security"
       summary: Delete layer rule.
       description: |
         Deletes specific layer-based rule(s). The {rule} must specified in the last part of the URL and of the form \<workspace\>.\<layer\>.[r|w|a]
@@ -295,6 +334,8 @@ paths:
 
     get:
       operationId: getACLServices
+      tags:
+       - "Security"
       summary: Get service rules
       description: Displays the current service-based security rules.
       produces:
@@ -318,6 +359,8 @@ paths:
 
     post:
       operationId: postACLServices
+      tags:
+       - "Security"
       summary: Add service rule(s)
       description: Adds one or more new service-based rules to the list of security rules.
       parameters:
@@ -338,6 +381,8 @@ paths:
 
     put:
       operationId: putACLServices
+      tags:
+       - "Security"
       summary: Edit service rule(s)
       description: Edits one or more service-based rules in the list of security rules.
       parameters:
@@ -358,6 +403,8 @@ paths:
 
     delete:
       operationId: deleteACLServices
+      tags:
+       - "Security"
       summary: Delete service rule(s)
       description: Deletes one or more service-based rules in the list of security rules.
       responses:
@@ -373,6 +420,8 @@ paths:
       
     get:
       operationId: getACLService
+      tags:
+       - "Security"
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
         405:
@@ -380,6 +429,8 @@ paths:
 
     post:
       operationId: postACLService
+      tags:
+       - "Security"
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
         405:
@@ -387,6 +438,8 @@ paths:
 
     put:
       operationId: putACLService
+      tags:
+       - "Security"
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
         405:
@@ -394,6 +447,8 @@ paths:
 
     delete:
       operationId: deleteACLService
+      tags:
+       - "Security"
       summary: Delete service rule.
       description: |
         Deletes specific service-based rule(s). The {rule} must be specified as the last part of the URL and must be of the form \<service\>.\<operation\>
@@ -406,6 +461,8 @@ paths:
 
     get:
       operationId: getACLRESTRules
+      tags:
+       - "Security"
       summary: Get REST rules
       description: Displays the current REST access rules.
       produces:
@@ -428,6 +485,8 @@ paths:
 
     post:
       operationId: postACLRESTRules
+      tags:
+       - "Security"
       summary: Add REST access rule(s)
       description: Adds one or more new REST access rules.
       parameters:
@@ -448,6 +507,8 @@ paths:
 
     put:
       operationId: putACLRESTRules
+      tags:
+       - "Security"
       summary: Edit REST access rule(s)
       description: Edits one or more REST access rules.
       parameters:
@@ -468,6 +529,8 @@ paths:
 
     delete:
       operationId: deleteACLRESTRules
+      tags:
+       - "Security"
       summary: Delete REST access rule(s)
       description: Deletes one or more service-based rules.
       responses:
@@ -490,6 +553,8 @@ paths:
 
     get:
       operationId: getACLRESTRule
+      tags:
+       - "Security"
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
         200:
@@ -497,6 +562,8 @@ paths:
 
     post:
       operationId: postACLRESTRule
+      tags:
+       - "Security"
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
         200:
@@ -504,6 +571,8 @@ paths:
 
     put:
       operationId: putACLRESTRule
+      tags:
+       - "Security"
       description: Has no effect. Endpoint that includes a specific rule is only used with DELETE.
       responses:
         200:
@@ -511,6 +580,8 @@ paths:
 
     delete:
       operationId: deleteACLRESTRule
+      tags:
+       - "Security"
       summary: Delete REST access rule
       description: |
         Deletes specific REST access rule(s). The {rule} must specified as the last part of the URL and must be of the form \<URL Ant pattern\>:\<comma separated list of HTTP methods\>
@@ -535,7 +606,7 @@ definitions:
     properties:
       oldMasterPassword:
         type: string
-        description: Current master password
+        description: Current keystore password
 
   UpdateMasterPW:
     title: masterPassword
@@ -545,11 +616,11 @@ definitions:
     properties:
       oldMasterPassword:
         type: string
-        description: Current master password
+        description: Current keystore password
         example: oldPassword
       newMasterPassword:
         type: string
-        description: New master password
+        description: New keystore password
         example: newPassword
 
   CatalogMode:

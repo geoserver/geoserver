@@ -70,6 +70,7 @@ public class TransactionResultTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.TRANSACTIONRESULTTYPE;
     }
@@ -81,7 +82,8 @@ public class TransactionResultTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<?> getType() {
         return null;
     }
 
@@ -92,6 +94,7 @@ public class TransactionResultTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         // TODO: implement
         return null;

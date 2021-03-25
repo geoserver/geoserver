@@ -31,10 +31,11 @@ public class RecordTextFunction extends FunctionExpressionImpl implements Intern
         super(NAME);
     }
 
+    @Override
     public Object evaluate(Object object) {
         Feature feature = (Feature) object;
 
-        List<Object> list = new ArrayList<Object>(feature.getProperties().size());
+        List<Object> list = new ArrayList<>(feature.getProperties().size());
         for (Property p : feature.getProperties()) {
             if (p.getDescriptor().getType() == CSWRecordDescriptor.SIMPLE_LITERAL) {
                 Object value = ((ComplexAttribute) p).getProperty("value").getValue();

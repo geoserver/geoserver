@@ -754,6 +754,7 @@ public class XMPPClient extends RemoteProcessClient {
     }
 
     /** Destroy the connection */
+    @Override
     public void destroy() throws Exception {
         if (connection != null && connection.isConnected()) {
             stopPingTask();
@@ -795,6 +796,7 @@ public class XMPPClient extends RemoteProcessClient {
 
             MessageListener listener =
                     new MessageListener() {
+                        @Override
                         public void processMessage(Chat chat, Message message) {
                             // TODO: Fix this so that this actually does something!
                         }
@@ -1165,6 +1167,7 @@ public class XMPPClient extends RemoteProcessClient {
         private boolean sendPing() throws NotConnectedException {
             IQ req =
                     new IQ() {
+                        @Override
                         public String getChildElementXML() {
                             return "<ping xmlns='urn:xmpp:ping'/>";
                         }
@@ -1185,6 +1188,7 @@ public class XMPPClient extends RemoteProcessClient {
         }
 
         /** */
+        @Override
         public void run() {
             try {
                 // Sleep before sending first heartbeat. This will give time to
@@ -1304,7 +1308,7 @@ public class XMPPClient extends RemoteProcessClient {
             System.arraycopy(bytes, 0, result, 2, bytes.length);
             return result;
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "", e);
             return null;
         }
     }
@@ -1426,13 +1430,13 @@ public class XMPPClient extends RemoteProcessClient {
 
         // Retrieve the Class of the parameter through the mapping
         String mimeTypes = "";
-        Class c = null;
+        Class<?> c = null;
         if (name.equalsIgnoreCase("complex") || name.equalsIgnoreCase("complex")) {
             // Is it a complex/raw data type?
             c = RawData.class;
         } else if (PRIMITIVE_NAME_TYPE_MAP.get(name) != null) {
             // Check for a primitive type
-            c = (Class) ((Object[]) PRIMITIVE_NAME_TYPE_MAP.get(name))[0];
+            c = (Class<?>) ((Object[]) PRIMITIVE_NAME_TYPE_MAP.get(name))[0];
         }
 
         if (c == null) {

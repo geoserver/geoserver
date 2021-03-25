@@ -161,3 +161,42 @@ As you can see, roads are still using the generic template, whilst POI is using 
 Advanced Formating
 ``````````````````
 The ``value`` property of Feature attribute values are given by geoserver in ``String`` form, using a sensible default depending on the actual type of the attribute value.  If you need to access the raw attribute value in order to apply a custom format (for example, to output ``"Enabled"`` or ``"Disabled"`` for a given boolean property, instead of the default ``true/false``, you can just use the ``rawValue`` property instead of ``value``.  For example: ``${attribute.rawValue?string("Enabled", "Disabled")}`` instead of just ``${attribute.value}``.
+
+Accessing static methods
+````````````````````````
+It is possible to call static methods and variables from within Freemarker templates to enable more sophisticated templates. 
+But please be aware that generally static method calls are a security liability, which can be used to make harmful things, especially when template authors can not be fully trusted. So by default this feature is disabled. The configuration parameter ``org.geoserver.htmlTemplates.staticMemberAccess`` has to specified to enabled it, for example as system property. The parameter takes a comma separated list of fully qualified class names. GeoServer allows access to static member of these classes from within templates using their simple, unqualified class name as the example below demonstrates.
+
+The following system property enables selective access::
+
+	-Dorg.geoserver.htmlTemplates.staticMemberAccess=java.lang.String
+
+This exposes the static members of ``java.lang.String`` using the variable name ``String`` in the template, which can be used in templates as follows::
+
+	<ul>
+	<#list features as feature>
+	  <li>${feature.NAME.value}: ${String.format("%.2f €", feature.AMOUNT.rawValue)}
+	  </li>
+	</#list>
+	</ul>
+
+In case of granting access to multiple classes with the same simple name, the later specified classes will be exposed with a number suffix. For example when specifying ``-Dorg.geoserver.htmlTemplates.staticMemberAccess=java.lang.String,com.acme.String``, the statics of ``java.lang.String`` will be exposed as ``String`` while the statics of ``com.acme.String`` will be exposed as ``String2`` and so on.
+
+You can also enable unrestricted access by specifying a ``*`` as the next example demonstrates.
+
+The following system property enables unrestricted access::
+
+	-Dorg.geoserver.htmlTemplates.staticMemberAccess=*
+
+In this case GeoServer exposes a ``statics`` variable you can use in templates to access static members as follows::
+
+	<#assign String=statics['java.lang.String']>
+	<ul>
+	<#list features as feature>
+	  <li>${feature.NAME.value}: ${String.format("%.2f €", feature.AMOUNT.rawValue)}
+	  </li>
+	</#list>
+	</ul>
+
+.. note::
+	Unrestricted access as shown above is only recommended if you can fully trust your template authors.

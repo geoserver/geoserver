@@ -60,6 +60,7 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
         this.templates = templates;
     }
 
+    @Override
     protected ComponentAuthorizer getPageAuthorizer() {
         return ComponentAuthorizer.WORKSPACE_ADMIN;
     }

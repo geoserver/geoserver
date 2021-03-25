@@ -20,10 +20,10 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
 
     private static final long serialVersionUID = 4806818198949114395L;
 
-    public static Property<LayerGroupInfo> NAME = new BeanProperty<LayerGroupInfo>("name", "name");
+    public static Property<LayerGroupInfo> NAME = new BeanProperty<>("name", "name");
 
     public static Property<LayerGroupInfo> WORKSPACE =
-            new BeanProperty<LayerGroupInfo>("workspace", "workspace.name");
+            new BeanProperty<>("workspace", "workspace.name");
 
     static final Property<LayerGroupInfo> MODIFIED_TIMESTAMP =
             new BeanProperty<>("datemodfied", "dateModified");
@@ -34,6 +34,7 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
     public static Property<LayerGroupInfo> ENABLED =
             new AbstractProperty<LayerGroupInfo>("Enabled") {
 
+                @Override
                 public Boolean getPropertyValue(LayerGroupInfo item) {
                     return Boolean.valueOf(item.isEnabled());
                 }
@@ -53,7 +54,7 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
     protected List<LayerGroupInfo> getItems() {
         List<LayerGroupInfo> groups = getCatalog().getLayerGroups();
         if (groupFilter != null) {
-            List<LayerGroupInfo> filtered = new ArrayList<LayerGroupInfo>(groups.size());
+            List<LayerGroupInfo> filtered = new ArrayList<>(groups.size());
             for (LayerGroupInfo group : groups) {
                 if (groupFilter.accept(group)) {
                     filtered.add(group);
@@ -82,7 +83,8 @@ public class LayerGroupProvider extends GeoServerDataProvider<LayerGroupInfo> {
         return modifiedPropertiesList;
     }
 
+    @Override
     public IModel<LayerGroupInfo> newModel(LayerGroupInfo object) {
-        return new LayerGroupDetachableModel((LayerGroupInfo) object);
+        return new LayerGroupDetachableModel(object);
     }
 }

@@ -86,7 +86,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         public static final Set<String> names;
 
         static {
-            Set<String> tmp = new HashSet<String>();
+            Set<String> tmp = new HashSet<>();
             for (SECTIONS section : SECTIONS.values()) {
                 tmp.add(section.name());
             }
@@ -167,6 +167,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
          * @param o The Object to encode.
          * @throws IllegalArgumentException if the Object is not encodeable.
          */
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             if (!(o instanceof GetCapabilitiesType)) {
                 throw new IllegalArgumentException(
@@ -272,7 +273,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                     || ct.getAcceptVersions().getVersion() == null
                     || ct.getAcceptVersions().getVersion().isEmpty()
                     || ct.getAcceptVersions().getVersion().contains("2.0.1")) {
-                Set<String> formats = new TreeSet<String>();
+                Set<String> formats = new TreeSet<>();
                 for (String format : responseFactory.getOutputFormats()) {
                     CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
                     String mime = delegate.getMimeType(format);
@@ -452,7 +453,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             end("ows:AllowedValues");
             end("ows:Constraint");
 
-            if (extensions != null && extensions.size() > 0) {
+            if (extensions != null && !extensions.isEmpty()) {
                 try {
                     for (WCSExtendedCapabilitiesProvider provider : extensions) {
                         provider.encodeExtendedOperations(translator, wcs, request);
@@ -575,13 +576,12 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             start("wcs:Contents");
 
             @SuppressWarnings("unchecked")
-            final Set<CoverageInfo> coverages =
-                    new TreeSet<CoverageInfo>(new CoverageInfoLabelComparator());
+            final Set<CoverageInfo> coverages = new TreeSet<>(new CoverageInfoLabelComparator());
             coverages.addAll(wcs.getGeoServer().getCatalog().getCoverages());
 
             // filter out disabled coverages
             for (Iterator<CoverageInfo> it = coverages.iterator(); it.hasNext(); ) {
-                CoverageInfo cv = (CoverageInfo) it.next();
+                CoverageInfo cv = it.next();
                 if (!cv.enabled()) {
                     it.remove();
                 }
@@ -610,12 +610,12 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                 }
             }
 
-            if (extensions != null && extensions.size() > 0) {
+            if (extensions != null && !extensions.isEmpty()) {
                 start("wcs:Extension");
                 try {
                     for (WCSExtendedCapabilitiesProvider provider : extensions) {
                         provider.encodeExtendedContents(
-                                translator, wcs, new ArrayList<CoverageInfo>(coverages), request);
+                                translator, wcs, new ArrayList<>(coverages), request);
                     }
                 } catch (Exception e) {
                     throw new ServiceException("Extended capabilities provider threw error", e);

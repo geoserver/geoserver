@@ -40,6 +40,7 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
         super(locking, settings);
     }
 
+    @SuppressWarnings("unchecked")
     FeatureLocking<SimpleFeatureType, SimpleFeature> locking() {
         return (FeatureLocking<SimpleFeatureType, SimpleFeature>) source;
     }
@@ -50,6 +51,8 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
      * @see
      *     org.vfny.geoserver.global.GeoServerFeatureStore#setFeatureLock(org.geotools.data.FeatureLock)
      */
+    @Override
+    @SuppressWarnings("unchecked")
     public void setFeatureLock(FeatureLock lock) {
         if (source instanceof FeatureLocking) {
             ((FeatureLocking<SimpleFeatureType, SimpleFeature>) source).setFeatureLock(lock);
@@ -59,6 +62,8 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
     }
 
     /** */
+    @Override
+    @SuppressWarnings("unchecked")
     public int lockFeatures(Query query) throws IOException {
         if (source instanceof FeatureLocking) {
             return ((FeatureLocking<SimpleFeatureType, SimpleFeature>) source).lockFeatures(query);
@@ -85,6 +90,7 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
     //    }
 
     /** */
+    @Override
     public int lockFeatures(Filter filter) throws IOException {
         filter = makeDefinitionFilter(filter);
 
@@ -92,22 +98,26 @@ public class GeoServerFeatureLocking extends GeoServerFeatureStore implements Si
     }
 
     /** */
+    @Override
     public int lockFeatures() throws IOException {
         return locking().lockFeatures();
     }
 
     /** */
+    @Override
     public void unLockFeatures() throws IOException {
         locking().lockFeatures();
     }
 
     /** */
+    @Override
     public void unLockFeatures(Filter filter) throws IOException {
         filter = makeDefinitionFilter(filter);
 
         locking().unLockFeatures(filter);
     }
 
+    @Override
     public void unLockFeatures(Query query) throws IOException {
         query = makeDefinitionQuery(query, schema);
 

@@ -18,13 +18,14 @@ import org.apache.wicket.model.IModel;
  * @author Gabriel Roldan
  * @todo: extend {@link FormComponentPanel} instead
  */
-public class CheckBoxParamPanel extends Panel implements ParamPanel {
+public class CheckBoxParamPanel extends Panel implements ParamPanel<Boolean> {
 
     private static final long serialVersionUID = -8587266542399491587L;
 
     private CheckBox checkBox;
 
-    public CheckBoxParamPanel(final String id, final IModel model, final IModel paramLabelModel) {
+    public CheckBoxParamPanel(
+            final String id, final IModel<Boolean> model, final IModel paramLabelModel) {
         super(id, model);
         Label label = new Label("paramName", paramLabelModel);
         checkBox = new CheckBox("paramValue", model);
@@ -32,6 +33,7 @@ public class CheckBoxParamPanel extends Panel implements ParamPanel {
         add(checkBox);
     }
 
+    @Override
     public FormComponent<Boolean> getFormComponent() {
         return checkBox;
     }

@@ -182,11 +182,11 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
     }
 
     private <T> Set<T> nonNull(Set<T> set) {
-        return set == null ? new HashSet<T>() : set;
+        return set == null ? new HashSet<>() : set;
     }
 
     private <K, T> Map<K, T> nonNull(Map<K, T> set) {
-        return set == null ? new HashMap<K, T>() : set;
+        return set == null ? new HashMap<>() : set;
     }
 
     /** @see org.geoserver.gwc.layer.GeoServerTileLayerInfo#getId() */
@@ -371,13 +371,13 @@ public class GeoServerTileLayerInfoImpl implements Serializable, GeoServerTileLa
     /** @see org.geoserver.gwc.layer.GeoServerTileLayerInfo#getParameterFilters() */
     @Override
     public Set<ParameterFilter> getParameterFilters() {
-        return new HashSet<ParameterFilter>(parameterFiltersMap.values());
+        return new HashSet<>(parameterFiltersMap.values());
     }
 
     /** @see org.geoserver.gwc.layer.GeoServerTileLayerInfo#setParameterFilters(Set) */
     @Override
     public void setParameterFilters(Set<ParameterFilter> parameterFilters) {
-        parameterFiltersMap = new HashMap<String, ParameterFilter>();
+        parameterFiltersMap = new HashMap<>();
         for (ParameterFilter pf : parameterFilters) {
             addParameterFilter(pf);
         }

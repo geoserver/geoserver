@@ -21,20 +21,21 @@ import org.geoserver.ows.util.OwsUtils;
  * XStreamPersister}
  */
 class ReferenceConverter implements Converter {
-    Class clazz;
+    Class<?> clazz;
 
     private Catalog catalog;
 
-    public ReferenceConverter(Class clazz, Catalog catalog) {
+    public ReferenceConverter(Class<?> clazz, Catalog catalog) {
         this.catalog = catalog;
         this.clazz = clazz;
     }
 
-    @SuppressWarnings("unchecked")
-    public boolean canConvert(Class type) {
+    @Override
+    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
         return clazz.isAssignableFrom(type);
     }
 
+    @Override
     public void marshal(
             Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
         // could be a proxy, unwrap it
@@ -47,6 +48,7 @@ class ReferenceConverter implements Converter {
         writer.endNode();
     }
 
+    @Override
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
         String ref = null;
         if (reader.hasMoreChildren()) {

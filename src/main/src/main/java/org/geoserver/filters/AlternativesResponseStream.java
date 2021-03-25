@@ -36,22 +36,27 @@ public class AlternativesResponseStream extends ServletOutputStream {
         this.contentLength = contentLength;
     }
 
+    @Override
     public void close() throws IOException {
         if (isDirty()) getStream().close();
     }
 
+    @Override
     public void flush() throws IOException {
         if (isDirty()) getStream().flush();
     }
 
+    @Override
     public void write(int b) throws IOException {
         getStream().write(b);
     }
 
+    @Override
     public void write(byte b[]) throws IOException {
         getStream().write(b);
     }
 
+    @Override
     public void write(byte b[], int off, int len) throws IOException {
         getStream().write(b, off, len);
     }

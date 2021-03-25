@@ -22,6 +22,7 @@ public class JMSCatalogStylesFileHandler extends DocumentFileHandler {
     private JMSConfiguration config;
     private final GeoServerResourceLoader loader;
 
+    @SuppressWarnings("rawtypes")
     public JMSCatalogStylesFileHandler(
             Catalog catalog, XStream xstream, Class clazz, GeoServerResourceLoader loader) {
         super(xstream, clazz);
@@ -46,7 +47,7 @@ public class JMSCatalogStylesFileHandler extends DocumentFileHandler {
 
                 if (!Resources.exists(file)) {
                     final String styleAbsolutePath = event.getResourcePath();
-                    if (styleAbsolutePath.indexOf("workspaces") > 0) {
+                    if (styleAbsolutePath.contains("workspaces")) {
                         file =
                                 loader.get(
                                         styleAbsolutePath.substring(

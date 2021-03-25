@@ -42,8 +42,7 @@ public class ProcessLimitsPageTest extends WPSPagesTestSupport {
         contour.getValidators()
                 .put(
                         "levels",
-                        new NumberRangeValidator(
-                                new NumberRange<Double>(Double.class, -8000d, 8000d)));
+                        new NumberRangeValidator(new NumberRange<>(Double.class, -8000d, 8000d)));
         contour.getValidators().put("levels", new MultiplicityValidator(3));
         rasterGroup.getFilteredProcesses().add(contour);
 
@@ -59,16 +58,12 @@ public class ProcessLimitsPageTest extends WPSPagesTestSupport {
         ProcessInfo pi = getProcess(rasterGroup.getFilteredProcesses(), "Contour");
 
         // start the pages
-        WPSAccessRulePage accessRulePage =
-                (WPSAccessRulePage) tester.startPage(new WPSAccessRulePage());
+        WPSAccessRulePage accessRulePage = tester.startPage(new WPSAccessRulePage());
         ProcessSelectionPage selectionPage =
-                (ProcessSelectionPage)
-                        tester.startPage(new ProcessSelectionPage(accessRulePage, rasterGroup));
+                tester.startPage(new ProcessSelectionPage(accessRulePage, rasterGroup));
         FilteredProcess filteredProcess = new FilteredProcess(pi.getName(), "");
         filteredProcess.setValidators(pi.getValidators());
-        ProcessLimitsPage limitsPage =
-                (ProcessLimitsPage)
-                        tester.startPage(new ProcessLimitsPage(selectionPage, filteredProcess));
+        tester.startPage(new ProcessLimitsPage(selectionPage, filteredProcess));
 
         // print(limitsPage, true, true);
 
@@ -90,7 +85,7 @@ public class ProcessLimitsPageTest extends WPSPagesTestSupport {
         il = (InputLimit) item.getDefaultModelObject();
         assertEquals("levels", il.getName());
         assertEquals(
-                new NumberRange(Double.class, -8000d, 8000d),
+                new NumberRange<>(Double.class, -8000d, 8000d),
                 item.get("itemProperties:2:component:range").getDefaultModelObject());
         // multiplicity validator
         item =

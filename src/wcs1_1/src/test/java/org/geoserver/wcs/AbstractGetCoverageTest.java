@@ -9,7 +9,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import net.opengis.wcs11.GetCoverageType;
@@ -37,7 +36,7 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
 
     WcsXmlReader xmlReader;
 
-    List<GridCoverage> coverages = new ArrayList<GridCoverage>();
+    List<GridCoverage> coverages = new ArrayList<>();
 
     @Before
     public void setup() {
@@ -72,7 +71,7 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
 
     /** Prepares the basic KVP map (service, version, request) */
     protected Map<String, Object> baseMap() {
-        Map<String, Object> raw = new HashMap<String, Object>();
+        Map<String, Object> raw = new HashMap<>();
         raw.put("service", "WCS");
         raw.put("version", "1.1.1");
         raw.put("request", "GetCoverage");
@@ -100,23 +99,24 @@ public abstract class AbstractGetCoverageTest extends WCSTestSupport {
         gs.save(info);
     }
 
-    protected Map parseKvp(Map /* <String,String> */ raw) throws Exception {
+    @Override
+    protected Map<String, Object> parseKvp(Map<String, Object> raw) throws Exception {
 
         // parse like the dispatcher but make sure we don't change the original map
-        HashMap input = new HashMap(raw);
+        HashMap<String, Object> input = new HashMap<>(raw);
         List<Throwable> errors = KvpUtils.parse(input);
-        if (errors != null && errors.size() > 0) throw (Exception) errors.get(0);
+        if (errors != null && !errors.isEmpty()) throw (Exception) errors.get(0);
 
         return caseInsensitiveKvp(input);
     }
 
-    protected Map caseInsensitiveKvp(HashMap input) {
+    @Override
+    protected <V> Map<String, V> caseInsensitiveKvp(Map<String, V> input) {
         // make it case insensitive like the servlet+dispatcher maps
-        Map result = new HashMap();
-        for (Iterator it = input.keySet().iterator(); it.hasNext(); ) {
-            String key = (String) it.next();
+        Map<String, V> result = new HashMap<>();
+        for (String key : input.keySet()) {
             result.put(key.toUpperCase(), input.get(key));
         }
-        return new CaseInsensitiveMap(result);
+        return new CaseInsensitiveMap<>(result);
     }
 }

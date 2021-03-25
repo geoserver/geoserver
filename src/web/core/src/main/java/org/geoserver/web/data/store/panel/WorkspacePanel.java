@@ -11,19 +11,20 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 
 /** A label + workspace dropdown form panel */
 @SuppressWarnings("serial")
-public class WorkspacePanel extends Panel implements ParamPanel {
+public class WorkspacePanel extends Panel implements ParamPanel<WorkspaceInfo> {
 
-    private DropDownChoice choice;
+    private DropDownChoice<WorkspaceInfo> choice;
 
     public WorkspacePanel(
             final String id,
-            final IModel workspaceModel,
-            final IModel paramLabelModel,
+            final IModel<WorkspaceInfo> workspaceModel,
+            final IModel<String> paramLabelModel,
             final boolean required) {
         // make the value of the combo field the model of this panel, for easy
         // value retriaval
@@ -36,7 +37,7 @@ public class WorkspacePanel extends Panel implements ParamPanel {
 
         // the drop down field, with a decorator for validations
         choice =
-                new DropDownChoice(
+                new DropDownChoice<>(
                         "paramValue",
                         workspaceModel,
                         new WorkspacesModel(),
@@ -55,7 +56,8 @@ public class WorkspacePanel extends Panel implements ParamPanel {
      * Returns the form component used in the panel in case it is needed for related form components
      * validation
      */
-    public FormComponent getFormComponent() {
+    @Override
+    public FormComponent<WorkspaceInfo> getFormComponent() {
         return choice;
     }
 }

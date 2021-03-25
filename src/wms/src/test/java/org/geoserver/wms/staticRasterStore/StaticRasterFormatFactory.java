@@ -4,7 +4,7 @@
  */
 package org.geoserver.wms.staticRasterStore;
 
-import java.awt.*;
+import java.awt.RenderingHints;
 import java.util.Collections;
 import java.util.Map;
 import org.geotools.coverage.grid.io.GridFormatFactorySpi;
@@ -12,15 +12,18 @@ import org.geotools.coverage.grid.io.GridFormatFactorySpi;
 /** Simple factory for the static raster format. */
 public final class StaticRasterFormatFactory implements GridFormatFactorySpi {
 
+    @Override
     public boolean isAvailable() {
         // we don't need anything specific
         return true;
     }
 
+    @Override
     public StaticRasterFormat createFormat() {
         return new StaticRasterFormat();
     }
 
+    @Override
     public Map<RenderingHints.Key, ?> getImplementationHints() {
         return Collections.emptyMap();
     }

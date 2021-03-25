@@ -68,6 +68,22 @@ public class ConfigurationPasswordEncryptionHelper {
     public Set<String> getEncryptedFields(StoreInfo info) {
         if (!(info instanceof DataStoreInfo)) {
             // only datastores supposed at this time, TODO: fix this
+
+            List<EncryptedFieldsProvider> encryptedFieldsProviders =
+                    GeoServerExtensions.extensions(EncryptedFieldsProvider.class);
+            if (!encryptedFieldsProviders.isEmpty()) {
+                Set<String> fields = new HashSet<>();
+                for (EncryptedFieldsProvider provider : encryptedFieldsProviders) {
+                    Set<String> providedFields = provider.getEncryptedFields(info);
+                    if (providedFields != null && !providedFields.isEmpty()) {
+                        fields.addAll(providedFields);
+                    }
+                }
+                if (!fields.isEmpty()) {
+                    return fields;
+                }
+            }
+
             return Collections.emptySet();
         }
 
@@ -123,7 +139,7 @@ public class ConfigurationPasswordEncryptionHelper {
 
         toEncrypt = Collections.emptySet();
         if (info != null && info.getConnectionParameters() != null) {
-            toEncrypt = new HashSet<String>(3);
+            toEncrypt = new HashSet<>(3);
             for (Param p : factory.getParametersInfo()) {
                 if (p.isPassword()) {
                     toEncrypt.add(p.getName());

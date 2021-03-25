@@ -34,7 +34,6 @@ public class BinaryProcessingsTest extends WPSTestSupport {
 
     @Test
     public void testAddOperation() throws Exception {
-        double[] addToSameCoverageValue = null;
         String addXml =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                         + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
@@ -89,24 +88,25 @@ public class BinaryProcessingsTest extends WPSTestSupport {
                         + "";
 
         MockHttpServletResponse response = postAsServletResponse(root(), addXml);
-        InputStream is = getBinaryInputStream(response);
+        try (InputStream is = getBinaryInputStream(response)) {
 
-        ArcGridFormat format = new ArcGridFormat();
-        GridCoverage2D gc = format.getReader(is).read(null);
+            ArcGridFormat format = new ArcGridFormat();
+            GridCoverage2D gc = format.getReader(is).read(null);
 
-        assertTrue(
-                new Envelope(144.9, 146.1, -40.9, -43.1)
-                        .contains(new ReferencedEnvelope(gc.getEnvelope())));
+            assertTrue(
+                    new Envelope(144.9, 146.1, -40.9, -43.1)
+                            .contains(new ReferencedEnvelope(gc.getEnvelope())));
 
-        addToSameCoverageValue = (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
-        assertEquals(1978.0, addToSameCoverageValue[0], DELTA);
+            double[] addToSameCoverageValue =
+                    (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
+            assertEquals(1978.0, addToSameCoverageValue[0], DELTA);
 
-        gc.dispose(true);
+            gc.dispose(true);
+        }
     }
 
     @Test
     public void testMultiplyOperation() throws Exception {
-        double[] multiplyForSameCoverageValue = null;
         String multiplyXml =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                         + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
@@ -161,20 +161,21 @@ public class BinaryProcessingsTest extends WPSTestSupport {
                         + "";
 
         MockHttpServletResponse response = postAsServletResponse(root(), multiplyXml);
-        InputStream is = getBinaryInputStream(response);
+        try (InputStream is = getBinaryInputStream(response)) {
 
-        ArcGridFormat format = new ArcGridFormat();
-        GridCoverage2D gc = format.getReader(is).read(null);
+            ArcGridFormat format = new ArcGridFormat();
+            GridCoverage2D gc = format.getReader(is).read(null);
 
-        assertTrue(
-                new Envelope(144.9, 146.1, -40.9, -43.1)
-                        .contains(new ReferencedEnvelope(gc.getEnvelope())));
+            assertTrue(
+                    new Envelope(144.9, 146.1, -40.9, -43.1)
+                            .contains(new ReferencedEnvelope(gc.getEnvelope())));
 
-        multiplyForSameCoverageValue =
-                (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
-        assertEquals(978121.0, multiplyForSameCoverageValue[0], DELTA);
+            double[] multiplyForSameCoverageValue =
+                    (double[]) gc.evaluate(new DirectPosition2D(145.9584, -41.6587));
+            assertEquals(978121.0, multiplyForSameCoverageValue[0], DELTA);
 
-        gc.dispose(true);
+            gc.dispose(true);
+        }
     }
 
     @Test

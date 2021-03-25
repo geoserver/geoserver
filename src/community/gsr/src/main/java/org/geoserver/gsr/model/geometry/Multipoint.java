@@ -14,10 +14,12 @@ public class Multipoint extends Geometry {
 
     protected GeometryTypeEnum geometryType;
 
+    @Override
     public GeometryTypeEnum getGeometryType() {
         return geometryType;
     }
 
+    @Override
     public void setGeometryType(GeometryTypeEnum geometryType) {
         this.geometryType = geometryType;
     }
@@ -32,10 +34,12 @@ public class Multipoint extends Geometry {
         this.points = points;
     }
 
+    @Override
     public SpatialReference getSpatialReference() {
         return spatialReference;
     }
 
+    @Override
     public void setSpatialReference(SpatialReference spatialReference) {
         this.spatialReference = spatialReference;
     }

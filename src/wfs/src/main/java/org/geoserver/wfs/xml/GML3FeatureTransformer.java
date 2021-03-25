@@ -15,6 +15,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 public class GML3FeatureTransformer extends FeatureTransformer {
+    @Override
     protected FeatureTranslator createTranslator(
             ContentHandler handler,
             String prefix,
@@ -25,7 +26,8 @@ public class GML3FeatureTransformer extends FeatureTransformer {
                 handler, prefix, ns, featureTypeNamespaces, schemaLocationSupport);
     }
 
-    protected void loadGmlAttributes(Set set) {
+    @Override
+    protected void loadGmlAttributes(Set<String> set) {
         set.add("name");
         set.add("description");
     }
@@ -40,10 +42,12 @@ public class GML3FeatureTransformer extends FeatureTransformer {
             super(handler, prefix, ns, featureTypeNamespaces, schemaLocationSupport);
         }
 
+        @Override
         protected GeometryTranslator createGeometryTranslator(ContentHandler handler) {
             return new GML3GeometryTranslator(handler);
         }
 
+        @Override
         protected GeometryTranslator createGeometryTranslator(
                 ContentHandler handler,
                 int numDecimals,
@@ -53,6 +57,7 @@ public class GML3FeatureTransformer extends FeatureTransformer {
                     handler, numDecimals, padWithZeros, forceDecimalEncoding);
         }
 
+        @Override
         protected GeometryTranslator createGeometryTranslator(
                 ContentHandler handler,
                 int numDecimals,

@@ -29,7 +29,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     protected MetadataMap metadata = new MetadataMap();
 
-    protected Map<Object, Object> clientProperties = new HashMap<Object, Object>();
+    protected Map<Object, Object> clientProperties = new HashMap<>();
 
     protected long updateSequence;
 
@@ -73,6 +73,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
 
     public GeoServerInfoImpl() {}
 
+    @Override
     public String getId() {
         return id;
     }
@@ -103,18 +104,22 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         return getSettings().getContact();
     }
 
+    @Override
     public JAIInfo getJAI() {
         return jai;
     }
 
+    @Override
     public void setJAI(JAIInfo jai) {
         this.jai = jai;
     }
 
+    @Override
     public CoverageAccessInfo getCoverageAccess() {
         return coverageAccess;
     }
 
+    @Override
     public void setCoverageAccess(CoverageAccessInfo coverageAccess) {
         this.coverageAccess = coverageAccess;
     }
@@ -183,58 +188,72 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         getSettings().setVerboseExceptions(verboseExceptions);
     }
 
+    @Override
     public long getUpdateSequence() {
         return updateSequence;
     }
 
+    @Override
     public void setUpdateSequence(long updateSequence) {
         this.updateSequence = updateSequence;
     }
 
+    @Override
     public String getAdminPassword() {
         return adminPassword;
     }
 
+    @Override
     public void setAdminPassword(String adminPassword) {
         this.adminPassword = adminPassword;
     }
 
+    @Override
     public String getAdminUsername() {
         return adminUsername;
     }
 
+    @Override
     public void setAdminUsername(String adminUsername) {
         this.adminUsername = adminUsername;
     }
 
+    @Override
     public int getFeatureTypeCacheSize() {
         return featureTypeCacheSize;
     }
 
+    @Override
     public void setFeatureTypeCacheSize(int featureTypeCacheSize) {
         this.featureTypeCacheSize = featureTypeCacheSize;
     }
 
+    @Override
     public Boolean isGlobalServices() {
         return globalServices;
     }
 
+    @Override
     public void setGlobalServices(Boolean forceVirtualServices) {
         this.globalServices = forceVirtualServices;
     }
 
+    @Override
     public Boolean isUseHeadersProxyURL() {
         return useHeadersProxyURL == null ? false : useHeadersProxyURL;
     }
 
+    @Override
     public void setUseHeadersProxyURL(Boolean useHeadersProxyURL) {
         this.useHeadersProxyURL = useHeadersProxyURL;
     }
 
+    @Override
     public void setXmlPostRequestLogBufferSize(Integer bufferSize) {
         this.xmlPostRequestLogBufferSize = bufferSize;
     }
 
+    @Override
     public Integer getXmlPostRequestLogBufferSize() {
         return this.xmlPostRequestLogBufferSize;
     }
@@ -243,6 +262,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
      * If true it enables evaluation of XML entities contained in XML files received in a service
      * (WMS, WFS, ...) request. Default is FALSE. Enabling this feature is a security risk.
      */
+    @Override
     public void setXmlExternalEntitiesEnabled(Boolean xmlExternalEntitiesEnabled) {
         this.xmlExternalEntitiesEnabled = xmlExternalEntitiesEnabled;
     }
@@ -251,10 +271,12 @@ public class GeoServerInfoImpl implements GeoServerInfo {
      * If true it enables evaluation of XML entities contained in XML files received in a service
      * (WMS, WFS, ...) request. Default is FALSE. Enabling this feature is a security risk.
      */
+    @Override
     public Boolean isXmlExternalEntitiesEnabled() {
         return this.xmlExternalEntitiesEnabled;
     }
 
+    @Override
     public MetadataMap getMetadata() {
         return metadata;
     }
@@ -263,6 +285,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         this.metadata = metadata;
     }
 
+    @Override
     public Map<Object, Object> getClientProperties() {
         return clientProperties;
     }
@@ -271,30 +294,36 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         this.clientProperties = properties;
     }
 
+    @Override
     public String getLockProviderName() {
         return this.lockProviderName;
     }
 
+    @Override
     public void setLockProviderName(String lockProviderName) {
         this.lockProviderName = lockProviderName;
     }
 
+    @Override
     public void dispose() {
         if (coverageAccess != null) {
             coverageAccess.dispose();
         }
     }
 
+    @Override
     public Boolean isAllowStoredQueriesPerWorkspace() {
         return allowStoredQueriesPerWorkspace == null
                 ? Boolean.TRUE
                 : allowStoredQueriesPerWorkspace;
     }
 
+    @Override
     public void setAllowStoredQueriesPerWorkspace(Boolean allowStoredQueriesPerWorkspace) {
         this.allowStoredQueriesPerWorkspace = allowStoredQueriesPerWorkspace;
     }
 
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -314,6 +343,7 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         return result;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
@@ -424,10 +454,12 @@ public class GeoServerInfoImpl implements GeoServerInfo {
         return this;
     }
 
+    @Override
     public void setResourceErrorHandling(ResourceErrorHandling mode) {
         this.resourceErrorHandling = mode;
     }
 
+    @Override
     public ResourceErrorHandling getResourceErrorHandling() {
         if (this.resourceErrorHandling == null) {
             return ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;

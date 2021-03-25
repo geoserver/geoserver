@@ -27,7 +27,7 @@ import org.springframework.mock.web.MockServletContext;
 public class FilePublisherTest {
 
     static FilePublisher publisher;
-    static List<String[]> paths = new ArrayList<String[]>();
+    static List<String[]> paths = new ArrayList<>();
 
     @BeforeClass
     public static void create() throws Exception {
@@ -53,9 +53,9 @@ public class FilePublisherTest {
         String fname = path[path.length - 1];
         File file = new File(parent, fname);
         file.deleteOnExit();
-        FileOutputStream fout = new FileOutputStream(file);
-        fout.write(fname.getBytes("UTF-8"));
-        fout.close();
+        try (FileOutputStream fout = new FileOutputStream(file)) {
+            fout.write(fname.getBytes("UTF-8"));
+        }
         return path;
     }
 
@@ -67,8 +67,8 @@ public class FilePublisherTest {
         request.setContextPath("/geoserver");
         request.setMethod("GET");
         StringBuilder b = new StringBuilder("/geoserver");
-        for (int i = 0; i < path.length; i++) {
-            b.append('/').append(path[i]);
+        for (String s : path) {
+            b.append('/').append(s);
         }
         String uri = URLEncoder.encode(b.toString(), "UTF-8");
         request.setRequestURI(uri);

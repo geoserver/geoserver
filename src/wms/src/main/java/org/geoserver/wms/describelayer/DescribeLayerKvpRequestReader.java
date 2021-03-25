@@ -63,7 +63,7 @@ public class DescribeLayerKvpRequestReader extends KvpRequestReader {
         List<MapLayerInfo> layers =
                 new MapLayerInfoKvpParser("LAYERS", wms).parse((String) rawKvp.get("LAYERS"));
         request.setLayers(layers);
-        if (layers == null || layers.size() == 0) {
+        if (layers == null || layers.isEmpty()) {
             throw new ServiceException(
                     "No LAYERS has been requested", "NoLayerRequested", getClass().getName());
         }

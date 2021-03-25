@@ -93,6 +93,7 @@ public class ProductsController extends AbstractOpenSearchController {
             this.pattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
         }
 
+        @Override
         public boolean matches(String name) {
             return pattern.matcher(name).matches();
         }

@@ -124,6 +124,7 @@ public class BulkImportPanel extends Panel {
                         }
                     }
 
+                    @Override
                     protected void onError(AjaxRequestTarget target, Form<?> form) {
                         ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
                     }

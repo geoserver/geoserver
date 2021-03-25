@@ -6,7 +6,7 @@
 package org.geoserver.wfs;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -39,6 +39,8 @@ import org.w3c.dom.Document;
  * @author Andrea Aime - GeoSolutions
  */
 public class ResourceAccessManagerWFSTest extends WFSTestSupport {
+
+    static final FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
     static final String INSERT_RESTRICTED_STREET =
             "<wfs:Transaction service=\"WFS\" version=\"1.0.0\"\n"
@@ -132,10 +134,9 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         addUser("cite_writefilter", "cite", null, Collections.singletonList("ROLE_DUMMY"));
         addUser("cite_writeatts", "cite", null, Collections.singletonList("ROLE_DUMMY"));
         addUser("cite_mixed", "cite", null, Collections.singletonList("ROLE_DUMMY"));
+        addUser("cite_nowrite_challenge", "cite", null, Collections.singletonList("ROLE_DUMMY"));
 
         // ------
-
-        FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
         // populate the access manager
         TestResourceAccessManager tam =
@@ -166,12 +167,7 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
                         CatalogMode.HIDE, readAtts, Filter.INCLUDE, null, Filter.INCLUDE));
 
         // disallow writing on Restricted Street
-        Filter restrictedStreet =
-                ff.not(ff.like(ff.property("ADDRESS"), "*Restricted Street*", "*", "?", "\\"));
-        tam.putLimits(
-                "cite_insertfilter",
-                buildings,
-                new VectorAccessLimits(CatalogMode.HIDE, null, null, null, restrictedStreet));
+        addRestrictedStreetLimit(tam, CatalogMode.HIDE, "cite_insertfilter");
 
         // allows writing only on 113
         tam.putLimits(
@@ -192,6 +188,29 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
                 buildings,
                 new VectorAccessLimits(
                         CatalogMode.MIXED, null, Filter.EXCLUDE, null, Filter.EXCLUDE));
+
+        // disallow write
+        tam.putLimits(
+                "cite_nowrite_challenge",
+                buildings,
+                new VectorAccessLimits(
+                        CatalogMode.CHALLENGE, null, Filter.INCLUDE, null, Filter.EXCLUDE));
+        tam.putLimits(
+                "anonymous",
+                buildings,
+                new VectorAccessLimits(
+                        CatalogMode.CHALLENGE, null, Filter.INCLUDE, null, Filter.EXCLUDE));
+    }
+
+    private void addRestrictedStreetLimit(
+            TestResourceAccessManager tam, CatalogMode mode, String user) {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo buildings =
+                catalog.getFeatureTypeByName(getLayerId(SystemTestData.BUILDINGS));
+        Filter restrictedStreet =
+                ff.not(ff.like(ff.property("ADDRESS"), "*Restricted Street*", "*", "?", "\\"));
+        tam.putLimits(
+                user, buildings, new VectorAccessLimits(mode, null, null, null, restrictedStreet));
     }
 
     @Test
@@ -388,6 +407,30 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
     }
 
     @Test
+    public void testInsertRestrictedChallenge() throws Exception {
+        TestResourceAccessManager tam =
+                (TestResourceAccessManager) applicationContext.getBean("testResourceAccessManager");
+        addRestrictedStreetLimit(tam, CatalogMode.CHALLENGE, "cite_insertfilter");
+        try {
+            setRequestAuth("cite_insertfilter", "cite");
+            MockHttpServletResponse response =
+                    postAsServletResponse("wfs", INSERT_RESTRICTED_STREET);
+            // this should state it's not authorized, since the user was authenticaed
+            assertEquals(403, response.getStatus());
+        } finally {
+            addRestrictedStreetLimit(tam, CatalogMode.HIDE, "cite_insertfilter");
+        }
+    }
+
+    @Test
+    public void testInsertRestrictedChallengeAnonymous() throws Exception {
+        setRequestAuth(null, null);
+        MockHttpServletResponse response = postAsServletResponse("wfs", INSERT_RESTRICTED_STREET);
+        // this should prompt to authenticat since the user was the anonymous one
+        assertEquals(401, response.getStatus());
+    }
+
+    @Test
     public void testInsertRestricted() throws Exception {
         setRequestAuth("cite_insertfilter", "cite");
         Document dom = postAsDOM("wfs", INSERT_RESTRICTED_STREET);
@@ -457,6 +500,20 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
     }
 
     @Test
+    public void testUpdateNoWrite() throws Exception {
+        setRequestAuth("cite_nowrite_challenge", "cite");
+        MockHttpServletResponse response = postAsServletResponse("wfs", UPDATE_ADDRESS);
+        assertEquals(403, response.getStatus());
+    }
+
+    @Test
+    public void testUpdateNoWriteAnonymous() throws Exception {
+        setRequestAuth(null, null);
+        MockHttpServletResponse response = postAsServletResponse("wfs", UPDATE_ADDRESS);
+        assertEquals(401, response.getStatus());
+    }
+
+    @Test
     public void testDeleteLimitWrite() throws Exception {
         setRequestAuth("cite_writefilter", "cite");
         Document dom = postAsDOM("wfs", DELETE_ADDRESS);
@@ -475,5 +532,19 @@ public class ResourceAccessManagerWFSTest extends WFSTestSupport {
         assertXpathEvaluatesTo("0", "count(//cite:Buildings[cite:FID = '113'])", doc);
         // but the other did not
         assertXpathEvaluatesTo("1", "count(//cite:Buildings[cite:FID = '114'])", doc);
+    }
+
+    @Test
+    public void testDeleteNoWrite() throws Exception {
+        setRequestAuth("cite_nowrite_challenge", "cite");
+        MockHttpServletResponse response = postAsServletResponse("wfs", DELETE_ADDRESS);
+        assertEquals(403, response.getStatus());
+    }
+
+    @Test
+    public void testDeleteNoWriteAnonymous() throws Exception {
+        setRequestAuth(null, null);
+        MockHttpServletResponse response = postAsServletResponse("wfs", DELETE_ADDRESS);
+        assertEquals(401, response.getStatus());
     }
 }

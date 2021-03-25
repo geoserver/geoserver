@@ -5,7 +5,9 @@
  */
 package org.geoserver.wfs;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import org.geoserver.data.test.CiteTestData;
@@ -51,7 +53,7 @@ public class GetFeatureMissingTypesTest extends WFSTestSupport {
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
         NodeList featureMembers = doc.getElementsByTagName("gml:featureMember");
-        assertFalse(featureMembers.getLength() == 0);
+        assertNotEquals(0, featureMembers.getLength());
 
         // but if we require buildings itself, it should fail
         xml =

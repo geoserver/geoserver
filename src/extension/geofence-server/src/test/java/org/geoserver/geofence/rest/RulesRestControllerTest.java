@@ -7,12 +7,12 @@ package org.geoserver.geofence.rest;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.UUID;
 import net.sf.json.JSONArray;
@@ -32,6 +32,8 @@ import org.geoserver.rest.RestBaseController;
 import org.geotools.gml3.bindings.GML3MockData;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.springframework.http.HttpStatus;
@@ -159,11 +161,12 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 rule.getLimits().getCatalogMode(),
                 realRule.getRuleLimits().getCatalogMode().toString());
         try {
-            assertEquals(
-                    new WKTReader().read(rule.getLimits().getAllowedArea()),
-                    realRule.getRuleLimits().getAllowedArea());
+            String allowedArea = rule.getLimits().getAllowedArea();
+            Geometry multiPolygon = new WKTReader().read(allowedArea.split(";")[1]);
+            multiPolygon.setSRID(4326);
+            assertEquals(multiPolygon, realRule.getRuleLimits().getAllowedArea());
         } catch (ParseException e) {
-            assertFalse(e.getLocalizedMessage(), true);
+            fail(e.getLocalizedMessage());
         }
 
         rule.getLimits().setCatalogMode("HIDE");
@@ -221,11 +224,12 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
 
         Rule realRule = adminService.get(id);
         try {
-            assertEquals(
-                    new WKTReader().read(rule.getLayerDetails().getAllowedArea()),
-                    realRule.getLayerDetails().getArea());
+            String allowedArea = rule.getLayerDetails().getAllowedArea();
+            Geometry multiPolygon = new WKTReader().read(allowedArea.split(";")[1]);
+            multiPolygon.setSRID(4326);
+            assertEquals(multiPolygon, realRule.getLayerDetails().getArea());
         } catch (ParseException e) {
-            assertFalse(e.getLocalizedMessage(), true);
+            fail(e.getLocalizedMessage());
         }
         assertEquals(
                 rule.getLayerDetails().getCatalogMode(),
@@ -501,7 +505,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                         + "      'defaultStyle': 'DE_USNG_UTM18',\n"
                         + "      'cqlFilterRead': 'Northings >= 100',\n"
                         + "      'cqlFilterWrite': null,\n"
-                        + "      'allowedArea': 'MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))',\n"
+                        + "      'allowedArea': 'SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))',\n"
                         + "      'catalogMode': null,\n"
                         + "      'allowedStyles': [],\n"
                         + "      'attributes': [\n"
@@ -576,7 +580,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 assertEquals("DE_USNG_UTM18", layerDetails.getString("defaultStyle"));
                 assertEquals("Northings >= 100", layerDetails.getString("cqlFilterRead"));
                 assertEquals(
-                        "MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))",
+                        "SRID=4326;MULTIPOLYGON (((-180 -90, -180 90, 180 90, 180 -90, -180 -90)))",
                         layerDetails.getString("allowedArea"));
                 break;
             } else {
@@ -609,6 +613,93 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         // print(json);
 
         assertEquals(1, json.getInt("count"));
+    }
+
+    @Test
+    public void testLimitsSRIDAndSpatialFilterType() {
+        JaxbRule rule = new JaxbRule();
+        rule.setPriority(5L);
+        rule.setAccess("LIMIT");
+        rule.setLimits(new JaxbRule.Limits());
+        MultiPolygon mPoly = GML3MockData.multiPolygon();
+        mPoly.setSRID(3003);
+        rule.getLimits().setAllowedArea(mPoly);
+        rule.getLimits().setSpatialFilterType("CLIP");
+        rule.getLimits().setCatalogMode("MIXED");
+
+        long id = prepareGeoFenceTestRules(rule);
+
+        Rule realRule = adminService.get(id);
+
+        assertEquals(
+                rule.getLimits().getCatalogMode(),
+                realRule.getRuleLimits().getCatalogMode().toString());
+
+        assertEquals(realRule.getRuleLimits().getAllowedArea().getSRID(), 3003);
+
+        assertTrue(rule.getLimits().getAllowedArea().contains("SRID=3003"));
+
+        assertEquals(
+                rule.getLimits().getSpatialFilterType(),
+                realRule.getRuleLimits().getSpatialFilterType().toString());
+        rule.getLimits().setSpatialFilterType("INTERSECT");
+
+        controller.update(id, rule);
+
+        realRule = adminService.get(id);
+
+        assertEquals(
+                rule.getLimits().getSpatialFilterType(),
+                realRule.getRuleLimits().getSpatialFilterType().toString());
+        JaxbRuleList list =
+                controller.get(
+                        null, null, false, null, null, null, null, null, null, null, null, null,
+                        null, null, null, null, null, null);
+        JaxbRule r = list.getRules().get(0);
+        JaxbRule.Limits limits = r.getLimits();
+        assertEquals(limits.getSpatialFilterType(), "INTERSECT");
+        assertTrue(limits.getAllowedArea().contains("SRID"));
+    }
+
+    @Test
+    public void testLayerDetailSRIDAndSpatialFilterType() {
+        JaxbRule rule = new JaxbRule();
+        rule.setPriority(5L);
+        rule.setWorkspace("workspace");
+        rule.setLayer("layer");
+        rule.setAccess("ALLOW");
+        rule.setLayerDetails(new JaxbRule.LayerDetails());
+        MultiPolygon multiPolygon = GML3MockData.multiPolygon();
+        multiPolygon.setSRID(3002);
+        rule.getLayerDetails().setAllowedArea(multiPolygon);
+        rule.getLayerDetails().setSpatialFilterType("INTERSECT");
+        rule.getLayerDetails().setDefaultStyle("myDefaultStyle");
+        rule.getLayerDetails().setLayerType("VECTOR");
+
+        long id = prepareGeoFenceTestRules(rule);
+
+        Rule realRule = adminService.get(id);
+        assertEquals(realRule.getLayerDetails().getArea().getSRID(), 3002);
+        assertTrue(rule.getLayerDetails().getAllowedArea().contains("SRID=3002"));
+        assertEquals(
+                rule.getLayerDetails().getSpatialFilterType(),
+                realRule.getLayerDetails().getSpatialFilterType().toString());
+
+        rule.getLayerDetails().setSpatialFilterType("CLIP");
+        controller.update(id, rule);
+
+        realRule = adminService.get(id);
+        assertEquals(
+                rule.getLayerDetails().getSpatialFilterType(),
+                realRule.getLayerDetails().getSpatialFilterType().toString());
+        JaxbRuleList list =
+                controller.get(
+                        null, null, false, null, null, null, null, null, null, null, null, null,
+                        null, null, null, null, null, null);
+        JaxbRule r = list.getRules().get(0);
+        JaxbRule.LayerDetails details = r.getLayerDetails();
+        assertEquals(details.getSpatialFilterType(), "CLIP");
+        assertTrue(details.getAllowedArea().contains("SRID"));
     }
 
     /**

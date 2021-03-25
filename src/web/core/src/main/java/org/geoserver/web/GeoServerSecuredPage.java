@@ -8,7 +8,6 @@ package org.geoserver.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.request.http.WebRequest;
 import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,7 +39,7 @@ public class GeoServerSecuredPage extends GeoServerBasePage {
             // emulate what spring security url control would do so that we get a proper redirect
             // after login
             HttpServletRequest httpRequest =
-                    (HttpServletRequest) ((WebRequest) getRequest()).getContainerRequest();
+                    (HttpServletRequest) getRequest().getContainerRequest();
             // ExceptionTranslationFilter translator = (ExceptionTranslationFilter)
             // getGeoServerApplication().getBean("consoleExceptionTranslationFilter");
             SavedRequest savedRequest =

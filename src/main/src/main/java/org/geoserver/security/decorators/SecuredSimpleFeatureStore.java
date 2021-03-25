@@ -49,11 +49,13 @@ public class SecuredSimpleFeatureStore extends SecuredFeatureStore<SimpleFeature
         return DataUtilities.simple(super.getFeatures(query));
     }
 
+    @Override
     public void modifyFeatures(String name, Object attributeValue, Filter filter)
             throws IOException {
         modifyFeatures(new String[] {name}, new Object[] {attributeValue}, filter);
     }
 
+    @Override
     public void modifyFeatures(String[] names, Object[] values, Filter filter) throws IOException {
         // are we limiting anything?
         Query writeQuery = getWriteQuery(policy);
@@ -74,18 +76,17 @@ public class SecuredSimpleFeatureStore extends SecuredFeatureStore<SimpleFeature
             ((SimpleFeatureStore) storeDelegate).modifyFeatures(names, values, mixed.getFilter());
         } else {
             // get the writable attribute set
-            Set<String> queryNames =
-                    new HashSet<String>(Arrays.asList(writeQuery.getPropertyNames()));
+            Set<String> queryNames = new HashSet<>(Arrays.asList(writeQuery.getPropertyNames()));
 
             // check the update fields
-            for (int i = 0; i < names.length; i++) {
-                if (!queryNames.contains(names[i])) {
+            for (String name : names) {
+                if (!queryNames.contains(name)) {
                     String typeName = getSchema().getName().getLocalPart();
                     if (policy.getResponse() == Response.CHALLENGE) {
                         throw SecureCatalogImpl.unauthorizedAccess(typeName);
                     } else {
                         throw new UnsupportedOperationException(
-                                "Trying to write on the write protected attribute " + names[i]);
+                                "Trying to write on the write protected attribute " + name);
                     }
                 }
             }

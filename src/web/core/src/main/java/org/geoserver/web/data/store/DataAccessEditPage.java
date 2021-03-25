@@ -83,6 +83,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
         initUI(store);
     }
 
+    @Override
     protected void initUI(final DataStoreInfo dataStoreInfo) {
         // the confirm dialog
         dialog = new GeoServerDialog("dialog");
@@ -107,6 +108,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
      *
      * @see AbstractDataAccessPage#onSaveDataStore(Form)
      */
+    @Override
     protected final void onSaveDataStore(
             final DataStoreInfo info, final AjaxRequestTarget requestTarget, boolean doReturn) {
 
@@ -132,10 +134,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
                 if (doReturn) {
                     doReturn(StorePage.class);
                 }
-            } catch (IOException e) {
-                LOGGER.log(Level.WARNING, "Error obtaining datastore with the modified values", e);
-                confirmSaveOnConnectionFailure(info, requestTarget, e);
-            } catch (RuntimeException e) {
+            } catch (IOException | RuntimeException e) {
                 LOGGER.log(Level.WARNING, "Error obtaining datastore with the modified values", e);
                 confirmSaveOnConnectionFailure(info, requestTarget, e);
             }

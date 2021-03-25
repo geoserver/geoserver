@@ -5,7 +5,7 @@
  */
 package org.geoserver.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -18,10 +18,10 @@ public class PartialBufferOutputStream2Test {
     @Test
     public void testFlushOnClose() throws IOException {
         MockHttpServletResponse mockResponse = new MockHttpServletResponse();
-        PartialBufferedOutputStream2 pbos = new PartialBufferedOutputStream2(mockResponse);
-        PrintStream ps = new PrintStream(pbos);
-        ps.print("Hello world!");
-        ps.close();
+        try (PartialBufferedOutputStream2 pbos = new PartialBufferedOutputStream2(mockResponse);
+                PrintStream ps = new PrintStream(pbos)) {
+            ps.print("Hello world!");
+        }
 
         // check the in memory buffer has been flushed to the target output stream
         // close

@@ -15,12 +15,13 @@ import java.util.Set;
  */
 public class BasicImportFilter implements ImportFilter {
 
-    Set<ImportTask> set = new HashSet<ImportTask>();
+    Set<ImportTask> set = new HashSet<>();
 
     public void add(ImportTask task) {
         set.add(task);
     }
 
+    @Override
     public boolean include(ImportTask task) {
         return set.contains(task);
     }

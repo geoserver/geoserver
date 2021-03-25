@@ -5,7 +5,9 @@
  */
 package org.geoserver.security.password;
 
-import static org.geoserver.security.SecurityUtils.*;
+import static org.geoserver.security.SecurityUtils.scramble;
+import static org.geoserver.security.SecurityUtils.toBytes;
+import static org.geoserver.security.SecurityUtils.toChars;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -164,6 +166,7 @@ public class GeoServerPBEPasswordEncoder extends AbstractGeoserverPasswordEncode
         return PasswordEncodingType.ENCRYPT;
     }
 
+    @Override
     public String decode(String encPass) throws UnsupportedOperationException {
         if (stringEncrypter == null) {
             // not initialized

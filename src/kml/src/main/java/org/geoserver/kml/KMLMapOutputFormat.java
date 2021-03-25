@@ -41,7 +41,7 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
 
     private Set<String> OUTPUT_FORMATS =
             Collections.unmodifiableSet(
-                    new HashSet<String>(
+                    new HashSet<>(
                             Arrays.asList(
                                     MIME_TYPE, /* NL_KML_MIME_TYPE, */
                                     "application/vnd.google-earth.kml",
@@ -57,6 +57,7 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
     }
 
     /** @see org.geoserver.wms.GetMapOutputFormat#getOutputFormatNames() */
+    @Override
     public Set<String> getOutputFormatNames() {
         return OUTPUT_FORMATS;
     }
@@ -65,6 +66,7 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
      * @return {@code "application/vnd.google-earth.kml+xml"}
      * @see org.geoserver.wms.GetMapOutputFormat#getMimeType()
      */
+    @Override
     public String getMimeType() {
         return MIME_TYPE;
     }
@@ -76,6 +78,7 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
      *     be used when producing the map.
      * @see GetMapOutputFormat#produceMap(WMSMapContent)
      */
+    @Override
     public KMLMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
         // initialize the kml encoding context
         KmlEncodingContext context = new KmlEncodingContext(mapContent, wms, false);
@@ -89,6 +92,7 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
         return map;
     }
 
+    @Override
     public MapProducerCapabilities getCapabilities(String format) {
         return KML_CAPABILITIES;
     }

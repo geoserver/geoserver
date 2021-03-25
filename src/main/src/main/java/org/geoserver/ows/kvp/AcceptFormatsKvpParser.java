@@ -6,7 +6,6 @@
 package org.geoserver.ows.kvp;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.geoserver.ows.KvpParser;
@@ -22,17 +21,21 @@ import org.geotools.xsd.EMFUtils;
  */
 public abstract class AcceptFormatsKvpParser extends KvpParser {
 
-    public AcceptFormatsKvpParser(Class clazz) {
+    public AcceptFormatsKvpParser(Class<?> clazz) {
         super("acceptFormats", clazz);
     }
 
+    @Override
     public Object parse(String value) throws Exception {
-        List values = KvpUtils.readFlat(value);
+        List<String> values = KvpUtils.readFlat(value);
 
         EObject acceptFormats = createObject();
 
-        for (Iterator v = values.iterator(); v.hasNext(); ) {
-            ((Collection) EMFUtils.get(acceptFormats, "outputFormat")).add(v.next());
+        for (String v : values) {
+            @SuppressWarnings("unchecked")
+            Collection<String> of =
+                    (Collection<String>) EMFUtils.get(acceptFormats, "outputFormat");
+            of.add(v);
         }
 
         return acceptFormats;

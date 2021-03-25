@@ -28,12 +28,9 @@ import org.geotools.ows.wms.Layer;
 @SuppressWarnings("serial")
 public class WMSLayerProvider extends GeoServerDataProvider<LayerResource> {
 
-    public static final Property<LayerResource> STATUS =
-            new BeanProperty<LayerResource>("status", "status");
-    public static final Property<LayerResource> NAME =
-            new BeanProperty<LayerResource>("name", "localName");
-    public static final Property<LayerResource> ACTION =
-            new PropertyPlaceholder<LayerResource>("action");
+    public static final Property<LayerResource> STATUS = new BeanProperty<>("status", "status");
+    public static final Property<LayerResource> NAME = new BeanProperty<>("name", "localName");
+    public static final Property<LayerResource> ACTION = new PropertyPlaceholder<>("action");
 
     public static final List<Property<LayerResource>> PROPERTIES =
             Arrays.asList(NAME, ACTION, STATUS);
@@ -45,14 +42,13 @@ public class WMSLayerProvider extends GeoServerDataProvider<LayerResource> {
     protected List<LayerResource> getItems() {
         if (items == null) {
             // return an empty list in case we still don't know about the store
-            if (storeId == null) return new ArrayList<LayerResource>();
+            if (storeId == null) return new ArrayList<>();
 
             // else, grab the resource list
             try {
-                List<LayerResource> result;
                 StoreInfo store = getCatalog().getStore(storeId, StoreInfo.class);
 
-                Map<String, LayerResource> resources = new HashMap<String, LayerResource>();
+                Map<String, LayerResource> resources = new HashMap<>();
                 WMSStoreInfo wmsInfo = (WMSStoreInfo) store;
 
                 CatalogBuilder builder = new CatalogBuilder(getCatalog());
@@ -76,7 +72,7 @@ public class WMSLayerProvider extends GeoServerDataProvider<LayerResource> {
                     LayerResource resource = resources.get(type.getNativeName());
                     if (resource != null) resource.setStatus(LayerStatus.PUBLISHED);
                 }
-                result = new ArrayList<LayerResource>(resources.values());
+                List<LayerResource> result = new ArrayList<>(resources.values());
 
                 // return by natural order
                 Collections.sort(result);

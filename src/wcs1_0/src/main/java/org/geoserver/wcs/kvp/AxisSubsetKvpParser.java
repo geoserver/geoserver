@@ -27,6 +27,8 @@ public class AxisSubsetKvpParser extends KvpParser {
         setService("wcs");
     }
 
+    @Override
+    @SuppressWarnings("unchecked") // due to EMF model having no generics
     public Object parse(String value) throws Exception {
         final AxisSubsetType axisSubset = Wcs10Factory.eINSTANCE.createAxisSubsetType();
 
@@ -59,7 +61,7 @@ public class AxisSubsetKvpParser extends KvpParser {
         } else {
             List<String> unparsed = KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER);
 
-            if (unparsed.size() == 0) {
+            if (unparsed.isEmpty()) {
                 throw new WcsException(
                         "Requested axis subset contains wrong number of values (should have at least 1): "
                                 + unparsed.size(),

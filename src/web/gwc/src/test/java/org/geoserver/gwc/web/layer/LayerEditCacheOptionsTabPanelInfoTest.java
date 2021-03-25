@@ -5,7 +5,8 @@
  */
 package org.geoserver.gwc.web.layer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,8 +57,8 @@ public class LayerEditCacheOptionsTabPanelInfoTest {
         when(layer.getResource()).thenReturn(resource);
         MetadataMap mdm = new MetadataMap();
         when(layer.getMetadata()).thenReturn(mdm);
-        resourceModel = new Model<ResourceInfo>(resource);
-        layerModel = new Model<LayerInfo>(layer);
+        resourceModel = new Model<>(resource);
+        layerModel = new Model<>(layer);
     }
 
     @After
@@ -69,8 +70,7 @@ public class LayerEditCacheOptionsTabPanelInfoTest {
     public void testCreateOwnModelNew() {
         final boolean isNew = true;
 
-        IModel<GeoServerTileLayerInfo> ownModel;
-        ownModel = panelInfo.createOwnModel(layerModel, isNew);
+        IModel<GeoServerTileLayerInfo> ownModel = panelInfo.createOwnModel(layerModel, isNew);
         assertNotNull(ownModel);
         GeoServerTileLayerInfoImpl expected = TileLayerInfoUtil.loadOrCreate(layer, defaults);
         assertEquals(expected, ownModel.getObject());
@@ -81,8 +81,7 @@ public class LayerEditCacheOptionsTabPanelInfoTest {
 
         final boolean isNew = false;
 
-        IModel<GeoServerTileLayerInfo> ownModel;
-        ownModel = panelInfo.createOwnModel(layerModel, isNew);
+        IModel<GeoServerTileLayerInfo> ownModel = panelInfo.createOwnModel(layerModel, isNew);
         assertNotNull(ownModel);
         GeoServerTileLayerInfo expected = TileLayerInfoUtil.loadOrCreate(layer, defaults);
         assertEquals(expected, ownModel.getObject());
@@ -90,6 +89,28 @@ public class LayerEditCacheOptionsTabPanelInfoTest {
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
         expected = new GeoServerTileLayerInfoImpl();
         expected.setEnabled(true);
+        when(tileLayer.getInfo()).thenReturn(expected);
+        when(gwc.getTileLayer(same(layer))).thenReturn(tileLayer);
+
+        ownModel = panelInfo.createOwnModel(layerModel, isNew);
+        assertEquals(expected, ownModel.getObject());
+    }
+
+    @Test
+    public void testCreateOwnModelExistingWithEnabledFalse() {
+
+        // test that if a layer is existing and has enable caching set to false
+        // enable value is not replaced with true
+        final boolean isNew = false;
+
+        IModel<GeoServerTileLayerInfo> ownModel = panelInfo.createOwnModel(layerModel, isNew);
+        assertNotNull(ownModel);
+        GeoServerTileLayerInfo expected = TileLayerInfoUtil.loadOrCreate(layer, defaults);
+        assertEquals(expected, ownModel.getObject());
+
+        GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
+        expected = new GeoServerTileLayerInfoImpl();
+        expected.setEnabled(false);
         when(tileLayer.getInfo()).thenReturn(expected);
         when(gwc.getTileLayer(same(layer))).thenReturn(tileLayer);
 

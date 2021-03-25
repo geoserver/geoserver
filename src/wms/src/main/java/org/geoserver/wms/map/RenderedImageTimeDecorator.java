@@ -4,8 +4,12 @@
  */
 package org.geoserver.wms.map;
 
-import java.awt.*;
-import java.awt.image.*;
+import java.awt.Rectangle;
+import java.awt.image.ColorModel;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
+import java.awt.image.WritableRaster;
 import java.util.Vector;
 import org.geotools.map.Layer;
 
@@ -14,6 +18,7 @@ import org.geotools.map.Layer;
  * rendering times of a raster render operation updating the rendering time whenever data is
  * computed
  */
+@SuppressWarnings("PMD.ReplaceVectorWithList")
 public class RenderedImageTimeDecorator implements RenderedImage {
 
     private RenderedImage delegate;

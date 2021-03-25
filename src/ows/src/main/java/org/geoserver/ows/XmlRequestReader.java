@@ -97,6 +97,7 @@ public abstract class XmlRequestReader {
     /**
      * Two XmlReaders considered equal if namespace,element, and version properties are the same.
      */
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof XmlRequestReader)) {
             return false;
@@ -117,6 +118,7 @@ public abstract class XmlRequestReader {
     }
 
     /** Implementation of hashcode. */
+    @Override
     public int hashCode() {
         return new HashCodeBuilder().append(element).append(version).append(serviceId).toHashCode();
     }

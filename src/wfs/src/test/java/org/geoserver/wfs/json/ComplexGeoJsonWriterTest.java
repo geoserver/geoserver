@@ -128,7 +128,7 @@ public class ComplexGeoJsonWriterTest {
                                 return null;
                             }
                         };
-                ArrayList<Property> list = new ArrayList<Property>();
+                ArrayList<Property> list = new ArrayList<>();
                 list.add(prop);
                 return list;
             }

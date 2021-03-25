@@ -5,7 +5,8 @@
  */
 package org.geoserver.security.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.security.GeoServerSecurityManager;
@@ -43,7 +44,7 @@ public class SecuritySettingsPageTest extends AbstractSecurityWicketTestSupport 
         form.submit("save");
         tester.assertNoErrorMessage();
 
-        assertEquals(false, manager.getSecurityConfig().isEncryptingUrlParams());
+        assertFalse(manager.getSecurityConfig().isEncryptingUrlParams());
         assertEquals(
                 getPlainTextPasswordEncoder().getName(),
                 manager.getSecurityConfig().getConfigPasswordEncrypterName());

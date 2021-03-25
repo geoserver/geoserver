@@ -5,7 +5,8 @@
  */
 package org.geoserver.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,9 +40,9 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
         tester.startPage(GeoServerHomePage.class);
 
         GeoServerApplication geoServerApplication = getGeoServerApplication();
-        List<GeoServerHomePageContentProvider> providers;
-        providers = geoServerApplication.getBeansOfType(GeoServerHomePageContentProvider.class);
-        assertTrue(providers.size() > 0);
+        List<GeoServerHomePageContentProvider> providers =
+                geoServerApplication.getBeansOfType(GeoServerHomePageContentProvider.class);
+        assertFalse(providers.isEmpty());
         tester.assertListView("contributedContent", providers);
     }
 
@@ -61,6 +62,7 @@ public class GeoServerHomePageTest extends GeoServerWicketTestSupport {
     }
 
     public static class MockHomePageContentProvider implements GeoServerHomePageContentProvider {
+        @Override
         public Component getPageBodyComponent(final String id) {
             return new Label(id, "MockHomePageContentProvider");
         }

@@ -23,6 +23,7 @@ public class AcceptVersionsKvpParser extends org.geoserver.ows.kvp.AcceptVersion
         setVersion(WFSInfo.Version.V_11.getVersion());
     }
 
+    @Override
     protected EObject createObject() {
         return Ows10Factory.eINSTANCE.createAcceptVersionsType();
     }

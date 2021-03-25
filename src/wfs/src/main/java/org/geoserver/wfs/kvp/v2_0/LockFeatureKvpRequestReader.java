@@ -31,7 +31,9 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         super(LockFeatureType.class, Wfs20Factory.eINSTANCE, geoServer, filterFactory);
     }
 
-    protected void querySet(EObject request, String property, List values) throws WFSException {
+    @Override
+    protected <T> void querySet(EObject request, String property, List<T> values)
+            throws WFSException {
         // no values specified, do nothing
         if (values == null) {
             return;
@@ -44,7 +46,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
             property = "typeNames";
         }
 
-        List query = req.getAdaptedQueries();
+        List<EObject> query = req.getAdaptedQueries();
 
         int m = values.size();
         int n = query.size();
@@ -66,7 +68,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
                 }
             } else if (n == 1) {
                 // clone single object up to
-                EObject q = (EObject) query.get(0);
+                EObject q = query.get(0);
 
                 for (int i = 1; i < m; i++) {
                     query.add(EMFUtils.clone(q, req.getFactory(), false));
@@ -81,7 +83,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         }
         if (m < n) {
             // fill the rest with nulls
-            List newValues = new ArrayList<>();
+            List<T> newValues = new ArrayList<>();
             newValues.addAll(values);
             for (int i = 0; i < n - m; i++) {
                 newValues.add(null);
@@ -92,7 +94,9 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         EMFUtils.set(query, property, values);
     }
 
-    protected void buildStoredQueries(EObject request, List<URI> storedQueryIds, Map kvp) {
+    @Override
+    protected void buildStoredQueries(
+            EObject request, List<URI> storedQueryIds, Map<String, Object> kvp) {
         LockFeatureRequest req = LockFeatureRequest.adapt(request);
 
         if (!(req instanceof LockFeatureRequest.WFS20)) {
@@ -139,6 +143,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
         }
     }
 
+    @Override
     protected List<Query> getQueries(EObject eObject) {
         return LockFeatureRequest.adapt(eObject).getQueries();
     }

@@ -25,6 +25,8 @@ public class Wcs10GetCapabilitiesRequestReader extends EMFKvpRequestReader {
         super(GetCapabilitiesType.class, Wcs10Factory.eINSTANCE);
     }
 
+    @Override
+    @SuppressWarnings("unchecked") // putting data back into kvp... should be generified
     public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
         request = super.read(request, kvp, rawKvp);
 
@@ -41,8 +43,9 @@ public class Wcs10GetCapabilitiesRequestReader extends EMFKvpRequestReader {
         if (rawKvp.containsKey("acceptVersions")) {
             String value = (String) rawKvp.get("acceptVersions");
             EObject acceptVersions = Ows10Factory.eINSTANCE.createAcceptVersionsType();
-            ((Collection) EMFUtils.get(acceptVersions, "version"))
-                    .addAll(KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER));
+            @SuppressWarnings("unchecked")
+            Collection<String> versions = (Collection) EMFUtils.get(acceptVersions, "version");
+            versions.addAll(KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER));
             kvp.put("acceptVersions", acceptVersions);
         }
         // make sure we get the right Sections-Type param -> workaround for GEOS-6807
@@ -50,8 +53,9 @@ public class Wcs10GetCapabilitiesRequestReader extends EMFKvpRequestReader {
             String value = (String) rawKvp.get("sections");
             LOGGER.info("Sections: " + value);
             EObject sections = Ows10Factory.eINSTANCE.createSectionsType();
-            ((Collection) EMFUtils.get(sections, "section"))
-                    .addAll(KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER));
+            @SuppressWarnings("unchecked")
+            Collection<String> sectionCollection = (Collection) EMFUtils.get(sections, "section");
+            sectionCollection.addAll(KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER));
             kvp.put("sections", sections);
         }
 

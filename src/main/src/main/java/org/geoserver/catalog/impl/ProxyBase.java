@@ -22,6 +22,7 @@ public class ProxyBase implements InvocationHandler {
     /** "dirty" properties */
     private volatile HashMap<String, Object> properties;
 
+    @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
         // getter?
@@ -79,7 +80,7 @@ public class ProxyBase implements InvocationHandler {
                 return properties;
             }
 
-            properties = new HashMap<String, Object>();
+            properties = new HashMap<>();
         }
 
         return properties;

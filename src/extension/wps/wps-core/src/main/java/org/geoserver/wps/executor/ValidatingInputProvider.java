@@ -35,6 +35,7 @@ public class ValidatingInputProvider implements InputProvider {
         this.validators = validators;
     }
 
+    @Override
     public Object getValue(ProgressListener subListener) throws Exception {
         Object value = delegate.getValue(subListener);
         Errors errors = new BeanPropertyBindingResult(value, getInputId());
@@ -51,14 +52,17 @@ public class ValidatingInputProvider implements InputProvider {
         return value;
     }
 
+    @Override
     public String getInputId() {
         return delegate.getInputId();
     }
 
+    @Override
     public boolean resolved() {
         return delegate.resolved();
     }
 
+    @Override
     public int longStepCount() {
         return delegate.longStepCount();
     }

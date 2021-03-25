@@ -5,12 +5,14 @@
  */
 package org.geoserver.wms.featureinfo;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.logging.Level;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSTestSupport;
@@ -28,19 +30,16 @@ public class FeatureTemplateTest extends WMSTestSupport {
 
         SimpleFeatureSource source = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
         SimpleFeatureCollection fc = source.getFeatures();
-        SimpleFeatureIterator i = fc.features();
-        try {
-            SimpleFeature f = (SimpleFeature) i.next();
+        try (SimpleFeatureIterator i = fc.features()) {
+            SimpleFeature f = i.next();
 
             FeatureTemplate template = new FeatureTemplate();
             try {
                 template.description(f);
             } catch (Exception e) {
-                e.printStackTrace();
-                fail("template threw exception on null value");
+                LOGGER.log(Level.WARNING, "", e);
+                fail("template threw exception on null value. " + e.getMessage());
             }
-        } finally {
-            i.close();
         }
     }
 
@@ -48,19 +47,16 @@ public class FeatureTemplateTest extends WMSTestSupport {
     public void testRawValue() throws Exception {
         SimpleFeatureSource source = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
         SimpleFeatureCollection fc = source.getFeatures();
-        SimpleFeatureIterator i = fc.features();
-        try {
-            SimpleFeature f = (SimpleFeature) i.next();
+        try (SimpleFeatureIterator i = fc.features()) {
+            SimpleFeature f = i.next();
 
             FeatureTemplate template = new FeatureTemplate();
             try {
                 template.template(f, "rawValues.ftl", FeatureTemplateTest.class);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
                 throw (e);
             }
-        } finally {
-            i.close();
         }
     }
 
@@ -69,9 +65,8 @@ public class FeatureTemplateTest extends WMSTestSupport {
 
         SimpleFeatureSource source = getFeatureSource(MockData.BASIC_POLYGONS);
         SimpleFeatureCollection fc = source.getFeatures();
-        SimpleFeatureIterator i = fc.features();
-        try {
-            SimpleFeature f = (SimpleFeature) i.next();
+        try (SimpleFeatureIterator i = fc.features()) {
+            SimpleFeature f = i.next();
 
             FeatureTemplate template = new FeatureTemplate();
             template.description(f);
@@ -81,12 +76,9 @@ public class FeatureTemplateTest extends WMSTestSupport {
             try {
                 template.description(f);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.WARNING, "", e);
                 fail("template threw exception on null value");
             }
-
-        } finally {
-            i.close();
         }
     }
 
@@ -94,16 +86,13 @@ public class FeatureTemplateTest extends WMSTestSupport {
     public void testAlternateLookup() throws Exception {
         SimpleFeatureSource source = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
         SimpleFeatureCollection fc = source.getFeatures();
-        SimpleFeatureIterator features = fc.features();
-        try {
+        try (SimpleFeatureIterator features = fc.features()) {
             SimpleFeature f = features.next();
 
             FeatureTemplate template = new FeatureTemplate();
             String result = template.template(f, "dummy.ftl", Dummy.class);
 
             assertEquals("dummy", result);
-        } finally {
-            features.close();
         }
     }
 

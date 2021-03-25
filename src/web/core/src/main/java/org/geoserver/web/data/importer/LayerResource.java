@@ -91,6 +91,7 @@ public class LayerResource implements Comparable<LayerResource>, Serializable {
         return true;
     }
 
+    @Override
     public int compareTo(LayerResource o) {
         // unpublished resources first
         if (status.compareTo(o.status) != 0) {

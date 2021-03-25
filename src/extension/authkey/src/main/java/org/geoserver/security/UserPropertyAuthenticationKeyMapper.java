@@ -32,6 +32,7 @@ public class UserPropertyAuthenticationKeyMapper extends AbstractAuthenticationK
         }
     }
 
+    @Override
     public boolean supportsReadOnlyUserGroupService() {
         return false;
     }

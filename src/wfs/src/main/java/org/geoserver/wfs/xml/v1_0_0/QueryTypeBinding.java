@@ -7,7 +7,6 @@ package org.geoserver.wfs.xml.v1_0_0;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.xml.namespace.QName;
 import net.opengis.wfs.QueryType;
@@ -109,6 +108,7 @@ public class QueryTypeBinding extends AbstractComplexBinding {
     }
 
     /** @generated */
+    @Override
     public QName getTarget() {
         return WFS.QUERYTYPE;
     }
@@ -120,10 +120,12 @@ public class QueryTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
-    public Class getType() {
+    @Override
+    public Class<QueryType> getType() {
         return QueryType.class;
     }
 
+    @Override
     public void initializeChildContext(
             ElementInstance childInstance, Node node, MutablePicoContainer context) {
         // if an srsName is set for this geometry, put it in the context for
@@ -147,23 +149,24 @@ public class QueryTypeBinding extends AbstractComplexBinding {
      *
      * @generated modifiable
      */
+    @Override
+    @SuppressWarnings("unchecked") // EMF model not having generics
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
         QueryType queryType = wfsfactory.createQueryType();
 
         // <xsd:element maxOccurs="unbounded" minOccurs="0" ref="ogc:PropertyName">
         // JD:difference in spec here, moved from ogc:PropertyName to string
-        List propertyNames = node.getChildValues(PropertyName.class);
+        List<PropertyName> propertyNames = node.getChildValues(PropertyName.class);
 
-        for (Iterator p = propertyNames.iterator(); p.hasNext(); ) {
-            PropertyName propertyName = (PropertyName) p.next();
+        for (PropertyName propertyName : propertyNames) {
             queryType.getPropertyName().add(propertyName.getPropertyName());
         }
 
         // <xsd:element maxOccurs="1" minOccurs="0" ref="ogc:Filter">
-        Filter filter = (Filter) node.getChildValue(Filter.class);
+        Filter filter = node.getChildValue(Filter.class);
 
         if (filter == null) {
-            filter = (Filter) Filter.INCLUDE;
+            filter = Filter.INCLUDE;
         }
 
         queryType.setFilter(filter);
@@ -172,8 +175,9 @@ public class QueryTypeBinding extends AbstractComplexBinding {
         queryType.setHandle((String) node.getAttributeValue("handle"));
 
         // <xsd:attribute name="typeName" type="xsd:QName" use="required"/>
-        List typeNameList = new ArrayList();
-        typeNameList.add(node.getAttributeValue("typeName"));
+        @SuppressWarnings("unchecked")
+        List<QName> typeNameList = new ArrayList();
+        typeNameList.add((QName) node.getAttributeValue("typeName"));
         queryType.setTypeName(typeNameList);
 
         // <xsd:attribute name="featureVersion" type="xsd:string" use="optional">

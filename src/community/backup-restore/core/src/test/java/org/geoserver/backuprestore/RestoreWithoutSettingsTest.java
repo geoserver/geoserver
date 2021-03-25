@@ -18,6 +18,7 @@ public class RestoreWithoutSettingsTest extends BackupRestoreTestSupport {
 
     protected static Backup backupFacade;
 
+    @Override
     @Before
     public void beforeTest() throws InterruptedException {
         backupFacade = (Backup) applicationContext.getBean("backupFacade");
@@ -74,8 +75,8 @@ public class RestoreWithoutSettingsTest extends BackupRestoreTestSupport {
                     || restoreExecution.getStatus() == BatchStatus.UNKNOWN) {
 
                 for (Throwable exception : restoreExecution.getAllFailureExceptions()) {
-                    LOGGER.log(Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
-                    exception.printStackTrace();
+                    LOGGER.log(
+                            Level.WARNING, "ERROR: " + exception.getLocalizedMessage(), exception);
                 }
                 break;
             }

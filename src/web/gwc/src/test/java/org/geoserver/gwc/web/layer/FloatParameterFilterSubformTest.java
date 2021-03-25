@@ -4,9 +4,9 @@
  */
 package org.geoserver.gwc.web.layer;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -97,6 +97,7 @@ public class FloatParameterFilterSubformTest extends GeoServerWicketTestSupport 
                             /** serialVersionUID */
                             private static final long serialVersionUID = 1L;
 
+                            @Override
                             public Component buildComponent(final String id) {
                                 return new FloatParameterFilterSubform(id, model);
                             }

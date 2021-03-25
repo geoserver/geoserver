@@ -48,17 +48,17 @@ copyright = u'{}, Open Source Geospatial Foundation'.format(now.year)
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '2.18'
+version = '2.20'
 
 # The full version, including alpha/beta/rc tags.
-release = '2.18-SNAPSHOT'
+release = '2.20-SNAPSHOT'
 
 # Used in build and documentation links
 branch = 'master'
 
 # Users don't need to see the "SNAPSHOT" notation when it's there
 if release.find('SNAPSHOT') != -1:
-   release = '2.18.x'
+   release = '2.20.x'
    download_release = 'https://build.geoserver.org/geoserver/'+branch+'/geoserver-'+version+'.x-latest-%s.zip'
    download_extension = 'https://build.geoserver.org/geoserver/'+branch+'/ext-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
    download_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
@@ -113,6 +113,7 @@ extlinks = {
     'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-'),
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-'),
     'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s',''),
+    'geotools': ('https://docs.geotools.org/latest/userguide/%s',''),
     'download_release': (download_release,None),
     'download_extension': (download_extension,None),
     'download_community': (download_community,None)

@@ -45,8 +45,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
     static Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
 
-    protected Set<RoleLoadedListener> listeners =
-            Collections.synchronizedSet(new HashSet<RoleLoadedListener>());
+    protected Set<RoleLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     protected String adminRoleName, groupAdminRoleName;
 
@@ -119,6 +118,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
     }
 
     /** @see org.geoserver.security.jdbc.AbstractJDBCService#getOrderedNamesForCreate() */
+    @Override
     protected String[] getOrderedNamesForCreate() {
         return new String[] {
             "roles.create",
@@ -130,11 +130,13 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
         };
     }
     /** @see org.geoserver.security.jdbc.AbstractJDBCService#getOrderedNamesForDrop() */
+    @Override
     protected String[] getOrderedNamesForDrop() {
         return new String[] {"grouproles.drop", "userroles.drop", "roleprops.drop", "roles.drop"};
     }
 
     /** @see org.geoserver.security.GeoServerRoleService#getRoleByName(java.lang.String) */
+    @Override
     public GeoServerRole getRoleByName(String role) throws IOException {
 
         Connection con = null;
@@ -171,11 +173,12 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
     }
 
     /** @see org.geoserver.security.GeoServerRoleService#getRoles() */
+    @Override
     public SortedSet<GeoServerRole> getRoles() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<String, GeoServerRole> map = new HashMap<String, GeoServerRole>();
+        Map<String, GeoServerRole> map = new HashMap<>();
         try {
             con = getConnection();
             ps = getDMLStatement("roles.all", con);
@@ -206,17 +209,18 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
             closeFinally(con, ps, rs);
         }
 
-        SortedSet<GeoServerRole> roles = new TreeSet<GeoServerRole>();
+        SortedSet<GeoServerRole> roles = new TreeSet<>();
         roles.addAll(map.values());
         return Collections.unmodifiableSortedSet(roles);
     }
 
     /** @see org.geoserver.security.GeoServerRoleService#getParentMappings() */
+    @Override
     public Map<String, String> getParentMappings() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         try {
             con = getConnection();
             ps = getDMLStatement("roles.all", con);
@@ -235,16 +239,18 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
     }
 
     /** @see org.geoserver.security.GeoServerRoleService#createRoleObject(java.lang.String) */
+    @Override
     public GeoServerRole createRoleObject(String role) {
         return new GeoServerRole(role);
     }
 
     /** @see org.geoserver.security.GeoServerRoleService#getRolesForUser(java.lang.String) */
+    @Override
     public SortedSet<GeoServerRole> getRolesForUser(String username) throws IOException {
         Connection con = null;
         PreparedStatement ps = null, ps2 = null;
         ResultSet rs = null, rs2 = null;
-        Map<String, GeoServerRole> map = new HashMap<String, GeoServerRole>();
+        Map<String, GeoServerRole> map = new HashMap<>();
         try {
             con = getConnection();
             ps = getDMLStatement("userroles.rolesForUser", con);
@@ -279,17 +285,18 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
             closeFinally(con, ps, rs);
         }
 
-        TreeSet<GeoServerRole> roles = new TreeSet<GeoServerRole>();
+        TreeSet<GeoServerRole> roles = new TreeSet<>();
         roles.addAll(map.values());
         return Collections.unmodifiableSortedSet(roles);
     }
 
     /** @see org.geoserver.security.GeoServerRoleService#getRolesForGroup(java.lang.String) */
+    @Override
     public SortedSet<GeoServerRole> getRolesForGroup(String groupname) throws IOException {
         Connection con = null;
         PreparedStatement ps = null, ps2 = null;
         ResultSet rs = null, rs2 = null;
-        Map<String, GeoServerRole> map = new HashMap<String, GeoServerRole>();
+        Map<String, GeoServerRole> map = new HashMap<>();
         try {
             con = getConnection();
             ps = getDMLStatement("grouproles.rolesForGroup", con);
@@ -324,12 +331,13 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
             closeFinally(con, ps, rs);
         }
 
-        TreeSet<GeoServerRole> roles = new TreeSet<GeoServerRole>();
+        TreeSet<GeoServerRole> roles = new TreeSet<>();
         roles.addAll(map.values());
         return Collections.unmodifiableSortedSet(roles);
     }
 
     /** @see org.geoserver.security.GeoServerRoleService#load() */
+    @Override
     public void load() throws IOException {
         // do nothing
     }
@@ -338,6 +346,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
      * @see
      *     org.geoserver.security.GeoServerRoleService#getParentRole(org.geoserver.security.impl.GeoServerRole)
      */
+    @Override
     public GeoServerRole getParentRole(GeoServerRole role) throws IOException {
 
         Connection con = null;
@@ -378,6 +387,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
      * @see
      *     org.geoserver.security.GeoServerRoleService#registerRoleLoadedListener(RoleLoadedListener)
      */
+    @Override
     public void registerRoleLoadedListener(RoleLoadedListener listener) {
         listeners.add(listener);
     }
@@ -386,6 +396,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
      * @see
      *     org.geoserver.security.GeoServerRoleService#unregisterRoleLoadedListener(RoleLoadedListener)
      */
+    @Override
     public void unregisterRoleLoadedListener(RoleLoadedListener listener) {
         listeners.remove(listener);
     }
@@ -402,11 +413,12 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
      * @see
      *     org.geoserver.security.GeoServerRoleService#getGroupNamesForRole(org.geoserver.security.impl.GeoServerRole)
      */
+    @Override
     public SortedSet<String> getGroupNamesForRole(GeoServerRole role) throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        SortedSet<String> result = new TreeSet<String>();
+        SortedSet<String> result = new TreeSet<>();
         try {
             con = getConnection();
             ps = getDMLStatement("grouproles.groupsForRole", con);
@@ -429,11 +441,12 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
      * @see
      *     org.geoserver.security.GeoServerRoleService#getUserNamesForRole(org.geoserver.security.impl.GeoServerRole)
      */
+    @Override
     public SortedSet<String> getUserNamesForRole(GeoServerRole role) throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        SortedSet<String> result = new TreeSet<String>();
+        SortedSet<String> result = new TreeSet<>();
         try {
             con = getConnection();
             ps = getDMLStatement("userroles.usersForRole", con);
@@ -455,6 +468,7 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
     /* (non-Javadoc)
      * @see org.geoserver.security.GeoServerRoleService#getRoleCount()
      */
+    @Override
     public int getRoleCount() throws IOException {
         Connection con = null;
         PreparedStatement ps = null;
@@ -482,15 +496,15 @@ public class JDBCRoleService extends AbstractJDBCService implements GeoServerRol
      *     <p>Default implementation: if a user property name equals a role propertyname, take the
      *     value from to user property and use it for the role property.
      */
+    @Override
     public Properties personalizeRoleParams(
             String roleName, Properties roleParams, String userName, Properties userProps)
             throws IOException {
-        Properties props = null;
 
         // this is true if the set is modified --> common
         // property names exist
 
-        props = new Properties();
+        Properties props = new Properties();
         boolean personalized = false;
 
         for (Object key : roleParams.keySet()) {

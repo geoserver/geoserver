@@ -204,7 +204,7 @@ public class WMSMapContent extends MapContent {
 
     @Override
     public int addLayers(Collection<? extends Layer> layers) {
-        List<Layer> filtered = new ArrayList<Layer>(layers.size());
+        List<Layer> filtered = new ArrayList<>(layers.size());
         for (Layer layer : layers) {
             layer = fireLayerCallbacks(layer);
             if (layer != null) {
@@ -212,10 +212,10 @@ public class WMSMapContent extends MapContent {
             }
         }
 
-        if (filtered.size() > 0) {
-            return super.addLayers(filtered);
-        } else {
+        if (filtered.isEmpty()) {
             return 0;
+        } else {
+            return super.addLayers(filtered);
         }
     }
 
@@ -303,6 +303,7 @@ public class WMSMapContent extends MapContent {
             System.arraycopy(keywords, 0, copy, 0, keywords.length);
             return copy;
         } else if (obj instanceof Collection) {
+            @SuppressWarnings("unchecked")
             Collection<String> keywords = (Collection) obj;
             return keywords.toArray(new String[keywords.size()]);
         } else {
@@ -348,7 +349,7 @@ public class WMSMapContent extends MapContent {
     }
 
     public double getScaleDenominator(boolean considerDPI) {
-        java.util.Map hints = new HashMap();
+        Map<String, Object> hints = new HashMap<>();
         if (considerDPI) {
             // compute the DPI
             if (request.getFormatOptions().get("dpi") != null) {

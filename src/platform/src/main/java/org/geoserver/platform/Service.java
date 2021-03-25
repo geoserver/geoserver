@@ -98,6 +98,7 @@ public final class Service {
         this.customCapabilitiesLink = customCapabilitiesLink;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Service)) {
             return false;
@@ -122,10 +123,10 @@ public final class Service {
         return operations.equals(other.operations);
     }
 
+    @Override
     public int hashCode() {
-        int result = 0;
 
-        result = id.hashCode();
+        int result = id.hashCode();
 
         if (version != null) {
             result = (result * 17) + version.hashCode();
@@ -136,6 +137,7 @@ public final class Service {
         return result;
     }
 
+    @Override
     public String toString() {
         return "Service( " + id + ", " + version + " )";
     }

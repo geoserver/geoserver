@@ -8,7 +8,6 @@ package org.geoserver.wps;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.config.ConfigurationListenerAdapter;
@@ -61,6 +60,7 @@ public class WPSInitializer implements GeoServerInitializer {
         this.resourceLoader = resourceLoader;
     }
 
+    @Override
     public void initialize(final GeoServer geoServer) throws Exception {
         initWPS(geoServer.getService(WPSInfo.class), geoServer);
 
@@ -165,7 +165,7 @@ public class WPSInitializer implements GeoServerInitializer {
     }
 
     static void lookupNewProcessGroups(WPSInfo info, GeoServer geoServer) {
-        List<ProcessGroupInfo> newGroups = new ArrayList();
+        List<ProcessGroupInfo> newGroups = new ArrayList<>();
 
         for (ProcessGroupInfo available : lookupProcessGroups()) {
             boolean found = false;
@@ -189,30 +189,25 @@ public class WPSInitializer implements GeoServerInitializer {
     }
 
     static List<ProcessGroupInfo> lookupProcessGroups() {
-        List<ProcessGroupInfo> processFactories = new ArrayList<ProcessGroupInfo>();
+        List<ProcessGroupInfo> processFactories = new ArrayList<>();
 
         // here we build a full list of process factories infos, covering all available
         // factories: this makes sure the available factories are availablefrom both
         // GUI and REST configuration
 
         // get the full list of factories
-        List<ProcessFactory> factories =
-                new ArrayList<ProcessFactory>(Processors.getProcessFactories());
+        List<ProcessFactory> factories = new ArrayList<>(Processors.getProcessFactories());
 
         // ensure there is a stable order across invocations, JDK and so on
         Collections.sort(
                 factories,
-                new Comparator<ProcessFactory>() {
-
-                    @Override
-                    public int compare(ProcessFactory o1, ProcessFactory o2) {
-                        if (o1 == null) {
-                            return o2 == null ? 0 : -1;
-                        } else if (o2 == null) {
-                            return 1;
-                        } else {
-                            return o1.getClass().getName().compareTo(o2.getClass().getName());
-                        }
+                (o1, o2) -> {
+                    if (o1 == null) {
+                        return o2 == null ? 0 : -1;
+                    } else if (o2 == null) {
+                        return 1;
+                    } else {
+                        return o1.getClass().getName().compareTo(o2.getClass().getName());
                     }
                 });
 

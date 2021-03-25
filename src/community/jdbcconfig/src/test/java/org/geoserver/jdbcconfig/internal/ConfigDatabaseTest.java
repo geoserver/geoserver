@@ -16,23 +16,37 @@
  */
 package org.geoserver.jdbcconfig.internal;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 import org.easymock.Capture;
 import org.easymock.CaptureType;
 import org.easymock.IAnswer;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
 import org.geoserver.catalog.event.CatalogListener;
@@ -43,6 +57,9 @@ import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
+import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.catalog.impl.WMSLayerInfoImpl;
+import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.ConfigurationListener;
 import org.geoserver.config.GeoServer;
@@ -410,5 +427,44 @@ public class ConfigDatabaseTest {
 
         service = database.getAll(WMSInfo.class).iterator().next();
         assertNotNull(service.getGeoServer());
+    }
+
+    @Test
+    public void testWMSCascadingInfos() throws Exception {
+        WorkspaceInfo ws = addWorkspace();
+
+        WMSStoreInfoImpl wmsStore = new WMSStoreInfoImpl(database.getCatalog());
+        wmsStore.setCapabilitiesURL(
+                ConfigDatabaseTest.class.getResource("/capabilities.xml").toString());
+        wmsStore.setId("theWmsStore");
+        wmsStore.setName("fakeGeoServer");
+        wmsStore.setWorkspace(ws);
+        wmsStore.setUseConnectionPooling(false); // allows to hit the file system
+        database.add(wmsStore);
+
+        CatalogBuilder cb = new CatalogBuilder(database.getCatalog());
+        cb.setStore(wmsStore);
+        WMSLayerInfoImpl wmsLayer = (WMSLayerInfoImpl) cb.buildWMSLayer("states");
+        wmsLayer.reset();
+        wmsLayer.setId("theWmsLayer");
+        wmsLayer.setForcedRemoteStyle("population");
+        wmsLayer.setSelectedRemoteStyles(new ArrayList<>(Arrays.asList("pophatch", "polygon")));
+        database.add(wmsLayer);
+        LayerInfoImpl layer = (LayerInfoImpl) cb.buildLayer(wmsLayer);
+        layer.setId("theLayer");
+        // used to fail here, as the styles are generated on the fly
+        database.add(layer);
+
+        StyleInfo defaultStyle = layer.getDefaultStyle();
+        assertRemoteStyle(defaultStyle);
+
+        Set<StyleInfo> styles = layer.getStyles();
+        assertEquals(2, styles.size());
+        styles.forEach(this::assertRemoteStyle);
+    }
+
+    private void assertRemoteStyle(StyleInfo defaultStyle) {
+        assertNull(defaultStyle.getId());
+        assertEquals(true, defaultStyle.getMetadata().get(StyleInfoImpl.IS_REMOTE, Boolean.class));
     }
 }

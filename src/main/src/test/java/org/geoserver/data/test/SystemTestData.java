@@ -76,6 +76,10 @@ import org.geotools.util.logging.Logging;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressWarnings({
+    "PMD.JUnit4TestShouldUseBeforeAnnotation",
+    "PMD.JUnit4TestShouldUseAfterAnnotation"
+})
 public class SystemTestData extends CiteTestData {
 
     /** Multiband tiff */
@@ -86,32 +90,31 @@ public class SystemTestData extends CiteTestData {
     /** Keys for overriding default layer properties */
     public static class LayerProperty<T> {
 
+        @SuppressWarnings("unchecked")
         T get(Map<LayerProperty, Object> map, T def) {
             return map != null && map.containsKey(this) ? (T) map.get(this) : def;
         }
 
-        public static LayerProperty<String> NAME = new LayerProperty<String>();
-        public static LayerProperty<ProjectionPolicy> PROJECTION_POLICY =
-                new LayerProperty<ProjectionPolicy>();
-        public static LayerProperty<String> STYLE = new LayerProperty<String>();
-        public static LayerProperty<ReferencedEnvelope> ENVELOPE =
-                new LayerProperty<ReferencedEnvelope>();
-        public static LayerProperty<ReferencedEnvelope> LATLON_ENVELOPE =
-                new LayerProperty<ReferencedEnvelope>();
-        public static LayerProperty<Integer> SRS = new LayerProperty<Integer>();
-        public static LayerProperty<String> STORE = new LayerProperty<String>();
+        public static LayerProperty<String> NAME = new LayerProperty<>();
+        public static LayerProperty<ProjectionPolicy> PROJECTION_POLICY = new LayerProperty<>();
+        public static LayerProperty<String> STYLE = new LayerProperty<>();
+        public static LayerProperty<ReferencedEnvelope> ENVELOPE = new LayerProperty<>();
+        public static LayerProperty<ReferencedEnvelope> LATLON_ENVELOPE = new LayerProperty<>();
+        public static LayerProperty<Integer> SRS = new LayerProperty<>();
+        public static LayerProperty<String> STORE = new LayerProperty<>();
     }
 
     /** Keys for overriding default layer properties */
     public static class StyleProperty<T> {
 
+        @SuppressWarnings("unchecked")
         T get(Map<StyleProperty, Object> map, T def) {
             return map != null && map.containsKey(this) ? (T) map.get(this) : def;
         }
 
-        public static StyleProperty<String> FORMAT = new StyleProperty<String>();
-        public static StyleProperty<Version> FORMAT_VERSION = new StyleProperty<Version>();
-        public static StyleProperty<LegendInfo> LEGEND_INFO = new StyleProperty<LegendInfo>();
+        public static StyleProperty<String> FORMAT = new StyleProperty<>();
+        public static StyleProperty<Version> FORMAT_VERSION = new StyleProperty<>();
+        public static StyleProperty<LegendInfo> LEGEND_INFO = new StyleProperty<>();
     }
 
     /** data directory root */
@@ -218,7 +221,7 @@ public class SystemTestData extends CiteTestData {
      *
      * @see {@link #addVectorLayer(QName, Map, Class, Catalog)}
      */
-    public void setUpVectorLayer(QName qName, Map<LayerProperty, Object> props, Class scope)
+    public void setUpVectorLayer(QName qName, Map<LayerProperty, Object> props, Class<?> scope)
             throws IOException {
         addVectorLayer(qName, props, scope, catalog);
     }
@@ -232,7 +235,7 @@ public class SystemTestData extends CiteTestData {
      * @see {@link #addVectorLayer(QName, Map, String, Class, Catalog)}
      */
     public void setUpVectorLayer(
-            QName qName, Map<LayerProperty, Object> props, String filename, Class scope)
+            QName qName, Map<LayerProperty, Object> props, String filename, Class<?> scope)
             throws IOException {
         addVectorLayer(qName, props, filename, scope, catalog);
     }
@@ -277,7 +280,7 @@ public class SystemTestData extends CiteTestData {
             String filename,
             String extension,
             Map<LayerProperty, Object> props,
-            Class scope)
+            Class<?> scope)
             throws IOException {
         addRasterLayer(qName, filename, extension, props, scope, catalog);
     }
@@ -414,7 +417,7 @@ public class SystemTestData extends CiteTestData {
      * @param name The name of the style.
      * @param scope Class from which to load sld resource from.
      */
-    public void addStyle(String name, Class scope, Catalog catalog) throws IOException {
+    public void addStyle(String name, Class<?> scope, Catalog catalog) throws IOException {
         addStyle(name, name + ".sld", scope, catalog);
     }
 
@@ -428,9 +431,9 @@ public class SystemTestData extends CiteTestData {
      * @param filename The filename to copy from classpath.
      * @param scope Class from which to load sld resource from.
      */
-    public void addStyle(String name, String filename, Class scope, Catalog catalog)
+    public void addStyle(String name, String filename, Class<?> scope, Catalog catalog)
             throws IOException {
-        addStyle((WorkspaceInfo) null, name, filename, scope, catalog);
+        addStyle(null, name, filename, scope, catalog);
     }
 
     /**
@@ -446,9 +449,9 @@ public class SystemTestData extends CiteTestData {
      * @param scope Class from which to load sld resource from.
      */
     public void addStyle(
-            WorkspaceInfo ws, String name, String filename, Class scope, Catalog catalog)
+            WorkspaceInfo ws, String name, String filename, Class<?> scope, Catalog catalog)
             throws IOException {
-        addStyle(ws, name, filename, scope, catalog, (Map) null);
+        addStyle(ws, name, filename, scope, catalog, Collections.emptyMap());
     }
 
     /**
@@ -467,7 +470,7 @@ public class SystemTestData extends CiteTestData {
             WorkspaceInfo ws,
             String name,
             String filename,
-            Class scope,
+            Class<?> scope,
             Catalog catalog,
             LegendInfo legend)
             throws IOException {
@@ -497,7 +500,7 @@ public class SystemTestData extends CiteTestData {
             WorkspaceInfo ws,
             String name,
             String filename,
-            Class scope,
+            Class<?> scope,
             Catalog catalog,
             Map<StyleProperty, Object> properties)
             throws IOException {
@@ -531,7 +534,7 @@ public class SystemTestData extends CiteTestData {
      * properties.
      */
     public void addVectorLayer(QName qName, Catalog catalog) throws IOException {
-        addVectorLayer(qName, new HashMap(), catalog);
+        addVectorLayer(qName, new HashMap<>(), catalog);
     }
 
     /**
@@ -562,7 +565,7 @@ public class SystemTestData extends CiteTestData {
      * {@link LayerProperty} class for supported properties.
      */
     public void addVectorLayer(
-            QName qName, Map<LayerProperty, Object> props, Class scope, Catalog catalog)
+            QName qName, Map<LayerProperty, Object> props, Class<?> scope, Catalog catalog)
             throws IOException {
         addVectorLayer(qName, props, qName.getLocalPart() + ".properties", scope, catalog);
     }
@@ -587,7 +590,7 @@ public class SystemTestData extends CiteTestData {
             QName qName,
             Map<LayerProperty, Object> props,
             String filename,
-            Class scope,
+            Class<?> scope,
             Catalog catalog)
             throws IOException {
         String prefix = qName.getPrefix();
@@ -746,7 +749,7 @@ public class SystemTestData extends CiteTestData {
      */
     public void addRasterLayer(QName qName, String filename, String extension, Catalog catalog)
             throws IOException {
-        addRasterLayer(qName, filename, extension, new HashMap(), catalog);
+        addRasterLayer(qName, filename, extension, new HashMap<>(), catalog);
     }
 
     /**
@@ -797,7 +800,7 @@ public class SystemTestData extends CiteTestData {
             String filename,
             String extension,
             Map<LayerProperty, Object> props,
-            Class scope,
+            Class<?> scope,
             Catalog catalog)
             throws IOException {
 
@@ -987,6 +990,7 @@ public class SystemTestData extends CiteTestData {
         for (XStreamServiceLoader loader : loaders) {
             if (serviceClass.equals(loader.getServiceClass())) {
                 // create a new one
+                @SuppressWarnings("unchecked")
                 T created = (T) loader.create(geoServer);
 
                 // grab the old one, if it exists
@@ -1068,6 +1072,7 @@ public class SystemTestData extends CiteTestData {
     }
 
     @Override
+    @SuppressWarnings("PMD.SystemPrintln")
     public void tearDown() throws Exception {
         int MAX_ATTEMPTS = 100;
         for (int i = 1; i <= MAX_ATTEMPTS; i++) {
@@ -1095,9 +1100,7 @@ public class SystemTestData extends CiteTestData {
         try {
             FileUtils.deleteDirectory(data);
         } catch (IOException e) {
-            if (!data.exists()) {
-                // gone some other way? good...
-            } else {
+            if (data.exists()) {
                 String tree = printFileTree(data);
                 throw new IOException("Failed to delete tree:\n" + tree, e);
             }

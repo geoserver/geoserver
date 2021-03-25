@@ -51,7 +51,7 @@ public class ExecuteProcessResponse extends Response {
 
     ApplicationContext ctx;
 
-    public ExecuteProcessResponse(Class binding, String elementName, Class xmlConfiguration) {
+    public ExecuteProcessResponse(Class<?> binding, String elementName, Class<?> xmlConfiguration) {
         super(ExecuteResponseType.class);
         this.standardResponse =
                 new XmlObjectEncodingResponse(binding, elementName, xmlConfiguration);

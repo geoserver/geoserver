@@ -47,6 +47,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
 
     public static final String NAMESPACE_GFC = "http://www.isotc211.org/2005/gfc";
     public static final String NAMESPACE_GMX = "http://www.isotc211.org/2005/gmx";
+    public static final String NAMESPACE_GML = "http://www.opengis.net/gml/3.2";
 
     public static final String NAMESPACE_GCO = "http://www.isotc211.org/2005/gco";
     public static final String NAMESPACE_GMD = "http://www.isotc211.org/2005/gmd";
@@ -78,6 +79,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
         NAMESPACES.declarePrefix("gmx", NAMESPACE_GMX);
         NAMESPACES.declarePrefix("xlink", NAMESPACE_XLINK);
         NAMESPACES.declarePrefix("gfc", NAMESPACE_GFC);
+        NAMESPACES.declarePrefix("gml", NAMESPACE_GML);
 
         FeatureTypeFactory typeFactory = new FeatureTypeFactoryImpl();
 
@@ -334,6 +336,7 @@ public class MetaDataDescriptor extends AbstractRecordDescriptor {
         return QUERYABLE_MAPPING.get(name.getLocalPart());
     }
 
+    @Override
     public void verifySpatialFilters(Filter filter) {
         filter.accept(new SpatialFilterChecker(getFeatureType()), null);
     }

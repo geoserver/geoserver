@@ -4,10 +4,12 @@
  */
 package org.geoserver.wms.dynamic.legendgraphic;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 import org.geoserver.catalog.Catalog;
@@ -93,7 +95,7 @@ public class DynamicGetLegendGraphicsCallbackTest extends GeoServerSystemTestSup
         try {
             tx.transform(style, System.out);
         } catch (TransformerException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "", e);
         }
     }
 }

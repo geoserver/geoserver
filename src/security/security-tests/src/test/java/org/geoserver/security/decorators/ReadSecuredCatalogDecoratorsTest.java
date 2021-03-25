@@ -5,7 +5,11 @@
  */
 package org.geoserver.security.decorators;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.impl.AbstractAuthorizationTest;
@@ -38,7 +42,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
         assertEquals(SecuredFeatureSource.class, fs.getClass());
         assertTrue(fs.policy.isHide());
         SecuredDataStoreInfo store = (SecuredDataStoreInfo) ro.getStore();
-        assertTrue(((SecuredDataStoreInfo) store).policy.isHide());
+        assertTrue(store.policy.isHide());
     }
 
     @Test
@@ -53,7 +57,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
                 fail("Should have failed with a security exception");
         }
         SecuredDataStoreInfo store = (SecuredDataStoreInfo) ro.getStore();
-        assertTrue(((SecuredDataStoreInfo) store).policy.isMetadata());
+        assertTrue(store.policy.isMetadata());
     }
 
     @Test
@@ -63,7 +67,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
         SecuredFeatureStore fs = (SecuredFeatureStore) ro.getFeatureSource(null, null);
         assertTrue(fs.policy.isReadOnlyChallenge());
         SecuredDataStoreInfo store = (SecuredDataStoreInfo) ro.getStore();
-        assertTrue(((SecuredDataStoreInfo) store).policy.isReadOnlyChallenge());
+        assertTrue(store.policy.isReadOnlyChallenge());
     }
 
     @Test
@@ -78,7 +82,7 @@ public class ReadSecuredCatalogDecoratorsTest extends AbstractAuthorizationTest 
         SecuredDataStoreInfo ro =
                 new SecuredDataStoreInfo(statesStore, WrapperPolicy.metadata(null));
         try {
-            ReadOnlyDataStore dataStore = (ReadOnlyDataStore) ro.getDataStore(null);
+            ro.getDataStore(null);
             fail("This should have failed with a security exception");
         } catch (Exception e) {
             if (ReadOnlyDataStoreTest.isSpringSecurityException(e) == false)

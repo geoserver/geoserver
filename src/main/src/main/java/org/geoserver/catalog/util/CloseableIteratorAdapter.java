@@ -103,7 +103,7 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
         UnmodifiableIterator<T> filteredNotCloseable = Iterators.filter(iterator, predicate);
         @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         Closeable closeable = iterator instanceof Closeable ? (Closeable) iterator : null;
-        return new CloseableIteratorAdapter<T>(filteredNotCloseable, closeable);
+        return new CloseableIteratorAdapter<>(filteredNotCloseable, closeable);
     }
 
     public static <F, T> CloseableIterator<T> transform(
@@ -112,7 +112,7 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
         Iterator<T> transformedNotCloseable = Iterators.transform(iterator, function);
         @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         Closeable closeable = (Closeable) (iterator instanceof CloseableIterator ? iterator : null);
-        return new CloseableIteratorAdapter<T>(transformedNotCloseable, closeable);
+        return new CloseableIteratorAdapter<>(transformedNotCloseable, closeable);
     }
 
     public static <T> CloseableIterator<T> limit(final Iterator<T> iterator, int maxElements) {
@@ -120,7 +120,7 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
         Iterator<T> limitedNotCloseable = Iterators.limit(iterator, maxElements);
         @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         Closeable closeable = iterator instanceof Closeable ? (Closeable) iterator : null;
-        return new CloseableIteratorAdapter<T>(limitedNotCloseable, closeable);
+        return new CloseableIteratorAdapter<>(limitedNotCloseable, closeable);
     }
 
     public static void close(Iterator<?> iterator) {
@@ -135,18 +135,12 @@ public class CloseableIteratorAdapter<T> implements CloseableIterator<T> {
 
     public static <T> CloseableIterator<T> empty() {
         Iterator<T> empty = Collections.emptyIterator();
-        return new CloseableIteratorAdapter<T>(empty);
+        return new CloseableIteratorAdapter<>(empty);
     }
 
     private static <T> com.google.common.base.Predicate<T> filterAdapter(
             final Filter catalogPredicate) {
 
-        return new com.google.common.base.Predicate<T>() {
-
-            @Override
-            public boolean apply(T input) {
-                return catalogPredicate.evaluate(input);
-            }
-        };
+        return input -> catalogPredicate.evaluate(input);
     }
 }

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
+import java.util.Map;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
@@ -119,7 +120,7 @@ public class DescribeFeatureTest extends WFSTestSupport {
         NodeList nl = doc.getElementsByTagName("xsd:import");
         assertEquals(3, nl.getLength());
 
-        HashMap<String, HashMap<String, String>> imprts = new HashMap();
+        Map<String, Map<String, String>> imprts = new HashMap<>();
         for (int i = 0; i < nl.getLength(); i++) {
             Element imprt = (Element) nl.item(i);
             String namespace = imprt.getAttribute("namespace");
@@ -128,25 +129,24 @@ public class DescribeFeatureTest extends WFSTestSupport {
 
             schemaLocation = schemaLocation.substring(query + 1);
             String[] sp = schemaLocation.split("&");
-            HashMap params = new HashMap();
-            for (int j = 0; j < sp.length; j++) {
-                String[] sp1 = sp[j].split("=");
+            Map<String, String> params = new HashMap<>();
+            for (String s : sp) {
+                String[] sp1 = s.split("=");
                 params.put(sp1[0].toLowerCase(), sp1[1].toLowerCase());
             }
 
             imprts.put(namespace, params);
         }
 
-        String[] expected =
-                new String[] {CiteTestData.SF_URI, CiteTestData.CDF_URI, CiteTestData.CGF_URI};
+        String[] expected = {CiteTestData.SF_URI, CiteTestData.CDF_URI, CiteTestData.CGF_URI};
         for (String namespace : expected) {
             assertNotNull(imprts.get(namespace));
-            HashMap params = imprts.get(namespace);
+            Map<String, String> params = imprts.get(namespace);
             assertEquals("wfs", params.get("service"));
             assertEquals("1.0.0", params.get("version"));
             assertEquals("describefeaturetype", params.get("request"));
 
-            String types = (String) params.get("typename");
+            String types = params.get("typename");
             assertNotNull(types);
 
             Catalog cat = getCatalog();

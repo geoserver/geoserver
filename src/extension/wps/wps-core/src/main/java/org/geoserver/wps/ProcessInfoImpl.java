@@ -18,7 +18,7 @@ public class ProcessInfoImpl implements ProcessInfo {
 
     private Boolean enabled;
 
-    private List<String> roles = new ArrayList<String>();
+    private List<String> roles = new ArrayList<>();
 
     private Name name;
 
@@ -58,6 +58,7 @@ public class ProcessInfoImpl implements ProcessInfo {
         this.enabled = enabled;
     }
 
+    @Override
     public Multimap<String, WPSInputValidator> getValidators() {
         return validators;
     }

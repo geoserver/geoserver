@@ -23,7 +23,7 @@ import org.opengis.filter.FilterFactory;
  */
 public class RuleFiltersCollector extends AbstractStyleVisitor {
 
-    List<Filter> filters = new ArrayList<Filter>();
+    List<Filter> filters = new ArrayList<>();
 
     @Override
     public void visit(FeatureTypeStyle fts) {
@@ -43,7 +43,7 @@ public class RuleFiltersCollector extends AbstractStyleVisitor {
 
     /** Returns a filter that includes all the visited rules */
     Filter getSummaryFilter() {
-        if (filters.size() == 0) {
+        if (filters.isEmpty()) {
             return Filter.INCLUDE;
         } else if (filters.size() == 1) {
             return filters.get(0);

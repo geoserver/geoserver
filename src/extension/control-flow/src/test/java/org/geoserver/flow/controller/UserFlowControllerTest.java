@@ -5,14 +5,17 @@
  */
 package org.geoserver.flow.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import javax.servlet.http.Cookie;
 import org.geoserver.flow.controller.FlowControllerTestingThread.ThreadState;
 import org.geoserver.ows.Request;
+import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class UserFlowControllerTest extends AbstractFlowControllerTest {
+
+    @Test
     public void testConcurrentRequestsSingleUser() {
         // a cookie based flow controller that will allow just one request at a time
         UserConcurrentFlowController controller = new UserConcurrentFlowController(1);
@@ -23,8 +26,7 @@ public class UserFlowControllerTest extends AbstractFlowControllerTest {
         tSample.start();
         waitTerminated(tSample, MAX_WAIT);
 
-        Cookie cookie =
-                (Cookie) ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
+        Cookie cookie = ((MockHttpServletResponse) firstRequest.getHttpResponse()).getCookies()[0];
         String cookieValue = cookie.getValue();
 
         // make three testing threads that will "process" forever, and will use the cookie to
@@ -41,6 +43,7 @@ public class UserFlowControllerTest extends AbstractFlowControllerTest {
             // starting the next one
             t1.start();
             waitBlocked(t1, MAX_WAIT);
+
             t2.start();
             waitBlocked(t2, MAX_WAIT);
 

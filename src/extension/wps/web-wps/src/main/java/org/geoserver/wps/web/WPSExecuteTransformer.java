@@ -5,11 +5,14 @@
  */
 package org.geoserver.wps.web;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.xml.serializer.TreeWalker;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.NamespaceInfo;
@@ -27,7 +30,6 @@ import org.geotools.wps.WPS;
 import org.geotools.xlink.XLINK;
 import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
-import org.hsqldb.lib.StringInputStream;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 import org.xml.sax.ContentHandler;
@@ -90,6 +92,7 @@ class WPSExecuteTransformer extends TransformerBase {
             super(ch, null, null);
         }
 
+        @Override
         public void encode(Object o) throws IllegalArgumentException {
             ExecuteRequest request = (ExecuteRequest) o;
             encode(request, true);
@@ -391,8 +394,8 @@ class WPSExecuteTransformer extends TransformerBase {
                 if (!data.startsWith("<?xml")) {
                     data = "<?xml version=\"1.0\" encoding=\"UTF-16\"?>\n" + data;
                 }
-                return builder.parse(new StringInputStream(data));
-            } catch (Throwable t) {
+                return builder.parse(new ByteArrayInputStream(data.getBytes()));
+            } catch (IOException | ParserConfigurationException | SAXException t) {
                 LOGGER.log(Level.FINE, "Failed to parse XML, assuming it's plain text", t);
                 return null;
             }

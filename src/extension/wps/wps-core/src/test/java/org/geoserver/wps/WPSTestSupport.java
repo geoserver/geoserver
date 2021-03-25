@@ -15,7 +15,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -55,7 +54,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
     public static QName WORLD = new QName(WCS_URI, "World", WCS_PREFIX);
     public static String TIFF = "tiff";
 
-    List<GridCoverage> coverages = new ArrayList<GridCoverage>();
+    List<GridCoverage> coverages = new ArrayList<>();
 
     static {
         Processors.addProcessFactory(MonkeyProcess.getFactory());
@@ -85,7 +84,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         catalog = getCatalog();
 
         // init xmlunit
-        Map<String, String> namespaces = new HashMap<String, String>();
+        Map<String, String> namespaces = new HashMap<>();
         namespaces.put("wps", "http://www.opengis.net/wps/1.0.0");
         namespaces.put("ows", "http://www.opengis.net/ows/1.1");
         namespaces.put("gml", "http://www.opengis.net/gml");
@@ -132,9 +131,9 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         p.parse(new DOMSource(dom));
 
         if (!p.getValidationErrors().isEmpty()) {
-            for (Iterator e = p.getValidationErrors().iterator(); e.hasNext(); ) {
-                SAXParseException ex = (SAXParseException) e.next();
-                System.out.println(
+            for (Exception exception : p.getValidationErrors()) {
+                SAXParseException ex = (SAXParseException) exception;
+                LOGGER.warning(
                         ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }
             fail("Document did not validate.");
@@ -142,15 +141,15 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
     }
 
     protected String readFileIntoString(String filename) throws IOException {
-        InputStream stream = getClass().getResourceAsStream(filename);
-        BufferedReader in = new BufferedReader(new InputStreamReader(stream));
-        StringBuffer sb = new StringBuffer();
-        String line = null;
-        while ((line = in.readLine()) != null) {
-            sb.append(line);
+        try (InputStream stream = getClass().getResourceAsStream(filename);
+                BufferedReader in = new BufferedReader(new InputStreamReader(stream))) {
+            StringBuffer sb = new StringBuffer();
+            String line = null;
+            while ((line = in.readLine()) != null) {
+                sb.append(line);
+            }
+            return sb.toString();
         }
-        in.close();
-        return sb.toString();
     }
 
     /** Adds the wcs 1.1 coverages. */
@@ -158,7 +157,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         String styleName = "raster";
         testData.addStyle(styleName, "raster.sld", MockData.class, getCatalog());
 
-        Map<LayerProperty, Object> props = new HashMap<SystemTestData.LayerProperty, Object>();
+        Map<LayerProperty, Object> props = new HashMap<>();
         props.put(LayerProperty.STYLE, styleName);
 
         // wcs 1.1
@@ -215,13 +214,9 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         return waitForProcessEnd(
                 statusLocation,
                 maxWaitSeconds,
-                new Callable<Void>() {
-
-                    @Override
-                    public Void call() throws Exception {
-                        Thread.sleep(100);
-                        return null;
-                    }
+                () -> {
+                    Thread.sleep(100);
+                    return null;
                 });
     }
 

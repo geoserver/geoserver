@@ -49,7 +49,9 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
     }
 
     @Override
-    public Object read(Object request, Map kvp, Map rawKvp) throws Exception {
+    @SuppressWarnings("unchecked") // EMF model without generics
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
+            throws Exception {
         ExecuteType execute = (ExecuteType) super.read(request, kvp, rawKvp);
         Wps10Factory factory = Wps10Factory.eINSTANCE;
 
@@ -123,6 +125,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
         return execute;
     }
 
+    @Override
     protected boolean filter(String kvp) {
         return "DataInputs".equalsIgnoreCase(kvp)
                 || "responseDocument".equalsIgnoreCase(kvp)
@@ -132,7 +135,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
     List<InputType> parseDataInputs(Map<String, Parameter<?>> inputParams, String inputString) {
         List<IOParam> params = parseIOParameters(inputString);
 
-        List<InputType> result = new ArrayList<InputType>();
+        List<InputType> result = new ArrayList<>();
         for (IOParam ioParam : params) {
             // common
             Wps10Factory factory = Wps10Factory.eINSTANCE;
@@ -165,7 +168,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
 
     /** Parses a list of a I/O parameters */
     List<IOParam> parseIOParameters(String inputString) {
-        List<IOParam> result = new ArrayList<IOParam>();
+        List<IOParam> result = new ArrayList<>();
 
         if (inputString == null || "".equals(inputString.trim())) {
             return Collections.emptyList();
@@ -178,7 +181,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
             // separate the id form the value/attribute
             int idx = input.indexOf("=");
             if (idx == -1) {
-                result.add(new IOParam(input, null, Collections.EMPTY_MAP));
+                result.add(new IOParam(input, null, Collections.emptyMap()));
             } else {
                 String inputId = input.substring(0, idx);
                 String[] valueAttributes = input.substring(idx + 1, input.length()).split("@");
@@ -194,7 +197,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
     }
 
     Map<String, String> parseAttributes(String[] attributes) {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
 
         // start from 1, 0 is the value
         for (int i = 1; i < attributes.length; i++) {
@@ -228,6 +231,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
         return ref;
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics
     private ComplexDataType parseComplex(InputType it, Wps10Factory factory, IOParam param) {
         ComplexDataType complex = factory.createComplexDataType();
         complex.getData().add(param.value);
@@ -249,8 +253,8 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
                     bbox.setCrs(
                             GML2EncodingUtils.epsgCode(envelope.getCoordinateReferenceSystem()));
                 }
-                List<Double> min = new ArrayList<Double>(envelope.getDimension());
-                List<Double> max = new ArrayList<Double>(envelope.getDimension());
+                List<Double> min = new ArrayList<>(envelope.getDimension());
+                List<Double> max = new ArrayList<>(envelope.getDimension());
                 for (int i = 0; i < envelope.getDimension(); i++) {
                     min.set(i, envelope.getMinimum(i));
                     max.set(i, envelope.getMaximum(i));
@@ -274,6 +278,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
         return literal;
     }
 
+    @SuppressWarnings("unchecked") // EMF model without generics
     ResponseFormType parseResponseDocument(
             Map<String, Parameter<?>> outputs, String responseDefinition) {
         Wps10Factory factory = Wps10Factory.eINSTANCE;
@@ -322,7 +327,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
 
         List<IOParam> ioParams = parseIOParameters(rawOutputs);
 
-        if (ioParams.size() == 0) {
+        if (ioParams.isEmpty()) {
             return response;
         }
         if (ioParams.size() > 1) {
@@ -335,6 +340,7 @@ public class ExecuteKvpRequestReader extends EMFKvpRequestReader
         return response;
     }
 
+    @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }

@@ -7,7 +7,7 @@
 .DEFAULT_GOAL := help
 .PHONY = help
 suite =
-war_url = "https://build.geoserver.org/geoserver/master/geoserver-master-latest-war.zip"
+war_url = "https://build.geoserver.org/geoserver/main/geoserver-main-latest-war.zip"
 
 
 help:

@@ -34,6 +34,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 
@@ -242,6 +243,9 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         geometriesOnTextSymbolizer.removeAll(geometriesOnLineSymbolizer);
         geometriesOnTextSymbolizer.removeAll(geometriesOnPointSymbolizer);
         for (Expression geom : geometriesOnTextSymbolizer) {
+            if (Function.class.isAssignableFrom(geom.getClass())) {
+                continue;
+            }
             Object result = geom.evaluate(schema);
             Class<?> geometryType = getTargetGeometryType(result);
             if (Polygon.class.isAssignableFrom(geometryType)

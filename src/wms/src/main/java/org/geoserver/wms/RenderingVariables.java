@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms;
 
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geotools.filter.function.EnvFunction;
@@ -37,6 +38,12 @@ public class RenderingVariables {
         EnvFunction.setLocalValue(WMS_SRS, mapContent.getRequest().getSRS());
         EnvFunction.setLocalValue(WMS_WIDTH, mapContent.getMapWidth());
         EnvFunction.setLocalValue(WMS_HEIGHT, mapContent.getMapHeight());
+        // add custom env variables
+        Map<String, Object> env = mapContent.getRequest().getEnv();
+        for (Map.Entry<String, Object> entry : env.entrySet()) {
+            EnvFunction.setLocalValue(entry.getKey(), entry.getValue());
+        }
+
         try {
             double scaleDenominator = mapContent.getScaleDenominator(true);
             EnvFunction.setLocalValue(WMS_SCALE_DENOMINATOR, scaleDenominator);

@@ -181,6 +181,8 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                         bbox,
                         decorationName,
                         time,
+                        null,
+                        null,
                         width,
                         height,
                         headerHeight,
@@ -282,6 +284,8 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             ReferencedEnvelope bbox,
             String decorationName,
             String time,
+            String animateParam,
+            String animateValue,
             int width,
             int height,
             Integer headerHeight,
@@ -300,6 +304,9 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         template.put("height", String.valueOf(height));
         if (time != null) {
             template.put("time", time);
+        }
+        if (animateParam != null && animateValue != null) {
+            template.put(animateParam, animateValue);
         }
         template.put(
                 "bbox",
@@ -349,6 +356,10 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                         request.getEnv().put("time", time);
                     }
                 }
+                if (animateParam != null && animateValue != null) {
+                    request.getEnv().put(animateParam, animateValue);
+                }
+
                 // render
                 GetMap mapBuilder = new GetMap(wms);
                 RenderedImageMap map = (RenderedImageMap) mapBuilder.run(request);

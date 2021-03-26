@@ -24,6 +24,8 @@ public class BaseDownloadImageProcessTest extends WPSTestSupport {
     protected static final String UNIT_SYMBOL = "ft";
     protected static QName GIANT_POLYGON =
             new QName(MockData.CITE_URI, "giantPolygon", MockData.CITE_PREFIX);
+    protected static QName GIANT_ANIMATED_POLYGON =
+            new QName(MockData.CITE_URI, "giantAnimatedPolygon", MockData.CITE_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -60,6 +62,21 @@ public class BaseDownloadImageProcessTest extends WPSTestSupport {
         testData.addVectorLayer(
                 GIANT_POLYGON,
                 Collections.emptyMap(),
+                "giantPolygon.properties",
+                SystemTestData.class,
+                getCatalog());
+
+        // add SLD and layer for variable animation
+        testData.addStyle(
+                "animate_variables",
+                "animate_variables.sld",
+                DownloadAnimationProcess.class,
+                catalog);
+        Map<SystemTestData.LayerProperty, Object> animationPropertyMap = new HashMap<>();
+        animationPropertyMap.put(SystemTestData.LayerProperty.STYLE, "animate_variables");
+        testData.addVectorLayer(
+                GIANT_ANIMATED_POLYGON,
+                animationPropertyMap,
                 "giantPolygon.properties",
                 SystemTestData.class,
                 getCatalog());

@@ -56,6 +56,7 @@ import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.process.ByteArrayRawData;
 import org.geoserver.wps.process.RawData;
 import org.geotools.data.util.DefaultProgressListener;
+import org.geotools.filter.function.EnvFunction;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.http.HTTPClient;
 import org.geotools.http.HTTPClientFinder;
@@ -189,6 +190,8 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                             bbox,
                             decorationName,
                             time,
+                            null,
+                            null,
                             width,
                             height,
                             headerHeight,
@@ -295,6 +298,8 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             ReferencedEnvelope bbox,
             String decorationName,
             String time,
+            String animateParam,
+            String animateValue,
             int width,
             int height,
             Integer headerHeight,
@@ -312,6 +317,9 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         template.put("height", String.valueOf(height));
         if (time != null) {
             template.put("time", time);
+        }
+        if (animateParam != null && animateValue != null) {
+            template.put(animateParam, animateValue);
         }
         template.put(
                 "bbox",
@@ -359,6 +367,16 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                     request.setFormatOptions(Collections.singletonMap("layout", decorationName));
                     if (time != null) { // allow text decoration timestamping
                         request.getEnv().put("time", time);
+                    }
+                }
+                if (animateParam != null
+                        && animateValue != null
+                        && animateParam.equalsIgnoreCase("env")) {
+                    String[] split = animateValue.split(":");
+                    if (split.length > 1) {
+                        String key = split[0];
+                        String value = split[1];
+                        EnvFunction.setLocalValue(key, value);
                     }
                 }
                 // render

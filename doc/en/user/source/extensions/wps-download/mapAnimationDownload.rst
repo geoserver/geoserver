@@ -13,6 +13,8 @@ The map and animation downloads work off a set of common parameters:
  * ``bbox`` : a geo-referenced bounding box, controlling both output area and desired projection
  * ``decoration`` : the name of a decoration layout to be added on top of the map
  * ``time`` : a WMS ``time`` specification used to drive the selection of times across the layers in the map, and to control the frame generation in the animation
+ * ``animateParam`` : the name of a SLD variable that should be used for animation. Cannot be used in conjunction with the ``time`` parameter
+ * ``animateValues`` : the comma separated list of values used for the ``animateParam`` variable
  * ``width`` and ``height`` : size of the output map/animation (and in combination with bounding box, also controls the output map scale)
  * ``layer``: a list of layer specifications, from a client side point of view (thus, a layer can be composed of multiple server side layers). When dwn:DecorationName layer option is used, it allows to define a specific layout that will be used when decorations are applied to the layer. It allows to render more than one Legend on the resulting image, when having more than one Layer declared.
  * ``headerheight`` : height size of a header space allocated at top of rendered map. It's an optional parameter, that forces to shrink the maps view height in order to avoid overlapping header over the maps. In combination with the use of layer specification options allows to group decorators at the top of resulting image.
@@ -117,12 +119,12 @@ A download map issued against a set of local layers can look as follows:
 
 For this example the layers could have been a single one, with a "Name" equal to "giantPolygon,watertermp".
 
-Sample DownloadAnimation request
-++++++++++++++++++++++++++++++++
+Sample time-based DownloadAnimation request
++++++++++++++++++++++++++++++++++++++++++++
 
 The download animation has all the basic parameters with the following variants/additions:
 
-* time: The time parameter is required and can be provided either as range with periodicity, ``start/stop/period``, or
+* time: The time parameter is required (if you are not using ``animateParam``) and can be provided either as range with periodicity, ``start/stop/period``, or
   as a comma separated list of times,``t1,t2,...,tn`` 
 * fps: Frame per seconds (defaults to one)
 
@@ -215,7 +217,87 @@ The ``formattedTimestamper`` decoration ensures the frame time is included in th
       </decoration>
     </layout>
 
+Sample variable-based DownloadAnimation request
++++++++++++++++++++++++++++++++++++++++++++++++
 
+If you want to animate a map based on variables, proceed as follows:
+
+* specify the ``animateParam`` variable. You can use this to animate SLD variables, as described in ``Variable substitution in SLD``
+  or animate through a custom parameter
+* specify the ``animateValues`` parameter as a comma separated list of your values that will be used in the animation
+* omit the ``time`` parameter, as it cannot be used in conjunction with the ``animateParam`` parameter
+* optionally specify the ``fps`` parameter to define the frame per seconds of the output video (defaults to one)
+
+A sample animation request can look as follows:
+
+ .. code-block:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <wps:Execute version="1.0.0" service="WPS"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0"
+                 xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0"
+                 xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml"
+                 xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1"
+                 xmlns:xlink="http://www.w3.org/1999/xlink"
+                 xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+      <ows:Identifier>gs:DownloadAnimation</ows:Identifier>
+      <wps:DataInputs>
+        <wps:Input>
+          <ows:Identifier>bbox</ows:Identifier>
+          <wps:Data>
+            <wps:BoundingBoxData crs="EPSG:4326">
+              <ows:LowerCorner>-180 -90</ows:LowerCorner>
+              <ows:UpperCorner>180 90</ows:UpperCorner>
+            </wps:BoundingBoxData>
+          </wps:Data>
+        </wps:Input>
+        <wps:Input>
+          <ows:Identifier>animateParam</ows:Identifier>
+          <wps:Data>
+            <wps:LiteralData>env</wps:LiteralData>
+          </wps:Data>
+        </wps:Input>
+        <wps:Input>
+          <ows:Identifier>animateValues</ows:Identifier>
+          <wps:Data>
+            <wps:LiteralData>size:10,size:20,size:30,size:40,size:50</wps:LiteralData>
+          </wps:Data>
+        </wps:Input>
+        <wps:Input>
+          <ows:Identifier>width</ows:Identifier>
+          <wps:Data>
+            <wps:LiteralData>271</wps:LiteralData>
+          </wps:Data>
+        </wps:Input>
+        <wps:Input>
+          <ows:Identifier>height</ows:Identifier>
+          <wps:Data>
+            <wps:LiteralData>136</wps:LiteralData>
+          </wps:Data>
+        </wps:Input>
+        <wps:Input>
+          <ows:Identifier>fps</ows:Identifier>
+          <wps:Data>
+            <wps:LiteralData>5</wps:LiteralData>
+          </wps:Data>
+        </wps:Input>
+        <wps:Input>
+          <ows:Identifier>layer</ows:Identifier>
+          <wps:Data>
+            <wps:ComplexData xmlns:dwn="http://geoserver.org/wps/download">
+              <dwn:Layer>
+                <dwn:Name>cite:giantPolygon</dwn:Name>
+              </dwn:Layer>
+            </wps:ComplexData>
+          </wps:Data>
+        </wps:Input>
+      </wps:DataInputs>
+      <wps:ResponseForm>
+        <wps:RawDataOutput mimeType="video/mp4">
+          <ows:Identifier>result</ows:Identifier>
+        </wps:RawDataOutput>
+      </wps:ResponseForm>
+    </wps:Execute>
 
 Decoration Layout
 +++++++++++++++++
@@ -243,7 +325,6 @@ In order to get both outputs, the following response form is recommended, which 
 a reference (a link) for the animation, while the warnings are included inline:
 
  .. code-block:: xml
-
 
     <?xml version="1.0" encoding="UTF-8"?>
     <wps:Execute version="1.0.0" service="WPS"

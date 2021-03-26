@@ -9,9 +9,12 @@ import java.awt.image.RenderedImage;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.PlanarImage;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -123,12 +127,26 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                     Integer headerHeight,
             @DescribeParameter(
                         name = "time",
-                        min = 1,
+                        min = 0,
                         description =
                                 "Map time specification (a range with "
                                         + "periodicity or a list of time values)"
                     )
                     String time,
+            @DescribeParameter(
+                        name = "animateParam",
+                        min = 0,
+                        max = 1,
+                        description = "The URL parameter / variable used to animate the map"
+                    )
+                    String animateParam,
+            @DescribeParameter(
+                        name = "animateValues",
+                        min = 0,
+                        description =
+                                "The comma separated values used to animate over the animateParam"
+                    )
+                    String animateValues,
             @DescribeParameter(name = "width", min = 1, description = "Output width", minValue = 1)
                     int width,
             @DescribeParameter(
@@ -175,8 +193,19 @@ public class DownloadAnimationProcess implements GeoServerProcess {
             AWTSequenceEncoder enc = new AWTSequenceEncoder(out, frameRate);
 
             DownloadServiceConfiguration configuration = confiGenerator.getConfiguration();
-            TimeParser timeParser = new TimeParser(configuration.getMaxAnimationFrames());
-            Collection parsedTimes = timeParser.parse(time);
+            int totalFrames;
+            Collection parsedTimes = null;
+            List<String> animateValuesList = new ArrayList<>();
+            if (!StringUtils.isEmpty(time)) {
+                TimeParser timeParser = new TimeParser(configuration.getMaxAnimationFrames());
+                parsedTimes = timeParser.parse(time);
+                totalFrames = parsedTimes.size();
+            } else if (!StringUtils.isEmpty(animateParam) && !StringUtils.isEmpty(animateValues)) {
+                animateValuesList = Arrays.asList(animateValues.split(","));
+                totalFrames = animateValuesList.size();
+            } else {
+                throw new WPSException("Neither time nor animateParam and animateValues given");
+            }
             progressListener.started();
             Map<String, WebMapServer> serverCache = new HashMap<>();
 
@@ -192,18 +221,17 @@ public class DownloadAnimationProcess implements GeoServerProcess {
             Future<Void> future =
                     executor.submit(
                             () -> {
-                                int totalTimes = parsedTimes.size();
                                 int count = 1;
                                 BufferedImage frame;
                                 while ((frame = renderingQueue.take()) != STOP) {
                                     enc.encodeImage(frame);
-                                    listener.progress(90 * (((float) count) / totalTimes));
+                                    listener.progress(90 * (((float) count) / totalFrames));
                                     listener.setTask(
                                             new SimpleInternationalString(
                                                     "Generated frames "
                                                             + count
                                                             + " out of "
-                                                            + totalTimes));
+                                                            + totalFrames));
                                     count++;
                                     // handling exit due to WPS cancellation, or to exceptions
                                     if (listener.isCanceled() || abortEncoding.get()) return null;
@@ -214,11 +242,17 @@ public class DownloadAnimationProcess implements GeoServerProcess {
             AnimationMetadata metadata = new AnimationMetadata();
             try {
                 int frameCounter = 0;
-                for (Object parsedTime : parsedTimes) {
-                    // turn parsed time into a specification, generates a "WMS" like request based
-                    // on it
-                    String mapTime = toWmsTimeSpecification(parsedTime);
-                    LOGGER.log(Level.FINE, "Building frame for time %s", mapTime);
+                for (int i = 0; i < totalFrames; i++) {
+                    String mapTime = null;
+                    String animateValue = null;
+                    if (parsedTimes != null) {
+                        // turn parsed time into a specification and generate a "WMS" like request
+                        // based
+                        // on it
+                        mapTime = toWmsTimeSpecification(parsedTimes.toArray()[i]);
+                    } else {
+                        animateValue = animateValuesList.get(i);
+                    }
                     // clean up eventual previous warnings
                     warningAppender.init(request);
 
@@ -227,6 +261,8 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                                     bbox,
                                     decorationName,
                                     mapTime,
+                                    animateParam,
+                                    animateValue,
                                     width,
                                     height,
                                     headerHeight,

@@ -224,8 +224,6 @@ paths:
           description: Success workspace deleted 
         404:
           description: Workspace doesn't exist
-        405:
-          description: Can't delete default workspace
         403: 
           description: Workspace or related Namespace is not empty (and recurse not true) 
       

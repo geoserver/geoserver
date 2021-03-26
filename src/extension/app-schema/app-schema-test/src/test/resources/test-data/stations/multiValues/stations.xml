@@ -95,7 +95,7 @@
           </ClientProperty>
           <ClientProperty>
             <name>xlink:title</name>
-            <value>TITLE</value>
+            <value>CODE</value>
           </ClientProperty>
         </AttributeMapping>
       </attributeMappings>

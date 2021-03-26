@@ -664,6 +664,9 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
 
     @Test
     public void testJDBCMultipleValueWithClientProps() throws Exception {
+        // tests that when having a void targetValue for JDBCMultipleValue
+        // and multiple ClientProperties, on of which with xlink:href,
+        // in the same AttributeMapping, the client properties are properly encoded
         // check if this is an online test with a JDBC based data store
         if (notJdbcBased()) {
             // not a JDBC online test
@@ -696,5 +699,34 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
                 document,
                 1,
                 "/wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32/st_gml32:info[@xlink:href='http://www.stations.org/1.0/st3' and @xlink:title='ST3']");
+    }
+
+    @Test
+    public void testJDBCMultipleValueWithClientPropsFilter() throws Exception {
+        // tests that the request not fails because the generation of
+        // an ambiguous query when different table
+        // have a column with the same name, and one of the column is mapped
+        // to a ClientProperty with JDBCMultipleValue directive.
+        // in this case the info table and the tag table have both a CODE column
+        if (notJdbcBased()) {
+            // not a JDBC online test
+            return;
+        }
+        String request =
+                "wfs?request=GetFeature&version=2.0&typename=st_gml32:Station_gml32"
+                        + "&cql_filter=st_gml32:info.\"@xlink:title\"='ST2'";
+        Document document = getAsDOM(request);
+        // check that we have two complex features
+        checkCount(
+                WFS20_XPATH_ENGINE,
+                document,
+                1,
+                "/wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32");
+        checkCount(
+                WFS20_XPATH_ENGINE,
+                document,
+                1,
+                "/wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32/st_gml32:info"
+                        + "[@xlink:title='ST2']");
     }
 }

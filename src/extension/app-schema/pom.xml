@@ -4,80 +4,79 @@
     This code is licensed under the GPL 2.0 license, available at the root
     application directory.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.geoserver</groupId>
-        <artifactId>extension</artifactId>
-        <version>2.20-SNAPSHOT</version>
-    </parent>
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>extension</artifactId>
+    <version>2.20-SNAPSHOT</version>
+  </parent>
 
-    <groupId>org.geoserver.extension</groupId>
-    <artifactId>gs-app-schema</artifactId>
-    <packaging>pom</packaging>
-    <name>Application Schema Support</name>
+  <groupId>org.geoserver.extension</groupId>
+  <artifactId>gs-app-schema</artifactId>
+  <packaging>pom</packaging>
+  <name>Application Schema Support</name>
 
-    <developers>
-        <developer>
-            <name>Nuno Oliveira</name>
-            <id>nmco</id>
-            <email>nuno.oliveira@geo-solutions.it</email>
-            <organization>GeoSolutions</organization>
-            <roles>
-                <role>Module Maintainer</role>
-                <role>Java Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Fernando Mino</name>
-            <id>fernandor777</id>
-            <email>fernando.mino@geo-solutions.it</email>
-            <organization>GeoSolutions</organization>
-            <roles>
-                <role>Module Maintainer</role>
-                <role>Java Developer</role>
-            </roles>
-        </developer>
-    </developers>
+  <developers>
+    <developer>
+      <id>nmco</id>
+      <name>Nuno Oliveira</name>
+      <email>nuno.oliveira@geo-solutions.it</email>
+      <organization>GeoSolutions</organization>
+      <roles>
+        <role>Module Maintainer</role>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>fernandor777</id>
+      <name>Fernando Mino</name>
+      <email>fernando.mino@geo-solutions.it</email>
+      <organization>GeoSolutions</organization>
+      <roles>
+        <role>Module Maintainer</role>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+  </developers>
 
-    <modules>
+  <modules>
+    <module>app-schema-core</module>
+    <module>app-schema-test</module>
+    <module>sample-data-access-test</module>
+  </modules>
+
+  <properties>
+    <!-- Relative to online test modules -->
+    <app-schema-test-dir>../app-schema-test</app-schema-test-dir>
+    <test.exclude.pattern>**/SecondaryNamespaceExceptionTest.*</test.exclude.pattern>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>app-schema</id>
+      <modules>
         <module>app-schema-core</module>
-        <module>app-schema-test</module>
-        <module>sample-data-access-test</module>
-    </modules>
-
-    <profiles>
-        <profile>
-            <id>app-schema</id>
-            <modules>
-                <module>app-schema-core</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>app-schema-online-test</id>
-            <modules>
-                <module>app-schema-oracle-test</module>
-                <module>app-schema-postgis-test</module>
-                <module>app-schema-mongo-test</module>
-                <module>app-schema-solr-test</module>
-                <module>app-schema-indexes-test</module>
-            </modules>
-            <dependencies>
-                <dependency>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-lang3</artifactId>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
-
-    <properties>
-        <!-- Relative to online test modules -->
-        <app-schema-test-dir>../app-schema-test</app-schema-test-dir>
-        <test.exclude.pattern>**/SecondaryNamespaceExceptionTest.*</test.exclude.pattern>
-    </properties>
+      </modules>
+    </profile>
+    <profile>
+      <id>app-schema-online-test</id>
+      <modules>
+        <module>app-schema-oracle-test</module>
+        <module>app-schema-postgis-test</module>
+        <module>app-schema-mongo-test</module>
+        <module>app-schema-solr-test</module>
+        <module>app-schema-indexes-test</module>
+      </modules>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-lang3</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 
 </project>

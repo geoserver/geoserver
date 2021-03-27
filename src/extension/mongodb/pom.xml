@@ -1,66 +1,66 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.geoserver</groupId>
-        <artifactId>extension</artifactId>
-        <version>2.20-SNAPSHOT</version>
-    </parent>
-    <groupId>org.geoserver.extension</groupId>
-    <artifactId>gs-mongodb</artifactId>
-    <packaging>jar</packaging>
-    <name>MongoDB Data Store</name>
-    
-    <developers>
-        <developer>
-            <id>nunooliveira</id>
-            <name>Nuno Oliveira</name>
-            <email>nuno.oliveira@geo-solutions.it</email>
-            <organization>GeoSolutions S.A.S.</organization>
-            <organizationUrl>http://www.geo-solutions.it</organizationUrl>
-            <roles>
-                <role>Module Maintainer</role>
-                <role>Java Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>fernandomino</id>
-            <name>Fernando Mino</name>
-            <email>fernando.mino@geo-solutions.it</email>
-            <organization>GeoSolutions S.A.S.</organization>
-            <organizationUrl>http://www.geo-solutions.it</organizationUrl>
-            <roles>
-                <role>Module Maintainer</role>
-                <role>Java Developer</role>
-            </roles>
-        </developer>
-    </developers>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-mongodb</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.geoserver</groupId>
-            <artifactId>gs-restconfig</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
-    <build>
-        <resources>
-            <resource>
-                <directory>${basedir}/src/main/java</directory>
-                <includes>
-                    <include>**/*.html</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>${basedir}/src/main/resources</directory>
-                <includes>
-                    <include>**/*</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>extension</artifactId>
+    <version>2.20-SNAPSHOT</version>
+  </parent>
+  <groupId>org.geoserver.extension</groupId>
+  <artifactId>gs-mongodb</artifactId>
+  <packaging>jar</packaging>
+  <name>MongoDB Data Store</name>
+
+  <developers>
+    <developer>
+      <id>nunooliveira</id>
+      <name>Nuno Oliveira</name>
+      <email>nuno.oliveira@geo-solutions.it</email>
+      <organization>GeoSolutions S.A.S.</organization>
+      <organizationUrl>http://www.geo-solutions.it</organizationUrl>
+      <roles>
+        <role>Module Maintainer</role>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>fernandomino</id>
+      <name>Fernando Mino</name>
+      <email>fernando.mino@geo-solutions.it</email>
+      <organization>GeoSolutions S.A.S.</organization>
+      <organizationUrl>http://www.geo-solutions.it</organizationUrl>
+      <roles>
+        <role>Module Maintainer</role>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-mongodb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-restconfig</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/main/java</directory>
+        <includes>
+          <include>**/*.html</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
 </project>

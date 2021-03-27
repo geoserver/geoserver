@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.geoserver</groupId>    
+    <groupId>org.geoserver</groupId>
     <artifactId>gs-security</artifactId>
     <version>2.20-SNAPSHOT</version>
   </parent>
@@ -19,7 +18,7 @@
   <artifactId>gs-sec-ldap</artifactId>
   <packaging>jar</packaging>
   <name>GeoServer LDAP Security Module</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -32,28 +31,28 @@
       <version>${spring.security.version}</version>
     </dependency>
     <dependency>
-    		<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.ldap</groupId>
       <artifactId>spring-ldap-test</artifactId>
       <scope>test</scope>
       <exclusions>
-          <exclusion>
-              <groupId>org.springframework.batch</groupId>
-              <artifactId>spring-batch-infrastructure</artifactId>
-          </exclusion>
-          <exclusion>
-              <groupId>org.springframework.batch</groupId>
-              <artifactId>spring-batch-core</artifactId>
-          </exclusion>
+        <exclusion>
+          <artifactId>spring-batch-infrastructure</artifactId>
+          <groupId>org.springframework.batch</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-batch-core</artifactId>
+          <groupId>org.springframework.batch</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
-        <groupId>org.apache.directory.server</groupId>
-        <artifactId>apacheds-all</artifactId>
-        <scope>test</scope>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-all</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -65,18 +64,18 @@
   </dependencies>
 
   <build>
-   <plugins>
-    <plugin>
-     <artifactId>maven-jar-plugin</artifactId>
-     <executions>
-       <execution>
-         <phase>package</phase>
-         <goals>
-            <goal>test-jar</goal>
-         </goals>
-       </execution>
-     </executions>
-    </plugin>
-   </plugins>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 </project>

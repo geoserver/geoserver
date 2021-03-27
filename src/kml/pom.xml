@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights 
   reserved. This code is licensed under the GPL 2.0 license, available at the 
   root application directory. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -30,16 +29,16 @@
       <version>2.2.0</version>
       <exclusions>
         <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
           <artifactId>jaxb-impl</artifactId>
+          <groupId>com.sun.xml.bind</groupId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.xml.bind</groupId>
           <artifactId>jaxb-xjc</artifactId>
+          <groupId>com.sun.xml.bind</groupId>
         </exclusion>
       </exclusions>
     </dependency>
-      <dependency>
+    <dependency>
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
     </dependency>
@@ -73,8 +72,8 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wfs</artifactId>
-      <classifier>tests</classifier>
       <version>${project.version}</version>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -106,8 +105,7 @@
       </testResource>
     </testResources>
 
-    <plugins>
-    </plugins>
+    <plugins></plugins>
   </build>
 
 </project>

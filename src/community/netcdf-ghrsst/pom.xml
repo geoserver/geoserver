@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright (C) 2016 - Open Source Geospatial Foundation. All rights reserved. This code is licensed 
   under the GPL 2.0 license, available at the root application directory. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -46,19 +44,19 @@
       <version>${netcdf.version}</version>
     </dependency>
     <dependency>
-    <groupId>org.geotools</groupId>
-    <artifactId>gt-netcdf</artifactId>
-    <version>${gt.version}</version>
-    <exclusions>
-      <exclusion>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-      </exclusion>
-      <exclusion>
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-      </exclusion>
-    </exclusions>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-netcdf</artifactId>
+      <version>${gt.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>slf4j-api</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jcl-over-slf4j</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -88,17 +86,17 @@
           <execution>
             <id>process-resources</id>
             <phase>process-resources</phase>
-            <configuration>
-              <tasks>
-                <replace dir="${project.build.outputDirectory}" encoding="ISO-8859-1">
-                  <include name="netcdf.properties"/>
-                  <replacefilter token="@netcdf.version@" value="${netcdf.version}"/>
-                </replace>
-              </tasks>
-            </configuration>
             <goals>
               <goal>run</goal>
             </goals>
+            <configuration>
+              <tasks>
+                <replace dir="${project.build.outputDirectory}" encoding="ISO-8859-1">
+                  <include name="netcdf.properties"></include>
+                  <replacefilter token="@netcdf.version@" value="${netcdf.version}"></replacefilter>
+                </replace>
+              </tasks>
+            </configuration>
           </execution>
         </executions>
       </plugin>

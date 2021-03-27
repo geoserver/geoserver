@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -14,6 +13,12 @@
   <artifactId>gs-importer</artifactId>
   <packaging>pom</packaging>
   <name>GeoServer Data Importer</name>
+
+  <modules>
+    <module>core</module>
+    <module>rest</module>
+    <module>web</module>
+  </modules>
 
   <dependencies>
     <dependency>
@@ -58,8 +63,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-	 <groupId>org.apache.commons</groupId>
-     <artifactId>commons-vfs2</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-vfs2</artifactId>
     </dependency>
     <dependency>
       <groupId>xmlunit</groupId>
@@ -89,11 +94,4 @@
     </testResources>
   </build>
 
-  <modules>
-    <module>core</module>
-    <module>rest</module>
-    <module>web</module>
-  </modules>
-
 </project>
-

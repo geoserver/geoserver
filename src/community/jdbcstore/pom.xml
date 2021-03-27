@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project>
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -9,9 +10,7 @@
   <artifactId>gs-jdbcstore</artifactId>
   <packaging>jar</packaging>
   <name>GeoServer JDBC Configuration Resource Store</name>
-  <description>
-    Store resources (icons, fonts, freemarker tempaltes and configuration files) in database alongside JDBC Store.
-  </description>
+  <description>Store resources (icons, fonts, freemarker tempaltes and configuration files) in database alongside JDBC Store.</description>
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -57,7 +56,7 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
       <version>${project.version}</version>

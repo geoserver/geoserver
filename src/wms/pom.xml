@@ -1,12 +1,10 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -38,12 +36,12 @@
       <artifactId>gt-svg</artifactId>
       <exclusions>
         <exclusion>
-           <groupId>xalan</groupId>
-           <artifactId>xalan</artifactId>
+          <artifactId>xalan</artifactId>
+          <groupId>xalan</groupId>
         </exclusion>
         <exclusion>
-          <groupId>org.apache.xmlgraphics</groupId>
           <artifactId>fop</artifactId>
+          <groupId>org.apache.xmlgraphics</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -70,12 +68,12 @@
       <artifactId>itext</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>bouncycastle</groupId>
           <artifactId>bcmail-jdk14</artifactId>
+          <groupId>bouncycastle</groupId>
         </exclusion>
         <exclusion>
-          <groupId>bouncycastle</groupId>
           <artifactId>bcprov-jdk14</artifactId>
+          <groupId>bouncycastle</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -85,7 +83,7 @@
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId> 
+      <artifactId>h2</artifactId>
     </dependency>
     <dependency>
       <groupId>ar.com.hjg</groupId>
@@ -109,8 +107,8 @@
       <artifactId>spring-context-support</artifactId>
       <version>${spring.version}</version>
     </dependency>
-    
-	<dependency>
+
+    <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-ows</artifactId>
       <classifier>tests</classifier>
@@ -149,10 +147,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>org.apache.pdfbox</groupId>
-        <artifactId>pdfbox</artifactId>
-        <version>2.0.12</version>
-        <scope>test</scope>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+      <version>2.0.12</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
@@ -179,8 +177,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>org.apache.httpcomponents</groupId>
-        <artifactId>httpclient</artifactId>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -192,7 +190,7 @@
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
-      </testResource>     
+      </testResource>
     </testResources>
     <plugins>
       <plugin>
@@ -213,19 +211,18 @@
       <id>macos-github-build</id>
       <build>
         <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <systemPropertyVariables>
-            <macos-github-build>true</macos-github-build>
-          </systemPropertyVariables>
-       </configuration>
-      </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <macos-github-build>true</macos-github-build>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
         </plugins>
       </build>
     </profile>
   </profiles>
-
 
 </project>

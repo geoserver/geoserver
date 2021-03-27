@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.geoserver</groupId>    
+    <groupId>org.geoserver</groupId>
     <artifactId>web</artifactId>
     <version>2.18-SNAPSHOT</version>
   </parent>
@@ -19,7 +18,7 @@
   <artifactId>gs-web-core</artifactId>
   <packaging>jar</packaging>
   <name>Core UI Module</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.apache.wicket</groupId>
@@ -71,24 +70,24 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
-	    <dependency>
-	       <groupId>org.springframework</groupId>
-	       <artifactId>spring-test</artifactId>
-	       <scope>test</scope>
-	    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
       <scope>test</scope>
     </dependency>
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt-coverage</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt-main</artifactId>
-		</dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-coverage</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-main</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-shapefile</artifactId>
@@ -101,62 +100,62 @@
       <groupId>org.geotools</groupId>
       <artifactId>gt-wfs-ng</artifactId>
     </dependency>
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt-jdbc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.geotools</groupId>
-			<artifactId>gt-metadata</artifactId>
-		</dependency>
-  <dependency>
-    <groupId>org.geotools</groupId>
-    <artifactId>gt-arcgrid</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>org.geotools</groupId>
-    <artifactId>gt-geotiff</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>org.geotools</groupId>
-    <artifactId>gt-image</artifactId>
-  </dependency>
-   <dependency>
-    <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-web</artifactId>
-   </dependency>
-   <dependency>
-    <groupId>org.bouncycastle</groupId>
-    <artifactId>bcprov-jdk15on</artifactId>    
-  </dependency>
-  <dependency>
-    <groupId>com.github.svenmeier.wicket-dnd</groupId>
-    <artifactId>wicket-dnd</artifactId>
-  </dependency>
-   <dependency>
-    <groupId>org.geotools</groupId>
-    <artifactId>gt-geopkg</artifactId>
-   </dependency>
-	<dependency>
-		<groupId>org.apache.wicket</groupId>
-		<artifactId>wicket-datetime</artifactId>
-		<version>${wicket.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>joda-time</groupId>
-		<artifactId>joda-time</artifactId>
-	</dependency>
-   <dependency>
-    <groupId>org.geotools.jdbc</groupId>
-    <artifactId>gt-jdbc-h2</artifactId>
-    <version>${gt.version}</version>
-    <scope>test</scope>
-  </dependency>
-  <dependency>
-   <groupId>org.hamcrest</groupId>
-   <artifactId>hamcrest-library</artifactId>
-   <scope>test</scope>
-  </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-metadata</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-arcgrid</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-geotiff</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-image</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.github.svenmeier.wicket-dnd</groupId>
+      <artifactId>wicket-dnd</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-geopkg</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-datetime</artifactId>
+      <version>${wicket.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools.jdbc</groupId>
+      <artifactId>gt-jdbc-h2</artifactId>
+      <version>${gt.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -167,19 +166,19 @@
           <execution>
             <id>process-resources</id>
             <phase>process-resources</phase>
-            <configuration>
-              <tasks>
-                <replace dir="${project.build.outputDirectory}" encoding="ISO-8859-1">
-                  <include name="*.properties"/> 
-                  <replacefilter token="@project.version@" value="${project.version}"/>
-                  <replacefilter token="@build.revision@" value="${build.commit.id}"/>
-                  <replacefilter token="@build.timestamp@" value="${build.timestamp}"/>
-                </replace>
-              </tasks>
-            </configuration>
             <goals>
               <goal>run</goal>
             </goals>
+            <configuration>
+              <tasks>
+                <replace dir="${project.build.outputDirectory}" encoding="ISO-8859-1">
+                  <include name="*.properties"></include>
+                  <replacefilter token="@project.version@" value="${project.version}"></replacefilter>
+                  <replacefilter token="@build.revision@" value="${build.commit.id}"></replacefilter>
+                  <replacefilter token="@build.timestamp@" value="${build.timestamp}"></replacefilter>
+                </replace>
+              </tasks>
+            </configuration>
           </execution>
         </executions>
       </plugin>

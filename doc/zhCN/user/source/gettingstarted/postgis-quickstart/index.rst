@@ -60,10 +60,6 @@
 
    .. note:: 一个 workspace 名是用于描述项目的标识符。它必须不超过10个字符长，且不能含有空格。而一个 Namespace URI (Uniform Resource Identifier，统一资源标识符) 通常可以是一个和项目有关的、追加了一个尾部标识符来表明 workspace 的 URL.   Namespace URI 不必指向一个真实存在的 Web 地址。
 
-   .. figure:: workspace_nycroads.png
-
-      nyc workspace
-
 #. 点击 :guilabel:`Submit` 按钮。 ``nyc`` workspace 将被添加到 :guilabel:`Workspaces` 列表。
 
 创建一个 Store

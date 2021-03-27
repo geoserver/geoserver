@@ -23,7 +23,7 @@
 
 #. 移动 ``nyc_roads`` 目录到 ``<GEOSERVER_DATA_DIR>/data``，其中 ``<GEOSERVER_DATA_DIR>`` 指的是 :ref:`GeoServer data directory <datadir>`. 如果 GeoServer 的文件结构没有被更改，那么路径是 ``geoserver/data_dir/data/nyc_roads``。 
  
-创建新 Workspace（工作区）
+创建新 Workspace
 ------------------------
 
 以下步骤中我们为 shapefile 创建新 workspace. 一个 workspace 是一种用于聚合相似图层的容器。

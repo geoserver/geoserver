@@ -46,7 +46,7 @@ Web 管理界面可以从浏览器中访问::
 图层预览
 -------------
 
-:ref:`layerpreview` 页面允许你快速查看发布的图层输出。
+layerpreview 页面允许你快速查看发布的图层输出。
 
 #. 点击菜单中的 :guilabel:`Layer Preview` 链接来导航到该页面。
 
@@ -68,6 +68,6 @@ Web 管理界面可以从浏览器中访问::
 
    .. note:: 排序和搜索适用于所有数据配置页面。
 
-.. note:: 欲知更多，请查阅 :ref:`layerpreview` 部分。
+.. note:: 欲知更多，请查阅 layerpreview 部分。
 
 

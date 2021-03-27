@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -13,11 +11,9 @@
 
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-oseo-core</artifactId>
-  <name>OpenSearch for EO core support</name>
-  <description>
-    Data sources supporting a  OpenSearch for Earth Observation implementation, and core classes
-  </description>
   <packaging>jar</packaging>
+  <name>OpenSearch for EO core support</name>
+  <description>Data sources supporting a  OpenSearch for Earth Observation implementation, and core classes</description>
 
   <dependencies>
     <dependency>
@@ -73,9 +69,9 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>

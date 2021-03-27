@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project>
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -9,6 +10,9 @@
   <artifactId>gs-css</artifactId>
   <packaging>jar</packaging>
   <name>GeoServer CSS Styling</name>
+  <properties>
+    <maven.test.search.classdir>true</maven.test.search.classdir>
+  </properties>
 
   <dependencies>
     <!-- Runtime/compile-time dependencies -->
@@ -54,9 +58,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-     <groupId>org.easymock</groupId>
-     <artifactId>easymock</artifactId>
-     <scope>test</scope>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -76,10 +80,15 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <properties>
-    <maven.test.search.classdir>true</maven.test.search.classdir>
-  </properties>
   <build>
+    <testResources>
+      <testResource>
+        <directory>${basedir}/src/test/resources/</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -90,13 +99,5 @@
         </configuration>
       </plugin>
     </plugins>
-    <testResources>
-      <testResource>
-        <directory>${basedir}/src/test/resources/</directory>
-        <includes>
-          <include>**/*</include>
-        </includes>
-      </testResource>
-    </testResources>
   </build>
 </project>

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -8,7 +9,7 @@
   <groupId>org.geoserver.importer</groupId>
   <artifactId>gs-importer-rest</artifactId>
   <name>Importer REST Api Module-ng</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver.importer</groupId>
@@ -36,5 +37,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
 </project>

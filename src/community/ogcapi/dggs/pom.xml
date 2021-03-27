@@ -5,25 +5,23 @@
   ~  application directory.
   ~  
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-	<groupId>org.geoserver.community</groupId>
-        <artifactId>gs-ogcapi</artifactId>
-    	<version>2.19-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
     <groupId>org.geoserver.community</groupId>
-    <artifactId>gs-dggs</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>gs-ogcapi</artifactId>
+    <version>2.19-SNAPSHOT</version>
+  </parent>
 
-    <modules>
-        <module>dggs-core</module>
-        <module>web-dggs</module>
-        <module>dggs-clickhouse</module>
-        <module>ogcapi-dggs</module>
-    </modules>
-    
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-dggs</artifactId>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>dggs-core</module>
+    <module>web-dggs</module>
+    <module>dggs-clickhouse</module>
+    <module>ogcapi-dggs</module>
+  </modules>
+
 </project>

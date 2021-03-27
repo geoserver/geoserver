@@ -1,17 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project>
+
+  <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>extension</artifactId>
     <version>2.20-SNAPSHOT</version>
   </parent>
-
-  <modelVersion>4.0.0</modelVersion>
   <groupId>org.geoserver.extension</groupId>
   <artifactId>gs-charts</artifactId>
   <packaging>jar</packaging>
   <name>Chart external graphics support</name>
-
 
   <dependencies>
     <dependency>

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project>
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -9,12 +10,10 @@
   <artifactId>gs-jdbcconfig</artifactId>
   <packaging>jar</packaging>
   <name>GeoServer JDBC Catalog</name>
-  <description>
-    Manage GeoServer Catalog configuration in a database.
-  </description>
+  <description>Manage GeoServer Catalog configuration in a database.</description>
   <properties>
-      <jdbcconfig.postgres.skip>true</jdbcconfig.postgres.skip>
-      <jdbcconfig.oracle.skip>true</jdbcconfig.oracle.skip>
+    <jdbcconfig.postgres.skip>true</jdbcconfig.postgres.skip>
+    <jdbcconfig.oracle.skip>true</jdbcconfig.oracle.skip>
   </properties>
   <dependencies>
     <dependency>
@@ -88,33 +87,17 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-     <groupId>org.hamcrest</groupId>
-     <artifactId>hamcrest-library</artifactId>
-     <scope>test</scope>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.oracle.database.jdbc</groupId>
       <artifactId>ojdbc8</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
   </dependencies>
-  <profiles>
-      <profile>
-          <!--  by default, skip oracle tests but allow to be enabled. -->
-          <id>oracle</id>
-          <properties>
-              <jdbcconfig.oracle.skip>false</jdbcconfig.oracle.skip>
-          </properties>
-      </profile>
-      <profile>
-          <!-- by default, skip postgres tests but allow to be enabled. -->
-          <id>postgres</id>
-          <properties>
-              <jdbcconfig.postgres.skip>false</jdbcconfig.postgres.skip>
-          </properties>
-      </profile>
-  </profiles>
   <build>
     <plugins>
       <plugin>
@@ -128,4 +111,20 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <!--  by default, skip oracle tests but allow to be enabled. -->
+      <id>oracle</id>
+      <properties>
+        <jdbcconfig.oracle.skip>false</jdbcconfig.oracle.skip>
+      </properties>
+    </profile>
+    <profile>
+      <!-- by default, skip postgres tests but allow to be enabled. -->
+      <id>postgres</id>
+      <properties>
+        <jdbcconfig.postgres.skip>false</jdbcconfig.postgres.skip>
+      </properties>
+    </profile>
+  </profiles>
 </project>

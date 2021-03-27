@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
  Copyright (C) 2014 - 2016 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.geoserver</groupId>    
+    <groupId>org.geoserver</groupId>
     <artifactId>web</artifactId>
     <version>2.19-SNAPSHOT</version>
   </parent>
@@ -19,7 +18,7 @@
   <artifactId>gs-web-gwc</artifactId>
   <packaging>jar</packaging>
   <name>GWC UI Module</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -64,9 +63,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-       <groupId>org.springframework</groupId>
-       <artifactId>spring-test</artifactId>
-       <scope>test</scope>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
@@ -78,5 +77,5 @@
       <artifactId>hamcrest-library</artifactId>
       <scope>test</scope>
     </dependency>
-   </dependencies>
+  </dependencies>
 </project>

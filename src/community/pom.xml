@@ -3,9 +3,10 @@
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
- --><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-    <parent>
+  <parent>
     <groupId>org.geoserver</groupId>
     <artifactId>geoserver</artifactId>
     <version>2.19-SNAPSHOT</version>
@@ -33,117 +34,117 @@
   </dependencies>
 
   <build>
-   <plugins>
-     <plugin>
-      <artifactId>maven-assembly-plugin</artifactId>
-      <version>3.2.0</version>
-      <configuration>
-        <descriptors>
-          <descriptor>release/ext-jdbcconfig.xml</descriptor>
-          <descriptor>release/ext-dds.xml</descriptor>
-          <descriptor>release/ext-wms-eo.xml</descriptor>
-          <descriptor>release/ext-colormap.xml</descriptor>
-          <descriptor>release/ext-mbtiles.xml</descriptor>
-          <descriptor>release/ext-mbtiles-store.xml</descriptor>
-          <descriptor>release/ext-geopkg.xml</descriptor>
-          <descriptor>release/ext-pgraster.xml</descriptor>
-          <descriptor>release/ext-dyndimension.xml</descriptor>
-          <descriptor>release/ext-flatgeobuf.xml</descriptor>
-          <descriptor>release/ext-kmlppio.xml</descriptor>
-          <descriptor>release/ext-gpx.xml</descriptor>
-          <descriptor>release/ext-jms-cluster.xml</descriptor>
-          <descriptor>release/ext-hz-cluster.xml</descriptor>
-          <descriptor>release/ext-activeMQ.xml</descriptor>
-          <descriptor>release/ext-solr.xml</descriptor>
-          <descriptor>release/ext-elasticsearch.xml</descriptor>
-          <descriptor>release/ext-gwc-distributed.xml</descriptor>
-          <descriptor>release/ext-gwc-azure-blob.xml</descriptor>
-          <descriptor>release/ext-gdal-wcs.xml</descriptor>
-          <descriptor>release/ext-gdal-wps.xml</descriptor>
-          <descriptor>release/ext-wps-remote.xml</descriptor>
-          <descriptor>release/ext-jdbcstore.xml</descriptor>
-          <descriptor>release/ext-ncwms.xml</descriptor>
-          <descriptor>release/ext-gwc-sqlite.xml</descriptor> 
-          <descriptor>release/ext-oauth2-google.xml</descriptor>
-          <descriptor>release/ext-oauth2-github.xml</descriptor>
-          <descriptor>release/ext-oauth2-geonode.xml</descriptor>
-          <descriptor>release/ext-oauth2-openid-connect.xml</descriptor>
-          <descriptor>release/ext-keycloak.xml</descriptor>
-          <descriptor>release/ext-backup-restore.xml</descriptor>
-          <descriptor>release/ext-saml.xml</descriptor>
-          <descriptor>release/ext-notification.xml</descriptor>
-          <descriptor>release/ext-ows-simulate.xml</descriptor> 
-          <descriptor>release/ext-jdbc-metrics.xml</descriptor>
-          <descriptor>release/ext-opensearch-eo.xml</descriptor>
-          <descriptor>release/ext-nsg-wmts-profile.xml</descriptor>
-          <descriptor>release/ext-nsg-wfs-profile.xml</descriptor>
-          <descriptor>release/ext-taskmanager-core.xml</descriptor>
-          <descriptor>release/ext-taskmanager-s3.xml</descriptor>
-          <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
-		  <descriptor>release/ext-cog.xml</descriptor>
-          <descriptor>release/ext-wfs3.xml</descriptor>
-          <descriptor>release/ext-qos.xml</descriptor>
-          <descriptor>release/ext-s3-geotiff.xml</descriptor>
-          <descriptor>release/ext-wmts-styles.xml</descriptor>
-          <descriptor>release/ext-ogr-datastore.xml</descriptor>
-          <descriptor>release/ext-ogcapi.xml</descriptor>
-          <descriptor>release/ext-geostyler.xml</descriptor>
-          <descriptor>release/ext-csw-iso.xml</descriptor>
-          <descriptor>release/ext-importer-jdbc.xml</descriptor>
-          <descriptor>release/ext-features-templating.xml</descriptor>
-          <descriptor>release/ext-metadata.xml</descriptor>
-          <descriptor>release/ext-gsr.xml</descriptor>
-          <descriptor>release/ext-imagemosaic-jdbc.xml</descriptor>
-          <descriptor>release/ext-smart-data-loader.xml</descriptor>
-          <descriptor>release/ext-cov-json.xml</descriptor>
-          <!-- As per our discussion on list, the module does not work, leaving it for eventual salvage,
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <descriptors>
+            <descriptor>release/ext-jdbcconfig.xml</descriptor>
+            <descriptor>release/ext-dds.xml</descriptor>
+            <descriptor>release/ext-wms-eo.xml</descriptor>
+            <descriptor>release/ext-colormap.xml</descriptor>
+            <descriptor>release/ext-mbtiles.xml</descriptor>
+            <descriptor>release/ext-mbtiles-store.xml</descriptor>
+            <descriptor>release/ext-geopkg.xml</descriptor>
+            <descriptor>release/ext-pgraster.xml</descriptor>
+            <descriptor>release/ext-dyndimension.xml</descriptor>
+            <descriptor>release/ext-flatgeobuf.xml</descriptor>
+            <descriptor>release/ext-kmlppio.xml</descriptor>
+            <descriptor>release/ext-gpx.xml</descriptor>
+            <descriptor>release/ext-jms-cluster.xml</descriptor>
+            <descriptor>release/ext-hz-cluster.xml</descriptor>
+            <descriptor>release/ext-activeMQ.xml</descriptor>
+            <descriptor>release/ext-solr.xml</descriptor>
+            <descriptor>release/ext-elasticsearch.xml</descriptor>
+            <descriptor>release/ext-gwc-distributed.xml</descriptor>
+            <descriptor>release/ext-gwc-azure-blob.xml</descriptor>
+            <descriptor>release/ext-gdal-wcs.xml</descriptor>
+            <descriptor>release/ext-gdal-wps.xml</descriptor>
+            <descriptor>release/ext-wps-remote.xml</descriptor>
+            <descriptor>release/ext-jdbcstore.xml</descriptor>
+            <descriptor>release/ext-ncwms.xml</descriptor>
+            <descriptor>release/ext-gwc-sqlite.xml</descriptor>
+            <descriptor>release/ext-oauth2-google.xml</descriptor>
+            <descriptor>release/ext-oauth2-github.xml</descriptor>
+            <descriptor>release/ext-oauth2-geonode.xml</descriptor>
+            <descriptor>release/ext-oauth2-openid-connect.xml</descriptor>
+            <descriptor>release/ext-keycloak.xml</descriptor>
+            <descriptor>release/ext-backup-restore.xml</descriptor>
+            <descriptor>release/ext-saml.xml</descriptor>
+            <descriptor>release/ext-notification.xml</descriptor>
+            <descriptor>release/ext-ows-simulate.xml</descriptor>
+            <descriptor>release/ext-jdbc-metrics.xml</descriptor>
+            <descriptor>release/ext-opensearch-eo.xml</descriptor>
+            <descriptor>release/ext-nsg-wmts-profile.xml</descriptor>
+            <descriptor>release/ext-nsg-wfs-profile.xml</descriptor>
+            <descriptor>release/ext-taskmanager-core.xml</descriptor>
+            <descriptor>release/ext-taskmanager-s3.xml</descriptor>
+            <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
+            <descriptor>release/ext-cog.xml</descriptor>
+            <descriptor>release/ext-wfs3.xml</descriptor>
+            <descriptor>release/ext-qos.xml</descriptor>
+            <descriptor>release/ext-s3-geotiff.xml</descriptor>
+            <descriptor>release/ext-wmts-styles.xml</descriptor>
+            <descriptor>release/ext-ogr-datastore.xml</descriptor>
+            <descriptor>release/ext-ogcapi.xml</descriptor>
+            <descriptor>release/ext-geostyler.xml</descriptor>
+            <descriptor>release/ext-csw-iso.xml</descriptor>
+            <descriptor>release/ext-importer-jdbc.xml</descriptor>
+            <descriptor>release/ext-features-templating.xml</descriptor>
+            <descriptor>release/ext-metadata.xml</descriptor>
+            <descriptor>release/ext-gsr.xml</descriptor>
+            <descriptor>release/ext-imagemosaic-jdbc.xml</descriptor>
+            <descriptor>release/ext-smart-data-loader.xml</descriptor>
+            <descriptor>release/ext-cov-json.xml</descriptor>
+            <!-- As per our discussion on list, the module does not work, leaving it for eventual salvage,
                but not providing an assembly. This one has been left for those interested
                <descriptor>release/ext-importer-bdb.xml</descriptor>
           -->
-        </descriptors>
-      </configuration>
-     </plugin>
-     <plugin>
-		<artifactId>maven-jar-plugin</artifactId>
-		<executions>
-			<execution>
-				<phase>package</phase>
-				<goals>
-					<goal>test-jar</goal>
-				</goals>
-			</execution>
-		</executions>
-		<configuration>
-			<archive>
-				<manifest>
-					<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-					<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-				</manifest>
-				<manifestEntries>
-					<GeoServerModule>community</GeoServerModule>
-					<Application-Name>${project.build.finalname}</Application-Name>
-					<Project-Version>${project.version}</Project-Version>
-					<Iteration-Name>${iteration}</Iteration-Name>
-					<Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
-					<Git-Revision>${build.commit.id}</Git-Revision>
-				</manifestEntries>
-			</archive>
-		</configuration>
-	</plugin>
-   </plugins>
+          </descriptors>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+            <manifestEntries>
+              <GeoServerModule>community</GeoServerModule>
+              <Application-Name>${project.build.finalname}</Application-Name>
+              <Project-Version>${project.version}</Project-Version>
+              <Iteration-Name>${iteration}</Iteration-Name>
+              <Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+              <Git-Revision>${build.commit.id}</Git-Revision>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
   <!-- profiles for individual modules -->
   <profiles>
     <profile>
       <id>colormap</id>
-      <modules> 
+      <modules>
         <module>colormap</module>
       </modules>
     </profile>
-     <profile>
+    <profile>
       <id>rest</id>
-      <modules> 
+      <modules>
         <module>rest</module>
       </modules>
     </profile>
@@ -159,13 +160,13 @@
         <module>gpxppio</module>
       </modules>
     </profile>
-    <profile>      
+    <profile>
       <id>webservice</id>
       <modules>
         <module>app-schema</module>
       </modules>
     </profile>
-     <profile>      
+    <profile>
       <id>app-schema</id>
       <modules>
         <module>app-schema</module>
@@ -183,23 +184,23 @@
         <module>saml</module>
       </modules>
     </profile>
-	<profile>
+    <profile>
       <id>notification</id>
       <modules>
-		<module>notification-common</module>
+        <module>notification-common</module>
         <module>notification</module>
       </modules>
     </profile>
-	<profile>
+    <profile>
       <id>notification-geonode</id>
       <modules>
-		<module>notification-geonode</module>
+        <module>notification-geonode</module>
       </modules>
     </profile>
     <profile>
       <id>qos</id>
       <modules>
-		<module>qos</module>
+        <module>qos</module>
       </modules>
     </profile>
     <profile>
@@ -266,8 +267,8 @@
         <module>gsr</module>
         <module>importer-bdb</module>
         <module>imagemosaic-jdbc</module>
-		<module>cog</module>
-		<module>cov-json</module>
+        <module>cog</module>
+        <module>cov-json</module>
         <module>smart-data-loader</module>
       </modules>
     </profile>
@@ -287,7 +288,9 @@
     <profile>
       <id>pgraster</id>
       <activation>
-        <property><name>pgraster</name></property>
+        <property>
+          <name>pgraster</name>
+        </property>
       </activation>
       <modules>
         <module>pgraster</module>
@@ -296,8 +299,10 @@
     <profile>
       <id>wms-eo</id>
       <activation>
-        <property><name>wms-eo</name></property>
-      </activation> 	  
+        <property>
+          <name>wms-eo</name>
+        </property>
+      </activation>
       <modules>
         <module>wms-eo</module>
       </modules>
@@ -329,12 +334,14 @@
     </profile>
     <profile>
       <id>dyndimension</id>
-	  <activation>
-        <property><name>dyndimension</name></property>
+      <activation>
+        <property>
+          <name>dyndimension</name>
+        </property>
       </activation>
       <modules>
         <module>dyndimension</module>
-	  </modules>
+      </modules>
     </profile>
     <profile>
       <id>flatgeobuf</id>
@@ -342,30 +349,32 @@
         <module>flatgeobuf</module>
       </modules>
     </profile>
-	<profile>
+    <profile>
       <id>rest-ext</id>
-	  <activation>
-        <property><name>rest-ext</name></property>
+      <activation>
+        <property>
+          <name>rest-ext</name>
+        </property>
       </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.2.0</version>
+            <configuration>
+              <descriptors>
+                <!-- If you are re-enabling this, remember to re-add the documentation -->
+                <descriptor>release/ext-rest-ext.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
       <modules>
         <module>rest-ext</module>
       </modules>
-      <build>
-       <plugins>
-         <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.2.0</version>
-          <configuration>
-            <descriptors>
-              <!-- If you are re-enabling this, remember to re-add the documentation -->
-              <descriptor>release/ext-rest-ext.xml</descriptor>
-            </descriptors>
-          </configuration>
-         </plugin>
-       </plugins>
-      </build>
     </profile>
-    <profile>      
+    <profile>
       <id>kmlppio</id>
       <modules>
         <module>kmlppio</module>
@@ -383,28 +392,28 @@
         <module>elasticsearch</module>
       </modules>
     </profile>
-    
+
     <profile>
       <id>rest-upload</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.2.0</version>
+            <configuration>
+              <descriptors>
+                <!-- If you are re-enabling this, remember to re-add the documentation -->
+                <descriptor>release/ext-rest-upload.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
       <modules>
         <module>rest-upload</module>
       </modules>
-      <build>
-       <plugins>
-         <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.2.0</version>
-          <configuration>
-            <descriptors>
-              <!-- If you are re-enabling this, remember to re-add the documentation -->
-              <descriptor>release/ext-rest-upload.xml</descriptor>
-            </descriptors>
-          </configuration>
-         </plugin>
-       </plugins>
-      </build>
     </profile>
-    
+
     <profile>
       <id>jms-cluster</id>
       <modules>
@@ -419,16 +428,16 @@
     </profile>
     <profile>
       <id>hz-cluster</id>
-        <modules>
-          <module>hz-cluster</module>
-        </modules>
+      <modules>
+        <module>hz-cluster</module>
+      </modules>
     </profile>
     <profile>
       <id>geomesa</id>
-        <modules>
-          <module>geomesa</module>
-        </modules>
-    </profile>    
+      <modules>
+        <module>geomesa</module>
+      </modules>
+    </profile>
     <profile>
       <id>gwc-distributed</id>
       <activation>
@@ -450,9 +459,9 @@
     </profile>
     <profile>
       <id>gdal-translate</id>
-        <modules>
-          <module>gdal</module>
-        </modules>
+      <modules>
+        <module>gdal</module>
+      </modules>
     </profile>
     <profile>
       <id>gwc-azure-blob</id>
@@ -493,22 +502,22 @@
     </profile>
     <profile>
       <id>geogig</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.2.0</version>
+            <configuration>
+              <descriptors>
+                <descriptor>release/ext-geogig.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
       <modules>
         <module>geogig</module>
       </modules>
-      <build>
-       <plugins>
-         <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.2.0</version>
-          <configuration>
-            <descriptors>
-              <descriptor>release/ext-geogig.xml</descriptor>
-            </descriptors>
-          </configuration>
-         </plugin>
-       </plugins>
-      </build>
     </profile>
     <profile>
       <id>oauth2-google</id>
@@ -543,7 +552,7 @@
       <modules>
         <module>security/keycloak</module>
       </modules>
-    </profile>    
+    </profile>
     <profile>
       <id>wmts-styles</id>
       <modules>
@@ -591,7 +600,7 @@
       <modules>
         <module>netcdf-ghrsst</module>
       </modules>
-    </profile>    
+    </profile>
     <profile>
       <id>cog</id>
       <modules>
@@ -608,25 +617,25 @@
       <id>taskmanager</id>
       <modules>
         <module>taskmanager</module>
-     </modules>
+      </modules>
     </profile>
     <profile>
       <id>taskmanager-s3</id>
       <modules>
         <module>taskmanager</module>
-     </modules>
+      </modules>
     </profile>
     <profile>
       <id>taskmanager-metadata</id>
       <modules>
         <module>taskmanager</module>
-     </modules>
+      </modules>
     </profile>
     <profile>
       <id>metadata</id>
       <modules>
         <module>metadata</module>
-     </modules>
+      </modules>
     </profile>
     <profile>
       <id>wfs3</id>
@@ -636,22 +645,22 @@
     </profile>
     <profile>
       <id>monitor-hibernate</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>3.2.0</version>
+            <configuration>
+              <descriptors>
+                <descriptor>release/ext-monitor-hibernate.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
       <modules>
         <module>monitor-hibernate</module>
       </modules>
-      <build>
-       <plugins>
-         <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.2.0</version>
-          <configuration>
-            <descriptors>
-              <descriptor>release/ext-monitor-hibernate.xml</descriptor>
-            </descriptors>
-          </configuration>
-         </plugin>
-       </plugins>
-      </build>
     </profile>
     <profile>
       <id>web-ogr</id>
@@ -707,5 +716,5 @@
         <module>smart-data-loader</module>
       </modules>
     </profile>
-  </profiles>  
+  </profiles>
 </project>

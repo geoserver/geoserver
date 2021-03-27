@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project>
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -9,10 +10,8 @@
   <artifactId>gs-web-resource</artifactId>
   <packaging>jar</packaging>
   <name>GeoServer Resource Browser</name>
-  <description>
-     Web Administration page to manage data directory configuration files
-     such as icons, fonts, and controlflow.properties.
-  </description>
+  <description>Web Administration page to manage data directory configuration files
+     such as icons, fonts, and controlflow.properties.</description>
   <dependencies>
     <dependency>
       <groupId>org.geoserver.web</groupId>
@@ -62,9 +61,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-       <groupId>org.springframework</groupId>
-       <artifactId>spring-test</artifactId>
-       <scope>test</scope>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
     </dependency>
-   </dependencies>
+  </dependencies>
 </project>

@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- 
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -31,39 +30,37 @@
     </dependency>
   </dependencies>
 
-
   <build>
-   <plugins>
-	<plugin>
-		<artifactId>maven-jar-plugin</artifactId>
-		<executions>
-			<execution>
-				<phase>package</phase>
-				<goals>
-					<goal>test-jar</goal>
-				</goals>
-			</execution>
-		</executions>
-		<configuration>
-			<archive>
-				<manifest>
-					<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-					<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-				</manifest>
-				<manifestEntries>
-					<GeoServerModule>extension</GeoServerModule>
-					<Application-Name>${project.build.finalname}</Application-Name>
-					<Project-Version>${project.version}</Project-Version>
-					<Iteration-Name>${iteration}</Iteration-Name>
-					<Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
-					<Git-Revision>${build.commit.id}</Git-Revision>
-				</manifestEntries>
-			</archive>
-		</configuration>
-	</plugin>
-   </plugins>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+            <manifestEntries>
+              <GeoServerModule>extension</GeoServerModule>
+              <Application-Name>${project.build.finalname}</Application-Name>
+              <Project-Version>${project.version}</Project-Version>
+              <Iteration-Name>${iteration}</Iteration-Name>
+              <Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
+              <Git-Revision>${build.commit.id}</Git-Revision>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
-
 
   <profiles>
 
@@ -103,7 +100,7 @@
         <module>mysql</module>
       </modules>
     </profile>
-    
+
     <profile>
       <id>db2</id>
       <modules>
@@ -117,7 +114,7 @@
         <module>jp2k</module>
       </modules>
     </profile>
-    
+
     <profile>
       <id>gdal</id>
       <modules>
@@ -138,14 +135,14 @@
         <module>imagemap</module>
       </modules>
     </profile>
-    
+
     <profile>
       <id>ogr</id>
       <modules>
         <module>ogr</module>
       </modules>
     </profile>
-    
+
     <profile>
       <id>excel</id>
       <modules>
@@ -227,28 +224,28 @@
         <module>css</module>
       </modules>
     </profile>
-    
+
     <profile>
       <id>mbstyle</id>
       <modules>
         <module>mbstyle</module>
       </modules>
     </profile>
-    
-    <profile>      
+
+    <profile>
       <id>csw</id>
       <modules>
         <module>csw</module>
       </modules>
     </profile>
-    
+
     <profile>
       <id>dxf</id>
       <modules>
         <module>dxf</module>
       </modules>
     </profile>
-    
+
     <profile>
       <id>printing</id>
       <modules>
@@ -276,11 +273,13 @@
         <module>importer</module>
       </modules>
     </profile>
-    
+
     <profile>
       <id>grib</id>
-	  <activation>
-        <property><name>grib</name></property>
+      <activation>
+        <property>
+          <name>grib</name>
+        </property>
       </activation>
       <modules>
         <module>grib</module>
@@ -290,8 +289,10 @@
     <profile>
       <id>netcdf</id>
       <activation>
-        <property><name>netcdf</name></property>
-      </activation> 
+        <property>
+          <name>netcdf</name>
+        </property>
+      </activation>
       <modules>
         <module>netcdf</module>
       </modules>
@@ -300,8 +301,10 @@
     <profile>
       <id>netcdf-out</id>
       <activation>
-        <property><name>netcdf-out</name></property>
-      </activation> 
+        <property>
+          <name>netcdf-out</name>
+        </property>
+      </activation>
       <modules>
         <module>netcdf-out</module>
       </modules>
@@ -326,42 +329,46 @@
     </profile>
     <profile>
       <id>sldService</id>
-      <modules> 
+      <modules>
         <module>sldService</module>
       </modules>
     </profile>
     <profile>
       <id>geofence</id>
-        <activation>
-          <property><name>geofence</name></property>
-        </activation>
-        <modules>
-          <module>geofence</module>
-        </modules>
+      <activation>
+        <property>
+          <name>geofence</name>
+        </property>
+      </activation>
+      <modules>
+        <module>geofence</module>
+      </modules>
     </profile>
     <profile>
       <id>geofence-server</id>
-        <activation>
-          <property><name>geofence</name></property>
-        </activation>
-        <modules>
-          <module>geofence</module>
-          <module>geofence-server</module>
-        </modules>
+      <activation>
+        <property>
+          <name>geofence</name>
+        </property>
+      </activation>
+      <modules>
+        <module>geofence</module>
+        <module>geofence-server</module>
+      </modules>
     </profile>
-    <profile>      
+    <profile>
       <id>authkey</id>
       <modules>
         <module>authkey</module>
       </modules>
     </profile>
-    <profile>      
+    <profile>
       <id>web-resource</id>
       <modules>
         <module>web-resource</module>
       </modules>
     </profile>
-    <profile>      
+    <profile>
       <id>params-extractor</id>
       <modules>
         <module>params-extractor</module>
@@ -373,13 +380,13 @@
         <module>wmts-multi-dimensional</module>
       </modules>
     </profile>
-    <profile>      
+    <profile>
       <id>gwc-s3</id>
       <modules>
         <module>gwc-s3</module>
       </modules>
     </profile>
-    <profile>      
+    <profile>
       <id>wps-download</id>
       <modules>
         <module>wps-download</module>
@@ -391,7 +398,7 @@
         <module>wps-jdbc</module>
       </modules>
     </profile>
-    <profile>      
+    <profile>
       <id>mapml</id>
       <modules>
         <module>mapml</module>
@@ -422,7 +429,7 @@
         <module>security</module>
         <module>xslt</module>
         <module>inspire</module>
-        <module>css</module>	
+        <module>css</module>
         <module>csw</module>
         <module>dxf</module>
         <module>printing</module>

@@ -51,7 +51,7 @@ public final class SVGBatikMapOutputFormat implements GetMapOutputFormat {
      * </ol>
      */
     private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(false, false, false, true, null);
+            new MapProducerCapabilities(false, false, true);
 
     private final WMS wms;
 

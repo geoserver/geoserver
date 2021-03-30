@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
@@ -20,20 +19,12 @@ import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.config.GeoServer;
 import org.geoserver.ows.kvp.TimeParser;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.NearestMatchFinder;
-import org.geoserver.wms.GetMap;
-import org.geoserver.wms.GetMapCallback;
-import org.geoserver.wms.GetMapCallbackAdapter;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSDimensionsTestSupport;
-import org.geoserver.wms.WMSInfo;
-import org.geoserver.wms.WMSMapContent;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
 
@@ -328,7 +319,6 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         BufferedImage image = getAsImage(BASE_PNG_URL + "&time=2009-10-31", "image/png");
         assertNearestTimeWarning(getLayerId(WATTEMP), "2008-11-01T00:00:00.000Z");
 
-        // same as testTimeAnimation, November
         assertPixel(image, 36, 31, new Color(246, 246, 255));
         assertPixel(image, 68, 72, new Color(255, 187, 187));
     }
@@ -341,118 +331,6 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         } finally {
             NearestMatchFinder.ENABLE_STRUCTURED_READER_SUPPORT = true;
         }
-    }
-
-    @Test
-    public void testTimeAnimation() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
-
-        List<BufferedImage> images =
-                getAsAnimation(
-                        BASE_URL + "&time=2008-10-01/2008-11-31&format=image/gif;subtype=animated",
-                        "image/gif");
-        assertEquals(2, images.size());
-        BufferedImage imageOctober = images.get(0);
-        BufferedImage imageNovember = images.get(1);
-
-        // this should be the same as "testTime"
-        assertPixel(imageOctober, 36, 31, new Color(246, 246, 255));
-        assertPixel(imageOctober, 68, 72, new Color(255, 181, 181));
-
-        // this should be the same as testDefault
-        assertPixel(imageNovember, 36, 31, new Color(246, 246, 255));
-        assertPixel(imageNovember, 68, 72, new Color(255, 187, 187));
-    }
-
-    @Test
-    public void testTimeAnimationTimeout() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
-
-        // setup a short timeout
-        final int TIMEOUT_MS = 10;
-        final GeoServer gs = getGeoServer();
-        WMSInfo wms = gs.getService(WMSInfo.class);
-        wms.getMetadata().put(WMS.MAX_RENDERING_TIME, String.valueOf(TIMEOUT_MS));
-        gs.save(wms);
-
-        // make extra sure we are going to take more than that
-        GetMap getMap = GeoServerExtensions.bean(GetMap.class);
-        List<GetMapCallback> originalCallbacks =
-                GeoServerExtensions.extensions(GetMapCallback.class);
-
-        GetMapCallback timeoutCallback =
-                new GetMapCallbackAdapter() {
-                    @Override
-                    public WMSMapContent beforeRender(WMSMapContent mapContent) {
-
-                        try {
-                            Thread.sleep(TIMEOUT_MS * 2);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                        return super.beforeRender(mapContent);
-                    }
-                };
-        try {
-            getMap.setGetMapCallbacks(Arrays.asList(timeoutCallback));
-
-            // run the request that will time out
-            MockHttpServletResponse resp =
-                    getAsServletResponse(
-                            BASE_URL
-                                    + "&time=2008-10-01/2008-11-31&format=image/gif;subtype=animated");
-            assertEquals("application/vnd.ogc.se_xml", resp.getContentType());
-            assertTrue(resp.getContentAsString().contains("This animation request used more time"));
-        } finally {
-            wms.getMetadata().remove(WMS.MAX_RENDERING_TIME);
-            gs.save(wms);
-            getMap.setGetMapCallbacks(originalCallbacks);
-        }
-    }
-
-    @Test
-    public void testElevationAnimation() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
-
-        List<BufferedImage> images =
-                getAsAnimation(
-                        BASE_URL + "&elevation=-100/500&format=image/gif;subtype=animated",
-                        "image/gif");
-        assertEquals(2, images.size());
-        BufferedImage image0 = images.get(0);
-        BufferedImage image100 = images.get(1);
-
-        // this should be the same as "testElevatin"
-        assertPixel(image100, 36, 31, new Color(255, 255, 255)); // nodata -> bgcolor
-        assertPixel(image100, 68, 72, new Color(246, 246, 255));
-
-        // this should be the same as testDefault
-        assertPixel(image0, 36, 31, new Color(246, 246, 255));
-        assertPixel(image0, 68, 72, new Color(255, 187, 187));
     }
 
     @Test

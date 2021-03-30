@@ -92,6 +92,6 @@ public class DDSMapResponse extends RenderedImageMapResponse {
     @Override
     public MapProducerCapabilities getCapabilities(String outputFormat) {
         // FIXME Become more capable
-        return new MapProducerCapabilities(false, false, false, true, null);
+        return new MapProducerCapabilities(false, false, true);
     }
 }

@@ -30,7 +30,7 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
     protected static final Logger LOGGER = Logging.getLogger(KMLMapOutputFormat.class);
 
     static final MapProducerCapabilities KML_CAPABILITIES =
-            new MapProducerCapabilities(false, false, true, true, null);
+            new MapProducerCapabilities(false, true, true);
 
     /** Official KML mime type */
     public static final String MIME_TYPE = "application/vnd.google-earth.kml+xml";

@@ -72,8 +72,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
      *   <li>transparency = supported
      * </ol>
      */
-    static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(true, false, true, true, null);
+    static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(true, true, true);
 
     /**
      * Set of parameters that we can ignore, since they are not part of the OpenLayers WMS request

@@ -11,11 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.wms.map.GIFMapResponse;
 import org.geotools.data.FeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
@@ -24,7 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class GetMapCallbackTest extends WMSDimensionsTestSupport {
@@ -141,56 +137,6 @@ public class GetMapCallbackTest extends WMSDimensionsTestSupport {
         assertEquals(0, callback.exceptions.size());
 
         assertEquals("cite:Forests", callback.layers.get(0).getTitle());
-    }
-
-    @Test
-    public void testAnimator() throws Exception {
-        TestCallback callback = new TestCallback();
-        getMap.setGetMapCallbacks(Arrays.asList(callback));
-        String requestURL =
-                "wms/animate?layers="
-                        + getLayerId(MockData.BASIC_POLYGONS)
-                        + "&aparam=fake_param&avalues=val0,val1,val2";
-
-        MockHttpServletResponse resp = getAsServletResponse(requestURL);
-
-        assertEquals("image/gif", resp.getContentType());
-
-        // the three frames, plus the fake request the animator does to get the mime type and
-        // map content for the output
-        assertEquals(4, callback.requests.size());
-        assertEquals(4, callback.mapContentsInited.size());
-        assertEquals(4, callback.layers.size());
-        assertEquals(4, callback.mapContents.size());
-        assertEquals(4, callback.maps.size());
-        assertEquals(0, callback.exceptions.size());
-    }
-
-    @Test
-    public void testAnimatedGifDimensions() throws Exception {
-        TestCallback callback = new TestCallback();
-        getMap.setGetMapCallbacks(Arrays.asList(callback));
-
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?service=WMS&version=1.1.1&request=GetMap"
-                                + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
-                                + "&layers="
-                                + getLayerId(V_TIME_ELEVATION)
-                                + "&time=2011-05-02,2011-05-04,2011-05-10&format="
-                                + GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED);
-
-        assertEquals("image/gif", response.getContentType());
-
-        // the three frames in a single request
-        assertEquals(1, callback.requests.size());
-        assertEquals(3, callback.mapContentsInited.size());
-        assertEquals(3, callback.layers.size());
-        assertEquals(3, callback.mapContents.size());
-        assertEquals(1, callback.maps.size());
-        assertEquals(0, callback.exceptions.size());
     }
 
     private class TestCallback implements GetMapCallback {

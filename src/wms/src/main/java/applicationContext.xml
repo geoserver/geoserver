@@ -233,11 +233,7 @@
     <bean id="AnimatedGIFDelayKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
 		<constructor-arg value="animatedGIFDelay"/>
  	</bean>
- 	
- 	<bean id="AnimatedGIFLoopContinuoslyKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
-		<constructor-arg value="animatedGIFLoopContinuosly"/>
- 	</bean>
- 	
+    
  	<bean id="widthKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">
 		<constructor-arg value="width"/>
  	</bean>
@@ -690,8 +686,6 @@
     </constructor-arg>
   </bean>
  		
-	<bean id="animateFilter" class="org.geoserver.wms.animate.AnimatorFilter"/>
- 	
 	<bean id="animateURLMapping" 
 		class="org.geoserver.ows.OWSHandlerMapping">
 		<constructor-arg ref="catalog"/>

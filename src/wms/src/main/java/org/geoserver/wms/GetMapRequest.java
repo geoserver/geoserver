@@ -614,20 +614,6 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
 
     private class OptionalParameters implements Cloneable {
 
-        /**
-         * Tells us whether or not we should loop forever in an ani,mated gif
-         *
-         * <p>Defaults to true
-         */
-        Boolean animatedGIFLoopContinuosly;
-
-        /**
-         * Tells us the delay in ms between two frames of an animated gif.
-         *
-         * <p>Default to 1s
-         */
-        Integer animatedGIFDelay;
-
         /** the map's background color requested, or the default (white) if not specified */
         Color bgColor = DEFAULT_BG;
 

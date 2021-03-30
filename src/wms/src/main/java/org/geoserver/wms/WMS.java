@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -119,24 +118,6 @@ public class WMS implements ApplicationContextAware {
     public static final String PNG_COMPRESSION = "pngCompression";
 
     public static final int PNG_COMPRESSION_DEFAULT = 25;
-
-    public static final String MAX_ALLOWED_FRAMES = "maxAllowedFrames";
-
-    public static final int MAX_ALLOWED_FRAMES_DEFAULT = Integer.MAX_VALUE;
-
-    public static final String MAX_RENDERING_TIME = "maxAnimatorRenderingTime";
-
-    public static final String MAX_RENDERING_SIZE = "maxRenderingSize";
-
-    public static final String FRAMES_DELAY = "framesDelay";
-
-    public static final int FRAMES_DELAY_DEFAULT = 1000;
-
-    public static final String DISPOSAL_METHOD = "disposalMethod";
-
-    public static final String LOOP_CONTINUOUSLY = "loopContinuously";
-
-    public static final Boolean LOOP_CONTINUOUSLY_DEFAULT = Boolean.FALSE;
 
     public static final String SCALEHINT_MAPUNITS_PIXEL = "scalehintMapunitsPixel";
 
@@ -245,9 +226,6 @@ public class WMS implements ApplicationContextAware {
         DISPOSAL_METHOD_PREVIOUS
     };
 
-    /** the WMS Animator animatorExecutor service */
-    private ExecutorService animatorExecutorService;
-
     private static final FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
 
     private final GeoServer geoserver;
@@ -343,16 +321,6 @@ public class WMS implements ApplicationContextAware {
 
     public GeoServer getGeoServer() {
         return this.geoserver;
-    }
-
-    /** @param animatorExecutorService the animatorExecutorService to set */
-    public void setAnimatorExecutorService(ExecutorService animatorExecutorService) {
-        this.animatorExecutorService = animatorExecutorService;
-    }
-
-    /** @return the animatorExecutorService */
-    public ExecutorService getAnimatorExecutorService() {
-        return animatorExecutorService;
     }
 
     public WMSInterpolation getInterpolation() {
@@ -591,30 +559,6 @@ public class WMS implements ApplicationContextAware {
     public boolean isRootLayerInCapabilitesEnabled() {
         return getMetadataValue(
                 ROOT_LAYER_IN_CAPABILITIES_KEY, ROOT_LAYER_IN_CAPABILITIES_DEFAULT, Boolean.class);
-    }
-
-    public int getMaxAllowedFrames() {
-        return getMetadataValue(MAX_ALLOWED_FRAMES, MAX_ALLOWED_FRAMES_DEFAULT, Integer.class);
-    }
-
-    public Long getMaxAnimatorRenderingTime() {
-        return getMetadataValue(MAX_RENDERING_TIME, null, Long.class);
-    }
-
-    public Long getMaxRenderingSize() {
-        return getMetadataValue(MAX_RENDERING_SIZE, null, Long.class);
-    }
-
-    public Integer getFramesDelay() {
-        return getMetadataValue(FRAMES_DELAY, FRAMES_DELAY_DEFAULT, Integer.class);
-    }
-
-    public String getDisposalMethod() {
-        return getMetadataValue(DISPOSAL_METHOD, DISPOSAL_METHOD_DEFAULT, String.class);
-    }
-
-    public Boolean getLoopContinuously() {
-        return getMetadataValue(LOOP_CONTINUOUSLY, LOOP_CONTINUOUSLY_DEFAULT, Boolean.class);
     }
 
     public Boolean getScalehintUnitPixel() {
@@ -1671,33 +1615,6 @@ public class WMS implements ApplicationContextAware {
         }
         int maxRenderingTime = getMaxRenderingTime(localMaxRenderingTime);
         return maxRenderingTime;
-    }
-
-    /**
-     * Returns the max rendering time for animations taking into account the server limits and the
-     * request options
-     */
-    public int getMaxAnimationRenderingTime(GetMapRequest request) {
-        int localMaxRenderingTime = 0;
-        Object timeoutOption = request.getFormatOptions().get("timeout");
-        if (timeoutOption != null) {
-            try {
-                localMaxRenderingTime = Integer.parseInt(timeoutOption.toString());
-            } catch (NumberFormatException e) {
-                RenderedImageMapOutputFormat.LOGGER.log(
-                        Level.WARNING,
-                        "Could not parse format_option \"timeout\": " + timeoutOption,
-                        e);
-            }
-        }
-        Long maxRenderingTime = getMaxAnimatorRenderingTime();
-        if (maxRenderingTime == null) {
-            return localMaxRenderingTime;
-        } else if (localMaxRenderingTime == 0) {
-            return maxRenderingTime.intValue();
-        } else {
-            return Math.min(maxRenderingTime.intValue(), localMaxRenderingTime);
-        }
     }
 
     /**

@@ -6,34 +6,43 @@ package org.geoserver.security.auth.web;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
-import org.geoserver.catalog.TestHttpClientProvider;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.ContentType;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.util.IOUtils;
-import org.geotools.http.HTTPClient;
-import org.geotools.http.HTTPResponse;
-import org.geotools.http.SimpleHttpClient;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class SimpleWebServiceAuthenticationProvider extends GeoServerAuthenticationProvider {
 
     private static final String HTTP_AUTHORIZATION_HEADER = "X-HTTP-AUTHORIZATION";
     private static final String ROLE_PREFIX = "ROLE_";
+
+    private static final List<String> SUPPORTED_MIME_TYPES = Arrays.asList("application/json");
 
     SimpleWebAuthenticationConfig config;
 
@@ -59,61 +68,39 @@ public class SimpleWebServiceAuthenticationProvider extends GeoServerAuthenticat
 
     @Override
     public Authentication authenticate(Authentication authentication, HttpServletRequest request) {
-
         Set<GrantedAuthority> roles = new TreeSet<>();
         roles.addAll(authentication.getAuthorities());
-
         String responseBody = null;
-        try {
-            HTTPClient client = getHTTPClient(config);
-            Map<String, String> headerMap = null;
+        try (CloseableHttpClient client = buildHttpClient()) {
+            HttpGet get = createGetRequest(authentication);
+            try (CloseableHttpResponse httpResponse = client.execute(get)) {
 
-            if (config.isUseHeader()) headerMap = getHeader(authentication);
+                int statusCode = httpResponse.getStatusLine().getStatusCode();
 
-            URL authenticationURL = getAuthenticationURL(config.getConnectionURL(), authentication);
-            verboseLog(
-                    "External authentication call URL:"
-                            + authenticationURL.toExternalForm()
-                            + " with headers:"
-                            + headerMap);
-            HTTPResponse httpResponse = client.get(authenticationURL, headerMap);
-            responseBody = IOUtils.toString(httpResponse.getResponseStream());
-            if (responseBody == null)
-                throw new UsernameNotFoundException(
-                        "Web Service Authentication Failed for "
-                                + authentication.getPrincipal().toString());
-            verboseLog("External authentication service response:" + responseBody);
-            roles.add(GeoServerRole.AUTHENTICATED_ROLE);
-        } catch (Exception e) {
-            LOGGER.severe(
+                if (statusCode != HttpServletResponse.SC_OK)
+                    throw new AuthenticationServiceException(
+                            "Web Service Authentication failed for "
+                                    + authentication.getPrincipal().toString()
+                                    + ". Response code is "
+                                    + statusCode);
+
+                HttpEntity entity = httpResponse.getEntity();
+                responseBody = IOUtils.toString(entity.getContent());
+                if (responseBody == null)
+                    throw new AuthenticationServiceException(
+                            "Web Service Authentication Failed for "
+                                    + authentication.getPrincipal().toString());
+                verboseLog("External authentication service response:" + responseBody);
+                roles.add(GeoServerRole.AUTHENTICATED_ROLE);
+            }
+        } catch (IOException e) {
+            throw new AuthenticationServiceException(
                     "Web Service Authentication Failed for "
-                            + authentication.getPrincipal().toString());
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            // let the other provider have a g
-            return null;
+                            + authentication.getPrincipal().toString(),
+                    e);
         }
 
-        // if a regex is set extract roles from it
-        if (config.getRoleRegex() != null && !config.getRoleRegex().isEmpty()) {
-            roles.addAll(extractRoles(responseBody, config.getRoleRegex()));
-        }
-
-        // next extract user roles from configured service
-        // if no role service is selected, use the system default
-        try {
-            GeoServerRoleService roleService =
-                    getRoleService(authentication.getPrincipal().toString(), config);
-            roles.addAll(authorize(authentication.getPrincipal().toString(), roleService));
-            roles.addAll(checkAdminRoles(roles, roleService));
-        } catch (Exception e) {
-            LOGGER.severe(
-                    "Error get roles from "
-                            + config.getRoleServiceName()
-                            + " Role Servie for user: "
-                            + authentication.getPrincipal().toString());
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-        }
-
+        addRoles(roles, responseBody, authentication);
         // authenticated but did find any roles..mark as anonymous
         if (roles.isEmpty()) roles.add(GeoServerRole.ANONYMOUS_ROLE);
 
@@ -154,33 +141,6 @@ public class SimpleWebServiceAuthenticationProvider extends GeoServerAuthenticat
         return roleService;
     }
 
-    private HTTPClient getHTTPClient(SimpleWebAuthenticationConfig config) {
-        // support for unit testing
-        if (TestHttpClientProvider.isTestModeEnabled()
-                && config.getConnectionURL().startsWith(TestHttpClientProvider.MOCKSERVER)) {
-            HTTPClient client = TestHttpClientProvider.get(config.getConnectionURL());
-
-            return client;
-        }
-
-        HTTPClient client;
-        client = new SimpleHttpClient();
-
-        int connectTimeout =
-                (config.getConnectionTimeOut() <= 0)
-                        ? SimpleWebAuthenticationConfig.DEFAULT_TIME_OUT
-                        : config.getConnectionTimeOut();
-        int readTimeout =
-                (config.getReadTimeoutOut() <= 0)
-                        ? SimpleWebAuthenticationConfig.DEFAULT_READTIME_OUT
-                        : config.getReadTimeoutOut();
-
-        client.setConnectTimeout(connectTimeout);
-        client.setReadTimeout(readTimeout);
-
-        return client;
-    }
-
     private Set<GrantedAuthority> extractRoles(final String responseBody, final String rolesRegex) {
         final Set<GrantedAuthority> authorities = new HashSet<>();
         final Pattern searchRolesRegex = Pattern.compile(rolesRegex);
@@ -197,28 +157,28 @@ public class SimpleWebServiceAuthenticationProvider extends GeoServerAuthenticat
                 }
             }
         }
-        return new TreeSet<GrantedAuthority>(authorities);
+        return new TreeSet<>(authorities);
     }
 
     // returns a URL with credentials substitued in place of place holders
-    private URL getAuthenticationURL(String connectionURL, Authentication authentication)
+    private String getAuthenticationURL(String connectionURL, Authentication authentication)
             throws MalformedURLException {
-        return new URL(
-                connectionURL
-                        .replace(
-                                SimpleWebAuthenticationConfig.URL_PLACEHOLDER_USER,
-                                authentication.getPrincipal().toString())
-                        .replace(
-                                SimpleWebAuthenticationConfig.URL_PLACEHOLDER_PASSWORD,
-                                authentication.getCredentials().toString()));
+        return connectionURL
+                .replace(
+                        SimpleWebAuthenticationConfig.URL_PLACEHOLDER_USER,
+                        encode(authentication.getPrincipal().toString()))
+                .replace(
+                        SimpleWebAuthenticationConfig.URL_PLACEHOLDER_PASSWORD,
+                        encode(authentication.getCredentials().toString()));
     }
 
-    private Map<String, String> getHeader(Authentication authentication) {
-        Map<String, String> headerMap = new HashMap<>();
-
-        String credentials = authentication.getPrincipal() + ":" + authentication.getCredentials();
-        headerMap.put(HTTP_AUTHORIZATION_HEADER, credentials);
-        return headerMap;
+    private void addHeaders(HttpGet httpGet, Authentication authentication) {
+        String credentials =
+                encode(
+                        authentication.getPrincipal().toString()
+                                + ":"
+                                + authentication.getCredentials().toString());
+        httpGet.addHeader(HTTP_AUTHORIZATION_HEADER, credentials);
     }
 
     private void verboseLog(String traceLog) {
@@ -253,5 +213,63 @@ public class SimpleWebServiceAuthenticationProvider extends GeoServerAuthenticat
                         + "| User is GroupAdmin: "
                         + isGroupAdmin);
         return adminAuthorities;
+    }
+
+    private String encode(String credentials) {
+        return new String(Base64.getEncoder().encode(credentials.getBytes()));
+    }
+
+    private CloseableHttpClient buildHttpClient() {
+        RequestConfig clientConfig =
+                RequestConfig.custom()
+                        .setConnectTimeout(this.config.getConnectionTimeOut() * 1000)
+                        .setSocketTimeout(this.config.getReadTimeoutOut() * 1000)
+                        .build();
+        return HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).build();
+    }
+
+    private HttpGet createGetRequest(Authentication authentication) throws MalformedURLException {
+        String authenticationURL = getAuthenticationURL(config.getConnectionURL(), authentication);
+        HttpGet httpGet = new HttpGet(authenticationURL);
+        if (config.isUseHeader()) addHeaders(httpGet, authentication);
+
+        verboseLog(
+                "External authentication call URL:"
+                        + authenticationURL
+                        + " with headers:"
+                        + Stream.of(httpGet.getAllHeaders())
+                                .collect(Collectors.toMap(Header::getName, Header::getValue)));
+        return httpGet;
+    }
+
+    private boolean isSupportedMimeType(ContentType contentType) {
+        boolean supported = false;
+        if (contentType != null && SUPPORTED_MIME_TYPES.contains(contentType.getMimeType()))
+            supported = true;
+        return supported;
+    }
+
+    private void addRoles(
+            Set<GrantedAuthority> roles, String responseBody, Authentication authentication) {
+        // if a regex is set extract roles from it
+        if (config.getRoleRegex() != null && !config.getRoleRegex().isEmpty()) {
+            roles.addAll(extractRoles(responseBody, config.getRoleRegex()));
+        }
+
+        // next extract user roles from configured service
+        // if no role service is selected, use the system default
+        try {
+            GeoServerRoleService roleService =
+                    getRoleService(authentication.getPrincipal().toString(), config);
+            roles.addAll(authorize(authentication.getPrincipal().toString(), roleService));
+            roles.addAll(checkAdminRoles(roles, roleService));
+        } catch (Exception e) {
+            LOGGER.severe(
+                    "Error getting roles from "
+                            + config.getRoleServiceName()
+                            + " Role Servie for user: "
+                            + authentication.getPrincipal().toString());
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 }

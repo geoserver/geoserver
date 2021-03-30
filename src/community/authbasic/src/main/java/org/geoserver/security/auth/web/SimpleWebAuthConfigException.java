@@ -18,6 +18,8 @@ public class SimpleWebAuthConfigException extends SecurityConfigException {
 
     public static final String NO_ROLE_SERVICE_SELECTED = "NO_ROLE_SERVICE_SELECTED";
 
+    public static final String HTTP_CONNECTION_NOT_ALLOWED = "HTTP_CONNECTION_NOT_ALLOWED";
+
     public SimpleWebAuthConfigException(String errorId, Object[] args) {
         super(errorId, args);
     }

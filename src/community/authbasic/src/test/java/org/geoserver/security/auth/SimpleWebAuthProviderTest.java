@@ -4,69 +4,109 @@
  */
 package org.geoserver.security.auth;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.net.URL;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
+import java.io.IOException;
 import java.security.Principal;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.servlet.ServletRequestEvent;
 import javax.servlet.http.HttpServletResponse;
-import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.GeoServerSecurityFilterChainProxy;
 import org.geoserver.security.auth.web.SimpleWebAuthenticationConfig;
 import org.geoserver.security.auth.web.SimpleWebServiceAuthenticationProvider;
 import org.geoserver.security.config.BasicAuthenticationFilterConfig;
 import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
 import org.geoserver.security.impl.GeoServerRole;
-import org.geoserver.test.http.MockHttpClient;
-import org.geoserver.test.http.MockHttpResponse;
-import org.geotools.util.Base64;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.request.RequestContextListener;
 
 public class SimpleWebAuthProviderTest extends AbstractAuthenticationProviderTest {
     public static final String testFilterName = "basicAuthTestFilter";
 
-    private static final String WebAuthProviderName = "webAuthProvider";
-    private static final String webAuthProviderUseHeader = "webAuthProviderUseHeader";
-    private static final String webAuthProviderWithRoleService = "webAuthProviderWithRoleService";
+    private static WireMockServer externalHTTPService;
+    private static final String VALID_RESPONSE = "\"roles\":\"WEB_SERVICE_ROLE\"";
+    private static final String NO_AUTH_RESPONSE = "\"authenticated\":\"false\"";
 
-    protected MockHttpClient webAuthHttpClientClient;
+    private static final String AUTH_REQUEST_PATH = "/auth";
+    private static final String TEST_USERNAME_ENC = encode(testUserName);
+    private static final String TEST_PWD_ENC = encode(testPassword);
+    private static final String TEST_HEADER_ENC = encode(testUserName + ":" + testPassword);
 
-    protected static URL baseURL;
-    protected static URL authURL;
+    private static final String TEST_NO_AUTH_USERNAME_ENC = encode("unauthUser");
+    private static final String TEST_NO_AUTH_PWD_ENC = encode("unauthPwd");
+    private static final String TEST_NO_AUTH_HEADER_ENC = encode("unauthUser" + ":" + "unauthPwd");
+
+    private static String authService;
+
+    @BeforeClass
+    public static void beforeClass() throws Exception {
+        externalHTTPService =
+                new WireMockServer(
+                        wireMockConfig()
+                                .dynamicPort()
+                                // uncomment the following to get wiremock logging
+                                .notifier(new ConsoleNotifier(true)));
+        externalHTTPService.start();
+        authService = "http://localhost:" + externalHTTPService.port();
+        externalHTTPService.stubFor(
+                WireMock.get(urlPathEqualTo(AUTH_REQUEST_PATH))
+                        .withHeader(
+                                "X-HTTP-AUTHORIZATION",
+                                equalTo(encode(testUserName + ":" + testPassword)))
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(200)
+                                        .withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)
+                                        .withBody(VALID_RESPONSE)));
+        externalHTTPService.stubFor(
+                WireMock.get(urlPathEqualTo(AUTH_REQUEST_PATH))
+                        .withQueryParam("user", equalTo(TEST_USERNAME_ENC))
+                        .withQueryParam("password", equalTo(TEST_PWD_ENC))
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(200)
+                                        .withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)
+                                        .withBody(VALID_RESPONSE)));
+        externalHTTPService.stubFor(
+                WireMock.get(urlPathEqualTo(AUTH_REQUEST_PATH))
+                        .withQueryParam("user", equalTo(TEST_NO_AUTH_USERNAME_ENC))
+                        .withQueryParam("password", equalTo(TEST_NO_AUTH_PWD_ENC))
+                        .willReturn(
+                                aResponse()
+                                        .withStatus(401)
+                                        .withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)
+                                        .withBody(NO_AUTH_RESPONSE)));
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-
         // configure the basic filter username password filter
         BasicAuthenticationFilterConfig config = new BasicAuthenticationFilterConfig();
         config.setClassName(GeoServerBasicAuthenticationFilter.class.getName());
         config.setUseRememberMe(false);
         config.setName(testFilterName);
         getSecurityManager().saveFilter(config);
-
-        String response = "\"user\":\"" + testUserName + "\",\"roles\":\"WEB_SERVICE_ROLE\"";
-
-        webAuthHttpClientClient = new MockHttpClient();
-        baseURL = new URL(TestHttpClientProvider.MOCKSERVER + "/webAuth");
-        authURL = new URL(baseURL + "?user=" + testUserName + "&pass=" + testPassword);
-        webAuthHttpClientClient.expectGet(
-                authURL, new MockHttpResponse(response.getBytes(), "text/plain"));
-        webAuthHttpClientClient.expectGet(
-                baseURL, new MockHttpResponse(response.getBytes(), "text/plain"));
-        TestHttpClientProvider.bind(
-                webAuthHttpClientClient, baseURL + "?user={user}&pass={password}");
-        TestHttpClientProvider.bind(webAuthHttpClientClient, authURL);
-        // for header
-        TestHttpClientProvider.bind(webAuthHttpClientClient, baseURL);
     }
 
     @Test
@@ -74,33 +114,22 @@ public class SimpleWebAuthProviderTest extends AbstractAuthenticationProviderTes
 
         SimpleWebAuthenticationConfig config = new SimpleWebAuthenticationConfig();
         config.setClassName(SimpleWebServiceAuthenticationProvider.class.getName());
-        config.setName(WebAuthProviderName);
-        config.setConnectionURL(baseURL + "?user={user}&pass={password}");
+        config.setName("webAuthProvider");
+        config.setConnectionURL(
+                authService + AUTH_REQUEST_PATH + "?user={user}&password={password}");
         config.setRoleRegex("^.*?\"roles\"\\s*:\\s*\"([^\"]+)\".*$");
+        config.setAllowHTTPConnection(true);
 
         config.setAuthorizationOption(SimpleWebAuthenticationConfig.AUTHORIZATION_RADIO_OPTION_WEB);
 
         getSecurityManager().saveAuthenticationProvider(config);
 
         prepareFilterChain(pattern, testFilterName);
-        prepareAuthProviders(WebAuthProviderName);
-        // SecurityContextHolder.getContext().setAuthentication(null);
+        prepareAuthProviders("webAuthProvider");
 
-        // Test entry point
-        MockHttpServletRequest request = createRequest("/foo/bar");
-        request.setMethod(RequestMethod.GET.toString());
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        MockFilterChain chain = new MockFilterChain();
+        MockHttpServletRequest request = createMockRequest();
 
-        chain = new MockFilterChain();
-
-        request.addHeader(
-                "Authorization",
-                "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (testUserName + ":" + testPassword).getBytes())));
-        getProxy().doFilter(request, response, chain);
+        MockHttpServletResponse response = executeOnSecurityFilters(request);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
         Authentication auth = getAuth(testFilterName, testUserName, null, null);
@@ -116,37 +145,25 @@ public class SimpleWebAuthProviderTest extends AbstractAuthenticationProviderTes
 
     @Test
     public void testWebAuthWithCredentialsInHeader() throws Exception {
-
+        String providerName = "webAuthProviderUseHeader";
         SimpleWebAuthenticationConfig config = new SimpleWebAuthenticationConfig();
         config.setClassName(SimpleWebServiceAuthenticationProvider.class.getName());
-        config.setName(webAuthProviderUseHeader);
-        config.setConnectionURL(baseURL + "?user={user}&pass={password}");
+        config.setName(providerName);
+        config.setConnectionURL(authService + AUTH_REQUEST_PATH);
         config.setRoleRegex("^.*?\"roles\"\\s*:\\s*\"([^\"]+)\".*$");
-
         config.setAuthorizationOption(SimpleWebAuthenticationConfig.AUTHORIZATION_RADIO_OPTION_WEB);
         config.setUseHeader(true);
+        config.setAllowHTTPConnection(true);
 
         getSecurityManager().saveAuthenticationProvider(config);
 
         prepareFilterChain(pattern, testFilterName);
-        prepareAuthProviders(webAuthProviderUseHeader);
-        // SecurityContextHolder.getContext().setAuthentication(null);
+        prepareAuthProviders(providerName);
 
-        // Test entry point
-        MockHttpServletRequest request = createRequest("/foo/bar");
-        request.setMethod(RequestMethod.GET.toString());
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        MockFilterChain chain = new MockFilterChain();
+        MockHttpServletRequest request = createMockRequest();
 
-        chain = new MockFilterChain();
+        MockHttpServletResponse response = executeOnSecurityFilters(request);
 
-        request.addHeader(
-                "Authorization",
-                "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (testUserName + ":" + testPassword).getBytes())));
-        getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
         Authentication auth = getAuth(testFilterName, testUserName, null, null);
@@ -163,32 +180,26 @@ public class SimpleWebAuthProviderTest extends AbstractAuthenticationProviderTes
     @Test
     public void testWebAuthWithRoleService() throws Exception {
 
+        String providerName = "webAuthProviderWithRoleService";
         SimpleWebAuthenticationConfig config = new SimpleWebAuthenticationConfig();
         config.setClassName(SimpleWebServiceAuthenticationProvider.class.getName());
-        config.setName(webAuthProviderWithRoleService);
-        config.setConnectionURL(baseURL + "?user={user}&pass={password}");
+        config.setName(providerName);
+        config.setConnectionURL(
+                authService + AUTH_REQUEST_PATH + "?user={user}&password={password}");
         config.setAuthorizationOption(
                 SimpleWebAuthenticationConfig.AUTHORIZATION_RADIO_OPTION_SERVICE);
         config.setRoleServiceName(getSecurityManager().getActiveRoleService().getName());
+        config.setAllowHTTPConnection(true);
+
         getSecurityManager().saveAuthenticationProvider(config);
 
         prepareFilterChain(pattern, testFilterName);
-        prepareAuthProviders(webAuthProviderWithRoleService);
-        // Test entry point
-        MockHttpServletRequest request = createRequest("/foo/bar");
-        request.setMethod(RequestMethod.GET.toString());
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        MockFilterChain chain = new MockFilterChain();
+        prepareAuthProviders(providerName);
 
-        chain = new MockFilterChain();
+        MockHttpServletRequest request = createMockRequest();
 
-        request.addHeader(
-                "Authorization",
-                "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (testUserName + ":" + testPassword).getBytes())));
-        getProxy().doFilter(request, response, chain);
+        MockHttpServletResponse response = executeOnSecurityFilters(request);
+
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
         Authentication auth = getAuth(testFilterName, testUserName, null, null);
@@ -197,6 +208,31 @@ public class SimpleWebAuthProviderTest extends AbstractAuthenticationProviderTes
         assertTrue(auth.getAuthorities().contains(new GeoServerRole(derivedRole)));
         // role from Auth provider
         assertTrue(auth.getAuthorities().contains(GeoServerRole.AUTHENTICATED_ROLE));
+    }
+
+    @Test
+    public void testWebAuthFails() throws Exception {
+        String providerName = "NoAuthProvider";
+        SimpleWebAuthenticationConfig config = new SimpleWebAuthenticationConfig();
+        config.setClassName(SimpleWebServiceAuthenticationProvider.class.getName());
+        config.setName(providerName);
+        config.setConnectionURL(
+                authService + AUTH_REQUEST_PATH + "?user={user}&password={password}");
+        config.setAuthorizationOption(
+                SimpleWebAuthenticationConfig.AUTHORIZATION_RADIO_OPTION_SERVICE);
+        config.setRoleServiceName(getSecurityManager().getActiveRoleService().getName());
+        config.setAllowHTTPConnection(true);
+
+        getSecurityManager().saveAuthenticationProvider(config);
+
+        prepareFilterChain(pattern, testFilterName);
+        prepareAuthProviders(providerName);
+
+        MockHttpServletRequest request = createMockRequest(TEST_NO_AUTH_HEADER_ENC);
+
+        MockHttpServletResponse response = executeOnSecurityFilters(request);
+
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
     }
 
     Authentication getAuth(String filterName, String user, Integer idleTime, Integer liveTime) {
@@ -244,5 +280,36 @@ public class SimpleWebAuthProviderTest extends AbstractAuthenticationProviderTes
         }
 
         return result;
+    }
+
+    private static String encode(String credentials) throws RuntimeException {
+        return new String(Base64.getEncoder().encode(credentials.getBytes()));
+    }
+
+    private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
+            throws IOException, javax.servlet.ServletException {
+        // for session local support in Spring
+        new RequestContextListener()
+                .requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
+
+        // run on the
+        MockFilterChain chain = new MockFilterChain();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        GeoServerSecurityFilterChainProxy filterChainProxy =
+                GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
+        filterChainProxy.doFilter(request, response, chain);
+
+        return response;
+    }
+
+    private MockHttpServletRequest createMockRequest() {
+        return createMockRequest(TEST_HEADER_ENC);
+    }
+
+    private MockHttpServletRequest createMockRequest(String authHeader) {
+        MockHttpServletRequest request = createRequest("/foo/bar");
+        request.setMethod(RequestMethod.GET.toString());
+        request.addHeader("Authorization", "Basic " + authHeader);
+        return request;
     }
 }

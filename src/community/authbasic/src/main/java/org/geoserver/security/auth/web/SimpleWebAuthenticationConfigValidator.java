@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.auth.web;
 
+import static org.geoserver.security.auth.web.SimpleWebAuthConfigException.HTTP_CONNECTION_NOT_ALLOWED;
 import static org.geoserver.security.auth.web.SimpleWebAuthConfigException.INVALID_REGEX_EXPRESSION;
 import static org.geoserver.security.auth.web.SimpleWebAuthConfigException.INVALID_TIMEOUT;
 import static org.geoserver.security.auth.web.SimpleWebAuthConfigException.INVALID_WEB_SERVICE_URL;
@@ -81,8 +82,9 @@ public class SimpleWebAuthenticationConfigValidator extends SecurityConfigValida
                     INVALID_WEB_SERVICE_URL, new Object[] {connectionURL});
         }
 
-        if (!connectionURL.startsWith("https"))
-            LOGGER.warning("Use of HTTPS is highly recommended");
+        if (!connectionURL.startsWith("https") && !config.isAllowHTTPConnection())
+            throw new SimpleWebAuthConfigException(HTTP_CONNECTION_NOT_ALLOWED, new Object[] {});
+        LOGGER.warning("Use of HTTPS is highly recommended");
 
         // look for {user} and {password} if not set to use HEADER
         if (!config.isUseHeader()) {

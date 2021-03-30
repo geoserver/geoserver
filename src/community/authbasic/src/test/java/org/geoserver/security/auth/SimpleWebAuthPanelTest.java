@@ -90,6 +90,7 @@ public class SimpleWebAuthPanelTest extends AbstractSecurityNamedServicePanelTes
         formTester.setValue(
                 "panel:content:webAuthorizationContainer:roleRegex",
                 "^.*?roles\"\\s*.\\s*\"([^\"]+)\".*$");
+        formTester.setValue("panel:content:allowHTTPConnection", true);
 
         clickSave();
         tester.assertNoErrorMessage();
@@ -115,6 +116,7 @@ public class SimpleWebAuthPanelTest extends AbstractSecurityNamedServicePanelTes
         formTester.setValue(
                 "panel:content:connectionURL",
                 "http://localhost:5000/auth?user={user}&pass={password}");
+        formTester.setValue("panel:content:allowHTTPConnection", true);
 
         // selecting a role service
         RoleServiceChoice roleChoice =
@@ -123,7 +125,6 @@ public class SimpleWebAuthPanelTest extends AbstractSecurityNamedServicePanelTes
                                 "form:panel:content:roleAuthorizationContainer:roleServiceName",
                                 false);
         roleChoice.setModelObject(roleServiceName);
-
         clickSave();
         tester.assertNoErrorMessage();
 
@@ -141,7 +142,7 @@ public class SimpleWebAuthPanelTest extends AbstractSecurityNamedServicePanelTes
         navigateToNewWebAuthPanel(webAuthProviderName);
         // set url value without place holders
         formTester.setValue("panel:content:connectionURL", "http://localhost:5000/auth");
-
+        formTester.setValue("panel:content:allowHTTPConnection", true);
         clickSave();
         assertTrue(
                 findErrorMessage(
@@ -152,6 +153,7 @@ public class SimpleWebAuthPanelTest extends AbstractSecurityNamedServicePanelTes
         navigateToNewWebAuthPanel(webAuthProviderName);
         formTester.setValue("panel:content:connectionURL", "http://localhost:5000/auth");
         formTester.setValue("panel:content:useHeader", true);
+        formTester.setValue("panel:content:allowHTTPConnection", true);
         clickSave();
         tester.assertNoErrorMessage();
     }
@@ -165,7 +167,7 @@ public class SimpleWebAuthPanelTest extends AbstractSecurityNamedServicePanelTes
                 "http://localhost:5000/auth?user={user}&pass={password}");
 
         formTester.setValue("panel:content:webAuthorizationContainer:roleRegex", "[");
-
+        formTester.setValue("panel:content:allowHTTPConnection", true);
         clickSave();
         assertTrue(findErrorMessage("Invalid Regex Expression", FeedbackMessage.ERROR));
     }
@@ -181,10 +183,25 @@ public class SimpleWebAuthPanelTest extends AbstractSecurityNamedServicePanelTes
         formTester.setValue(
                 "panel:content:connectionURL",
                 "http://localhost:5000/auth?user={user}&pass={password}");
+        formTester.setValue("panel:content:allowHTTPConnection", true);
 
         // no role service is selected and click save
         clickSave();
         assertTrue(findErrorMessage("No Role Service has been selected", FeedbackMessage.ERROR));
+    }
+
+    @Test
+    public void testAllowsHTTPConnectionValidation() throws Exception {
+
+        // test the place holders are not required when using headers
+        navigateToNewWebAuthPanel(webAuthProviderName);
+        formTester.setValue("panel:content:connectionURL", "http://localhost:5000/auth");
+        formTester.setValue("panel:content:useHeader", true);
+        clickSave();
+        assertTrue(
+                findErrorMessage(
+                        "HTTP connections is not allowed. If you really want to allow it flag the Allow HTTP connection checkbox",
+                        FeedbackMessage.ERROR));
     }
 
     private boolean findErrorMessage(String msg, int level) {

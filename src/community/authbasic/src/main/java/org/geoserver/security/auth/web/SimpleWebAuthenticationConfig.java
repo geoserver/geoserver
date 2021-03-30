@@ -39,6 +39,8 @@ public class SimpleWebAuthenticationConfig extends BaseSecurityNamedServiceConfi
     private boolean useHeader;
     private String authorizationOption = AUTHORIZATION_RADIO_OPTION_WEB;
 
+    private boolean allowHTTPConnection;
+
     public SimpleWebAuthenticationConfig() {
         super();
     }
@@ -52,6 +54,7 @@ public class SimpleWebAuthenticationConfig extends BaseSecurityNamedServiceConfi
         this.connectionTimeOut = other.getConnectionTimeOut();
         this.useHeader = other.isUseHeader();
         this.authorizationOption = other.getAuthorizationOption();
+        this.allowHTTPConnection = other.isAllowHTTPConnection();
     }
 
     /** @return the connectionURL */
@@ -134,6 +137,14 @@ public class SimpleWebAuthenticationConfig extends BaseSecurityNamedServiceConfi
         // empty
     }
 
+    public boolean isAllowHTTPConnection() {
+        return allowHTTPConnection;
+    }
+
+    public void setAllowHTTPConnection(boolean allowHTTPConnection) {
+        this.allowHTTPConnection = allowHTTPConnection;
+    }
+
     @Override
     public String toString() {
         return "SimpleWebAuthenticationConfig [connectionURL="
@@ -150,6 +161,8 @@ public class SimpleWebAuthenticationConfig extends BaseSecurityNamedServiceConfi
                 + useHeader
                 + ", authorizationOption="
                 + authorizationOption
+                + ", allowHTTPConnection"
+                + allowHTTPConnection
                 + "]";
     }
 }

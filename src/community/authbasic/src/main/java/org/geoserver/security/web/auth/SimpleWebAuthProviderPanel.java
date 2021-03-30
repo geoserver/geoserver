@@ -32,6 +32,7 @@ public class SimpleWebAuthProviderPanel
         add(new TextField<Integer>("readTimeoutOut"));
         add(new TextField<Integer>("connectionTimeOut"));
         add(new CheckBox("useHeader"));
+        add(new CheckBox("allowHTTPConnection"));
 
         // authorization controls
         webAuthorizationContainer.setOutputMarkupId(true);
@@ -60,7 +61,6 @@ public class SimpleWebAuthProviderPanel
 
     private RadioGroup initAuthorizationRadioChoice(IModel<SimpleWebAuthenticationConfig> model) {
         RadioGroup sl = new RadioGroup("authorizationOption");
-        // form.add(sl);
         sl.add(
                 new Radio<>(
                         "roleService",
@@ -70,13 +70,6 @@ public class SimpleWebAuthProviderPanel
                 new Radio<>(
                         "webResponse",
                         new Model<>(SimpleWebAuthenticationConfig.AUTHORIZATION_RADIO_OPTION_WEB)));
-
-        //        final RadioChoice<String> radioChoice =
-        //                new RadioChoice<String>(
-        //                        "authorizationOption",
-        //                        new PropertyModel<String>(model, "authorizationOption"),
-        //                        SimpleWebAuthenticationConfig.AUTHORIZATION_RADIO_OPTIONS);
-
         sl.add(
                 new AjaxFormChoiceComponentUpdatingBehavior() {
 

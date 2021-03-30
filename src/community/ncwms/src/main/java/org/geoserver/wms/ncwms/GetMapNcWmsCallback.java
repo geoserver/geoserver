@@ -70,29 +70,6 @@ public class GetMapNcWmsCallback extends AbstractDispatcherCallback {
             }
             EnvFunction.setLocalValue(PaletteParser.OPACITY, value / 100f);
         }
-        if (kvp.containsKey(ANIMATION)) {
-            String str = (String) rawKvp.get(ANIMATION);
-            Boolean animate = Converters.convert(str, Boolean.class);
-            if ((animate == null && str != null && !str.trim().isEmpty())) {
-                throw new ServiceException(
-                        "Expected a boolean value for ANIMATION but found '" + str + "' instead",
-                        ServiceException.INVALID_PARAMETER_VALUE,
-                        "ANIMATION");
-            }
-            if (animate) {
-                String format = (String) rawKvp.get("format");
-                if (!gifResponse.getOutputFormats().contains(format)) {
-                    throw new ServiceException(
-                            "Animation is supported only with image/gif output format",
-                            ServiceException.INVALID_PARAMETER_VALUE,
-                            "format");
-                } else if (!GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED.equals(format)) {
-                    // switch to animated mode
-                    rawKvp.put("format", GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED);
-                    kvp.put("format", GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED);
-                }
-            }
-        }
         mapParameter(kvp, rawKvp, NUMCOLORBANDS, PaletteParser.NUMCOLORS, Integer.class);
         mapParameter(kvp, rawKvp, BELOWMINCOLOR, PaletteParser.COLOR_BEFORE, String.class);
         mapParameter(kvp, rawKvp, ABOVEMAXCOLOR, PaletteParser.COLOR_AFTER, String.class);

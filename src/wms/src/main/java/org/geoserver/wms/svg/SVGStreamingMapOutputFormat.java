@@ -35,7 +35,7 @@ public final class SVGStreamingMapOutputFormat implements GetMapOutputFormat {
      * </ol>
      */
     private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(false, false, false, true, null);
+            new MapProducerCapabilities(false, false, true);
 
     public SVGStreamingMapOutputFormat() {
         //

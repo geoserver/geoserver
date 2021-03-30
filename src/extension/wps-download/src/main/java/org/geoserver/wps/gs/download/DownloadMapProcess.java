@@ -104,11 +104,6 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                     public int getMaxRenderingErrors() {
                         return -1;
                     }
-
-                    @Override
-                    public Long getMaxRenderingSize() {
-                        return null; //
-                    }
                 };
         this.getMapReader = new GetMapKvpRequestReader(wms);
     }

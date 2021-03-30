@@ -23,7 +23,7 @@ public class JpegPngMapResponse extends RenderedImageMapResponse {
     private static final String[] OUTPUT_FORMATS = {MIME, MIME8};
 
     private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(true, false, false, true, null);
+            new MapProducerCapabilities(true, false, true);
 
     private PNGMapResponse pngResponse;
 

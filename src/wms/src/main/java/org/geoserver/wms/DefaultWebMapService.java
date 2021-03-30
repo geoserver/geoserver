@@ -14,7 +14,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.sld.GetStyles;
 import org.geoserver.sld.GetStylesRequest;
-import org.geoserver.wms.animate.Animator;
 import org.geoserver.wms.capabilities.Capabilities_1_3_0_Transformer;
 import org.geoserver.wms.capabilities.GetCapabilitiesTransformer;
 import org.geoserver.wms.describelayer.DescribeLayerModel;
@@ -281,21 +280,6 @@ public class DefaultWebMapService
     public WebMap kml(GetMapRequest getMap) {
         throw new ServiceException(
                 "kml service is not available, please include a KML module in WEB-INF/lib");
-    }
-
-    /**
-     * Method for generation of WMS animations.
-     *
-     * @param getMap GetMapRequest
-     * @return the <WebMap> output
-     */
-    @Override
-    public WebMap animate(GetMapRequest getMap) {
-        try {
-            return Animator.produce(getMap, this, wms);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /** @see WebMapService#reflect(GetMapRequest) */

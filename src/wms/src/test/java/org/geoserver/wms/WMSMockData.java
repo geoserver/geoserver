@@ -220,7 +220,7 @@ public class WMSMockData {
 
         @Override
         public MapProducerCapabilities getCapabilities(String format) {
-            return new MapProducerCapabilities(true, true, true, true, MIME_TYPE);
+            return new MapProducerCapabilities(true, true, true);
         }
     }
 

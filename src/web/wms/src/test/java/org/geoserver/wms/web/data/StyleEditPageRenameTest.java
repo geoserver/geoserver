@@ -4,10 +4,10 @@
  */
 package org.geoserver.wms.web.data;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 import org.apache.wicket.Component;
@@ -20,6 +20,7 @@ import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -124,7 +125,8 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
                     tester.getComponentFromLastRenderedPage("styleForm:context:panel:generate");
             tester.executeAjaxEvent(generateLink, "onClick");
             // check single quote in the message has been escaped
-            assertTrue(tester.getLastResponseAsString().contains("l\\'éditeur"));
+            assertThat(
+                    tester.getLastResponseAsString(), CoreMatchers.containsString("l\\'éditeur"));
         } finally {
             session.clear();
             session.setLocale(Locale.getDefault());
@@ -149,7 +151,8 @@ public class StyleEditPageRenameTest extends GeoServerWicketTestSupport {
                     tester.getComponentFromLastRenderedPage("styleForm:context:panel:copy");
             tester.executeAjaxEvent(copyLink, "onClick");
             // check single quote in the message has been escaped
-            assertTrue(tester.getLastResponseAsString().contains("l\\'éditeur"));
+            assertThat(
+                    tester.getLastResponseAsString(), CoreMatchers.containsString("l\\'éditeur"));
         } finally {
             session.clear();
             session.setLocale(Locale.getDefault());

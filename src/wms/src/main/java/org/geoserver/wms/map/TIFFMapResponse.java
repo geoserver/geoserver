@@ -55,7 +55,7 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
      * </ol>
      */
     private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(true, false, true, true, null);
+            new MapProducerCapabilities(true, true, true);
 
     /**
      * Creates a {@link GetMapProducer} to encode the {@link RenderedImage} generated in <code>

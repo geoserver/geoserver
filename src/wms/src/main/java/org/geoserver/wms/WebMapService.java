@@ -56,8 +56,5 @@ public interface WebMapService {
     /** KML reflector */
     WebMap kml(GetMapRequest getMap);
 
-    /** animator */
-    WebMap animate(GetMapRequest getMap);
-
     StyledLayerDescriptor getStyles(GetStylesRequest request);
 }

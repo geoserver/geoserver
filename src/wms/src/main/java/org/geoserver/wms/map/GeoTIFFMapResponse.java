@@ -65,7 +65,7 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
      * <p>We should soon support multipage tiff.
      */
     private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(true, false, true, true, null);
+            new MapProducerCapabilities(true, true, true);
 
     public GeoTIFFMapResponse(final WMS wms) {
         super(OUTPUT_FORMATS, wms);

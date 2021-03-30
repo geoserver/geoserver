@@ -235,41 +235,6 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 new TextField<>("jpeg.compression", jpegCompression, Integer.class);
         jpegCompressionField.add(new RangeValidator<>(0, 100));
         form.add(jpegCompressionField);
-        // GIF animated
-        // MAX_ALLOWED_FRAMES
-        MapModel maxAllowedFrames =
-                defaultedModel(
-                        metadataModel, WMS.MAX_ALLOWED_FRAMES, WMS.MAX_ALLOWED_FRAMES_DEFAULT);
-        TextField<Integer> maxAllowedFramesField =
-                new TextField<>("anim.maxallowedframes", maxAllowedFrames, Integer.class);
-        maxAllowedFramesField.add(new RangeValidator<>(0, Integer.MAX_VALUE));
-        form.add(maxAllowedFramesField);
-        // MAX_RENDERING_TIME
-        MapModel maxRenderingTime = defaultedModel(metadataModel, WMS.MAX_RENDERING_TIME, null);
-        TextField<Integer> maxRenderingTimeField =
-                new TextField<>("anim.maxrenderingtime", maxRenderingTime, Integer.class);
-        form.add(maxRenderingTimeField);
-        // MAX_RENDERING_SIZE
-        MapModel maxRenderingSize = defaultedModel(metadataModel, WMS.MAX_RENDERING_SIZE, null);
-        TextField<Integer> maxRenderingSizeField =
-                new TextField<>("anim.maxrenderingsize", maxRenderingSize, Integer.class);
-        form.add(maxRenderingSizeField);
-        // FRAMES_DELAY
-        MapModel framesDelay =
-                defaultedModel(metadataModel, WMS.FRAMES_DELAY, WMS.FRAMES_DELAY_DEFAULT);
-        TextField<Integer> framesDelayField =
-                new TextField<>("anim.framesdelay", framesDelay, Integer.class);
-        framesDelayField.add(new RangeValidator<>(0, Integer.MAX_VALUE));
-        form.add(framesDelayField);
-        // DISPOSAL_METHOD
-        MapModel disposalMethod =
-                defaultedModel(metadataModel, WMS.DISPOSAL_METHOD, WMS.DISPOSAL_METHOD_DEFAULT);
-        form.add(new DropDownChoice("anim.disposalmethod", disposalMethod, DISPOSAL_METHODS));
-        // LOOP_CONTINUOUSLY
-        MapModel loopContinuously =
-                defaultedModel(metadataModel, WMS.LOOP_CONTINUOUSLY, WMS.LOOP_CONTINUOUSLY_DEFAULT);
-        CheckBox loopContinuouslyField = new CheckBox("anim.loopcontinuously", loopContinuously);
-        form.add(loopContinuouslyField);
 
         // kml handling
         MapModel kmlReflectorMode =

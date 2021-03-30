@@ -116,23 +116,4 @@ Output bounding box for every supported CRS:  "${properties.bBOXForEachCRS!}"
   <li>SVG Antialising:  "${properties.svgAntiAlias!}"</li>
 </ul>
 
-<h4>WMS-Animator Options</h4>
-<ul>
-  <#if properties.maxAllowedFrames??>
-    <li>Max allowed frames:  "${properties.maxAllowedFrames!}"</li>
-  </#if>
-  <#if properties.maxAnimatorRenderingTime??>
-    <li>Max rendering time(ms):  "${properties.maxAnimatorRenderingTime!}"</li>
-  </#if>
-  <#if properties.maxRenderingSize??>
-    <li>Max rendering size(bytes):  "${properties.maxRenderingSize!}"</li>
-  </#if>
-  <#if properties.framesDelay??>
-    <li>Frames delay(ms):  "${properties.framesDelay!}"</li>
-  </#if>
-  <#if properties.loopContinuosly??>
-    <li>Loop Continuously:  "${properties.loopContinuosly!}"</li>
-  </#if>
-</ul>
-
 <#include "tail.ftl">

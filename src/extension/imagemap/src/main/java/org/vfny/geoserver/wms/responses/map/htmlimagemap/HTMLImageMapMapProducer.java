@@ -25,7 +25,7 @@ public class HTMLImageMapMapProducer implements GetMapOutputFormat {
     static final String MIME_TYPE = "text/html";
 
     static final MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(false, false, true, true, null);
+            new MapProducerCapabilities(false, true, true);
 
     public HTMLImageMapMapProducer() {
         //

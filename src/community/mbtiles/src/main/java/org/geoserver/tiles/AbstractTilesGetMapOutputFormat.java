@@ -123,7 +123,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
 
     @Override
     public MapProducerCapabilities getCapabilities(String format) {
-        return new MapProducerCapabilities(false, false, false, true, null);
+        return new MapProducerCapabilities(false, false, true);
     }
 
     @Override

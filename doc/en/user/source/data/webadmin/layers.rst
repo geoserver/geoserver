@@ -336,7 +336,7 @@ Limits features based on certain criteria, otherwise known as **regionation**.
 Edit Layer: Dimensions
 ----------------------
 
-GeoServer supports adding specific dimensions to WMS layers, as specified in WMS 1.1.1 and WMS 1.3.0 standards. There are two pre-defined dimensions in the WMS standards mentioned above, **TIME** and **ELEVATION**. Enabling dimensions for a layer allows users to specify those as extra parameters in GetMap requests, useful for creating maps or animations from underlying multi-dimensional data.
+GeoServer supports adding specific dimensions to WMS layers, as specified in WMS 1.1.1 and WMS 1.3.0 standards. There are two pre-defined dimensions in the WMS standards mentioned above, **TIME** and **ELEVATION**. Enabling dimensions for a layer allows users to specify those as extra parameters in GetMap requests, filtering the dataset to that particular set of times or elevations.
 
 These dimensions can be enabled and configured on the Dimensions tab.
 

@@ -8,16 +8,9 @@ package org.geoserver.wms.wms_1_1_1;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.io.ByteArrayInputStream;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
@@ -30,7 +23,6 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.geoserver.wms.WMSInfo;
-import org.geoserver.wms.map.GIFMapResponse;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -558,138 +550,6 @@ public class DimensionsVectorGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 60, 10, Color.BLACK);
         assertPixel(image, 20, 30, Color.WHITE);
         assertPixel(image, 60, 30, Color.BLACK);
-    }
-
-    @Test
-    public void testTimeListAnimated() throws Exception {
-        // adding a extra elevation that is simply not there, should not break
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?service=WMS&version=1.1.1&request=GetMap"
-                                + "&bbox=-180,-90,180,90&styles=&width=80&height=40&srs=EPSG:4326"
-                                + "&layers="
-                                + getLayerId(V_TIME_ELEVATION)
-                                + "&time=2011-05-02,2011-05-04,2011-05-10&format="
-                                + GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED);
-
-        // check we did not get a service exception
-        assertEquals("image/gif", response.getContentType());
-        // check it is a animated gif withthree frames
-        ByteArrayInputStream bis = getBinaryInputStream(response);
-        try (ImageInputStream iis = ImageIO.createImageInputStream(bis)) {
-            ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
-            reader.setInput(iis);
-            assertEquals(3, reader.getNumImages(true));
-        }
-    }
-
-    @Test
-    public void testTimeListAnimatedNonTransparent() throws Exception {
-        // testing NON transparency in animated gif, with RED bgcolor
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?service=WMS&version=1.1.1&request=GetMap"
-                                + "&bbox=-180,-90,180,90&styles=&width=80&height=40&srs=EPSG:4326"
-                                + "&layers="
-                                + getLayerId(V_TIME_ELEVATION)
-                                + "&time=2011-05-02,2011-05-04,2011-05-10&format="
-                                + GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED
-                                + "&TRANSPARENT=false&BGCOLOR=0xff0000");
-
-        // check we did not get a service exception
-        assertEquals("image/gif", response.getContentType());
-
-        // check it is a animated gif with three frames
-        try (ByteArrayInputStream bis = getBinaryInputStream(response);
-                ImageInputStream iis = ImageIO.createImageInputStream(bis); ) {
-            ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
-            reader.setInput(iis);
-            assertEquals(3, reader.getNumImages(true));
-
-            // creating film strip to be able to test different frames of animated gif
-            // http://stackoverflow.com/questions/18908217/losing-transparency-when-using-imageinputstream-and-bufferedimage-to-create-png
-            int h = reader.getHeight(0);
-            int w = reader.getWidth(0);
-            int n = reader.getNumImages(true);
-            BufferedImage image = new BufferedImage(w * n, h, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g = image.createGraphics();
-            for (int i = 0; i < n; i++) {
-                BufferedImage img = reader.read(i);
-                g.drawImage(img, w * i, 0, null);
-                // want to see the individual frame images and the filmstrip? uncomment below
-                // File outputfile = new File("/tmp/geoserveranimatednontransparentframe"+i+".gif");
-                // ImageIO.write(img, "gif", outputfile);
-            }
-            // File outputfile = new File("/tmp/geoserveranimatedstripnontransparent.gif");
-            // ImageIO.write(image, "gif", outputfile);
-
-            // actual check for NON transparency and colored background
-            assertPixel(image, 20, 10, Color.RED);
-            assertPixel(image, 60, 10, Color.BLACK);
-            assertPixel(image, 100, 10, Color.RED);
-            assertPixel(image, 140, 30, Color.BLACK);
-        }
-    }
-
-    @Test
-    public void testTimeListAnimatedTransparent() throws Exception {
-        // testing transparency in animated gif
-        // note only by truly visual test you can test if animated gif is truly transparent
-        // note that in this test BGCOLOR should be white, else ALL is transparent
-        // note by uncommenting lines below you can see actual output
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?service=WMS&version=1.1.1&request=GetMap"
-                                + "&bbox=-180,-90,180,90&styles=&width=80&height=40&srs=EPSG:4326"
-                                + "&layers="
-                                + getLayerId(V_TIME_ELEVATION)
-                                + "&time=2011-05-02,2011-05-04,2011-05-10&format="
-                                + GIFMapResponse.IMAGE_GIF_SUBTYPE_ANIMATED
-                                + "&TRANSPARENT=true&BGCOLOR=0xfffff");
-
-        // check we did not get a service exception
-        assertEquals("image/gif", response.getContentType());
-
-        // check it is a animated gif with three frames
-        try (ByteArrayInputStream bis = getBinaryInputStream(response);
-                ImageInputStream iis = ImageIO.createImageInputStream(bis); ) {
-            ImageReader reader = ImageIO.getImageReadersBySuffix("gif").next();
-            reader.setInput(iis);
-            assertEquals(3, reader.getNumImages(true));
-
-            // creating film strip to be able to test different frames of animated gif
-            // http://stackoverflow.com/questions/18908217/losing-transparency-when-using-imageinputstream-and-bufferedimage-to-create-png
-            int h = reader.getHeight(0);
-            int w = reader.getWidth(0);
-            int n = reader.getNumImages(true);
-            BufferedImage image = new BufferedImage(w * n, h, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g = image.createGraphics();
-            for (int i = 0; i < n; i++) {
-                BufferedImage img = reader.read(i);
-                g.drawImage(img, w * i, 0, null);
-                // want to see the individual frame images and the filmstrip? uncomment below
-                // File outputfile = new File("/tmp/geoserveranimatedtransparentframe"+i+".gif");
-                // ImageIO.write(img, "gif", outputfile);
-            }
-            // File outputfile = new File("/tmp/geoserveranimatedstriptransparent.gif");
-            // ImageIO.write(image, "gif", outputfile);
-
-            ColorModel cm = image.getColorModel();
-            assertTrue(cm.hasAlpha());
-            assertEquals(3, cm.getNumColorComponents());
-
-            // actual check for transparency and color
-            assertPixelIsTransparent(image, 20, 10);
-            assertPixel(image, 60, 10, Color.BLACK);
-            assertPixelIsTransparent(image, 100, 10);
-            assertPixel(image, 140, 30, Color.BLACK);
-        }
     }
 
     @Test

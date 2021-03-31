@@ -23,7 +23,7 @@ import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.AbstractCollectionDocument;
 import org.geoserver.ogcapi.CollectionExtents;
-import org.geoserver.ogcapi.QueryablesDocument;
+import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.StyleDocument;
 import org.geoserver.wms.WMS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -150,7 +150,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                 this.queryable = true;
                 addLinksFor(
                         "ogc/tiles/collections/" + id + "/queryables",
-                        QueryablesDocument.class,
+                        Queryables.class,
                         "Collection queryables as ",
                         "queryables",
                         null,

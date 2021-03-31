@@ -39,8 +39,10 @@ public class QueryablesTest extends TilesTestSupport {
         DocumentContext json =
                 getAsJSONPath(
                         "ogc/tiles/collections/" + getLayerId(ROAD_SEGMENTS) + "/queryables", 200);
-        assertEquals("geometry", readSingle(json, "queryables[?(@.id=='the_geom')].type"));
-        assertEquals("string", readSingle(json, "queryables[?(@.id=='FID')].type"));
-        assertEquals("string", readSingle(json, "queryables[?(@.id=='NAME')].type"));
+        assertEquals(
+                "https://geojson.org/schema/MultiLineString.json",
+                json.read("properties.the_geom.$ref"));
+        assertEquals("string", json.read("properties.FID.type"));
+        assertEquals("string", json.read("properties.NAME.type"));
     }
 }

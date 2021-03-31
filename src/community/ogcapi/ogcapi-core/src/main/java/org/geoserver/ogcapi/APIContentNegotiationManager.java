@@ -39,7 +39,8 @@ public class APIContentNegotiationManager extends ContentNegotiationManager {
                 throws HttpMediaTypeNotAcceptableException {
             String format = webRequest.getParameter("f");
             if ("json".equals(format)) {
-                return Collections.singletonList(MediaType.APPLICATION_JSON);
+                return Arrays.asList(
+                        MediaType.APPLICATION_JSON, MediaType.parseMediaType("application/*+json"));
             } else if ("xml".equals(format)) {
                 return Arrays.asList(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
             } else if ("html".equals(format)) {

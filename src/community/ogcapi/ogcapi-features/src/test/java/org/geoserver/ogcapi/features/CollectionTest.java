@@ -21,6 +21,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.APIDispatcher;
+import org.geoserver.ogcapi.Queryables;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.hamcrest.Matchers;
@@ -76,9 +77,12 @@ public class CollectionTest extends FeaturesTestSupport {
         // check the queryables link
         assertThat(
                 readSingle(
-                        json, "links[?(@.rel=='queryables' && @.type=='application/json')].href"),
+                        json,
+                        "links[?(@.rel=='"
+                                + Queryables.REL
+                                + "' && @.type=='application/schema+json')].href"),
                 equalTo(
-                        "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/queryables?f=application%2Fjson"));
+                        "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/queryables?f=application%2Fschema%2Bjson"));
 
         // check the CRS list, this feature type shares the top level list
         List<String> crs = json.read("crs");
@@ -181,9 +185,11 @@ public class CollectionTest extends FeaturesTestSupport {
         String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
         DocumentContext json =
                 getAsJSONPath("cite/ogc/features/collections/" + roadSegments + "/queryables", 200);
-        assertThat(readSingle(json, "queryables[?(@.id == 'the_geom')].type"), equalTo("geometry"));
-        assertThat(readSingle(json, "queryables[?(@.id == 'FID')].type"), equalTo("string"));
-        assertThat(readSingle(json, "queryables[?(@.id == 'NAME')].type"), equalTo("string"));
+        assertThat(
+                json.read("properties.the_geom.$ref"),
+                equalTo("https://geojson.org/schema/MultiLineString.json"));
+        assertThat(json.read("properties.FID.type"), equalTo("string"));
+        assertThat(json.read("properties.NAME.type"), equalTo("string"));
     }
 
     @Test
@@ -191,6 +197,6 @@ public class CollectionTest extends FeaturesTestSupport {
         String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
         org.jsoup.nodes.Document document =
                 getAsJSoup("cite/ogc/features/collections/" + roadSegments + "/queryables?f=html");
-        assertEquals("the_geom: geometry", document.select("#queryables li:eq(0)").text());
+        assertEquals("the_geom: MultiLineString", document.select("#queryables li:eq(0)").text());
     }
 }

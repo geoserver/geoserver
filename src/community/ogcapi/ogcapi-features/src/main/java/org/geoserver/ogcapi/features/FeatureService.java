@@ -4,6 +4,15 @@
  */
 package org.geoserver.ogcapi.features;
 
+import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_ARITHMETIC;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_JSON;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_TEXT;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_FUNCTIONS;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_SPATIAL_OPS;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_TEMPORAL;
+
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -28,11 +37,16 @@ import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.APIService;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DefaultContentType;
+import org.geoserver.ogcapi.FunctionsDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
+import org.geoserver.ogcapi.JSONSchemaMessageConverter;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
-import org.geoserver.ogcapi.QueryablesDocument;
+import org.geoserver.ogcapi.Queryables;
+import org.geoserver.ogcapi.QueryablesBuilder;
+import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.kvp.TimeParser;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.StoredQueryProvider;
 import org.geoserver.wfs.WFSInfo;
@@ -80,12 +94,6 @@ public class FeatureService {
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf2";
     public static final String OAS30 =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
-    public static final String CQL_TEXT =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/x-cql-text";
-    public static final String CQL_JSON_OBJECT =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/x-cql-json-object";
-    public static final String CQL_JSON_ARRAY =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/x-cql-json-array";
 
     public static final String CRS_PREFIX = "http://www.opengis.net/def/crs/EPSG/0/";
     public static final String DEFAULT_CRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
@@ -181,14 +189,11 @@ public class FeatureService {
         return new CollectionsDocument(geoServer, getServiceCRSList());
     }
 
-    @GetMapping(path = "filter-capabilities", name = "getFilterCapabilities")
+    @GetMapping(path = "functions", name = "getFunctions")
     @ResponseBody
-    @HTMLResponseBody(
-        templateName = "filter-capabilities.ftl",
-        fileName = "filter-capabilities.html"
-    )
-    public FilterCapabilitiesDocument getFilterCapabilities() {
-        return new FilterCapabilitiesDocument();
+    @HTMLResponseBody(templateName = "functions.ftl", fileName = "functions.html")
+    public FunctionsDocument getFunctions() {
+        return new FunctionsDocument();
     }
 
     @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
@@ -203,13 +208,25 @@ public class FeatureService {
         return collection;
     }
 
-    @GetMapping(path = "collections/{collectionId}/queryables", name = "getQueryables")
+    @GetMapping(
+        path = "collections/{collectionId}/queryables",
+        name = "getQueryables",
+        produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE
+    )
     @ResponseBody
     @HTMLResponseBody(templateName = "queryables.ftl", fileName = "queryables.html")
-    public QueryablesDocument queryables(@PathVariable(name = "collectionId") String collectionId)
+    public Queryables queryables(@PathVariable(name = "collectionId") String collectionId)
             throws IOException {
         FeatureTypeInfo ft = getFeatureType(collectionId);
-        return new QueryablesDocument(ft);
+        String id =
+                ResponseUtils.buildURL(
+                        APIRequestInfo.get().getBaseURL(),
+                        "ogc/features/collections/"
+                                + ResponseUtils.urlEncode(collectionId)
+                                + "/queryables",
+                        null,
+                        URLMangler.URLType.RESOURCE);
+        return new QueryablesBuilder(id).forType(ft).build();
     }
 
     private FeatureTypeInfo getFeatureType(String collectionId) {
@@ -228,7 +245,21 @@ public class FeatureService {
     @ResponseBody
     @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
-        List<String> classes = Arrays.asList(CORE, OAS30, HTML, GEOJSON, GMLSF0, CQL_TEXT);
+        List<String> classes =
+                Arrays.asList(
+                        CORE,
+                        OAS30,
+                        HTML,
+                        GEOJSON,
+                        GMLSF0,
+                        FEATURES_FILTER,
+                        FILTER,
+                        FILTER_SPATIAL_OPS,
+                        FILTER_TEMPORAL,
+                        FILTER_FUNCTIONS,
+                        FILTER_ARITHMETIC,
+                        FILTER_CQL_TEXT,
+                        FILTER_CQL_JSON);
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 

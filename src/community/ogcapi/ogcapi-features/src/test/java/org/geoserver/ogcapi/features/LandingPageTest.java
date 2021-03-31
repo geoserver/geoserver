@@ -39,7 +39,7 @@ public class LandingPageTest extends FeaturesTestSupport {
                         "getFeatures",
                         "getLandingPage",
                         "getQueryables",
-                        "getFilterCapabilities"));
+                        "getFunctions"));
     }
 
     @Test

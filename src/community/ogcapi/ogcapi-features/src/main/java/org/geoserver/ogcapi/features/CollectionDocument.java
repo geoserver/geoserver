@@ -22,7 +22,7 @@ import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractCollectionDocument;
 import org.geoserver.ogcapi.CollectionExtents;
 import org.geoserver.ogcapi.Link;
-import org.geoserver.ogcapi.QueryablesDocument;
+import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.TimeExtentCalculator;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
@@ -100,11 +100,11 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
                 "ogc/features/collections/"
                         + ResponseUtils.urlEncode(featureType.prefixedName())
                         + "/queryables",
-                QueryablesDocument.class,
+                Queryables.class,
                 "Queryable attributes as ",
                 "queryables",
                 null,
-                "queryables");
+                Queryables.REL);
 
         // map preview
         if (isWMSAvailable(geoServer)) {

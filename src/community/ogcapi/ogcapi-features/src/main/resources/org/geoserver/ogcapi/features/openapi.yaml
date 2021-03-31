@@ -67,19 +67,19 @@ paths:
           $ref: '#/components/responses/ConformanceDeclaration'
         '500':
           $ref: '#/components/responses/ServerError'
-  '/filter-capabilities':
+  '/functions':
     get:
       tags:
         - Capabilities
-      summary: information about filters supported in the CQL filter extension
+      summary: information about functions supported in the CQL filter extension
       description: |-
         A list of supported filters and functions.
-      operationId: getFilterCapabilities
+      operationId: getCQLFunctions
       parameters:
          - $ref: '#/components/parameters/otherParameters'
       responses:
         '200':
-          $ref: '#/components/responses/FilterCapabilities'
+          $ref: '#/components/responses/Functions'
         '500':
           $ref: '#/components/responses/ServerError'
   '/collections':
@@ -799,6 +799,60 @@ components:
       type: string
       format: date-time
       example: '2017-08-17T08:05:32Z'
+      
+    functions:
+      type: object
+      required:
+        - functions
+      properties:
+        functions:
+          type: array
+          items:
+            type: object
+            required:
+              - name
+              - returns
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+              metadataUrl:
+                type: string
+                format: uri-reference
+              arguments:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - type
+                  properties:
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    type:
+                      type: array
+                      items:
+                        type: string
+                        enum:
+                          - string
+                          - number
+                          - integer
+                          - datetime
+                          - geometry
+                          - boolean
+              returns:
+                type: array
+                items:
+                  type: string
+                  enum:
+                    - string
+                    - number
+                    - integer
+                    - datetime
+                    - geometry
+                    - boolean
   responses:
     LandingPage:
       description: |-
@@ -1123,13 +1177,13 @@ components:
         text/html:
           schema:
             type: string
-    FilterCapabilities:
+    Functions:
       description: |-
         A document listing the server filtering capabilities
       content:
         application/json:
           schema:
-            type: object
+            $ref: '#/components/schemas/functions'
         text/html:
           schema:
             type: string

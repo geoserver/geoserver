@@ -39,7 +39,7 @@ public class LandingPageTest extends TiledFeaturesTestSupport {
                         "getFeatures",
                         "getLandingPage",
                         "getQueryables",
-                        "getFilterCapabilities",
+                        "getFunctions",
                         "getTileMatrixSets",
                         "getTileMatrixSet",
                         "describeTiles",

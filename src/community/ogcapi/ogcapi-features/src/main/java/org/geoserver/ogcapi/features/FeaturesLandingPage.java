@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ogcapi.AbstractLandingPageDocumentNoConformance;
 import org.geoserver.ogcapi.ConformanceDocument;
+import org.geoserver.ogcapi.FunctionsDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.wfs.WFSInfo;
 
@@ -41,11 +42,11 @@ public class FeaturesLandingPage extends AbstractLandingPageDocumentNoConformanc
 
         // filter capabilities
         addLinksFor(
-                featuresBase + "/filter-capabilities",
-                FilterCapabilitiesDocument.class,
+                featuresBase + "/functions",
+                FunctionsDocument.class,
                 "Filter capabilities as ",
                 "filter-capabilities",
                 null,
-                Link.REL_DATA);
+                FunctionsDocument.REL);
     }
 }

@@ -137,7 +137,7 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
      * @return The context derived from the JSON Path evaluation
      */
     protected DocumentContext readContext(DocumentContext ctx, String path) {
-        JSONAware result = ctx.read(path);
+        JSONAware result = ctx.read(path, JSONAware.class);
         return JsonPath.parse(result.toJSONString());
     }
 

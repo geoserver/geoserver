@@ -5,8 +5,9 @@
 package org.geoserver.ogcapi;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.common.collect.ImmutableMap;
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.util.Map;
 import org.locationtech.jts.geom.Geometry;
 
 /** Types of attributes, used in {@link Queryable} */
@@ -16,8 +17,6 @@ public enum AttributeType {
     ENUMERATION("enum"),
     NUMBER("number"),
     INTEGER("integer"),
-    DATE("date"),
-    DATE_TIME("dateTime"),
     BOOL("boolean"),
     GEOMETRY("geometry");
 
@@ -41,7 +40,28 @@ public enum AttributeType {
         return getType();
     }
 
+    private static final Map<Class<?>, Class<?>> PRIMITIVES_TO_WRAPPERS =
+            new ImmutableMap.Builder<Class<?>, Class<?>>()
+                    .put(boolean.class, Boolean.class)
+                    .put(byte.class, Byte.class)
+                    .put(char.class, Character.class)
+                    .put(double.class, Double.class)
+                    .put(float.class, Float.class)
+                    .put(int.class, Integer.class)
+                    .put(long.class, Long.class)
+                    .put(short.class, Short.class)
+                    .put(void.class, Void.class)
+                    .build();
+
+    /**
+     * Returns an AttributeType for the given class. Always returns a value, in case there is no
+     * better match {@link AttributeType#STRING} is returned.
+     */
     public static AttributeType fromClass(Class<?> binding) {
+        // some functions use primitive return types, go to the wrapper
+        if (PRIMITIVES_TO_WRAPPERS.containsKey(binding)) {
+            binding = PRIMITIVES_TO_WRAPPERS.get(binding);
+        }
         if (Number.class.isAssignableFrom(binding)) {
             if (Float.class.isAssignableFrom(binding)
                     || Double.class.isAssignableFrom(binding)
@@ -50,13 +70,10 @@ public enum AttributeType {
             } else {
                 return AttributeType.INTEGER;
             }
-        } else if (Date.class.isAssignableFrom(binding)) {
-            return AttributeType.DATE;
-        } else if (java.util.Date.class.isAssignableFrom(binding)) {
-            return AttributeType.DATE_TIME;
         } else if (Boolean.class.isAssignableFrom(binding)) {
             return AttributeType.BOOL;
-        } else if (Geometry.class.isAssignableFrom(binding)) {
+        } else if (Geometry.class.isAssignableFrom(binding)
+                || org.opengis.geometry.Geometry.class.isAssignableFrom(binding)) {
             return AttributeType.GEOMETRY;
         } else {
             // fallback

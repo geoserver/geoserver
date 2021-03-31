@@ -4,9 +4,21 @@
  */
 package org.geoserver.ogcapi.features;
 
+import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_ARITHMETIC;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_JSON;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_TEXT;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_FUNCTIONS;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_SPATIAL_OPS;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_TEMPORAL;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -21,13 +33,25 @@ public class ConformanceTest extends FeaturesTestSupport {
 
     private void checkConformance(DocumentContext json) {
         assertEquals(1, (int) json.read("$.length()", Integer.class));
-        assertEquals(6, (int) json.read("$.conformsTo.length()", Integer.class));
-        assertEquals(FeatureService.CORE, json.read("$.conformsTo[0]", String.class));
-        assertEquals(FeatureService.OAS30, json.read("$.conformsTo[1]", String.class));
-        assertEquals(FeatureService.HTML, json.read("$.conformsTo[2]", String.class));
-        assertEquals(FeatureService.GEOJSON, json.read("$.conformsTo[3]", String.class));
-        assertEquals(FeatureService.GMLSF0, json.read("$.conformsTo[4]", String.class));
-        assertEquals(FeatureService.CQL_TEXT, json.read("$.conformsTo[5]", String.class));
+        assertThat(json.read("$.conformsTo"), containsInAnyOrder(getExpectedConformanceClasses()));
+    }
+
+    private String[] getExpectedConformanceClasses() {
+        return new String[] {
+            FeatureService.CORE,
+            FeatureService.OAS30,
+            FeatureService.HTML,
+            FeatureService.GEOJSON,
+            FeatureService.GMLSF0,
+            FEATURES_FILTER,
+            FILTER,
+            FILTER_SPATIAL_OPS,
+            FILTER_TEMPORAL,
+            FILTER_FUNCTIONS,
+            FILTER_ARITHMETIC,
+            FILTER_CQL_TEXT,
+            FILTER_CQL_JSON
+        };
     }
 
     @Test
@@ -47,11 +71,11 @@ public class ConformanceTest extends FeaturesTestSupport {
     public void testConformanceHTML() throws Exception {
         org.jsoup.nodes.Document document = getAsJSoup("ogc/features/conformance?f=text/html");
         assertEquals("GeoServer OGC API Features Conformance", document.select("#title").text());
-        assertEquals(FeatureService.CORE, document.select("#content li:eq(0)").text());
-        assertEquals(FeatureService.OAS30, document.select("#content li:eq(1)").text());
-        assertEquals(FeatureService.HTML, document.select("#content li:eq(2)").text());
-        assertEquals(FeatureService.GEOJSON, document.select("#content li:eq(3)").text());
-        assertEquals(FeatureService.GMLSF0, document.select("#content li:eq(4)").text());
-        assertEquals(FeatureService.CQL_TEXT, document.select("#content li:eq(5)").text());
+        List<String> classes =
+                document.select("#content li")
+                        .stream()
+                        .map(e -> e.text())
+                        .collect(Collectors.toList());
+        assertThat(classes, containsInAnyOrder(getExpectedConformanceClasses()));
     }
 }

@@ -37,9 +37,12 @@ import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.InvalidParameterValueException;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
-import org.geoserver.ogcapi.QueryablesDocument;
+import org.geoserver.ogcapi.Queryables;
+import org.geoserver.ogcapi.QueryablesBuilder;
 import org.geoserver.ogcapi.ResourceNotFoundException;
 import org.geoserver.ogcapi.StyleDocument;
+import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WMS;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.logging.Logging;
@@ -616,7 +619,7 @@ public class TilesService {
     @GetMapping(path = "collections/{collectionId}/queryables", name = "getQueryables")
     @ResponseBody
     @HTMLResponseBody(templateName = "queryables.ftl", fileName = "queryables.html")
-    public QueryablesDocument queryables(@PathVariable(name = "collectionId") String collectionId)
+    public Queryables queryables(@PathVariable(name = "collectionId") String collectionId)
             throws IOException {
         TileLayer tileLayer = getTileLayer(collectionId);
         if (!supportsFiltering(tileLayer)) {
@@ -626,10 +629,19 @@ public class TilesService {
                             + "' cannot be filtered, no queryables available");
         }
 
-        return new QueryablesDocument(
+        FeatureTypeInfo ft =
                 (FeatureTypeInfo)
                         ((LayerInfo) ((GeoServerTileLayer) tileLayer).getPublishedInfo())
-                                .getResource());
+                                .getResource();
+        String id =
+                ResponseUtils.buildURL(
+                        APIRequestInfo.get().getBaseURL(),
+                        "ogc/tiels/collections/"
+                                + ResponseUtils.urlEncode(collectionId)
+                                + "/queryables",
+                        null,
+                        URLMangler.URLType.RESOURCE);
+        return new QueryablesBuilder(id).forType(ft).build();
     }
 
     /** Utility method to check if a given tile layer supports filtering */

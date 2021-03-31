@@ -6,10 +6,10 @@
       <h2>Queryables for ${model.collectionId}</h2>
     </div>
     <div class="card-body">
-      <#if model.queryables??>
+      <#if model.getProperties()??>
       <ul id="queryables">
-      <#list model.queryables as queryable>
-        <li><b>${queryable.id}</b>: ${queryable.type}</li>
+      <#list model.getProperties() as name, definition>
+        <li><b>${name}</b>: ${definition.getDescription()}</li>
       </#list>
       </ul>
       <#else>

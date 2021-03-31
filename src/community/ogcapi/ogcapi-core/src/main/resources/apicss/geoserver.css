@@ -52,3 +52,13 @@ header a {
   background: url(img/logo.png) no-repeat;
   display: block;
 }
+
+.function-table, .function-table td, .function-table tr, .function-table th {
+  border: 1px solid darkgray; 
+  border-collapse: collapse;
+  padding: 0.3em;
+}
+
+.function-table th {
+  background: var(--bs-green);
+}

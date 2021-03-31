@@ -5,6 +5,10 @@
 
   <#include "collection_include.ftl">
   
-  <a href="${serviceLink("collections/${collection.name.value}/items")}">Collection items</a>
+  <p>More resources:</p>
+  <ul>
+  <li><a href="${serviceLink("collections/${collection.name.value}/queryables")}">CQL filtering queryables</a></li>
+  <li><a href="${serviceLink("collections/${collection.name.value}/items")}">Collection items</a>
+  </ul>
 
 <#include "common-footer.ftl">

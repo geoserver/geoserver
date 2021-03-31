@@ -109,6 +109,10 @@ public class JDBCOpenSearchAccessTest {
 
     @BeforeClass
     public static void setupStore() throws IOException, SQLException {
+        osAccess = setupAndReturnStore();
+    }
+
+    public static OpenSearchAccess setupAndReturnStore() throws IOException, SQLException {
         Assume.assumeNotNull(getFixture());
 
         Map params = new HashMap<>();
@@ -134,7 +138,7 @@ public class JDBCOpenSearchAccessTest {
         params.put("store", "test:jdbcStore");
         params.put("namespace", TEST_NAMESPACE);
         params.put("repository", repository);
-        osAccess = (OpenSearchAccess) DataAccessFinder.getDataStore(params);
+        return (OpenSearchAccess) DataAccessFinder.getDataStore(params);
     }
 
     @After

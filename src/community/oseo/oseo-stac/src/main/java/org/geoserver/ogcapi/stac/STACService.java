@@ -4,6 +4,16 @@
  */
 package org.geoserver.ogcapi.stac;
 
+import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_ARITHMETIC;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_JSON;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_TEXT;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_FUNCTIONS;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_SPATIAL_OPS;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_TEMPORAL;
+import static org.geoserver.ows.URLMangler.URLType.RESOURCE;
+
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -22,13 +32,16 @@ import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.APIFilterParser;
+import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.APIService;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
+import org.geoserver.ogcapi.JSONSchemaMessageConverter;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.ogcapi.PaginationLinksBuilder;
+import org.geoserver.ogcapi.Queryables;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.ows.kvp.TimeParser;
@@ -82,8 +95,6 @@ public class STACService {
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson";
     public static final String FEATURE_OAS30 =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
-    public static final String FEATURE_CQL_TEXT =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/x-cql-text";
     public static final String STAC_CORE = "https://api.stacspec.org/v1.0.0-beta.1/core";
     public static final String STAC_SEARCH = "https://api.stacspec.org/v1.0.0-beta.1/item-search";
     public static final String STAC_FEATURES =
@@ -135,10 +146,17 @@ public class STACService {
                         FEATURE_OAS30,
                         FEATURE_HTML,
                         FEATURE_GEOJSON,
-                        FEATURE_CQL_TEXT,
                         STAC_CORE,
                         STAC_FEATURES,
-                        STAC_SEARCH);
+                        STAC_SEARCH,
+                        FEATURES_FILTER,
+                        FILTER,
+                        FILTER_SPATIAL_OPS,
+                        FILTER_TEMPORAL,
+                        FILTER_FUNCTIONS,
+                        FILTER_ARITHMETIC,
+                        FILTER_CQL_TEXT,
+                        FILTER_CQL_JSON);
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
@@ -171,12 +189,22 @@ public class STACService {
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
     public CollectionResponse collection(@PathVariable("collectionId") String collectionId)
             throws IOException {
+        Feature collection = getCollection(collectionId);
+        return new CollectionResponse(collection);
+    }
+
+    private Feature getCollection(String collectionId) throws IOException {
         Query q = new Query();
         q.setFilter(FF.equals(FF.property("name"), FF.literal(collectionId)));
         FeatureCollection<FeatureType, Feature> collections =
                 accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
         Feature collection = DataUtilities.first(collections);
-        return new CollectionResponse(collection);
+        if (collection == null)
+            throw new APIException(
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    "Collection not found: " + collectionId,
+                    HttpStatus.NOT_FOUND);
+        return collection;
     }
 
     @GetMapping(path = "collections/{collectionId}/items/{itemId:.+}", name = "getItem")
@@ -186,6 +214,9 @@ public class STACService {
             @PathVariable(name = "collectionId") String collectionId,
             @PathVariable(name = "itemId") String itemId)
             throws Exception {
+        // run just to check the collection exists, and throw an appropriate exception otherwise
+        getCollection(collectionId);
+
         Query q = new Query();
         q.setFilter(FF.equals(FF.property("identifier"), FF.literal(itemId)));
 
@@ -472,5 +503,51 @@ public class STACService {
         } else {
             return FF.and(filters);
         }
+    }
+
+    @GetMapping(
+        path = "collections/{collectionId}/queryables",
+        name = "getCollectionQueryables",
+        produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE
+    )
+    @ResponseBody
+    @HTMLResponseBody(templateName = "queryables-collection.ftl", fileName = "queryables.html")
+    public Queryables collectionQueryables(@PathVariable(name = "collectionId") String collectionId)
+            throws IOException {
+        // check the collection is there
+        getCollection(collectionId);
+        String id =
+                ResponseUtils.buildURL(
+                        APIRequestInfo.get().getBaseURL(),
+                        "ogc/stac/collections/"
+                                + ResponseUtils.urlEncode(collectionId)
+                                + "/queryables",
+                        null,
+                        RESOURCE);
+        FeatureType itemsSchema =
+                accessProvider.getOpenSearchAccess().getProductSource().getSchema();
+        Queryables queryables =
+                new STACQueryablesBuilder(id, templates.getItemTemplate(), itemsSchema)
+                        .getQueryables();
+        queryables.setCollectionId(collectionId);
+        return queryables;
+    }
+
+    @GetMapping(
+        path = "queryables",
+        name = "getSearchQueryables",
+        produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE
+    )
+    @ResponseBody
+    @HTMLResponseBody(templateName = "queryables-global.ftl", fileName = "queryables.html")
+    public Queryables searchQueryables() throws IOException {
+        String baseURL = APIRequestInfo.get().getBaseURL();
+        String id = ResponseUtils.buildURL(baseURL, "ogc/stac/queryables", null, RESOURCE);
+        FeatureType itemsSchema =
+                accessProvider.getOpenSearchAccess().getProductSource().getSchema();
+        Queryables queryables =
+                new STACQueryablesBuilder(id, templates.getItemTemplate(), itemsSchema)
+                        .getQueryables();
+        return queryables;
     }
 }

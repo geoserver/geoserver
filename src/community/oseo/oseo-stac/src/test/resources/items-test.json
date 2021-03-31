@@ -1,0 +1,66 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "stac_version": "$${env('stac_version', '1.0.0-beta.2')}",
+      "stac_extensions": [
+        // skip SAR sensors
+        "$filter{eop:parentIdentifier LIKE 'SENTINEL%' or eop:parentIdentifier LIKE 'LANDSAT%'},eo", 
+        "view"
+      ],
+      "id": "${eop:identifier}",
+      "type": "Feature",
+      "geometry": "${footprint}",
+      "bbox": [
+        "$${minx(footprint)}",
+        "$${miny(footprint)}",
+        "$${maxx(footprint)}",
+        "$${maxy(footprint)}"
+      ],
+      "properties": {
+        "start_datetime": "$filter{timeStart is not null and timeEnd is not null and timeStart <> timeEnd},${timeStart}",
+        "end_datetime": "$filter{timeStart is not null and timeEnd is not null and timeStart <> timeEnd},${timeEnd}",
+        "datetime": "$filter{timeStart is not null and (timeEnd is null or timeStart = timeEnd)},${timeStart}",
+        "created": "${eop:creationDate}",
+        "updated": "${eop:modificationDate}",
+        "platform": "${eop:productPlatform}",
+        "instruments": [
+          "$filter{eop:parentIdentifier = 'SENTINEL2'},msi",
+          "$filter{eop:parentIdentifier = 'LANDSAT8'},oli",
+          "$filter{eop:parentIdentifier = 'LANDSAT8'},tirs"
+        ],
+        "constellation": "$${strToLowerCase(eop:parentIdentifier)}",
+        "eo:cloud_cover": "$${opt:cloudCover / 2}", /* Added on purpose to check expression type evaluation */
+        "view:sun_azimuth": "${eop:illuminationAzimuthAngle}",
+        "view:sun_elevation": "${eop:illuminationElevationAngle}",
+        "sar:minimum_incidence_angle": "${sar:minimumIncidenceAngle}",
+        "test:the_max": "$${max(sar:minimumIncidenceAngle, eop:illuminationAzimuthAngle)}",
+        "one": {
+          "two": {
+            "three": "${eop:illuminationAzimuthAngle}"
+          }
+        }
+      },
+      "collection": "${eop:parentIdentifier}",
+      "assets": {
+      },
+      "links": [
+        {
+          "href": "$${serviceLink('ogcapi/stac/collections/%s', eop:parentIdentifier)}",
+          "rel": "collection",
+          "type": "application/json"
+        },
+        {
+          "href": "$${serviceLink('ogcapi/stac')}",
+          "rel": "root",
+          "type": "application/json"
+        },
+        {
+          "href": "$${serviceLink('ogcapi/stac/collections/%s/items/%s', eop:parentIdentifier, eop:identifier)}",
+          "rel": "self",
+          "type": "application/geo+json"
+        }
+      ]
+    }
+  ]
+}

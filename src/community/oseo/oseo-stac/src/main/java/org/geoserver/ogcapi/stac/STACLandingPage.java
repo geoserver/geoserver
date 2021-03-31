@@ -4,13 +4,17 @@
  */
 package org.geoserver.ogcapi.stac;
 
+import static org.geoserver.ogcapi.JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractLandingPageDocumentNoConformance;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.Queryables;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.springframework.http.HttpMethod;
 
@@ -72,6 +76,24 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
                                 (t, l) -> l.setMethod(HttpMethod.POST),
                                 REL_SEARCH,
                                 true));
+
+        // queryables
+        links.addAll(
+                APIRequestInfo.get()
+                        .getLinksFor(
+                                basePath + "/queryables",
+                                Queryables.class,
+                                "Queryables as ",
+                                "queryables",
+                                null,
+                                Queryables.REL,
+                                true)
+                        .stream()
+                        .filter(
+                                l ->
+                                        "text/html".equals(l.getType())
+                                                || SCHEMA_TYPE_VALUE.equals(l.getType()))
+                        .collect(Collectors.toList()));
     }
 
     @JsonProperty("stac_version")

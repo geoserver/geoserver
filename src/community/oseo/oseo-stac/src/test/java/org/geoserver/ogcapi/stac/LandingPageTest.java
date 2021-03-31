@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 
 import com.jayway.jsonpath.DocumentContext;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.Queryables;
 import org.geoserver.platform.Service;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
@@ -37,7 +38,9 @@ public class LandingPageTest extends STACTestSupport {
                         "getItems",
                         "getItem",
                         "searchGet",
-                        "searchPost"));
+                        "searchPost",
+                        "getCollectionQueryables",
+                        "getSearchQueryables"));
     }
 
     @Test
@@ -135,6 +138,11 @@ public class LandingPageTest extends STACTestSupport {
                 "links[?(@.method == 'POST' && @.href =~ /.*ogc\\/stac\\/search.*/)].rel",
                 REL_SEARCH,
                 REL_SEARCH);
+        assertJSONList(
+                json,
+                "links[?(@.href =~ /.*ogc\\/stac\\/queryables.*/)].rel",
+                Queryables.REL,
+                Queryables.REL);
         // check title
         assertEquals(STAC_TITLE, json.read("title"));
         // check description

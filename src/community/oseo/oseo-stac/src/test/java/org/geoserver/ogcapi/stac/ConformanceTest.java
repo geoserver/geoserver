@@ -4,9 +4,21 @@
  */
 package org.geoserver.ogcapi.stac;
 
+import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_ARITHMETIC;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_JSON;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_TEXT;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_FUNCTIONS;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_SPATIAL_OPS;
+import static org.geoserver.ogcapi.ConformanceClass.FILTER_TEMPORAL;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Test;
 
 public class ConformanceTest extends STACTestSupport {
@@ -18,16 +30,27 @@ public class ConformanceTest extends STACTestSupport {
     }
 
     public static void checkConformance(DocumentContext json) {
-        assertEquals(8, (int) json.read("$.conformsTo.length()", Integer.class));
-        assertEquals(STACService.FEATURE_CORE, json.read("$.conformsTo[0]", String.class));
-        assertEquals(STACService.FEATURE_OAS30, json.read("$.conformsTo[1]", String.class));
-        assertEquals(STACService.FEATURE_HTML, json.read("$.conformsTo[2]", String.class));
-        assertEquals(STACService.FEATURE_GEOJSON, json.read("$.conformsTo[3]", String.class));
-        assertEquals(STACService.FEATURE_CQL_TEXT, json.read("$.conformsTo[4]", String.class));
-        assertEquals(STACService.STAC_CORE, json.read("$.conformsTo[5]", String.class));
-        assertEquals(STACService.STAC_FEATURES, json.read("$.conformsTo[6]", String.class));
-        assertEquals(STACService.STAC_SEARCH, json.read("$.conformsTo[7]", String.class));
-        // check the others as they get implemented
+        assertThat(json.read("$.conformsTo"), containsInAnyOrder(getExpectedConformanceClasses()));
+    }
+
+    private static String[] getExpectedConformanceClasses() {
+        return new String[] {
+            STACService.FEATURE_CORE,
+            STACService.FEATURE_OAS30,
+            STACService.FEATURE_HTML,
+            STACService.FEATURE_GEOJSON,
+            STACService.STAC_CORE,
+            STACService.STAC_FEATURES,
+            STACService.STAC_SEARCH,
+            FEATURES_FILTER,
+            FILTER,
+            FILTER_SPATIAL_OPS,
+            FILTER_TEMPORAL,
+            FILTER_FUNCTIONS,
+            FILTER_ARITHMETIC,
+            FILTER_CQL_TEXT,
+            FILTER_CQL_JSON
+        };
     }
 
     @Test
@@ -42,14 +65,11 @@ public class ConformanceTest extends STACTestSupport {
         assertEquals(
                 "GeoServer SpatioTemporal Asset Catalog Conformance",
                 document.select("#title").text());
-        assertEquals(STACService.FEATURE_CORE, document.select("#content li:eq(0)").text());
-        assertEquals(STACService.FEATURE_OAS30, document.select("#content li:eq(1)").text());
-        assertEquals(STACService.FEATURE_HTML, document.select("#content li:eq(2)").text());
-        assertEquals(STACService.FEATURE_GEOJSON, document.select("#content li:eq(3)").text());
-        assertEquals(STACService.FEATURE_CQL_TEXT, document.select("#content li:eq(4)").text());
-        assertEquals(STACService.STAC_CORE, document.select("#content li:eq(5)").text());
-        assertEquals(STACService.STAC_FEATURES, document.select("#content li:eq(6)").text());
-        assertEquals(STACService.STAC_SEARCH, document.select("#content li:eq(7)").text());
-        // check the others as they get implemented
+        List<String> classes =
+                document.select("#content li")
+                        .stream()
+                        .map(e -> e.text())
+                        .collect(Collectors.toList());
+        assertThat(classes, containsInAnyOrder(getExpectedConformanceClasses()));
     }
 }

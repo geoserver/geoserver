@@ -11,6 +11,7 @@ import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.geoserver.ogcapi.Queryables;
 import org.geotools.data.Query;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
@@ -53,7 +54,7 @@ public class CollectionsTest extends STACTestSupport {
 
         // concentrate on the Sentinel2 object
         DocumentContext s2 = readSingleContext(json, "collections[?(@.id == 'SENTINEL2')]");
-        testSentine2JSON(s2);
+        testSentinel2JSON(s2);
 
         // check Sentinel 1 providers too
         DocumentContext s1 = readSingleContext(json, "collections[?(@.id == 'SENTINEL1')]");
@@ -95,10 +96,10 @@ public class CollectionsTest extends STACTestSupport {
     public void testCollectionJSON() throws Exception {
         DocumentContext s2 = getAsJSONPath("ogc/stac/collections/SENTINEL2?f=json", 200);
 
-        testSentine2JSON(s2);
+        testSentinel2JSON(s2);
     }
 
-    public void testSentine2JSON(DocumentContext s2) {
+    public void testSentinel2JSON(DocumentContext s2) {
         assertEquals("The Sentinel-2 mission", s2.read("title"));
         assertThat(
                 s2.read("description"),
@@ -125,7 +126,7 @@ public class CollectionsTest extends STACTestSupport {
                         .size());
         assertEquals(1, s2.read("providers[?(@.name == 'GeoServer')].length()", List.class).size());
         // the links for sentinel2
-        assertEquals(4, (int) s2.read("links.length()", Integer.class));
+        assertEquals(5, (int) s2.read("links.length()", Integer.class));
         assertEquals(
                 "http://localhost:8080/geoserver/ogcapi/stac/collections/SENTINEL2",
                 readSingle(s2, "links[?(@.rel == 'self')].href"));
@@ -138,5 +139,8 @@ public class CollectionsTest extends STACTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/ogcapi/stac/collections/SENTINEL2/items",
                 readSingle(s2, "links[?(@.rel == 'items')].href"));
+        assertEquals(
+                "http://localhost:8080/geoserver/ogcapi/stac/collections/SENTINEL2/queryables",
+                readSingle(s2, "links[?(@.rel == '" + Queryables.REL + "')].href"));
     }
 }

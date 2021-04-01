@@ -11,6 +11,7 @@ import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireSchema.VS_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.VS_SCHEMA;
+import static org.geoserver.inspire.InspireTestSupport.assertSchemaLocationContains;
 import static org.geoserver.inspire.InspireTestSupport.clearInspireMetadata;
 import static org.junit.Assert.assertEquals;
 
@@ -83,5 +84,14 @@ public class WMSExtendedCapabilitiesTest extends ViewServicesTestSupport {
         final Document dom = getAsDOM(WMS_1_1_1_GETCAPREQUEST);
         final NodeList nodeList = dom.getElementsByTagNameNS(VS_NAMESPACE, "ExtendedCapabilities");
         assertEquals("Number of INSPIRE ExtendedCapabilities elements", 0, nodeList.getLength());
+    }
+
+    @Test
+    public void testINSPIRESchemaLocations() throws Exception {
+        final Document dom = getAsDOM(WMS_1_3_0_GETCAPREQUEST);
+        final NodeList nodeList = dom.getElementsByTagNameNS(VS_NAMESPACE, "ExtendedCapabilities");
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements", 0, nodeList.getLength());
+        String schemaLocation = dom.getDocumentElement().getAttribute("xsi:schemaLocation");
+        assertSchemaLocationContains(schemaLocation, VS_NAMESPACE, VS_SCHEMA);
     }
 }

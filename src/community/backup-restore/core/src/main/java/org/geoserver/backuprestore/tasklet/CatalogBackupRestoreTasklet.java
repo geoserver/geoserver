@@ -456,26 +456,17 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
             throws IOException, Exception, IllegalArgumentException {
 
         final boolean purgeResources = purge;
+        final boolean filterIsValid = filterIsValid();
 
-        if (!skipSettings && !filterIsValid()) {
-            // Restore GeoServer Global Info
-            Files.delete(dd.get("global.xml").file());
-            doWrite(newGeoServerInfo, dd.get(Paths.BASE), "global.xml");
-            geoserver.setGlobal(newGeoServerInfo);
-
-            // Restore GeoServer Global Logging Settings
-            Files.delete(dd.get("logging.xml").file());
-            doWrite(newLoggingInfo, dd.get(Paths.BASE), "logging.xml");
-            geoserver.setLogging(newLoggingInfo);
-
-            restoreGlobalServices(sourceRestoreFolder, dd);
+        if (!skipSettings && !filterIsValid) {
+            restoreGlobals(geoserver, dd, sourceRestoreFolder, newGeoServerInfo, newLoggingInfo);
         }
 
         // Restore Workspaces
         // - Prepare folder
         Resource workspaces = dd.get("workspaces");
         if (purgeResources) {
-            if (!filterIsValid()) {
+            if (!filterIsValid) {
                 Files.delete(workspaces.dir());
             }
             workspaces = BackupUtils.dir(dd.get(Paths.BASE), "workspaces");
@@ -484,59 +475,90 @@ public class CatalogBackupRestoreTasklet extends AbstractCatalogBackupRestoreTas
 
         // - GeoServer Catalog Alignment
         // Align missing Resources (in case of filtering) from the original catalog
-        syncTo(geoserver.getCatalog());
+        if (!purgeResources) {
+            LOGGER.log(Level.INFO, "Sync catalogs in execution due to no purge flag activated.");
+            syncTo(geoserver.getCatalog());
+        }
 
         // Restore Styles
         // - Prepare folder
         Resource styles = dd.get("styles");
 
-        if (purgeResources) {
-            if (!filterIsValid()) {
-                Files.delete(styles.dir());
-                styles = BackupUtils.dir(dd.get(Paths.BASE), "styles");
-                restoreGlobalStyles(sourceRestoreFolder, styles);
-            }
+        if (purgeResources && !filterIsValid) {
+            Files.delete(styles.dir());
+            styles = BackupUtils.dir(dd.get(Paths.BASE), "styles");
+            restoreGlobalStyles(sourceRestoreFolder, styles);
         }
 
         // Restore Workspace Specific Settings and Services
         if (purgeResources) {
-            restoreLocalWorkspaceSettingsAndServices(
-                    geoserver, sourceRestoreFolder, sourceWorkspacesFolder, dd);
-
-            // Restore GeoServer Plugins
-            final GeoServerResourceLoader sourceGeoServerResourceLoader =
-                    new GeoServerResourceLoader(sourceRestoreFolder.dir());
-            for (GeoServerPluginConfigurator pluginConfig :
-                    GeoServerExtensions.extensions(GeoServerPluginConfigurator.class)) {
-                // On restore invoke 'pluginConfig.loadConfiguration(resourceLoader);'. Replace
-                // 'properties' files first.
-                for (Resource configFile : pluginConfig.getFileLocations()) {
-                    replaceConfigFile(sourceGeoServerResourceLoader, configFile);
-                }
-
-                // - Invoke 'pluginConfig.loadConfiguration' from the GOSERVER_DATA_DIR
-                pluginConfig.loadConfiguration(dd.getResourceLoader());
-            }
-
-            for (GeoServerPropertyConfigurer props :
-                    GeoServerExtensions.extensions(GeoServerPropertyConfigurer.class)) {
-                // On restore invoke 'props.reload();' after having replaced the properties files.
-                Resource configFile = props.getConfigFile();
-                replaceConfigFile(sourceGeoServerResourceLoader, configFile);
-
-                // - Invoke 'props.reload()' from the GOSERVER_DATA_DIR
-                props.reload();
-            }
-
-            // Restore other configuration bits, like images, palettes, user projections and so
-            // on...
-            backupRestoreAdditionalResources(sourceGeoServerResourceLoader, dd.get(Paths.BASE));
+            restoreWorkspaceSpecifics(geoserver, dd, sourceRestoreFolder, sourceWorkspacesFolder);
         }
 
         // Restore GWC Configuration bits
         if (purgeResources || !skipGWC) {
             restoreGwc(geoserver, dd, sourceRestoreFolder);
         }
+    }
+
+    /** Restore Workspace Specific Settings and Services. */
+    private void restoreWorkspaceSpecifics(
+            final GeoServer geoserver,
+            final GeoServerDataDirectory dd,
+            Resource sourceRestoreFolder,
+            Resource sourceWorkspacesFolder)
+            throws Exception, IOException {
+        restoreLocalWorkspaceSettingsAndServices(
+                geoserver, sourceRestoreFolder, sourceWorkspacesFolder, dd);
+
+        // Restore GeoServer Plugins
+        final GeoServerResourceLoader sourceGeoServerResourceLoader =
+                new GeoServerResourceLoader(sourceRestoreFolder.dir());
+        for (GeoServerPluginConfigurator pluginConfig :
+                GeoServerExtensions.extensions(GeoServerPluginConfigurator.class)) {
+            // On restore invoke 'pluginConfig.loadConfiguration(resourceLoader);'. Replace
+            // 'properties' files first.
+            for (Resource configFile : pluginConfig.getFileLocations()) {
+                replaceConfigFile(sourceGeoServerResourceLoader, configFile);
+            }
+
+            // - Invoke 'pluginConfig.loadConfiguration' from the GOSERVER_DATA_DIR
+            pluginConfig.loadConfiguration(dd.getResourceLoader());
+        }
+
+        for (GeoServerPropertyConfigurer props :
+                GeoServerExtensions.extensions(GeoServerPropertyConfigurer.class)) {
+            // On restore invoke 'props.reload();' after having replaced the properties files.
+            Resource configFile = props.getConfigFile();
+            replaceConfigFile(sourceGeoServerResourceLoader, configFile);
+
+            // - Invoke 'props.reload()' from the GOSERVER_DATA_DIR
+            props.reload();
+        }
+
+        // Restore other configuration bits, like images, palettes, user projections and so
+        // on...
+        backupRestoreAdditionalResources(sourceGeoServerResourceLoader, dd.get(Paths.BASE));
+    }
+
+    private void restoreGlobals(
+            final GeoServer geoserver,
+            final GeoServerDataDirectory dd,
+            Resource sourceRestoreFolder,
+            GeoServerInfo newGeoServerInfo,
+            LoggingInfo newLoggingInfo)
+            throws Exception {
+        // Restore GeoServer Global Info
+        Files.delete(dd.get("global.xml").file());
+        doWrite(newGeoServerInfo, dd.get(Paths.BASE), "global.xml");
+        geoserver.setGlobal(newGeoServerInfo);
+
+        // Restore GeoServer Global Logging Settings
+        Files.delete(dd.get("logging.xml").file());
+        doWrite(newLoggingInfo, dd.get(Paths.BASE), "logging.xml");
+        geoserver.setLogging(newLoggingInfo);
+
+        restoreGlobalServices(sourceRestoreFolder, dd);
     }
 
     private void restoreGwc(

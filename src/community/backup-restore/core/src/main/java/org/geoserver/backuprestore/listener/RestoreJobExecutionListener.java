@@ -52,7 +52,8 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
         // swapped at the end of the Restore if everything goes well.
         if (backupFacade.getRestoreExecutions().get(jobExecution.getId()) != null) {
             this.restoreExecution = backupFacade.getRestoreExecutions().get(jobExecution.getId());
-            this.restoreExecution.setRestoreCatalog(createRestoreCatalog());
+            this.restoreExecution.setRestoreCatalog(
+                    createRestoreCatalog(jobExecution.getJobParameters()));
         } else {
             Long id = null;
             RestoreExecutionAdapter rst = null;
@@ -97,17 +98,17 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
         }
     }
 
-    private synchronized Catalog createRestoreCatalog() {
+    private synchronized Catalog createRestoreCatalog(JobParameters params) {
+        boolean purge = getPurgeResources(params);
         CatalogImpl restoreCatalog = new CatalogImpl();
-        Catalog gsCatalog = backupFacade.getGeoServer().getCatalog();
-        if (gsCatalog instanceof Wrapper) {
-            gsCatalog = ((Wrapper) gsCatalog).unwrap(Catalog.class);
-        }
+        Catalog gsCatalog = unwrapGsCatalog();
 
         restoreCatalog.setResourceLoader(gsCatalog.getResourceLoader());
         restoreCatalog.setResourcePool(gsCatalog.getResourcePool());
-
-        syncCatalogs(restoreCatalog, gsCatalog);
+        // only synchronize catalogs if purge flag is not set to true
+        if (!purge) {
+            syncCatalogs(restoreCatalog, gsCatalog);
+        }
 
         for (CatalogListener listener : gsCatalog.getListeners()) {
             restoreCatalog.addListener(listener);
@@ -116,8 +117,23 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
         return restoreCatalog;
     }
 
+    private Catalog unwrapGsCatalog() {
+        Catalog gsCatalog = backupFacade.getGeoServer().getCatalog();
+        if (gsCatalog instanceof Wrapper) {
+            gsCatalog = ((Wrapper) gsCatalog).unwrap(Catalog.class);
+        }
+        return gsCatalog;
+    }
+
+    private boolean getPurgeResources(JobParameters params) {
+        String value = params.getString(Backup.PARAM_PURGE_RESOURCES);
+        if (value == null) return false;
+        return Boolean.valueOf(value.trim());
+    }
+
     /** Synchronizes catalogs content. */
     private void syncCatalogs(CatalogImpl restoreCatalog, Catalog gsCatalog) {
+        LOGGER.fine("Synchronizing catalogs items.");
         if (gsCatalog instanceof CatalogImpl) {
             restoreCatalog.sync((CatalogImpl) gsCatalog);
         }
@@ -156,31 +172,7 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
                                 + backupFacade.getJobOperator().getSummary(executionId));
 
                 if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
-
-                    JobParameters jobParameters = restoreExecution.getJobParameters();
-                    Resource tempFolder =
-                            Resources.fromURL(
-                                    jobParameters.getString(Backup.PARAM_INPUT_FILE_PATH));
-
-                    // Cleanup Temporary Resources
-                    String cleanUpTempFolders = jobParameters.getString(Backup.PARAM_CLEANUP_TEMP);
-                    if (cleanUpTempFolders != null
-                            && Boolean.parseBoolean(cleanUpTempFolders)
-                            && tempFolder != null) {
-                        if (Resources.exists(tempFolder)) {
-                            try {
-                                if (!tempFolder.delete()) {
-                                    LOGGER.warning(
-                                            "It was not possible to cleanup Temporary Resources. Please double check that Resources inside the Temp GeoServer Data Directory have been removed.");
-                                }
-                            } catch (Exception e) {
-                                LOGGER.log(
-                                        Level.WARNING,
-                                        "It was not possible to cleanup Temporary Resources. Please double check that Resources inside the Temp GeoServer Data Directory have been removed.",
-                                        e);
-                            }
-                        }
-                    }
+                    cleanUp();
                 }
             }
             // Collect errors
@@ -190,6 +182,33 @@ public class RestoreJobExecutionListener implements JobExecutionListener {
                 throw new RuntimeException(e);
             } else {
                 this.restoreExecution.addWarningExceptions(Arrays.asList(e));
+            }
+        }
+    }
+
+    /** Clean up temp folder if required on settings. */
+    private void cleanUp() {
+        JobParameters jobParameters = restoreExecution.getJobParameters();
+        Resource tempFolder =
+                Resources.fromURL(jobParameters.getString(Backup.PARAM_INPUT_FILE_PATH));
+
+        // Cleanup Temporary Resources
+        String cleanUpTempFolders = jobParameters.getString(Backup.PARAM_CLEANUP_TEMP);
+        if (cleanUpTempFolders != null
+                && Boolean.parseBoolean(cleanUpTempFolders)
+                && tempFolder != null) {
+            if (Resources.exists(tempFolder)) {
+                try {
+                    if (!tempFolder.delete()) {
+                        LOGGER.warning(
+                                "It was not possible to cleanup Temporary Resources. Please double check that Resources inside the Temp GeoServer Data Directory have been removed.");
+                    }
+                } catch (Exception e) {
+                    LOGGER.log(
+                            Level.WARNING,
+                            "It was not possible to cleanup Temporary Resources. Please double check that Resources inside the Temp GeoServer Data Directory have been removed.",
+                            e);
+                }
             }
         }
     }

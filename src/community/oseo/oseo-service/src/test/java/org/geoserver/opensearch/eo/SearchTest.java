@@ -403,6 +403,16 @@ public class SearchTest extends OSEOTestSupport {
     }
 
     @Test
+    public void testProductByIdDisabled() throws Exception {
+        Document dom =
+                getAsDOM(
+                        "oseo/search?parentId=LANDSAT8&uid=LS8_TEST.DISABLED&httpAccept="
+                                + AtomSearchResponse.MIME);
+        // no results, the product is there, but disabled
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("0")));
+    }
+
+    @Test
     public void testAllSentinel2Products() throws Exception {
         Document dom =
                 getAsDOM("oseo/search?parentId=SENTINEL2&httpAccept=" + AtomSearchResponse.MIME);
@@ -843,6 +853,16 @@ public class SearchTest extends OSEOTestSupport {
     }
 
     @Test
+    public void testGetDisableCollectionMetadata() throws Exception {
+        Document dom = getAsOpenSearchException("oseo/metadata?uid=DISABLED_COLLECTION", 404);
+        assertThat(
+                dom,
+                hasXPath(
+                        "/rss/channel/item/title",
+                        containsString("Could not locate the requested product")));
+    }
+
+    @Test
     public void testGetProductMetadataInvalidFormat() throws Exception {
         Document dom =
                 getAsOpenSearchException(
@@ -853,11 +873,35 @@ public class SearchTest extends OSEOTestSupport {
     }
 
     @Test
+    public void testGetDisabledProductMetadata() throws Exception {
+        Document dom =
+                getAsOpenSearchException(
+                        "oseo/metadata?parentId=LANDSAT8&uid=LS8_TEST.DISABLED", 404);
+        assertThat(
+                dom,
+                hasXPath(
+                        "/rss/channel/item/title",
+                        containsString("Could not locate the requested product")));
+    }
+
+    @Test
     public void testQuicklook() throws Exception {
         String path =
                 "oseo/quicklook?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01";
         RenderedImage image = getAsImage(path, "image/jpeg");
         assertNotNull(image);
+    }
+
+    @Test
+    public void testDisabledProductQuicklook() throws Exception {
+        Document dom =
+                getAsOpenSearchException(
+                        "oseo/quicklook?parentId=LANDSAT8&uid=LS8_TEST.DISABLED", 404);
+        assertThat(
+                dom,
+                hasXPath(
+                        "/rss/channel/item/title",
+                        containsString("Could not locate the requested product")));
     }
 
     @Test

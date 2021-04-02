@@ -44,6 +44,7 @@ import org.geoserver.ogcapi.PaginationLinksBuilder;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
+import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
@@ -61,6 +62,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.Literal;
 import org.opengis.referencing.FactoryException;
 import org.springframework.http.HttpStatus;
@@ -179,8 +181,10 @@ public class STACService {
     @ResponseBody
     @HTMLResponseBody(templateName = "collections.ftl", fileName = "collections.html")
     public CollectionsResponse collections() throws IOException {
+        Query q = new Query();
+        q.setFilter(getEnabledFilter());
         FeatureCollection<FeatureType, Feature> collections =
-                accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures();
+                accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
         return new CollectionsResponse(collections);
     }
 
@@ -195,7 +199,10 @@ public class STACService {
 
     private Feature getCollection(String collectionId) throws IOException {
         Query q = new Query();
-        q.setFilter(FF.equals(FF.property("name"), FF.literal(collectionId)));
+        q.setFilter(
+                FF.and(
+                        getEnabledFilter(),
+                        FF.equals(FF.property("name"), FF.literal(collectionId))));
         FeatureCollection<FeatureType, Feature> collections =
                 accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
         Feature collection = DataUtilities.first(collections);
@@ -218,7 +225,10 @@ public class STACService {
         getCollection(collectionId);
 
         Query q = new Query();
-        q.setFilter(FF.equals(FF.property("identifier"), FF.literal(itemId)));
+        q.setFilter(
+                FF.and(
+                        getEnabledFilter(),
+                        FF.equals(FF.property("identifier"), FF.literal(itemId))));
 
         FeatureSource<FeatureType, Feature> products =
                 accessProvider.getOpenSearchAccess().getProductSource();
@@ -344,6 +354,9 @@ public class STACService {
             Filter mapped = parseFilter(source, sq.getFilter(), sq.getFilterLang());
             filters.add(mapped);
         }
+        // keep only enabled products
+        filters.add(getEnabledFilter());
+
         Query q = new Query();
         q.setStartIndex(sq.getStartIndex());
         int limit = getLimit(sq.getLimit());
@@ -370,6 +383,10 @@ public class STACService {
         response.setNextBody(linksBuilder.getNextMap(false));
 
         return response;
+    }
+
+    public PropertyIsEqualTo getEnabledFilter() {
+        return FF.equals(FF.property(OpenSearchAccess.ENABLED), FF.literal(true));
     }
 
     public Filter parseFilter(
@@ -411,6 +428,9 @@ public class STACService {
             Filter mapped = parseFilter(source, filter, filterLanguage);
             filters.add(mapped);
         }
+        // keep only enabled products
+        filters.add(getEnabledFilter());
+
         Query q = new Query();
         q.setStartIndex(startIndex);
         int limit = getLimit(requestedLimit);

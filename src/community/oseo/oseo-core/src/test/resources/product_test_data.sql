@@ -835,6 +835,44 @@ VALUES(250, '<table xmlns="">
         </td>
     </tr>
 </table>', '2018-02-27 10:20:21.000', '2018-02-27 10:20:21.000', NULL, NULL, NULL, 'LS8_TEST.02', 'LANDSAT8', NULL, 'NOMINAL', 65, 'DESCENDING', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, '2017-02-26 10:24:58.000', '2017-02-28 10:24:58.000', NULL, NULL, 'DPA', 'DATA_DRIVEN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'LANDSAT_8');
+INSERT INTO product
+("id", "htmlDescription", "timeStart", "timeEnd", "originalPackageLocation", "thumbnailURL", "quicklookURL", "eoIdentifier", "eoParentIdentifier", "eoProductionStatus", "eoAcquisitionType", "eoOrbitNumber", "eoOrbitDirection", "eoTrack", "eoFrame", "eoSwathIdentifier", "optCloudCover", "optSnowCover", "eoProductQualityStatus", "eoProductQualityDegradationStatus", "eoProcessorName", "eoProcessingCenter", "eoCreationDate", "eoModificationDate", "eoProcessingDate", "eoSensorMode", "eoArchivingCenter", "eoProcessingMode", "eoAvailabilityTime", "eoAcquisitionStation", "eoAcquisitionSubtype", "eoStartTimeFromAscendingNode", "eoCompletionTimeFromAscendingNode", "eoIlluminationAzimuthAngle", "eoIlluminationZenithAngle", "eoIlluminationElevationAngle", "sarPolarisationMode", "sarPolarisationChannels", "sarAntennaLookDirection", "sarMinimumIncidenceAngle", "sarMaximumIncidenceAngle", "sarDopplerFrequency", "sarIncidenceAngleVariation", "eoProductPlatform", "enabled")
+VALUES(251, '<table xmlns="">
+    <tr>
+        <td valign="top" width="10%">
+            <a href="${QUICKLOOK_URL}" target="_blank" title="View browse image">
+                <img align="left" border="0" height="66" hspace="8" src="" width="66" />
+            </a>
+        </td>
+        <td valign="top" width="90%">
+            <table>
+                <tr valign="top">
+                    <td>
+                        <b>Date </b>
+                    </td>
+                    <td>2018-02-27 10:20:21.000/2018-02-27 10:20:21.000</td>
+                </tr>
+                <tr valign="top">
+                    <td>
+                        <b>Media Type</b>
+                    </td>
+                    <td>
+                        <a href="${ATOM_URL}" title="Atom format">ATOM(todo)</a>
+
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <td>
+                        <b>Metadata </b>
+                    </td>
+                    <td>
+                        <a href="${OM_METADATA_URL}" title="O&M format">O&amp;M</a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>', '2018-02-27 10:20:21.000', '2018-02-27 10:20:21.000', NULL, NULL, NULL, 'LS8_TEST.DISABLED', 'LANDSAT8', NULL, 'NOMINAL', 65, 'DESCENDING', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, '2017-02-26 10:24:58.000', '2017-02-28 10:24:58.000', NULL, NULL, 'DPA', 'DATA_DRIVEN', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'LANDSAT_8', false);
 -- setup sequence to allow new inserts
 select setval('product_id_seq'::regclass, 400);
 -- geometries
@@ -860,6 +898,7 @@ update product set "footprint" = ST_GeomFromText('POLYGON((11.54663057229 42.335
 update product set "footprint" = ST_GeomFromText('POLYGON((-180 -90, 180 -90, 180 90, -180 90, -180 -90))', 4326) where "id" = 1;
 update product set "footprint" = ST_GeomFromText('POLYGON((-180 -90, 180 -90, 180 90, -180 90, -180 -90))', 4326) where "id" = 2;
 update product set "footprint" = ST_GeomFromText('POLYGON((-180 -90, 180 -90, 180 90, -180 90, -180 -90))', 4326) where "id" = 250;
+update product set "footprint" = ST_GeomFromText('POLYGON((-180 -90, 180 -90, 180 90, -180 90, -180 -90))', 4326) where "id" = 251;
 
 -- metadata
 INSERT INTO product_metadata

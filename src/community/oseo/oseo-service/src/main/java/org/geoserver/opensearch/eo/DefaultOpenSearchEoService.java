@@ -32,6 +32,7 @@ import org.opengis.feature.Property;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.PropertyName;
@@ -127,12 +128,20 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         Query query = new Query(collectionSource.getName().getLocalPart(), filter);
         FeatureCollection<FeatureType, Feature> features = collectionSource.getFeatures(query);
 
-        // get the expected maching feature
+        // get the expected matching feature
         Feature match = DataUtilities.first(features);
         if (match == null) {
             throw new OWS20Exception(
                     "Unknown parentId '" + parentId + "'", OWSExceptionCode.InvalidParameterValue);
+        } else {
+            Property enabled = match.getProperty(OpenSearchAccess.ENABLED);
+            if (enabled == null || !Boolean.TRUE.equals(enabled.getValue())) {
+                throw new OWS20Exception(
+                        "Parent '" + parentId + "' is not enabled",
+                        OWSExceptionCode.InvalidParameterValue);
+            }
         }
+
         return match;
     }
 
@@ -189,7 +198,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         // grab the right feature source for the request
         final OpenSearchAccess access = getOpenSearchAccess();
         final FeatureSource<FeatureType, Feature> featureSource;
-        Query resultsQuery = request.getQuery();
+        Query resultsQuery = filterEnabled(request.getQuery());
         final String parentId = request.getParentId();
         if (parentId == null) {
             featureSource = access.getCollectionSource();
@@ -235,6 +244,25 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         return results;
     }
 
+    /**
+     * Adds an "enabled" = "true" filter to the
+     *
+     * @param query
+     * @return
+     */
+    private Query filterEnabled(Query query) {
+        Query result = new Query(query);
+        Filter filter = query.getFilter();
+        PropertyIsEqualTo enabledFilter =
+                FF.equals(FF.property(OpenSearchAccess.ENABLED), FF.literal(true));
+        if (filter == null || Filter.INCLUDE.equals(filter)) {
+            result.setFilter(enabledFilter);
+        } else {
+            result.setFilter(FF.and(filter, enabledFilter));
+        }
+        return result;
+    }
+
     OpenSearchAccess getOpenSearchAccess() throws IOException {
         return accessProvider.getOpenSearchAccess();
     }
@@ -248,7 +276,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         OpenSearchAccess access = getOpenSearchAccess();
 
         // build the query
-        Query query = queryByIdentifier(request.getId());
+        Query query = filterEnabled(queryByIdentifier(request.getId()));
         query.setProperties(Arrays.asList(FF.property(OpenSearchAccess.METADATA_PROPERTY_NAME)));
 
         // run it
@@ -260,6 +288,14 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
             source = access.getProductSource();
         }
         FeatureCollection<FeatureType, Feature> features = source.getFeatures(query);
+        if (features.isEmpty()) {
+            throw new OWS20Exception(
+                    "Could not locate the requested product for uid = "
+                            + request.getId()
+                            + " and parentId = "
+                            + request.getParentId(),
+                    OWSExceptionCode.NotFound);
+        }
 
         // get the metadata from the feature
         String metadata =
@@ -281,6 +317,9 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
     public QuicklookResults quicklook(QuicklookRequest request) throws IOException {
         OpenSearchAccess access = getOpenSearchAccess();
 
+        // check collection exists
+        getCollectionByParentIdentifier(request.getParentId());
+
         // build the query
         Query query = queryByIdentifier(request.getId());
         query.setProperties(Arrays.asList(FF.property(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME)));
@@ -294,6 +333,14 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
             source = access.getProductSource();
         }
         FeatureCollection<FeatureType, Feature> features = source.getFeatures(query);
+        if (features.isEmpty()) {
+            throw new OWS20Exception(
+                    "Could not locate the requested product for uid = "
+                            + request.getId()
+                            + " and parentId = "
+                            + request.getParentId(),
+                    OWSExceptionCode.NotFound);
+        }
 
         byte[] payload =
                 (byte[])

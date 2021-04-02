@@ -494,6 +494,9 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         // get the product type, if any (might be a virtual collection)
         SimpleFeature collectionFeature =
                 getCollectionFeature(collection, delegate, collectionTableName);
+        if (collectionFeature == null)
+            throw new IOException("Collection " + collection + " not found");
+
         String sensorType = (String) collectionFeature.getAttribute("eoSensorType");
         ProductClass productClass = null;
         if (sensorType != null) {

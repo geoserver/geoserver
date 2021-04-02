@@ -789,11 +789,11 @@
         <module>smart-data-loader</module>
       </modules>
     </profile>
-      <profile>
-          <id>schemaless-features</id>
-          <modules>
-              <module>schemaless-features</module>
-          </modules>
-      </profile>
-  </profiles>  
+    <profile>
+      <id>schemaless-features</id>
+      <modules>
+        <module>schemaless-features</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

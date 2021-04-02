@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import org.geoserver.schemalessfeatures.type.SchemalessComplexType;
+import org.geoserver.schemalessfeatures.type.DynamicComplexType;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.type.AttributeDescriptorImpl;
 import org.geotools.feature.type.ComplexTypeImpl;
@@ -51,7 +51,7 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
         if (propertyPath == null) return null;
 
         if (!ComplexAttribute.class.isAssignableFrom(type)
-                && !SchemalessComplexType.class.isAssignableFrom(type)
+                && !DynamicComplexType.class.isAssignableFrom(type)
                 && !AttributeDescriptor.class.isAssignableFrom(type)) return null;
 
         return new SchemalessFeaturePropertyAccessor();
@@ -67,7 +67,7 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
                 type = (AttributeType) object;
             } else if (object instanceof AttributeDescriptor)
                 type = ((AttributeDescriptor) object).getType();
-            return type != null && type instanceof SchemalessComplexType;
+            return type != null && type instanceof DynamicComplexType;
         }
 
         @Override
@@ -79,7 +79,7 @@ public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactor
                 if (xpath.indexOf('/') != -1) pathParts = xpath.split("/");
                 else pathParts = xpath.split(":");
                 return (T) walkComplexAttribute((ComplexAttribute) object, pathParts);
-            } else if (object instanceof SchemalessComplexType) {
+            } else if (object instanceof DynamicComplexType) {
                 return (T) ANYTYPE_TYPE;
             } else if (object instanceof AttributeDescriptor) {
                 return (T)

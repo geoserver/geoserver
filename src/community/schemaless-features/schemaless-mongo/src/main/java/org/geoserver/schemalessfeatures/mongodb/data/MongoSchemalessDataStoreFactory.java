@@ -5,6 +5,7 @@
 package org.geoserver.schemalessfeatures.mongodb.data;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Map;
 import org.geotools.data.DataAccessFactory;
 
@@ -41,9 +42,10 @@ public class MongoSchemalessDataStoreFactory implements DataAccessFactory {
     }
 
     @Override
-    public MongoSchemalessDataAccess createDataStore(Map<String, ?> params) throws IOException {
-        MongoSchemalessDataAccess dataStore =
-                new MongoSchemalessDataAccess((String) CONNECTION_STRING.lookUp(params));
+    public MongoComplexContentDataAccess createDataStore(Map<String, Serializable> params)
+            throws IOException {
+        MongoComplexContentDataAccess dataStore =
+                new MongoComplexContentDataAccess((String) CONNECTION_STRING.lookUp(params));
         String uri = (String) NAMESPACE.lookUp(params);
         if (uri != null) {
             dataStore.setNamespaceURI(uri);

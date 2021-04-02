@@ -9,15 +9,16 @@ import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import org.geoserver.schemalessfeatures.data.SchemalessDataAccess;
+import org.geoserver.schemalessfeatures.data.ComplexContentDataAccess;
 import org.geoserver.schemalessfeatures.data.SchemalessFeatureSource;
 import org.geoserver.schemalessfeatures.mongodb.MongoSchemalessUtils;
-import org.geoserver.schemalessfeatures.mongodb.filter.MongoSchemalessHelper;
+import org.geoserver.schemalessfeatures.mongodb.filter.MongoTypeFinder;
 import org.geoserver.schemalessfeatures.mongodb.filter.SchemalessFilterToMongo;
-import org.geoserver.schemalessfeatures.type.SchemalessFeatureType;
+import org.geoserver.schemalessfeatures.type.DynamicFeatureType;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureReader;
 import org.geotools.data.FilteringFeatureReader;
@@ -26,6 +27,7 @@ import org.geotools.data.QueryCapabilities;
 import org.geotools.data.mongodb.MongoFilterSplitter;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.filter.visitor.PostPreProcessFilterSplittingVisitor;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
@@ -45,18 +47,19 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
 
     private MongoCollection<DBObject> collection;
 
-    private MongoSchemalessHelper dataTypeFinder;
+    private MongoTypeFinder dataTypeFinder;
 
     public MongoSchemalessFeatureSource(
-            Name name, MongoCollection<DBObject> collection, SchemalessDataAccess store) {
+            Name name, MongoCollection<DBObject> collection, ComplexContentDataAccess store) {
         super(name, store);
         this.collection = collection;
-        this.dataTypeFinder = new MongoSchemalessHelper(name, collection);
+        this.dataTypeFinder = new MongoTypeFinder(name, collection);
     }
 
     @Override
     protected GeometryDescriptor getGeometryDescriptor() {
         String geometryPath = dataTypeFinder.getGeometryPath();
+        if (geometryPath == null) return null;
         AttributeTypeBuilder attributeBuilder = new AttributeTypeBuilder();
         attributeBuilder.setBinding(Geometry.class);
         String geometryAttributeName;
@@ -78,7 +81,7 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
     protected FeatureReader<FeatureType, Feature> getReaderInteranl(Query query) {
         List<Filter> postFilterList = new ArrayList<>();
         FeatureReader<FeatureType, Feature> reader =
-                new MongoSchemalessReader(toCursor(query, postFilterList), this);
+                new MongoComplexReader(toCursor(query, postFilterList), this);
         if (!postFilterList.isEmpty())
             return new FilteringFeatureReader<>(reader, postFilterList.get(0));
         return reader;
@@ -170,7 +173,7 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
         }
 
         SchemalessFilterToMongo v =
-                new SchemalessFilterToMongo((SchemalessFeatureType) getSchema(), collection);
+                new SchemalessFilterToMongo((DynamicFeatureType) getSchema(), collection);
 
         return (DBObject) f.accept(v, null);
     }
@@ -214,11 +217,20 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
     private String getGeometryPath() {
         GeometryDescriptor descriptor = getGeometryDescriptor();
         if (descriptor == null) return null;
-
         return descriptor
                 .getType()
                 .getUserData()
                 .get(MongoSchemalessUtils.GEOMETRY_PATH)
                 .toString();
+    }
+
+    @Override
+    protected ReferencedEnvelope getBoundsInternal(Query q) throws IOException {
+        String geometryPath = getGeometryPath();
+        if (geometryPath != null) {
+            q = new Query(q);
+            q.setPropertyNames(new String[] {MongoSchemalessUtils.toPropertyName(geometryPath)});
+        }
+        return super.getBoundsInternal(q);
     }
 }

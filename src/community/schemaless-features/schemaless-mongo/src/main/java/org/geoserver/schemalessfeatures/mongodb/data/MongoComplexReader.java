@@ -9,25 +9,23 @@ import com.mongodb.client.MongoCursor;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import org.geoserver.schemalessfeatures.SchemalessFeatureMapper;
-import org.geoserver.schemalessfeatures.data.SchemalessFeatureReader;
-import org.geoserver.schemalessfeatures.data.SchemalessFeatureSource;
+import org.geoserver.schemalessfeatures.data.ComplexFeatureReader;
+import org.geoserver.schemalessfeatures.data.ComplexFeatureSource;
 import org.geoserver.schemalessfeatures.mongodb.mappers.SchemalessMongoToComplexMapper;
-import org.geoserver.schemalessfeatures.type.SchemalessFeatureType;
+import org.geoserver.schemalessfeatures.type.DynamicFeatureType;
 import org.opengis.feature.Feature;
 
-public class MongoSchemalessReader extends SchemalessFeatureReader {
+public class MongoComplexReader extends ComplexFeatureReader {
 
     private MongoCursor<DBObject> cursor;
 
     private SchemalessFeatureMapper<DBObject> mapper;
 
-    public MongoSchemalessReader(
-            MongoCursor<DBObject> cursor, SchemalessFeatureSource featureSource) {
+    public MongoComplexReader(MongoCursor<DBObject> cursor, ComplexFeatureSource featureSource) {
         super(featureSource);
         this.cursor = cursor;
         this.mapper =
-                new SchemalessMongoToComplexMapper(
-                        (SchemalessFeatureType) featureSource.getSchema());
+                new SchemalessMongoToComplexMapper((DynamicFeatureType) featureSource.getSchema());
     }
 
     @Override

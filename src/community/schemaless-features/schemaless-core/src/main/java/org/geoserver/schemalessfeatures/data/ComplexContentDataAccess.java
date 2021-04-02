@@ -14,7 +14,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 
-public abstract class SchemalessDataAccess implements DataAccess<FeatureType, Feature> {
+public abstract class ComplexContentDataAccess implements DataAccess<FeatureType, Feature> {
 
     @SuppressWarnings("deprecation")
     FilterCapabilities filterCapabilities;
@@ -23,7 +23,7 @@ public abstract class SchemalessDataAccess implements DataAccess<FeatureType, Fe
 
     private List<Name> typeNames;
 
-    public SchemalessDataAccess() {
+    public ComplexContentDataAccess() {
         filterCapabilities = createFilterCapabilities();
     }
 
@@ -35,13 +35,19 @@ public abstract class SchemalessDataAccess implements DataAccess<FeatureType, Fe
     }
 
     @Override
-    public void createSchema(FeatureType featureType) throws IOException {}
+    public void createSchema(FeatureType featureType) throws IOException {
+        throw new UnsupportedOperationException("Not a supported operation");
+    }
 
     @Override
-    public void updateSchema(Name typeName, FeatureType featureType) throws IOException {}
+    public void updateSchema(Name typeName, FeatureType featureType) throws IOException {
+        throw new UnsupportedOperationException("Not a supported operation");
+    }
 
     @Override
-    public void removeSchema(Name typeName) throws IOException {}
+    public void removeSchema(Name typeName) throws IOException {
+        throw new UnsupportedOperationException("Not a supported operation");
+    }
 
     @Override
     public List<Name> getNames() throws IOException {

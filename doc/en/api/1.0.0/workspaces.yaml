@@ -94,7 +94,7 @@ paths:
             Location:
               description: URL where the newly created workspace can be found
               type: string
-        401:
+        409:
           description: Unable to add workspace as it already exists
      
     put:

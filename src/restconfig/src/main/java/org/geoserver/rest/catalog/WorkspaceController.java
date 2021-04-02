@@ -112,8 +112,7 @@ public class WorkspaceController extends AbstractCatalogController {
 
         if (catalog.getWorkspaceByName(workspace.getName()) != null) {
             throw new RestException(
-                    "Workspace '" + workspace.getName() + "' already exists",
-                    HttpStatus.UNAUTHORIZED);
+                    "Workspace '" + workspace.getName() + "' already exists", HttpStatus.CONFLICT);
         }
         catalog.add(workspace);
         String name = workspace.getName();

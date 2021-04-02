@@ -24,7 +24,7 @@ This guide provides guidance to help pull requests be reviewed in a consistent f
 
 Before you start:
 
-* Double check the github [CONTRIBUTING](https://github.com/geoserver/geoserver/blob/main/CONTRIBUTING.md) policy capturing requirements for submitted code.
+* Double check the github `CONTRIBUTING.md <https://github.com/geoserver/geoserver/blob/main/CONTRIBUTING.md>`__ policy capturing requirements for submitted code.
 
   This document is shown to contributors each time a pull request is made.
   
@@ -48,12 +48,18 @@ The following checks can be performed quickly and represent common mistakes or o
 * *Presence of a proposal*, if required. For any large change our process demands a formal proposal to be made and discussed in the community before a pull request gets made. If the pull request is made anyways, point them to the process and warn that the community might eventually request changes in the approach
 
 * *Copyright headers* are present. Every source file needs a copyright header to be present. For new files ask the contributor to add the header. Copyright headers do not need to be updated for changes to existing files.
+  
+  *Where possible we use checkstyle to double check copyright headers are included, you will still need to check xml files during review.*
 
 * *No commented out code sections*. The version control is able to tell differences between existing and past versions of a certain file, thus, the commit should not contain commented out code sections.
 
-* *Javadocs and comments*. Public classes and methods should have a minimum of javadoc (a simple sentence explaning what the method or class does will be sufficient), difficult parts of the code should have some comments explaining what the code does (how it does it, is evident by the code). Comments should be professional (no personal opinions or jokes), current to the code (no need to explain what was there before, unless there is a high risk of it coming back), with no reference to the comment author (in case we need to know that information, a git blame will do)
+* *Javadocs and comments*. Public classes and methods should have a minimum of javadoc (a simple sentence explaning what the method or class does will be sufficient), difficult parts of the code should have some comments explaining what the code does (how it does it, is evident by the code). Comments should be professional (no personal opinions or jokes), current to the code (no need to explain what was there before, unless there is a high risk of it coming back), with no reference to the comment author (in case we need to know that information, a git blame will do).
 
-* *Code formatting*. The project has code formatting guidelines embodied in a Eclipse code formatting template, for every other IDEs it's basically the official Java coding conventions (spaces instead of tabs) with "long" lines.
+  *Where possible our build process uses tools like checkstyle to double check javadocs are formatted correctly.*
+
+* *Code formatting*. The project is setup to reformat code using google code formatter, for every other IDEs it's basically the official Java coding conventions (spaces instead of tabs) with "long" lines.
+
+  *Where possible our build process reformats the code automatically to reduce frustration during the review process.*
 
 * *Reformats and other changes obfuscating the actual patch*. We recommend contributors to limit changes to a minimum and avoid reformatting the code, even if the existing code is not following the existing coding conventions. Reformats can be put in separate commits if necessary.
 

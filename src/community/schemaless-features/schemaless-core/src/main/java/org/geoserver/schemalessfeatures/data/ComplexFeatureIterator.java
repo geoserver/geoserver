@@ -11,11 +11,11 @@ import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 
-public class SchemalessFeatureIterator implements FeatureIterator<Feature> {
+public class ComplexFeatureIterator implements FeatureIterator<Feature> {
 
     private FeatureReader<FeatureType, Feature> featureReader;
 
-    public SchemalessFeatureIterator(FeatureReader<FeatureType, Feature> reader) {
+    public ComplexFeatureIterator(FeatureReader<FeatureType, Feature> reader) {
         this.featureReader = reader;
     }
 

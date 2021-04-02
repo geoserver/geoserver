@@ -14,7 +14,7 @@ import org.geoserver.ows.Request;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.schemalessfeatures.type.SchemalessFeatureType;
+import org.geoserver.schemalessfeatures.type.DynamicFeatureType;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geoserver.wms.GetFeatureInfoRequest;
@@ -83,7 +83,7 @@ public class SchemalessDispatcherCallback extends AbstractDispatcherCallback {
                     catalog.getFeatureTypeByName(
                             new NameImpl(typeName.getPrefix(), typeName.getLocalPart()));
             try {
-                if (featureTypeInfo.getFeatureType() instanceof SchemalessFeatureType) return true;
+                if (featureTypeInfo.getFeatureType() instanceof DynamicFeatureType) return true;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -107,7 +107,7 @@ public class SchemalessDispatcherCallback extends AbstractDispatcherCallback {
         for (MapLayerInfo l : layerInfos) {
             FeatureTypeInfo fti = catalog.getFeatureTypeByName(l.getName());
             try {
-                if (fti != null && fti.getFeatureType() instanceof SchemalessFeatureType) {
+                if (fti != null && fti.getFeatureType() instanceof DynamicFeatureType) {
                     return false;
                 }
             } catch (IOException e) {

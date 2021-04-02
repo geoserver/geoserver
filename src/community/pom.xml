@@ -267,11 +267,7 @@
         <module>cog</module>
         <module>cov-json</module>
         <module>smart-data-loader</module>
-<<<<<<< HEAD
-=======
-        <module>rest-openapi</module>
         <module>schemaless-features</module>
->>>>>>> f6183b2a27... [GEOS-9981] New schemaless-features community module
       </modules>
     </profile>
     <profile>
@@ -718,11 +714,11 @@
         <module>smart-data-loader</module>
       </modules>
     </profile>
-     <profile>
-          <id>schemaless-features</id>
-          <modules>
-              <module>schemaless-features</module>
-          </modules>
-      </profile>
-  </profiles>  
+    <profile>
+      <id>schemaless-features</id>
+      <modules>
+        <module>schemaless-features</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

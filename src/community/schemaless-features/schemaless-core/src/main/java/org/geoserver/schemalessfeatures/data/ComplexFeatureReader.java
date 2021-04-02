@@ -8,11 +8,11 @@ import org.geotools.data.FeatureReader;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 
-public abstract class SchemalessFeatureReader implements FeatureReader<FeatureType, Feature> {
+public abstract class ComplexFeatureReader implements FeatureReader<FeatureType, Feature> {
 
-    protected SchemalessFeatureSource featureSource;
+    protected ComplexFeatureSource featureSource;
 
-    public SchemalessFeatureReader(SchemalessFeatureSource featureSource) {
+    public ComplexFeatureReader(ComplexFeatureSource featureSource) {
         this.featureSource = featureSource;
     }
 

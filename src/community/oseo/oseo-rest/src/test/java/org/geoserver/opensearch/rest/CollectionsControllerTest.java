@@ -37,7 +37,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
     @Test
     public void testGetCollections() throws Exception {
         DocumentContext json = getAsJSONPath("/rest/oseo/collections", 200);
-        assertEquals(5, json.read("$.collections.*", List.class).size());
+        assertEquals(6, json.read("$.collections.*", List.class).size());
         // check the first (sorted alphabetically)
         assertEquals("ATMTEST", json.read("$.collections[0].name"));
         assertEquals(
@@ -50,7 +50,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testGetCollectionsPaging() throws Exception {
-        DocumentContext json = getAsJSONPath("/rest/oseo/collections?offset=3&limit=1", 200);
+        DocumentContext json = getAsJSONPath("/rest/oseo/collections?offset=4&limit=1", 200);
         assertEquals(1, json.read("$.collections.*", List.class).size());
         assertEquals("SENTINEL1", json.read("$.collections[0].name"));
         assertEquals(
@@ -188,6 +188,29 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
 
         assertEquals("PT-123", json.read("$.properties['eo:productType']"));
         assertEquals("2017-01-01T00:00:00.000+0000", json.read("$.properties['timeStart']"));
+    }
+
+    @Test
+    public void testUpdateEnabled() throws Exception {
+        MockHttpServletResponse response;
+        createTest123Collection();
+
+        // grab the JSON to modify some bits
+        JSONObject feature = (JSONObject) getAsJSON("/rest/oseo/collections/DISABLED_COLLECTION");
+        JSONObject properties = feature.getJSONObject("properties");
+        properties.element("enabled", "true");
+
+        // send it back
+        response =
+                putAsServletResponse(
+                        "rest/oseo/collections/DISABLED_COLLECTION",
+                        feature.toString(),
+                        "application/json");
+        assertEquals(200, response.getStatus());
+
+        // check the changes
+        DocumentContext json = getAsJSONPath("/rest/oseo/collections/DISABLED_COLLECTION", 200);
+        assertEquals(Boolean.TRUE, json.read("$.properties['enabled']"));
     }
 
     @Test

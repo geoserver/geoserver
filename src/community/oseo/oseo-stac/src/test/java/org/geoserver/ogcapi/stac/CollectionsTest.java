@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.geoserver.ogcapi.Queryables;
+import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geotools.data.Query;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
@@ -48,8 +49,9 @@ public class CollectionsTest extends STACTestSupport {
     @Test
     public void testCollectionsJSON() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/collections?f=json", 200);
-        // all collections are accounted for
-        Integer collectionCount = getOpenSearchAccess().getCollectionSource().getCount(Query.ALL);
+        // all collections are accounted for (one is disabled
+        OpenSearchAccess osa = getOpenSearchAccess();
+        Integer collectionCount = osa.getCollectionSource().getCount(Query.ALL) - 1;
         assertEquals(collectionCount, json.read("$.collections.length()"));
 
         // concentrate on the Sentinel2 object
@@ -142,5 +144,13 @@ public class CollectionsTest extends STACTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/ogcapi/stac/collections/SENTINEL2/queryables",
                 readSingle(s2, "links[?(@.rel == '" + Queryables.REL + "')].href"));
+    }
+
+    @Test
+    public void testDisabledItem() throws Exception {
+        DocumentContext json = getAsJSONPath("ogc/stac/collections/DISABLED_COLLECTION", 404);
+
+        assertEquals("InvalidParameterValue", json.read("code"));
+        assertEquals("Collection not found: DISABLED_COLLECTION", json.read("description"));
     }
 }

@@ -241,6 +241,14 @@ public class DescriptionTest extends OSEOTestSupport {
     }
 
     @Test
+    public void testDisabledCollectionDescription() throws Exception {
+        Document dom = getAsDOM("oseo/description?parentId=DISABLED_COLLECTION");
+        assertThat(
+                dom,
+                hasXPath("//item/title", equalTo("Parent 'DISABLED_COLLECTION' is not enabled")));
+    }
+
+    @Test
     public void testOpticalCollectionDescription() throws Exception {
         Document dom = getAsDOM("oseo/description?parentId=SENTINEL2");
         print(dom);

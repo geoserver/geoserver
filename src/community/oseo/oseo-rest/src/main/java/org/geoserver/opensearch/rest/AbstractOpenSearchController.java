@@ -366,6 +366,12 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
             Attribute attribute = ab.buildSimple(null, converted);
             builder.append(pd.getName(), attribute);
         }
+        // if not otherwise specified, collections and products are enabled
+        if (feature.getAttribute("enabled") == null) {
+            PropertyDescriptor pd = targetSch.getDescriptor("enabled");
+            ab.setDescriptor((AttributeDescriptor) pd);
+            builder.append(pd.getName(), ab.buildSimple(null, true));
+        }
         Feature collectionFeature = builder.buildFeature(feature.getID());
         return collectionFeature;
     }

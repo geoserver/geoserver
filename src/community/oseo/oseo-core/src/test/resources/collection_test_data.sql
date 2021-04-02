@@ -141,8 +141,11 @@ VALUES(18, 'ATMTEST', 'Atmospheric collection test', 'The sample atmospheric sen
     <td>The sample atmospheric sensor (SAS)</td>
   </tr>
 </table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2018-02-26 10:20:21.000', '2018-03-01 10:20:21.000', NULL, NULL, 'SAS1', NULL, '', NULL, 'OLI', 'ATMOSPHERIC', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'various');
+INSERT INTO collection
+("id", "name", "title", "description", "primary", "htmlDescription", "footprint", "timeStart", "timeEnd", "productCqlFilter", "masked", "eoIdentifier", "eoProductType", "eoPlatform", "eoPlatformSerialIdentifier", "eoInstrument", "eoSensorType", "eoCompositeType", "eoProcessingLevel", "eoOrbitType", "eoSpectralRange", "eoWavelength", "eoSecurityConstraints", "eoDissemination", "eoAcquisitionStation", "license", "enabled")
+VALUES(34, 'DISABLED_COLLECTION', 'A disabled collections', 'Not meant to be shared', NULL, '', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2015-07-01 10:20:21.000', '2016-02-26 10:20:21.000', NULL, NULL, 'DISABLED_COLLECTION', 'S2MSI1C', 'Sentinel-2', 'A', 'MSI', 'OPTICAL', NULL, 'Level-1C', 'LEO', NULL, NULL, NULL, NULL, NULL, 'CC-BY-NC-ND-3.0-IGO', false);
 -- setup sequence to allow new inserts
-select setval('collection_id_seq'::regclass, 33);
+select setval('collection_id_seq'::regclass, 35);
 -- metadata
 INSERT INTO collection_metadata ("mid","metadata") VALUES (
 17,'<?xml version="1.0" encoding="UTF-8"?>
@@ -3354,3 +3357,4 @@ VALUES(31, 'gs', 'landsat8-SINGLE', false, null, null, true, 'EPSG:4326', true);
 INSERT into public.collection_layer
 ("cid", "workspace", "layer", "separateBands", "bands", "browseBands", "heterogeneousCRS", "mosaicCRS", "defaultLayer")
 VALUES(31, 'gs', 'landsat8-SEPARATE', true, 'B01,B02,B03,B04,B05,B06,B07,B08,B09', 'B04,B03,B02', true, 'EPSG:4326', false);
+

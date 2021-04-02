@@ -90,6 +90,15 @@ public class ItemsTest extends STACTestSupport {
         checkSentinel2Sample(json);
     }
 
+    @Test
+    public void testDisabledItem() throws Exception {
+        DocumentContext json =
+                getAsJSONPath("ogc/stac/collections/LANDSAT8/items/LS8_TEST.DISABLED", 404);
+
+        assertEquals("InvalidParameterValue", json.read("code"));
+        assertEquals("Could not locate item LS8_TEST.DISABLED", json.read("description"));
+    }
+
     private void checkSentinel2Sample(DocumentContext s2Sample) {
         // ... geometry
         assertEquals("Polygon", s2Sample.read("geometry.type"));

@@ -357,6 +357,28 @@ public class ProductsControllerTest extends OSEORestTestSupport {
     }
 
     @Test
+    public void testUpdateDisabledProduct() throws Exception {
+        // grab the JSON to modify some bits
+        JSONObject feature =
+                (JSONObject) getAsJSON("rest/oseo/collections/LANDSAT8/products/LS8_TEST.DISABLED");
+        JSONObject properties = feature.getJSONObject("properties");
+        properties.element("enabled", true);
+
+        // send it back
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        "rest/oseo/collections/LANDSAT8/products/LS8_TEST.DISABLED",
+                        feature.toString(),
+                        "application/json");
+        assertEquals(200, response.getStatus());
+
+        // check the changes
+        DocumentContext json =
+                getAsJSONPath("rest/oseo/collections/LANDSAT8/products/LS8_TEST.DISABLED", 200);
+        assertEquals(Boolean.TRUE, json.read("$.properties['enabled']"));
+    }
+
+    @Test
     public void testUpdateAtmosphericProduct() throws Exception {
         // create the product
         MockHttpServletResponse response =

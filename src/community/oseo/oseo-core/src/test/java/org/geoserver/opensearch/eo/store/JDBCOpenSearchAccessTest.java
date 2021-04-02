@@ -328,7 +328,7 @@ public class JDBCOpenSearchAccessTest {
     public void testTypeNames() throws Exception {
         List<Name> names = osAccess.getNames();
         // product, collection, SENTINEL1, SENTINEL2, LANDSAT8, ATM1,
-        MatcherAssert.assertThat(names, hasSize(27));
+        MatcherAssert.assertThat(names, hasSize(28));
         Set<String> localNames = new HashSet<>();
         for (Name name : names) {
             Assert.assertEquals(TEST_NAMESPACE, name.getNamespaceURI());
@@ -363,7 +363,8 @@ public class JDBCOpenSearchAccessTest {
                         "LANDSAT8__B06",
                         "LANDSAT8__B07",
                         "LANDSAT8__B08",
-                        "LANDSAT8__B09"));
+                        "LANDSAT8__B09",
+                        "DISABLED_COLLECTION"));
     }
 
     @Test

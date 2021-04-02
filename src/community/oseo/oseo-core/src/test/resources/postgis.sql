@@ -39,7 +39,8 @@ create table collection (
   "eoSecurityConstraints" boolean,
   "eoDissemination" varchar,
   "eoAcquisitionStation" varchar,
-  "license" varchar
+  "license" varchar,
+  "enabled" boolean not null DEFAULT true
 );
 -- index all (really, this is a search engine)
 -- manually generated indexes
@@ -139,7 +140,8 @@ create table product (
   "atmSpeciesError" float[],
   "atmUnit" varchar[],
   "atmAlgorithmName" varchar[],
-  "atmAlgorithmVersion" varchar[]
+  "atmAlgorithmVersion" varchar[],
+  "enabled" boolean not null DEFAULT true
 );
 
 -- index all (really, this is a search engine)

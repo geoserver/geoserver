@@ -4,9 +4,9 @@
  */
 package org.geoserver.schemalessfeatures;
 
-import org.geoserver.schemalessfeatures.builders.SchemalessComplexTypeBuilder;
+import org.geoserver.schemalessfeatures.builders.DynamicComplexTypeBuilder;
 import org.geoserver.schemalessfeatures.filter.SchemalessPropertyAccessorFactory;
-import org.geoserver.schemalessfeatures.type.SchemalessComplexType;
+import org.geoserver.schemalessfeatures.type.DynamicComplexType;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.NameImpl;
 import org.geotools.gml3.v3_2.GMLSchema;
@@ -32,10 +32,10 @@ public abstract class SchemalessFeatureMapper<T> {
 
     protected AttributeBuilder attributeBuilder;
 
-    protected SchemalessComplexTypeBuilder typeBuilder;
+    protected DynamicComplexTypeBuilder typeBuilder;
 
     public SchemalessFeatureMapper(
-            AttributeBuilder attributeBuilder, SchemalessComplexTypeBuilder typeBuilder) {
+            AttributeBuilder attributeBuilder, DynamicComplexTypeBuilder typeBuilder) {
         this.attributeBuilder = attributeBuilder;
         this.typeBuilder = typeBuilder;
     }
@@ -59,7 +59,7 @@ public abstract class SchemalessFeatureMapper<T> {
      * @return the propertyDescriptor with the Object Type and descriptor
      */
     protected PropertyDescriptor buildFullyObjectPropertyModelDescriptor(
-            SchemalessComplexType parentType,
+            DynamicComplexType parentType,
             String namespaceURI,
             String attrName,
             boolean isCollection) {
@@ -68,7 +68,7 @@ public abstract class SchemalessFeatureMapper<T> {
                 .name(capitalizeName(attrName) + PROPERTY_TYPE_SUFFIX)
                 .superType(GMLSchema.ABSTRACTFEATURETYPE_TYPE);
 
-        SchemalessComplexType complexPropertyType = typeBuilder.buildComplexType();
+        DynamicComplexType complexPropertyType = typeBuilder.buildComplexType();
 
         PropertyDescriptor descriptorProperty =
                 typeBuilder.buildDescriptor(attrName, complexPropertyType, isCollection);
@@ -78,7 +78,7 @@ public abstract class SchemalessFeatureMapper<T> {
                 .namespaceURI(namespaceURI)
                 .name(capitalizeName(attrName) + TYPE_SUFFIX)
                 .superType(GMLSchema.ABSTRACTGMLTYPE_TYPE);
-        SchemalessComplexType nestedFeatureType = typeBuilder.buildNestedFeatureType();
+        DynamicComplexType nestedFeatureType = typeBuilder.buildNestedFeatureType();
 
         PropertyDescriptor nestedFeatureDescriptor =
                 typeBuilder.buildDescriptor(
@@ -106,7 +106,7 @@ public abstract class SchemalessFeatureMapper<T> {
      * @return the simple Attribute
      */
     protected Attribute buildSimpleAttribute(
-            String namespaceURI, String attrName, Object value, SchemalessComplexType parentType) {
+            String namespaceURI, String attrName, Object value, DynamicComplexType parentType) {
         Name name = new NameImpl(namespaceURI, attrName);
         PropertyDescriptor attrDescriptor = parentType.getDescriptor(name);
         if (attrDescriptor == null) {
@@ -118,7 +118,7 @@ public abstract class SchemalessFeatureMapper<T> {
                     .minOccurs(0);
             AttributeType attrType = typeBuilder.buildType();
             attrDescriptor = typeBuilder.buildDescriptor(attrType.getName(), attrType);
-            if (parentType instanceof SchemalessComplexType) {
+            if (parentType instanceof DynamicComplexType) {
                 parentType.addPropertyDescriptor(attrDescriptor);
             }
         }

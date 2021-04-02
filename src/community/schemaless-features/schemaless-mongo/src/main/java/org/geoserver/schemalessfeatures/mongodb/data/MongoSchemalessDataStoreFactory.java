@@ -41,9 +41,9 @@ public class MongoSchemalessDataStoreFactory implements DataAccessFactory {
     }
 
     @Override
-    public MongoSchemalessDataAccess createDataStore(Map<String, ?> params) throws IOException {
-        MongoSchemalessDataAccess dataStore =
-                new MongoSchemalessDataAccess((String) CONNECTION_STRING.lookUp(params));
+    public MongoComplexContentDataAccess createDataStore(Map<String, ?> params) throws IOException {
+        MongoComplexContentDataAccess dataStore =
+                new MongoComplexContentDataAccess((String) CONNECTION_STRING.lookUp(params));
         String uri = (String) NAMESPACE.lookUp(params);
         if (uri != null) {
             dataStore.setNamespaceURI(uri);

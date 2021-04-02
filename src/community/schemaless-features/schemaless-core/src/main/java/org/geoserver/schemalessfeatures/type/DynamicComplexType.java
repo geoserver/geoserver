@@ -8,10 +8,10 @@ import org.opengis.feature.type.ComplexType;
 import org.opengis.feature.type.PropertyDescriptor;
 
 /**
- * Interface that represents a SchemalessComplexType. By Schemaless is meant a type with no fixed
- * descriptor definition.
+ * Interface that represents a DynamicComplexType, a type with no fixed descriptor definition,
+ * allowing the addition of new ones.
  */
-public interface SchemalessComplexType extends ComplexType {
+public interface DynamicComplexType extends ComplexType {
 
     /**
      * add a PropertyDescriptor

@@ -16,13 +16,13 @@ import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.InternationalString;
 
-/** Schemaless representation of a FeatureType */
-public class SchemalessFeatureType extends SchemalessComplexTypeImpl implements FeatureType {
+/** A FeatureType that allows new PropertyDescriptor to be added */
+public class DynamicFeatureType extends DynamicComplexTypeImpl implements FeatureType {
 
     private GeometryDescriptor defaultGeometry;
     private CoordinateReferenceSystem crs;
 
-    public SchemalessFeatureType(
+    public DynamicFeatureType(
             Name name,
             Collection<PropertyDescriptor> schema,
             GeometryDescriptor defaultGeometry,

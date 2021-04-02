@@ -15,7 +15,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.geoserver.schemalessfeatures.data.SchemalessDataAccess;
+import org.geoserver.schemalessfeatures.data.ComplexContentDataAccess;
 import org.geotools.data.FeatureSource;
 import org.geotools.filter.FilterCapabilities;
 import org.opengis.feature.Feature;
@@ -29,13 +29,13 @@ import org.opengis.filter.spatial.BBOX;
 import org.opengis.filter.spatial.Intersects;
 import org.opengis.filter.spatial.Within;
 
-public class MongoSchemalessDataAccess extends SchemalessDataAccess {
+public class MongoComplexContentDataAccess extends ComplexContentDataAccess {
 
     private MongoDatabase database;
 
     private MongoClient client;
 
-    public MongoSchemalessDataAccess(String connectionString) {
+    public MongoComplexContentDataAccess(String connectionString) {
         super();
         ConnectionString connection = getConnectionString(connectionString);
         this.client = createMongoClient(connection);

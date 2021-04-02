@@ -58,6 +58,16 @@ public class MongoSchemalessUtils {
         return sb.toString();
     }
 
+    /**
+     * Convert a mongoPath to a PropertyName
+     *
+     * @param mongoPath the mongoPath
+     * @return a string representation of PropertyName
+     */
+    public static String toPropertyName(String mongoPath) {
+        return mongoPath.replaceAll("\\.", "/");
+    }
+
     public static boolean isGeometry(DBObject object) {
         Set keys = object.keySet();
         if (keys.size() != 2 || !keys.contains("coordinates") || !keys.contains("type")) {

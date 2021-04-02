@@ -17,14 +17,14 @@ import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.util.InternationalString;
 
-/** Concrete implementation of a SchemalessComplexType */
-public class SchemalessComplexTypeImpl extends AttributeTypeImpl implements SchemalessComplexType {
+/** Concrete implementation of a DynamicComplexType */
+public class DynamicComplexTypeImpl extends AttributeTypeImpl implements DynamicComplexType {
 
     private final Collection<PropertyDescriptor> properties;
 
     private final Map<Name, PropertyDescriptor> propertyMap;
 
-    public SchemalessComplexTypeImpl(
+    public DynamicComplexTypeImpl(
             Name name,
             Collection<PropertyDescriptor> properties,
             boolean identified,
@@ -110,7 +110,7 @@ public class SchemalessComplexTypeImpl extends AttributeTypeImpl implements Sche
         if (getClass() != o.getClass()) {
             return false;
         }
-        SchemalessComplexTypeImpl other = (SchemalessComplexTypeImpl) o;
+        DynamicComplexTypeImpl other = (DynamicComplexTypeImpl) o;
         if (!properties.equals(other.properties)) {
             return false;
         }

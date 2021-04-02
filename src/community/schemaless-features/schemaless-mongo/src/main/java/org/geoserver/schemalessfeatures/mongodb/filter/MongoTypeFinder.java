@@ -21,15 +21,15 @@ import org.opengis.feature.type.Name;
  * Class helping to overcome those issues caused by the schemaless approach, eg. the retrieval of
  * the type binding for a PropertyName or of a geometry path for the geometryDescriptor.
  */
-public class MongoSchemalessHelper {
+public class MongoTypeFinder {
 
-    private static final Logger LOG = Logging.getLogger(MongoSchemalessHelper.class);
+    private static final Logger LOG = Logging.getLogger(MongoTypeFinder.class);
 
     private MongoCollection<DBObject> collection;
 
     private Name name;
 
-    public MongoSchemalessHelper(Name name, MongoCollection<DBObject> collection) {
+    public MongoTypeFinder(Name name, MongoCollection<DBObject> collection) {
         this.name = name;
         this.collection = collection;
     }
@@ -40,7 +40,7 @@ public class MongoSchemalessHelper {
      * @param attribute the string PropertyName
      * @return the type of the attribute
      */
-    public Class<?> getAttributeTypeResult(String attribute) {
+    public Class<?> getAttributeType(String attribute) {
         Document projection = new Document();
         projection.put(MongoSchemalessUtils.toMongoPath(attribute), 1);
         projection.put("_id", 0);
@@ -103,6 +103,11 @@ public class MongoSchemalessHelper {
         return geometryPath;
     }
 
+    /**
+     * Get the geometry path from the first geometry index, if exists, found in the MongoCollection.
+     *
+     * @return the path to the geometry or null if no 2dsphere index has been provided.
+     */
     private String findGeometryPathByIndex() {
         String geometryPath = null;
         Set<String> geometries = MongoSchemalessUtils.findIndexedGeometries(collection);

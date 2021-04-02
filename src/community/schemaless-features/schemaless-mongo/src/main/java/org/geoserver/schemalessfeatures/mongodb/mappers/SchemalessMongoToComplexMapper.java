@@ -11,11 +11,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import org.geoserver.schemalessfeatures.SchemalessFeatureMapper;
-import org.geoserver.schemalessfeatures.builders.SchemalessComplexTypeBuilder;
-import org.geoserver.schemalessfeatures.builders.SchemalessComplexTypeFactory;
+import org.geoserver.schemalessfeatures.builders.DynamicComplexTypeBuilder;
+import org.geoserver.schemalessfeatures.builders.DynamicComplexTypeFactory;
 import org.geoserver.schemalessfeatures.mongodb.MongoSchemalessUtils;
-import org.geoserver.schemalessfeatures.type.SchemalessComplexType;
-import org.geoserver.schemalessfeatures.type.SchemalessFeatureType;
+import org.geoserver.schemalessfeatures.type.DynamicComplexType;
+import org.geoserver.schemalessfeatures.type.DynamicFeatureType;
 import org.geotools.data.mongodb.MongoGeometryBuilder;
 import org.geotools.feature.AttributeBuilder;
 import org.geotools.feature.ComplexFeatureBuilder;
@@ -41,12 +41,12 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
 
     private MongoGeometryBuilder geomBuilder;
 
-    private SchemalessFeatureType type;
+    private DynamicFeatureType type;
 
-    public SchemalessMongoToComplexMapper(SchemalessFeatureType type) {
+    public SchemalessMongoToComplexMapper(DynamicFeatureType type) {
         super(
                 new AttributeBuilder(new ValidatingFeatureFactoryImpl()),
-                new SchemalessComplexTypeBuilder(new SchemalessComplexTypeFactory()));
+                new DynamicComplexTypeBuilder(new DynamicComplexTypeFactory()));
         this.geomBuilder = new MongoGeometryBuilder();
         this.type = type;
     }
@@ -73,7 +73,7 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
         return f;
     }
 
-    private List<Property> getNestedAttributes(DBObject rootDBO, SchemalessComplexType parentType) {
+    private List<Property> getNestedAttributes(DBObject rootDBO, DynamicComplexType parentType) {
         Set<String> keys = rootDBO.keySet();
         String namespaceURI = type.getName().getNamespaceURI();
         List<Property> attributes = new ArrayList<>();
@@ -108,7 +108,7 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
             String namespaceURI,
             String attrName,
             DBObject dbobject,
-            SchemalessComplexType parentType,
+            DynamicComplexType parentType,
             boolean isCollection) {
         PropertyDescriptor descriptorProperty =
                 parentType.getDescriptor(new NameImpl(namespaceURI, attrName));
@@ -118,8 +118,8 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
                             parentType, namespaceURI, attrName, isCollection);
         ComplexType complexTypeProperty = (ComplexType) descriptorProperty.getType();
         PropertyDescriptor nestedFeatureDescriptor = extractFeatureDescriptor(descriptorProperty);
-        SchemalessComplexType nestedFeatureType =
-                (SchemalessComplexType) nestedFeatureDescriptor.getType();
+        DynamicComplexType nestedFeatureType =
+                (DynamicComplexType) nestedFeatureDescriptor.getType();
         ComplexFeatureBuilder featureBuilder =
                 new ComplexFeatureBuilder((AttributeDescriptor) nestedFeatureDescriptor);
         List<Property> attributes = getNestedAttributes(dbobject, nestedFeatureType);
@@ -138,7 +138,7 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
             String namespaceURI,
             String attrName,
             BasicDBList value,
-            SchemalessComplexType parentType) {
+            DynamicComplexType parentType) {
         List<Property> attributes = new ArrayList<>();
         for (int i = 0; i < value.size(); i++) {
             Object obj = value.get(i);
@@ -156,7 +156,7 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
     }
 
     private GeometryAttribute buildGeometryAttribute(
-            Geometry geom, String namespaceURI, String name, SchemalessComplexType parentType) {
+            Geometry geom, String namespaceURI, String name, DynamicComplexType parentType) {
         AttributeDescriptor descriptor =
                 (AttributeDescriptor) parentType.getDescriptor(new NameImpl(namespaceURI, name));
         if (descriptor == null) {

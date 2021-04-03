@@ -15,7 +15,7 @@ to avoid running tests and code formatting.
 PMD checks
 ----------
 
-The `PMD <https://pmd.github.io/>`__ checks are based oon source code analysis for common errors, we have configured :command:`PMD` to check for common mistakes and bad practices such as accidentally including debug ``System.out.println()`` statements in your commit.
+The `PMD <https://pmd.github.io/>`__ checks are based on source code analysis for common errors, we have configured :command:`PMD` to check for common mistakes and bad practices such as accidentally including debug ``System.out.println()`` statements in your commit.
 
 Rules are configured in our build `build/qa/pmd-ruleset.xml <https://github.com/geoserver/geoserver/blob/main/build/qa/pmd-ruleset.xml>`_:
 
@@ -41,7 +41,7 @@ error message, and a reference to a XML file with the same information after it 
     17340 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-pmd-plugin:3.11.0:check (default) on project gt-main: You have 1 PMD violation. For more details see:       /home/yourUser/devel/git-gt/modules/library/main/target/pmd.xml -> [Help 1]
     17340 [ERROR] 
 
-In case of parallel build, the specific error messages will be in the body of the build output, while the XML file reference wil be at end end, search for ``PMD Failure`` in the build logs to find the specific code issues.
+In case of parallel build, the specific error messages will be in the body of the build output, while the XML file reference will be at the end, search for ``PMD Failure`` in the build logs to find the specific code issues.
 
 If you do have a :command:`PMD` failure it is worth checking the pmd website which offers quite clear suggestions:
 
@@ -143,4 +143,3 @@ Any failure to comply with the rules will show up as a compiler error in the bui
         14610 [INFO] --- maven-checkstyle-plugin:3.0.0:check (default) @ gt-jdbc ---
         15563 [INFO] There is 1 error reported by Checkstyle 6.18 with /home/aaime/devel/git-gs/build/qa/checkstyle.xml ruleset.
         15572 [ERROR] wms/main/java/org/geoserver/wms/map/RenderedImageMapOutputFormat.java:[325,8] (javadoc) JavadocMethod: Unused @param tag for 'foobar'.
-

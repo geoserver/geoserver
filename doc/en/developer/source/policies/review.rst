@@ -45,7 +45,7 @@ The following checks can be performed quickly and represent common mistakes or o
 
 * *Presence of documentation*. For functional, user or protocol facing changes, check that some basic documentation has been contributed. Almost nobody will know functionality is there if we don't have documentation on how it works. As a plus, documentation will help you understand quicker what is getting contributed, both from a high level view, and as a guide though the changes being made.
 
-* *Presence of a proposal*, if required. For any large change our process demands a formal proposal to be made and discussed in the community before a pull request gets made. If the pull request is made anyways, point them to the process and warn that the community might eventually request changes in the approach
+* *Presence of a proposal*, if required. For any large change our process requires a formal proposal to be made and discussed in the community before a pull request gets made. If the pull request is made anyway, point the submitter to the process and note that the community might eventually request changes in the approach.
 
 * *Copyright headers* are present. Every source file needs a copyright header to be present. For new files ask the contributor to add the header. Copyright headers do not need to be updated for changes to existing files.
   
@@ -57,9 +57,8 @@ The following checks can be performed quickly and represent common mistakes or o
 
   *Where possible our build process uses tools like checkstyle to double check javadocs are formatted correctly.*
 
-* *Code formatting*. The project is setup to reformat code using google code formatter, for every other IDEs it's basically the official Java coding conventions (spaces instead of tabs) with "long" lines.
+* *Code formatting*. The project is set up to reformat code using the AOSP code formatting conventions. This will happen automatically when building with Maven. Some IDEs can do the same formatting, however do a command line Maven build if in doubt. Note that QA checks will fail if there are formatting issues.
 
-  *Where possible our build process reformats the code automatically to reduce frustration during the review process.*
 
 * *Reformats and other changes obfuscating the actual patch*. We recommend contributors to limit changes to a minimum and avoid reformatting the code, even if the existing code is not following the existing coding conventions. Reformats can be put in separate commits if necessary.
 

@@ -24,7 +24,7 @@ This guide provides guidance to help pull requests be reviewed in a consistent f
 
 Before you start:
 
-* Double check the github [CONTRIBUTING](https://github.com/geoserver/geoserver/blob/main/CONTRIBUTING.md) policy capturing requirements for submitted code.
+* Double check the github `CONTRIBUTING.md <https://github.com/geoserver/geoserver/blob/main/CONTRIBUTING.md>`__ policy capturing requirements for submitted code.
 
   This document is shown to contributors each time a pull request is made.
   
@@ -45,15 +45,20 @@ The following checks can be performed quickly and represent common mistakes or o
 
 * *Presence of documentation*. For functional, user or protocol facing changes, check that some basic documentation has been contributed. Almost nobody will know functionality is there if we don't have documentation on how it works. As a plus, documentation will help you understand quicker what is getting contributed, both from a high level view, and as a guide though the changes being made.
 
-* *Presence of a proposal*, if required. For any large change our process demands a formal proposal to be made and discussed in the community before a pull request gets made. If the pull request is made anyways, point them to the process and warn that the community might eventually request changes in the approach
+* *Presence of a proposal*, if required. For any large change our process requires a formal proposal to be made and discussed in the community before a pull request gets made. If the pull request is made anyway, point the submitter to the process and note that the community might eventually request changes in the approach.
 
 * *Copyright headers* are present. Every source file needs a copyright header to be present. For new files ask the contributor to add the header. Copyright headers do not need to be updated for changes to existing files.
+  
+  *Where possible we use checkstyle to double check copyright headers are included, you will still need to check xml files during review.*
 
 * *No commented out code sections*. The version control is able to tell differences between existing and past versions of a certain file, thus, the commit should not contain commented out code sections.
 
-* *Javadocs and comments*. Public classes and methods should have a minimum of javadoc (a simple sentence explaning what the method or class does will be sufficient), difficult parts of the code should have some comments explaining what the code does (how it does it, is evident by the code). Comments should be professional (no personal opinions or jokes), current to the code (no need to explain what was there before, unless there is a high risk of it coming back), with no reference to the comment author (in case we need to know that information, a git blame will do)
+* *Javadocs and comments*. Public classes and methods should have a minimum of javadoc (a simple sentence explaning what the method or class does will be sufficient), difficult parts of the code should have some comments explaining what the code does (how it does it, is evident by the code). Comments should be professional (no personal opinions or jokes), current to the code (no need to explain what was there before, unless there is a high risk of it coming back), with no reference to the comment author (in case we need to know that information, a git blame will do).
 
-* *Code formatting*. The project has code formatting guidelines embodied in a Eclipse code formatting template, for every other IDEs it's basically the official Java coding conventions (spaces instead of tabs) with "long" lines.
+  *Where possible our build process uses tools like checkstyle to double check javadocs are formatted correctly.*
+
+* *Code formatting*. The project is set up to reformat code using the AOSP code formatting conventions. This will happen automatically when building with Maven. Some IDEs can do the same formatting, however do a command line Maven build if in doubt. Note that QA checks will fail if there are formatting issues.
+
 
 * *Reformats and other changes obfuscating the actual patch*. We recommend contributors to limit changes to a minimum and avoid reformatting the code, even if the existing code is not following the existing coding conventions. Reformats can be put in separate commits if necessary.
 

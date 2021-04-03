@@ -21,4 +21,4 @@ Welcome to the GeoServer Developer Manual.  The manual is for those who want to 
    cite-test-guide/index
    translation
    policies/index
-   win-installer
+   installer/index

@@ -1,5 +1,5 @@
 Automatic Quality Assurance checks
-----------------------------------
+==================================
 
 The GeoServer builds on Github Actions and `https://build.geoserver.org/ <https://build.geoserver.org/>`_ apply
 `PMD <https://pmd.github.io/>`_ and `Error Prone <https://errorprone.info/>`_ checks on the code base
@@ -15,13 +15,18 @@ to avoid running tests and code formatting.
 PMD checks
 ----------
 
-The `PMD <https://pmd.github.io/>`_ checks are based on the basic PMD validation, but limited to priority 2 checks:
+The `PMD <https://pmd.github.io/>`__ checks are based on source code analysis for common errors, we have configured :command:`PMD` to check for common mistakes and bad practices such as accidentally including debug ``System.out.println()`` statements in your commit.
 
-https://github.com/geoserver/geoserver/blob/main/src/pmd-ruleset.xml
+Rules are configured in our build `build/qa/pmd-ruleset.xml <https://github.com/geoserver/geoserver/blob/main/build/qa/pmd-ruleset.xml>`_:
 
-In order to activate the PMD checks, use the "-Ppmd" profile.
+.. literalinclude:: /../../../../build/qa/pmd-ruleset.xml
+   :language: xml
+   :start-after: </description>
+   :end-before: </ruleset>
 
-PMD will fail the build in case of violation, reporting the specific errors before the build
+In order to activate the :command:`PMD` checks, use the ``-Ppmd`` profile.
+
+:command:`PMD` will fail the build in case of violation, reporting the specific errors before the build
 error message, and a reference to a XML file with the same information after it (example taken from GeoTools)::
 
     7322 [INFO] --- maven-pmd-plugin:3.11.0:check (default) @ gt-main ---
@@ -36,15 +41,20 @@ error message, and a reference to a XML file with the same information after it 
     17340 [ERROR] Failed to execute goal org.apache.maven.plugins:maven-pmd-plugin:3.11.0:check (default) on project gt-main: You have 1 PMD violation. For more details see:       /home/yourUser/devel/git-gt/modules/library/main/target/pmd.xml -> [Help 1]
     17340 [ERROR] 
 
-In case of parallel build, the specific error messages will be in the body of the build, while the
-XML file reference wil be at end end, just search for "PMD Failure" in the build logs to find the specific code issues.
+In case of parallel build, the specific error messages will be in the body of the build output, while the XML file reference will be at the end, search for ``PMD Failure`` in the build logs to find the specific code issues.
+
+If you do have a :command:`PMD` failure it is worth checking the pmd website which offers quite clear suggestions:
+
+* `Java Rules <https://pmd.github.io/latest/pmd_rules_java_bestpractices.html>`__
 
 PMD false positive suppression
 """"""""""""""""""""""""""""""
 
 Occasionally PMD will report a false positive failure, for those it's possible to annotate the method
 or the class in question with a SuppressWarnings using ``PMD.<RuleName``, e.g. if the above error
-was actually a legit use of ``System.out.println`` it could have been annotated with::
+was actually a legit use of ``System.out.println`` it could have been annotated with:
+
+.. code-block:: java
 
     @SuppressWarnings("PMD.SystemPrintln")
     public void methodDoingPrintln(...) {
@@ -59,7 +69,9 @@ can be instructed to check for more by configuration (do check the PMD configura
 
 The check is a bit fragile, in that there are multiple ways to close an object between direct calls,
 utilities and delegate methods. The configuration lists the type of methods, and the eventual
-prefix, that will be used to perform the close, for example::
+prefix, that will be used to perform the close, for example:
+
+.. code-block:: xml
 
     <rule ref="category/java/errorprone.xml/CloseResource" >
         <properties>
@@ -110,9 +122,15 @@ It is also possible to run the spotbugs:gui goal to have a Swing based issue exp
 
 In case an invalid report is given, an annotation on the class/method/variable can be added to ignore it:
 
+.. code-block:: java
+
    @SuppressFBWarnings("NP_GUARANTEED_DEREF")
 
-or if it's a general one that should be ignored, the ``${geoserverBaseDir}/build/qa/spotbugs-exclude.xml`` file can be modified.
+or if it's a general one that should be ignored, the `build/qa/spotbugs-exclude.xml <https://github.com/geoserver/geoserver/blob/main/build/qa/spotbugs-exclude.xml>`__ file can be modified.
+
+.. literalinclude:: /../../../../build/qa/spotbugs-exclude.xml
+   :language: xml
+
 
 Checkstyle
 ----------
@@ -125,4 +143,3 @@ Any failure to comply with the rules will show up as a compiler error in the bui
         14610 [INFO] --- maven-checkstyle-plugin:3.0.0:check (default) @ gt-jdbc ---
         15563 [INFO] There is 1 error reported by Checkstyle 6.18 with /home/aaime/devel/git-gs/build/qa/checkstyle.xml ruleset.
         15572 [ERROR] wms/main/java/org/geoserver/wms/map/RenderedImageMapOutputFormat.java:[325,8] (javadoc) JavadocMethod: Unused @param tag for 'foobar'.
-

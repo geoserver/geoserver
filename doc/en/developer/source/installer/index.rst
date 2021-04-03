@@ -33,15 +33,15 @@ However you can create your own installer (using a Windows machine).
       wrapper.jar
       wrapper-server-license.txt
 
-   .. figure:: win-installer1.png
+   .. figure:: img/win-installer1.png
       :align: center
 
 #. Right-click on the installer script :file:`GeoServerEXE.nsi` and select :command:`Compile Script`.  
 
-   .. figure:: win-installer2.png
+   .. figure:: img/win-installer2.png
       :align: center
 
-After successfully compiling the script, an installer named :file:`geoserver-[VERSION].exe` will be located in the root of the unpacked archive.
+#. After successfully compiling the script, an installer named :file:`geoserver-[VERSION].exe` will be located in the root of the unpacked archive.
 
-.. figure:: win-installer3.png
-   :align: center
+   .. figure:: img/win-installer3.png
+      :align: center

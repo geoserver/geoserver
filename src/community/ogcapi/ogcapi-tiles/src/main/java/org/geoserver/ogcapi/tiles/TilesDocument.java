@@ -15,6 +15,7 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WMS;
 import org.geowebcache.layer.TileLayer;
+import org.geowebcache.layer.meta.TileJSON;
 import org.geowebcache.mime.MimeType;
 
 public class TilesDocument extends AbstractDocument {

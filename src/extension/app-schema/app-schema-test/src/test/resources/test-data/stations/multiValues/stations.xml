@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <as:AppSchemaDataAccess xmlns:as="http://www.geotools.org/app-schema"
                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
                         xsi:schemaLocation="http://www.geotools.org/app-schema AppSchemaDataAccess.xsd">
   <namespaces>
     <Namespace>
@@ -10,6 +11,10 @@
     <Namespace>
       <prefix>ms_${GML_PREFIX}</prefix>
       <uri>http://www.measurements_${GML_PREFIX}.org/1.0</uri>
+    </Namespace>
+    <Namespace>
+      <prefix>xlink</prefix>
+      <uri>http://www.w3.org/1999/xlink</uri>
     </Namespace>
   </namespaces>
   <sourceDataStores>
@@ -75,6 +80,23 @@
             <linkElement>ms_${GML_PREFIX}:Measurement_${GML_PREFIX}</linkElement>
             <linkField>FEATURE_LINK[1]</linkField>
           </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st_${GML_PREFIX}:info</targetAttribute>
+          <jdbcMultipleValue>
+            <sourceColumn>ID</sourceColumn>
+            <targetTable>INFO_${GML_PREFIX_UPPER}</targetTable>
+            <targetColumn>OWNER</targetColumn>
+            <targetValue></targetValue>
+          </jdbcMultipleValue>
+          <ClientProperty>
+            <name>xlink:href</name>
+            <value>LINK</value>
+          </ClientProperty>
+          <ClientProperty>
+            <name>xlink:title</name>
+            <value>CODE</value>
+          </ClientProperty>
         </AttributeMapping>
       </attributeMappings>
     </FeatureTypeMapping>

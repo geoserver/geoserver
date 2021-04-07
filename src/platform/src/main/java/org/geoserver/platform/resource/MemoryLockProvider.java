@@ -10,7 +10,10 @@
 package org.geoserver.platform.resource;
 
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.geotools.util.logging.Logging;
 
 /**
  * An in memory lock provider based on a striped lock
@@ -18,6 +21,8 @@ import org.apache.commons.codec.digest.DigestUtils;
  * @author Andrea Aime - GeoSolutions
  */
 public class MemoryLockProvider implements LockProvider {
+
+    static final Logger LOGGER = Logging.getLogger(MemoryLockProvider.class.getName());
 
     java.util.concurrent.locks.Lock[] locks;
 
@@ -34,7 +39,11 @@ public class MemoryLockProvider implements LockProvider {
 
     public Resource.Lock acquire(String lockKey) {
         final int idx = getIndex(lockKey);
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Mapped lock key " + lockKey + " to index " + idx + ". Acquiring lock.");
         locks[idx].lock();
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.fine("Mapped lock key " + lockKey + " to index " + idx + ". Lock acquired");
         return new Resource.Lock() {
 
             boolean released = false;
@@ -43,6 +52,8 @@ public class MemoryLockProvider implements LockProvider {
                 if (!released) {
                     released = true;
                     locks[idx].unlock();
+                    if (LOGGER.isLoggable(Level.FINE))
+                        LOGGER.fine("Released lock key " + lockKey + " mapped to index " + idx);
                 }
             }
 

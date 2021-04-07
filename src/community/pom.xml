@@ -736,7 +736,7 @@
       <id>web-service-auth</id>
       <modules>
         <module>web-service-auth</module>
-     </modules>
+      </modules>
     </profile>
     <profile>
       <id>gwc-mbtiles</id>

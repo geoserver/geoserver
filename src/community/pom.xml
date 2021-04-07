@@ -34,6 +34,7 @@
   </dependencies>
 
   <build>
+
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -99,6 +100,7 @@
             <descriptor>release/ext-cov-json.xml</descriptor>
             <descriptor>release/ext-schemaless-features.xml</descriptor>
             <descriptor>release/ext-web-service-auth.xml</descriptor>
+            <descriptor>release/ext-gwc-mbtiles.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -271,6 +273,7 @@
         <module>rest-openapi</module>
         <module>schemaless-features</module>
         <module>web-service-auth</module>
+        <module>gwc-mbtiles</module>
       </modules>
     </profile>
     <profile>
@@ -733,6 +736,12 @@
       <id>web-service-auth</id>
       <modules>
         <module>web-service-auth</module>
+     </modules>
+    </profile>
+    <profile>
+      <id>gwc-mbtiles</id>
+      <modules>
+        <module>gwc-mbtiles</module>
       </modules>
     </profile>
   </profiles>

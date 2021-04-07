@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -61,6 +62,7 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
@@ -83,6 +85,7 @@ import org.geoserver.wms.capabilities.LegendSample;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geoserver.wms.map.RenderedImageTimeDecorator;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -102,7 +105,10 @@ import org.geowebcache.io.Resource;
 import org.geowebcache.layer.ExpirationRule;
 import org.geowebcache.layer.meta.LayerMetaInformation;
 import org.geowebcache.layer.meta.MetadataURL;
+import org.geowebcache.layer.meta.TileJSON;
+import org.geowebcache.layer.meta.VectorLayerMetadata;
 import org.geowebcache.locks.MemoryLockProvider;
+import org.geowebcache.mime.ApplicationMime;
 import org.geowebcache.mime.FormatModifier;
 import org.geowebcache.mime.MimeType;
 import org.geowebcache.storage.StorageBroker;
@@ -111,6 +117,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -137,6 +144,8 @@ public class GeoServerTileLayerTest {
 
     private FeatureTypeInfoImpl resource;
 
+    private NamespaceInfoImpl ns;
+
     @After
     public void tearDown() throws Exception {
         GWC.set(null);
@@ -153,7 +162,7 @@ public class GeoServerTileLayerTest {
 
         final String layerInfoId = "mock-layer-info";
 
-        NamespaceInfo ns = new NamespaceInfoImpl();
+        ns = new NamespaceInfoImpl();
         ns.setPrefix("test");
         ns.setURI("http://goserver.org/test");
 
@@ -190,12 +199,21 @@ public class GeoServerTileLayerTest {
         metadataLinkInfo.setType("metadata-format");
         resource.setMetadataLinks(Collections.singletonList(metadataLinkInfo));
 
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("testType");
+        builder.setNamespaceURI(ns.getURI());
+        builder.setSRS("EPSG:4326");
+        builder.add("stringField", String.class);
+        builder.add("numberField", Number.class);
+        SimpleFeatureType featureType = builder.buildFeatureType();
+
         ResourcePool resourcePool = mock(ResourcePool.class);
         Style style = mock(Style.class);
         when(style.featureTypeStyles()).thenReturn(Collections.emptyList());
         when(resourcePool.getStyle(any(StyleInfo.class))).thenReturn(style);
         catalog = mock(Catalog.class);
         when(catalog.getResourcePool()).thenReturn(resourcePool);
+        when(resourcePool.getFeatureType(eq(resource))).thenReturn(featureType);
 
         layerInfo = new LayerInfoImpl();
         layerInfo.setId(layerInfoId);
@@ -578,6 +596,215 @@ public class GeoServerTileLayerTest {
         } catch (GeoWebCacheException e) {
             assertTrue(true);
         }
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void testGetTileJSON() throws Exception {
+
+        layerInfoTileLayer =
+                new GeoServerTileLayer(
+                        catalog,
+                        layerInfo.getId(),
+                        gridSetBroker,
+                        TileLayerInfoUtil.loadOrCreate(layerInfo, defaults));
+
+        ConveyorTile convTile = new ConveyorTile(null, null, null, null);
+        convTile.setTileLayer(layerInfoTileLayer);
+        convTile.setMimeType(ApplicationMime.mapboxVector);
+        convTile.setGridSetId("EPSG:900913");
+        convTile.servletReq = new MockHttpServletRequest();
+
+        Resource mockResult = mock(Resource.class);
+        ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
+        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
+
+        TileJSON result = layerInfoTileLayer.getTileJSON();
+        assertEquals("test:MockLayerInfoName", result.getName());
+        assertEquals("Test resource abstract", result.getDescription());
+        assertArrayEquals(new double[] {-180.0d, 0.0d, -90.0d, 0.0d}, result.getBounds(), 1E-6);
+
+        List<VectorLayerMetadata> layers = result.getLayers();
+        assertEquals(1, layers.size());
+        VectorLayerMetadata layer = layers.get(0);
+        assertEquals("MockLayerInfoName", layer.getId());
+
+        Map<String, String> fields = layer.getFields();
+        assertEquals("String", fields.get("stringField"));
+        assertEquals("Number", fields.get("numberField"));
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void testGetTileJSONLayerGroup() throws Exception {
+        WorkspaceInfo workspaceInfo = new WorkspaceInfoImpl();
+        workspaceInfo.setName("workspace");
+
+        DataStoreInfoImpl storeInfo = new DataStoreInfoImpl(null);
+        storeInfo.setId("mock-store-info");
+        storeInfo.setEnabled(true);
+        storeInfo.setWorkspace(workspaceInfo);
+
+        ResourcePool resourcePool = mock(ResourcePool.class);
+        catalog = mock(Catalog.class);
+        when(catalog.getResourcePool()).thenReturn(resourcePool);
+
+        LayerInfoImpl layerInfo1 = createMockVectorLayer(storeInfo, resourcePool, 1);
+        LayerInfoImpl layerInfo2 = createMockVectorLayer(storeInfo, resourcePool, 2);
+
+        LayerGroupInfoImpl layerGroupVectors = new LayerGroupInfoImpl();
+        final String layerGroupVectorsId = "mock-layergroup-vectors-id";
+        layerGroupVectors.setId(layerGroupVectorsId);
+        layerGroupVectors.setName("MockLayerGroupVectors");
+        layerGroupVectors.setTitle("Group title");
+        layerGroupVectors.setAbstract("Group abstract");
+        layerGroupVectors.setLayers(Arrays.asList(layerInfo1, layerInfo2));
+
+        when(catalog.getLayerGroup(eq(layerGroupVectorsId))).thenReturn(layerGroupVectors);
+
+        CoordinateReferenceSystem nativeCrs = CRS.decode("EPSG:4326", true);
+        ReferencedEnvelope nativeBounds = new ReferencedEnvelope(-180, 180, -90, 90, nativeCrs);
+        layerGroupVectors.setBounds(nativeBounds);
+        GeoServerTileLayer layerGroupInfoVectorTileLayer =
+                new GeoServerTileLayer(
+                        catalog,
+                        layerGroupVectors.getId(),
+                        gridSetBroker,
+                        TileLayerInfoUtil.loadOrCreate(layerGroupVectors, defaults));
+
+        ConveyorTile convTile = new ConveyorTile(null, null, null, null);
+        convTile.setTileLayer(layerGroupInfoVectorTileLayer);
+        convTile.setMimeType(ApplicationMime.mapboxVector);
+        convTile.setGridSetId("EPSG:900913");
+        convTile.servletReq = new MockHttpServletRequest();
+
+        Resource mockResult = mock(Resource.class);
+        ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
+        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
+
+        TileJSON result = layerGroupInfoVectorTileLayer.getTileJSON();
+        assertEquals("MockLayerGroupVectors", result.getName());
+        assertEquals("Group abstract", result.getDescription());
+        List<VectorLayerMetadata> layers = result.getLayers();
+        assertEquals(2, layers.size());
+        int id = 1;
+        for (VectorLayerMetadata vectorLayerMetadata : layers) {
+            assertEquals("MockLayerInfoName" + id, vectorLayerMetadata.getId());
+            Map<String, String> fields = vectorLayerMetadata.getFields();
+            assertEquals("String", fields.get("stringField" + id));
+            assertEquals("Number", fields.get("numberField" + id));
+            id++;
+        }
+    }
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void testGetTileJSONLayerGroupMixed() throws Exception {
+        WorkspaceInfo workspaceInfo = new WorkspaceInfoImpl();
+        workspaceInfo.setName("workspace");
+
+        DataStoreInfoImpl storeInfo = new DataStoreInfoImpl(null);
+        storeInfo.setId("mock-store-info");
+        storeInfo.setEnabled(true);
+        storeInfo.setWorkspace(workspaceInfo);
+
+        ResourcePool resourcePool = mock(ResourcePool.class);
+        catalog = mock(Catalog.class);
+        when(catalog.getResourcePool()).thenReturn(resourcePool);
+
+        LayerInfoImpl layerInfo1 = createMockVectorLayer(storeInfo, resourcePool, 1);
+        LayerInfoImpl layerInfo = new LayerInfoImpl();
+
+        CoverageInfoImpl resource = new CoverageInfoImpl(null);
+        resource.setId("mock-resource-info");
+        resource.setName("MockLayerInfoName");
+        resource.setNamespace(ns);
+        resource.setEnabled(true);
+
+        final String layerInfoId = "mock-layer-info";
+        layerInfo.setId(layerInfoId);
+        layerInfo.setResource(resource);
+        layerInfo.setEnabled(true);
+        layerInfo.setName("MockLayerInfoName");
+        layerInfo.setType(PublishedType.RASTER);
+        when(catalog.getLayer(eq(layerInfoId))).thenReturn(layerInfo);
+
+        LayerGroupInfoImpl layerGroupMixed = new LayerGroupInfoImpl();
+        final String layerGroupVectorsId = "mock-layergroup-mixed-id";
+        layerGroupMixed.setId(layerGroupVectorsId);
+        layerGroupMixed.setName("MockLayerGroupMixed");
+        layerGroupMixed.setTitle("Group title");
+        layerGroupMixed.setAbstract("Group abstract");
+        layerGroupMixed.setLayers(Arrays.asList(layerInfo1, layerInfo));
+
+        when(catalog.getLayerGroup(eq(layerGroupVectorsId))).thenReturn(layerGroupMixed);
+
+        CoordinateReferenceSystem nativeCrs = CRS.decode("EPSG:4326", true);
+        ReferencedEnvelope nativeBounds = new ReferencedEnvelope(-180, 180, -90, 90, nativeCrs);
+        layerGroupMixed.setBounds(nativeBounds);
+        GeoServerTileLayer layerGroupInfoVectorTileLayer =
+                new GeoServerTileLayer(
+                        catalog,
+                        layerGroupMixed.getId(),
+                        gridSetBroker,
+                        TileLayerInfoUtil.loadOrCreate(layerGroupMixed, defaults));
+
+        ConveyorTile convTile = new ConveyorTile(null, null, null, null);
+        convTile.setTileLayer(layerGroupInfoVectorTileLayer);
+        convTile.setMimeType(MimeType.createFromFormat("image/png"));
+        convTile.setGridSetId("EPSG:900913");
+        convTile.servletReq = new MockHttpServletRequest();
+
+        Resource mockResult = mock(Resource.class);
+        ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
+        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
+
+        TileJSON result = layerGroupInfoVectorTileLayer.getTileJSON();
+        assertEquals("MockLayerGroupMixed", result.getName());
+        assertEquals("Group abstract", result.getDescription());
+        List<VectorLayerMetadata> layers = result.getLayers();
+
+        // No vectorLayerMetadata has been produced with mixed layergroup
+        assertEquals(0, layers.size());
+    }
+
+    private LayerInfoImpl createMockVectorLayer(
+            DataStoreInfoImpl storeInfo, ResourcePool resourcePool, int id) throws IOException {
+        LayerInfoImpl layerInfo = new LayerInfoImpl();
+
+        SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+        builder.setName("testType");
+        builder.setNamespaceURI("http://goserver.org/test");
+        builder.setSRS("EPSG:4326");
+        builder.add("stringField" + id, String.class);
+        builder.add("numberField" + id, Number.class);
+        SimpleFeatureType featureType = builder.buildFeatureType();
+
+        FeatureTypeInfoImpl resource = new FeatureTypeInfoImpl(null);
+        resource.setStore(storeInfo);
+        resource.setId("mock-resource-info");
+        resource.setName("MockLayerInfoName" + id);
+        resource.setNamespace(ns);
+        resource.setTitle("Test resource title");
+        resource.setAbstract("Test resource abstract");
+        resource.setEnabled(true);
+        resource.setDescription("Test resource description");
+        resource.setLatLonBoundingBox(
+                new ReferencedEnvelope(-180, -90, 0, 0, DefaultGeographicCRS.WGS84));
+        resource.setNativeBoundingBox(
+                new ReferencedEnvelope(-180, -90, 0, 0, DefaultGeographicCRS.WGS84));
+        resource.setSRS("EPSG:4326");
+
+        final String layerInfoId = "mock-layer-info" + id;
+        layerInfo.setId(layerInfoId);
+        layerInfo.setResource(resource);
+        layerInfo.setEnabled(true);
+        layerInfo.setName("MockLayerInfoName" + id);
+        layerInfo.setType(PublishedType.VECTOR);
+        when(resourcePool.getFeatureType(eq(resource))).thenReturn(featureType);
+        when(catalog.getLayer(eq(layerInfoId))).thenReturn(layerInfo);
+
+        return layerInfo;
     }
 
     @Test

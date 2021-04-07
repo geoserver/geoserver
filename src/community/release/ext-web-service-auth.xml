@@ -1,0 +1,18 @@
+<assembly>
+  <id>web-service-auth</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>gs-web-service-auth*.jar</include>
+        <include>httpcore*</include>
+        <include>httpclient*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</assembly>

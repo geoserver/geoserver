@@ -28,9 +28,9 @@
       <artifactId>gs-web-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.wololo</groupId>
-      <artifactId>flatgeobuf</artifactId>
-      <version>3.10.1</version>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-flatgeobuf</artifactId>
+      <version>${gt.version}</version>
     </dependency>
   </dependencies>
 

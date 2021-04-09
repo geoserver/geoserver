@@ -17,6 +17,8 @@ import java.util.Set;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.security.AccessLevel;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.VectorAccessLimits;
@@ -39,6 +41,8 @@ import org.opengis.util.ProgressListener;
  * @author Andrea Aime - TOPP
  */
 public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
+
+    protected static final String GET_CAPABILITIES = "GetCapabilities";
 
     WrapperPolicy policy;
 
@@ -103,12 +107,39 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
             ProgressListener listener, Hints hints) throws IOException {
         final FeatureSource<? extends FeatureType, ? extends Feature> fs =
                 delegate.getFeatureSource(listener, hints);
-
-        if (policy.level == AccessLevel.METADATA) {
+        Request request = Dispatcher.REQUEST.get();
+        if (policy.level == AccessLevel.METADATA && !isGetCapabilities(request)) {
             throw SecureCatalogImpl.unauthorizedAccess(this.getName());
         } else {
-            return SecuredObjects.secure(fs, policy);
+            return SecuredObjects.secure(fs, computeWrapperPolicy(request));
         }
+    }
+
+    /**
+     * Checks if current request is GetCapabilities and returns a new WrapperPolicy with attributes
+     * read allowed to compute the dimensions values. If current request is not a GetCapabilities
+     * one, returns the same policy without changes.
+     */
+    private WrapperPolicy computeWrapperPolicy(Request request) {
+        if (isGetCapabilities(request) && policy.getLimits() instanceof VectorAccessLimits) {
+            VectorAccessLimits accessLimits = (VectorAccessLimits) policy.getLimits();
+            VectorAccessLimits newLimits =
+                    new VectorAccessLimits(
+                            accessLimits.getMode(),
+                            null,
+                            Filter.INCLUDE,
+                            accessLimits.getWriteAttributes(),
+                            accessLimits.getWriteFilter());
+            WrapperPolicy newPolicy = WrapperPolicy.readOnlyChallenge(newLimits);
+            return newPolicy;
+        }
+        return policy;
+    }
+
+    /** Returns true only if current request is a GetCapabilities, otherwise returns false. */
+    private boolean isGetCapabilities(Request request) {
+        if (request == null) return false;
+        return GET_CAPABILITIES.equalsIgnoreCase(request.getRequest());
     }
 
     @Override

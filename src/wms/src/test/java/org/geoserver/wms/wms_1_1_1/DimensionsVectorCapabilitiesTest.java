@@ -8,6 +8,12 @@ package org.geoserver.wms.wms_1_1_1;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
@@ -18,12 +24,60 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.CatalogMode;
+import org.geoserver.security.GeoServerUserGroupStore;
+import org.geoserver.security.TestResourceAccessManager;
+import org.geoserver.security.VectorAccessLimits;
+import org.geoserver.security.impl.AbstractUserGroupService;
 import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.junit.Test;
+import org.opengis.filter.Filter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
+
+    /** Add the test resource access manager in the spring context */
+    @Override
+    protected void setUpSpring(List<String> springContextLocations) {
+        super.setUpSpring(springContextLocations);
+        springContextLocations.add("classpath:/org/geoserver/wms/ResourceAccessManagerContext.xml");
+    }
+
+    /** Enable the Spring Security auth filters */
+    @Override
+    protected List<javax.servlet.Filter> getFilters() {
+        return Collections.singletonList(
+                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+    }
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        GeoServerUserGroupStore ugStore =
+                getSecurityManager()
+                        .loadUserGroupService(AbstractUserGroupService.DEFAULT_NAME)
+                        .createStore();
+        ugStore.addUser(ugStore.createUserObject("admin2", "geoserver", true));
+        ugStore.store();
+    }
+
+    @Override
+    protected void setUpTestData(SystemTestData testData) throws Exception {
+        super.setUpTestData(testData);
+
+        File security = new File(testData.getDataDirectoryRoot(), "security");
+        security.mkdir();
+
+        File users = new File(security, "users.properties");
+        Properties props = new Properties();
+        props.put("admin", "geoserver,ROLE_ADMINISTRATOR");
+        props.put("admin2", "ROLE_DUMMY");
+        props.store(new FileOutputStream(users), "");
+    }
 
     @Test
     public void testNoDimension() throws Exception {
@@ -418,5 +472,44 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         Document dom = dom(get("wms?request=getCapabilities&version=1.1.0"), false);
         assertXpathEvaluatesTo(
                 "2011-05-01T00:00:00Z", "//Layer[Name='sf:TimeElevation']/Extent/@default", dom);
+    }
+
+    @Test
+    public void testElevationContinuousChallenge() throws Exception {
+        Catalog catalog = getCatalog();
+        TestResourceAccessManager tam = getResourceAccessManager();
+
+        FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByName("sf:TimeElevation");
+        tam.putLimits(
+                "admin2",
+                featureTypeInfo,
+                new VectorAccessLimits(
+                        CatalogMode.CHALLENGE, null, Filter.EXCLUDE, null, Filter.EXCLUDE));
+
+        setupVectorDimension(
+                ResourceInfo.ELEVATION,
+                "elevation",
+                DimensionPresentation.CONTINUOUS_INTERVAL,
+                null,
+                UNITS,
+                UNIT_SYMBOL);
+
+        setRequestAuth("admin2", "geoserver");
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+
+        // check dimension has been declared
+        assertXpathEvaluatesTo("1", "count(//Layer/Dimension)", dom);
+        assertXpathEvaluatesTo("elevation", "//Layer/Dimension/@name", dom);
+        assertXpathEvaluatesTo(UNITS, "//Layer/Dimension/@units", dom);
+        assertXpathEvaluatesTo(UNIT_SYMBOL, "//Layer/Dimension/@unitSymbol", dom);
+        // check we have the extent
+        assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
+        assertXpathEvaluatesTo("elevation", "//Layer/Extent/@name", dom);
+        assertXpathEvaluatesTo("0.0", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo("0.0/3.0/0", "//Layer/Extent", dom);
+    }
+
+    protected TestResourceAccessManager getResourceAccessManager() {
+        return (TestResourceAccessManager) applicationContext.getBean("testResourceAccessManager");
     }
 }

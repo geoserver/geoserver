@@ -15,10 +15,10 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geotools.data.flatgeobuf.FeatureCollectionConversions;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.wololo.flatgeobuf.geotools.FeatureCollectionConversions;
 
 /**
  * A GetFeatureInfo response handler specialized in producing FlatGeobuf data for a GetFeatureInfo

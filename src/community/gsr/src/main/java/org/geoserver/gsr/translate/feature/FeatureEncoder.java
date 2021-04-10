@@ -10,6 +10,7 @@
 package org.geoserver.gsr.translate.feature;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,8 +62,14 @@ public class FeatureEncoder {
                     value = ((Boolean) prop.getValue()) ? Integer.valueOf(1) : Integer.valueOf(0);
                 } else if (prop.getValue() instanceof java.lang.Integer) {
                     value = ((Integer) prop.getValue());
+                } else if (prop.getValue() instanceof java.lang.Long) {
+                    value = ((Long) prop.getValue());
+                } else if (prop.getValue() instanceof java.lang.Float) {
+                    value = ((Float) prop.getValue());
                 } else if (prop.getValue() instanceof java.lang.Double) {
                     value = ((Double) prop.getValue());
+                } else if (prop.getValue() instanceof java.math.BigDecimal) {
+                    value = ((BigDecimal) prop.getValue());
                 } else {
                     value = prop.getValue().toString();
                 }

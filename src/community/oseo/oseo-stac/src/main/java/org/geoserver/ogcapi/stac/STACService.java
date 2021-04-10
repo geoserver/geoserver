@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
@@ -53,13 +54,17 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.NameImpl;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
+import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.PropertyIsEqualTo;
@@ -87,7 +92,7 @@ public class STACService {
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    public static final String STAC_VERSION = "1.0.0-beta.2";
+    public static final String STAC_VERSION = "1.0.0-rc2";
 
     public static final String FEATURE_CORE =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core";
@@ -101,6 +106,12 @@ public class STACService {
     public static final String STAC_SEARCH = "https://api.stacspec.org/v1.0.0-beta.1/item-search";
     public static final String STAC_FEATURES =
             "https://api.stacspec.org/spec/v1.0.0-beta.1/ogcapi-features";
+
+    /** Container type: catalog */
+    public static String TYPE_CATALOG = "Catalog";
+
+    /** Container type: collection */
+    public static String TYPE_COLLECTION = "Collection";
 
     private static final String DISPLAY_NAME = "SpatioTemporal Asset Catalog";
 
@@ -135,7 +146,8 @@ public class STACService {
     @ResponseBody
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
     public STACLandingPage getLandingPage() throws IOException {
-        return new STACLandingPage(getService(), "ogc/stac", conformance().getConformsTo());
+        return new STACLandingPage(
+                getService(), "ogc/stac", conformance().getConformsTo(), getCollectionIds());
     }
 
     @GetMapping(path = "conformance", name = "getConformanceDeclaration")
@@ -212,6 +224,21 @@ public class STACService {
                     "Collection not found: " + collectionId,
                     HttpStatus.NOT_FOUND);
         return collection;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Set<String> getCollectionIds() throws IOException {
+        Query q = new Query();
+        q.setFilter(getEnabledFilter());
+        FeatureCollection<FeatureType, Feature> collections =
+                accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
+        FeatureType schema = collections.getSchema();
+        // for unique visitor to work against complex features, full namespace has to be provided
+        Name name = new NameImpl(schema.getName().getNamespaceURI(), "name");
+        UniqueVisitor unique = new UniqueVisitor(FF.property(schema.getDescriptor(name).getName()));
+        collections.accepts(unique, null);
+        Set<Attribute> values = unique.getUnique();
+        return values.stream().map(a -> (String) a.getValue()).collect(Collectors.toSet());
     }
 
     @GetMapping(path = "collections/{collectionId}/items/{itemId:.+}", name = "getItem")

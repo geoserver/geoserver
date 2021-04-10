@@ -1795,7 +1795,7 @@
         </dependency>
       </dependencies>
     </profile>
-   <profile>
+    <profile>
       <id>web-service-auth</id>
       <dependencies>
         <dependency>
@@ -1805,5 +1805,5 @@
         </dependency>
       </dependencies>
     </profile>
-</profiles>
+  </profiles>
 </project>

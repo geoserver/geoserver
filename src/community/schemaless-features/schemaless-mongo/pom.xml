@@ -1,75 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.geoserver.community</groupId>
-        <artifactId>gs-schemaless-features</artifactId>
-        <version>2.20-SNAPSHOT</version>
-    </parent>
-
+  <parent>
     <groupId>org.geoserver.community</groupId>
-    <artifactId>gs-schemaless-mongo</artifactId>
-    <packaging>jar</packaging>
-    <name>Schemaless Features MongoDB</name>
-    <description>Schemaless Features MongoDB functionalities</description>
+    <artifactId>gs-schemaless-features</artifactId>
+    <version>2.20-SNAPSHOT</version>
+  </parent>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.geoserver.community</groupId>
-            <artifactId>gs-schemaless-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-mongodb</artifactId>
-            <version>${gt.version}</version>
-        </dependency>
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-schemaless-mongo</artifactId>
+  <packaging>jar</packaging>
+  <name>Schemaless Features MongoDB</name>
+  <description>Schemaless Features MongoDB functionalities</description>
 
-        <!--   Third-party dependencies   -->
-        <!--   version number defined here as this is a community module -->
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-schemaless-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-mongodb</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
 
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-sync</artifactId>
-            <version>4.0.2</version>
-        </dependency>
+    <!--   Third-party dependencies   -->
+    <!--   version number defined here as this is a community module -->
 
-        <!--   Test dependencies   -->
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongodb-driver-sync</artifactId>
+      <version>4.0.2</version>
+    </dependency>
 
-        <dependency>
-            <groupId>org.geoserver</groupId>
-            <artifactId>gs-main</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-            <classifier>tests</classifier>
-        </dependency>
+    <!--   Test dependencies   -->
 
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-sample-data</artifactId>
-            <version>${gt.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.geoserver</groupId>
-            <artifactId>gs-wms</artifactId>
-            <scope>test</scope>
-        </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
 
-    </dependencies>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-sample-data</artifactId>
+      <version>${gt.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
 
 </project>

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.Date;
 import org.geoserver.gsr.api.GeoServicesJacksonJsonConverter;
 import org.geoserver.gsr.api.ServiceException;
 import org.geoserver.gsr.model.feature.Feature;
@@ -31,34 +32,54 @@ public class FeatureEncoderTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testCreateFeature() throws IOException, ServiceException, SchemaException {
+        String stringValue = "t0002";
+        int intValue = 2;
+        Float floatValue = 3.6523f;
+        Double doubleValue = Double.valueOf(2.54565);
+        Date dateValue = new Date();
+
         final SimpleFeatureType TYPE =
                 DataUtilities.createType(
                         "Location",
                         "the_geom:Point:srid=4326,"
                                 + // <- the geometry attribute: Point type
-                                "id:String,"
+                                "stringfield:String,"
                                 + // <- a String attribute
                                 "intfield:Integer,"
                                 + // <- a Integer attribute
-                                "doublefield:Double");
-        // <- a Double attribute
+                                "floatfield:Float,"
+                                + // <- a Float attribute
+                                "doublefield:Double,"
+                                + // <- a Double attribute
+                                "datefield:Date,"
+                                + // <- a Date attribute
+                                "booleanfield:Boolean"
+                        // <- a boolean attribute
+                        );
         GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
         SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(TYPE);
 
         Point point = geometryFactory.createPoint(new Coordinate(-112.6653, 34.54645645));
         featureBuilder.add(point);
-        featureBuilder.add("t0002");
-        featureBuilder.add(2);
-        featureBuilder.add(2.54);
+        featureBuilder.add(stringValue);
+        featureBuilder.add(intValue);
+        featureBuilder.add(floatValue);
+        featureBuilder.add(doubleValue);
+        featureBuilder.add(dateValue);
+        featureBuilder.add(true);
         SimpleFeature feature = featureBuilder.buildFeature(null);
 
         Feature encodedFeature =
                 FeatureEncoder.feature(feature, true, new SpatialReferenceWKID(32615), "id");
         String featureJson = mapper.writeValueAsString(encodedFeature);
 
-        // Check the JSON to ensure the number attributes for the feature
-        // aren't encoded as strings
-        assertTrue(featureJson.contains("\"intfield\":2"));
-        assertTrue(featureJson.contains("\"doublefield\":2.54"));
+        System.out.println(featureJson);
+        // Check the JSON to ensure attributes for the feature are encoded with the correct types
+        assertTrue(featureJson.contains("\"stringfield\":\"" + stringValue));
+        assertTrue(featureJson.contains("\"intfield\":" + intValue));
+        assertTrue(featureJson.contains("\"floatfield\":" + floatValue));
+        assertTrue(featureJson.contains("\"doublefield\":" + doubleValue));
+        assertTrue(featureJson.contains("\"datefield\":" + dateValue.getTime()));
+        assertTrue(featureJson.contains("\"booleanfield\":1"));
     }
 }

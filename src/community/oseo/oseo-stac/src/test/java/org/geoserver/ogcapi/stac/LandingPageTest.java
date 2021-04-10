@@ -10,9 +10,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.io.IOException;
+import java.util.List;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.Queryables;
+import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.Service;
+import org.geotools.data.Query;
 import org.geotools.util.Version;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
@@ -90,7 +94,7 @@ public class LandingPageTest extends STACTestSupport {
                 document.select("#htmlConformanceLink").attr("href"));
     }
 
-    void checkJSONLandingPage(DocumentContext json) {
+    void checkJSONLandingPage(DocumentContext json) throws IOException {
         // check landing page links
         assertJSONList(
                 json,
@@ -102,11 +106,9 @@ public class LandingPageTest extends STACTestSupport {
                 "alternate",
                 "alternate");
         checkJSONLandingPageShared(json);
-        // STAC repeates the conformance declaration in the landing page too
-        ConformanceTest.checkConformance(json);
     }
 
-    void checkJSONLandingPageShared(DocumentContext json) {
+    void checkJSONLandingPageShared(DocumentContext json) throws IOException {
         // check API links
         assertJSONList(
                 json,
@@ -124,7 +126,7 @@ public class LandingPageTest extends STACTestSupport {
         // check collection links
         assertJSONList(
                 json,
-                "links[?(@.href =~ /.*ogc\\/stac\\/collections.*/)].rel",
+                "links[?(@.href =~ /.*ogc\\/stac\\/collections\\?.*/)].rel",
                 Link.REL_DATA,
                 Link.REL_DATA);
         // check search links
@@ -149,5 +151,27 @@ public class LandingPageTest extends STACTestSupport {
         assertEquals(
                 "Provides interoperable access, following ISO/OGC interface guidelines, to Earth Observation metadata.",
                 json.read("description"));
+        // STAC repeats the conformance declaration in the landing page too
+        ConformanceTest.checkConformance(json);
+        // version, id and type
+        assertEquals(STACService.STAC_VERSION, json.read("stac_version"));
+        assertEquals(STACLandingPage.LANDING_PAGE_ID, json.read("id"));
+        assertEquals(
+                "Provides interoperable access, following ISO/OGC interface guidelines, to Earth Observation metadata.",
+                json.read("description"));
+        assertEquals("Catalog", json.read("type"));
+        // check we get the collections links, and no disabled collections (one of them is)
+        OpenSearchAccess osa = getOpenSearchAccess();
+        int collectionCount = osa.getCollectionSource().getCount(Query.ALL) - 1;
+        assertEquals(
+                collectionCount, json.read("links[?(@.rel == 'child')].href", List.class).size());
+        assertThat(
+                json.read("links[?(@.rel == 'child')].href"),
+                Matchers.containsInAnyOrder(
+                        "ogc/stac/collections/LANDSAT8",
+                        "ogc/stac/collections/SENTINEL2",
+                        "ogc/stac/collections/SENTINEL1",
+                        "ogc/stac/collections/GS_TEST",
+                        "ogc/stac/collections/ATMTEST"));
     }
 }

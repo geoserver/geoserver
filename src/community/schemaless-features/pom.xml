@@ -1,26 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-<parent>
-        <groupId>org.geoserver</groupId>
-        <artifactId>community</artifactId>
-        <version>2.20-SNAPSHOT</version>
-    </parent>
+  <modelVersion>4.0.0</modelVersion>
 
-    <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.geoserver</groupId>
+    <artifactId>community</artifactId>
+    <version>2.20-SNAPSHOT</version>
+  </parent>
 
-    <groupId>org.geoserver.community</groupId>
-    <artifactId>gs-schemaless-features</artifactId>
-    <packaging>pom</packaging>
-    <name>Schemaless Features Module</name>
-    <description>Schemaless features plugin</description>
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-schemaless-features</artifactId>
+  <packaging>pom</packaging>
+  <name>Schemaless Features Module</name>
+  <description>Schemaless features plugin</description>
 
-    <modules>
-        <module>schemaless-core</module>
-        <module>schemaless-mongo</module>
-    </modules>
-
+  <modules>
+    <module>schemaless-core</module>
+    <module>schemaless-mongo</module>
+  </modules>
 
 </project>

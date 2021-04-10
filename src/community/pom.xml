@@ -270,7 +270,7 @@
         <module>smart-data-loader</module>
         <module>rest-openapi</module>
         <module>schemaless-features</module>
-		<module>web-service-auth</module>
+        <module>web-service-auth</module>
       </modules>
     </profile>
     <profile>
@@ -723,13 +723,13 @@
         <module>rest-openapi</module>
       </modules>
     </profile>
-      <profile>
-          <id>schemaless-features</id>
-          <modules>
-              <module>schemaless-features</module>
-          </modules>
-      </profile>
-	<profile>
+    <profile>
+      <id>schemaless-features</id>
+      <modules>
+        <module>schemaless-features</module>
+      </modules>
+    </profile>
+    <profile>
       <id>web-service-auth</id>
       <modules>
         <module>web-service-auth</module>

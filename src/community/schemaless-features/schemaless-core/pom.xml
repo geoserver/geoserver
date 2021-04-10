@@ -1,48 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.geoserver.community</groupId>
-        <artifactId>gs-schemaless-features</artifactId>
-        <version>2.20-SNAPSHOT</version>
-    </parent>
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
     <groupId>org.geoserver.community</groupId>
-    <artifactId>gs-schemaless-core</artifactId>
-    <packaging>jar</packaging>
-    <name>Schemaless Features Core</name>
-    <description>Schemaless Features core functionality DB agnostic</description>
+    <artifactId>gs-schemaless-features</artifactId>
+    <version>2.20-SNAPSHOT</version>
+  </parent>
 
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-schemaless-core</artifactId>
+  <packaging>jar</packaging>
+  <name>Schemaless Features Core</name>
+  <description>Schemaless Features core functionality DB agnostic</description>
 
-    <dependencies>
+  <dependencies>
 
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-main</artifactId>
-            <version>${gt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geoserver</groupId>
-            <artifactId>gs-wfs</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.geoserver</groupId>
-            <artifactId>gs-wms</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-main</artifactId>
+      <version>${gt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms</artifactId>
+    </dependency>
 
-        <!--   Third-party dependencies   -->
-        <!--   version number defined here as this is a community module -->
+    <!--   Third-party dependencies   -->
+    <!--   version number defined here as this is a community module -->
 
-        <!--   Test dependencies   -->
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-sample-data</artifactId>
-            <version>${gt.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
+    <!--   Test dependencies   -->
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-sample-data</artifactId>
+      <version>${gt.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
 </project>

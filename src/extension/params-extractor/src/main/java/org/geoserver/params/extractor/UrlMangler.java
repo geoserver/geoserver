@@ -6,7 +6,6 @@ package org.geoserver.params.extractor;
 
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -17,11 +16,8 @@ import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.resource.Resource;
-import org.geotools.util.logging.Logging;
 
 public class UrlMangler implements URLMangler {
-
-    private static final Logger LOGGER = Logging.getLogger(UrlMangler.class);
 
     private List<EchoParameter> echoParameters;
 
@@ -51,9 +47,6 @@ public class UrlMangler implements URLMangler {
             StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
         Request request = Dispatcher.REQUEST.get();
         if (request == null || !"GetCapabilities".equalsIgnoreCase(request.getRequest())) {
-            Utils.debug(
-                    LOGGER,
-                    "Not a capabilities request, ignored by the parameters extractor URL mangler.");
             return;
         }
         forwardOriginalUri(request, path);
@@ -65,7 +58,6 @@ public class UrlMangler implements URLMangler {
             requestRawKvp = new KvpMap<>(KvpUtils.normalize(parameters));
         }
         forwardParameters(requestRawKvp, kvp);
-        Utils.debug(LOGGER, "Parameters extractor URL mangler applied.");
     }
 
     private void forwardOriginalUri(Request request, StringBuilder path) {

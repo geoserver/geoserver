@@ -5,7 +5,6 @@
 package org.geoserver.params.extractor;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.servlet.FilterChain;
@@ -35,7 +34,7 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
     // duplicate filter application by the spring instance
     private boolean servletInstance = false;
 
-    private List<Rule> rules = new ArrayList<>();
+    private List<Rule> rules;
 
     @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     public Filter() {
@@ -43,35 +42,18 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
         // flags for this scenario
         USE_AS_SERVLET_FILTER = true;
         servletInstance = true;
-        logFilterInitiation();
     }
 
     public Filter(GeoServerDataDirectory dataDirectory) {
         servletInstance = false;
         initRules(dataDirectory);
-        logFilterInitiation();
-    }
-
-    /** Helper method to log parameters extractor filter initiation. * */
-    private void logFilterInitiation() {
-        Utils.info(
-                LOGGER,
-                "Parameters extractor filter initiated [USE_AS_SERVLET_FILTER=%s, SERVLET_INSTANCE=%s].",
-                USE_AS_SERVLET_FILTER,
-                servletInstance);
     }
 
     private void initRules(GeoServerDataDirectory dataDirectory) {
         if (dataDirectory != null) {
-            Utils.info(LOGGER, "Initiating parameters extractor rules.");
             Resource resource = dataDirectory.get(RulesDao.getRulesPath());
             rules = RulesDao.getRules(() -> resource.in());
             resource.addListener(notify -> rules = RulesDao.getRules(() -> resource.in()));
-        } else {
-            // no rules were be loaded
-            Utils.info(
-                    LOGGER,
-                    "No data directory provided, no parameters extractor rules were loaded.");
         }
     }
 
@@ -88,7 +70,7 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
     public void init(FilterConfig filterConfig) throws ServletException {
         GeoServerDataDirectory dataDirectory =
                 GeoServerExtensions.bean(GeoServerDataDirectory.class);
-        Utils.info(LOGGER, "Initiating parameters extractor as a standard web container filter.");
+
         initRules(dataDirectory);
     }
 
@@ -105,11 +87,6 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
                                 httpServletRequest.getParameterMap());
                 String originalRequest = urlTransform.toString();
                 rules.forEach(rule -> rule.apply(urlTransform));
-                Utils.debug(
-                        LOGGER,
-                        "About to evaluate request '%s' with parameters extractor (%d) rules.",
-                        originalRequest,
-                        rules.size());
                 if (urlTransform.haveChanged()) {
                     Utils.info(
                             LOGGER,
@@ -117,23 +94,8 @@ public final class Filter implements GeoServerFilter, ExtensionPriority {
                             originalRequest,
                             urlTransform.toString());
                     request = new RequestWrapper(urlTransform, httpServletRequest);
-                } else {
-                    // no parameters extractor rules matched the url
-                    Utils.debug(
-                            LOGGER,
-                            "No parameters extractor rules matched with the request '%s'.",
-                            originalRequest);
                 }
-            } else {
-                // parameters extractor is disabled
-                Utils.debug(
-                        LOGGER,
-                        "Request '%s' ignored by parameters extractor.",
-                        httpServletRequest.getRequestURI());
             }
-        } else {
-            // parameters extractor is disabled
-            Utils.debug(LOGGER, "Parameters extractor is disabled.");
         }
         chain.doFilter(request, response);
     }

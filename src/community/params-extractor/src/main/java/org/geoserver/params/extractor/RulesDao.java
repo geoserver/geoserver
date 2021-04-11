@@ -52,12 +52,14 @@ public final class RulesDao {
     public static List<Rule> getRules(InputStream inputStream) {
         try {
             if (inputStream.available() == 0) {
-                Utils.debug(LOGGER, "Rules files seems to be empty.");
+                Utils.info(LOGGER, "Parameters extractor rules file seems to be empty.");
                 return new ArrayList<>();
             }
 
             RuleList list = (RuleList) xStream.fromXML(inputStream);
-            return list.rules == null ? new ArrayList<>() : list.rules;
+            List<Rule> rules = list.rules == null ? new ArrayList<>() : list.rules;
+            Utils.info(LOGGER, "Parameters extractor loaded %d rules.", rules.size());
+            return rules;
         } catch (Exception exception) {
             throw Utils.exception(exception, "Error parsing rules files.");
         } finally {
@@ -92,6 +94,7 @@ public final class RulesDao {
             Utils.closeQuietly(inputStream);
             Utils.closeQuietly(outputStream);
         }
+        Utils.info(LOGGER, "Parameters extractor rules updated.");
     }
 
     public static void deleteRules(String... rulesIds) {
@@ -115,6 +118,7 @@ public final class RulesDao {
                                                             ruleId -> ruleId.equals(rule.getId())))
                             .collect(Collectors.toList()),
                     outputStream);
+            Utils.info(LOGGER, "Deleted one or more parameters extractor rules.");
         } finally {
             Utils.closeQuietly(inputStream);
             Utils.closeQuietly(outputStream);

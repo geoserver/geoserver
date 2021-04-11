@@ -16,7 +16,7 @@
 
   <groupId>org.geoserver.community</groupId>
   <artifactId>gs-flatgeobuf</artifactId>
-  <name>FlatGeobuf WFS custom output format</name>
+  <name>FlatGeobuf DataStore and WFS output format</name>
 
   <dependencies>
     <dependency>

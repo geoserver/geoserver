@@ -1,5 +1,5 @@
-# FlatGeobuf WFS output format prototype
+# FlatGeobuf DataStore and WFS output format extension
 
-This module contains a prototype FlatGeobuf WFS output format.
+This module adds FlatGeobuf as DataStore and WFS output format.
 
-* https://github.com/bjornharrtell/flatgeobuf
+* https://flatgeobuf.org

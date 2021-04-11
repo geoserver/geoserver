@@ -28,7 +28,7 @@ public class GetFeaturesNumberMatchedTest extends AbstractAppSchemaTestSupport {
                 getAsDOM(
                         "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits");
         LOGGER.info("WFS GetFeature, typename=gsml:MappedFeature response:\n" + prettyString(doc));
-        assertXpathEvaluatesTo("4", "/wfs:FeatureCollection/@numberMatched", doc);
+        assertXpathEvaluatesTo("5", "/wfs:FeatureCollection/@numberMatched", doc);
     }
 
     /** Test that count with a filter pointing to a root property works */

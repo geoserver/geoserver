@@ -2,7 +2,6 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-
 package org.geoserver.mapml;
 
 import java.nio.charset.Charset;
@@ -10,6 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import org.springframework.http.MediaType;
 
+/**
+ * @author Chris Hodgson
+ * @author prushforth
+ */
 public final class MapMLConstants {
 
     /** format mime type */

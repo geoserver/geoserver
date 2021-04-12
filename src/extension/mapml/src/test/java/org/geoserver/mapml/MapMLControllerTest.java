@@ -623,8 +623,8 @@ public class MapMLControllerTest extends WMSTestSupport {
         // set up mapml layer featurecaption
         Catalog catalog = getCatalog();
         ResourceInfo layerMeta = catalog.getLayerByName(getLayerId(MockData.FORESTS)).getResource();
-        String featureCaptionAttributeName = "NAME";
-        layerMeta.getMetadata().put("mapml.featureCaption", featureCaptionAttributeName);
+        String featureCaptionTemplate = "${NAME}";
+        layerMeta.getMetadata().put("mapml.featureCaption", featureCaptionTemplate);
         catalog.save(layerMeta);
 
         assertTrue(layerMeta.getMetadata().containsKey("mapml.featureCaption"));
@@ -633,7 +633,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                         .getMetadata()
                         .get("mapml.featureCaption")
                         .toString()
-                        .equalsIgnoreCase(featureCaptionAttributeName));
+                        .equalsIgnoreCase(featureCaptionTemplate));
         String forests = getLayerId(MockData.FORESTS);
         HashMap<String, String> vars = new HashMap<>();
         vars.put("version", "1.1.1");
@@ -669,8 +669,8 @@ public class MapMLControllerTest extends WMSTestSupport {
         ResourceInfo layerMeta =
                 catalog.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart()).getResource();
 
-        String featureCaptionAttributeName = "ID";
-        layerMeta.getMetadata().put("mapml.featureCaption", featureCaptionAttributeName);
+        String featureCaptionTemplate = "${ID}";
+        layerMeta.getMetadata().put("mapml.featureCaption", featureCaptionTemplate);
         catalog.save(layerMeta);
         assertTrue(layerMeta.getMetadata().containsKey("mapml.featureCaption"));
         assertTrue(
@@ -678,7 +678,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                         .getMetadata()
                         .get("mapml.featureCaption")
                         .toString()
-                        .equalsIgnoreCase(featureCaptionAttributeName));
+                        .equalsIgnoreCase(featureCaptionTemplate));
 
         org.w3c.dom.Document doc = getMapML(path);
 

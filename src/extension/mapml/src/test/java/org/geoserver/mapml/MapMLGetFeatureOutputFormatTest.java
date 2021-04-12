@@ -201,7 +201,7 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
     }
 
     @Test
-    public void testMapMLFeatureCaption() throws Exception {
+    public void testFeatureCaptionForAllFeatures() throws Exception {
         HashMap<String, String> vars = new HashMap<>();
         vars.put("service", "wfs");
         vars.put("version", "1.0.0");
@@ -209,15 +209,23 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         vars.put("typename", MockData.STREAMS.getLocalPart());
         vars.put("outputFormat", "MAPML");
 
+        FeatureTypeInfo layerInfo = getFeatureTypeInfo(MockData.STREAMS);
+        MetadataMap layerMeta = layerInfo.getMetadata();
+        layerMeta.clear();
+        getCatalog().save(layerInfo);
+
         Document doc = getMapML("wfs", vars);
         assertEquals("mapml", doc.getDocumentElement().getNodeName());
         assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
         assertXpathEvaluatesTo("0", "count(//html:featurecaption)", doc);
 
-        FeatureTypeInfo layerInfo = getFeatureTypeInfo(MockData.STREAMS);
-        MetadataMap layerMeta = layerInfo.getMetadata();
-        String featureCaptionAttributeName = "NAME";
-        layerMeta.put("mapml.featureCaption", featureCaptionAttributeName);
+        // test that all features have a caption
+        layerInfo = getFeatureTypeInfo(MockData.STREAMS);
+
+        // all features in this layer have an id
+        String featureCaptionTemplate = "${FID}";
+        layerMeta = layerInfo.getMetadata();
+        layerMeta.put("mapml.featureCaption", featureCaptionTemplate);
         getCatalog().save(layerInfo);
 
         layerMeta = getFeatureTypeInfo(MockData.STREAMS).getMetadata();
@@ -226,25 +234,84 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
                 layerMeta
                         .get("mapml.featureCaption")
                         .toString()
-                        .equalsIgnoreCase(featureCaptionAttributeName));
+                        .equalsIgnoreCase(featureCaptionTemplate));
+
+        doc = getMapML("wfs", vars);
+        assertEquals("mapml", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
+        assertXpathEvaluatesTo("2", "count(//html:featurecaption)", doc);
+    }
+
+    @Test
+    public void testFeatureCaptionIsOptional() throws Exception {
+        HashMap<String, String> vars = new HashMap<>();
+        vars.put("service", "wfs");
+        vars.put("version", "1.0.0");
+        vars.put("request", "GetFeature");
+        vars.put("typename", MockData.STREAMS.getLocalPart());
+        vars.put("outputFormat", "MAPML");
+
+        FeatureTypeInfo layerInfo = getFeatureTypeInfo(MockData.STREAMS);
+        MetadataMap layerMeta = layerInfo.getMetadata();
+        layerMeta.clear();
+        getCatalog().save(layerInfo);
+
+        Document doc = getMapML("wfs", vars);
+        assertEquals("mapml", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
+        assertXpathEvaluatesTo("0", "count(//html:featurecaption)", doc);
+
+        // test that SOME features can have a caption while others may not
+        layerInfo = getFeatureTypeInfo(MockData.STREAMS);
+        String featureCaptionTemplate = "${NAME}";
+        layerMeta = layerInfo.getMetadata();
+        layerMeta.put("mapml.featureCaption", featureCaptionTemplate);
+        getCatalog().save(layerInfo);
+
+        layerMeta = getFeatureTypeInfo(MockData.STREAMS).getMetadata();
+        assertTrue(layerMeta.containsKey("mapml.featureCaption"));
+        assertTrue(
+                layerMeta
+                        .get("mapml.featureCaption")
+                        .toString()
+                        .equalsIgnoreCase(featureCaptionTemplate));
 
         doc = getMapML("wfs", vars);
         assertEquals("mapml", doc.getDocumentElement().getNodeName());
         assertXpathEvaluatesTo("1", "count(//html:featurecaption)", doc);
+    }
 
-        // test that SOME features can have a caption while others may not
-        featureCaptionAttributeName = "FID";
-        layerMeta = layerInfo.getMetadata();
-        layerMeta.replace("mapml.featureCaption", featureCaptionAttributeName);
+    @Test
+    public void testFeatureCaptionTemplateWithPlaceholders() throws Exception {
+        HashMap<String, String> vars = new HashMap<>();
+        vars.put("service", "wfs");
+        vars.put("version", "1.0.0");
+        vars.put("request", "GetFeature");
+        vars.put("typename", MockData.STREAMS.getLocalPart());
+        vars.put("outputFormat", "MAPML");
+
+        FeatureTypeInfo layerInfo = getFeatureTypeInfo(MockData.STREAMS);
+        MetadataMap layerMeta = layerInfo.getMetadata();
+        layerMeta.clear();
         getCatalog().save(layerInfo);
 
-        layerMeta = getFeatureTypeInfo(MockData.STREAMS).getMetadata();
+        Document doc = getMapML("wfs", vars);
+        assertEquals("mapml", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
+        assertXpathEvaluatesTo("0", "count(//html:featurecaption)", doc);
+
+        // test that a string with > 1 ${placeholder} can be processed
+        layerInfo = getFeatureTypeInfo(MockData.STREAMS);
+        layerMeta = layerInfo.getMetadata();
+        String featureCaptionTemplate = "Name: ${NAME}; Feature ID: ${FID}";
+        layerMeta.put("mapml.featureCaption", featureCaptionTemplate);
+        getCatalog().save(layerInfo);
         assertTrue(layerMeta.containsKey("mapml.featureCaption"));
         assertTrue(
                 layerMeta
                         .get("mapml.featureCaption")
                         .toString()
-                        .equalsIgnoreCase(featureCaptionAttributeName));
+                        .equalsIgnoreCase(featureCaptionTemplate));
 
         doc = getMapML("wfs", vars);
         assertEquals("mapml", doc.getDocumentElement().getNodeName());

@@ -14,7 +14,11 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
 
-/** LayerGroup configuration panel for MapML */
+/**
+ * LayerGroup configuration panel for MapML
+ *
+ * @author prushforth
+ */
 public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPanel<LayerGroupInfo> {
 
     private static final long serialVersionUID = 1L;

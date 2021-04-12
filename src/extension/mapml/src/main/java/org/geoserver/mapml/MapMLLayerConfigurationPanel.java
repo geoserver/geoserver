@@ -14,8 +14,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.ListMultipleChoice;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
@@ -33,13 +36,18 @@ import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 
-/** Resource configuration panel for MapML */
+/**
+ * Resource configuration panel for MapML
+ *
+ * @author Chris Hodgson
+ * @author prushforth
+ */
 public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<LayerInfo> {
     static final Logger LOGGER = Logging.getLogger(MapMLLayerConfigurationPanel.class);
 
     private static final long serialVersionUID = 1L;
+    ListMultipleChoice<String> featureCaptionAttributes;
 
-    DropDownChoice<AttributeTypeInfo> attributes;
     /**
      * Adds MapML configuration panel
      *
@@ -104,17 +112,21 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         dimension.setNullValid(true);
         add(dimension);
 
-        MapModel<String> feeatureCaptionModel =
+        featureCaptionAttributes =
+                new ListMultipleChoice<>(
+                        "featurecaptionattributes",
+                        new Model<ArrayList<String>>(),
+                        getAttributeNames(model.getObject()));
+        featureCaptionAttributes.setOutputMarkupId(false);
+        add(featureCaptionAttributes);
+
+        MapModel<String> featureCaptionModel =
                 new MapModel<>(
                         new PropertyModel<MetadataMap>(model, "resource.metadata"),
                         "mapml.featureCaption");
-        DropDownChoice<String> featureCaption =
-                new DropDownChoice<>(
-                        "featurecaption",
-                        feeatureCaptionModel,
-                        getAttributeNames(model.getObject()));
-        featureCaption.setNullValid(true);
-        add(featureCaption);
+        TextArea<String> featureCaptionTemplate =
+                new TextArea<>("featureCaptionTemplate", featureCaptionModel);
+        add(featureCaptionTemplate);
     }
     /**
      * @param layer a LayerInfo for the layer

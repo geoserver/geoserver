@@ -19,8 +19,13 @@ import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.GeometryType;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.PlaceholderConfigurerSupport;
+import org.springframework.core.Constants;
+import org.springframework.util.PropertyPlaceholderHelper;
 
 /**
+ * @author Chris Hodgson
  * @author prushforth
  *     <p>methods to convert GeoServer features markup
  */
@@ -30,10 +35,11 @@ public class MapMLGenerator {
 
     /**
      * @param sf a feature
+     * @param featureCaptionTemplate - template optionally containing ${placeholders}. Can be null.
      * @return the feature
      * @throws IOException - IOException
      */
-    public static Feature buildFeature(SimpleFeature sf, String featureCaptionAttribute)
+    public static Feature buildFeature(SimpleFeature sf, String featureCaptionTemplate)
             throws IOException {
 
         Feature f = new Feature();
@@ -41,6 +47,15 @@ public class MapMLGenerator {
         f.setClazz(sf.getFeatureType().getTypeName());
         PropertyContent pc = new PropertyContent();
         f.setProperties(pc);
+        if (featureCaptionTemplate != null && !featureCaptionTemplate.isEmpty()) {
+            AttributeValueResolver attributeResolver = new AttributeValueResolver(sf);
+            String caption =
+                    StringEscapeUtils.escapeXml10(
+                            attributeResolver.resolveFeatureCaption(featureCaptionTemplate));
+            if (caption != null && !caption.trim().isEmpty()) {
+                f.setFeatureCaption(caption.trim());
+            }
+        }
 
         StringBuilder sb = new StringBuilder();
         sb.append(
@@ -59,12 +74,6 @@ public class MapMLGenerator {
                         sf.getAttribute(attr.getName()) != null
                                 ? sf.getAttribute(attr.getName()).toString()
                                 : "";
-                if (featureCaptionAttribute != null
-                        && !featureCaptionAttribute.isEmpty()
-                        && featureCaptionAttribute.equalsIgnoreCase(escapedName)
-                        && !value.trim().isEmpty()) {
-                    f.setFeatureCaption(value);
-                }
                 sb.append("<tr><th scope=\"row\">")
                         .append(escapedName)
                         .append("</th>")
@@ -75,11 +84,61 @@ public class MapMLGenerator {
                         .append("</td></tr>");
             }
         }
-
         sb.append("</tbody></table>");
         pc.setAnyElement(sb.toString());
         f.setGeometry(buildGeometry(g));
         return f;
+    }
+
+    private static class AttributeValueResolver {
+
+        private final Constants constants = new Constants(PlaceholderConfigurerSupport.class);
+        private final PropertyPlaceholderHelper helper =
+                new PropertyPlaceholderHelper(
+                        constants.asString("DEFAULT_PLACEHOLDER_PREFIX"),
+                        constants.asString("DEFAULT_PLACEHOLDER_SUFFIX"),
+                        constants.asString("DEFAULT_VALUE_SEPARATOR"),
+                        true);
+        private final String nullValue = "null";
+        private final SimpleFeature feature;
+        private final PropertyPlaceholderHelper.PlaceholderResolver resolver =
+                (name) -> resolveAttributeNames(name);
+        /**
+         * Wrap the feature to caption via this constructor
+         *
+         * @param feature
+         */
+        protected AttributeValueResolver(SimpleFeature feature) {
+            this.feature = feature;
+        }
+        /**
+         * Take an attribute name, return the attribute. "attribute" may be a band name. Band names
+         * can have spaces in them, but these seem to require that the space be replaced by an
+         * underscore, so this function performs that transformation.
+         *
+         * @param attributeName
+         * @return null-signifying token (nullValue) or the attribute value
+         */
+        private String resolveAttributeNames(String attributeName) {
+            // have seen band names with spaces in the name, naively replace with
+            // underscore seems to work. TBD.  btw regexes are hard. that is all.
+            Object attribute = feature.getAttribute(attributeName.trim().replaceAll("\\s", "_"));
+            if (attribute == null) return nullValue;
+            return feature.getAttribute(attributeName).toString();
+        }
+        /**
+         * Invokes PropertyPlaceholderHelper.replacePlaceholders, which iterates over the
+         * userTemplate string to replace placeholders with attribute values of the attribute of
+         * that name, if found.
+         *
+         * @param userTemplate
+         * @return A possibly null string with placeholders resolved
+         * @throws BeansException if something goes wrong
+         */
+        protected String resolveFeatureCaption(String userTemplate) throws BeansException {
+            String resolved = this.helper.replacePlaceholders(userTemplate, this.resolver);
+            return (resolved.equals(nullValue) ? null : resolved);
+        }
     }
 
     /**

@@ -226,4 +226,12 @@ public class TiledCRSConstants {
                         APSTILE_SCALES));
         tiledCRSBySrsName.put(APSTILE_SRSNAME, tiledCRSDefinitions.get(APSTILE_NAME));
     }
+    /**
+     * @param crsCode - an official CRS code / srsName to look up
+     * @return the TCRS corresponding to the crsCode, long or short, or null if not found
+     */
+    public static TiledCRSParams lookupTCRS(String crsCode) {
+        return TiledCRSConstants.tiledCRSDefinitions.getOrDefault(
+                crsCode, TiledCRSConstants.tiledCRSBySrsName.get(crsCode));
+    }
 }

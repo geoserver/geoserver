@@ -273,7 +273,7 @@ export class MapLayer extends HTMLElement {
     this._layer.on('add remove extentload', this._validateDisabled,  this);
 
     // if controls option is enabled, insert the layer into the overlays array
-    if (this.parentNode.controls && !this.hidden) {
+    if (this.parentNode._layerControl && !this.hidden) {
       this._layerControl = this.parentNode._layerControl;
       this._layerControl.addOrUpdateOverlay(this._layer, this.label);
     }

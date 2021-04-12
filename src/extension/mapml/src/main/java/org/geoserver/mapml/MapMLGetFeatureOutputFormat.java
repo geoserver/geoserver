@@ -9,8 +9,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
@@ -28,7 +31,10 @@ import org.geoserver.mapml.xml.HeadContent;
 import org.geoserver.mapml.xml.Link;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.Meta;
+import org.geoserver.mapml.xml.ProjType;
 import org.geoserver.mapml.xml.RelType;
+import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
@@ -45,10 +51,17 @@ import org.opengis.referencing.crs.GeodeticCRS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-/** @author prushforth */
+/**
+ * @author Chris Hodgson
+ * @author prushforth
+ */
 public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
 
     @Autowired private Jaxb2Marshaller mapmlMarshaller;
+
+    private String base;
+    private String path;
+    private Map<String, Object> query;
 
     /** @param gs */
     public MapMLGetFeatureOutputFormat(GeoServer gs) {
@@ -88,9 +101,6 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         // build the head
         HeadContent head = new HeadContent();
         head.setTitle(layerInfo.getName());
-        // I know of no way to build a base URL within this method
-        // as featureCollectionResponse.getBaseURL() returns null
-        // which will impact provision of external style sheets, perhaps TBD
         List<Meta> metas = head.getMetas();
         Meta meta = new Meta();
         meta.setCharset("UTF-8");
@@ -101,6 +111,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         metas.add(meta);
         metas.addAll(deduceProjectionAndExtent(getFeature, layerInfo));
         List<Link> links = head.getLinks();
+        links.addAll(alternateProjections());
 
         String licenseLink = layerMeta.get("mapml.licenseLink", String.class);
         String licenseTitle = layerMeta.get("mapml.licenseTitle", String.class);
@@ -116,7 +127,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
             links.add(link);
         }
 
-        String fCaptionAttribute = layerMeta.get("mapml.featureCaption", String.class);
+        String fCaptionTemplate = layerMeta.get("mapml.featureCaption", String.class);
         mapml.setHead(head);
 
         // build the body
@@ -128,7 +139,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
             while (iterator.hasNext()) {
                 SimpleFeature feature = iterator.next();
                 // convert feature to xml
-                Feature f = MapMLGenerator.buildFeature(feature, fCaptionAttribute);
+                Feature f = MapMLGenerator.buildFeature(feature, fCaptionTemplate);
                 features.add(f);
             }
         }
@@ -166,7 +177,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
                 String code = srsName.toString();
                 responseCRS = CRS.decode(code);
                 responseCRSCode = CRS.toSRS(CRS.decode(code));
-                tcrs = lookupTCRS(responseCRSCode);
+                tcrs = TiledCRSConstants.lookupTCRS(responseCRSCode);
                 if (tcrs != null) {
                     projection.setContent(tcrs.getName());
                     crs = (responseCRS instanceof GeodeticCRS) ? "gcrs" : "pcrs";
@@ -191,14 +202,6 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         metas.add(coordinateSystem);
         metas.add(extent);
         return metas;
-    }
-    /**
-     * @param crsCode - an official CRS code / srsName to look up
-     * @return the TCRS corresponding to the crsCode, long or short, or null if not found
-     */
-    private TiledCRSParams lookupTCRS(String crsCode) {
-        return TiledCRSConstants.tiledCRSDefinitions.getOrDefault(
-                crsCode, TiledCRSConstants.tiledCRSBySrsName.get(crsCode));
     }
 
     /**
@@ -245,7 +248,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
                 "top-left-easting=%1$.2f,top-left-northing=%2$.2f,bottom-right-easting=%3$.2f,bottom-right-northing=%4$.2f";
         double minLong, minLat, maxLong, maxLat;
         double minEasting, minNorthing, maxEasting, maxNorthing;
-        TiledCRSParams tcrs = lookupTCRS(responseCRSCode);
+        TiledCRSParams tcrs = TiledCRSConstants.lookupTCRS(responseCRSCode);
         try {
             if (responseCRS instanceof GeodeticCRS) {
                 re = r.getLatLonBoundingBox();
@@ -283,5 +286,64 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
             }
         }
         return extent;
+    }
+    /**
+     * Format TCRS as alternate projection links for use in a WFS response, allowing projection
+     * negotiation
+     *
+     * @return list of link elements with rel=alternate projection=proj-name
+     */
+    private List<Link> alternateProjections() {
+        ArrayList<Link> links = new ArrayList<>();
+        Set<String> projections = TiledCRSConstants.tiledCRSBySrsName.keySet();
+        projections.forEach(
+                (String p) -> {
+                    Link l = new Link();
+                    TiledCRSParams projection = TiledCRSConstants.lookupTCRS(p);
+                    l.setProjection(ProjType.fromValue(projection.getName()));
+                    l.setRel(RelType.ALTERNATE);
+                    this.query.put("srsName", projection.getCode());
+                    HashMap<String, String> kvp = new HashMap<>(this.query.size());
+                    this.query
+                            .keySet()
+                            .forEach(
+                                    key -> {
+                                        kvp.put(key, this.query.getOrDefault(key, "").toString());
+                                    });
+                    l.setHref(
+                            ResponseUtils.urlDecode(
+                                    ResponseUtils.buildURL(
+                                            this.base,
+                                            this.path,
+                                            kvp,
+                                            URLMangler.URLType.SERVICE)));
+                    links.add(l);
+                });
+
+        return links;
+    }
+    /**
+     * Set the base context of the URL of the request for use in output format; set by callback
+     *
+     * @param base the URL to use as base, corresponds to ResponseUtils.buildURL base parameter
+     */
+    public void setBase(String base) {
+        this.base = base;
+    }
+    /**
+     * Set the query part of the URL to use as input to ResponseUtils.buildURL
+     *
+     * @param query
+     */
+    public void setQuery(Map<String, Object> query) {
+        this.query = query;
+    }
+    /**
+     * Set the path to be used as the path parameter for input to ResponseUtils.buildURL
+     *
+     * @param path
+     */
+    public void setPath(String path) {
+        this.path = path;
     }
 }

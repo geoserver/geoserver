@@ -1,15 +1,3 @@
-/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
- * Copyright © 2019 World Wide Web Consortium, (Massachusetts Institute of Technology, 
- * European Research Consortium for Informatics and Mathematics, Keio    
- * University, Beihang). All Rights Reserved. This work is distributed under the 
- * W3C® Software License [1] in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR 
- * A PARTICULAR PURPOSE.
- * [1] http://www.w3.org/Consortium/Legal/copyright-software
- * 
- */
 import './leaflet-src.js';  // a lightly modified version of Leaflet for use as browser module
 import './proj4-src.js';        // modified version of proj4; could be stripped down for mapml
 import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use.

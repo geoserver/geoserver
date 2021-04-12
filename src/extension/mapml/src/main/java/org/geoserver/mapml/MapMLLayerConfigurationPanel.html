@@ -74,12 +74,22 @@
                 <li>
                     <fieldset>
                         <legend>
-                            <span><wicket:message key="mapmlFeatureCaptionSection">Map attribute to &lt;featurecaption&gt;</wicket:message></span>
+                            <span><wicket:message key="mapmlFeatureCaptionSection">Map text and attributes to &lt;featurecaption&gt;</wicket:message></span>
                         </legend>
                         <ul>
+<!--                            <li>
+                                <label for="featurecaptionattributes"><wicket:message key="mapmlFeatureCaption">Available Attributes</wicket:message></label>
+                                <select id="featurecaptionattributes" wicket:id="featurecaptionattributes"></select>
+                            </li>-->
                             <li>
-                                <label for="featurecaption"><wicket:message key="mapmlFeatureCaption">Attribute to map</wicket:message></label>
-                                <select id="featurecaption" wicket:id="featurecaption"></select>
+                              <label for="featurecaptionattributes"><wicket:message key="mapmlFeatureCaption">Available Attributes</wicket:message></label>
+                              <select id="featurecaptionattributes" class="select" wicket:id="featurecaptionattributes" multiple="multiple" style="width:25em;"></select>
+                            </li>
+                            <li>
+                                <label for="featureCaptionTemplate">
+                                    <wicket:message key="mapmlFeatureCaptionTemplate">Feature Caption Template String (enter text including &#36;{attribute-name} placeholders for attribute names [case-sensitive] in the feature caption)</wicket:message>
+                                </label>
+                                <textarea id="featureCaptionTemplate" wicket:id="featureCaptionTemplate" class="field textarea" rows="5" cols="30"></textarea>
                             </li>
                          </ul>
                     </fieldset>

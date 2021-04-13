@@ -255,7 +255,7 @@ Requirements:
 
 - `GeoServer running`
 - teamengine
-- Posgresql
+- PostgreSQL
 - PostGIS
 
 #. Prepare the environment:

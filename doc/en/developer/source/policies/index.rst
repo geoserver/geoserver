@@ -6,11 +6,11 @@ Policies and Procedures
 .. toctree::
    :maxdepth: 1
 
-   community-process.rst
-   psc.rst
-   gsip.rst
-   committing.rst
-   pull_request.rst
-   review.rst
-   community-modules.rst
-
+   community-process
+   psc
+   gsip
+   committing
+   pull_request
+   review
+   community-modules
+   service_providers

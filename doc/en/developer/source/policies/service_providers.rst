@@ -21,13 +21,13 @@ Service Provider checklist
 
 To recognizing experienced providers and core contributors consistently we have developed the following checklist.
 
-Core contributors:
+Core contributors: take responsibility for the project, meeting all three core responsibilities:
 
 * ``core`` demonstrating an ongoing responsibility: security email list, releases, supported extension
 * ``committer`` active development: geoserver-devel, review of pull-requests, assigned jira tickets, development activities such bug-stomps and sprint participation
 * ``support`` sustained community support: geoserver-user, review of jira, gis.stackexchange.com, something!
 
-Experienced providers: work on GeoServer when hired by customers but are not always active
+Experienced providers: work on GeoServer when hired by customers but are not always active, demonstrating experience with a selection of the following checklist labels:
 
 * ``development`` feature development: examples GISP proposal, community module
 * ``coding`` work on java code, bug fix, signed code contribution agreement

@@ -26,6 +26,10 @@ build: $(suite)		## Will Build the GeoServer Docker Image for the Environment.
       build --build-arg GEOSERVER_WEBAPP_SRC=${war_url} geoserver
 
 test: $(suite)		## Will running the Suite test with teamengine.
+    @echo Getting the GeoServer version.
+    docker run -it ogccite/geoserver:$(suite) bash -c 'cd /usr/local/tomcat/webapps/ \
+           && if [ -f geoserver.war ]; then unzip -q geoserver.war; cat META-INF/MANIFEST.MF; \
+           else cat META-INF/MANIFEST.MF; fi'
 	@echo running the Suite test with teamengine
 	docker-compose -f docker-compose.yml -f ./$(suite)/docker-compose.override.yml \
       up --force-recreate --exit-code-from teamengine teamengine

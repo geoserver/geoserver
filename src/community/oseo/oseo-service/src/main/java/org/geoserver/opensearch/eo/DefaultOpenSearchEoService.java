@@ -199,7 +199,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         final OpenSearchAccess access = getOpenSearchAccess();
         final FeatureSource<FeatureType, Feature> featureSource;
         Query resultsQuery = filterEnabled(request.getQuery());
-        final String parentId = request.getParentId();
+        final String parentId = request.getParentIdentifier();
         if (parentId == null) {
             featureSource = access.getCollectionSource();
         } else {
@@ -281,7 +281,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
         // run it
         FeatureSource<FeatureType, Feature> source;
-        if (request.getParentId() == null) {
+        if (request.getParentIdentifier() == null) {
             // collection request
             source = access.getCollectionSource();
         } else {
@@ -293,7 +293,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
                     "Could not locate the requested product for uid = "
                             + request.getId()
                             + " and parentId = "
-                            + request.getParentId(),
+                            + request.getParentIdentifier(),
                     OWSExceptionCode.NotFound);
         }
 
@@ -307,7 +307,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
                     "Could not locate the requested metadata for uid = "
                             + request.getId()
                             + " and parentId = "
-                            + request.getParentId());
+                            + request.getParentIdentifier());
         }
 
         return new MetadataResults(request, metadata);
@@ -318,7 +318,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         OpenSearchAccess access = getOpenSearchAccess();
 
         // check collection exists
-        getCollectionByParentIdentifier(request.getParentId());
+        getCollectionByParentIdentifier(request.getParentIdentifier());
 
         // build the query
         Query query = queryByIdentifier(request.getId());
@@ -326,7 +326,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
 
         // run it
         FeatureSource<FeatureType, Feature> source;
-        if (request.getParentId() == null) {
+        if (request.getParentIdentifier() == null) {
             // collection request
             source = access.getCollectionSource();
         } else {
@@ -334,12 +334,19 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         }
         FeatureCollection<FeatureType, Feature> features = source.getFeatures(query);
         if (features.isEmpty()) {
-            throw new OWS20Exception(
-                    "Could not locate the requested product for uid = "
-                            + request.getId()
-                            + " and parentId = "
-                            + request.getParentId(),
-                    OWSExceptionCode.NotFound);
+            query.setProperties(Collections.emptyList());
+            features = source.getFeatures(query);
+            if (features.isEmpty()) {
+                String msg = "Could not locate the requested product for uid = " + request.getId();
+                if (request.getParentIdentifier() != null) {
+                    msg += " and parentId = " + request.getParentIdentifier();
+                }
+                throw new OWS20Exception(msg, OWSExceptionCode.NotFound);
+            } else {
+                throw new OWS20Exception(
+                        "Could not locate the quicklook for the requested resource",
+                        OWSExceptionCode.NotFound);
+            }
         }
 
         byte[] payload =
@@ -351,7 +358,7 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
                     "Could not locate the quicklook for uid = "
                             + request.getId()
                             + " and parentId = "
-                            + request.getParentId());
+                            + request.getParentIdentifier());
         }
 
         return new QuicklookResults(request, payload, guessImageMimeType(payload));
@@ -415,6 +422,6 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
                 FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier"));
         final PropertyIsEqualTo idFilter = FF.equal(idProperty, FF.literal(identifier), true);
         query.setFilter(idFilter);
-        return query;
+        return filterEnabled(query);
     }
 }

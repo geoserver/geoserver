@@ -123,13 +123,4 @@ public class JsonTemplateReaderTest {
             if (builder.getChildren() != null) testBuildersType(builder.getChildren(), predicate);
         }
     }
-
-    @Test
-    public void testArrayFilterNoSource() throws IOException, CQLException {
-        RootBuilder root = getBuilderTree("arrayFilterNoSource.json");
-        IteratingBuilder it = (IteratingBuilder) root.getChildren().get(0);
-        assertEquals(ECQL.toFilter("name = 'LANDSAT8'"), it.getFilter());
-        // first child is static, the dynamic part is the filter
-        assertThat(it.getChildren().get(0), instanceOf(StaticBuilder.class));
-    }
 }

@@ -164,26 +164,6 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             encodeEntries(results.getResults(), results.getRequest());
         }
 
-        private void buildSearchLink(SearchRequest request) {
-            Map<String, String> kvp = null;
-            if (request.getParentId() != null) {
-                kvp = Collections.singletonMap("parentId", request.getParentId());
-            }
-            String href =
-                    ResponseUtils.buildURL(
-                            request.getBaseUrl(), "oseo/search/description", kvp, URLType.SERVICE);
-            element(
-                    "link",
-                    NO_CONTENTS,
-                    attributes(
-                            "rel",
-                            "search",
-                            "href",
-                            href,
-                            "type",
-                            DescriptionResponse.OS_DESCRIPTION_MIME));
-        }
-
         private int getQueryStartIndex(SearchResults results) {
             Integer startIndex = results.getRequest().getQuery().getStartIndex();
             if (startIndex == null) {
@@ -192,24 +172,32 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             return startIndex;
         }
 
-        private void buildPaginationLinks(SearchResults results) {
-            final SearchRequest request = results.getRequest();
-            int total = results.getTotalResults();
-            int startIndex = getQueryStartIndex(results) + 1;
-            int itemsPerPage = request.getQuery().getMaxFeatures();
+        private void buildSearchLink(SearchRequest request) {
+            Map<String, String> kvp = null;
+            if (request.getParentIdentifier() != null) {
+                kvp = Collections.singletonMap("parentId", request.getParentIdentifier());
+            }
+            String href =
+                    ResponseUtils.buildURL(
+                            request.getBaseUrl(), "oseo/search/description", kvp, URLType.SERVICE);
+            encodeLink("search", href, DescriptionResponse.OS_DESCRIPTION_MIME);
+        }
 
-            // warning, opensearch is 1-based, geotools is 0 based
-            encodePaginationLink("self", startIndex, itemsPerPage, request);
-            encodePaginationLink("first", 1, itemsPerPage, request);
-            if (startIndex > 1) {
-                encodePaginationLink(
-                        "previous", Math.max(startIndex - itemsPerPage, 1), itemsPerPage, request);
-            }
-            if (startIndex + itemsPerPage <= total) {
-                encodePaginationLink("next", startIndex + itemsPerPage, itemsPerPage, request);
-            }
-            encodePaginationLink(
-                    "last", getLastPageStart(total, itemsPerPage), itemsPerPage, request);
+        private void buildPaginationLinks(SearchResults results) {
+            PaginationLinkBuilder builder =
+                    new PaginationLinkBuilder(results, info, AtomSearchResponse.MIME);
+
+            encodeLink("self", builder.getSelf(), AtomSearchResponse.MIME);
+            encodeLink("first", builder.getFirst(), AtomSearchResponse.MIME);
+            if (builder.getPrevious() != null)
+                encodeLink("previous", builder.getPrevious(), AtomSearchResponse.MIME);
+            if (builder.getNext() != null)
+                encodeLink("next", builder.getNext(), AtomSearchResponse.MIME);
+            encodeLink("last", builder.getLast(), AtomSearchResponse.MIME);
+        }
+
+        private void encodeLink(String rel, String href, String type) {
+            element("link", NO_CONTENTS, attributes("rel", rel, "href", href, "type", type));
         }
 
         private void encodeEntries(FeatureCollection results, SearchRequest request) {
@@ -356,7 +344,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             String productIdentifierLink = buildProductIdentifierLink(identifier, request);
             String metadataLink =
                     buildMetadataLink(
-                            request.getParentId(),
+                            request.getParentIdentifier(),
                             identifier,
                             MetadataRequest.OM_METADATA,
                             request);
@@ -583,7 +571,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
         private String buildProductIdentifierLink(Object identifier, SearchRequest request) {
             String baseURL = request.getBaseUrl();
             Map<String, String> kvp = new LinkedHashMap<String, String>();
-            kvp.put("parentId", request.getParentId());
+            kvp.put("parentId", request.getParentIdentifier());
             kvp.put("uid", String.valueOf(identifier));
             kvp.put("httpAccept", AtomSearchResponse.MIME);
             String href = ResponseUtils.buildURL(baseURL, "oseo/search", kvp, URLType.SERVICE);
@@ -593,7 +581,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
         private String buildQuicklookLink(String identifier, SearchRequest request) {
             String baseURL = request.getBaseUrl();
             Map<String, String> kvp = new LinkedHashMap<String, String>();
-            kvp.put("parentId", request.getParentId());
+            kvp.put("parentId", request.getParentIdentifier());
             kvp.put("uid", String.valueOf(identifier));
             String href = ResponseUtils.buildURL(baseURL, "oseo/quicklook", kvp, URLType.SERVICE);
             return href;
@@ -668,39 +656,6 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
                 }
                 return value;
             }
-        }
-
-        private int getLastPageStart(int total, int itemsPerPage) {
-            // all in one page?
-            if (total <= itemsPerPage || itemsPerPage == 0) {
-                return 1;
-            }
-            // check how many items in the last page, is the last page partial or full?
-            int lastPageItems = total % itemsPerPage;
-            if (lastPageItems == 0) {
-                lastPageItems = itemsPerPage;
-            }
-            return total - lastPageItems + 1;
-        }
-
-        private void encodePaginationLink(
-                String rel, int startIndex, int itemsPerPage, SearchRequest request) {
-            String baseURL = request.getBaseUrl();
-            Map<String, String> kvp = new LinkedHashMap<String, String>();
-            for (Map.Entry<Parameter, String> entry : request.getSearchParameters().entrySet()) {
-                Parameter parameter = entry.getKey();
-                String value = entry.getValue();
-                String key = OpenSearchParameters.getQualifiedParamName(info, parameter, false);
-                kvp.put(key, value);
-            }
-            kvp.put("startIndex", "" + startIndex);
-            kvp.put("count", "" + itemsPerPage);
-            kvp.put("httpAccept", AtomSearchResponse.MIME);
-            String href = ResponseUtils.buildURL(baseURL, "oseo/search", kvp, URLType.SERVICE);
-            element(
-                    "link",
-                    NO_CONTENTS,
-                    attributes("rel", rel, "href", href, "type", AtomSearchResponse.MIME));
         }
 
         public Attributes getQueryAttributes(SearchRequest request) {

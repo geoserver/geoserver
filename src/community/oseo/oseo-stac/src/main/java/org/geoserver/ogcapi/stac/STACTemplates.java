@@ -9,16 +9,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.emf.common.util.URI;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.featurestemplating.builders.BuilderFactory;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.configuration.Template;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.featurestemplating.validation.AbstractTemplateValidator;
+import org.geoserver.opensearch.eo.AbstractTemplates;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
@@ -34,12 +32,10 @@ import org.xml.sax.helpers.NamespaceSupport;
 
 /** Provides access to the collection and item templates used for the STAC JSON outputs */
 @Component
-public class STACTemplates {
+public class STACTemplates extends AbstractTemplates {
 
     static final Logger LOGGER = Logging.getLogger(STACTemplates.class);
 
-    private final OpenSearchAccessProvider accessProvider;
-    private final GeoServerDataDirectory dd;
     private Template collectionTemplate;
     private Template itemTemplate;
 
@@ -47,8 +43,7 @@ public class STACTemplates {
 
     public STACTemplates(GeoServerDataDirectory dd, OpenSearchAccessProvider accessProvider)
             throws IOException {
-        this.accessProvider = accessProvider;
-        this.dd = dd;
+        super(dd, accessProvider);
     }
 
     /** Copies over all HTML templates, to allow customization */
@@ -126,15 +121,6 @@ public class STACTemplates {
         this.collectionTemplate = new Template(collections, configuration);
     }
 
-    private void copyDefault(Resource collections, String defaultTemplate) throws IOException {
-        if (collections.getType() == Resource.Type.UNDEFINED) {
-            try (InputStream is = STACTemplates.class.getResourceAsStream(defaultTemplate);
-                    OutputStream os = collections.out()) {
-                IOUtils.copy(is, os);
-            }
-        }
-    }
-
     /** Returns the collections template */
     public RootBuilder getCollectionTemplate() throws IOException {
         // load templates lazily, on startup the OpenSearchAccess might not yet be configured
@@ -179,48 +165,5 @@ public class STACTemplates {
                     accessProvider.getOpenSearchAccess().getProductSource());
 
         return builder;
-    }
-
-    private void validate(
-            RootBuilder root,
-            AbstractTemplateValidator validator,
-            FeatureSource<FeatureType, Feature> source)
-            throws IOException {
-        if (root != null) {
-            boolean isValid = validator.validateTemplate(root);
-            if (!isValid) {
-                throw new RuntimeException(
-                        "Failed to validate template for "
-                                + validator.getTypeName()
-                                + ". Failing attribute is "
-                                + URI.decode(validator.getFailingAttribute())
-                                + "\n"
-                                + availableAttributesSuffix(
-                                        source.getSchema(), getNamespaces(source)));
-            }
-        }
-    }
-
-    private String availableAttributesSuffix(Object ctx, NamespaceSupport ns) {
-        if (ctx instanceof FeatureType) {
-            FeatureType ft = (FeatureType) ctx;
-            String values =
-                    ft.getDescriptors()
-                            .stream()
-                            .map(ad -> attributeName(ad, ns))
-                            .collect(Collectors.joining(", "));
-            if (!StringUtils.isEmpty(values)) return " Available attributes: " + values;
-        }
-        return "";
-    }
-
-    protected String attributeName(PropertyDescriptor ad, NamespaceSupport ns) {
-        String name = ad.getName().getLocalPart();
-        String uri = ad.getName().getNamespaceURI();
-        if (ns != null && uri != null && !StringUtils.isEmpty(ns.getPrefix(uri))) {
-            name = ns.getPrefix(uri) + ":" + name;
-        }
-
-        return name;
     }
 }

@@ -17,7 +17,7 @@ import org.geotools.data.Query;
  */
 public class SearchRequest {
 
-    String parentId;
+    String parentIdentifier;
 
     Query query;
 
@@ -35,12 +35,12 @@ public class SearchRequest {
         this.baseUrl = baseUrl;
     }
 
-    public String getParentId() {
-        return parentId;
+    public String getParentIdentifier() {
+        return parentIdentifier;
     }
 
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
+    public void setParentIdentifier(String parentIdentifier) {
+        this.parentIdentifier = parentIdentifier;
     }
 
     public Query getQuery() {

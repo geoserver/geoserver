@@ -116,5 +116,19 @@
   </bean>
   
   <bean id="oseoServiceVoter" class="org.geoserver.opensearch.eo.OpenSearchServiceVoter"/>
+  
+  <bean id="openSearchTemplates" class="org.geoserver.opensearch.eo.OpenSearchTemplates">
+    <constructor-arg ref="dataDirectory"/>
+    <constructor-arg ref="openSearchAccessProvider"/>
+  </bean>
+  
+  <bean id="geoJSONSearchResponse" class="org.geoserver.opensearch.eo.response.GeoJSONSearchResponse">
+    <constructor-arg ref="geoServer"/>
+    <constructor-arg ref="openSearchTemplates"/>
+  </bean>
+  
+  <bean id="geoJSONTemplateReloader" class="org.geoserver.opensearch.eo.TemplatesReloader">
+    <constructor-arg ref="openSearchTemplates"/>
+  </bean>
 
 </beans>

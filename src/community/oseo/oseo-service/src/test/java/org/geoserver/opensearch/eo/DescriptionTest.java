@@ -117,7 +117,7 @@ public class DescriptionTest extends OSEOTestSupport {
         assertEquals(200, response.getStatus());
 
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
-        // print(dom);
+        print(dom);
 
         // generic contents check
         assertThat(dom, hasXPath("/os:OpenSearchDescription"));
@@ -160,8 +160,16 @@ public class DescriptionTest extends OSEOTestSupport {
                         containsString("/oseo/description")));
 
         // check the result link
+        validateCollectionSearchURL(dom, "application/atom+xml");
+        validateCollectionSearchURL(dom, "application/geo+json");
+
+        // general validation
+        checkValidOSDD(dom);
+    }
+
+    private void validateCollectionSearchURL(Document dom, String mime) {
         String resultsBase =
-                "/os:OpenSearchDescription/os:Url[@rel='collection'and @type='application/atom+xml']";
+                "/os:OpenSearchDescription/os:Url[@rel='collection'and @type='" + mime + "']";
         assertThat(dom, hasXPath(resultsBase));
         assertThat(
                 dom,
@@ -235,9 +243,6 @@ public class DescriptionTest extends OSEOTestSupport {
                 hasXPath(
                         paramBase
                                 + "[@name='identifier' and @value='{eo:identifier}' and @minimum='0']"));
-
-        // general validation
-        checkValidOSDD(dom);
     }
 
     @Test
@@ -267,11 +272,16 @@ public class DescriptionTest extends OSEOTestSupport {
                 hasXPath(
                         "/os:OpenSearchDescription/os:Url[@rel='self' "
                                 + "and @type='application/opensearchdescription+xml']/@template",
-                        containsString("/oseo/description?parentId=SENTINEL2")));
+                        containsString("/oseo/description?parentIdentifier=SENTINEL2")));
 
         // check the results link is there
+        checkOpticalCollectionSearch(dom, "application/atom+xml");
+        checkOpticalCollectionSearch(dom, "application/geo+json");
+    }
+
+    private void checkOpticalCollectionSearch(Document dom, String mime) {
         String resultsBase =
-                "/os:OpenSearchDescription/os:Url[@rel='results'and @type='application/atom+xml']";
+                "/os:OpenSearchDescription/os:Url[@rel='results'and @type='" + mime + "']";
         assertThat(dom, hasXPath(resultsBase));
         // ... and has the right parentId, and basic search params
         assertThat(
@@ -280,7 +290,7 @@ public class DescriptionTest extends OSEOTestSupport {
                         resultsBase + "/@template",
                         allOf(
                                 containsString("/oseo/search?"), //
-                                containsString("parentId=SENTINEL2"), //
+                                containsString("parentIdentifier=SENTINEL2"), //
                                 containsString("searchTerms={searchTerms?}"), //
                                 containsString("lat={geo:lat?}"), //
                                 containsString("timeStart={time:start?}"))));
@@ -334,7 +344,7 @@ public class DescriptionTest extends OSEOTestSupport {
                 hasXPath(
                         "/os:OpenSearchDescription/os:Url[@rel='self' "
                                 + "and @type='application/opensearchdescription+xml']/@template",
-                        containsString("/oseo/description?parentId=SENTINEL1")));
+                        containsString("/oseo/description?parentIdentifier=SENTINEL1")));
 
         // check the results link is there
         String resultsBase =
@@ -347,7 +357,7 @@ public class DescriptionTest extends OSEOTestSupport {
                         resultsBase + "/@template",
                         allOf(
                                 containsString("/oseo/search?"), //
-                                containsString("parentId=SENTINEL1"), //
+                                containsString("parentIdentifier=SENTINEL1"), //
                                 containsString("searchTerms={searchTerms?}"), //
                                 containsString("lat={geo:lat?}"), //
                                 containsString("timeStart={time:start?}"), //

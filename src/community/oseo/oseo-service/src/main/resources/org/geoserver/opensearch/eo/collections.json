@@ -1,0 +1,79 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "id": "$${serviceLink('oseo/search?uid=%s&httpAccept=application/geo%%2Bjson', eo:identifier)}",
+      "type": "Feature",
+      "geometry": "${footprint}",
+      "properties": {
+        "identifier": "${eo:identifier}",
+        "title": "${title}",
+        "abstract": "${description}",
+        "date": "$${if_then_else(equalTo(timeStart, timeEnd), timeStart, Concatenate(timeStart, '/', timeEnd))}",
+        "acquisitionInformation": {
+          "platform": {
+            "$filter" : "eo:platform is not null and strLength(eo:platform) > 0",
+            "id": "$${serviceLink('oseo/id/%s', eo:platform)}",
+            "platformSerialIdentifier": "${eo:platformSerialIdentifier}",
+            "platformShortName": "${eo:platform}",
+            "orbitType": "${eo:orbitType}"
+          },
+          "instrument": {
+            "instrumentShortName": "${eo:instrument}",
+            "sensorType": "${eo:sensorType}",
+            "wavelengths": [
+              {
+                "$filter": "eo:wavelength is not null"
+              },
+              {
+              "spectralRange": "${eo:spectralRange}",
+              "startWavelength": "${eo:wavelength}"
+            }]
+          },
+          "acquisitionParameters": {
+            "acquisitionStation": "${eo:acquisitionStation}"
+          }
+        },
+        "productInformation": {
+          "productType": "${eo:productType}",
+          "compositeType": "${eo:compositeType}",
+          "processingLevel": "${eo:processingLevel}"
+        },
+        "links": {
+          "alternates": [
+            {
+              "href": "$${serviceLink('oseo/search?uid=%s&httpAccept=application/atom%%2Bxml', eo:identifier)}",
+              "type": "application/atom+xml",
+              "title": "Atom format"
+            },
+            {
+              "href": "$${serviceLink('oseo/metadata?uid=%s', eo:identifier)}",
+              "type": "application/gml+xml;profile=http://www.opengis.net/spec/EOMPOM/1.0",
+              "title": "O&M metadata"
+            }
+          ],
+          "previews": [
+            {
+              "href": "$${serviceLink('oseo/quicklook?uid=%s', eo:identifier)}",
+              "type": "image/jpeg",
+              // we don't really know what's inside the quicklook, could be other formats
+              "title": "Quicklook"
+            }
+          ],
+          "ogc": [
+            {
+              "$source": "eo:ogcLinks"
+            },
+            {
+              "offering": "${eo:offering}",
+              "method": "${eo:method}",
+              "type": "${eo:type}",
+              "href": "$${templateLink(eo:href)}"
+            }
+            
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -24,7 +24,7 @@ public class MetadataRequestKvpReader extends AbstractProductRequestKvpReader {
         MetadataRequest mr = (MetadataRequest) super.read(request, kvp, rawKvp);
 
         // check httpAccept
-        if (mr.getParentId() == null) {
+        if (mr.getParentIdentifier() == null) {
             assertHttpAccept(mr, MetadataRequest.ISO_METADATA);
         } else {
             assertHttpAccept(mr, MetadataRequest.OM_METADATA);

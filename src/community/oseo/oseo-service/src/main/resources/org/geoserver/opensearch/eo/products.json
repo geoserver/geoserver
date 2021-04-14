@@ -1,0 +1,123 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "id": "$${serviceLink('oseo/search?parentIdentifier=%s&uid=%s&httpAccept=application/geo%%2Bjson', eop:parentIdentifier, eop:identifier)}",
+      "type": "Feature",
+      "geometry": "${footprint}",
+      "properties": {
+        "identifier": "${eop:identifier}",
+        "parentIdentifier": "${eop:parentIdentifier}",
+        "status": "${eop:productionStatus}",
+        "date": "$${if_then_else(equalTo(timeStart, timeEnd), timeStart, Concatenate(timeStart, '/', timeEnd))}",
+        "created": "${eop:creationDate}",
+        "updated": "${eop:modificationDate}",
+        "acquisitionInformation": {
+          /* Cannot be done at the moment, these attributes are part of the collection
+          "platform": { 
+          "platformShortName": "${eo:platform}",
+          "platformSerialIdentifier": "${eo:platformSerialIdentifier}"
+          },
+          "instrument": {
+          "instrumentShortName": "${eo:instrumentShortName}"
+          "sensorType": "${eo:sensorType}"
+          },
+          */
+          "acquisitionParameters": {
+            "operationalMode": "${eop:sensorMode}",
+            "beginningDateTime": "${timeStart}",
+            "endingDateTime": "${timeEnd}",
+            "orbitDirection": "${eop:orbitDirection}",
+            "orbitNumber": "${eop:orbitNumber}",
+            "acquisitionType": "${eop:acquisitionType}",
+            "swathIdentifier": "${eop:swathIdentifier}",
+            "archivingCenter": "${eop:archivingCenter}",
+            "acquisitionStation": "${eop:acquisitionStation}",
+            "acquisitionSubType": "${eop:acquisitionSubtype}",
+            "startTimeFromAscendingNode": "${eop:startTimeFromAscendingNode}",
+            "completionTimeFromAscendingNode": "${eop:completionTimeFromAscendingNode}",
+            "polarisationMode": "${sar:polarisationMode}",
+            "polarisationChannels": "${sar:polarisationChannels}",
+            "antennaLookDirection": "${sar:antennaLookDirection}",
+            "dopplerFrequency": "${sar:dopplerFrequency}",
+            "incidenceAngleVariation": "${sar:incidenceAngleVariation}",
+            "resolution": "${eop:resolution}",
+            "acquisitionAngles": {
+              "minimumIncidenceAngle": "${sar:minimumIncidenceAngle}",
+              "maximumIncidenceAngle": "${sar:maximumIncidenceAngle}",
+              "illuminationAzimuthAngle": "${eop:illuminationAzimuthAngle}",
+              "illuminationElevationAngle": "${eop:illuminationElevationAngle}",
+              "illuminationZenithAngle": "${eop:illuminationZenithAngle}"
+            }
+          }
+        },
+        "productInformation": {
+          "referenceSystemIdentifier": "$filter{crs is not null},crs",
+          "cloudCover": "${opt:cloudCover}",
+          "snowCover": "${opt:snowCover}",
+          "processorName": "${eop:processorName}",
+          "processingCenter": "${eop:processingCenter}",
+          "processingDate": "${eop:processingDate}",
+          "processingMode": "${eop:processingMode}",
+          "availabilityTime": "${eop:availabilityTime}",
+          // "verticalResolution": "${atm:verticalResolution}",
+          // in EO it's an array though
+          "qualityInformation": {
+            "qualityStatus": "${eop:productQualityStatus}",
+            "qualityDegradationTag": "${eop:productQualityDegradationStatus}"
+          }
+        },
+        "links": {
+          "alternates": [
+            {
+              "href": "$${serviceLink('oseo/search?parentIdentifier=%s&uid=%s&httpAccept=application/atom%%2Bxml', eop:parentIdentifier, eop:identifier)}",
+              "type": "application/atom+xml",
+              "title": "Atom format"
+            },
+            {
+              "href": "$${serviceLink('oseo/metadata?parentIdentifier=%s&uid=%s', eop:parentIdentifier, eop:identifier)}",
+              "type": "application/gml+xml;profile=http://www.opengis.net/spec/EOMPOM/1.0",
+              "title": "O&M metadata"
+            }
+          ],
+          "previews": [
+            {
+              "href": "$${serviceLink('oseo/quicklook?parentIdentifier=%s&uid=%s', eop:parentIdentifier, eop:identifier)}",
+              "type": "image/jpeg",
+              // we don't really know what's inside the quicklook, could be other formats
+              "title": "Quicklook"
+            }
+          ],
+          "data": [
+            {
+              "$filter": "originalPackageLocation IS NOT NULL"
+            },
+            {
+              "href": "$${templateLink(originalPackageLocation)}",
+              "type": "$${if_then_else(isNull(originalPackageType), 'application/octet-stream', originalPackageType)}",
+              "title": "Download"
+            }
+          ],
+          "up": [
+            {
+              "href": "$${serviceLink('oseo/search?parentIdentifier=%s&httpAccept=application/geo%%2Bjson', eop:parentIdentifier)}",
+              "type": "application/geo+json",
+              "title": "Up"
+            }
+          ],
+          "ogc": [
+            {
+              "$source": "eo:ogcLinks"
+            },
+            {
+              "offering": "${eo:offering}",
+              "method": "${eo:method}",
+              "type": "${eo:type}",
+              "href": "$${templateLink(eo:href)}"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

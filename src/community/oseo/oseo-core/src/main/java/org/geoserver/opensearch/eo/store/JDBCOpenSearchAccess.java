@@ -214,12 +214,28 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
     private AttributeDescriptor buildFeatureDescriptor(
             Name name, String prefix, SimpleFeatureType schema, int minOccurs, int maxOccurs) {
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
-        ab.name(name.getLocalPart()).namespaceURI(name.getNamespaceURI());
+        String ns = name.getNamespaceURI();
+        ab.name(name.getLocalPart()).namespaceURI(ns);
         ab.setMinOccurs(minOccurs);
         ab.setMaxOccurs(maxOccurs);
         ab.userData(PREFIX, prefix);
-        AttributeDescriptor descriptor = ab.buildDescriptor(name, schema);
+        AttributeDescriptor descriptor = ab.buildDescriptor(name, applyNamespace(ns, schema));
         return descriptor;
+    }
+
+    private FeatureType applyNamespace(String namespaceURI, SimpleFeatureType schema) {
+        TypeBuilder tb = new org.geoserver.opensearch.eo.store.OrderedTypeBuilder();
+        tb.setName(schema.getTypeName());
+        tb.setNamespaceURI(namespaceURI);
+        AttributeTypeBuilder ab = new AttributeTypeBuilder();
+        for (AttributeDescriptor ad : schema.getAttributeDescriptors()) {
+            ab.init(ad);
+            ab.setNamespaceURI(namespaceURI);
+            NameImpl name = new NameImpl(namespaceURI, ad.getLocalName());
+            AttributeDescriptor newDescriptor = ab.buildDescriptor(name, ab.buildType());
+            tb.add(newDescriptor);
+        }
+        return tb.feature();
     }
 
     private FeatureType buildProductFeatureType(DataStore delegate) throws IOException {

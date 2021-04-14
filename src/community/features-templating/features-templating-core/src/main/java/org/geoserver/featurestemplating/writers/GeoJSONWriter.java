@@ -37,7 +37,7 @@ public class GeoJSONWriter extends CommonJSONWriter {
     }
 
     @Override
-    protected void writeValue(Object value) throws IOException {
+    public void writeValue(Object value) throws IOException {
         if (value instanceof String) {
             writeString((String) value);
         } else if (value instanceof Integer) {
@@ -54,11 +54,15 @@ public class GeoJSONWriter extends CommonJSONWriter {
             writeNumber((BigDecimal) value);
         } else if (value instanceof Boolean) {
             writeBoolean((Boolean) value);
+        } else if (value instanceof Date) {
+            writeString(new ISO8601Formatter().format(value));
+        } else {
+            writeString(value.toString());
         }
     }
 
     @Override
-    protected void writeGeometry(Object value) throws IOException {
+    public void writeGeometry(Object value) throws IOException {
         GeometryJSON geomJson = new GeometryJSON();
         String strGeom = geomJson.toString((Geometry) value);
         ObjectMapper mapper = new ObjectMapper();

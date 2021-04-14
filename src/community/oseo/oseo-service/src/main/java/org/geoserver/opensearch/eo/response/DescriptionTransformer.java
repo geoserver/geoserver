@@ -108,6 +108,18 @@ public class DescriptionTransformer extends LambdaTransformerBase {
                             "application/atom+xml",
                             "indexOffset",
                             "1"));
+            element(
+                    "Url",
+                    () -> describeParameters(description),
+                    attributes( //
+                            "rel",
+                            relValue, //
+                            "template",
+                            buildResultsUrl(description, "json"), //
+                            "type",
+                            "application/geo+json",
+                            "indexOffset",
+                            "1"));
             element("LongName", oseo.getTitle());
             element("Developer", oseo.getMaintainer());
             element("SyndicationRight", "open"); // make configurable?
@@ -128,7 +140,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
             if (description.getParentId() == null) {
                 params = Collections.emptyMap();
             } else {
-                params = params("parentId", description.getParentId());
+                params = params("parentIdentifier", description.getParentId());
             }
             return params;
         }

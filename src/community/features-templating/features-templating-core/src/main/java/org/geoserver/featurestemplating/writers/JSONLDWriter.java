@@ -20,12 +20,12 @@ public class JSONLDWriter extends CommonJSONWriter {
     private JsonNode contextHeader;
 
     @Override
-    protected void writeValue(Object value) throws IOException {
+    public void writeValue(Object value) throws IOException {
         writeString(String.valueOf(value));
     }
 
     @Override
-    protected void writeGeometry(Object value) throws IOException {
+    public void writeGeometry(Object value) throws IOException {
         FilterFunction_toWKT toWKT = new FilterFunction_toWKT();
         String wkt = (String) toWKT.evaluate(value);
         writeString(wkt);

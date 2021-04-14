@@ -109,9 +109,9 @@ public abstract class CommonJSONWriter extends com.fasterxml.jackson.core.JsonGe
         }
     }
 
-    protected abstract void writeValue(Object value) throws IOException;
+    public abstract void writeValue(Object value) throws IOException;
 
-    protected abstract void writeGeometry(Object value) throws IOException;
+    public abstract void writeGeometry(Object value) throws IOException;
 
     @Override
     public void writeElementName(Object elementName) throws IOException {

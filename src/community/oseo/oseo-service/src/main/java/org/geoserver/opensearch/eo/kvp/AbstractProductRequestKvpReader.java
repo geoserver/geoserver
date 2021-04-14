@@ -38,7 +38,7 @@ public abstract class AbstractProductRequestKvpReader extends KvpRequestReader {
         apr.setId(uid);
 
         // check parentId if required
-        if (parentIdRequired && apr.getParentId() == null) {
+        if (parentIdRequired && apr.getParentIdentifier() == null) {
             throw new OWS20Exception(
                     "Missing mandatory parentId parameter",
                     OWS20Exception.OWSExceptionCode.MissingParameterValue,

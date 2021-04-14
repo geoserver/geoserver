@@ -40,6 +40,8 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
             this.cql = cqlManager.getExpressionFromString();
         } else if (expression.startsWith("${")) {
             this.xpath = cqlManager.getAttributeExpressionFromString();
+        } else {
+            throw new IllegalArgumentException("Invalid value: " + expression);
         }
         this.contextPos = cqlManager.getContextPos();
     }

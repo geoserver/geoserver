@@ -8,6 +8,8 @@ package org.geoserver.ows.util;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -155,7 +157,7 @@ public class ResponseUtils {
     /**
      * Returns the query string part of a request url.
      *
-     * <p>If the url does not have a query string compopnent, the empty string is returned.
+     * <p>If the url does not have a query string component, the empty string is returned.
      *
      * @param url The url.
      * @return The query string part of the url.
@@ -168,6 +170,23 @@ public class ResponseUtils {
         }
 
         return url.substring(index + 1);
+    }
+
+    /**
+     * Returns the path portion of a request uri.
+     *
+     * <p>If the uri does not have a query string component, it is returned as-is
+     *
+     * @param uri The uri.
+     * @return The path portion of the uri.
+     */
+    public static String getPath(String uri) {
+        try {
+            return new URI(uri).getPath();
+        } catch (URISyntaxException e) {
+            // unexpected, URI is pretty forgiving
+            throw new RuntimeException(e);
+        }
     }
 
     /**

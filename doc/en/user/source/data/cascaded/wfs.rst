@@ -29,7 +29,7 @@ To connect to an external WFS, it is necessary to load it as a new datastore.  T
    * - :guilabel:`Enabled`
      - Enables the store.  If disabled, no data from the external WFS will be served.
    * - :guilabel:`GET_CAPABILITIES_URL`
-     - URL to access the capabilities document of the remote WFS. Providing `?version=1.0.0` or `?version=1.1.0` is required for beeing able to publish GeoJSON format. See `respective Issue <https://osgeo-org.atlassian.net/browse/GEOS-10021#>`_.
+     - URL to access the capabilities document of the remote WFS. Providing `&version=1.0.0` or `&version=1.1.0` is required for beeing able to publish GeoJSON format. See `respective Issue <https://osgeo-org.atlassian.net/browse/GEOS-10021#>`_.
    * - :guilabel:`PROTOCOL`
      - When checked, connects with POST, otherwise uses GET.
    * - :guilabel:`USERNAME`

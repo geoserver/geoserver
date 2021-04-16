@@ -35,6 +35,8 @@ import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.styling.TextSymbolizer;
 import org.geotools.styling.visitor.DpiRescaleStyleVisitor;
+import org.geotools.styling.visitor.LegendRenderingSelectorStyleVisitor;
+import org.geotools.styling.visitor.RenderingSelectorStyleVisitor;
 import org.geotools.styling.visitor.RescaleStyleVisitor;
 import org.geotools.styling.visitor.UomRescaleStyleVisitor;
 import org.locationtech.jts.geom.Coordinate;
@@ -508,5 +510,19 @@ public abstract class LegendGraphicBuilder {
                 }
             }
         }
+    }
+
+    /**
+     * Checks if any <VendorOption name="renderingLegend">false</VendorOption> is present in the
+     * style removing style's elements not meant to be applied to the legend.
+     *
+     * @param style the style being used to build the legend
+     * @return the style without the element not meant to be applied to obtain the legend output
+     */
+    protected Style applyRenderingSelection(Style style) {
+        RenderingSelectorStyleVisitor renderingSelectorStyleVisitor =
+                new LegendRenderingSelectorStyleVisitor();
+        style.accept(renderingSelectorStyleVisitor);
+        return (Style) renderingSelectorStyleVisitor.getCopy();
     }
 }

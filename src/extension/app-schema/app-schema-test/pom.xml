@@ -228,8 +228,8 @@
                                 <exclude>**/XPathPredicateTest.java</exclude>
                                 <exclude>**/PagingTest.java</exclude>
                                 <exclude>**/DefaultGeometryTest.java</exclude>
-                                <exclude>**/GetFeaturesNumberMatchedTest.java</exclude>
-                                <exclude>**/GetFeatureNumberMatchedFeatureChainingTest.java</exclude>
+                                <exclude>**/GetFeatureNumberMatchedGMLTest.java</exclude>
+                                <exclude>**/GetFeatureNumberMatchedGeoJSONTest.java</exclude>
                                 <exclude>**/FeatureChainingWfsTest.java</exclude>
                                 <exclude>**/NoIdExpressionTest.java</exclude>
                                 <exclude>${test.exclude.pattern}</exclude>
@@ -259,58 +259,58 @@
                 </dependency>
             </dependencies>
         </profile>
-        <profile>
-            <!-- Default profile, exclude online tests -->
-            <id>offline</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <excludes>
-                                <exclude>**/DataReferenceWfsOracleTest.java</exclude>
-                                <exclude>**/DataReferenceWfsPostgisTest.java</exclude>
-                                <exclude>**/DataReferenceWfsOracleWithJoiningTest.java</exclude>
-                                <exclude>**/DataReferenceWfsPostgisWithJoiningTest.java</exclude>
-                                <exclude>**/WfsOnlineOracleTest.java</exclude>
-                                <exclude>**/WfsOnlinePostgisTest.java</exclude>
-                                <exclude>**/DataReferenceWmsOracleTest.java</exclude>
-                                <exclude>**/DataReferenceWmsPostgisTest.java</exclude>
-                                <exclude>**/DataReferenceWmsOracleWithJoiningTest.java</exclude>
-                                <exclude>**/DataReferenceWmsPostgisWithJoiningTest.java</exclude>
-                                <exclude>**/SortByTest.java</exclude>
-                                <exclude>**/PagingTest.java</exclude>
-                                <exclude>**/IdFunctionWfsWithJoiningTest.java</exclude>
-                                <exclude>**/XPathPredicateTest.java</exclude>
-                                <exclude>${test.exclude.pattern}</exclude>
-                                <exclude>**/GetFeaturesNumberMatchedTest.java</exclude>
-                                <exclude>**/GetFeatureNumberMatchedFeatureChainingTest.java</exclude>
-                                <exclude>**/FeatureChainingWfsTest.java</exclude>
-                                <exclude>**/NoIdExpressionTest.java</exclude>
-                            </excludes>
-                            <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts}
+    <profile>
+      <!-- Default profile, exclude online tests -->
+      <id>offline</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <testResources>
+          <testResource>
+            <directory>src/test/resources</directory>
+            <includes>
+              <include>**/*.properties</include>
+              <include>**/*.xml</include>
+              <include>**/*.xsd</include>
+              <include>**/*.sql</include>
+              <include>**/*.sld</include>
+              <include>**/*.png</include>
+              <include>**/*.json</include>
+            </includes>
+          </testResource>
+        </testResources>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <exclude>**/DataReferenceWfsOracleTest.java</exclude>
+                <exclude>**/DataReferenceWfsPostgisTest.java</exclude>
+                <exclude>**/DataReferenceWfsOracleWithJoiningTest.java</exclude>
+                <exclude>**/DataReferenceWfsPostgisWithJoiningTest.java</exclude>
+                <exclude>**/WfsOnlineOracleTest.java</exclude>
+                <exclude>**/WfsOnlinePostgisTest.java</exclude>
+                <exclude>**/DataReferenceWmsOracleTest.java</exclude>
+                <exclude>**/DataReferenceWmsPostgisTest.java</exclude>
+                <exclude>**/DataReferenceWmsOracleWithJoiningTest.java</exclude>
+                <exclude>**/DataReferenceWmsPostgisWithJoiningTest.java</exclude>
+                <exclude>**/SortByTest.java</exclude>
+                <exclude>**/PagingTest.java</exclude>
+                <exclude>**/IdFunctionWfsWithJoiningTest.java</exclude>
+                <exclude>**/XPathPredicateTest.java</exclude>
+                <exclude>${test.exclude.pattern}</exclude>
+                <exclude>**/GetFeatureNumberMatchedGMLTest.java</exclude>
+                <exclude>**/GetFeatureNumberMatchedGeoJSONTest.java</exclude>
+                <exclude>**/FeatureChainingWfsTest.java</exclude>
+                <exclude>**/NoIdExpressionTest.java</exclude>
+              </excludes>
+              <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts}
                                 -Djava.awt.headless=${java.awt.headless} -DquietTests=${quietTests}</argLine>
                         </configuration>
                     </plugin>
                 </plugins>
-                <testResources>
-                    <testResource>
-                        <directory>src/test/resources</directory>
-                        <includes>
-                            <include>**/*.properties</include>
-                            <include>**/*.xml</include>
-                            <include>**/*.xsd</include>
-                            <include>**/*.sql</include>
-                            <include>**/*.sld</include>
-                            <include>**/*.png</include>
-                            <include>**/*.json</include>
-                        </includes>
-                    </testResource>
-                </testResources>
             </build>
         </profile>
     </profiles>

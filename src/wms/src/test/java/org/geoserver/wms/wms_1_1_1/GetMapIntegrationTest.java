@@ -230,6 +230,15 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         testData.addStyle(
                 "transparencyFillWidth", "transparencyFillStyleWidth.sld", getClass(), catalog);
 
+        testData.addStyle(
+                "namedPlacesRenderingSelection",
+                "NamedPlacesRenderingSelection.sld",
+                getClass(),
+                catalog);
+
+        testData.addStyle(
+                "lakesRenderingSelection", "LakesRenderingSelection.sld", getClass(), catalog);
+
         Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, "raster");
         testData.addRasterLayer(
@@ -2291,5 +2300,71 @@ public class GetMapIntegrationTest extends WMSTestSupport {
             assertPixel(imageFill, i, 638, Color.RED);
             assertPixel(imageFill, i, 639, Color.RED);
         }
+    }
+
+    @Test
+    public void testNamedPlacesRenderingSelection() throws Exception {
+        // We have two set of rules in the style one for the map having
+        // test <VendorOption name=renderingLegend>false</VendorOption>
+        // and one for the legend having test
+        // <VendorOption name=renderingMap>false</VendorOption>
+        // the final result obtained with a legend decorator should show
+        // polygons and legend icons with same colors but icons without black border
+        Catalog catalog = getCatalog();
+        File layouts = getDataDirectory().findOrCreateDir("layouts");
+        URL layout = GetMapIntegrationTest.class.getResource("../test-layout-legend-image.xml");
+        FileUtils.copyURLToFile(layout, new File(layouts, "test-layout-legend-image.xml"));
+        LayerInfo places = catalog.getLayerByName(getLayerId(MockData.NAMED_PLACES));
+        StyleInfo placesStyle = catalog.getStyleByName("namedPlacesRenderingSelection");
+        LegendInfoImpl legend = new LegendInfoImpl();
+        legend.setFormat("image/png;charset=utf-8");
+        legend.setHeight(32);
+        legend.setWidth(32);
+        placesStyle.setLegend(legend);
+        catalog.save(placesStyle);
+        places.getStyles().add(placesStyle);
+        catalog.save(places);
+        String url =
+                "wms?LAYERS="
+                        + places.getName()
+                        + "&STYLES=namedPlacesRenderingSelection&FORMAT=image%2Fpng"
+                        + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256"
+                        + "&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010&format_options=layout:test-layout-legend-image";
+        BufferedImage image = getAsImage(url, "image/png");
+        URL urlPng = getClass().getResource("renderingSelectionNamedPlaces.png");
+        ImageAssert.assertEquals(new File(urlPng.toURI()), image, 1300);
+    }
+
+    @Test
+    public void testLakesWithRenderingSelection() throws Exception {
+        // We have two featureTypeStyle in the style one for the map having
+        // test <VendorOption name=renderingLegend>false</VendorOption>
+        // and one for the legend having test
+        // <VendorOption name=renderingMap>false</VendorOption>
+        // the final result obtained with a legend decorator should show
+        // polygon and legend icon with same color but icon without black border
+        Catalog catalog = getCatalog();
+        File layouts = getDataDirectory().findOrCreateDir("layouts");
+        URL layout = GetMapIntegrationTest.class.getResource("../test-layout-legend-image.xml");
+        FileUtils.copyURLToFile(layout, new File(layouts, "test-layout-legend-image.xml"));
+        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
+        StyleInfo lakesStyle = catalog.getStyleByName("lakesRenderingSelection");
+        LegendInfoImpl legend = new LegendInfoImpl();
+        legend.setFormat("image/png;charset=utf-8");
+        legend.setHeight(32);
+        legend.setWidth(32);
+        lakesStyle.setLegend(legend);
+        catalog.save(lakesStyle);
+        lakes.getStyles().add(lakesStyle);
+        catalog.save(lakes);
+        String url =
+                "wms?LAYERS="
+                        + lakes.getName()
+                        + "&STYLES=lakesRenderingSelection&FORMAT=image%2Fpng"
+                        + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256"
+                        + "&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010&format_options=layout:test-layout-legend-image";
+        BufferedImage image = getAsImage(url, "image/png");
+        URL urlPng = getClass().getResource("renderingSelectionLakes.png");
+        ImageAssert.assertEquals(new File(urlPng.toURI()), image, 1300);
     }
 }

@@ -46,6 +46,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
@@ -460,11 +461,21 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
     protected LayerGroupInfo createLakesPlacesLayerGroup(
             Catalog catalog, LayerGroupInfo.Mode mode, LayerInfo rootLayer) throws Exception {
-        return createLakesPlacesLayerGroup(catalog, "lakes_and_places", mode, rootLayer);
+        return createLakesPlacesLayerGroup(catalog, "lakes_and_places", mode, rootLayer, null);
     }
 
     protected LayerGroupInfo createLakesPlacesLayerGroup(
             Catalog catalog, String name, LayerGroupInfo.Mode mode, LayerInfo rootLayer)
+            throws Exception {
+        return createLakesPlacesLayerGroup(catalog, name, mode, rootLayer, null);
+    }
+
+    protected LayerGroupInfo createLakesPlacesLayerGroup(
+            Catalog catalog,
+            String name,
+            LayerGroupInfo.Mode mode,
+            LayerInfo rootLayer,
+            List<StyleInfo> styleInfos)
             throws Exception {
         LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
         LayerInfo places = catalog.getLayerByName(getLayerId(MockData.NAMED_PLACES));
@@ -480,9 +491,12 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
         group.getLayers().add(lakes);
         group.getLayers().add(places);
-        group.getStyles().add(null);
-        group.getStyles().add(null);
-
+        if (styleInfos == null) {
+            group.getStyles().add(null);
+            group.getStyles().add(null);
+        } else {
+            group.getStyles().addAll(styleInfos);
+        }
         CatalogBuilder cb = new CatalogBuilder(catalog);
         cb.calculateLayerGroupBounds(group);
 

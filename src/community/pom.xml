@@ -98,6 +98,7 @@
             <descriptor>release/ext-smart-data-loader.xml</descriptor>
             <descriptor>release/ext-cov-json.xml</descriptor>
             <descriptor>release/ext-schemaless-features.xml</descriptor>
+            <descriptor>release/ext-web-service-auth.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -268,6 +269,7 @@
         <module>cov-json</module>
         <module>smart-data-loader</module>
         <module>schemaless-features</module>
+        <module>web-service-auth</module>
       </modules>
     </profile>
     <profile>
@@ -718,6 +720,12 @@
       <id>schemaless-features</id>
       <modules>
         <module>schemaless-features</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>web-service-auth</id>
+      <modules>
+        <module>web-service-auth</module>
       </modules>
     </profile>
   </profiles>

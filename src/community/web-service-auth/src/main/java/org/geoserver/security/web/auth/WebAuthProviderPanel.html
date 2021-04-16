@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:wicket="http://wicket.apache.org/">
+<body>
+    <wicket:extend>
+        <fieldset>
+        <legend><span><wicket:message key="connectionSettingsLegend">Web Service Setting</wicket:message></span></legend>
+        <ul>
+        
+            <li><label for="connectionURL"><wicket:message key="connectionURL"></wicket:message></label> <input type="text"
+                id="connectionURL" wicket:id="connectionURL" class="text" /></li>
+            <li><label for="connectionTimeOut"><wicket:message
+                        key="connectionTimeOut"></wicket:message></label> <input type="text"
+                id="connectionTimeOut" wicket:id="connectionTimeOut" class="text" />
+            </li>
+            <li><label for="readTimeoutOut"><wicket:message
+                        key="readTimeoutOut"></wicket:message></label> <input type="text"
+                id="readTimeoutOut" wicket:id="readTimeoutOut" class="text" /></li>
+            <li class="choiceItem">
+                 <input type="checkbox" id="useHeader" wicket:id="useHeader" />
+                 <label for="useHeader"><span><wicket:message key="useHeader"></wicket:message></span></label>
+            </li>
+            <li class="choiceItem">
+                <input type="checkbox" id="allowHTTPConnection" wicket:id="allowHTTPConnection" />
+                <label for="allowHTTPConnection"><span><wicket:message key="allowHTTPConnection"></wicket:message></span></label>
+            </li>
+        </ul>
+        </fieldset>
+        <fieldset>
+        <legend><span><wicket:message key="authorizationSettingsLegend">Authorization</wicket:message></span></legend>
+        
+<!--         <li id="authorizationOption" wicket:id="authorizationOption"></li> -->
+<!--         </ul> -->
+        <div id="authorizationOption" wicket:id="authorizationOption">
+        <ul class="choiceList">
+          <li>
+            <input id="roleService" wicket:id="roleService" type="radio"></input>
+            <label for="roleService">Use Existing Role Service</label>
+          </li>          
+          <li>
+            <input id="webResponse" wicket:id="webResponse" type="radio"></input>
+            <label for="webResponse">Read Roles from Web Response</label>
+          </li>          
+        </ul>
+      </div>
+        </fieldset>
+        <ul  id="webAuthorizationContainer" wicket:id="webAuthorizationContainer">
+        <li>
+                 <label for="roleRegex"><wicket:message key="roleRegex"></wicket:message></label>
+                 <input type="text" id="roleRegex" wicket:id="roleRegex" class="text" />
+        </li>
+        </ul>
+        <ul  id="roleAuthorizationContainer" wicket:id="roleAuthorizationContainer">
+        <li>
+                <label for="roleServiceName"><wicket:message key="roleService"></wicket:message></label>
+                <select id="roleServiceName" wicket:id="roleServiceName"></select>
+        </li>
+        </ul>
+                
+    </wicket:extend>
+</body>
+</html>

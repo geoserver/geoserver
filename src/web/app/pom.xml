@@ -1795,5 +1795,15 @@
         </dependency>
       </dependencies>
     </profile>
+    <profile>
+      <id>web-service-auth</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-web-service-auth</artifactId>
+          <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 </project>

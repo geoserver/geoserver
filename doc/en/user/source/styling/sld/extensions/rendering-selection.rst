@@ -3,16 +3,21 @@
 Rendering Selection
 ====================
 
-GeoServer provides a ``VendorOptions`` to define whether a particular element ``Rule``, ``FeatureTypeStyle`` or ``Symbolizer`` should be applied to a ``getLegendGraphic`` output or to a ``getMap`` output.
-The option is named ``inclusion`` and can take the following values: ``normal`` if no selection will apply, ``mapOnly`` if the SLD element should be used only during maps rendering and ``legendOnly`` if the element will be applied only when rendering legends eg.:
+GeoServer provides a ``VendorOption`` to define whether a particular element ``Rule``, ``FeatureTypeStyle`` or ``Symbolizer`` should be applied to a ``getLegendGraphic`` output or to a ``getMap`` output.
 
-* - <VendorOption name="inclusion">legendOnly</VendorOption>
+This allows to generate legends from the SLD that can be better looking and more expressive, without the underlying complexity of the actual rendered style. Other systems have a dedicated language to build legends instead. The advantage of using the same language is that dynamic behaviors, like rule removal based on the area being rendered, can be easily retained.
 
-* - <VendorOption name="inclusion">mapOnly</VendorOption>
+The vendor option is named ``inclusion``, e.g.:
 
-If the value is set to ``legendOnly`` the element will be skipped when applying the style to the data to render map.
-If the value is set to ``mapOnly`` the element will be skipped when applying the style to the data to render legend.
-If the value is set to ``normal`` will have the same effect then omitting the VendorOption: the SLD element will be used for both map and legend.
+* <VendorOption name="inclusion">legendOnly</VendorOption>
+
+* <VendorOption name="inclusion">mapOnly</VendorOption>
+
+Valid values are:
+
+* ``legendOnly`` the element will be skipped when applying the style to the data to render map.
+* ``mapOnly`` the element will be skipped when applying the style to the data to render legend.
+* ``normal`` will have the same effect then omitting the VendorOption: the SLD element will be used for both map and legend (same effect as not specifying the vendor option).
 
 
 Take as an example the following style: for each Rule two symbolizers are defined one that will be skipped when rendering the legend and one that will be skipped when rendering the map and loads the legend icon from an external svg file. 

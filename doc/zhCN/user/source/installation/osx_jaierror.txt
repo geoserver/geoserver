@@ -1,0 +1,15 @@
+.. warning:: 在启动过程中遇到以下错误，则默认的Mac Java安装中可能包含一些无效的JAI jar：
+
+    .. code-block:: bash
+
+        java.lang.NoClassDefFoundError: Could not initialize class javax.media.jai.JAI
+    
+    要解决此错误，请找到您的Java扩展文件夹 (通常为 ``/System/Library/Java/Extensions`` 和/或 ``~/Library/Java/Extensions``), 然后删除以下jar：
+
+    .. code-block:: bash
+
+        jai_codec-1.1.3.jar
+        jai_core-1.1.3.jar
+        jai_imageio-1.1.jar
+
+    如果您已从旧版本升级了操作系统，则可能无权删除这些jar。在这种情况下，您首先需要 `禁用系统完整性保护 <https://developer.apple.com/library/content/documentation/Security/Conceptual/System_Integrity_Protection_Guide/ConfiguringSystemIntegrityProtection/ConfiguringSystemIntegrityProtection.html#//apple_ref/doc/uid/TP40016462-CH5-SW1>`_。

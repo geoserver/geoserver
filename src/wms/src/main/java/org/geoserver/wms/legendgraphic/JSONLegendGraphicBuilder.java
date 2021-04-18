@@ -269,6 +269,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             FeatureType layer = legend.getFeatureType();
 
             Style gt2Style = legend.getStyle();
+            gt2Style = applyRenderingSelection(gt2Style);
             if (gt2Style == null) {
                 throw new NullPointerException("request.getStyle()");
             }

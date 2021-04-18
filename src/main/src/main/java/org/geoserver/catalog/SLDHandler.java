@@ -60,7 +60,7 @@ public class SLDHandler extends StyleHandler {
      * number of bytes to "look ahead" when pre parsing xml document. TODO: make this configurable,
      * and possibley link it to the same value used by the ows dispatcher.
      */
-    static int XML_LOOKAHEAD = 8192;
+    static int XML_LOOKAHEAD = 8500;
 
     public static final String FORMAT = "sld";
 

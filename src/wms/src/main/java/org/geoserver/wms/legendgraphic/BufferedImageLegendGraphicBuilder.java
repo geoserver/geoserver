@@ -135,6 +135,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                 throw new NullPointerException("request.getStyle()");
             }
 
+            gt2Style = applyRenderingSelection(gt2Style);
             // get rule corresponding to the layer index
             // normalize to null for NO RULE
             String ruleName = legend.getRule(); // was null

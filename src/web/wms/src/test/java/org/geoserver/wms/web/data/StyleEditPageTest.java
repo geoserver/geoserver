@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -68,7 +69,12 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wms.web.data.publish.WMSLayerConfigTest;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyleBuilder;
+import org.geotools.styling.visitor.DuplicatingStyleVisitor;
 import org.geotools.util.URLs;
+import org.geotools.xml.styling.SLDTransformer;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -982,6 +988,37 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         // check for correct embedding in page
         tester.assertComponent(
                 "styleForm:style-component-mock", StyleEditPageTest.MockStyleComponent.class);
+    }
+
+    @Test
+    public void testInvalidMark() throws Exception {
+        // GEOS-10013 tests that with a big style there is no error message MarkInvalid throw by the
+        // SLDHandler
+        // method getVersionAndReader
+
+        // generate a long style
+        StyleBuilder styleBuilder = new StyleBuilder();
+        DuplicatingStyleVisitor duplicatingStyleVisitor = new DuplicatingStyleVisitor();
+        buildingsStyle.getStyle().accept(duplicatingStyleVisitor);
+        Style style = (Style) duplicatingStyleVisitor.getCopy();
+        FeatureTypeStyle typeStyle = style.featureTypeStyles().get(0);
+        for (int i = 0; i < 30; i++) {
+            FeatureTypeStyle fts =
+                    styleBuilder.createFeatureTypeStyle(
+                            typeStyle.getName() + i, typeStyle.rules().get(0));
+            style.featureTypeStyles().add(fts);
+        }
+        SLDTransformer transformer = new SLDTransformer();
+        StringWriter writer = new StringWriter();
+        transformer.transform(style, writer);
+        String sld = writer.toString();
+
+        // test that the Mark invalid error message not appears doesn't occur
+        tester.newFormTester("styleForm")
+                .setValue("styleEditor:editorContainer:editorParent:editor", sld);
+
+        tester.executeAjaxEvent("validate", "click");
+        tester.assertNoErrorMessage();
     }
 
     public static class MockStyleComponentInfo extends StyleComponentInfo {

@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <assembly>
   <id>ogr-wfs-plugin</id>
   <formats>
@@ -7,25 +9,25 @@
   <fileSets>
     <fileSet>
       <directory>release/target/dependency</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
         <include>gs-ogr-wfs-*.jar</include>
         <include>gs-ogr-core-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>
-       <directory>release/extensions/ogr</directory>
-       <outputDirectory></outputDirectory>
-       <includes>
-         <include>ogr-README.txt</include>
-       </includes>
+      <directory>release/extensions/ogr</directory>
+      <outputDirectory/>
+      <includes>
+        <include>ogr-README.txt</include>
+      </includes>
     </fileSet>
     <fileSet>
       <directory>release</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
-         <include>GPL.md</include>
-         <include>NOTICE.md</include>
+        <include>GPL.md</include>
+        <include>NOTICE.md</include>
       </includes>
     </fileSet>
   </fileSets>

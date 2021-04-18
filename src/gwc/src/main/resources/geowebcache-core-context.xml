@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <beans>
-  <description>
-   Bean configuration file for the gwc-core module
-  </description>
+  <description>Bean configuration file for the gwc-core
+</description>
 
   <bean id="geoWebCacheExtensions" class="org.geowebcache.GeoWebCacheExtensions"/>
-  
+
   <bean id="geoWebCacheEnvironment" class="org.geowebcache.GeoWebCacheEnvironment" depends-on="geoWebCacheExtensions"/>
-  
-  <bean id="gwcAppCtx" class="org.geowebcache.util.ApplicationContextProvider" />
-  
+
+  <bean id="gwcAppCtx" class="org.geowebcache.util.ApplicationContextProvider"/>
+
   <bean id="gwcXmlConfigResourceProvider" class="org.geoserver.gwc.config.GeoserverXMLResourceProvider">
-     <constructor-arg value="geowebcache.xml" />
-     <constructor-arg ref="resourceStore" />
+    <constructor-arg value="geowebcache.xml"/>
+    <constructor-arg ref="resourceStore"/>
   </bean>
-  
+
   <!-- The location of a static configuration file for GeoWebCache. 
        By default this lives in WEB-INF/classes/geowebcache.xml -->
   <bean id="gwcXmlConfig" class="org.geowebcache.config.XMLConfiguration">
-    <constructor-arg ref="gwcAppCtx" />
-    <constructor-arg ref="gwcXmlConfigResourceProvider" />
+    <constructor-arg ref="gwcAppCtx"/>
+    <constructor-arg ref="gwcXmlConfigResourceProvider"/>
     <property name="template" value="/geowebcache_empty.xml">
       <description>Create an empty geoebcache.xml in data_dir/gwc as template</description>
     </property>
   </bean>
-  
+
   <!-- If you like to automatically configure GWC from a WMS Getcapabilities document,
        change the values below. The last constructor-arg lets you specify parameters 
        that are appended to every WMS request to the backed, for example: 
@@ -56,40 +56,38 @@
       <description>Whether to allow cached=false to specificed for certain requests</description>
     </constructor-arg> 
   </bean-->
-  
+
   <!-- For each configuration bean above, add them below to activate -->
   <bean id="gwcTLDispatcher" class="org.geowebcache.layer.TileLayerDispatcher" depends-on="gwcCatalogConfiguration,geoWebCacheExtensions">
-    <description>
-      TileLayerDispatcher serves up TileLayers from the available Configurations in the application context
-    </description>
+    <description>TileLayerDispatcher serves up TileLayers from the available Configurations in the application
+</description>
     <constructor-arg ref="gwcGridSetBroker"/>
   </bean>
 
   <bean id="gwcBlobStoreAggregator" class="org.geowebcache.storage.BlobStoreAggregator">
-    <description>
-      BlobStoreAggregator serves up BlobStoreInfos from the available Configurations in the application context
-    </description>
+    <description>BlobStoreAggregator serves up BlobStoreInfos from the available Configurations in the application
+</description>
   </bean>
-  
+
   <bean id="gwcDefaultStorageFinder" class="org.geowebcache.storage.DefaultStorageFinder">
-  	<constructor-arg ref="gwcAppCtx" />
+    <constructor-arg ref="gwcAppCtx"/>
   </bean>
 
   <bean id="gwcBlobStore" class="org.geowebcache.storage.CompositeBlobStore" destroy-method="destroy">
     <constructor-arg ref="gwcTLDispatcher"/>
-    <constructor-arg ref="gwcDefaultStorageFinder" />
+    <constructor-arg ref="gwcDefaultStorageFinder"/>
     <constructor-arg ref="gwcBlobStoreAggregator"/>
     <constructor-arg ref="gwcXmlConfig"/>
   </bean>
-  
+
   <!-- Static definition of where to put the blobstore. 
        Note that the directory MUST EXIST when GWC is started. -->
   <!-- bean id="gwcBlobStore" class="org.geowebcache.storage.blobstore.file.FileBlobStore" destroy-method="destroy">
     <constructor-arg value="/tmp/gwc_blobstore" />
   </bean -->
-  
+
   <bean id="gwcStorageBroker" class="org.geowebcache.storage.DefaultStorageBroker" destroy-method="destroy">
-    <constructor-arg ref="gwcConfigBlobStore" />
+    <constructor-arg ref="gwcConfigBlobStore"/>
     <constructor-arg>
       <bean class="org.geowebcache.storage.TransientCache">
         <constructor-arg index="0" value="100"/>
@@ -98,14 +96,13 @@
       </bean>
     </constructor-arg>
   </bean>
-  
-  
+
   <bean id="gwcGridSetBroker" class="org.geowebcache.grid.GridSetBroker">
     <constructor-arg>
       <list>
         <bean id="defaultGridsets" class="org.geowebcache.config.DefaultGridsets">
           <!-- Should we used EPSG:900913 instead of EPSG:3857 ? -->
-          <constructor-arg type="boolean" value="TRUE" />
+          <constructor-arg type="boolean" value="TRUE"/>
           <!--
             Should the default grids be named EPSG:4326 and EPSG:900913 (TRUE),
             or (FALSE) use the new names similar to what WMTS suggests,
@@ -114,15 +111,15 @@
             If you say FALSE here, you have to manually
             rename the directories and entries in the H2 database.
            -->
-          <constructor-arg type="boolean" value="TRUE" />
+          <constructor-arg type="boolean" value="TRUE"/>
         </bean>
       </list>
     </constructor-arg>
   </bean>
-  
+
   <bean id="gwcRuntimeStats" class="org.geowebcache.stats.RuntimeStats" destroy-method="destroy">
     <!-- The poll interval, the number of seconds until counters are aggregated -->
-    <constructor-arg type="int" value="3" />
+    <constructor-arg type="int" value="3"/>
     <!-- The intervals (in seconds) for which aggregates are reported.
          Each interval must be a multiple of the poll interval above and
          listed in ascending order. For example, for a maximum interval 
@@ -145,7 +142,7 @@
       </list>
     </constructor-arg>
   </bean>
-  
+
   <!-- controller for handling all incoming requests -->
   <bean id="geowebcacheDispatcher" class="org.geowebcache.GeoWebCacheDispatcher" destroy-method="destroy">
     <constructor-arg ref="gwcTLDispatcher"/>
@@ -158,12 +155,13 @@
     <property name="securityDispatcher" ref="gwcSecurityDispatcher"/>
     <property name="servletPrefix" value="gwc"/>
   </bean>
-	
+
   <!-- Thread pool for seeding -->
-  <bean id="gwcSeederThreadPoolExec" 
-    class="org.geoserver.gwc.seed.SeederThreadLocalTransferExecutor">
-    <constructor-arg value="16"/><!-- Size of core pool -->
-    <constructor-arg value="32"/><!-- Maximum size of pool -->
+  <bean id="gwcSeederThreadPoolExec" class="org.geoserver.gwc.seed.SeederThreadLocalTransferExecutor">
+    <constructor-arg value="16"/>
+    <!-- Size of core pool -->
+    <constructor-arg value="32"/>
+    <!-- Maximum size of pool -->
   </bean>
 
   <!-- Breeder (the one that seeds) -->
@@ -173,51 +171,52 @@
     <property name="storageBroker" ref="gwcStorageBroker"/>
   </bean>
 
-  <bean id="gwcProxyDispatcher"
-	class="org.geowebcache.proxy.ProxyDispatcher"/>
-  
+  <bean id="gwcProxyDispatcher" class="org.geowebcache.proxy.ProxyDispatcher"/>
+
   <!-- Lock providers -->
   <bean id="noLock" class="org.geowebcache.locks.NoOpLockProvider"/>
 
-  <bean id="gwcURLMangler" class="org.geoserver.gwc.ResponseUtilsURLMangler" />
+  <bean id="gwcURLMangler" class="org.geoserver.gwc.ResponseUtilsURLMangler"/>
 
-  <bean id="gwcSecurityDispatcher" class="org.geowebcache.filter.security.SecurityDispatcher" />
+  <bean id="gwcSecurityDispatcher" class="org.geowebcache.filter.security.SecurityDispatcher"/>
 
   <bean id="memoryLock" class="org.geowebcache.locks.MemoryLockProvider"/>
-  
+
   <bean id="nioLock" class="org.geowebcache.locks.NIOLockProvider">
     <constructor-arg ref="gwcDefaultStorageFinder"/>
   </bean>
-  
+
   <bean id="globalLock" class="org.geoserver.gwc.GeoServerLockProvider">
-      <property name="delegate" ref="lockProvider"/>
+    <property name="delegate" ref="lockProvider"/>
   </bean>
-  
+
   <!-- The tool performing the automatic migration between metastore and fs hashes -->
   <bean id="metastoreRemover" class="org.geowebcache.storage.MetastoreRemover">
     <constructor-arg ref="gwcDefaultStorageFinder"/>
   </bean>
-  
+
   <bean id="cacheConfiguration" class="org.geowebcache.storage.blobstore.memory.CacheConfiguration">
-    <property name="hardMemoryLimit" value="64"/> <!-- 64 Mb -->
-    <property name="policy" value="EXPIRE_AFTER_ACCESS"/> <!-- 64 Mb -->
+    <property name="hardMemoryLimit" value="64"/>
+    <!-- 64 Mb -->
+    <property name="policy" value="EXPIRE_AFTER_ACCESS"/>
+    <!-- 64 Mb -->
   </bean>
-  
-   <bean id="guavaCacheProvider" class="org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider">
-     <constructor-arg ref="cacheConfiguration"/>
+
+  <bean id="guavaCacheProvider" class="org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider">
+    <constructor-arg ref="cacheConfiguration"/>
   </bean>
-  
-    <bean id="gwcMemoryBlobStore" class="org.geowebcache.storage.blobstore.memory.MemoryBlobStore" destroy-method="destroy">
-    <property name="store" ref="gwcBlobStore" />
-    <property name="cacheProvider" ref="guavaCacheProvider" />
+
+  <bean id="gwcMemoryBlobStore" class="org.geowebcache.storage.blobstore.memory.MemoryBlobStore" destroy-method="destroy">
+    <property name="store" ref="gwcBlobStore"/>
+    <property name="cacheProvider" ref="guavaCacheProvider"/>
   </bean>
-  
- <bean id="gwcNullBlobStore" class="org.geowebcache.storage.blobstore.memory.NullBlobStore" destroy-method="destroy"/>
- 
+
+  <bean id="gwcNullBlobStore" class="org.geowebcache.storage.blobstore.memory.NullBlobStore" destroy-method="destroy"/>
+
   <bean id="gwcConfigBlobStore" class="org.geoserver.gwc.ConfigurableBlobStore" destroy-method="destroy">
-      <constructor-arg ref="gwcBlobStore" />
-      <constructor-arg ref="gwcMemoryBlobStore" />
-      <constructor-arg ref="gwcNullBlobStore" />
+    <constructor-arg ref="gwcBlobStore"/>
+    <constructor-arg ref="gwcMemoryBlobStore"/>
+    <constructor-arg ref="gwcNullBlobStore"/>
   </bean>
 
 </beans>

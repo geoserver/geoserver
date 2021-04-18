@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <assembly>
   <id>geopkg-plugin</id>
   <formats>
@@ -7,8 +9,8 @@
   <fileSets>
     <fileSet>
       <directory>release/target/dependency</directory>
-      <outputDirectory></outputDirectory>
-      <includes>	
+      <outputDirectory/>
+      <includes>
         <include>gt-mbtiles-*.jar</include>
         <include>gs-mbtiles-*.jar</include>
         <include>jackson-databind*</include>

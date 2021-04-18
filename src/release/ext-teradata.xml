@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <assembly>
   <id>teradata-plugin</id>
   <formats>
@@ -7,24 +9,24 @@
   <fileSets>
     <fileSet>
       <directory>release/target/dependency</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
         <include>gt-jdbc-teradata-*</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>release/extensions/teradata</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
         <include>*</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>release</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
-         <include>LGPL.md</include>
-         <include>GEOTOOLS_NOTICE.txt</include>
+        <include>LGPL.md</include>
+        <include>GEOTOOLS_NOTICE.txt</include>
       </includes>
     </fileSet>
   </fileSets>

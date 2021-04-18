@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <!-- 
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
 
   <bean id="dataDirectory" class="org.geoserver.config.GeoServerDataDirectory">
@@ -15,7 +15,7 @@
       </bean>
     </constructor-arg>
   </bean>
-  
+
   <bean id="myPropertyConfigurer" class="org.geoserver.config.GeoServerPropertyConfigurer">
     <constructor-arg ref="dataDirectory"/>
     <property name="location" value="file:foo.properties"/>
@@ -26,10 +26,10 @@
       </props>
     </property>
   </bean>
-  
+
   <bean id="myBean" class="org.geoserver.config.GeoServerPropertyConfigurerTest$Foo">
     <property name="bar" value="${prop1}"/>
     <property name="baz" value="${prop2}"/>
   </bean>
-  
+
 </beans>

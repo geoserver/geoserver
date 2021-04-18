@@ -1,249 +1,226 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!-- 
  Copyright (C) 2015 - 2016 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
-        http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/mvc
-        http://www.springframework.org/schema/mvc/spring-mvc.xsd
-        http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd">
-        
-    <context:component-scan base-package="org.geoserver.system.status"/>
-        
-    <bean class="org.geoserver.platform.ModuleStatusImpl">
-        <constructor-arg index="0" value="gs-main"/>
-        <constructor-arg index="1" value="GeoServer Main"/>
-    </bean>
-    <bean class="org.geoserver.platform.RenderingEngineStatus"/>
-    <bean class="org.geoserver.platform.SystemPropertyStatus"/>
-    <bean class="org.geoserver.platform.SystemEnvironmentStatus"/>
-    
-    <!--  lock providers -->
-    <bean id="nullLockProvider" class="org.geoserver.platform.resource.NullLockProvider"/>
-    <bean id="memoryLockProvider" class="org.geoserver.platform.resource.MemoryLockProvider"/>
-    <bean id="fileLockProvider" class="org.geoserver.platform.resource.FileLockProvider"/>
-    <bean id="lockProvider" class="org.geoserver.platform.resource.GlobalLockProvider">
-        <property name="delegate" ref="nullLockProvider"/>
-    </bean>
-    <bean id="lockProviderInitializer" class="org.geoserver.config.LockProviderInitializer"/>
-    
-    <!-- used by alternative resource stores -->
-    <bean id="resourceNotificationDispatcher" class="org.geoserver.platform.resource.SimpleResourceNotificationDispatcher"/>
-    
-	<!-- resources -->
-    <bean id="dataDirectoryResourceStore" class="org.geoserver.platform.resource.DataDirectoryResourceStore">
-        <property name="lockProvider" ref="lockProvider"/>
-    </bean>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="         http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans.xsd         http://www.springframework.org/schema/mvc         http://www.springframework.org/schema/mvc/spring-mvc.xsd         http://www.springframework.org/schema/context         http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <bean id="resourceStore" class="org.geoserver.platform.resource.ResourceStoreFactory" />
+  <context:component-scan base-package="org.geoserver.system.status"/>
 
-    <bean id="resourceLoader" class="org.geoserver.platform.GeoServerResourceLoader">
-	    <constructor-arg ref="resourceStore"/>
-    </bean>
-    
-    <bean id="dataDirectory" class="org.geoserver.config.GeoServerDataDirectory">
-       <constructor-arg ref="resourceLoader"/>
-    </bean>
-    
-    <bean id="manifestLoader" class="org.geoserver.ManifestLoader" lazy-init="false">
-       <constructor-arg ref="resourceLoader"/>
-    </bean>
-    
-    <!-- extensions -->
-    <bean id="extensions" class="org.geoserver.platform.GeoServerExtensions"/>
+  <bean class="org.geoserver.platform.ModuleStatusImpl">
+    <constructor-arg index="0" value="gs-main"/>
+    <constructor-arg index="1" value="GeoServer Main"/>
+  </bean>
+  <bean class="org.geoserver.platform.RenderingEngineStatus"/>
+  <bean class="org.geoserver.platform.SystemPropertyStatus"/>
+  <bean class="org.geoserver.platform.SystemEnvironmentStatus"/>
 
-    <!-- environments -->
-    <bean id="environments" class="org.geoserver.platform.GeoServerEnvironment" depends-on="extensions"/>
-    
-    <!-- the shared filter factory -->
-    <bean id="filterFactory" class="org.geotools.filter.FilterFactoryImpl"/>
-    
-    <!-- geotools factory iterator provider, commented 
+  <!--  lock providers -->
+  <bean id="nullLockProvider" class="org.geoserver.platform.resource.NullLockProvider"/>
+  <bean id="memoryLockProvider" class="org.geoserver.platform.resource.MemoryLockProvider"/>
+  <bean id="fileLockProvider" class="org.geoserver.platform.resource.FileLockProvider"/>
+  <bean id="lockProvider" class="org.geoserver.platform.resource.GlobalLockProvider">
+    <property name="delegate" ref="nullLockProvider"/>
+  </bean>
+  <bean id="lockProviderInitializer" class="org.geoserver.config.LockProviderInitializer"/>
+
+  <!-- used by alternative resource stores -->
+  <bean id="resourceNotificationDispatcher" class="org.geoserver.platform.resource.SimpleResourceNotificationDispatcher"/>
+
+  <!-- resources -->
+  <bean id="dataDirectoryResourceStore" class="org.geoserver.platform.resource.DataDirectoryResourceStore">
+    <property name="lockProvider" ref="lockProvider"/>
+  </bean>
+
+  <bean id="resourceStore" class="org.geoserver.platform.resource.ResourceStoreFactory"/>
+
+  <bean id="resourceLoader" class="org.geoserver.platform.GeoServerResourceLoader">
+    <constructor-arg ref="resourceStore"/>
+  </bean>
+
+  <bean id="dataDirectory" class="org.geoserver.config.GeoServerDataDirectory">
+    <constructor-arg ref="resourceLoader"/>
+  </bean>
+
+  <bean id="manifestLoader" class="org.geoserver.ManifestLoader" lazy-init="false">
+    <constructor-arg ref="resourceLoader"/>
+  </bean>
+
+  <!-- extensions -->
+  <bean id="extensions" class="org.geoserver.platform.GeoServerExtensions"/>
+
+  <!-- environments -->
+  <bean id="environments" class="org.geoserver.platform.GeoServerEnvironment" depends-on="extensions"/>
+
+  <!-- the shared filter factory -->
+  <bean id="filterFactory" class="org.geotools.filter.FilterFactoryImpl"/>
+
+  <!-- geotools factory iterator provider, commented 
     <bean id="factoryIteratorProvider" depends-on="extensions" 
        class="org.geoserver.platform.GeoServerFactoryIteratorProvider"/>
      -->
-       
-    <!-- 
+
+  <!-- 
         core modules
      -->
-     
-    <!-- configuration module -->
-        <!-- note: we use depends to ensure that all datastore plugins are 
+
+  <!-- configuration module -->
+  <!-- note: we use depends to ensure that all datastore plugins are 
              loaded from the spring container before processing hte catalog -->
-     
-    <bean id="rawCatalog" class="org.geoserver.catalog.impl.CatalogImpl" depends-on="configurationLock">
-         <property name="resourceLoader" ref="resourceLoader"/>  
-    </bean>
-    <bean id="secureCatalog" class="org.geoserver.security.SecureCatalogImpl" depends-on="accessRulesDao,extensions">
-        <constructor-arg ref="rawCatalog" /> 
-    </bean>
-    <bean id="advertisedCatalog" class="org.geoserver.catalog.impl.AdvertisedCatalog">
-        <constructor-arg ref="secureCatalog" />
-        <property name="layerGroupVisibilityPolicy">
-        	<bean id="org.geoserver.catalog.LayerGroupVisibilityPolicy.HIDE_NEVER" 
-        		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
-        </property>
-    </bean>    
-    <bean id="localWorkspaceCatalog" class="org.geoserver.catalog.impl.LocalWorkspaceCatalog">
-        <constructor-arg ref="advertisedCatalog" />
-    </bean>
-    <bean id="disabledResourceFilter" class="org.geoserver.security.DisabledResourceFilter"/>
-    <bean id="disabledServiceResourceFilter" class="org.geoserver.security.DisabledServiceResourceFilter"/>
-    
-    <!-- Switch this when you want to enable the secure catalog by default -->
-    <!--alias name="secureCatalog" alias="catalog"/-->
-    <alias name="localWorkspaceCatalog" alias="catalog"/> 
-    
-    <bean id="geoServer" class="org.geoserver.config.impl.GeoServerImpl">
-      <property name="catalog" ref="catalog"/>
-    </bean>
-    <bean id="geoServerLoader" class="org.geoserver.config.GeoServerLoaderProxy">
-      <constructor-arg ref="resourceLoader"/>
-    </bean>
-    
-    <!-- 
+
+  <bean id="rawCatalog" class="org.geoserver.catalog.impl.CatalogImpl" depends-on="configurationLock">
+    <property name="resourceLoader" ref="resourceLoader"/>
+  </bean>
+  <bean id="secureCatalog" class="org.geoserver.security.SecureCatalogImpl" depends-on="accessRulesDao,extensions">
+    <constructor-arg ref="rawCatalog"/>
+  </bean>
+  <bean id="advertisedCatalog" class="org.geoserver.catalog.impl.AdvertisedCatalog">
+    <constructor-arg ref="secureCatalog"/>
+    <property name="layerGroupVisibilityPolicy">
+      <bean id="org.geoserver.catalog.LayerGroupVisibilityPolicy.HIDE_NEVER" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean"/>
+    </property>
+  </bean>
+  <bean id="localWorkspaceCatalog" class="org.geoserver.catalog.impl.LocalWorkspaceCatalog">
+    <constructor-arg ref="advertisedCatalog"/>
+  </bean>
+  <bean id="disabledResourceFilter" class="org.geoserver.security.DisabledResourceFilter"/>
+  <bean id="disabledServiceResourceFilter" class="org.geoserver.security.DisabledServiceResourceFilter"/>
+
+  <!-- Switch this when you want to enable the secure catalog by default -->
+  <!--alias name="secureCatalog" alias="catalog"/-->
+  <alias name="localWorkspaceCatalog" alias="catalog"/>
+
+  <bean id="geoServer" class="org.geoserver.config.impl.GeoServerImpl">
+    <property name="catalog" ref="catalog"/>
+  </bean>
+  <bean id="geoServerLoader" class="org.geoserver.config.GeoServerLoaderProxy">
+    <constructor-arg ref="resourceLoader"/>
+  </bean>
+
+  <!-- 
         service strategies 
     -->
-    <bean id="serviceStrategyFactory" 
-        class="org.vfny.geoserver.servlets.ServiceStrategyFactory">
-        <constructor-arg ref="geoServer"/>
-    </bean>
-    
-    <bean id="speedServiceStrategy" name="SPEED"
-        class="org.vfny.geoserver.servlets.SpeedStrategy"/>
-        
-    <bean id="fileServiceStrategy" name="FILE"
-        class="org.vfny.geoserver.servlets.FileStrategy"/>
-        
-    <bean id="bufferServiceStrategy" name="BUFFER"
-        class="org.vfny.geoserver.servlets.BufferStrategy"/>
-        
-    <bean id="partialBufferServiceStrategy2" name="PARTIAL-BUFFER2"
-        class="org.vfny.geoserver.servlets.PartialBufferStrategy2"/>
-        
-    <!-- 
+  <bean id="serviceStrategyFactory" class="org.vfny.geoserver.servlets.ServiceStrategyFactory">
+    <constructor-arg ref="geoServer"/>
+  </bean>
+
+  <bean id="speedServiceStrategy" name="SPEED" class="org.vfny.geoserver.servlets.SpeedStrategy"/>
+
+  <bean id="fileServiceStrategy" name="FILE" class="org.vfny.geoserver.servlets.FileStrategy"/>
+
+  <bean id="bufferServiceStrategy" name="BUFFER" class="org.vfny.geoserver.servlets.BufferStrategy"/>
+
+  <bean id="partialBufferServiceStrategy2" name="PARTIAL-BUFFER2" class="org.vfny.geoserver.servlets.PartialBufferStrategy2"/>
+
+  <!-- 
         custom property editors
      -->
-    <bean id="customEditorConfigurer" 
-     class="org.springframework.beans.factory.config.CustomEditorConfigurer">
-        <property name="customEditors">
-          <map>
-              <entry key="org.geotools.util.Version" value="org.geoserver.platform.util.VersionPropertyEditor"/>
-          </map>
-        </property>
-    </bean>
-        
-        
-    <!--  dispatcher -->
-    <bean id="dispatcher" class="org.geoserver.ows.Dispatcher"/>
+  <bean id="customEditorConfigurer" class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+    <property name="customEditors">
+      <map>
+        <entry key="org.geotools.util.Version" value="org.geoserver.platform.util.VersionPropertyEditor"/>
+      </map>
+    </property>
+  </bean>
 
-    <!-- file publisher, allows parts of the data dir to be published as static files (used
+  <!--  dispatcher -->
+  <bean id="dispatcher" class="org.geoserver.ows.Dispatcher"/>
+
+  <!-- file publisher, allows parts of the data dir to be published as static files (used
          to publish www and by wcs 1.1.1 ) -->
-    <bean id="filePublisher" class="org.geoserver.ows.FilePublisher">
-      <constructor-arg ref="resourceLoader" />
-    </bean>
-    
-    <!-- style publisher, used to publish the global styles folder currently in workspaced, www and by wcs 1.1.1 -->
-    <bean id="stylePublisher" class="org.geoserver.ows.StylePublisher">
-      <constructor-arg ref="catalog" />
-    </bean>
-        
-    <!-- classpath publisher, allows resources in the classpath to be published as static files -->
-    <bean id="classpathPublisher" class="org.geoserver.ows.ClasspathPublisher"/>
-    
+  <bean id="filePublisher" class="org.geoserver.ows.FilePublisher">
+    <constructor-arg ref="resourceLoader"/>
+  </bean>
+
+  <!-- style publisher, used to publish the global styles folder currently in workspaced, www and by wcs 1.1.1 -->
+  <bean id="stylePublisher" class="org.geoserver.ows.StylePublisher">
+    <constructor-arg ref="catalog"/>
+  </bean>
+
+  <!-- classpath publisher, allows resources in the classpath to be published as static files -->
+  <bean id="classpathPublisher" class="org.geoserver.ows.ClasspathPublisher"/>
+
   <!-- jai initializer -->
   <bean id="jaiInitializer" class="org.geoserver.jai.JAIInitializer"/>
-  
+
   <!-- coverage access initializer -->
-  <bean id="coverageAccessInitializer" class="org.geoserver.coverage.CoverageAccessInitializer">
-  </bean>
-  
+  <bean id="coverageAccessInitializer" class="org.geoserver.coverage.CoverageAccessInitializer"></bean>
+
   <!-- logging initializer -->
   <bean id="loggingInitializer" class="org.geoserver.logging.LoggingInitializer">
     <property name="resourceLoader" ref="resourceLoader"/>
   </bean>
-  
+
   <!-- resource pool initializer -->
   <bean id="resourcePoolInitializer" class="org.geoserver.catalog.ResourcePoolInitializer">
-      <constructor-arg ref="entityResolverProvider"/>
+    <constructor-arg ref="entityResolverProvider"/>
   </bean>
-  
+
   <!-- security wrapper factories  -->
   <bean id="defaultDataSecurityFactory" class="org.geoserver.security.decorators.DefaultSecureDataFactory"/>
   <bean id="defaultCatalogSecurityFactory" class="org.geoserver.security.decorators.DefaultSecureCatalogFactory"/>
-  
+
   <bean id="disabledServiceChecker" class="org.geoserver.ows.DisabledServiceCheck"/>
-  
-  <bean id="dispatcherMapping" 
-    class="org.geoserver.ows.OWSHandlerMapping">
+
+  <bean id="dispatcherMapping" class="org.geoserver.ows.OWSHandlerMapping">
     <constructor-arg ref="catalog"/>
-	 <property name="alwaysUseFullPath" value="true"/>
-	 <property name="mappings">
+    <property name="alwaysUseFullPath" value="true"/>
+    <property name="mappings">
       <props>
         <prop key="/ows">dispatcher</prop>
         <prop key="/ows/**">dispatcher</prop>
       </props>
     </property>
   </bean>
-  
-  <bean id="filePublisherMapping"
-    class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-     <property name="alwaysUseFullPath" value="true"/>
-     <property name="mappings">
-       <props>
+
+  <bean id="filePublisherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="alwaysUseFullPath" value="true"/>
+    <property name="mappings">
+      <props>
         <prop key="/www/**">filePublisher</prop>
-       </props>
-     </property>
+      </props>
+    </property>
   </bean>
-  
-  <bean id="stylePublisherMapping"
-    class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-     <property name="alwaysUseFullPath" value="true"/>
-     <property name="mappings">
-       <props>
+
+  <bean id="stylePublisherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="alwaysUseFullPath" value="true"/>
+    <property name="mappings">
+      <props>
         <prop key="/styles/**">stylePublisher</prop>
-       </props>
-     </property>
+      </props>
+    </property>
   </bean>
-  
-  <bean id="classpathPublisherMapping"
-    class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-     <property name="alwaysUseFullPath" value="true"/>
-     <property name="mappings">
-       <props>
+
+  <bean id="classpathPublisherMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="alwaysUseFullPath" value="true"/>
+    <property name="mappings">
+      <props>
         <prop key="/schemas/**">classpathPublisher</prop>
         <prop key="/j_acegi_security_check">classpathPublisher</prop>
         <prop key="/j_spring_security_check">classpathPublisher</prop>
         <prop key="/login">classpathPublisher</prop>
-       </props>
-     </property>
+      </props>
+    </property>
   </bean>
-  
+
   <!-- geotools repository adapter for catalog -->
   <bean id="catalogRepository" class="org.geoserver.catalog.CatalogRepository">
     <constructor-arg ref="catalog"/>
   </bean>
-  
+
   <!-- the proxyfing URL mangler, along with machinery to support headers expansion usage in asynch requests -->
   <bean id="proxyfier" class="org.geoserver.ows.ProxifyingURLMangler">
     <constructor-arg index="0" ref="geoServer"/>
   </bean>
   <bean id="proxyfierHeaderCollector" class="org.geoserver.ows.HTTPHeadersCollector"/>
   <bean id="proxyfierHeaderTransfer" class="org.geoserver.threadlocals.PublicThreadLocalTransfer">
-      <constructor-arg index="0" value="org.geoserver.ows.HTTPHeadersCollector"/>
-      <constructor-arg index="1" value="HEADERS"/>
+    <constructor-arg index="0" value="org.geoserver.ows.HTTPHeadersCollector"/>
+    <constructor-arg index="1" value="HEADERS"/>
   </bean>
 
-
-    <!-- URL mangler for workspace/layers accessed through the /ows?service=... service end points -->
+  <!-- URL mangler for workspace/layers accessed through the /ows?service=... service end points -->
   <bean id="owsDispatcherLocalWorkspaceURLManger" class="org.geoserver.ows.LocalWorkspaceURLMangler">
     <constructor-arg value="ows"/>
   </bean>
@@ -253,28 +230,28 @@
 
   <!-- workspace local callback -->
   <bean id="workspaceLocal" class="org.geoserver.ows.LocalWorkspaceCallback">
-     <constructor-arg ref="geoServer"/>  
+    <constructor-arg ref="geoServer"/>
   </bean>
-  
+
   <bean id="updateSequenceListener" class="org.geoserver.config.UpdateSequenceListener" lazy-init="false">
-	<constructor-arg ref="geoServer"/>
+    <constructor-arg ref="geoServer"/>
   </bean>
-  
+
   <bean id="namespaceWorkspaceConsistencyListener" class="org.geoserver.catalog.NamespaceWorkspaceConsistencyListener" lazy-init="false">
     <constructor-arg ref="catalog"/>
   </bean>
-  
+
   <!-- Hides resources in other workspaces when using virtual services -->
   <bean id="localWorkspaceFilter" class="org.geoserver.ows.LocalWorkspaceCatalogFilter">
-    <constructor-arg ref="rawCatalog"/> 
+    <constructor-arg ref="rawCatalog"/>
   </bean>
-   
+
   <!-- Alllows to lock the config subsyste to that we serialize accesses to it -->
   <bean id="configurationLock" class="org.geoserver.GeoServerConfigurationLock"/>
-  
+
   <!-- Automatically injects a env map into the env function -->
   <bean id="enviromentInjector" class="org.geoserver.ows.EnviromentInjectionCallback"/>
-  
+
   <!-- Thread local transfers -->
   <bean id="dispatcherRequestTransfer" class="org.geoserver.threadlocals.PublicThreadLocalTransfer">
     <constructor-arg index="0" value="org.geoserver.ows.Dispatcher"/>
@@ -294,10 +271,10 @@
 
   <!-- JDBC VirtualTable callback -->
   <bean id="virtualTableCallback" class="org.geoserver.catalog.VirtualTableCallback"/>
-  
+
   <!-- WFS Cascaded Stored Query callback  -->
   <bean id="cascadedStoredQueryCallback" class="org.geoserver.catalog.CascadedStoredQueryCallback"/>
-  
+
   <!-- Entity resolver provider, to stop xml attacks via system entity resolution -->
   <!-- The depends-on is important to avoid circularities, when a depends-on is setup a bean does not
        start creation until the bean it depends onto is created. This ensures GeoServer post-processing
@@ -306,18 +283,18 @@
   <bean id="entityResolverProvider" class="org.geoserver.util.EntityResolverProvider" depends-on="geoServer">
     <constructor-arg ref="geoServer"/>
   </bean>
-  
+
   <bean id="capabilitiesCachingHeadersCallback" class="org.geoserver.config.CapabilitiesCacheHeadersCallback">
     <constructor-arg ref="geoServer"/>
   </bean>
-  
+
   <bean id="serviceResourceProvider" class="org.geoserver.catalog.ServiceResourceProvider">
-  	<constructor-arg ref="geoServer"/>
+    <constructor-arg ref="geoServer"/>
   </bean>
-  
+
   <!-- handle time stamping of layer/style creation/modification -->
   <bean id="catalogTimeStampUpdater" class="org.geoserver.config.CatalogTimeStampUpdater">
-  	<constructor-arg ref="catalog"/>
+    <constructor-arg ref="catalog"/>
   </bean>
 
   <bean id="nearestMatchWarningAppender" class="org.geoserver.util.NearestMatchWarningAppender"/>

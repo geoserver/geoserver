@@ -11,17 +11,17 @@
     -->
 
   <bean id="importerInfoDao" class="org.geoserver.importer.ImporterInfoDAO"/>
-  
+
   <bean id="importer" class="org.geoserver.importer.Importer">
     <constructor-arg ref="catalog"/>
     <constructor-arg ref="importerInfoDao"/>
   </bean>
-  
-  <!--  format beans -->
-  <bean id="kmlFormat" class="org.geoserver.importer.format.KMLFileFormat" />
-  <bean id="gmlFormat" class="org.geoserver.importer.format.GMLFileFormat" />
-  <bean id="geoJsonFormat" class="org.geoserver.importer.format.GeoJSONFormat" />
 
-  <bean id="spatialFileExtensionsProvider" class="org.geoserver.importer.SpatialFileExtensionsProvider" />
+  <!--  format beans -->
+  <bean id="kmlFormat" class="org.geoserver.importer.format.KMLFileFormat"/>
+  <bean id="gmlFormat" class="org.geoserver.importer.format.GMLFileFormat"/>
+  <bean id="geoJsonFormat" class="org.geoserver.importer.format.GeoJSONFormat"/>
+
+  <bean id="spatialFileExtensionsProvider" class="org.geoserver.importer.SpatialFileExtensionsProvider"/>
 
 </beans>

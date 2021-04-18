@@ -1,50 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <assembly>
-    <id>app-schema-plugin</id>
-    <formats>
-        <format>zip</format>
-    </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
-    <fileSets>
-        <fileSet>
-            <directory>release/extensions/app-schema</directory>
-            <outputDirectory></outputDirectory>
-            <includes>
-                <include>*</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>release/target/dependency</directory>
-            <outputDirectory></outputDirectory>
-            <includes>
-                <!-- matches both gt-app-schema and gt-app-schema-resolver jars -->
-                <include>gs-app-schema-core*.jar</include>
-                <include>gt-app-schema-*.jar</include>
-                <include>gt-complex-*.jar</include>
-                <include>commons-digester-*.jar</include>
-            </includes>
-            <excludes>
-                <exclude>*-tests.jar</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>release/</directory>
-            <outputDirectory></outputDirectory>
-            <includes>
-                <include>LGPL.md</include>
-                <include>GEOTOOLS_NOTICE.txt</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../data/app-schema-tutorial</directory>
-            <outputDirectory>tutorial</outputDirectory>
-            <excludes>
-                <!-- might have been manually added as an eclipse project -->
-                <exclude>**/.project</exclude>
-                <!-- might have been used for local testing -->
-                <exclude>**/app-schema-cache/**</exclude>
-                <exclude>**/geoserver.log</exclude>
-                <exclude>**/gwc/**</exclude>
-            </excludes>
-        </fileSet>
-    </fileSets>
+  <id>app-schema-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/extensions/app-schema</directory>
+      <outputDirectory/>
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory/>
+      <includes>
+        <!-- matches both gt-app-schema and gt-app-schema-resolver jars -->
+        <include>gs-app-schema-core*.jar</include>
+        <include>gt-app-schema-*.jar</include>
+        <include>gt-complex-*.jar</include>
+        <include>commons-digester-*.jar</include>
+      </includes>
+      <excludes>
+        <exclude>*-tests.jar</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>release/</directory>
+      <outputDirectory/>
+      <includes>
+        <include>LGPL.md</include>
+        <include>GEOTOOLS_NOTICE.txt</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>../data/app-schema-tutorial</directory>
+      <outputDirectory>tutorial</outputDirectory>
+      <excludes>
+        <!-- might have been manually added as an eclipse project -->
+        <exclude>**/.project</exclude>
+        <!-- might have been used for local testing -->
+        <exclude>**/app-schema-cache/**</exclude>
+        <exclude>**/geoserver.log</exclude>
+        <exclude>**/gwc/**</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
 </assembly>

@@ -1,58 +1,54 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <!-- 
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>	
-	<!--  
+<beans>
+  <!--  
 		Map producers and Responses
 	 -->
-	<bean id="DDSMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
-        <value>image/dds</value>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-    </bean>
-	<bean id="DDSMapResponse"
-		scope="prototype"
-		class="org.geoserver.wms.worldwind.DDSMapResponse">
-		<constructor-arg index="0" ref="wms"/>
-	</bean>
-	<bean id="BilMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
-      <constructor-arg>
-        <description>The prescribed output format MIME-Type</description>
-        <value>image/bil</value>
-      </constructor-arg>
-      <constructor-arg>
-        <description>The declared output format MIME-Types in the capabilities document</description>
-        <list>
-          <value>application/bil</value>
-          <value>application/bil8</value>
-          <value>application/bil16</value>
-          <value>application/bil32</value>
-        </list>
-      </constructor-arg>
-      <constructor-arg ref="wms" />
-    </bean>
-	<bean id="BilMapResponse"
-		scope="prototype"
-		class="org.geoserver.wms.worldwind.BilMapResponse">
-		<constructor-arg index="0" ref="wms"/>
-	</bean>
+  <bean id="DDSMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+    <constructor-arg>
+      <description>The prescribed output format MIME-Type, same as declared in the getcaps document</description>
+      <value>image/dds</value>
+    </constructor-arg>
+    <constructor-arg ref="wms"/>
+  </bean>
+  <bean id="DDSMapResponse" scope="prototype" class="org.geoserver.wms.worldwind.DDSMapResponse">
+    <constructor-arg index="0" ref="wms"/>
+  </bean>
+  <bean id="BilMapProducer" class="org.geoserver.wms.map.RenderedImageMapOutputFormat">
+    <constructor-arg>
+      <description>The prescribed output format MIME-Type</description>
+      <value>image/bil</value>
+    </constructor-arg>
+    <constructor-arg>
+      <description>The declared output format MIME-Types in the capabilities document</description>
+      <list>
+        <value>application/bil</value>
+        <value>application/bil8</value>
+        <value>application/bil16</value>
+        <value>application/bil32</value>
+      </list>
+    </constructor-arg>
+    <constructor-arg ref="wms"/>
+  </bean>
+  <bean id="BilMapResponse" scope="prototype" class="org.geoserver.wms.worldwind.BilMapResponse">
+    <constructor-arg index="0" ref="wms"/>
+  </bean>
 
-    <!-- Register a layer configuration panel to allow the server admin to configure how BIL output is produced. -->
-    <bean id="bilLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
-        <property name="id" value="bilLayerConfig"/>
-        <property name="titleKey" value="publish.layer.config.bil"/>
-        <property name="componentClass" value="org.geoserver.wms.worldwind.web.BilLayerConfigPanel"/>
-        <property name="supportedTypes">
-            <list>
-                <value>org.geoserver.catalog.CoverageInfo</value>
-            </list>
-        </property>
-    </bean>
+  <!-- Register a layer configuration panel to allow the server admin to configure how BIL output is produced. -->
+  <bean id="bilLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+    <property name="id" value="bilLayerConfig"/>
+    <property name="titleKey" value="publish.layer.config.bil"/>
+    <property name="componentClass" value="org.geoserver.wms.worldwind.web.BilLayerConfigPanel"/>
+    <property name="supportedTypes">
+      <list>
+        <value>org.geoserver.catalog.CoverageInfo</value>
+      </list>
+    </property>
+  </bean>
 </beans>

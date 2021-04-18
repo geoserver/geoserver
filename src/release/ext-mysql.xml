@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <assembly>
   <id>mysql-plugin</id>
   <formats>
@@ -7,14 +9,14 @@
   <fileSets>
     <fileSet>
       <directory>release/extensions/mysql</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
         <include>*</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>release/target/dependency</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
         <include>gt-jdbc-mysql*.jar</include>
         <include>mysql-connector-java-*.jar</include>
@@ -22,18 +24,18 @@
     </fileSet>
     <fileSet>
       <directory>release/extensions</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
         <include>LICENSE.txt</include>
       </includes>
     </fileSet>
-  <fileSet>
-    <directory>release</directory>
-    <outputDirectory></outputDirectory>
-    <includes>
-       <include>LGPL.md</include>
-       <include>GEOTOOLS_NOTICE.txt</include>
-    </includes>
-  </fileSet>
+    <fileSet>
+      <directory>release</directory>
+      <outputDirectory/>
+      <includes>
+        <include>LGPL.md</include>
+        <include>GEOTOOLS_NOTICE.txt</include>
+      </includes>
+    </fileSet>
   </fileSets>
 </assembly>

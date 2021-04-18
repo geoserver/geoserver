@@ -10,11 +10,11 @@
     wicket ui stuff
    -->
   <bean id="importDataMenuPage" class="org.geoserver.web.MenuPageInfo">
-    <property name="id" value="importData" />
+    <property name="id" value="importData"/>
     <property name="category" ref="dataCategory"/>
-    <property name="titleKey" value="ImportDataPage.menu" />
-    <property name="descriptionKey" value="ImportDataPage.description" />
-    <property name="componentClass" value="org.geoserver.importer.web.ImportDataPage" />
+    <property name="titleKey" value="ImportDataPage.menu"/>
+    <property name="descriptionKey" value="ImportDataPage.description"/>
+    <property name="componentClass" value="org.geoserver.importer.web.ImportDataPage"/>
     <property name="order" value="6"/>
     <property name="icon" value="map_add.png"/>
   </bean>
@@ -23,9 +23,9 @@
     <property name="titleKey" value="ImporterConfigPage.title"/>
     <property name="descriptionKey" value="ImporterConfigPage.description"/>
     <property name="componentClass" value="org.geoserver.importer.web.ImporterConfigPage"/>
-    <property name="category" ref="settingsCategory" />
-    <property name="order" value="50" />
-    <property name="icon" value="map_cog.png" />
+    <property name="category" ref="settingsCategory"/>
+    <property name="order" value="50"/>
+    <property name="icon" value="map_cog.png"/>
   </bean>
 
 </beans>

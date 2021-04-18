@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <assembly>
   <id>feature-pregeneralized-plugin</id>
   <formats>
@@ -5,16 +7,17 @@
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
-    <fileSet> <!-- appears to be unused -->
+    <fileSet>
+      <!-- appears to be unused -->
       <directory>release/extensions/feature-pregeneralized</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
         <include>*</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>release/target/dependency</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
         <include>gs-feature-pregeneralized-*.jar</include>
         <include>gt-feature-pregeneralized-*.jar</include>
@@ -24,14 +27,14 @@
       </excludes>
     </fileSet>
     <fileSet>
-        <directory>release</directory>
-        <outputDirectory></outputDirectory>
-        <includes>
-            <include>LGPL.md</include>
-            <include>GEOTOOLS_NOTICE.txt</include>
-            <include>GPL.md</include>
-            <include>NOTICE.md</include>
-        </includes>
+      <directory>release</directory>
+      <outputDirectory/>
+      <includes>
+        <include>LGPL.md</include>
+        <include>GEOTOOLS_NOTICE.txt</include>
+        <include>GPL.md</include>
+        <include>NOTICE.md</include>
+      </includes>
     </fileSet>
   </fileSets>
 </assembly>

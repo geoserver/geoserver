@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <beans>
-  <description>
-   Bean configuration file for the gwc-ve module
-  </description>
-  <bean id="gwcServiceVETarget"
-	class="org.geowebcache.service.ve.VEConverter">
-	<constructor-arg ref="gwcStorageBroker"/>
-	<constructor-arg ref="gwcTLDispatcher"/>
-	<constructor-arg ref="gwcGridSetBroker"/>
+  <description>Bean configuration file for the gwc-ve
+</description>
+  <bean id="gwcServiceVETarget" class="org.geowebcache.service.ve.VEConverter">
+    <constructor-arg ref="gwcStorageBroker"/>
+    <constructor-arg ref="gwcTLDispatcher"/>
+    <constructor-arg ref="gwcGridSetBroker"/>
   </bean>
   <bean id="gwcServiceVEProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
     <property name="targetName">
@@ -16,9 +15,9 @@
     </property>
     <property name="interceptorNames">
       <list>
-          <!-- allow any other advise defined elsewhere and named "gwcServiceVEInterceptor*" 
+        <!-- allow any other advise defined elsewhere and named "gwcServiceVEInterceptor*" 
                to be added to the interceptors list -->
-          <value>gwcServiceVEInterceptor*</value>
+        <value>gwcServiceVEInterceptor*</value>
       </list>
     </property>
   </bean>

@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <assembly>
   <id>geofence-plugin</id>
   <formats>
@@ -7,10 +9,10 @@
   <fileSets>
     <fileSet>
       <directory>release/target/dependency</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
         <include>*geofence*</include>
-      </includes>      
+      </includes>
       <excludes>
         <exclude>*geofence-server*.jar</exclude>
         <exclude>*geofence-persistence*.jar</exclude>
@@ -19,12 +21,12 @@
       </excludes>
     </fileSet>
     <fileSet>
-        <directory>release</directory>
-        <outputDirectory></outputDirectory>
-        <includes>
-            <include>GPL.md</include>
-            <include>NOTICE.md</include>
-        </includes>
+      <directory>release</directory>
+      <outputDirectory/>
+      <includes>
+        <include>GPL.md</include>
+        <include>NOTICE.md</include>
+      </includes>
     </fileSet>
   </fileSets>
 </assembly>

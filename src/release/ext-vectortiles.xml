@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <assembly>
   <id>vectortiles-plugin</id>
   <formats>
@@ -7,20 +9,20 @@
   <fileSets>
     <fileSet>
       <directory>release/target/dependency</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
         <include>gs-vectortiles*.jar</include>
         <include>java-vector-tile*.jar</include>
         <include>gson*.jar</include>
         <include>protobuf-java*.jar</include>
-      </includes>      
+      </includes>
     </fileSet>
     <fileSet>
       <directory>release</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
-         <include>GPL.md</include>
-         <include>NOTICE.md</include>
+        <include>GPL.md</include>
+        <include>NOTICE.md</include>
       </includes>
     </fileSet>
   </fileSets>

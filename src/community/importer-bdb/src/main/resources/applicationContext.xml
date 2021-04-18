@@ -8,7 +8,7 @@
   </bean>
   <!--  bdb import store -->
   <bean id="bdbImportStore" class="org.geoserver.importer.bdb.BDBImportStore">
-    <constructor-arg ref="importer"></constructor-arg>
+    <constructor-arg ref="importer"/>
   </bean>
 
 </beans>

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <!-- 
  Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
   <bean class="org.geoserver.platform.ModuleStatusImpl">
     <constructor-arg index="0" value="gs-web-wms"/>
@@ -19,8 +19,8 @@
     <property name="icon" value="server_map.png"/>
     <property name="category" ref="servicesCategory"/>
     <property name="serviceClass" value="org.geoserver.wms.WMSInfo"/>
-  </bean> 
-    
+  </bean>
+
   <bean id="wmsLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="wmsLayerConfig"/>
     <property name="titleKey" value="publish.layer.config.wms"/>
@@ -51,13 +51,13 @@
   </bean>
 
   <bean id="styleMenuPage" class="org.geoserver.web.MenuPageInfo">
-     <property name="id" value="style.manager"/>
-     <property name="titleKey" value="style.title"/>
-     <property name="descriptionKey" value="StylePage.description"/>
-     <property name="componentClass" value="org.geoserver.wms.web.data.StylePage"/>
-     <property name="category" ref="dataCategory"/>
-     <property name="icon" value="palette.png"/>
-     <property name="order" value="30"/>
-     <property name="authorizer" ref="workspaceAdminAuthorizer"/>
-  </bean>  
+    <property name="id" value="style.manager"/>
+    <property name="titleKey" value="style.title"/>
+    <property name="descriptionKey" value="StylePage.description"/>
+    <property name="componentClass" value="org.geoserver.wms.web.data.StylePage"/>
+    <property name="category" ref="dataCategory"/>
+    <property name="icon" value="palette.png"/>
+    <property name="order" value="30"/>
+    <property name="authorizer" ref="workspaceAdminAuthorizer"/>
+  </bean>
 </beans>

@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <!-- 
  Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
-  <description>
-   Bean configuration file for the gwc-aws-s3 module
-  </description>
-  
+  <description>Bean configuration file for the gwc-aws-s3
+</description>
+
   <bean id="S3BlobStoreConfigProvider" class="org.geowebcache.s3.S3BlobStoreConfigProvider" depends-on="geoWebCacheExtensions">
-    <description>
-      Contributes XStream configuration settings to org.geowebcache.config.XMLConfiguration to encode S3BlobStoreInfo instances
-    </description>
+    <description>Contributes XStream configuration settings to org.geowebcache.config.XMLConfiguration to encode S3BlobStoreInfo
+</description>
   </bean>
 
-  <bean class="org.geoserver.gwc.web.blob.S3BlobStoreType" />
+  <bean class="org.geoserver.gwc.web.blob.S3BlobStoreType"/>
 </beans>

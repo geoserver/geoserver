@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <beans>
-  <description>
-   Bean configuration file for the gwc-kml module
-  </description>
-  <bean id="gwcServiceKMLTarget"
-	class="org.geowebcache.service.kml.KMLService">
-	<constructor-arg ref="gwcStorageBroker"/>
-	<constructor-arg ref="gwcTLDispatcher"/>
-	<constructor-arg ref="gwcGridSetBroker"/>
-	<constructor-arg ref="gwcRuntimeStats"/>
+  <description>Bean configuration file for the gwc-kml
+</description>
+  <bean id="gwcServiceKMLTarget" class="org.geowebcache.service.kml.KMLService">
+    <constructor-arg ref="gwcStorageBroker"/>
+    <constructor-arg ref="gwcTLDispatcher"/>
+    <constructor-arg ref="gwcGridSetBroker"/>
+    <constructor-arg ref="gwcRuntimeStats"/>
     <property name="securityDispatcher" ref="gwcSecurityDispatcher"/>
   </bean>
   <bean id="gwcServiceKMLProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
@@ -18,9 +17,9 @@
     </property>
     <property name="interceptorNames">
       <list>
-          <!-- allow any other advise defined elsewhere and named "gwcServiceKMLInterceptor*" 
+        <!-- allow any other advise defined elsewhere and named "gwcServiceKMLInterceptor*" 
                to be added to the interceptors list -->
-          <value>gwcServiceKMLInterceptor*</value>
+        <value>gwcServiceKMLInterceptor*</value>
       </list>
     </property>
   </bean>

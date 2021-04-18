@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <!-- 
  Copyright (C) 2018 - Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
   <bean id="ghrsstNetCDFEncoderFactory" class="org.geoserver.wcs.responses.GHRSSTEncoderFactory"/>
   <bean id="ghrsstExtensionPanel" class="org.geoserver.web.netcdf.NetCDFExtensionPanelInfo">

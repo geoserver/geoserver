@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <assembly>
   <id>importer-plugin</id>
   <formats>
@@ -7,7 +9,7 @@
   <fileSets>
     <fileSet>
       <directory>release/target/dependency</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
         <include>gs-importer-core-*.jar</include>
         <include>gs-importer-web-*.jar</include>
@@ -22,14 +24,14 @@
       </includes>
     </fileSet>
     <fileSet>
-        <directory>release</directory>
-        <outputDirectory></outputDirectory>
-        <includes>
-            <include>LGPL.md</include>
-            <include>GEOTOOLS_NOTICE.txt</include>
-            <include>GPL.md</include>
-            <include>NOTICE.md</include>
-        </includes>
+      <directory>release</directory>
+      <outputDirectory/>
+      <includes>
+        <include>LGPL.md</include>
+        <include>GEOTOOLS_NOTICE.txt</include>
+        <include>GPL.md</include>
+        <include>NOTICE.md</include>
+      </includes>
     </fileSet>
   </fileSets>
 </assembly>

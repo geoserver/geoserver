@@ -1,95 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:mvc="http://www.springframework.org/schema/mvc"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:tx="http://www.springframework.org/schema/tx"
-  xmlns:context="http://www.springframework.org/schema/context"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans
-    http://www.springframework.org/schema/beans/spring-beans.xsd
-    http://www.springframework.org/schema/tx
-    http://www.springframework.org/schema/tx/spring-tx.xsd
-    http://www.springframework.org/schema/context
-    http://www.springframework.org/schema/context/spring-context.xsd" >
-    
-    <!-- monitor daos -->
-    <bean id="memMonitorDAO" class="org.geoserver.monitor.MemoryMonitorDAO"/>
-    
-    <bean id="monitorInitializer" class="org.geoserver.monitor.MonitorInitializer">
-      <constructor-arg ref="monitor"/>
-    </bean>
-    
-    <bean id="monitorRequestFilter" class="org.geoserver.monitor.MonitorRequestFilter">
-      <constructor-arg ref="resourceLoader"/>
-    </bean>
-    
-    <bean id="monitorConfig" class="org.geoserver.monitor.MonitorConfig">
-       <constructor-arg ref="resourceLoader"/>
-    </bean>
-    
-    <bean id="monitor" class="org.geoserver.monitor.Monitor">
-      <constructor-arg ref="monitorConfig"/>
-    </bean>
 
-    <!-- the top level monitoring filter -->
-    <bean id="monitorFilter" class="org.geoserver.monitor.MonitorFilter">
-        <constructor-arg ref="monitor"/>
-        <constructor-arg ref="monitorRequestFilter"/>
-    </bean>
-    
-    <!-- rest bindings -->
-   <context:component-scan base-package="org.geoserver.monitor.rest"/>
-    
-    <!-- ows dispatcher callback for ows specific stuff -->
-    <bean id="monitorOwsCallback" class="org.geoserver.monitor.ows.MonitorCallback">
-      <constructor-arg ref="monitor"/>
-      <constructor-arg ref="catalog"/>
-    </bean>
-    <bean id="controlFlowCallbackProxy" class="org.geoserver.monitor.ows.ControlFlowCallbackProxy">
-      <constructor-arg ref="monitor"/>
-    </bean>
-    
-    <!-- rest dispatcher callback -->
-    <bean id="monitorRestCallback" class="org.geoserver.monitor.rest.RESTMonitorCallback">
-       <constructor-arg ref="monitor"/>
-    </bean>
-    
-    <!--
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context" xsi:schemaLocation="http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans.xsd     http://www.springframework.org/schema/tx     http://www.springframework.org/schema/tx/spring-tx.xsd     http://www.springframework.org/schema/context     http://www.springframework.org/schema/context/spring-context.xsd">
+
+  <!-- monitor daos -->
+  <bean id="memMonitorDAO" class="org.geoserver.monitor.MemoryMonitorDAO"/>
+
+  <bean id="monitorInitializer" class="org.geoserver.monitor.MonitorInitializer">
+    <constructor-arg ref="monitor"/>
+  </bean>
+
+  <bean id="monitorRequestFilter" class="org.geoserver.monitor.MonitorRequestFilter">
+    <constructor-arg ref="resourceLoader"/>
+  </bean>
+
+  <bean id="monitorConfig" class="org.geoserver.monitor.MonitorConfig">
+    <constructor-arg ref="resourceLoader"/>
+  </bean>
+
+  <bean id="monitor" class="org.geoserver.monitor.Monitor">
+    <constructor-arg ref="monitorConfig"/>
+  </bean>
+
+  <!-- the top level monitoring filter -->
+  <bean id="monitorFilter" class="org.geoserver.monitor.MonitorFilter">
+    <constructor-arg ref="monitor"/>
+    <constructor-arg ref="monitorRequestFilter"/>
+  </bean>
+
+  <!-- rest bindings -->
+  <context:component-scan base-package="org.geoserver.monitor.rest"/>
+
+  <!-- ows dispatcher callback for ows specific stuff -->
+  <bean id="monitorOwsCallback" class="org.geoserver.monitor.ows.MonitorCallback">
+    <constructor-arg ref="monitor"/>
+    <constructor-arg ref="catalog"/>
+  </bean>
+  <bean id="controlFlowCallbackProxy" class="org.geoserver.monitor.ows.ControlFlowCallbackProxy">
+    <constructor-arg ref="monitor"/>
+  </bean>
+
+  <!-- rest dispatcher callback -->
+  <bean id="monitorRestCallback" class="org.geoserver.monitor.rest.RESTMonitorCallback">
+    <constructor-arg ref="monitor"/>
+  </bean>
+
+  <!--
      web stuff
      -->
-    <bean id="monitorCategory" class="org.geoserver.web.Category">
-      <property name="nameKey" value="category.monitor"/>
-      <property name="order" value="600"/>
-    </bean>
-    
-    <bean id="monitorActivityPage" class="org.geoserver.web.MenuPageInfo">
-        <property name="id" value="monitor.activity"/>
-        <property name="titleKey" value="ActivityPage.title"/>
-        <property name="descriptionKey" value="ActivityPage.description"/>
-        <property name="componentClass" value="org.geoserver.monitor.web.ActivityPage"/>
-        <property name="category" ref="monitorCategory"/>
-        <property name="icon" value="img/chart_bar.png"/>
-        <property name="order" value="10"/>
-   </bean>
-   
-    <bean id="monitorReportPage" class="org.geoserver.web.MenuPageInfo">
-        <property name="id" value="monitor.report"/>
-        <property name="titleKey" value="ReportPage.title"/>
-        <property name="descriptionKey" value="ReportPage.description"/>
-        <property name="componentClass" value="org.geoserver.monitor.web.ReportPage"/>
-        <property name="category" ref="monitorCategory"/>
-        <property name="icon" value="img/table.png"/>
-        <property name="order" value="20"/>
-   </bean>
-  
-    <!-- post processors -->
-    <bean id="layerNameNormalizer" class="org.geoserver.monitor.LayerNameNormalizer">
-        <constructor-arg ref="catalog"/>
-    </bean>
+  <bean id="monitorCategory" class="org.geoserver.web.Category">
+    <property name="nameKey" value="category.monitor"/>
+    <property name="order" value="600"/>
+  </bean>
 
-    <!--  audit logger -->
-    <bean id="auditor" class="org.geoserver.monitor.auditlog.AuditLogger">
-        <constructor-arg ref="monitorConfig" index="0"/>
-        <constructor-arg ref="resourceLoader" index="1"/>
-    </bean>
-    
+  <bean id="monitorActivityPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="monitor.activity"/>
+    <property name="titleKey" value="ActivityPage.title"/>
+    <property name="descriptionKey" value="ActivityPage.description"/>
+    <property name="componentClass" value="org.geoserver.monitor.web.ActivityPage"/>
+    <property name="category" ref="monitorCategory"/>
+    <property name="icon" value="img/chart_bar.png"/>
+    <property name="order" value="10"/>
+  </bean>
+
+  <bean id="monitorReportPage" class="org.geoserver.web.MenuPageInfo">
+    <property name="id" value="monitor.report"/>
+    <property name="titleKey" value="ReportPage.title"/>
+    <property name="descriptionKey" value="ReportPage.description"/>
+    <property name="componentClass" value="org.geoserver.monitor.web.ReportPage"/>
+    <property name="category" ref="monitorCategory"/>
+    <property name="icon" value="img/table.png"/>
+    <property name="order" value="20"/>
+  </bean>
+
+  <!-- post processors -->
+  <bean id="layerNameNormalizer" class="org.geoserver.monitor.LayerNameNormalizer">
+    <constructor-arg ref="catalog"/>
+  </bean>
+
+  <!--  audit logger -->
+  <bean id="auditor" class="org.geoserver.monitor.auditlog.AuditLogger">
+    <constructor-arg ref="monitorConfig" index="0"/>
+    <constructor-arg ref="resourceLoader" index="1"/>
+  </bean>
+
 </beans>

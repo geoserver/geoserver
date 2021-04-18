@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <!--
   ~    GeoTools - The Open Source Java GIS Toolkit
   ~    http://geotools.org
@@ -16,8 +18,6 @@
   ~    Lesser General Public License for more details.
   ~
   -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
 
   <bean id="ogrDataStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">

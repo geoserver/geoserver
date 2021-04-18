@@ -19,3 +19,4 @@ Although not portable to other applications, these extensions make styling more 
    randomized
    composite-blend/index
    z-order/index
+   rendering-selection

@@ -73,9 +73,12 @@ public class JSONTemplateReader implements TemplateReader {
 
     private void getBuilderFromJsonObject(
             JsonNode node, TemplateBuilder currentBuilder, BuilderFactory factory) {
-        if (node.has(SOURCEKEY) && node.size() == 1) {
-            String source = node.get(SOURCEKEY).asText();
-            ((SourceBuilder) currentBuilder).setSource(source);
+        // check special node at beginning of arrays, controlling the array contents
+        if (isArrayControlNode(node)) {
+            if (node.has(SOURCEKEY)) {
+                String source = node.get(SOURCEKEY).asText();
+                ((SourceBuilder) currentBuilder).setSource(source);
+            }
             if (node.has(FILTERKEY)) {
                 setFilterToBuilder(currentBuilder, node);
             }
@@ -148,7 +151,7 @@ public class JSONTemplateReader implements TemplateReader {
                 JsonNode childNode = arrayIterator.next();
                 if (childNode.isObject()) {
                     String childJSON = childNode.toString();
-                    if (childNode.has(SOURCEKEY)) {
+                    if (isArrayControlNode(childNode)) {
                         // special object controlling array contents
                         getBuilderFromJsonObject(childNode, iteratingBuilder, factory);
                     } else if (childJSON.contains(EXPRSTART) || childJSON.contains(FILTERKEY)) {
@@ -171,6 +174,11 @@ public class JSONTemplateReader implements TemplateReader {
                 }
             }
         }
+    }
+
+    private boolean isArrayControlNode(JsonNode node) {
+        return (node.size() == 1 && (node.has(SOURCEKEY) || node.has(FILTERKEY)))
+                || (node.size() == 2 && node.has(SOURCEKEY) && node.has(FILTERKEY));
     }
 
     private void getBuilderFromJsonAttribute(

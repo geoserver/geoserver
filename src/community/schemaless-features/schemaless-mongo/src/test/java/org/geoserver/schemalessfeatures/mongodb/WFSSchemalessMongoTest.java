@@ -1,6 +1,7 @@
 package org.geoserver.schemalessfeatures.mongodb;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -122,10 +123,22 @@ public class WFSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
         assertNotNull(properties.get("numericValue"));
         JSONObject contact = properties.getJSONObject("contact");
         assertNotNull(contact);
-        assertEquals(4, contact.size());
+        assertSkippedGeoJSONProperties(contact);
+        assertEquals(1, contact.size());
         JSONArray measurements = properties.getJSONArray("measurements");
         assertNotNull(measurements);
         assertTrue(measurements.size() > 0);
+        for (int i = 0; i < measurements.size(); i++) {
+            JSONObject measurement = measurements.getJSONObject(i);
+            assertSkippedGeoJSONProperties(measurement);
+        }
+    }
+
+    private static void assertSkippedGeoJSONProperties(JSONObject object) {
+        assertFalse(object.has("properties"));
+        assertFalse(object.has("geometry"));
+        assertFalse(object.has("id"));
+        assertFalse(object.has("type"));
     }
 
     private String readResourceContent(String resourcePath) {

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <beans>
-  <description>
-   Bean configuration file for the gwc-tms module
-  </description>
-  <bean id="gwcServiceTMSTarget"
-	class="org.geowebcache.service.tms.TMSService">
-	<constructor-arg ref="gwcStorageBroker"/>
-	<constructor-arg ref="gwcTLDispatcher"/>
-	<constructor-arg ref="gwcGridSetBroker"/>
-	<constructor-arg ref="gwcRuntimeStats"/>
+  <description>Bean configuration file for the gwc-tms
+</description>
+  <bean id="gwcServiceTMSTarget" class="org.geowebcache.service.tms.TMSService">
+    <constructor-arg ref="gwcStorageBroker"/>
+    <constructor-arg ref="gwcTLDispatcher"/>
+    <constructor-arg ref="gwcGridSetBroker"/>
+    <constructor-arg ref="gwcRuntimeStats"/>
     <constructor-arg ref="gwcURLMangler"/>
     <constructor-arg ref="geowebcacheDispatcher"/>
   </bean>
@@ -19,9 +18,9 @@
     </property>
     <property name="interceptorNames">
       <list>
-          <!-- allow any other advise defined elsewhere and named "gwcServiceTMSInterceptor*" 
+        <!-- allow any other advise defined elsewhere and named "gwcServiceTMSInterceptor*" 
                to be added to the interceptors list -->
-          <value>gwcServiceTMSInterceptor*</value>
+        <value>gwcServiceTMSInterceptor*</value>
       </list>
     </property>
   </bean>

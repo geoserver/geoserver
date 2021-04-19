@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <assembly>
   <id>control-flow-plugin</id>
   <formats>
@@ -7,17 +9,17 @@
   <fileSets>
     <fileSet>
       <directory>release/target/dependency</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
         <include>gs-control-flow-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>release</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
-          <include>GPL.md</include>
-          <include>NOTICE.md</include>
+        <include>GPL.md</include>
+        <include>NOTICE.md</include>
       </includes>
     </fileSet>
   </fileSets>

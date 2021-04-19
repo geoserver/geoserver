@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <assembly>
   <id>sldservice-plugin</id>
   <formats>
@@ -7,7 +9,7 @@
   <fileSets>
     <fileSet>
       <directory>release/target/dependency</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
         <include>gs-sldservice*</include>
         <include>*xom*</include>
@@ -15,10 +17,10 @@
     </fileSet>
     <fileSet>
       <directory>release</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
-         <include>GPL.md</include>
-         <include>NOTICE.md</include>
+        <include>GPL.md</include>
+        <include>NOTICE.md</include>
       </includes>
     </fileSet>
   </fileSets>

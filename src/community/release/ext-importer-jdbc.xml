@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <assembly>
   <id>importer-jdbc-plugin</id>
   <formats>
@@ -7,8 +9,8 @@
   <fileSets>
     <fileSet>
       <directory>release/target/dependency</directory>
-      <outputDirectory></outputDirectory>
-      <includes>	
+      <outputDirectory/>
+      <includes>
         <include>gs-importer-jdbc-*.jar</include>
         <!-- to include H2 -->
         <include>gt-jdbc-h2-*.jar</include>

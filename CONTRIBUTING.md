@@ -115,6 +115,10 @@ GeoServer does not have much in the way of strict commit policies. Our current c
    
    The [google-java-format project](https://github.com/google/google-java-format) offers plugins for various IDEs. If your IDE is not supported, please just build once on the command line before committing.
 
+5. **Ensure pom files are properly formatted:** We use the the `sortpom` to do this, running a full build using Maven will take care of properly formatting the pom files.
+
+6. **Ensure xml files are properly formatted:** We use the the `xml-format-maven-plugin` to do this, running a full build using Maven will take care of properly formatting the xml files (Spring application contexts and Maven assembly descriptors).
+
 ## Community commit access
 
 The first stage of access allows a developer to commit only to the community

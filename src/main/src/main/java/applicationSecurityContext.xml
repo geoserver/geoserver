@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--  <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">-->
 
-<beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:sec="http://www.springframework.org/schema/security"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans
-          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-          http://www.springframework.org/schema/security
-          http://www.springframework.org/schema/security/spring-security-3.0.4.xsd">
+<!--  <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:sec="http://www.springframework.org/schema/security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd           http://www.springframework.org/schema/security           http://www.springframework.org/schema/security/spring-security-3.0.4.xsd">
 
   <bean id="filterChainProxy" class="org.geoserver.security.GeoServerSecurityFilterChainProxy">
     <constructor-arg ref="authenticationManager"/>
@@ -19,16 +13,15 @@
       In order to have these applied, add restFilterDefintionMap to the end of the filter list in the filterChainProxy above
   -->
   <bean id="restFilterDefinitionMap" class="org.geoserver.security.RESTfulDefinitionSource">
-      <constructor-arg ref="restRulesDao"/>
+    <constructor-arg ref="restRulesDao"/>
   </bean>
 
-  <bean id="geoserverMetadataSource" class="org.geoserver.security.filter.GeoServerSecurityMetadataSource" />
+  <bean id="geoserverMetadataSource" class="org.geoserver.security.filter.GeoServerSecurityMetadataSource"/>
 
   <!--
     The actual remember-me cookie handler
   -->
-  <bean id="rememberMeServices"
-    class="org.geoserver.security.rememberme.RememberMeServicesFactoryBean">
+  <bean id="rememberMeServices" class="org.geoserver.security.rememberme.RememberMeServicesFactoryBean">
     <constructor-arg ref="geoServerSecurityManager"/>
   </bean>
 
@@ -37,53 +30,45 @@
     The bean managing authentication, basically forwards authentication requests against
     a number of child providers
   -->
-  <bean id="authenticationManager" class="org.geoserver.security.GeoServerSecurityManager"
-     depends-on="extensions">
-    <constructor-arg ref="dataDirectory"/>     
+  <bean id="authenticationManager" class="org.geoserver.security.GeoServerSecurityManager" depends-on="extensions">
+    <constructor-arg ref="dataDirectory"/>
   </bean>
   <alias name="authenticationManager" alias="geoServerSecurityManager"/>
 
- 
   <!-- password encoders -->
-  <bean id="emptyPasswordEncoder"
-    class="org.geoserver.security.password.GeoServerEmptyPasswordEncoder">
-    <property name="prefix" value="empty" />    
+  <bean id="emptyPasswordEncoder" class="org.geoserver.security.password.GeoServerEmptyPasswordEncoder">
+    <property name="prefix" value="empty"/>
   </bean>
-  <bean id="plainTextPasswordEncoder"        
-    class="org.geoserver.security.password.GeoServerPlainTextPasswordEncoder">
-    <property name="prefix" value="plain" />
+  <bean id="plainTextPasswordEncoder" class="org.geoserver.security.password.GeoServerPlainTextPasswordEncoder">
+    <property name="prefix" value="plain"/>
   </bean>
-  <bean id="pbePasswordEncoder"    
-    class="org.geoserver.security.password.GeoServerPBEPasswordEncoder" scope="prototype">
-    <property name="prefix" value="crypt1" />
-    <property name="algorithm" value="PBEWITHMD5ANDDES" />
+  <bean id="pbePasswordEncoder" class="org.geoserver.security.password.GeoServerPBEPasswordEncoder" scope="prototype">
+    <property name="prefix" value="crypt1"/>
+    <property name="algorithm" value="PBEWITHMD5ANDDES"/>
   </bean>
-  <bean id="strongPbePasswordEncoder"    
-    class="org.geoserver.security.password.GeoServerPBEPasswordEncoder" scope="prototype">
-    <property name="prefix" value="crypt2" />
-    <property name="providerName" value="BC" />
-    <property name="algorithm" value="PBEWITHSHA256AND256BITAES-CBC-BC" />
-    <property name="availableWithoutStrongCryptogaphy" value="false" />
-  </bean>  
-  <bean id="digestPasswordEncoder"    
-    class="org.geoserver.security.password.GeoServerDigestPasswordEncoder" scope="prototype">
-    <property name="prefix" value="digest1" />    
+  <bean id="strongPbePasswordEncoder" class="org.geoserver.security.password.GeoServerPBEPasswordEncoder" scope="prototype">
+    <property name="prefix" value="crypt2"/>
+    <property name="providerName" value="BC"/>
+    <property name="algorithm" value="PBEWITHSHA256AND256BITAES-CBC-BC"/>
+    <property name="availableWithoutStrongCryptogaphy" value="false"/>
   </bean>
-  
-    
+  <bean id="digestPasswordEncoder" class="org.geoserver.security.password.GeoServerDigestPasswordEncoder" scope="prototype">
+    <property name="prefix" value="digest1"/>
+  </bean>
+
   <!--
   Extensions can inject another class implementing org.geoserver.security.KeyStoreProvider   
   <bean id="keyStoreProvider" class="org.geoserver.security.KeyStoreProviderImpl" />
    -->
-   
-  <bean id="roleConverter" class="org.geoserver.security.impl.GeoServerRoleConverterImpl" >  
-  	<property name="roleDelimiterString" value=";" />
-  	<property name="roleParameterDelimiterString" value=","/>
-  	<property name="roleParameterStartString" value="("/>
-  	<property name="roleParameterEndString" value= ")"/>
-  	<property name="roleParameterAssignmentString" value="="/>  
+
+  <bean id="roleConverter" class="org.geoserver.security.impl.GeoServerRoleConverterImpl">
+    <property name="roleDelimiterString" value=";"/>
+    <property name="roleParameterDelimiterString" value=","/>
+    <property name="roleParameterStartString" value="("/>
+    <property name="roleParameterEndString" value=")"/>
+    <property name="roleParameterAssignmentString" value="="/>
   </bean>
-  
+
   <!-- This is an example how to inject a security filter
    
   <bean id="roleFilterConfig" class="org.geoserver.security.config.RoleFilterConfig">
@@ -110,57 +95,51 @@
     </property>
   </bean>
    -->
-  
-   
 
   <bean id="xmlSecurityProvider" class="org.geoserver.security.xml.XMLSecurityProvider"/>
   <bean id="j2eeSecurityProvider" class="org.geoserver.security.impl.J2eeSecurityProvider"/>
   <bean id="basicAuthSecurityProvider" class="org.geoserver.security.filter.GeoServerBasicAuthenticationProvider"/>
   <bean id="digestAuthSecurityProvider" class="org.geoserver.security.filter.GeoServerDigestAuthenticationProvider"/>
   <bean id="roleFilterProvider" class="org.geoserver.security.filter.GeoServerRoleProvider"/>
-  <bean id="sslFilterProvider" class="org.geoserver.security.filter.GeoServerSSLProvider"/>  
+  <bean id="sslFilterProvider" class="org.geoserver.security.filter.GeoServerSSLProvider"/>
   <bean id="j2eeAuthSecurityProvider" class="org.geoserver.security.filter.GeoServerJ2eeAuthenticationProvider"/>
   <bean id="requestHeaderFilterProvider" class="org.geoserver.security.filter.GeoServerRequestHeaderAuthenticationProvider"/>
   <bean id="exceptionTranslationFilterProvider" class="org.geoserver.security.filter.GeoServerExceptionTranslationProvider"/>
   <bean id="usernamePasswordFilterProvider" class="org.geoserver.security.filter.GeoServerUserNamePasswordAuthenticationProvider"/>
   <bean id="x509FilterProvider" class="org.geoserver.security.filter.GeoServerX509CertificateAuthenticationProvider"/>
-  <bean id="contextPersistenceProvider" class="org.geoserver.security.filter.GeoServerSecurityContextPersistenceProvider"/>  
+  <bean id="contextPersistenceProvider" class="org.geoserver.security.filter.GeoServerSecurityContextPersistenceProvider"/>
   <bean id="rememberMeFilterProvider" class="org.geoserver.security.filter.GeoServerRememberMeAuthenticationProvider"/>
   <bean id="anonymousFilterProvider" class="org.geoserver.security.filter.GeoServerAnonymousAuthenticationProvider"/>
-  <bean id="logoutFilterProvider" class="org.geoserver.security.filter.GeoServerLogoutProvider"/>  
-  <bean id="securityInterceptorFilterProvider" class="org.geoserver.security.filter.GeoServerSecurityInterceptorProvider"/>  
+  <bean id="logoutFilterProvider" class="org.geoserver.security.filter.GeoServerLogoutProvider"/>
+  <bean id="securityInterceptorFilterProvider" class="org.geoserver.security.filter.GeoServerSecurityInterceptorProvider"/>
   <bean id="credentialsFromRequestHeaderSecurityProvider" class="org.geoserver.security.filter.GeoServerCredentialsFromRequestHeaderProvider"/>
-  
-  
-  
-  <bean id="urlMasterPasswordProvider" 
-    class="org.geoserver.security.password.URLMasterPasswordProvider$SecurityProvider"/>
-  
+
+  <bean id="urlMasterPasswordProvider" class="org.geoserver.security.password.URLMasterPasswordProvider$SecurityProvider"/>
+
   <!-- The dao used to deal with layer level security -->
   <bean id="accessRulesDao" class="org.geoserver.security.impl.DataAccessRuleDAO">
-  	<constructor-arg ref="dataDirectory"/>
-  	<constructor-arg ref="rawCatalog"/>
+    <constructor-arg ref="dataDirectory"/>
+    <constructor-arg ref="rawCatalog"/>
   </bean>
-  
+
   <!-- The dao used to deal with service level security -->
   <bean id="serviceRulesDao" class="org.geoserver.security.impl.ServiceAccessRuleDAO">
     <constructor-arg ref="dataDirectory"/>
-  	<constructor-arg ref="rawCatalog"/>
+    <constructor-arg ref="rawCatalog"/>
   </bean>
 
   <!-- The dao used to deal with rest security -->
   <bean id="restRulesDao" class="org.geoserver.security.impl.RESTAccessRuleDAO">
     <constructor-arg ref="dataDirectory"/>
   </bean>
-  
+
   <!-- 
     This callback will be used before calling operations on OWS stuff, and making it secure
    -->
-  <bean id="operationCallback"
-    class="org.geoserver.security.OperationSecurityCallback">
+  <bean id="operationCallback" class="org.geoserver.security.OperationSecurityCallback">
     <constructor-arg ref="serviceRulesDao"/>
   </bean>
-  
+
   <bean id="bruteForceListener" class="org.geoserver.security.BruteForceListener">
     <constructor-arg ref="geoServerSecurityManager"/>
   </bean>
@@ -168,5 +147,5 @@
   <bean id="securedResourceNameChangeListener" class="org.geoserver.security.SecuredResourceNameChangeListener">
     <constructor-arg ref="rawCatalog"/>
     <constructor-arg ref="accessRulesDao"/>
-  </bean>  
+  </bean>
 </beans>

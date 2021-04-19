@@ -1,32 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <assembly>
-	<id>pgraster-plugin</id>
-	<formats>
-		<format>zip</format>
-	</formats>
-	<includeBaseDirectory>false</includeBaseDirectory>
-	<fileSets>
-		<fileSet>
-			<directory>release/extensions/pgraster</directory>
-			<outputDirectory></outputDirectory>
-			<includes>
-				<include>*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>release/target/dependency</directory>
-			<outputDirectory></outputDirectory>
-			<includes>
+  <id>pgraster-plugin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>release/extensions/pgraster</directory>
+      <outputDirectory/>
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release/target/dependency</directory>
+      <outputDirectory/>
+      <includes>
         <include>*gt-imagemosaic-jdbc*.jar</include>
-				<include>ant*1.8.4.jar</include>
-				<include>gs-pgraster-*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>release/extensions</directory>
-			<outputDirectory></outputDirectory>
-			<includes>
-				<include>LICENSE.txt</include>
-			</includes>
-		</fileSet>
-	</fileSets>
+        <include>ant*1.8.4.jar</include>
+        <include>gs-pgraster-*.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>release/extensions</directory>
+      <outputDirectory/>
+      <includes>
+        <include>LICENSE.txt</include>
+      </includes>
+    </fileSet>
+  </fileSets>
 </assembly>

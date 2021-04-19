@@ -1,9 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <!-- 
  Copyright (C) 2014 - 2016 Open Source Geospatial Foundation. All rights reserved.
  This code is licensed under the GPL 2.0 license, available at the root
  application directory.
  -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
   <bean class="org.geoserver.platform.ModuleStatusImpl">
     <constructor-arg index="0" value="gs-sec-ldap"/>
@@ -12,11 +14,11 @@
   <bean id="ldapSecurityProvider" class="org.geoserver.security.ldap.LDAPSecurityProvider">
     <constructor-arg ref="geoServerSecurityManager"/>
   </bean>
-  
+
   <!--bean id="ldapContext" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
     <constructor-arg value="ldap://192.168.0.108:389/dc=skunkworks,dc=org"/>
   </bean-->
-  
+
   <!--bean id="ldapAuthorityPopulator" class="org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator">
     <constructor-arg ref="ldapContext"/>
     <constructor-arg value="ou=groups"/>
@@ -25,7 +27,7 @@
   <!--bean id="ldapAuthorityPopulator" class="org.springframework.security.ldap.authentication.UserDetailsServiceLdapAuthoritiesPopulator">
     <constructor-arg ref="userDetailsService"/>
   </bean-->
-      
+
   <!--bean id="ldapAuthProvider" class="org.springframework.security.ldap.authentication.LdapAuthenticationProvider">
     <constructor-arg>
       <bean class="org.springframework.security.ldap.authentication.BindAuthenticator">
@@ -40,9 +42,9 @@
     </constructor-arg>
     <constructor-arg ref="ldapAuthorityPopulator"/>
 </bean-->
-  
+
   <!--bean id="ldapAuthProviderContrib" class="org.geoserver.security.AuthenticationProviderContributor">
     <constructor-arg ref="ldapAuthProvider"/>
   </bean-->
-  
+
 </beans>

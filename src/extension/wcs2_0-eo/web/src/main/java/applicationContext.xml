@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <!-- Copyright (c) 2001 - 2013 OpenPlans - www.openplans.org. All rights 
   reserved. This code is licensed under the GPL 2.0 license, available at the 
   root application directory. -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
 
   <bean id="wcseoAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
@@ -12,13 +12,13 @@
     <property name="componentClass" value="org.geoserver.wcs2_0.eo.web.WCSEOAdminPanel"/>
     <property name="serviceClass" value="org.geoserver.wcs.WCSInfo"/>
   </bean>
-  
-    <bean id="wcsEoLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
+
+  <bean id="wcsEoLayerConfig" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="wcsEoResourceConfig"/>
     <property name="titleKey" value="data.resource.config.wcs"/>
     <property name="componentClass" value="org.geoserver.wcs2_0.eo.web.WCSEOLayerConfig"/>
     <property name="supportedTypes">
-      <list>  
+      <list>
         <value>org.geoserver.catalog.CoverageInfo</value>
       </list>
     </property>

@@ -1,35 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <assembly>
   <id>oracle-plugin</id>
   <formats>
-      <format>zip</format>
+    <format>zip</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-        <directory>release/extensions/oracle</directory>
-        <outputDirectory></outputDirectory>
-        <includes>
-            <include>*</include>
-        </includes>
+      <directory>release/extensions/oracle</directory>
+      <outputDirectory/>
+      <includes>
+        <include>*</include>
+      </includes>
     </fileSet>
     <fileSet>
-        <directory>release/target/dependency</directory>
-        <outputDirectory></outputDirectory>
-        <includes>
-            <include>gt-jdbc-oracle-*.jar</include>
-            <include>ojdbc8-*.jar</include>
-        </includes>
-        <excludes>
-            <exclude>*-tests-*.jar</exclude>
-        </excludes>
+      <directory>release/target/dependency</directory>
+      <outputDirectory/>
+      <includes>
+        <include>gt-jdbc-oracle-*.jar</include>
+        <include>ojdbc8-*.jar</include>
+      </includes>
+      <excludes>
+        <exclude>*-tests-*.jar</exclude>
+      </excludes>
     </fileSet>
     <fileSet>
       <directory>release</directory>
-      <outputDirectory></outputDirectory>
+      <outputDirectory/>
       <includes>
-         <include>LGPL.md</include>
-         <include>GEOTOOLS_NOTICE.txt</include>
-         <include>OracleFUTC.txt</include>
+        <include>LGPL.md</include>
+        <include>GEOTOOLS_NOTICE.txt</include>
+        <include>OracleFUTC.txt</include>
       </includes>
     </fileSet>
   </fileSets>

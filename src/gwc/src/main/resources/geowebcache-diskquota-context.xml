@@ -1,60 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
 <beans>
 
-
   <bean id="DiskQuotaConfigResourceProvider" class="org.geoserver.gwc.config.GeoserverXMLResourceProvider">
-     <constructor-arg value="geowebcache-diskquota.xml" />
-     <constructor-arg ref="resourceStore" />
+    <constructor-arg value="geowebcache-diskquota.xml"/>
+    <constructor-arg ref="resourceStore"/>
   </bean>
-  
+
   <bean id="jdbcDiskQuotaConfigResourceProvider" class="org.geoserver.gwc.config.GeoserverXMLResourceProvider">
-     <constructor-arg value="geowebcache-diskquota-jdbc.xml" />
-     <constructor-arg ref="resourceStore" />
+    <constructor-arg value="geowebcache-diskquota-jdbc.xml"/>
+    <constructor-arg ref="resourceStore"/>
   </bean>
-  
+
   <!-- the config loader depends on the metastore remover because in case of migration we need to drop the disk quota subsystem -->
   <bean id="DiskQuotaConfigLoader" class="org.geowebcache.diskquota.ConfigLoader" depends-on="metastoreRemover">
-    <constructor-arg ref="DiskQuotaConfigResourceProvider" />
-    <constructor-arg ref="gwcDefaultStorageFinder" />
-    <constructor-arg ref="gwcTLDispatcher" />
+    <constructor-arg ref="DiskQuotaConfigResourceProvider"/>
+    <constructor-arg ref="gwcDefaultStorageFinder"/>
+    <constructor-arg ref="gwcTLDispatcher"/>
   </bean>
 
   <bean id="DiskQuotaStoreProvider" class="org.geoserver.gwc.ConfigurableQuotaStoreProvider">
-      <constructor-arg ref="DiskQuotaConfigLoader" />
-      <constructor-arg ref="gwcTilePageCalculator" />
-      <constructor-arg ref="gwcJdbcConfigurationStorage" />
+    <constructor-arg ref="DiskQuotaConfigLoader"/>
+    <constructor-arg ref="gwcTilePageCalculator"/>
+    <constructor-arg ref="gwcJdbcConfigurationStorage"/>
   </bean>
 
   <bean id="DiskQuotaMonitor" class="org.geowebcache.diskquota.DiskQuotaMonitor">
-    <constructor-arg ref="gwcDefaultStorageFinder" />
-    <constructor-arg ref="DiskQuotaConfigLoader" />
-    <constructor-arg ref="gwcTLDispatcher" />
-    <constructor-arg ref="gwcStorageBroker" />
-    <constructor-arg ref="DiskQuotaStoreProvider" />
-    <constructor-arg ref="gwcCacheCleaner" />
+    <constructor-arg ref="gwcDefaultStorageFinder"/>
+    <constructor-arg ref="DiskQuotaConfigLoader"/>
+    <constructor-arg ref="gwcTLDispatcher"/>
+    <constructor-arg ref="gwcStorageBroker"/>
+    <constructor-arg ref="DiskQuotaStoreProvider"/>
+    <constructor-arg ref="gwcCacheCleaner"/>
   </bean>
 
   <bean id="gwcTilePageCalculator" class="org.geowebcache.diskquota.storage.TilePageCalculator">
-    <constructor-arg ref="gwcTLDispatcher" />
-    <constructor-arg ref="gwcStorageBroker" />
+    <constructor-arg ref="gwcTLDispatcher"/>
+    <constructor-arg ref="gwcStorageBroker"/>
   </bean>
 
   <bean id="gwcCacheCleaner" class="org.geowebcache.diskquota.CacheCleaner">
-    <constructor-arg ref="gwcTileBreeder" />
+    <constructor-arg ref="gwcTileBreeder"/>
   </bean>
 
   <!--bean id="mockWMSSource" class="org.geowebcache.util.MockWMSLayerSource"> <description>REMOVE THIS, it's a fake WMS 
     source for all layers!!!</description> <constructor-arg ref="gwcTLDispatcher" /> </bean -->
 
-
   <bean id="jdbcQuotaStoreFactory" class="org.geowebcache.diskquota.jdbc.JDBCQuotaStoreFactory">
-   <constructor-arg ref="jdbcDiskQuotaConfigResourceProvider" />
+    <constructor-arg ref="jdbcDiskQuotaConfigResourceProvider"/>
   </bean>
-  
-    <!-- The SQL dialects -->
+
+  <!-- The SQL dialects -->
   <bean id="H2QuotaDialect" class="org.geowebcache.diskquota.jdbc.H2Dialect"/>
   <bean id="PostgreSQLQuotaDialect" class="org.geowebcache.diskquota.jdbc.PostgreSQLDialect"/>
   <bean id="OracleQuotaDialect" class="org.geowebcache.diskquota.jdbc.OracleDialect"/>
-  
+
 </beans>

@@ -2,6 +2,5 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-  <bean id="mockHomePageContentProvider" class="org.geoserver.web.GeoServerHomePageTest$MockHomePageContentProvider">
-  </bean>
+  <bean id="mockHomePageContentProvider" class="org.geoserver.web.GeoServerHomePageTest$MockHomePageContentProvider"></bean>
 </beans>

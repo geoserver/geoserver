@@ -149,6 +149,8 @@
     <fmt.skip>false</fmt.skip>
     <pom.fmt.action>sort</pom.fmt.action>
     <pom.fmt.skip>${fmt.skip}</pom.fmt.skip>
+    <xml.fmt.action>xml-format</xml.fmt.action>
+    <xml.fmt.skip>${fmt.skip}</xml.fmt.skip>
     <errorProneFlags></errorProneFlags>
     <errorProne.version>2.3.4</errorProne.version>
     <javac.version>9+181-r4173-1</javac.version>
@@ -1851,6 +1853,34 @@
           <createBackupFile>false</createBackupFile>
           <verifyFail>stop</verifyFail>
           <verifyFailOn>strict</verifyFailOn>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>au.com.acegi</groupId>
+        <artifactId>xml-format-maven-plugin</artifactId>
+        <version>3.1.3-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>${xml.fmt.action}</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <includes>
+            <include>src/**/*Context.xml</include>
+            <include>src/**/*context.xml</include>
+            <include>ext-*.xml</include>
+          </includes>
+          <skip>${xml.fmt.skip}</skip>
+          <indentSize>2</indentSize>
+          <encoding>UTF-8</encoding>
+          <omitEncoding>false</omitEncoding>
+          <suppressDeclaration>false</suppressDeclaration>
+          <tabIndent>false</tabIndent>
+          <newLineAfterDeclaration>true</newLineAfterDeclaration>
+          <keepBlankLines>true</keepBlankLines>
         </configuration>
       </plugin>
 

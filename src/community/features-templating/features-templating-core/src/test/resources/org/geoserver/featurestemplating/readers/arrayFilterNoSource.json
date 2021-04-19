@@ -1,0 +1,14 @@
+{
+  "providers": [
+    {
+      "$filter": "name = 'LANDSAT8'"
+    },
+    {
+      "name": "USGS",
+      "url": "https://landsat.usgs.gov/",
+      "roles": [
+        "producer"
+      ]
+    }
+  ]
+}

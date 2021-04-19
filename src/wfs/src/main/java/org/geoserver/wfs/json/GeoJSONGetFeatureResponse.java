@@ -192,9 +192,16 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
             featuresInfo =
                     encodeSimpleFeatures(jsonWriter, resultsList, isFeatureBounding(), operation);
         } else {
+            List<ComplexGeoJsonWriterOptions> settings =
+                    GeoServerExtensions.extensions(ComplexGeoJsonWriterOptions.class);
+            ComplexGeoJsonWriterOptions chosen = null;
+            for (ComplexGeoJsonWriterOptions setting : settings) {
+                if (setting.canHandle(resultsList)) chosen = setting;
+            }
+            if (chosen == null) chosen = new DefaultComplexGeoJsonWriterOptions();
             // encode collection with complex features
             ComplexGeoJsonWriter complexWriter =
-                    new ComplexGeoJsonWriter(jsonWriter) {
+                    new ComplexGeoJsonWriter(jsonWriter, chosen) {
 
                         @Override
                         protected void writeExtraFeatureProperties(

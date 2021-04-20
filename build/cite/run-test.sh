@@ -3,12 +3,12 @@
 # fail on error
 set -e
 
-TE_LOG_DIR="$TE_BASE/users/root"
+TE_LOG_DIR="$TE_BASE/users/teamengine"
 TE_FORMS_DIR="$TE_BASE/forms"
 
 mkdir -p "$TE_FORMS_DIR"
 
-cd "/root/te_base/bin/unix/"
+cd "/home/teamengine/te_base/bin/unix/"
 
 
 # test.sh comes from https://github.com/opengeospatial/teamengine/blob/master/teamengine-console/src/main/scripts/shell/unix/test.sh

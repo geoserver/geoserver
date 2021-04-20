@@ -9,5 +9,5 @@ services:
 
   teamengine:
     volumes:
-      - ./wcs11/wcs-1.1.1.xml:/root/te_base/forms/wcs-1.1.1.xml
+      - ./wcs11/wcs-1.1.1.xml:/home/teamengine/te_base/forms/wcs-1.1.1.xml
     command: /run-test.sh wcs11

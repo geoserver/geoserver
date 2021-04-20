@@ -11,7 +11,7 @@ services:
 
   teamengine:
     volumes:
-      - ./wfs11/wfs-1.1.0.xml:/root/te_base/forms/wfs-1.1.0.xml
+      - ./wfs11/wfs-1.1.0.xml:/home/teamengine/te_base/forms/wfs-1.1.0.xml
     command: /run-test.sh wfs11
 
   postgres:

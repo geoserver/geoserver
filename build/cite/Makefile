@@ -18,20 +18,20 @@ clean:		## Will Clean the Environment of previous runs.
 	docker-compose down --remove-orphans --rmi all -v
 	docker-compose rm -vfs
 	@echo Cleanning the previous logs.
-	sudo rm -Rf logs/
+	rm -Rf logs/*
 
 build: $(suite)		## Will Build the GeoServer Docker Image for the Environment.
 	@echo Build the GeoServer Docker Image
 	docker-compose -f docker-compose.yml -f ./$(suite)/docker-compose.override.yml \
       build --build-arg GEOSERVER_WEBAPP_SRC=${war_url} geoserver
 
-test: $(suite)		## Will running the Suite test with teamengine.
-    @echo Getting the GeoServer version.
-    docker run -it ogccite/geoserver:$(suite) bash -c 'cd /usr/local/tomcat/webapps/ \
-           && if [ -f geoserver.war ]; then unzip -q geoserver.war; cat META-INF/MANIFEST.MF; \
-           else cat META-INF/MANIFEST.MF; fi'
-	@echo running the Suite test with teamengine
-	docker-compose -f docker-compose.yml -f ./$(suite)/docker-compose.override.yml \
+version: $(suite)   ## Will give the version of the GeoServer on the current docker.
+		@echo Getting the GeoServer version.
+		docker run -i ogccite/geoserver:$(suite) bash -c 'cd /usr/local/tomcat/webapps/ && if [ -f geoserver.war ]; then unzip -q geoserver.war; cat META-INF/MANIFEST.MF; else cat META-INF/MANIFEST.MF; fi'
+
+test: $(suite) | version		## Will running the Suite test with teamengine.
+		@echo running the Suite test with teamengine
+		docker-compose -f docker-compose.yml -f ./$(suite)/docker-compose.override.yml \
       up --force-recreate --exit-code-from teamengine teamengine
 
 webUI:		## Will running the Suite test with teamengine.

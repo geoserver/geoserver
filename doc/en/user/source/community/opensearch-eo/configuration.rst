@@ -83,3 +83,24 @@ The various properties have different usages:
 It is possible to add new product classes as well as changing the build-in ones, but care should
 be taken to keep product classes and database aligned. After any change to the database structure
 remember to "reset" the GeoServer configuration to make it re-scan the table structures.
+
+GeoJSON output templates
+------------------------
+
+The module supports GeoJSON encoding of collections and products according to the  
+<OGC OpenSearch-EO GeoJSON(-LD) Response Encoding Standard`https://docs.opengeospatial.org/is/17-047r1/17-047r1.html`>_.
+
+Give the structure required in output, it's not possible to use the simple features GeoJSON encoders.
+The module is instead using two dedicated :ref:`features templates <community_wfstemplating>`,
+that the user can customize to match the database structure.
+
+The default templates are part of the GeoServer distribution, and are automatically copied to the
+data directory on startup, to allow for customization:
+
+* `$GEOSERER_DATA_DIR/templates/os-eo/products.json` is the `products template <https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/products.json>`_
+* `$GEOSERER_DATA_DIR/templates/os-eo/collections.json` is the `collections template <https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/collections.json>`_
+
+The default templates work against the `default PostGIS database structure <https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-core/src/test/resources/postgis.sql>`_ and
+can be customized to include new properties to follow eventual database modifications.
+
+More information about writing templates can be found in the :ref:`templates guide <oseotemplates>`.

@@ -902,8 +902,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     @Test
     public void testCoverageReaderInputConverterInvalidURI() throws IOException {
         Assume.assumeTrue(SystemUtils.IS_OS_WINDOWS);
-        String fileURL =
-                MockData.class.getResource("tazdem.tiff").getFile().replaceAll("/", "\\\\");
+        String fileURL = MockData.class.getResource("tazdem.tiff").getFile().replace("/", "\\");
         fileURL = "file://" + fileURL;
         // the file URL is not now a valid URI but the converter should be able to convert it
         Catalog catalog = getCatalog();

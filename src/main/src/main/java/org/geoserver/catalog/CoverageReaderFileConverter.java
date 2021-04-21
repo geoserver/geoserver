@@ -82,7 +82,7 @@ public class CoverageReaderFileConverter implements CoverageReaderInputObjectCon
             URI uri = new URL(input).toURI();
             canConvert = uri.getScheme() == null || "file".equalsIgnoreCase(uri.getScheme());
         } catch (MalformedURLException | URISyntaxException | IllegalArgumentException e) {
-            if (input.startsWith("file")) {
+            if (input.startsWith("file:")) {
                 canConvert = true;
             } else {
                 // lets see if we have a normal file path

@@ -5,8 +5,10 @@
 package org.geoserver.catalog;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.geoserver.platform.resource.Files;
@@ -74,14 +76,21 @@ public class CoverageReaderFileConverter implements CoverageReaderInputObjectCon
      *     input to File.
      */
     protected boolean canConvert(String input) {
-        // Check to see if our "url" points to a file or not, otherwise we use the string itself for
-        // reading
+        boolean canConvert = false;
+        // Check to see if our "url" points to a file or not.
         try {
-            URI uri = new URI(input);
-            return uri.getScheme() == null || "file".equalsIgnoreCase(uri.getScheme());
-        } catch (URISyntaxException e) {
-            return false;
+            URI uri = new URL(input).toURI();
+            canConvert = uri.getScheme() == null || "file".equalsIgnoreCase(uri.getScheme());
+        } catch (MalformedURLException | URISyntaxException | IllegalArgumentException e) {
+            if (input.startsWith("file:")) {
+                canConvert = true;
+            } else {
+                // lets see if we have a normal file path
+                File file = new File(input);
+                canConvert = file.exists() || !file.isAbsolute();
+            }
         }
+        return canConvert;
     }
 
     /**

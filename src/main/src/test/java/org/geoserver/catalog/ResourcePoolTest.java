@@ -47,6 +47,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.easymock.Capture;
 import org.easymock.CaptureType;
@@ -96,6 +97,7 @@ import org.geotools.util.URLs;
 import org.geotools.util.Version;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.locationtech.jts.geom.Point;
@@ -886,6 +888,54 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
         GridCoverageReader reader = pool.getGridCoverageReader(info, null);
 
+        // the CoverageReaderFileConverter should have successfully converted the URL string to a
+        // File object
+        assertTrue(reader.getSource() instanceof File);
+    }
+
+    /**
+     * Tests that even if the input string cannot be parsed as a valid URI reference, but the it is
+     * nontheless a valid file URL, the CoverageReaderFileConverter is able to do the conversion.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testCoverageReaderInputConverterInvalidURI() throws IOException {
+        Assume.assumeTrue(SystemUtils.IS_OS_WINDOWS);
+        String fileURL = MockData.class.getResource("tazdem.tiff").getFile().replace("/", "\\");
+        fileURL = "file://" + fileURL;
+        // the file URL is not now a valid URI but the converter should be able to convert it
+        Catalog catalog = getCatalog();
+        ResourcePool pool = new ResourcePool(catalog);
+
+        CoverageStoreInfo info = catalog.getFactory().createCoverageStore();
+        info.setType("GeoTIFF");
+        info.setURL(fileURL);
+
+        GridCoverageReader reader = pool.getGridCoverageReader(info, null);
+        // the CoverageReaderFileConverter should have successfully converted the URL string to a
+        // File object
+        assertTrue(reader.getSource() instanceof File);
+    }
+
+    /**
+     * Tests that even if the input string is a valid file path, the CoverageReaderFileConverter is
+     * able to do the conversion.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testCoverageReaderInputConverterFilePath() throws IOException {
+        String fileURL = MockData.class.getResource("tazdem.tiff").getFile();
+        // the file URL is not now a valid URI but the converter should be able to convert it
+        Catalog catalog = getCatalog();
+        ResourcePool pool = new ResourcePool(catalog);
+
+        CoverageStoreInfo info = catalog.getFactory().createCoverageStore();
+        info.setType("GeoTIFF");
+        info.setURL(fileURL);
+
+        GridCoverageReader reader = pool.getGridCoverageReader(info, null);
         // the CoverageReaderFileConverter should have successfully converted the URL string to a
         // File object
         assertTrue(reader.getSource() instanceof File);

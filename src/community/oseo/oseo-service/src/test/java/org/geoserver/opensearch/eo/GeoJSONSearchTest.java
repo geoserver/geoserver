@@ -12,8 +12,10 @@ import static org.junit.Assert.assertTrue;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.opensearch.eo.response.GeoJSONSearchResponse;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.resource.Resource;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
@@ -21,6 +23,14 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
 
     private static final String ENCODED_GEOJSON =
             ResponseUtils.urlEncode(GeoJSONSearchResponse.MIME);
+
+    @Test
+    public void testTemplatesCopy() throws Exception {
+        GeoServerDataDirectory dd = getDataDirectory();
+        Resource templates = dd.get("templates/os-eo/");
+        assertEquals(Resource.Type.RESOURCE, templates.get("collections.json").getType());
+        assertEquals(Resource.Type.RESOURCE, templates.get("products.json").getType());
+    }
 
     @Test
     public void testSearchCollections() throws Exception {

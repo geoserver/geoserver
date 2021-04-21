@@ -4,7 +4,12 @@
  */
 package org.geoserver.opensearch.eo;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.config.impl.GeoServerLifecycleHandler;
+import org.geoserver.platform.ContextLoadedEvent;
+import org.geotools.util.logging.Logging;
+import org.springframework.context.ApplicationListener;
 
 /**
  * Forces reload of the templates on big configuration changes.
@@ -13,7 +18,10 @@ import org.geoserver.config.impl.GeoServerLifecycleHandler;
  * database) or when the OpenSearchAccess is modified, or when the datastore that
  * JDBCOpenSearchAccess is modified.
  */
-public class TemplatesReloader implements GeoServerLifecycleHandler {
+public class TemplatesReloader
+        implements GeoServerLifecycleHandler, ApplicationListener<ContextLoadedEvent> {
+    static final Logger LOGGER = Logging.getLogger(TemplatesReloader.class);
+
     AbstractTemplates templates;
 
     public TemplatesReloader(AbstractTemplates templates) {
@@ -22,7 +30,7 @@ public class TemplatesReloader implements GeoServerLifecycleHandler {
 
     @Override
     public void onReset() {
-        this.templates.reloadTemplates();
+        reload();
     }
 
     @Override
@@ -33,6 +41,19 @@ public class TemplatesReloader implements GeoServerLifecycleHandler {
 
     @Override
     public void onReload() {
-        this.templates.reloadTemplates();
+        reload();
+    }
+
+    @Override
+    public void onApplicationEvent(ContextLoadedEvent contextStartedEvent) {
+        reload();
+    }
+
+    private void reload() {
+        try {
+            this.templates.reloadTemplates();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Failed to reload templates", e);
+        }
     }
 }

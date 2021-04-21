@@ -11,9 +11,7 @@
             <includes>
                 <include>gs-gwc-mbtiles-*.jar</include>
                 <include>gt-mbtiles-*.jar</include>
-                <include>sqlite*.jar</include>
-                <include>jackson-annotation*.jar</include>
-                <include>jackson-databind*.jar</include>
+                <include>gwc-mbtiles-*.jar</include>
                 <include>java-vector-tile*.jar</include>
                 <include>protobuf-java*.jar</include>
             </includes>

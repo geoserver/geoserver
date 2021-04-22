@@ -51,7 +51,7 @@ class ComplexGeoJsonWriter {
     private CoordinateReferenceSystem crs;
     private long featuresCount = 0;
 
-    private ComplexGeoJsonWriterOptions settings;
+    private final ComplexGeoJsonWriterOptions settings;
 
     public ComplexGeoJsonWriter(GeoJSONBuilder jsonWriter, ComplexGeoJsonWriterOptions settings) {
         this.jsonWriter = jsonWriter;

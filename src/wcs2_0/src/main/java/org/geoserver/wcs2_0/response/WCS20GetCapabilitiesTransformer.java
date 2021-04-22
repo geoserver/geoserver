@@ -171,7 +171,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         public void encode(Object o) throws IllegalArgumentException {
             if (!(o instanceof GetCapabilitiesType)) {
                 throw new IllegalArgumentException(
-                        "Not a GetCapabilitiesType: " + o != null ? o.toString() : "null");
+                        "Not a GetCapabilitiesType: " + (o != null ? o.toString() : "null"));
             }
 
             this.request = (GetCapabilitiesType) o;
@@ -233,7 +233,8 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                             WCS.NAMESPACE,
                             "http://schemas.opengis.net/wcs/2.0/wcsGetCapabilities.xsd");
 
-            // final String locationDef = WCS.NAMESPACE + " " + buildSchemaURL(request.getBaseUrl(),
+            // final String locationDef = WCS.NAMESPACE + " " +
+            // buildSchemaURL(request.getBaseUrl(),
             // "wcs/2.0/wcsGetCapabilities.xsd");//
             attributes.addAttribute("", "xsi:schemaLocation", "xsi:schemaLocation", "", location);
 
@@ -341,7 +342,8 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             element("ows:Profile", "http://www.opengis.net/spec/WCS/2.0/conf/core");
             element(
                     "ows:Profile",
-                    "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0.1"); // requirement #1 in OGC 09-147r3
+                    "http://www.opengis.net/spec/WCS_protocol-binding_get-kvp/1.0.1"); // requirement #1
+            // in OGC 09-147r3
             element("ows:Profile", "http://www.opengis.net/spec/WCS_protocol-binding_post-xml/1.0");
 
             // don't believe we support this one
@@ -351,12 +353,17 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                     "ows:Profile",
                     "http://www.opengis.net/spec/WCS_service-extension_crs/1.0/conf/crs-gridded-coverage");
 
-            // element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding/1.0/conf/coverage-encoding"); // TODO: check specs and URL
+            // element("ows:Profile","http://www.opengis.net/spec/WCS_coverage-encoding/1.0/conf/coverage-encoding");
+            // // TODO: check specs and URL
 
             // === GeoTiff encoding extension
             element(
                     "ows:Profile",
-                    " http://www.opengis.net/spec/WCS_geotiff-coverages/1.0/conf/geotiff-coverage"); // TODO: check specs and URL
+                    " http://www.opengis.net/spec/WCS_geotiff-coverages/1.0/conf/geotiff-coverage"); // TODO:
+            // check
+            // specs
+            // and
+            // URL
 
             // === GML encoding
             element("ows:Profile", "http://www.opengis.net/spec/GMLCOV/1.0/conf/gml-coverage");
@@ -379,7 +386,10 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                     "http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/interpolation");
             element(
                     "ows:Profile",
-                    "http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/interpolation-per-axis"); // TODO for time axis
+                    "http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/interpolation-per-axis"); // TODO
+            // for
+            // time
+            // axis
             element(
                     "ows:Profile",
                     "http://www.opengis.net/spec/WCS_service-extension_interpolation/1.0/conf/nearest-neighbor");
@@ -448,8 +458,8 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             start("ows:Constraint", attributes);
             start("ows:AllowedValues");
             element("ows:Value", "XML");
-            //            element("ows:Value", "text/xml");
-            //            element("ows:Value", "application/xml");
+            // element("ows:Value", "text/xml");
+            // element("ows:Value", "application/xml");
             end("ows:AllowedValues");
             end("ows:Constraint");
 
@@ -694,9 +704,9 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         }
 
         private void handleLanguages() {
-            //            start("ows:Languages");
-            //            // TODO
-            //            end("ows:Languages");
+            // start("ows:Languages");
+            // // TODO
+            // end("ows:Languages");
         }
 
         /** Writes the element if and only if the content is not null and not empty */

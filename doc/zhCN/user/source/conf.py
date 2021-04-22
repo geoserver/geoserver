@@ -210,7 +210,7 @@ html_context = {
   'display_github': True,
   'github_user': 'geoserver',
   'github_repo': 'geoserver',
-  'github_version': 'master',
+  'github_version': 'main',
   'conf_py_path': 'doc/zhCN/user/source'
 }
 

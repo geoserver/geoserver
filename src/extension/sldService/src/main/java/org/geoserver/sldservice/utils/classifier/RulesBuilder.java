@@ -240,10 +240,8 @@ public class RulesBuilder {
                     e);
         }
         int numberOfDistinctValues = uniqueVisitor.getResult().toInt();
-        boolean result = false;
-        if (numberOfDistinctValues > maxNumberOfDistinctValues) result = true;
 
-        return result;
+        return numberOfDistinctValues > maxNumberOfDistinctValues;
     }
 
     /**

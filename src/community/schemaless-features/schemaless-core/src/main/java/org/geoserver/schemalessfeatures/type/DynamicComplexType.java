@@ -19,4 +19,6 @@ public interface DynamicComplexType extends ComplexType {
      * @param descriptor the descriptor to add
      */
     void addPropertyDescriptor(PropertyDescriptor descriptor);
+
+    void removePropertyDescriptor(PropertyDescriptor descriptor);
 }

@@ -16,7 +16,9 @@
     ],
     "type": "Point"
   },
-  "nullableField": null,
+  "anotherNullableField": {
+    "value": null
+  },
   "measurements": [
     {
       "name": "temp",

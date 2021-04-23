@@ -6,6 +6,8 @@
   "groupAttribute": "groupAttribute1",
   "groupAttribute2": "groupAttribute22",
   "numericValue": 47.0,
+  "nullableField": "notNull2",
+
   "contact": {
     "mail": "station2@mail.com"
   },

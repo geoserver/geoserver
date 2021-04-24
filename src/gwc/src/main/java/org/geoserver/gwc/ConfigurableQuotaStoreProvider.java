@@ -49,8 +49,7 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
         this.jdbcConfigManager = jdbcConfigManager;
 
         boolean disabled =
-                Boolean.valueOf(GeoServerExtensions.getProperty(GWC_DISKQUOTA_DISABLED))
-                        .booleanValue();
+                Boolean.parseBoolean(GeoServerExtensions.getProperty(GWC_DISKQUOTA_DISABLED));
         if (disabled) {
             LOGGER.warning(
                     " -- Found environment variable "

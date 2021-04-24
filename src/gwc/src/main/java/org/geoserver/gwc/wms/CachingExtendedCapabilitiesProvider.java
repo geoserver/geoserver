@@ -64,7 +64,7 @@ public class CachingExtendedCapabilitiesProvider implements ExtendedCapabilities
     }
 
     private boolean isTiled(GetCapabilitiesRequest request) {
-        return Boolean.valueOf(request.getRawKvp().get("TILED")).booleanValue()
+        return Boolean.parseBoolean(request.getRawKvp().get("TILED"))
                 || !gwc.getConfig().isRequireTiledParameter();
     }
 

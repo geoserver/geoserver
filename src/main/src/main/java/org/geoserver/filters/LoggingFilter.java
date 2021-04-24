@@ -113,7 +113,7 @@ public class LoggingFilter implements Filter {
     protected boolean getConfigBool(String name, FilterConfig conf) {
         try {
             String value = conf.getInitParameter(name);
-            return Boolean.valueOf(value).booleanValue();
+            return Boolean.parseBoolean(value);
         } catch (Exception e) {
             return false;
         }

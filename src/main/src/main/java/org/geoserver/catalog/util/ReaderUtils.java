@@ -320,7 +320,7 @@ public class ReaderUtils {
             return defaultValue;
         }
 
-        return Boolean.valueOf(value).booleanValue();
+        return Boolean.parseBoolean(value);
     }
 
     /**

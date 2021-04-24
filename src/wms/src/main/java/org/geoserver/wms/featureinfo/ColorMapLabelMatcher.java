@@ -131,12 +131,8 @@ class ColorMapLabelMatcher {
     }
 
     static int getLabelAttributeNameCount(List<ColorMapLabelMatcher> colorMapLabelMatchers) {
-        return Long.valueOf(
-                        colorMapLabelMatchers
-                                .stream()
-                                .filter(l -> l.getAttributeName() == "Label")
-                                .count())
-                .intValue();
+        return (int)
+                colorMapLabelMatchers.stream().filter(l -> l.getAttributeName() == "Label").count();
     }
 
     static boolean isLabelReplacingValue(List<ColorMapLabelMatcher> colorMapLabelMatchers) {

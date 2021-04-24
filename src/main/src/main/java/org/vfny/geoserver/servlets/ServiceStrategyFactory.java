@@ -97,7 +97,7 @@ public class ServiceStrategyFactory implements OutputStrategyFactory, Applicatio
 
                 if (size != null) {
                     try {
-                        partialBufferSize = Integer.valueOf(size).intValue();
+                        partialBufferSize = Integer.parseInt(size);
 
                         if (partialBufferSize <= 0) {
                             LOGGER.warning(

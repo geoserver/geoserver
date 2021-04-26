@@ -50,7 +50,6 @@ import org.geoserver.mapml.xml.Link;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.ProjType;
 import org.geoserver.mapml.xml.RelType;
-import org.geoserver.mapml.xml.UnitType;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -78,7 +77,7 @@ public class MapMLControllerTest extends WMSTestSupport {
         mc = applicationContext.getBean(MapMLController.class);
         mapmlMarshaller = (Jaxb2Marshaller) applicationContext.getBean("mapmlMarshaller");
         HashMap<String, String> m = new HashMap<>();
-        m.put("html", "http://www.w3.org/1999/xhtml/");
+        m.put("html", "http://www.w3.org/1999/xhtml");
 
         NamespaceContext ctx = new SimpleNamespaceContext(m);
         XMLUnit.setXpathNamespaceContext(ctx);
@@ -146,13 +145,35 @@ public class MapMLControllerTest extends WMSTestSupport {
         Catalog cat = getCatalog();
 
         LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
+        ResourceInfo layerMeta = li.getResource();
+        layerMeta.getMetadata().put("mapml.useTiles", true);
+        cat.save(layerMeta);
+        testLayersAndGroupsMapML(li);
+
+        li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
+        layerMeta = li.getResource();
+        layerMeta.getMetadata().put("mapml.useTiles", false);
+        cat.save(layerMeta);
         testLayersAndGroupsMapML(li);
 
         LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroup");
         assertSame(DefaultGeographicCRS.WGS84, lgi.getBounds().getCoordinateReferenceSystem());
         testLayersAndGroupsMapML(lgi);
 
+        lgi = cat.getLayerGroupByName("layerGroup");
+        lgi.getMetadata().put("mapml.useTiles", true);
+        cat.save(lgi);
+        testLayersAndGroupsMapML(lgi);
+
         lgi = cat.getLayerGroupByName(NATURE_GROUP);
+        assertSame(
+                MapMLController.previewTcrsMap.get("OSMTILE").getCRS(),
+                lgi.getBounds().getCoordinateReferenceSystem());
+        testLayersAndGroupsMapML(lgi);
+
+        lgi = cat.getLayerGroupByName(NATURE_GROUP);
+        lgi.getMetadata().put("mapml.useTiles", true);
+        cat.save(lgi);
         assertSame(
                 MapMLController.previewTcrsMap.get("OSMTILE").getCRS(),
                 lgi.getBounds().getCoordinateReferenceSystem());
@@ -280,7 +301,7 @@ public class MapMLControllerTest extends WMSTestSupport {
 
         String result = sw.toString();
         // this tests that the result has had namespaces mapped to minimum possible cruft
-        assertTrue(result.matches("<mapml xmlns=\"http://www.w3.org/1999/xhtml/\">.*"));
+        assertTrue(result.matches("<mapml xmlns=\"http://www.w3.org/1999/xhtml\">.*"));
 
         BodyContent b = mapml.getBody();
         assertNotNull("mapML method must return MapML body in response", b);
@@ -298,8 +319,10 @@ public class MapMLControllerTest extends WMSTestSupport {
                 assertNotNull("extent/link@href must not be null/empty", link.getTref());
                 assertFalse("extent/link@href must not be null/empty", link.getTref().isEmpty());
                 assertTrue(
-                        "link rel for this layer group must bel image or query",
-                        (link.getRel() == RelType.IMAGE || link.getRel() == RelType.QUERY));
+                        "link rel for this layer group must bel image, query or tile",
+                        (link.getRel() == RelType.IMAGE
+                                || link.getRel() == RelType.QUERY
+                                || link.getRel() == RelType.TILE));
                 // lots of stuff that is better covered by validation.
             } else if (o instanceof Input) {
                 Input input = (Input) o;
@@ -309,9 +332,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                                 || input.getType() == InputType.LOCATION
                                 || input.getType() == InputType.WIDTH
                                 || input.getType() == InputType.HEIGHT);
-                if (input.getType() == InputType.LOCATION
-                        && input.getUnits() == UnitType.PCRS
-                        && input.getAxis() == AxisType.EASTING) {
+                if (input.getType() == InputType.LOCATION && input.getAxis() == AxisType.EASTING) {
                     assertTrue(
                             "input[type=location/@min must equal -2.0037508342789244E7",
                             "-2.0037508342789244E7".equalsIgnoreCase(input.getMin()));
@@ -319,7 +340,6 @@ public class MapMLControllerTest extends WMSTestSupport {
                             "input[type=location/@max must equal 2.0037508342789244E7",
                             "2.0037508342789244E7".equalsIgnoreCase(input.getMax()));
                 } else if (input.getType() == InputType.LOCATION
-                        && input.getUnits() == UnitType.PCRS
                         && input.getAxis() == AxisType.NORTHING) {
                     assertTrue(
                             "input[type=location/@min must equal -2.0037508342780735E7",

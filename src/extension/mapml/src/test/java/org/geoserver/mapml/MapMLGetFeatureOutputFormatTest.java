@@ -41,7 +41,7 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
         HashMap<String, String> m = new HashMap<>();
-        m.put("html", "http://www.w3.org/1999/xhtml/");
+        m.put("html", "http://www.w3.org/1999/xhtml");
 
         NamespaceContext ctx = new SimpleNamespaceContext(m);
         XMLUnit.setXpathNamespaceContext(ctx);
@@ -159,7 +159,7 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
                 assertXpathEvaluatesTo(
                         "1", "count(//html:meta[@name='cs'][@content='" + cs + "'])", doc);
                 assertXpathEvaluatesTo("1", "count(//html:meta[@name='projection'])", doc);
-                TiledCRSParams tcrs = lookupTCRS(code);
+                TiledCRSParams tcrs = TiledCRSConstants.lookupTCRS(code);
                 CoordinateReferenceSystem crs = CRS.decode(code);
                 String cite = (crs instanceof GeodeticCRS) ? "MapML:" : "";
                 String proj = tcrs == null ? cite + code : tcrs.getName();
@@ -190,14 +190,6 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
             }
         } catch (Exception e) {
         }
-    }
-    /**
-     * @param crsCode - an official CRS code / srsName to look up
-     * @return the TCRS corresponding to the crsCode, long or short, or null if not found
-     */
-    private TiledCRSParams lookupTCRS(String crsCode) {
-        return TiledCRSConstants.tiledCRSDefinitions.getOrDefault(
-                crsCode, TiledCRSConstants.tiledCRSBySrsName.get(crsCode));
     }
 
     @Test
@@ -321,6 +313,13 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
 
     @Test
     public void testMapMLOutputFormatCoordinates() throws Exception {
+        FeatureTypeInfo layerInfo = getFeatureTypeInfo(MockData.FIFTEEN);
+        MetadataMap layerMeta = layerInfo.getMetadata();
+        layerMeta.clear();
+        getCatalog().save(layerInfo);
+        // why is xpath null here? Need a new instance or we get NPE.
+        xpath = XMLUnit.newXpathEngine();
+
         HashMap<String, String> vars = new HashMap<>();
         vars.put("service", "wfs");
         vars.put("version", "1.0");
@@ -332,6 +331,39 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         Document doc = getMapML("wfs", vars);
         assertEquals("mapml", doc.getDocumentElement().getNodeName());
         assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
+        String coords =
+                xpath.evaluate("//html:feature[@id='Fifteen.1']//html:coordinates/text()", doc);
+        assertEquals(
+                "numDecimals unset should return 8 digits of precision",
+                "329290.83733147 -5812472.16880127",
+                coords);
+
+        layerInfo = getFeatureTypeInfo(MockData.FIFTEEN);
+        layerInfo.setNumDecimals(4);
+        getCatalog().save(layerInfo);
+
+        doc = getMapML("wfs", vars);
+        assertEquals("mapml", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
+        coords = xpath.evaluate("//html:feature[@id='Fifteen.1']//html:coordinates/text()", doc);
+        assertEquals(
+                "numDecimals=4 should return 4 digits of precision",
+                "329290.8373 -5812472.1688",
+                coords);
+
+        // be really sure
+        layerInfo = getFeatureTypeInfo(MockData.FIFTEEN);
+        layerInfo.setNumDecimals(2);
+        getCatalog().save(layerInfo);
+
+        doc = getMapML("wfs", vars);
+        assertEquals("mapml", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
+        coords = xpath.evaluate("//html:feature[@id='Fifteen.1']//html:coordinates/text()", doc);
+        assertEquals(
+                "numDecimals=2 should return 2 digits of precision",
+                "329290.84 -5812472.17",
+                coords);
     }
     /**
      * Executes a request using the GET method and returns the result as an MapML document.

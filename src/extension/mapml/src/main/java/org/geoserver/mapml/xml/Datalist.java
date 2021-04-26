@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "datalist", namespace = "http://www.w3.org/1999/xhtml/")
+@XmlRootElement(name = "datalist", namespace = "http://www.w3.org/1999/xhtml")
 public class Datalist {
 
     @XmlElement(name = "option", required = true)

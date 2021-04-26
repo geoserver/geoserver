@@ -66,6 +66,8 @@ public class TiledCRSConstants {
                         WGS84_TILE_SIZE,
                         WGS84_TILE_ORIGIN,
                         WGS84_SCALES));
+        tiledCRSDefinitions.put(WGS84_SRSNAME, tiledCRSDefinitions.get(WGS84_NAME));
+        tiledCRSDefinitions.put(WGS84_CODE, tiledCRSDefinitions.get(WGS84_NAME));
         tiledCRSBySrsName.put(WGS84_SRSNAME, tiledCRSDefinitions.get(WGS84_NAME));
 
         final String OSMTILE_NAME = "OSMTILE";
@@ -120,6 +122,8 @@ public class TiledCRSConstants {
                         OSMTILE_TILE_SIZE,
                         OSMTILE_TILE_ORIGIN,
                         OSMTILE_SCALES));
+        tiledCRSDefinitions.put(OSMTILE_SRSNAME, tiledCRSDefinitions.get(OSMTILE_NAME));
+        tiledCRSDefinitions.put(OSMTILE_CODE, tiledCRSDefinitions.get(OSMTILE_NAME));
         tiledCRSBySrsName.put(OSMTILE_SRSNAME, tiledCRSDefinitions.get(OSMTILE_NAME));
 
         final String CBMTILE_NAME = "CBMTILE";
@@ -174,6 +178,8 @@ public class TiledCRSConstants {
                         CBMTILE_TILE_SIZE,
                         CBMTILE_TILE_ORIGIN,
                         CBMTILE_SCALES));
+        tiledCRSDefinitions.put(CBMTILE_SRSNAME, tiledCRSDefinitions.get(CBMTILE_NAME));
+        tiledCRSDefinitions.put(CBMTILE_CODE, tiledCRSDefinitions.get(CBMTILE_NAME));
         tiledCRSBySrsName.put(CBMTILE_SRSNAME, tiledCRSDefinitions.get(CBMTILE_NAME));
 
         /* Arctic Polar Stereographic, origin and scales defined by map service at http://maps8.arcgisonline.com/arcgis/rest/services/Arctic_Polar_Ocean_Base/MapServer */
@@ -224,14 +230,23 @@ public class TiledCRSConstants {
                         APSTILE_TILE_SIZE,
                         APSTILE_TILE_ORIGIN,
                         APSTILE_SCALES));
+        tiledCRSDefinitions.put(APSTILE_SRSNAME, tiledCRSDefinitions.get(APSTILE_NAME));
+        tiledCRSDefinitions.put(APSTILE_CODE, tiledCRSDefinitions.get(APSTILE_NAME));
         tiledCRSBySrsName.put(APSTILE_SRSNAME, tiledCRSDefinitions.get(APSTILE_NAME));
     }
     /**
-     * @param crsCode - an official CRS code / srsName to look up
-     * @return the TCRS corresponding to the crsCode, long or short, or null if not found
+     * @param identifier - an official CRS code / srsName OR TCRS NAME to look up
+     * @return the TCRS corresponding to the code, long or short, or null if not found
      */
-    public static TiledCRSParams lookupTCRS(String crsCode) {
-        return TiledCRSConstants.tiledCRSDefinitions.getOrDefault(
-                crsCode, TiledCRSConstants.tiledCRSBySrsName.get(crsCode));
+    public static TiledCRSParams lookupTCRS(String identifier) {
+        return TiledCRSConstants.tiledCRSDefinitions.get(identifier);
+    }
+    /**
+     * @param code - an official CRS code / srsName OR a TCRS name (e.g. OSMTILE) to look up
+     * @return the TCRS name corresponding to the code, long or short, or null if not found
+     */
+    public static String lookupTCRSName(String code) {
+        TiledCRSParams tcrs = lookupTCRS(code);
+        return tcrs != null ? tcrs.getName() : null;
     }
 }

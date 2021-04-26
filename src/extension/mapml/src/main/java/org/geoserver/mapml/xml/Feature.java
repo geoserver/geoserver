@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType
-@XmlRootElement(name = "feature", namespace = "http://www.w3.org/1999/xhtml/")
+@XmlRootElement(name = "feature", namespace = "http://www.w3.org/1999/xhtml")
 public class Feature {
 
     //    @XmlElementRefs({
@@ -58,20 +58,20 @@ public class Feature {
     @XmlElement(
         name = "featurecaption",
         required = false,
-        namespace = "http://www.w3.org/1999/xhtml/"
+        namespace = "http://www.w3.org/1999/xhtml"
     )
     protected String featurecaption;
 
-    @XmlElement(name = "geometry", required = false, namespace = "http://www.w3.org/1999/xhtml/")
+    @XmlElement(name = "geometry", required = false, namespace = "http://www.w3.org/1999/xhtml")
     protected GeometryContent geometry;
 
-    @XmlElement(name = "bbox", required = false, namespace = "http://www.w3.org/1999/xhtml/")
+    @XmlElement(name = "bbox", required = false, namespace = "http://www.w3.org/1999/xhtml")
     protected JAXBElement bbox;
 
-    @XmlElement(name = "image", required = false, namespace = "http://www.w3.org/1999/xhtml/")
+    @XmlElement(name = "image", required = false, namespace = "http://www.w3.org/1999/xhtml")
     protected Image image;
 
-    @XmlElement(name = "properties", required = false, namespace = "http://www.w3.org/1999/xhtml/")
+    @XmlElement(name = "properties", required = false, namespace = "http://www.w3.org/1999/xhtml")
     protected PropertyContent properties;
 
     @XmlAttribute(name = "id")

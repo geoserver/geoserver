@@ -117,11 +117,9 @@ export class MapArea extends HTMLAreaElement {
       } else if (!this.shape || this.shape === 'rect') {
         var bounds = L.latLngBounds(map.containerPointToLatLng(points[0]), map.containerPointToLatLng(points[1]));
         this._feature = L.rectangle(bounds, options).addTo(map);
-      } else if (this.shape === 'line') {
-        this._feature = L.polyline(this._pointsToLatLngs(points),options).addTo(map);
       } else if (this.shape === 'poly') {
         this._feature = L.polygon(this._pointsToLatLngs(points),options).addTo(map);
-      } else if (this.shape === 'default') {
+      } else {
         // whole initial area of map is a hyperlink
         this._feature = L.rectangle(map.getBounds(),options).addTo(map);
       }

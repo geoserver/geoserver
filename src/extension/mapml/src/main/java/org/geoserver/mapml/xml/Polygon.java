@@ -41,7 +41,7 @@ public class Polygon {
     @XmlElementRef(
         name = "coordinates",
         type = JAXBElement.class,
-        namespace = "http://www.w3.org/1999/xhtml/"
+        namespace = "http://www.w3.org/1999/xhtml"
     )
     protected List<JAXBElement<List<String>>> threeOrMoreCoordinatePairs;
 

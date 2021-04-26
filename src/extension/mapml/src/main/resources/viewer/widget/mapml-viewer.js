@@ -68,10 +68,17 @@ export class MapViewer extends HTMLElement {
   set projection(val) {
     if(val && M[val]){
       this.setAttribute('projection', val);
-      this.dispatchEvent(new CustomEvent('createmap'));
-    } else {
-      throw new Error("Undefined Projection");
-    }
+      if (this._map && this._map.options.projection !== val){
+        this._map.options.crs = M[val];
+        this._map.options.projection = val;
+        for(let layer of this.querySelectorAll("layer-")){
+          layer.removeAttribute("disabled");
+          let reAttach = this.removeChild(layer);
+          this.appendChild(reAttach);
+        }
+        if(this._debug) for(let i = 0; i<2;i++) this.toggleDebug();
+      } else this.dispatchEvent(new CustomEvent('createmap'));
+    } else throw new Error("Undefined Projection");
   }
   get zoom() {
     return this.hasAttribute("zoom") ? this.getAttribute("zoom") : 0;
@@ -224,7 +231,9 @@ export class MapViewer extends HTMLElement {
     
           this.setControls(false,false,true);
           this._crosshair = M.crosshair().addTo(this._map);
-    
+          
+          // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
+          this.setAttribute('role', 'application');
           // Make the Leaflet container element programmatically identifiable
           // (https://github.com/Leaflet/Leaflet/issues/7193).
           this._container.setAttribute('role', 'region');
@@ -481,8 +490,7 @@ export class MapViewer extends HTMLElement {
   }
 
   toggleDebug(){
-    let mapEl = this;
-    if(mapEl._debug){
+    if(this._debug){
       this._debug.remove();
       this._debug = undefined;
     } else {
@@ -505,8 +513,8 @@ export class MapViewer extends HTMLElement {
     }
   }
   zoomTo(lat, lon, zoom) {
-    zoom = Number.isInteger(zoom)? zoom:this.zoom;
-    var location = new L.LatLng(lat,lon);
+    zoom = Number.isInteger(+zoom) ? +zoom : this.zoom;
+    let location = new L.LatLng(+lat, +lon);
     this._map.setView(location, zoom);
     this.zoom = zoom;
     this.lat = location.lat;
@@ -575,11 +583,12 @@ export class MapViewer extends HTMLElement {
 
   defineCustomProjection(jsonTemplate) {
     let t = JSON.parse(jsonTemplate);
-    if (t === undefined || !t.code || !t.proj4string || !t.projection || !t.resolutions || !t.origin || !t.bounds) throw new Error('Incomplete TCRS Definition');
+    if (t === undefined || !t.proj4string || !t.projection || !t.resolutions || !t.origin || !t.bounds) throw new Error('Incomplete TCRS Definition');
+    if (t.projection.indexOf(":") >= 0) throw new Error('":" is not permitted in projection name');
     if (M[t.projection.toUpperCase()]) return t.projection.toUpperCase();
     let tileSize = [256, 512, 1024, 2048, 4096].includes(t.tilesize)?t.tilesize:256;
 
-    M[t.projection] = new L.Proj.CRS(t.code, t.proj4string, {
+    M[t.projection] = new L.Proj.CRS(t.projection, t.proj4string, {
       origin: t.origin,
       resolutions: t.resolutions,
       bounds: L.bounds(t.bounds),
@@ -679,28 +688,6 @@ export class MapViewer extends HTMLElement {
     });      //creates crs using L.Proj
     M[t.projection.toUpperCase()] = M[t.projection]; //adds the projection uppercase to global M
     return t.projection;
-  }
-  
-  _ready() {
-    // when used in a custom element, the leaflet script element is hidden inside
-    // the import's shadow dom.
-    // this might not work and may not be necessary in standard custom elements
-    L.Icon.Default.imagePath = (function () {
-      var imp = document.querySelector('link[rel="import"][href*="web-map.html"]'),
-        doc = imp ? imp.import : document,
-        scripts = doc.getElementsByTagName('script'),
-        leafletRe = /[\/^]leaflet[\-\._]?([\w\-\._]*)\.js\??/;
-
-      var i, len, src, path;
-
-      for (i = 0, len = scripts.length; i < len; i++) {
-        src = scripts[i].src;
-        if (src.match(leafletRe)) {
-          path = src.split(leafletRe)[0];
-          return (path ? path + '/' : '') + 'images';
-        }
-      }
-    }());
   }
 }
 // need to provide options { extends: ... }  for custom built-in elements

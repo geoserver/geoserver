@@ -14,6 +14,7 @@ import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.GeometryContent;
 import org.geoserver.mapml.xml.ObjectFactory;
 import org.geoserver.mapml.xml.PropertyContent;
+import org.geoserver.wfs.json.RoundingUtil;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.opengis.feature.simple.SimpleFeature;
@@ -33,13 +34,15 @@ public class MapMLGenerator {
 
     static ObjectFactory factory = new ObjectFactory();
 
+    private int numDecimals = 6;
+
     /**
      * @param sf a feature
      * @param featureCaptionTemplate - template optionally containing ${placeholders}. Can be null.
      * @return the feature
      * @throws IOException - IOException
      */
-    public static Feature buildFeature(SimpleFeature sf, String featureCaptionTemplate)
+    public Feature buildFeature(SimpleFeature sf, String featureCaptionTemplate)
             throws IOException {
 
         Feature f = new Feature();
@@ -59,7 +62,7 @@ public class MapMLGenerator {
 
         StringBuilder sb = new StringBuilder();
         sb.append(
-                "<table xmlns=\"http://www.w3.org/1999/xhtml/\"><thead><tr>"
+                "<table xmlns=\"http://www.w3.org/1999/xhtml\"><thead><tr>"
                         + "<th role=\"columnheader\" scope=\"col\">Property name</th>"
                         + "<th role=\"columnheader\" scope=\"col\">Property value</th>"
                         + "</tr></thead><tbody>");
@@ -90,7 +93,7 @@ public class MapMLGenerator {
         return f;
     }
 
-    private static class AttributeValueResolver {
+    private class AttributeValueResolver {
 
         private final Constants constants = new Constants(PlaceholderConfigurerSupport.class);
         private final PropertyPlaceholderHelper helper =
@@ -146,8 +149,7 @@ public class MapMLGenerator {
      * @return
      * @throws IOException - IOException
      */
-    public static GeometryContent buildGeometry(org.locationtech.jts.geom.Geometry g)
-            throws IOException {
+    public GeometryContent buildGeometry(org.locationtech.jts.geom.Geometry g) throws IOException {
         GeometryContent geom = new GeometryContent();
         if (g instanceof org.locationtech.jts.geom.Point) {
             geom.setGeometryContent(
@@ -188,8 +190,7 @@ public class MapMLGenerator {
      * @return
      * @throws IOException - IOException
      */
-    private static Object buildSpecificGeom(org.locationtech.jts.geom.Geometry g)
-            throws IOException {
+    private Object buildSpecificGeom(org.locationtech.jts.geom.Geometry g) throws IOException {
         switch (g.getGeometryType()) {
             case "Point":
                 return buildPoint((org.locationtech.jts.geom.Point) g);
@@ -215,7 +216,7 @@ public class MapMLGenerator {
      * @return
      * @throws IOException - IOException
      */
-    private static org.geoserver.mapml.xml.GeometryCollection buildGeometryCollection(
+    private org.geoserver.mapml.xml.GeometryCollection buildGeometryCollection(
             org.locationtech.jts.geom.GeometryCollection gc) throws IOException {
         org.geoserver.mapml.xml.GeometryCollection geomColl =
                 new org.geoserver.mapml.xml.GeometryCollection();
@@ -229,7 +230,7 @@ public class MapMLGenerator {
      * @param mpg a JTS MultiPolygo
      * @return
      */
-    private static org.geoserver.mapml.xml.MultiPolygon buildMultiPolygon(
+    private org.geoserver.mapml.xml.MultiPolygon buildMultiPolygon(
             org.locationtech.jts.geom.MultiPolygon mpg) {
         org.geoserver.mapml.xml.MultiPolygon multiPoly = new org.geoserver.mapml.xml.MultiPolygon();
         List<org.geoserver.mapml.xml.Polygon> polys = multiPoly.getPolygon();
@@ -242,7 +243,7 @@ public class MapMLGenerator {
      * @param ml a JTS MultiLineString
      * @return
      */
-    private static org.geoserver.mapml.xml.MultiLineString buildMultiLineString(
+    private org.geoserver.mapml.xml.MultiLineString buildMultiLineString(
             org.locationtech.jts.geom.MultiLineString ml) {
         org.geoserver.mapml.xml.MultiLineString multiLine =
                 new org.geoserver.mapml.xml.MultiLineString();
@@ -261,7 +262,7 @@ public class MapMLGenerator {
      * @param l a JTS LineString
      * @return
      */
-    private static org.geoserver.mapml.xml.LineString buildLineString(
+    private org.geoserver.mapml.xml.LineString buildLineString(
             org.locationtech.jts.geom.LineString l) {
         org.geoserver.mapml.xml.LineString lineString = new org.geoserver.mapml.xml.LineString();
         List<String> lsCoords = lineString.getCoordinates();
@@ -272,7 +273,7 @@ public class MapMLGenerator {
      * @param mp a JTS MultiPoint
      * @return
      */
-    private static org.geoserver.mapml.xml.MultiPoint buildMultiPoint(
+    private org.geoserver.mapml.xml.MultiPoint buildMultiPoint(
             org.locationtech.jts.geom.MultiPoint mp) {
         org.geoserver.mapml.xml.MultiPoint multiPoint = new org.geoserver.mapml.xml.MultiPoint();
         List<String> mpCoords = multiPoint.getCoordinates();
@@ -283,17 +284,20 @@ public class MapMLGenerator {
      * @param p a JTS Point
      * @return
      */
-    private static org.geoserver.mapml.xml.Point buildPoint(org.locationtech.jts.geom.Point p) {
+    private org.geoserver.mapml.xml.Point buildPoint(org.locationtech.jts.geom.Point p) {
         org.geoserver.mapml.xml.Point point = new org.geoserver.mapml.xml.Point();
-        point.getCoordinates().add(p.getX() + " " + p.getY());
+        point.getCoordinates()
+                .add(
+                        RoundingUtil.round(p.getX(), this.numDecimals)
+                                + " "
+                                + RoundingUtil.round(p.getY(), this.numDecimals));
         return point;
     }
     /**
      * @param p a JTS Polygon
      * @return
      */
-    private static org.geoserver.mapml.xml.Polygon buildPolygon(
-            org.locationtech.jts.geom.Polygon p) {
+    private org.geoserver.mapml.xml.Polygon buildPolygon(org.locationtech.jts.geom.Polygon p) {
         org.geoserver.mapml.xml.Polygon poly = new org.geoserver.mapml.xml.Polygon();
         List<JAXBElement<List<String>>> ringList = poly.getThreeOrMoreCoordinatePairs();
         List<String> coordList =
@@ -310,13 +314,20 @@ public class MapMLGenerator {
      * @param coordList a list of coordinate strings to add to
      * @return
      */
-    private static List<String> buildCoordinates(CoordinateSequence cs, List<String> coordList) {
+    private List<String> buildCoordinates(CoordinateSequence cs, List<String> coordList) {
         if (coordList == null) {
             coordList = new ArrayList<>(cs.size());
         }
         for (int i = 0; i < cs.size(); i++) {
-            coordList.add(cs.getX(i) + " " + cs.getY(i));
+            coordList.add(
+                    RoundingUtil.round(cs.getX(i), this.numDecimals)
+                            + " "
+                            + RoundingUtil.round(cs.getY(i), this.numDecimals));
         }
         return coordList;
+    }
+    /** @param numDecimals */
+    public void setNumDecimals(int numDecimals) {
+        this.numDecimals = numDecimals;
     }
 }

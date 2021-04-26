@@ -8,6 +8,7 @@ package org.geoserver.sldservice.utils.classifier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
@@ -268,5 +269,23 @@ public class RulesBuilderTest {
         assertEquals(CQL.toFilter("foo >= 43.0 AND foo < 61.0"), rules.get(1).getFilter());
         assertEquals(CQL.toFilter("foo >= 61.0 AND foo < 90.0"), rules.get(2).getFilter());
         assertEquals(CQL.toFilter("foo = 90.0"), rules.get(3).getFilter());
+    }
+
+    @Test
+    public void testUniqueIntervalClassificationCheckOnMaxNumberOfUniqueValues() throws Exception {
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> {
+                            List<Rule> rules =
+                                    builder.uniqueIntervalClassification(
+                                            pointCollection, "id", Integer.class, -1, false, 7);
+                            assertEquals(8, rules.size());
+                        });
+        String expectedMessage =
+                "Cannot perform unique value classification over "
+                        + "vector data with a number of distinct values greater "
+                        + "than 7";
+        assertEquals(exception.getMessage(), expectedMessage);
     }
 }

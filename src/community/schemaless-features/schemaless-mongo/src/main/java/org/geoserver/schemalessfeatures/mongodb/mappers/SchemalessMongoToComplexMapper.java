@@ -132,9 +132,6 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
         List<Property> attributes = getNestedAttributes(dbobject, nestedFeatureType);
         for (Property p : attributes) featureBuilder.append(p.getName(), p);
         Feature f = featureBuilder.buildFeature(null);
-        if (f == null) {
-            String stopHeare = "";
-        }
         ComplexAttribute propertyAttribute =
                 attributeBuilder.createComplexAttribute(
                         Arrays.asList(f),
@@ -158,7 +155,8 @@ public class SchemalessMongoToComplexMapper extends SchemalessFeatureMapper<DBOb
                                 namespaceURI, attrName, (DBObject) obj, parentType, true);
                 attributes.add(attribute);
             } else if (obj != null) {
-                Attribute attribute = buildSimpleAttribute(namespaceURI, attrName, obj, parentType);
+                Attribute attribute =
+                        buildSimpleAttribute(namespaceURI, attrName, obj, parentType, true);
                 attributes.add(attribute);
             } else if (obj == null) {
                 Attribute attribute = buildNullAttribute(namespaceURI, attrName, parentType);

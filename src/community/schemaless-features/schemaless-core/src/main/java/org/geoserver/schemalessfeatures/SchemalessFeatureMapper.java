@@ -105,10 +105,16 @@ public abstract class SchemalessFeatureMapper<T> {
      * @param attrName the name of the attribute
      * @param value the value
      * @param parentType the parentType to which append the descriptor of the attribute
+     * @param isCollection true if the attribute being encode can contain multiple values false
+     *     otherwise
      * @return the simple Attribute
      */
     protected Attribute buildSimpleAttribute(
-            String namespaceURI, String attrName, Object value, DynamicComplexType parentType) {
+            String namespaceURI,
+            String attrName,
+            Object value,
+            DynamicComplexType parentType,
+            boolean isCollection) {
         Name name = new NameImpl(namespaceURI, attrName);
         PropertyDescriptor attrDescriptor = parentType.getDescriptor(name);
         boolean shouldRemove =
@@ -120,7 +126,7 @@ public abstract class SchemalessFeatureMapper<T> {
                     .binding(value.getClass())
                     .name(attrName)
                     .namespaceURI(namespaceURI)
-                    .maxOccurs(1)
+                    .maxOccurs(isCollection ? Integer.MAX_VALUE : 1)
                     .minOccurs(0);
             AttributeType attrType = typeBuilder.buildType();
             attrDescriptor = typeBuilder.buildDescriptor(attrType.getName(), attrType);
@@ -136,6 +142,11 @@ public abstract class SchemalessFeatureMapper<T> {
         return attributeBuilder.buildSimple(null, value);
     }
 
+    protected Attribute buildSimpleAttribute(
+            String namespaceURI, String attrName, Object value, DynamicComplexType parentType) {
+        return buildSimpleAttribute(namespaceURI, attrName, value, parentType, false);
+    }
+
     /**
      * Builds a simple attribute based on a null value.
      *
@@ -146,7 +157,6 @@ public abstract class SchemalessFeatureMapper<T> {
      */
     protected Attribute buildNullAttribute(
             String namespaceURI, String attrName, DynamicComplexType parentType) {
-        Name name = new NameImpl(namespaceURI, attrName);
         typeBuilder
                 .binding(Object.class)
                 .name(attrName)

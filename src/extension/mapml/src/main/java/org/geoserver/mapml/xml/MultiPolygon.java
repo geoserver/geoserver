@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlType;
 )
 public class MultiPolygon {
 
-    @XmlElement(name = "polygon", required = true, namespace = "http://www.w3.org/1999/xhtml/")
+    @XmlElement(name = "polygon", required = true, namespace = "http://www.w3.org/1999/xhtml")
     protected List<Polygon> polygon;
 
     /**

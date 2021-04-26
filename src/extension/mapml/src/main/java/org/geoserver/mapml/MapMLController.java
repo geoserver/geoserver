@@ -684,7 +684,7 @@ public class MapMLController {
                     double y1 = t.getBounds().getMax().y;
                     double x2 = t.getBounds().getMin().x;
                     double y2 = t.getBounds().getMin().y;
-                    bbbox = new ReferencedEnvelope(x1, y1, x2, y2, t.getCRS());
+                    bbbox = new ReferencedEnvelope(x1, x2, y1, y2, t.getCRS());
                 }
 
                 // tile inputs

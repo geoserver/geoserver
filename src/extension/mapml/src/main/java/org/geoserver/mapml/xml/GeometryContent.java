@@ -41,7 +41,7 @@ public class GeometryContent {
     @XmlElementRef(
         name = "GeometryContent",
         type = JAXBElement.class,
-        namespace = "http://www.w3.org/1999/xhtml/"
+        namespace = "http://www.w3.org/1999/xhtml"
     )
     protected JAXBElement<?> geometryContent;
 

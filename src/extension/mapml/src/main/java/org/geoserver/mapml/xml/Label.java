@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlValue;
     name = "",
     propOrder = {"content"}
 )
-@XmlRootElement(name = "label", namespace = "http://www.w3.org/1999/xhtml/")
+@XmlRootElement(name = "label", namespace = "http://www.w3.org/1999/xhtml")
 public class Label {
 
     @XmlValue protected String content;

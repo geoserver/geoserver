@@ -135,11 +135,15 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         mapml.setBody(body);
 
         List<Feature> features = body.getFeatures();
+        MapMLGenerator featureBuilder = new MapMLGenerator();
+        int numDecimals = this.getNumDecimals(featureCollections, gs, gs.getCatalog());
+        featureBuilder.setNumDecimals(numDecimals);
         try (SimpleFeatureIterator iterator = fc.features()) {
             while (iterator.hasNext()) {
                 SimpleFeature feature = iterator.next();
                 // convert feature to xml
-                Feature f = MapMLGenerator.buildFeature(feature, fCaptionTemplate);
+
+                Feature f = featureBuilder.buildFeature(feature, fCaptionTemplate);
                 features.add(f);
             }
         }

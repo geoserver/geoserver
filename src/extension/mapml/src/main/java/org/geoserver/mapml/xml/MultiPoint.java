@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlType;
 public class MultiPoint {
 
     @XmlList
-    @XmlElement(required = true, namespace = "http://www.w3.org/1999/xhtml/")
+    @XmlElement(required = true, namespace = "http://www.w3.org/1999/xhtml")
     protected List<String> coordinates;
 
     /**

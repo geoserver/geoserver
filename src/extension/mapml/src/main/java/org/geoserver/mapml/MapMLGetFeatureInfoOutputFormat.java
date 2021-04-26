@@ -11,13 +11,19 @@ import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import net.opengis.wfs.FeatureCollectionType;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.mapml.tcrs.TiledCRSConstants;
-import org.geoserver.mapml.tcrs.TiledCRSParams;
 import org.geoserver.mapml.xml.Base;
 import org.geoserver.mapml.xml.BodyContent;
 import org.geoserver.mapml.xml.Feature;
@@ -27,6 +33,7 @@ import org.geoserver.mapml.xml.Meta;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wfs.TypeInfoCollectionWrapper;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
@@ -36,6 +43,7 @@ import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -70,16 +78,12 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
             throws ServiceException, IOException {
 
         String baseUrl = request.getBaseUrl();
-        // the MapMLController serialized the CRS parameter, so we can rely
-        // on it being a string match for TiledCRSParamms.code field.
-        String crs = request.getRawKvp().get("CRS");
-        String projection = null;
-        for (TiledCRSParams tcrs : TiledCRSConstants.tiledCRSDefinitions.values()) {
-            if (tcrs.getCode().equalsIgnoreCase(crs)) {
-                projection = tcrs.getName();
-                break;
-            }
-        }
+        Map<String, String> kvp = request.getRawKvp();
+        String projection =
+                TiledCRSConstants.lookupTCRSName(
+                        kvp.getOrDefault(
+                                "CRS",
+                                kvp.getOrDefault("SRS", kvp.getOrDefault("TILEMATRIXSET", ""))));
 
         // build the mapML doc
         Mapml mapml = new Mapml();
@@ -117,6 +121,10 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
         List<FeatureCollection> featureCollections = results.getFeature();
         HashMap<Name, String> captionTemplates = captionsMap(request.getQueryLayers());
         SimpleFeatureCollection fc;
+        MapMLGenerator featureBuilder = new MapMLGenerator();
+        featureBuilder.setNumDecimals(
+                getNumDecimals(
+                        featureCollections, wms.getGeoServer(), wms.getGeoServer().getCatalog()));
         if (!featureCollections.isEmpty()) {
             Iterator<FeatureCollection> fci = featureCollections.iterator();
             while (fci.hasNext()) {
@@ -132,7 +140,7 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
                             // scalar properties
                             feature = iterator.next();
                             Feature f =
-                                    MapMLGenerator.buildFeature(
+                                    featureBuilder.buildFeature(
                                             feature,
                                             captionTemplates.get(fc.getSchema().getName()));
                             // might be interesting to be able to put features
@@ -179,5 +187,68 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
                             map.put(r.getQualifiedName(), fcap.isEmpty() ? null : fcap);
                         });
         return map;
+    }
+    /**
+     * Copied from org.geoserver.wfs.WFSGetFeatureOutputFormat
+     *
+     * @param featureCollections
+     * @param geoServer
+     * @param catalog
+     * @return
+     */
+    protected int getNumDecimals(List featureCollections, GeoServer geoServer, Catalog catalog) {
+        int numDecimals = -1;
+        for (Object featureCollection : featureCollections) {
+            Integer ftiDecimals =
+                    getFeatureTypeInfoProperty(
+                            catalog,
+                            (FeatureCollection) featureCollection,
+                            fti -> fti.getNumDecimals());
+
+            // track num decimals, in cases where the query has multiple types we choose the max
+            // of all the values (same deal as above, might not be a vector due to GetFeatureInfo
+            // reusing this)
+            if (ftiDecimals != null && ftiDecimals > 0) {
+                numDecimals = numDecimals == -1 ? ftiDecimals : Math.max(numDecimals, ftiDecimals);
+            }
+        }
+
+        SettingsInfo settings = geoServer.getSettings();
+
+        if (numDecimals == -1) {
+            numDecimals = settings.getNumDecimals();
+        }
+
+        return numDecimals;
+    }
+    /**
+     * Copied from org.geoserver.wfs.WFSGetFeatureOutputFormat
+     *
+     * @param <T>
+     * @param catalog
+     * @param features
+     * @param callback
+     * @return
+     */
+    private <T> T getFeatureTypeInfoProperty(
+            Catalog catalog, FeatureCollection features, Function<FeatureTypeInfo, T> callback) {
+        FeatureTypeInfo fti;
+        ResourceInfo meta = null;
+        // if it's a complex feature collection get the proper ResourceInfo
+        if (features instanceof TypeInfoCollectionWrapper.Complex) {
+            TypeInfoCollectionWrapper.Complex fcollection =
+                    (TypeInfoCollectionWrapper.Complex) features;
+            fti = fcollection.getFeatureTypeInfo();
+            meta = catalog.getResourceByName(fti.getName(), ResourceInfo.class);
+        } else {
+            // no complex, normal behavior
+            FeatureType featureType = features.getSchema();
+            meta = catalog.getResourceByName(featureType.getName(), ResourceInfo.class);
+        }
+        if (meta instanceof FeatureTypeInfo) {
+            fti = (FeatureTypeInfo) meta;
+            return callback.apply(fti);
+        }
+        return null;
     }
 }

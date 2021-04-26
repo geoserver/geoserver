@@ -58,6 +58,25 @@
  * Controls.
  */
  
+ /* Generic class for seamless buttons */
+ .mapml-button {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  text-align: left;
+  text-align: inline-start;
+  text-transform: none;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+}
+ 
  .leaflet-top .leaflet-control {
    margin-top: 5px;
  }
@@ -66,13 +85,25 @@
    margin-left: 5px;
  }
 
-.leaflet-bar a {
+.leaflet-bar a,
+.mapml-reload-button {
+  background-color: #fff;
   box-sizing: border-box;
   width: 44px !important;
   height: 44px !important;
   line-height: 44px !important;
   font-size: 34px !important;
   font-weight: normal;
+  text-align: center;
+}
+
+.mapml-reload-button:not([aria-disabled="true"]):hover {
+  background-color: #f4f4f4;
+}
+
+.mapml-reload-button[aria-disabled="true"] {
+  color: #bbb;
+  cursor: default;
 }
 
 .leaflet-control-layers-toggle {
@@ -81,11 +112,13 @@
 }
 
 .leaflet-bar a,
-.leaflet-control-layers {
+.leaflet-control-layers,
+.mapml-reload-button {
   border-color: #e3e3e3 !important;
 }
 
-.leaflet-control-layers {
+.leaflet-control-layers,
+.mapml-reload-button {
   border-radius: 4px !important;
 }
 .leaflet-touch .leaflet-bar a:last-child {
@@ -201,9 +234,6 @@
   display: inline;
 }
 
-.mapml-control-layers summary::-webkit-details-marker {
-  margin-right: 5px;
-}
 .mapml-control-layers summary::marker {
   margin-right: 5px;
 }
@@ -241,7 +271,7 @@
   cursor: default;
 }
 
-.mapml-contextmenu a.mapml-contextmenu-item {
+.mapml-contextmenu button.mapml-contextmenu-item {
   display: block;
   color: #222;
   font-size: 12px;
@@ -251,9 +281,10 @@
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent;
   cursor: default;
+  width: 100%;
 }
 
-.mapml-contextmenu a.mapml-contextmenu-item.over {
+.mapml-contextmenu button.mapml-contextmenu-item.over {
   background-color: #f4f4f4;
   border-top: 1px solid #f0f0f0;
   border-bottom: 1px solid #f0f0f0;
@@ -273,24 +304,34 @@
   max-height: 100%;
   max-width: 100%;
   border-radius: 4px;
-  padding: 10px;
+  padding: 5px 10px;
   background-color: #fff;
   cursor: default;
+  z-index: 1000;
+  position: absolute;
+  display: block;
+  top: auto;
+  right: 5px;
+  bottom: 5px;
+  left: 5px;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  font: inherit;
 }
 
 .mapml-debug-banner {
-  margin-left: 4px;
   font-weight: bold;
   text-transform: uppercase;
+  display: inline-block;
+  text-align: left;
+  text-align: inline-start;
+  line-height: 2;
 }
 
 .mapml-debug-panel,
 .mapml-debug-grid {
   font-family: monospace;
-}
-
-.mapml-debug-panel {
-  margin-top: 4px;
 }
 
 .mapml-debug-tile {
@@ -301,6 +342,20 @@
 .mapml-debug-coordinates {
   padding-left: 4px;
   padding-right: 4px;
+}
+
+.mapml-debug,
+.mapml-debug * {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.mapml-debug-coordinates:empty {
+  display: none;
+}
+
+.mapml-debug-coordinates > * {
+  display: inline;
 }
 
 /*
@@ -321,6 +376,8 @@
 }
 
 /* Disable dragging of controls. */
+.mapml-popup-button,
+.leaflet-popup-close-button,
 .leaflet-control :not([draggable="true"]),
 .mapml-contextmenu :not([draggable="true"]) {
   -webkit-user-drag: none;
@@ -329,7 +386,8 @@
 /* Disable text selection in controls. */
 .leaflet-control,
 .mapml-contextmenu,
-.mapml-debug {
+.mapml-debug,
+.mapml-focus-buttons {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -349,7 +407,7 @@
 .leaflet-tooltip,
 .leaflet-crosshair *,
 .mapml-contextmenu-item > *,
-.mapml-control-layers label[for^="o"],
+.mapml-control-layers .mapml-control-layers summary label,
 .mapml-draggable [aria-grabbed="true"] .mapml-control-layers > * {
   pointer-events: none!important;
 }
@@ -366,6 +424,12 @@
    delegating focus. */
 .leaflet-active:not(:focus) {
   outline: unset !important;
+}
+.leaflet-container:not(:focus-within) .mapml-outline {
+  outline: 0;
+}
+.leaflet-container:not(:focus-within) .mapml-crosshair {
+  visibility: hidden;
 }
 
 /* Restore the default UA tap highlight color by overriding the opinionated tap
@@ -424,19 +488,20 @@ summary {
 	padding: 0 4px 0 4px;
 	border: none;
 	text-align: center;
-	width: 18px;
-	height: 14px;
 	font: 16px/14px Tahoma, Verdana, sans-serif;
-	color: #c3c3c3;
+	color: inherit;
 	text-decoration: none;
 	font-weight: bold;
   background: transparent;
   white-space: nowrap;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
 }
 
 .mapml-focus-buttons {
   white-space: nowrap;
-  display: inline;
 }
 
 .mapml-feature-count {
@@ -446,12 +511,62 @@ summary {
   padding: 2px;
 }
 
+.mapml-focus-buttons button,
+.leaflet-container a.leaflet-popup-close-button {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  line-height: 44px;
+}
+.leaflet-popup-content {
+  margin: 0;
+  min-width: min-content;
+}
+.mapml-popup-content {
+  padding-top: 44px;
+}
+.mapml-focus-buttons {
+  display: block;
+  text-align: center;
+}
+.mapml-focus-buttons button {
+  display: inline-block;
+  padding: 0;
+}
+.leaflet-container a.leaflet-popup-close-button {
+  padding: 0;
+  font-size: 20px;
+}
+.leaflet-popup-content .mapml-feature-count {
+  margin: 0;
+  padding: 0 5px;
+  line-height: 44px;
+}
+.mapml-popup-content hr:last-of-type {
+  margin-bottom: 0;
+  border-bottom: 0;
+  border-top: 1px solid #e3e3e3;
+}
+.mapml-popup-content :first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+.mapml-popup-content > :not(.mapml-focus-buttons) {
+  padding: 0 1rem;
+}
+.leaflet-popup-tip-container {
+  margin-top: -1px;
+}
+
 .mapml-outline {
   outline-style: auto;
   outline-offset: -1px;
   z-index: 1000;
   pointer-events: none;
-  position: relative;
+  position: absolute;
+  height: 100%;
+  width: 100%;
 }
 
 /* Quick fix for https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/358,
@@ -484,4 +599,23 @@ summary {
 svg.leaflet-image-layer.leaflet-interactive g {
   pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
   pointer-events: auto;
+}
+
+:fullscreen .mapml-debug-grid {
+  color: #fff;
+  text-shadow: 1px 1px 1px #000, 1px 1px 1px #000;
+}
+
+.mapml-link-preview {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  background-color: rgb(222,225,230);
+  border-radius: 0 5px 0 0 ;
+  z-index: 1050;
+}
+
+.mapml-link-preview > p {
+  margin: 3px 5px 2px 3px;
+  color: rgb(60,64,67);
 }

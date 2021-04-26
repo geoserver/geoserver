@@ -5,7 +5,10 @@
  */
 package org.geoserver.sldservice.utils.classifier;
 
+import static org.geoserver.sldservice.utils.classifier.RasterSymbolizerBuilder.MAX_UNIQUE_VALUES;
+
 import java.awt.Color;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +20,7 @@ import java.util.stream.DoubleStream;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.visitor.UniqueCountVisitor;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.function.Classifier;
 import org.geotools.filter.function.ExplicitClassifier;
@@ -187,8 +191,26 @@ public class RulesBuilder {
             String property,
             Class<?> propertyType,
             int intervals,
-            boolean normalize)
+            boolean normalize) {
+        return uniqueIntervalClassification(
+                features, property, propertyType, intervals, normalize, MAX_UNIQUE_VALUES);
+    }
+
+    List<Rule> uniqueIntervalClassification(
+            FeatureCollection features,
+            String property,
+            Class<?> propertyType,
+            int intervals,
+            boolean normalize,
+            int maxNumberOfUniqueValues)
             throws IllegalArgumentException {
+
+        if (greaterThanMaxNumberOfDistinctValues(features, property, maxNumberOfUniqueValues)) {
+            throw new IllegalArgumentException(
+                    "Cannot perform unique value classification over vector data with a number of distinct values greater than "
+                            + maxNumberOfUniqueValues);
+        }
+
         List<Rule> rules =
                 getRules(
                         features,
@@ -202,6 +224,24 @@ public class RulesBuilder {
             throw new IllegalArgumentException("Intervals: " + rules.size());
         }
         return rules;
+    }
+
+    private boolean greaterThanMaxNumberOfDistinctValues(
+            FeatureCollection features, String property, int maxNumberOfDistinctValues) {
+        UniqueCountVisitor uniqueVisitor = new UniqueCountVisitor(property);
+        uniqueVisitor.setMaxFeatures(maxNumberOfDistinctValues + 1);
+        try {
+            features.accepts(uniqueVisitor, null);
+        } catch (IOException e) {
+            throw new RuntimeException(
+                    ""
+                            + "Unable to compute the number of distinct values for "
+                            + features.getSchema().getName().toString(),
+                    e);
+        }
+        int numberOfDistinctValues = uniqueVisitor.getResult().toInt();
+
+        return numberOfDistinctValues > maxNumberOfDistinctValues;
     }
 
     /**

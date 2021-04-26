@@ -56,7 +56,7 @@ public class RasterSymbolizerBuilder {
      * Maximum number of values collected by the unique value classifier, if not specified via
      * system variable
      */
-    private static final int MAX_UNIQUE_VALUES =
+    static final int MAX_UNIQUE_VALUES =
             Integer.getInteger("org.geoserver.sldService.maxUniqueRange", 1024);
 
     /**

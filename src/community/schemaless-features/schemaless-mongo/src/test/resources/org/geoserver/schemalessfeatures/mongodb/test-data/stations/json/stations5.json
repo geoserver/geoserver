@@ -6,6 +6,10 @@
   "groupAttribute": "groupAttribute2",
   "groupAttribute2": "groupAttribute21",
   "numericValue": 50.0,
+  "simpleArrayString": [
+    "stringOne",
+    "stringTwo"
+  ],
   "contact": {
     "mail": "station1@mail.com"
   },
@@ -16,7 +20,9 @@
     ],
     "type": "Point"
   },
-  "nullableField": null,
+  "anotherNullableField": {
+    "value": null
+  },
   "measurements": [
     {
       "name": "temp",

@@ -124,4 +124,11 @@ public class DynamicComplexTypeImpl extends AttributeTypeImpl implements Dynamic
             propertyMap.put(descriptor.getName(), descriptor);
         }
     }
+
+    public void removePropertyDescriptor(PropertyDescriptor descriptor) {
+        if (properties.contains(descriptor)) {
+            properties.remove(descriptor);
+            propertyMap.remove(descriptor.getName());
+        }
+    }
 }

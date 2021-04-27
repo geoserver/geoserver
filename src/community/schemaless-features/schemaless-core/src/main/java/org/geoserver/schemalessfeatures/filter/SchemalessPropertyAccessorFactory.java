@@ -34,7 +34,7 @@ import org.opengis.feature.type.ComplexType;
 public class SchemalessPropertyAccessorFactory implements PropertyAccessorFactory {
 
     public static final String NESTED_FEATURE_SUFFIX = "Feature";
-    private static final ComplexType ANYTYPE_TYPE =
+    public static final ComplexType ANYTYPE_TYPE =
             new ComplexTypeImpl(
                     new NameImpl("http://www.w3.org/2001/XMLSchema", "anyType"),
                     null,

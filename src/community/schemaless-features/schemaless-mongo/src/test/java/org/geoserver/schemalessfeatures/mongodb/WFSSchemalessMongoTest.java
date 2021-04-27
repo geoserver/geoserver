@@ -112,6 +112,54 @@ public class WFSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
                         "Schemaless support for GetFeature is not available for text/xml"));
     }
 
+    @Test
+    public void testGetStationFeaturesWithFilterNull() throws Exception {
+        JSON json =
+                getAsJSON(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&outputFormat=application/json&cql_filter=nullableField IS NULL");
+        JSONObject jsonObject = (JSONObject) json;
+        JSONArray features = jsonObject.getJSONArray("features");
+        assertEquals(3, features.size());
+    }
+
+    @Test
+    public void testGetStationFeaturesWithFilterNull2() throws Exception {
+        JSON json =
+                getAsJSON(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&outputFormat=application/json&cql_filter=anotherNullableField IS NULL");
+        JSONObject jsonObject = (JSONObject) json;
+        JSONArray features = jsonObject.getJSONArray("features");
+        assertEquals(10, features.size());
+    }
+
+    @Test
+    public void testGetStationFeaturesWithFilterNotNull() throws Exception {
+        JSON json =
+                getAsJSON(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&outputFormat=application/json&cql_filter=anotherNullableField IS NOT NULL");
+        JSONObject jsonObject = (JSONObject) json;
+        JSONArray features = jsonObject.getJSONArray("features");
+        assertEquals(2, features.size());
+    }
+
+    @Test
+    public void testGetStationFeaturesWithFilterNotNull2() throws Exception {
+        JSON json =
+                getAsJSON(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&outputFormat=application/json&cql_filter=anotherNullableField.value IS NOT NULL");
+        JSONObject jsonObject = (JSONObject) json;
+        JSONArray features = jsonObject.getJSONArray("features");
+        assertEquals(1, features.size());
+    }
+
     static void checkStationFeature(JSONObject station) {
         JSONObject properties = station.getJSONObject("properties");
         JSONObject geometry = station.getJSONObject("geometry");

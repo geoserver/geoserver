@@ -1,7 +1,8 @@
 package org.geoserver.schemalessfeatures.mongodb;
 
-import static org.geoserver.schemalessfeatures.mongodb.WFSSchemalessMongoTest.checkStationFeature;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -40,6 +41,8 @@ public class WMSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
 
     private static final String STYLE_ST_SORT_DESC = "stationsSortDesc";
 
+    private static final String STYLE_NULLABLE_FIELD = "stationsFilterOnNullableField";
+
     @Before
     @Override
     public void setUp() throws Exception {
@@ -61,6 +64,8 @@ public class WMSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
             li.getStyles().add(stSortAsc);
             StyleInfo stSortDesc = cat.getStyleByName(STYLE_ST_SORT_DESC);
             li.getStyles().add(stSortDesc);
+            StyleInfo stNullableField = cat.getStyleByName(STYLE_NULLABLE_FIELD);
+            li.getStyles().add(stNullableField);
             cat.save(li);
         }
     }
@@ -84,6 +89,12 @@ public class WMSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
         testData.addStyle(
                 STYLE_ST_SORT_DESC,
                 "./test-data/stations/styles/stations_with_sort_by_desc.sld",
+                getClass(),
+                catalog);
+
+        testData.addStyle(
+                STYLE_NULLABLE_FIELD,
+                "./test-data/stations/styles/stationsFilterOnNullableField.sld",
                 getClass(),
                 catalog);
     }
@@ -209,5 +220,44 @@ public class WMSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
             JSONObject feature = features.getJSONObject(i);
             checkStationFeature(feature);
         }
+    }
+
+    @Test
+    public void testStationsWmsGetMapStyleNullableField() throws Exception {
+        // execute the WMS GetMap request
+        MockHttpServletResponse result =
+                getAsServletResponse(
+                        "wms?SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&STYLES="
+                                + STYLE_NULLABLE_FIELD
+                                + "&LAYERS=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&SRS=EPSG:4326&WIDTH=349&HEIGHT=768"
+                                + "&BBOX=96.251220703125,-57.81005859375,103.919677734375,-40.93505859375");
+        assertEquals(result.getStatus(), 200);
+        assertEquals(result.getContentType(), "image/png");
+        // check that we got the expected image back
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(getBinary(result)));
+        ImageAssert.assertEquals(
+                URLs.urlToFile(getClass().getResource("wms-results/stations-nullable-result.png")),
+                image,
+                240);
+    }
+
+    private void checkStationFeature(JSONObject station) {
+        JSONObject properties = station.getJSONObject("properties");
+        JSONObject geometry = station.getJSONObject("geometry");
+        assertNotNull(geometry);
+        assertTrue(geometry.has("type"));
+        assertTrue(geometry.has("coordinates"));
+        assertNotNull(properties.get("id"));
+        assertNotNull(properties.get("name"));
+        assertNotNull(properties.get("numericValue"));
+        JSONObject contact = properties.getJSONObject("contact");
+        assertNotNull(contact);
+        assertEquals(1, contact.size());
+        JSONArray measurements = properties.getJSONArray("measurements");
+        assertNotNull(measurements);
+        assertTrue(measurements.size() > 0);
     }
 }

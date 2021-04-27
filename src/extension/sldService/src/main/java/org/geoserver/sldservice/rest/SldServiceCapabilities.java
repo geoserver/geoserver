@@ -24,7 +24,13 @@ class SldServiceCapabilities {
                     "standardDeviation");
 
     private final List<String> rasterClassifications =
-            Arrays.asList("quantile", "jenks", "equalArea", "equalInterval", "uniqueInterval");
+            Arrays.asList(
+                    "quantile",
+                    "jenks",
+                    "equalArea",
+                    "equalInterval",
+                    "uniqueInterval",
+                    "standardDeviation");
 
     List<String> getVectorClassifications() {
         return vectorClassifications;

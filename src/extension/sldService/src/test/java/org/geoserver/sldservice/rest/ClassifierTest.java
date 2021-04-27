@@ -2867,4 +2867,96 @@ public class ClassifierTest extends SLDServiceBaseTest {
         double lastEntryVal = entry.getQuantity().evaluate(null, Double.class);
         assertTrue(lastEntryVal > -50d && lastEntryVal < -49d);
     }
+
+    @Test
+    public void testStddevClassificationDemClosedIntervals() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:dem/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=standardDeviation&intervals=5&ramp=jet&fullSLD=true&continuous=false";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(6, entries.length);
+        assertEntry(entries[0], -501.5361443600022, null, "#000000", 0);
+        assertEntry(
+                entries[1], -214.2998914263162, ">= -501.536144 AND < -214.299891", "#0000FF", 1);
+        assertEntry(entries[2], 72.93636150736975, ">= -214.299891 AND < 72.936362", "#FFFF00", 1);
+        assertEntry(entries[3], 360.17261444105577, ">= 72.936362 AND < 360.172614", "#FFAA00", 1);
+        assertEntry(entries[4], 647.4088673747417, ">= 360.172614 AND < 647.408867", "#FF5500", 1);
+        assertEntry(entries[5], 1250.0000000000002, ">= 647.408867 AND <= 1250", "#FF0000", 1);
+    }
+
+    @Test
+    public void testStddevClassificationDemOpenIntervals() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:dem/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "open=true&method=standardDeviation&intervals=5&ramp=jet&fullSLD=true&continuous=false";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(5, entries.length);
+        assertEntry(entries[0], -214.2998914263162, "< -214.299891", "#0000FF", 1);
+        assertEntry(entries[1], 72.93636150736975, ">= -214.299891 AND < 72.936362", "#FFFF00", 1);
+        assertEntry(entries[2], 360.17261444105577, ">= 72.936362 AND < 360.172614", "#FFAA00", 1);
+        assertEntry(entries[3], 647.4088673747417, ">= 360.172614 AND < 647.408867", "#FF5500", 1);
+        assertEntry(entries[4], 1.7976931348623157E308, ">= 647.408867", "#FF0000", 1);
+    }
+
+    @Test
+    public void testStddevClassificationDemContinuos() throws Exception {
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:dem/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=standardDeviation&intervals=5&ramp=jet&fullSLD=true&continuous=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(5, entries.length);
+        assertEntry(entries[0], -501.5361443600022, "-501.536144", "#0000FF", 1);
+        assertEntry(entries[1], -214.2998914263162, "-214.299891", "#FFFF00", 1);
+        assertEntry(entries[2], 72.93636150736975, "72.936362", "#FFAA00", 1);
+        assertEntry(entries[3], 360.17261444105577, "360.172614", "#FF5500", 1);
+        assertEntry(entries[4], 1250.0, "1250", "#FF0000", 1);
+    }
+
+    @Test
+    public void testPercentagesInRulesLabelsRasterStddev() throws Exception {
+        String regex = "\\d+(\\.\\d)%";
+        Pattern rgx = Pattern.compile(regex);
+        final String restPath =
+                RestBaseController.ROOT_PATH
+                        + "/sldservice/cite:tazbyte/"
+                        + getServiceUrl()
+                        + ".xml?"
+                        + "method=standardDeviation"
+                        + "&ramp=jet&fullSLD=true&intervals=6&percentages=true";
+        Document dom = getAsDOM(restPath, 200);
+        RasterSymbolizer rs = getRasterSymbolizer(dom);
+        ColorMap cm = rs.getColorMap();
+        ColorMapEntry[] entries = cm.getColorMapEntries();
+        assertEquals(7, entries.length);
+        double percentagesSum = 0d;
+        for (ColorMapEntry e : entries) {
+            if (e.getLabel() != null) {
+                String label = e.getLabel();
+                int i = label.lastIndexOf("(");
+                int i2 = label.indexOf("%)");
+                percentagesSum += Double.valueOf(label.substring(i + 1, i2));
+                Matcher matcher = rgx.matcher(e.getLabel());
+                assertTrue(matcher.find());
+            }
+        }
+        assertEquals(percentagesSum, 100d, 10E-14);
+    }
 }

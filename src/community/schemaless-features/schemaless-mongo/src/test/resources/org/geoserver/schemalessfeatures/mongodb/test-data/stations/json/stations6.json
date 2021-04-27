@@ -6,6 +6,13 @@
   "groupAttribute": "groupAttribute2",
   "groupAttribute2": "groupAttribute21",
   "numericValue": 43.1,
+  "simpleArrayString": [
+    "stringOne",
+    "stringTwo"
+  ],
+  "anotherNullableField": {
+    "value": "the not null value"
+  },
   "contact": {
     "mail": "station2@mail.com"
   },

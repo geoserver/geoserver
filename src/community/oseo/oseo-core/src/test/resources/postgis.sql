@@ -152,6 +152,7 @@ create index "idx_product_footprint" on product using GIST("footprint");
  CREATE INDEX "idx_product_timeStart" ON product ("timeStart");
  CREATE INDEX "idx_product_timeEnd" ON product ("timeEnd");
  CREATE INDEX "idx_product_eoParentIdentifier" ON product ("eoParentIdentifier");
+ CREATE INDEX "idx_product_eoParentIdentifier_timeEnd_timeStart" ON product("eoParentIdentifier","timeEnd","timeStart");
  CREATE INDEX "idx_product_eoProductionStatus" ON product ("eoProductionStatus");
  CREATE INDEX "idx_product_eoAcquisitionType" ON product ("eoAcquisitionType");
  CREATE INDEX "idx_product_eoOrbitNumber" ON product ("eoOrbitNumber");

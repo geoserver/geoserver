@@ -1589,6 +1589,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         // layer)
         GridSetBroker gridSetBroker = GWC.get().getGridSetBroker();
         GridSet testGridSet = namedGridsetCopy("TEST", gridSetBroker.getDefaults().worldEpsg4326());
+        // gridset bounds are computed only for gridsets known to the broker
+        gridSetBroker.addGridSet(testGridSet);
         GridSubset testGridSubset =
                 GridSubsetFactory.createGridSubSet(
                         testGridSet,

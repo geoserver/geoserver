@@ -270,6 +270,13 @@ public class CatalogLayerEventListener implements CatalogListener {
                     || changedProperties.contains("workspace")) {
                 handleRename(tileLayerInfo, source, changedProperties, oldValues, newValues);
             }
+
+            GeoServerTileLayer tileLayer = mediator.getTileLayer(source);
+            if (tileLayer != null
+                    && (changedProperties.contains("nativeBoundingBox")
+                            || changedProperties.contains("bounds"))) {
+                tileLayer.boundsChanged();
+            }
         } else if (source instanceof WorkspaceInfo) {
             if (changedProperties.contains("name")) {
                 handleWorkspaceRename(source, changedProperties, oldValues, newValues);

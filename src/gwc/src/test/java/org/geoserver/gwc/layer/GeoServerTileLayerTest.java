@@ -6,12 +6,15 @@
 package org.geoserver.gwc.layer;
 
 import static org.geoserver.gwc.GWC.tileLayerName;
+import static org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -83,7 +86,6 @@ import org.geoserver.wms.map.RenderedImageMapResponse;
 import org.geoserver.wms.map.RenderedImageTimeDecorator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.Style;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.config.DefaultGridsets;
@@ -169,10 +171,8 @@ public class GeoServerTileLayerTest {
         resource.setAbstract("Test resource abstract");
         resource.setEnabled(true);
         resource.setDescription("Test resource description");
-        resource.setLatLonBoundingBox(
-                new ReferencedEnvelope(-180, -90, 0, 0, DefaultGeographicCRS.WGS84));
-        resource.setNativeBoundingBox(
-                new ReferencedEnvelope(-180, -90, 0, 0, DefaultGeographicCRS.WGS84));
+        resource.setLatLonBoundingBox(new ReferencedEnvelope(-180, -90, 0, 0, WGS84));
+        resource.setNativeBoundingBox(new ReferencedEnvelope(-180, -90, 0, 0, WGS84));
         resource.setSRS("EPSG:4326");
         resource.setKeywords(Arrays.asList(new Keyword("kwd1"), new Keyword("kwd2")));
 
@@ -461,10 +461,8 @@ public class GeoServerTileLayerTest {
         layerInfoTileLayer.removeGridSubset("EPSG:4326");
         layerInfoTileLayer.addGridSubset(subset);
 
-        resource.setLatLonBoundingBox(
-                new ReferencedEnvelope(-90, -90, 0, 0, DefaultGeographicCRS.WGS84));
-        resource.setNativeBoundingBox(
-                new ReferencedEnvelope(-90, -90, 0, 0, DefaultGeographicCRS.WGS84));
+        resource.setLatLonBoundingBox(new ReferencedEnvelope(-90, -90, 0, 0, WGS84));
+        resource.setNativeBoundingBox(new ReferencedEnvelope(-90, -90, 0, 0, WGS84));
 
         GridSubset subset2 = layerInfoTileLayer.getGridSubset("EPSG:4326");
 
@@ -489,10 +487,8 @@ public class GeoServerTileLayerTest {
         layerInfoTileLayer.removeGridSubset("EPSG:4326");
         layerInfoTileLayer.addGridSubset(new GridSubset(subset)); // Makes the dynamic extent static
 
-        resource.setLatLonBoundingBox(
-                new ReferencedEnvelope(-90, -90, 0, 0, DefaultGeographicCRS.WGS84));
-        resource.setNativeBoundingBox(
-                new ReferencedEnvelope(-90, -90, 0, 0, DefaultGeographicCRS.WGS84));
+        resource.setLatLonBoundingBox(new ReferencedEnvelope(-90, -90, 0, 0, WGS84));
+        resource.setNativeBoundingBox(new ReferencedEnvelope(-90, -90, 0, 0, WGS84));
 
         GridSubset subset2 = layerInfoTileLayer.getGridSubset("EPSG:4326");
 
@@ -513,7 +509,7 @@ public class GeoServerTileLayerTest {
         layerGroupInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
 
         // force building and setting the bounds to the saved representation
-        layerGroupInfoTileLayer.getGridSubsets();
+        layerGroupInfoTileLayer.getGridSubset("EPSG:900913");
 
         XMLGridSubset savedSubset =
                 layerGroupInfoTileLayer.getInfo().getGridSubsets().iterator().next();
@@ -970,5 +966,20 @@ public class GeoServerTileLayerTest {
         when(httpRequest.getServerPort()).thenReturn(8080);
         when(httpRequest.getContextPath()).thenReturn("/geoserver");
         Dispatcher.REQUEST.set(request);
+    }
+
+    @Test
+    public void testGridsetNames() {
+        // set a empty reference envelope, like the importer would do
+        resource.setLatLonBoundingBox(new ReferencedEnvelope());
+
+        // grab the gridsets, check this does not trigger computation of bounds
+        GeoServerTileLayer layer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        assertThat(layer.getGridSubsets(), containsInAnyOrder("EPSG:4326", "EPSG:900913"));
+
+        // half planet
+        resource.setLatLonBoundingBox(new ReferencedEnvelope(-180, 0, -90, 0, WGS84));
+        GridSubset subset = layer.getGridSubset("EPSG:4326");
+        assertArrayEquals(new long[] {0, 1, 0, 0, 1}, subset.getCoverage(1));
     }
 }

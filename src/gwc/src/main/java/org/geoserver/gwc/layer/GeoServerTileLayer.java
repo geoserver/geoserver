@@ -8,7 +8,6 @@ package org.geoserver.gwc.layer;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Throwables.throwIfUnchecked;
-import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
 
@@ -31,6 +30,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
@@ -328,48 +328,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     public boolean isQueryable() {
         boolean queryable = GWC.get().isQueryable(this);
         return queryable;
-    }
-
-    private ReferencedEnvelope getLatLonBbox() throws IllegalStateException {
-        final CoordinateReferenceSystem wgs84LonFirst;
-        try {
-            final boolean longitudeFirst = true;
-            wgs84LonFirst = CRS.decode("EPSG:4326", longitudeFirst);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        ReferencedEnvelope latLongBbox;
-        final PublishedInfo publishedInfo = getPublishedInfo();
-        if (publishedInfo instanceof LayerGroupInfo) {
-            LayerGroupInfo groupInfo = (LayerGroupInfo) publishedInfo;
-            try {
-                ReferencedEnvelope bounds = groupInfo.getBounds();
-                boolean lenient = true;
-                latLongBbox = bounds.transform(wgs84LonFirst, lenient);
-            } catch (Exception e) {
-                String msg =
-                        "Can't get lat long bounds for layer group " + tileLayerName(groupInfo);
-                LOGGER.log(Level.WARNING, msg, e);
-                throw new IllegalStateException(msg, e);
-            }
-        } else {
-            ResourceInfo resourceInfo = getResourceInfo();
-            latLongBbox = resourceInfo.getLatLonBoundingBox();
-            if (null == latLongBbox) {
-                latLongBbox = new ReferencedEnvelope(wgs84LonFirst);
-            }
-            if (null == latLongBbox.getCoordinateReferenceSystem()) {
-                ReferencedEnvelope tmp = new ReferencedEnvelope(wgs84LonFirst);
-                tmp.init(
-                        latLongBbox.getMinX(),
-                        latLongBbox.getMaxX(),
-                        latLongBbox.getMinY(),
-                        latLongBbox.getMaxY());
-                latLongBbox = tmp;
-            }
-        }
-        return latLongBbox;
     }
 
     /**
@@ -855,7 +813,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     /** @see org.geowebcache.layer.TileLayer#getGridSubsets() */
     @Override
     public Set<String> getGridSubsets() {
-        return new HashSet<>(gridSubsets().keySet());
+        Set<XMLGridSubset> gridSubsets = info.getGridSubsets();
+        if (gridSubsets == null) return Collections.emptySet();
+        return gridSubsets.stream().map(ss -> ss.getGridSetName()).collect(Collectors.toSet());
     }
 
     @Override
@@ -919,14 +879,18 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         this._subSets.set(null);
     }
 
+    /** Can be called to notify the layer bounds changed. Resets the grid subsets cache. */
+    public void boundsChanged() {
+        this._subSets.set(null);
+    }
+
     /**
      * Actually computes the layer's {@link GridSubset}s. This method is intended as a helper for
      * {@link #gridSubsets()} to compute the mappings atomically in a lock-free way
      */
     private Map<String, GridSubset> computeGridSubsets() {
-        ReferencedEnvelope latLongBbox = getLatLonBbox();
         try {
-            return getGrids(latLongBbox, gridSetBroker);
+            return getGrids(gridSetBroker);
         } catch (ConfigurationException e) {
             String msg = "Can't create grids for '" + getName() + "': " + e.getMessage();
             LOGGER.log(Level.WARNING, msg, e);
@@ -935,10 +899,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         }
     }
 
-    private Map<String, GridSubset> getGrids(
-            final ReferencedEnvelope latLonBbox, final GridSetBroker gridSetBroker)
+    private Map<String, GridSubset> getGrids(final GridSetBroker gridSetBroker)
             throws ConfigurationException {
-
         Set<XMLGridSubset> cachedGridSets = info.getGridSubsets();
         if (cachedGridSets.isEmpty()) {
             return Collections.emptyMap();

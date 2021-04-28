@@ -33,15 +33,26 @@ Ubuntu
 
 .. note:: These instructions may work on other Linux distributions as well, but have not been tested.
 
+.. note:: Ensure version number is >3.3.1 in case you use your distribution packages
+
 #. Open a terminal and type the following command::
   
-      sudo apt-get install python-dev build-essential pip
+      sudo apt-get install python-dev build-essential python3-pip
   
    Depending on your system this may trigger the installation of other packages.
 
-#. Install Sphinx using :command:`pip`::
+#. Install Sphinx using :command:`pip3`::
   
-      pip install --user sphinx
+      pip3 install --user sphinx
+      
+      Confirm availability with::
+   
+   sphinx-build --version
+
+::
+
+   sphinx-build 3.5.4
+      
   
 #. To test for a successful installation, navigate to your GeoServer source checkout and run::
   
@@ -81,7 +92,7 @@ Confirm availability with::
 
 ::
 
-   sphinx-build 1.8.4
+   sphinx-build 3.5.3
 
 To test for a successful installation, navigate to your GeoServer source checkout and run::
   

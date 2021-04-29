@@ -112,6 +112,15 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         gi2.getStyles().add(getCatalog().getStyleByName("raster"));
         cb.calculateLayerGroupBounds(gi2);
         getCatalog().add(gi2);
+
+        LayerGroupInfo gi3 = cf.createLayerGroup();
+        gi3.setName("testGroup3");
+        gi3.getLayers().add(getCatalog().getLayerByName(MockData.BUILDINGS.getLocalPart()));
+        gi3.getStyles().add(getCatalog().getStyleByName("raster"));
+        gi3.getLayers().add(getCatalog().getLayerByName(MockData.BUILDINGS.getLocalPart()));
+        gi3.getStyles().add(getCatalog().getStyleByName("raster"));
+        cb.calculateLayerGroupBounds(gi3);
+        getCatalog().add(gi3);
     }
 
     @Override
@@ -307,6 +316,19 @@ public class GetMapKvpRequestReaderTest extends KvpRequestReaderTestSupport {
         assertNull(request.getInterpolations().get(1));
         assertNotNull(request.getInterpolations().get(2));
         assertTrue(request.getInterpolations().get(2) instanceof InterpolationBilinear);
+    }
+
+    @Test
+    public void testFiltersForLayerGroups() throws Exception {
+        HashMap kvp = new HashMap();
+        kvp.put("layers", "testGroup3");
+        kvp.put("cql_filter", "ADDRESS='123 Main Street'");
+        GetMapRequest request = reader.createRequest();
+        request = reader.read(request, parseKvp(kvp), caseInsensitiveKvp(kvp));
+        assertNotNull(request.getFilter());
+        assertEquals(2, request.getFilter().size());
+        assertNotNull(request.getCQLFilter());
+        assertEquals(2, request.getCQLFilter().size());
     }
 
     @Test

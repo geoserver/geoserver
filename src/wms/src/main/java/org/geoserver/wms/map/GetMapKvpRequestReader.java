@@ -575,6 +575,12 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                     }
                 }
                 getMap.setStyles(newStyles);
+                if (newFilters != null
+                        && !newFilters.isEmpty()
+                        && getMap.getCQLFilter() != null
+                        && !getMap.getCQLFilter().isEmpty()) {
+                    getMap.setCQLFilter(newFilters);
+                }
                 getMap.setFilter(newFilters);
                 getMap.setSortBy(newSortBy);
             }

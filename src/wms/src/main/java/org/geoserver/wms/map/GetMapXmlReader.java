@@ -333,7 +333,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                     for (int j = 0; j < layerGroupStyles.size(); j++) {
                         StyleInfo si = layerGroupStyles.get(j);
                         LayerInfo layer = layerGroupLayers.get(j);
-                        currLayer = new MapLayerInfo(layer);
+                        currLayer = new MapLayerInfo(layer, layerGroup.getMetadata());
                         if (si != null) {
                             currLayer.setStyle(si.getStyle());
                         }

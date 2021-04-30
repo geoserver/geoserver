@@ -79,16 +79,31 @@ public final class MapLayerInfo {
     /** The extra constraints that can be set when an external SLD is used */
     private FeatureTypeConstraint[] layerFeatureConstraints;
 
+    private MetadataMap overrideMetadata;
+
     public MapLayerInfo(SimpleFeatureSource remoteSource) {
+        this(remoteSource, new MetadataMap());
+    }
+
+    public MapLayerInfo(SimpleFeatureSource remoteSource, MetadataMap overrideMetadata) {
         this.remoteFeatureSource = remoteSource;
         this.layerInfo = null;
         name = remoteFeatureSource.getSchema().getTypeName();
         label = name;
         description = "Remote WFS";
         type = TYPE_REMOTE_VECTOR;
+        this.overrideMetadata = new MetadataMap(overrideMetadata);
     }
 
     public MapLayerInfo(LayerInfo layerInfo) {
+        this(layerInfo, new MetadataMap());
+    }
+
+    /**
+     * @param layerInfo
+     * @param overrideMetadata override layerInfo metadata e.g. max-age
+     */
+    public MapLayerInfo(LayerInfo layerInfo, MetadataMap overrideMetadata) {
         this.layerInfo = layerInfo;
         this.remoteFeatureSource = null;
         ResourceInfo resource = layerInfo.getResource();
@@ -99,6 +114,7 @@ public final class MapLayerInfo {
         this.description = resource.getAbstract();
 
         this.type = layerInfo.getType().getCode();
+        this.overrideMetadata = new MetadataMap(overrideMetadata);
     }
 
     public Style getStyle() {
@@ -230,6 +246,8 @@ public final class MapLayerInfo {
      * @return true if we should, false if we should omit the header
      */
     public boolean isCachingEnabled() {
+        boolean cachingEnabled = this.isCachingEnabled(this.overrideMetadata);
+
         if (layerInfo == null) {
             return false;
         }
@@ -240,12 +258,16 @@ public final class MapLayerInfo {
             return false;
         }
         ResourceInfo resource = layerInfo.getResource();
-        MetadataMap metadata = resource.getMetadata();
-        Boolean cachingEnabled = null;
-        if (metadata != null) {
-            cachingEnabled = metadata.get(ResourceInfo.CACHING_ENABLED, Boolean.class);
-        }
-        return cachingEnabled == null ? false : cachingEnabled.booleanValue();
+
+        cachingEnabled = cachingEnabled || this.isCachingEnabled(resource.getMetadata());
+
+        return cachingEnabled;
+    }
+
+    private boolean isCachingEnabled(MetadataMap metadata) {
+        Boolean value = metadata.get(ResourceInfo.CACHING_ENABLED, Boolean.class);
+
+        return value != null ? value : false;
     }
 
     /**
@@ -257,12 +279,29 @@ public final class MapLayerInfo {
      *     0} if not set
      */
     public int getCacheMaxAge() {
-        if (layerInfo == null) {
-            return 0;
+        int maxAge = 0;
+
+        // maxAge may be deffined in override metadata, but caching
+        // may be disabled
+        if (this.isCachingEnabled(this.overrideMetadata)) {
+            maxAge = getCacheMaxAge(this.overrideMetadata);
         }
-        ResourceInfo resource = layerInfo.getResource();
-        Integer val = resource.getMetadata().get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
-        return val == null ? 0 : val;
+
+        if (maxAge == 0) {
+            if (layerInfo == null) {
+                return 0;
+            }
+            ResourceInfo resource = layerInfo.getResource();
+            maxAge = getCacheMaxAge(resource.getMetadata());
+        }
+
+        return maxAge;
+    }
+
+    private int getCacheMaxAge(MetadataMap metadata) {
+        Integer value = metadata.get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
+
+        return value != null ? value : 0;
     }
 
     /**
@@ -339,6 +378,12 @@ public final class MapLayerInfo {
         return layerFeatureConstraints;
     }
 
+    /**
+     * Get wrapped layer info. Note metadata override are not available. e.g. is caching enabled and
+     * cache max age.
+     *
+     * @return layer info
+     */
     public LayerInfo getLayerInfo() {
         return layerInfo;
     }

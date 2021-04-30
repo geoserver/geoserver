@@ -1204,6 +1204,13 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
     /** Returns the max age of a layer group by looking for the minimum max age of its components */
     private int getGroupMaxAge(LayerGroupInfo lg) {
         int maxAge = Integer.MAX_VALUE;
+        if (isCachingEnabled(lg.getMetadata())) {
+            int cacheMaxAge = getCacheMaxAge(lg.getMetadata());
+            if (cacheMaxAge > 0) {
+                maxAge = cacheMaxAge;
+            }
+        }
+
         for (PublishedInfo pi : lg.getLayers()) {
             int piAge;
             if (pi instanceof LayerInfo) {
@@ -1229,17 +1236,23 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
     /** Returns the max age for the specified layer */
     private int getLayerMaxAge(LayerInfo li) {
         MetadataMap metadata = li.getResource().getMetadata();
-        Object enabled = metadata.get(ResourceInfo.CACHING_ENABLED);
-        if (enabled != null && enabled.toString().equalsIgnoreCase("true")) {
-            Integer maxAge = metadata.get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
-            if (maxAge != null) {
-                return maxAge;
-            } else {
-                return 0;
-            }
+        if (isCachingEnabled(metadata)) {
+            return getCacheMaxAge(metadata);
         }
 
         return 0;
+    }
+
+    private boolean isCachingEnabled(MetadataMap metadata) {
+        Boolean value = metadata.get(ResourceInfo.CACHING_ENABLED, Boolean.class);
+
+        return value != null ? value : false;
+    }
+
+    private int getCacheMaxAge(MetadataMap metadata) {
+        Integer value = metadata.get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
+
+        return value != null ? value : 0;
     }
 
     /**

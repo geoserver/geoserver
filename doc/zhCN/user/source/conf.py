@@ -54,7 +54,7 @@ version = '2.19'
 release = '2.19-SNAPSHOT'
 
 # Used in build and documentation links
-branch = 'master'
+branch = 'main'
 
 # Users don't need to see the "SNAPSHOT" notation when it's there
 if release.find('SNAPSHOT') != -1:

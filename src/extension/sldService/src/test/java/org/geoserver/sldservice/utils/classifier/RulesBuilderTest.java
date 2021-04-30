@@ -28,6 +28,7 @@ import org.geotools.styling.Rule;
 import org.geotools.util.factory.GeoTools;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -268,5 +269,18 @@ public class RulesBuilderTest {
         assertEquals(CQL.toFilter("foo >= 43.0 AND foo < 61.0"), rules.get(1).getFilter());
         assertEquals(CQL.toFilter("foo >= 61.0 AND foo < 90.0"), rules.get(2).getFilter());
         assertEquals(CQL.toFilter("foo = 90.0"), rules.get(3).getFilter());
+    }
+
+    @org.junit.Rule public ExpectedException thrown = ExpectedException.none();
+
+    @Test
+    public void testUniqueIntervalClassificationCheckOnMaxNumberOfUniqueValues() throws Exception {
+        thrown.expect(IllegalArgumentException.class);
+        String expectedMessage =
+                "Cannot perform unique value classification over "
+                        + "vector data with a number of distinct values greater "
+                        + "than 7";
+        thrown.expectMessage(expectedMessage);
+        builder.uniqueIntervalClassification(pointCollection, "id", Integer.class, -1, false, 7);
     }
 }

@@ -44,14 +44,13 @@ public class MongoComplexContentDataAccess extends ComplexContentDataAccess {
 
     @Override
     protected List<Name> createTypeNames() {
-
-        Set<String> collectionNames = new LinkedHashSet<>();
-        database.listCollectionNames().forEach(n -> collectionNames.add(n));
-        return collectionNames.stream().map(s -> name(s)).collect(Collectors.toList());
+        return getCollectionNames().stream().map(s -> name(s)).collect(Collectors.toList());
     }
 
     @Override
     public FeatureSource<FeatureType, Feature> getFeatureSource(Name typeName) throws IOException {
+        if (!getCollectionNames().contains(typeName.getLocalPart()))
+            throw new IOException("Type with name " + typeName.getLocalPart() + " not found");
         MongoCollection<DBObject> collection =
                 database.getCollection(typeName.getLocalPart(), DBObject.class);
         return new MongoSchemalessFeatureSource(typeName, collection, this);
@@ -121,5 +120,11 @@ public class MongoComplexContentDataAccess extends ComplexContentDataAccess {
     @Override
     public void dispose() {
         client.close();
+    }
+
+    private Set<String> getCollectionNames() {
+        Set<String> collectionNames = new LinkedHashSet<>();
+        database.listCollectionNames().forEach(n -> collectionNames.add(n));
+        return collectionNames;
     }
 }

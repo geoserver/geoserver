@@ -13,6 +13,7 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -32,7 +33,7 @@ import org.w3c.dom.Document;
 })
 public class WMSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
 
-    private static final String DATA_STORE_NAME = "stationsMongoWfs";
+    protected static final String DATA_STORE_NAME = "stationsMongoWfs";
 
     private static MongoTestSetup testSetup;
 
@@ -274,5 +275,24 @@ public class WMSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
         assertTrue(
                 xpath.getMatchingNodes("//Layer/Name[contains(.,geoJSONStations)]", doc).getLength()
                         > 0);
+    }
+
+    @Test
+    public void testLayerWithNameDifferentFromMongoCollection() throws Exception {
+        String layerRename = "StationsRenamed";
+        Catalog cat = getCatalog();
+        FeatureTypeInfo fti = cat.getFeatureTypeByName("gs", StationsTestSetup.COLLECTION_NAME);
+        fti.setName(layerRename);
+        cat.save(fti);
+        // execute the WMS GetMap request
+        MockHttpServletResponse result =
+                getAsServletResponse(
+                        "wms?SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&STYLES&LAYERS=gs:"
+                                + "StationsRenamed"
+                                + "&SRS=EPSG:4326&WIDTH=349&HEIGHT=768"
+                                + "&BBOX=96.251220703125,-57.81005859375,103.919677734375,-40.93505859375");
+        assertEquals(result.getStatus(), 200);
+        assertEquals(result.getContentType(), "image/png");
     }
 }

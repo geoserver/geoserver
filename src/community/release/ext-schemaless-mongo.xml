@@ -1,5 +1,5 @@
 <assembly>
-    <id>schemaless-features-plugin</id>
+    <id>schemaless-mongo-plugin</id>
     <formats>
         <format>zip</format>
     </formats>

@@ -9,6 +9,8 @@ import java.io.ByteArrayInputStream;
 import javax.imageio.ImageIO;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -22,6 +24,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 @SuppressWarnings({
     "PMD.JUnit4TestShouldUseAfterAnnotation",
@@ -259,5 +262,17 @@ public class WMSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
         JSONArray measurements = properties.getJSONArray("measurements");
         assertNotNull(measurements);
         assertTrue(measurements.size() > 0);
+    }
+
+    @Test
+    public void testSchemalessLayerInCapabilities() throws Exception {
+        LayerInfo layerInfo =
+                getCatalog().getLayerByName(new NameImpl("gs", StationsTestSetup.COLLECTION_NAME));
+        // execute the WMS GetMap request
+        Document doc = getAsDOM("wms?request=GetCapabilities&service=WMS&version=1.1.1");
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        assertTrue(
+                xpath.getMatchingNodes("//Layer/Name[contains(.,geoJSONStations)]", doc).getLength()
+                        > 0);
     }
 }

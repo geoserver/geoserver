@@ -1,7 +1,8 @@
 Installing the GeoServer OGC API module
 =======================================
 
-#. Download :download_community:`ogcapi-plugin` nightly GeoServer community module `builds <https://build.geoserver.org/geoserver/master/community-latest/>`__).
+
+#. Download the OGC API nightly GeoServer community module from :download_community:`ogcapi`.
    
    .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|release|-ogcapi-plugin.zip above).
 

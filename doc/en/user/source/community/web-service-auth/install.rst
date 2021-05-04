@@ -3,7 +3,7 @@
 Installing the HTTP Based Authorization plug-in
 ===============================================
 
-#. Download the ``gs-web-service-auth`` plug-in from the `nightly GeoServer community module builds <https://build.geoserver.org/geoserver/main/community-latest/>`_.
+#. Download the nightly GeoServer community module from :download_community:`web-service-auth`.
 
     .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 

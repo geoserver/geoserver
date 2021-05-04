@@ -41,24 +41,24 @@ master_doc = 'index'
 
 # General substitutions.
 project = u'GeoServer'
-manual = u'User Manual'
+manual = u'用户手册'
 copyright = u'{}, Open Source Geospatial Foundation'.format(now.year)
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '2.18'
+version = '2.20'
 
 # The full version, including alpha/beta/rc tags.
-release = '2.18-SNAPSHOT'
+release = '2.20-SNAPSHOT'
 
 # Used in build and documentation links
-branch = '2.18.x'
+branch = 'main'
 
 # Users don't need to see the "SNAPSHOT" notation when it's there
 if release.find('SNAPSHOT') != -1:
-   release = '2.18.x'
+   release = '2.20.x'
    download_release = 'https://build.geoserver.org/geoserver/'+branch+'/geoserver-'+version+'.x-latest-%s.zip'
    download_extension = 'https://build.geoserver.org/geoserver/'+branch+'/ext-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
    download_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
@@ -112,8 +112,8 @@ extlinks = {
     'docguide': ('http://docs.geoserver.org/latest/en/docguide/%s',''),
     'geos': ('https://osgeo-org.atlassian.net/browse/GEOS-%s','GEOS-'),
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-'),
-    'api': ('http://docs.geoserver.org/stable/en/api/#1.0.0/%s',''),
-    'geotools': ('https://docs.geotools.org/stable/userguide/%s',''),
+    'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s',''),
+    'geotools': ('https://docs.geotools.org/latest/userguide/%s',''),
     'download_release': (download_release,None),
     'download_extension': (download_extension,None),
     'download_community': (download_community,None)
@@ -134,7 +134,7 @@ rst_epilog = "\n" \
 # Options for HTML output
 # -----------------------
 html_theme = 'geoserver'
-html_theme_path = ['../../themes']
+html_theme_path = ['../../../en/themes']
 
 if os.environ.get('HTML_THEME_PATH'):
   html_theme_path.append(os.environ.get('HTML_THEME_PATH'))
@@ -158,7 +158,7 @@ html_title = project + " " + release + " " + manual
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = '../../themes/geoserver/static/geoserver.ico'
+html_favicon = '../../../en/themes/geoserver/static/geoserver.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -210,8 +210,8 @@ html_context = {
   'display_github': True,
   'github_user': 'geoserver',
   'github_repo': 'geoserver',
-  'github_version': 'master',
-  'conf_py_path': 'doc/en/user/source'
+  'github_version': 'main',
+  'conf_py_path': 'doc/zhCN/user/source'
 }
 
 
@@ -234,7 +234,7 @@ latex_documents = [
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-latex_logo = '../../themes/geoserver/static/GeoServer_500.png'
+latex_logo = '../../../en/themes/geoserver/static/GeoServer_500.png'
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.

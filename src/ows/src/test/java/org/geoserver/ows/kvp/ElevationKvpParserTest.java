@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import junit.framework.TestCase;
+import org.geoserver.platform.ServiceException;
 import org.geotools.util.NumberRange;
 
 /**
@@ -56,5 +57,44 @@ public class ElevationKvpParserTest extends TestCase {
         assertEquals(5.0, elements.get(4));
         assertEquals(8.9, elements.get(5));
         return parser;
+    }
+
+    public void testInfiniteLoopZeroInterval() throws ParseException {
+        String value = "0/0/0";
+        try {
+            new ElevationKvpParser("ELEVATION").parse(value);
+            fail("expected ServiceException here");
+        } catch (ServiceException e) {
+            assertEquals(
+                    "Exceeded 100 iterations parsing elevations, bailing out.", e.getMessage());
+            assertEquals(ServiceException.INVALID_PARAMETER_VALUE, e.getCode());
+            assertEquals("elevation", e.getLocator());
+        }
+    }
+
+    public void testInfiniteLoopPositiveInfinity() throws ParseException {
+        String value = "Infinity/Infinity/1";
+        try {
+            new ElevationKvpParser("ELEVATION").parse(value);
+            fail("expected ServiceException here");
+        } catch (ServiceException e) {
+            assertEquals(
+                    "Exceeded 100 iterations parsing elevations, bailing out.", e.getMessage());
+            assertEquals(ServiceException.INVALID_PARAMETER_VALUE, e.getCode());
+            assertEquals("elevation", e.getLocator());
+        }
+    }
+
+    public void testInfiniteLoopNegativeInfinity() throws ParseException {
+        String value = "-Infinity/-Infinity/1";
+        try {
+            new ElevationKvpParser("ELEVATION").parse(value);
+            fail("expected ServiceException here");
+        } catch (ServiceException e) {
+            assertEquals(
+                    "Exceeded 100 iterations parsing elevations, bailing out.", e.getMessage());
+            assertEquals(ServiceException.INVALID_PARAMETER_VALUE, e.getCode());
+            assertEquals("elevation", e.getLocator());
+        }
     }
 }

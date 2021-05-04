@@ -1201,16 +1201,16 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         }
     }
 
-    /** Returns the max age of a layer group by looking for the minimum max age of its components */
+    /**
+     * Returns the max age of a layer group using layer group configuration or by looking for the
+     * minimum max age of its components
+     */
     private int getGroupMaxAge(LayerGroupInfo lg) {
-        int maxAge = Integer.MAX_VALUE;
         if (isCachingEnabled(lg.getMetadata())) {
-            int cacheMaxAge = getCacheMaxAge(lg.getMetadata());
-            if (cacheMaxAge > 0) {
-                maxAge = cacheMaxAge;
-            }
+            return getCacheMaxAge(lg.getMetadata());
         }
 
+        int maxAge = Integer.MAX_VALUE;
         for (PublishedInfo pi : lg.getLayers()) {
             int piAge;
             if (pi instanceof LayerInfo) {

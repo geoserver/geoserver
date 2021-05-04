@@ -164,6 +164,6 @@ HTTP Settings
 
 Cache parameters that apply to the HTTP response from client requests.
 
-* **Response Cache Headers**— If selected, GeoServer will not request the same tile twice within the time specified in :guilabel:`Cache Time`. One hour measured in seconds (3600), is the default value for :guilabel:`Cache Time`.
+* **Response Cache Headers**— If selected, GeoServer will not request the same tile twice within the time specified in :guilabel:`Cache Time`. One hour measured in seconds (3600), is the default value for :guilabel:`Cache Time`. Layer group **Response Cache Headers** configuration replace **Response Cache Headers** configured in layers defined in layer group.
 
 .. figure:: img/data_http_response_caching_settings.png

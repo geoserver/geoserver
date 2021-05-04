@@ -942,7 +942,7 @@ public class GeoServerTileLayerTest {
 
     /**
      * Test expire web cache with metadata value of LayerGroup resource. No setup of LayerInfo
-     * expiration -> can't have cache enabled.
+     * expiration.
      */
     @Test
     public void testExpireClientsEnabledLayerGroup() {
@@ -950,12 +950,12 @@ public class GeoServerTileLayerTest {
         layerInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
         int expire = layerInfoTileLayer.getExpireClients(0);
 
-        assertEquals(0, expire);
+        assertEquals(MAX_AGE_VALUE, expire);
     }
 
     /**
-     * Test expire web cache with metadata value of LayerGroup resource. Set lower LayerInfo
-     * expiration.
+     * Test expire web cache with metadata value of LayerGroup resource. Use Layer Group HTTP
+     * configuration even if any of lyaers in lyaer group has lower max age value.
      */
     @Test
     public void testExpireClientsEnabledLayerGroupLayerInfoLower() {
@@ -965,7 +965,7 @@ public class GeoServerTileLayerTest {
         layerInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
         int expire = layerInfoTileLayer.getExpireClients(0);
 
-        assertEquals(MAX_AGE_VALUE - 1, expire);
+        assertEquals(MAX_AGE_VALUE, expire);
     }
 
     /**

@@ -79,20 +79,24 @@ public final class MapLayerInfo {
     /** The extra constraints that can be set when an external SLD is used */
     private FeatureTypeConstraint[] layerFeatureConstraints;
 
-    private MetadataMap overrideMetadata;
+    private MetadataMap layerGroupMetadata;
 
     public MapLayerInfo(SimpleFeatureSource remoteSource) {
         this(remoteSource, new MetadataMap());
     }
 
-    public MapLayerInfo(SimpleFeatureSource remoteSource, MetadataMap overrideMetadata) {
+    /**
+     * @param remoteSource
+     * @param layerGroupMetadata override layerInfo metadata e.g. max-age
+     */
+    public MapLayerInfo(SimpleFeatureSource remoteSource, MetadataMap layerGroupMetadata) {
         this.remoteFeatureSource = remoteSource;
         this.layerInfo = null;
         name = remoteFeatureSource.getSchema().getTypeName();
         label = name;
         description = "Remote WFS";
         type = TYPE_REMOTE_VECTOR;
-        this.overrideMetadata = new MetadataMap(overrideMetadata);
+        this.layerGroupMetadata = new MetadataMap(layerGroupMetadata);
     }
 
     public MapLayerInfo(LayerInfo layerInfo) {
@@ -101,9 +105,9 @@ public final class MapLayerInfo {
 
     /**
      * @param layerInfo
-     * @param overrideMetadata override layerInfo metadata e.g. max-age
+     * @param layerGroupMetadata override layerInfo metadata e.g. max-age
      */
-    public MapLayerInfo(LayerInfo layerInfo, MetadataMap overrideMetadata) {
+    public MapLayerInfo(LayerInfo layerInfo, MetadataMap layerGroupMetadata) {
         this.layerInfo = layerInfo;
         this.remoteFeatureSource = null;
         ResourceInfo resource = layerInfo.getResource();
@@ -114,7 +118,7 @@ public final class MapLayerInfo {
         this.description = resource.getAbstract();
 
         this.type = layerInfo.getType().getCode();
-        this.overrideMetadata = new MetadataMap(overrideMetadata);
+        this.layerGroupMetadata = new MetadataMap(layerGroupMetadata);
     }
 
     public Style getStyle() {
@@ -246,22 +250,23 @@ public final class MapLayerInfo {
      * @return true if we should, false if we should omit the header
      */
     public boolean isCachingEnabled() {
-        boolean cachingEnabled = this.isCachingEnabled(this.overrideMetadata);
-
-        if (layerInfo == null) {
-            return false;
-        }
         if (type == TYPE_REMOTE_VECTOR) {
             // we just assume remote WFS is not cacheable since it's just used
             // in feature portrayal requests (which are one off and don't have a way to
             // tell us how often the remote WFS changes)
             return false;
         }
+
+        if (this.isCachingEnabled(this.layerGroupMetadata)) {
+            return true;
+        }
+
+        if (layerInfo == null) {
+            return false;
+        }
+
         ResourceInfo resource = layerInfo.getResource();
-
-        cachingEnabled = cachingEnabled || this.isCachingEnabled(resource.getMetadata());
-
-        return cachingEnabled;
+        return this.isCachingEnabled(resource.getMetadata());
     }
 
     private boolean isCachingEnabled(MetadataMap metadata) {
@@ -279,23 +284,18 @@ public final class MapLayerInfo {
      *     0} if not set
      */
     public int getCacheMaxAge() {
-        int maxAge = 0;
-
-        // maxAge may be deffined in override metadata, but caching
+        // maxAge may be defined in layer group metadata, but caching
         // may be disabled
-        if (this.isCachingEnabled(this.overrideMetadata)) {
-            maxAge = getCacheMaxAge(this.overrideMetadata);
+        if (this.isCachingEnabled(this.layerGroupMetadata)) {
+            return getCacheMaxAge(this.layerGroupMetadata);
         }
 
-        if (maxAge == 0) {
-            if (layerInfo == null) {
-                return 0;
-            }
-            ResourceInfo resource = layerInfo.getResource();
-            maxAge = getCacheMaxAge(resource.getMetadata());
+        if (layerInfo == null) {
+            return 0;
         }
 
-        return maxAge;
+        ResourceInfo resource = layerInfo.getResource();
+        return getCacheMaxAge(resource.getMetadata());
     }
 
     private int getCacheMaxAge(MetadataMap metadata) {
@@ -379,8 +379,7 @@ public final class MapLayerInfo {
     }
 
     /**
-     * Get wrapped layer info. Note metadata override are not available. e.g. is caching enabled and
-     * cache max age.
+     * Get layer info.
      *
      * @return layer info
      */

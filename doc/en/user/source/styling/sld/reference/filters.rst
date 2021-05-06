@@ -82,7 +82,7 @@ Examples
         <PropertyName>GEOMETRY</PropertyName>
       </ogc:Function>
       <Literal>1000000</Literal>
-   </PropertyIsEqualTo>
+   </PropertyIsGreaterThan>
 
    
 Spatial operators

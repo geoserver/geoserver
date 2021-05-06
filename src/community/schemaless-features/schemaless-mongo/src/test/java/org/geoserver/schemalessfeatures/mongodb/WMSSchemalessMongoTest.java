@@ -6,11 +6,17 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 import javax.imageio.ImageIO;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -22,6 +28,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 @SuppressWarnings({
     "PMD.JUnit4TestShouldUseAfterAnnotation",
@@ -29,7 +36,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 })
 public class WMSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
 
-    private static final String DATA_STORE_NAME = "stationsMongoWfs";
+    protected static final String DATA_STORE_NAME = "stationsMongoWfs";
 
     private static MongoTestSetup testSetup;
 
@@ -43,10 +50,18 @@ public class WMSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
 
     private static final String STYLE_NULLABLE_FIELD = "stationsFilterOnNullableField";
 
+    private XpathEngine xpath;
+
     @Before
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("wms", "http://www.opengis.net/wms");
+        namespaces.put("ows", "http://www.opengis.net/ows");
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+        xpath = XMLUnit.newXpathEngine();
         Catalog cat = getCatalog();
         DataStoreInfo storeInfo = cat.getDataStoreByName(DATA_STORE_NAME);
         if (storeInfo == null) {
@@ -259,5 +274,43 @@ public class WMSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
         JSONArray measurements = properties.getJSONArray("measurements");
         assertNotNull(measurements);
         assertTrue(measurements.size() > 0);
+    }
+
+    @Test
+    public void testSchemalessLayerInCapabilities() throws Exception {
+        // execute the WMS GetMap request
+        Document doc = getAsDOM("wms?request=GetCapabilities&service=WMS&version=1.1.1");
+        assertTrue(
+                xpath.getMatchingNodes("//Layer/Name[contains(.,geoJSONStations)]", doc).getLength()
+                        > 0);
+    }
+
+    @Test
+    public void testSchemalessLayerInCapabilities13() throws Exception {
+        // execute the WMS GetMap request
+        Document doc = getAsDOM("wms?request=GetCapabilities&service=WMS&version=1.3.0");
+        assertTrue(
+                xpath.getMatchingNodes("//wms:Layer/wms:Name[contains(.,geoJSONStations)]", doc)
+                                .getLength()
+                        > 0);
+    }
+
+    @Test
+    public void testLayerWithNameDifferentFromMongoCollection() throws Exception {
+        String layerRename = "StationsRenamed";
+        Catalog cat = getCatalog();
+        FeatureTypeInfo fti = cat.getFeatureTypeByName("gs", StationsTestSetup.COLLECTION_NAME);
+        fti.setName(layerRename);
+        cat.save(fti);
+        // execute the WMS GetMap request
+        MockHttpServletResponse result =
+                getAsServletResponse(
+                        "wms?SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=true&STYLES&LAYERS=gs:"
+                                + "StationsRenamed"
+                                + "&SRS=EPSG:4326&WIDTH=349&HEIGHT=768"
+                                + "&BBOX=96.251220703125,-57.81005859375,103.919677734375,-40.93505859375");
+        assertEquals(result.getStatus(), 200);
+        assertEquals(result.getContentType(), "image/png");
     }
 }

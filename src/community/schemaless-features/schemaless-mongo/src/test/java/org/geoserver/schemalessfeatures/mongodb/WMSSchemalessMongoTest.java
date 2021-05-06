@@ -6,9 +6,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 import javax.imageio.ImageIO;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
@@ -47,10 +50,18 @@ public class WMSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
 
     private static final String STYLE_NULLABLE_FIELD = "stationsFilterOnNullableField";
 
+    private XpathEngine xpath;
+
     @Before
     @Override
     public void setUp() throws Exception {
         super.setUp();
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("wms", "http://www.opengis.net/wms");
+        namespaces.put("ows", "http://www.opengis.net/ows");
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
+        xpath = XMLUnit.newXpathEngine();
         Catalog cat = getCatalog();
         DataStoreInfo storeInfo = cat.getDataStoreByName(DATA_STORE_NAME);
         if (storeInfo == null) {
@@ -267,13 +278,20 @@ public class WMSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
 
     @Test
     public void testSchemalessLayerInCapabilities() throws Exception {
-        LayerInfo layerInfo =
-                getCatalog().getLayerByName(new NameImpl("gs", StationsTestSetup.COLLECTION_NAME));
         // execute the WMS GetMap request
         Document doc = getAsDOM("wms?request=GetCapabilities&service=WMS&version=1.1.1");
-        XpathEngine xpath = XMLUnit.newXpathEngine();
         assertTrue(
                 xpath.getMatchingNodes("//Layer/Name[contains(.,geoJSONStations)]", doc).getLength()
+                        > 0);
+    }
+
+    @Test
+    public void testSchemalessLayerInCapabilities13() throws Exception {
+        // execute the WMS GetMap request
+        Document doc = getAsDOM("wms?request=GetCapabilities&service=WMS&version=1.3.0");
+        assertTrue(
+                xpath.getMatchingNodes("//wms:Layer/wms:Name[contains(.,geoJSONStations)]", doc)
+                                .getLength()
                         > 0);
     }
 

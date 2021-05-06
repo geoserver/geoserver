@@ -98,7 +98,7 @@
             <descriptor>release/ext-imagemosaic-jdbc.xml</descriptor>
             <descriptor>release/ext-smart-data-loader.xml</descriptor>
             <descriptor>release/ext-cov-json.xml</descriptor>
-            <descriptor>release/ext-schemaless-features.xml</descriptor>
+            <descriptor>release/ext-schemaless-mongo.xml</descriptor>
             <descriptor>release/ext-web-service-auth.xml</descriptor>
             <descriptor>release/ext-gwc-mbtiles.xml</descriptor>
           </descriptors>

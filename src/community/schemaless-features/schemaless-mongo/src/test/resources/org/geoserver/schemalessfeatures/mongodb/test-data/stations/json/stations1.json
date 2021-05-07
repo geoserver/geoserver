@@ -9,6 +9,10 @@
   "contact": {
     "mail": "station1@mail.com"
   },
+  "simpleArrayString": [
+    "stringOne",
+    "stringTwo"
+  ],
   "geometry": {
     "coordinates": [
       50,

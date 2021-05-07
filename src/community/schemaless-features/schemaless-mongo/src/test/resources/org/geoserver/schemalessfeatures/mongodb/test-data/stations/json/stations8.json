@@ -6,6 +6,11 @@
   "groupAttribute": "groupAttribute2",
   "groupAttribute2": "groupAttribute22",
   "numericValue": 97.1,
+  "simpleArrayString": [
+    "stringOne",
+    "stringTwo"
+  ],
+  "nullableField": "notNull3",
   "contact": {
     "mail": "station2@mail.com"
   },

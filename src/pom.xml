@@ -97,7 +97,7 @@
     <jetty.version>9.4.36.v20210114</jetty.version>
     <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
     <poi.version>4.0.0</poi.version>
-    <wicket.version>7.6.0</wicket.version>
+    <wicket.version>7.17.0</wicket.version>
     <ant.version>1.10.9</ant.version>
     <imageio-ext.version>1.3.6</imageio-ext.version>
     <jaiext.version>1.1.20</jaiext.version>

@@ -5,6 +5,9 @@
  */
 package org.geoserver.wms.web.data;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -541,6 +544,38 @@ public class StyleNewPageTest extends GeoServerWicketTestSupport {
         assertEquals("image/png", matcher.group(2));
 
         dd.getStyles().get("GeoServer_75.png").delete();
+    }
+
+    @Test
+    public void testInsertImageEscaped() throws Exception {
+        // create some fake images
+        GeoServerDataDirectory dd =
+                GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
+        dd.getStyles().get("');foo('.png").out().close();
+
+        // since we don't have code mirror available in the test environment, we are kind of limited
+        // we'll make the tool bar visible to test the dialog anyway
+        tester.getComponentFromLastRenderedPage(
+                        "styleForm:styleEditor:editorContainer:toolbar", false)
+                .setVisible(true);
+
+        // test uploading
+        tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
+        FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
+        org.apache.wicket.util.file.File file =
+                new org.apache.wicket.util.file.File(
+                        dd.getStyles().get("');foo('.png").file().getPath());
+        formTester.setFile("userPanel:upload", file, "image/png");
+        formTester.submit("submit");
+        String response = tester.getLastResponseAsString();
+
+        assertTrue(Resources.exists(dd.getStyles().get("');foo('.1.png")));
+
+        assertThat(response, not(containsString("\"');foo('.1.png\"")));
+        assertThat(response, containsString("\"\\');foo(\\'.1.png\""));
+
+        dd.getStyles().get("');foo('.png").delete();
+        dd.getStyles().get("');foo('.1.png").delete();
     }
 
     @Test

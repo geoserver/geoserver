@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -114,7 +115,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             String enableSpectrum =
                     "$(\"#chooser\").spectrum({\n"
                             + "    color: \""
-                            + initialColor
+                            + StringEscapeUtils.escapeEcmaScript(initialColor)
                             + "\",\n"
                             + "    showInput: true,\n"
                             + "    flat: true,\n"
@@ -478,11 +479,11 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
                                             return false;
                                         }
                                     }
-                                    target.appendJavaScript(
-                                            "replaceSelection('"
-                                                    + styleHandler()
-                                                            .insertImageCode(imageFileName, input)
-                                                    + "');");
+                                    String code =
+                                            StringEscapeUtils.escapeEcmaScript(
+                                                    styleHandler()
+                                                            .insertImageCode(imageFileName, input));
+                                    target.appendJavaScript("replaceSelection('" + code + "');");
                                     return true;
                                 }
 

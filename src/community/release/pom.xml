@@ -393,7 +393,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-schemaless-mongo</artifactId>
+      <artifactId>gs-mongodb-schemaless</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

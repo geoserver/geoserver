@@ -10,7 +10,7 @@
   </parent>
 
   <groupId>org.geoserver.community</groupId>
-  <artifactId>gs-schemaless-mongo</artifactId>
+  <artifactId>gs-mongodb-schemaless</artifactId>
   <packaging>jar</packaging>
   <name>Schemaless Features MongoDB</name>
   <description>Schemaless Features MongoDB functionalities</description>

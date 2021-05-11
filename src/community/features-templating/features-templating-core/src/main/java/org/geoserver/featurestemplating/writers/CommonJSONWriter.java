@@ -4,17 +4,25 @@
  */
 package org.geoserver.featurestemplating.writers;
 
-import com.fasterxml.jackson.core.*;
+import com.fasterxml.jackson.core.Base64Variant;
+import com.fasterxml.jackson.core.JsonStreamContext;
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.core.SerializableString;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 
@@ -147,6 +155,8 @@ public abstract class CommonJSONWriter extends com.fasterxml.jackson.core.JsonGe
         } else if (result instanceof Attribute) {
             Attribute attr = (Attribute) result;
             writeElementNameAndValue(attr.getValue(), key);
+        } else if (result instanceof JsonNode) {
+            writeStaticContent(key, result);
         } else if (result instanceof List) {
             List list = (List) result;
             if (list.size() == 1) {

@@ -4,7 +4,6 @@
  */
 package org.geoserver.featurestemplating.response;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;

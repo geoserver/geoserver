@@ -29,7 +29,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
         checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
-        assertEquals(5, features.size());
+        assertEquals(4, features.size());
         for (int i = 0; i < features.size(); i++) {
             JSONObject feature = (JSONObject) features.get(i);
             checkMappedFeatureJSON(feature);
@@ -170,7 +170,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
                         .append("&filter= features.gsml:positionalAccuracy.valueArray1 > 120");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         JSONArray features = result.getJSONArray("features");
-        assertEquals(3, features.size());
+        assertEquals(2, features.size());
         for (int i = 0; i < features.size(); i++) {
             JSONObject f = features.getJSONObject(i);
             JSONArray values =

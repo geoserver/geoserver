@@ -12,7 +12,6 @@ import org.opengis.feature.type.FeatureType;
  * This class perform a validation of a template by evaluating dynamic and source fields using
  * {@link ValidateExpressionVisitor}
  */
-
 public class TemplateValidator extends AbstractTemplateValidator {
 
     private FeatureTypeInfo type;

@@ -4,7 +4,7 @@
  */
 package org.geoserver.featurestemplating.ogcapi;
 
-import static org.geoserver.ogcapi.features.FeatureService.ITEM_ID;
+import static org.geoserver.api.features.FeatureService.ITEM_ID;
 import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
 
 import com.fasterxml.jackson.core.JsonEncoding;

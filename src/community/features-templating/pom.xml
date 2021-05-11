@@ -7,29 +7,29 @@
     <artifactId>community</artifactId>
     <version>2.18-SNAPSHOT</version>
   </parent>
-    <groupId>org.geoserver.community</groupId>
-    <artifactId>gs-features-templating</artifactId>
-    <packaging>pom</packaging>
-    <name>Features Templating Module</name>
-    <description>Features templating plugin</description>
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-features-templating</artifactId>
+  <packaging>pom</packaging>
+  <name>Features Templating Module</name>
+  <description>Features templating plugin</description>
 
-    <modules>
-        <module>features-templating-core</module>
-        <module>features-templating-wfs</module>
-        <module>features-templating-ogcapi</module>
-    </modules>
+  <developers>
+    <developer>
+      <id>taba90</id>
+      <name>Marco Volpini</name>
+      <email>marco.volpini@geosolutions.it</email>
+      <organization>GeoSolutions S.A.S.</organization>
+      <roles>
+        <role>Java Developer</role>
+        <role>Module Maintainer</role>
+      </roles>
+    </developer>
+  </developers>
 
-    <developers>
-        <developer>
-            <name>Marco Volpini</name>
-            <id>taba90</id>
-            <email>marco.volpini@geosolutions.it</email>
-            <organization>GeoSolutions S.A.S. </organization>
-            <roles>
-                <role>Java Developer</role>
-                <role>Module Maintainer</role>
-            </roles>
-        </developer>
-    </developers>
-    
+  <modules>
+    <module>features-templating-core</module>
+    <module>features-templating-wfs</module>
+    <module>features-templating-ogcapi</module>
+  </modules>
+
 </project>

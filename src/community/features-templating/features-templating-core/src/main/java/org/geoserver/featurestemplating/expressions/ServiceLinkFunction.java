@@ -6,6 +6,8 @@ package org.geoserver.featurestemplating.expressions;
 
 import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +55,13 @@ public class ServiceLinkFunction extends FunctionImpl {
 
         String uri = String.format(template, templateParameters);
         Map<String, String> kvp = lenientQueryStringParse(uri);
-        String path = ResponseUtils.getPath(uri);
+        String path = null;
+        try {
+            path = new URI(uri).getPath();
+        } catch (URISyntaxException e) {
+            // unexpected, URI is pretty forgiving
+            throw new RuntimeException(e);
+        }
 
         Request request = Dispatcher.REQUEST.get();
         if (request == null) return path; // just for testing purposes

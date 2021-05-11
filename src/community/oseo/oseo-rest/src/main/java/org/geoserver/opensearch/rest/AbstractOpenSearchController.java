@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.featurestemplating.builders.JSONFieldSupport;
 import org.geoserver.opensearch.eo.ListComplexFeatureCollection;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.ProductClass;
@@ -42,6 +44,7 @@ import org.geotools.data.FeatureStore;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
 import org.geotools.data.collection.ListFeatureCollection;
+import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.factory.CommonFactoryFinder;
@@ -53,7 +56,6 @@ import org.geotools.feature.NameImpl;
 import org.geotools.feature.collection.BaseSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Attribute;
@@ -200,7 +202,10 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
                 mappedName = name.getLocalPart();
             }
             tb.userData(SOURCE_NAME, name);
-            tb.add(mappedName, pd.getType().getBinding());
+            // Make it a generic object if it's a JSON field, could contain both a Map or a List
+            // after parsing
+            if (JSONFieldSupport.isJSONField(pd)) tb.add(mappedName, Object.class);
+            else tb.add(mappedName, pd.getType().getBinding());
         }
         tb.setName(schema.getName());
         extraAttributeBuilder.accept(tb);
@@ -249,11 +254,21 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
             if (p != null) {
                 Object value = p.getValue();
                 if (value != null) {
-                    fb.set(ad.getLocalName(), value);
-                    if (("eo:identifier".equals(ad.getLocalName())
-                                    || "eop:identifier".equals(ad.getLocalName()))
-                            && value instanceof String) {
-                        identifier = (String) value;
+                    if (JSONFieldSupport.isJSONField(p.getDescriptor())) {
+                        try {
+                            Object json = JSONFieldSupport.parseJSON(value);
+                            fb.set(ad.getLocalName(), json);
+                        } catch (Exception e) {
+                            throw new RuntimeException(
+                                    "Failed to parse JSON for field " + sourceName, e);
+                        }
+                    } else {
+                        fb.set(ad.getLocalName(), value);
+                        if (("eo:identifier".equals(ad.getLocalName())
+                                        || "eop:identifier".equals(ad.getLocalName()))
+                                && value instanceof String) {
+                            identifier = (String) value;
+                        }
                     }
                 }
             }
@@ -407,7 +422,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
         String[] split = sourceName.split(":");
         switch (split.length) {
             case 1:
-                if ("geometry".equals(sourceName)) {
+                if ("the_geom".equals(sourceName)) {
                     return new NameImpl(defaultNamespace, "footprint");
                 } else {
                     return new NameImpl(defaultNamespace, sourceName);
@@ -508,7 +523,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
     protected SimpleFeature parseGeoJSONFeature(String fileReference, final byte[] payload) {
         try {
             SimpleFeature jsonFeature =
-                    new FeatureJSON().readFeature(new ByteArrayInputStream(payload));
+                    GeoJSONReader.parseFeature(new String(payload, StandardCharsets.UTF_8));
             return jsonFeature;
         } catch (IOException e) {
             throw new RestException(
@@ -522,11 +537,10 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
             String fileReference, final byte[] payload) {
         try {
             SimpleFeatureCollection fc =
-                    (SimpleFeatureCollection)
-                            new FeatureJSON()
-                                    .readFeatureCollection(new ByteArrayInputStream(payload));
+                    GeoJSONReader.parseFeatureCollection(
+                            new String(payload, StandardCharsets.UTF_8));
             return fc;
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
             throw new RestException(
                     fileReference + " contains invalid GeoJSON: " + e.getMessage(),
                     HttpStatus.BAD_REQUEST,

@@ -24,7 +24,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.opensearch.rest.CollectionsController.CollectionPart;
 import org.geoserver.rest.util.MediaTypeExtensions;
-import org.geotools.geojson.feature.FeatureJSON;
+import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
@@ -118,7 +118,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
     public void testCreateCollectionNotGeoJson() throws Exception {
         MockHttpServletResponse response =
                 postAsServletResponse(
-                        "rest/oseo/collections", "{foo: 45}", MediaType.APPLICATION_JSON_VALUE);
+                        "rest/oseo/collections", "{\"foo\": 45}", MediaType.APPLICATION_JSON_VALUE);
         assertEquals(400, response.getStatus());
     }
 
@@ -160,9 +160,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testCreateCollection() throws Exception {
-        MockHttpServletResponse response;
         createTest123Collection();
-
         assertTest123CollectionCreated();
     }
 
@@ -498,8 +496,14 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals("A", json.read("$.properties['eo:platformSerialIdentifier']"));
         assertEquals("MSI", json.read("$.properties['eo:instrument']"));
         assertEquals("2012-04-23T18:25:43.511+0000", json.read("$.properties['timeStart']"));
+        // test the JSON field
+        assertEquals(
+                "https://geoserver.org/stac-examples/test123.xml",
+                json.read("$.properties['assets'].metadata_iso_19139.href"));
+        assertEquals(
+                "ISO 19139 metadata", json.read("$.properties['assets'].metadata_iso_19139.title"));
 
-        SimpleFeature sf = new FeatureJSON().readFeature(json.jsonString());
+        SimpleFeature sf = GeoJSONReader.parseFeature(json.jsonString());
         ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
         assertTrue(new Envelope(-180, 180, -90, 90).equals(bounds));
     }

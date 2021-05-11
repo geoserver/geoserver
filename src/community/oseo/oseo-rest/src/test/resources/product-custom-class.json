@@ -15,8 +15,8 @@
     "eop:orbitNumber" : 65,
     "eop:orbitDirection" : "DESCENDING",
     "eop:creationDate" : "2018-01-01T00:00:00Z",
-    "eop:archivingCenter" : "DPA"
+    "eop:archivingCenter" : "DPA",
     "eop:processingMode" : "DATA_DRIVEN",
-    "gs:test" : "123456",
+    "gs:test" : "123456"
   }
 }

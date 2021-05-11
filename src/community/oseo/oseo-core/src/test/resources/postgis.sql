@@ -40,7 +40,8 @@ create table collection (
   "eoDissemination" varchar,
   "eoAcquisitionStation" varchar,
   "license" varchar,
-  "enabled" boolean not null DEFAULT true
+  "enabled" boolean not null DEFAULT true,
+  "assets" json
 );
 -- index all (really, this is a search engine)
 -- manually generated indexes
@@ -141,7 +142,8 @@ create table product (
   "atmUnit" varchar[],
   "atmAlgorithmName" varchar[],
   "atmAlgorithmVersion" varchar[],
-  "enabled" boolean not null DEFAULT true
+  "enabled" boolean not null DEFAULT true,
+  "assets" json
 );
 
 -- index all (really, this is a search engine)

@@ -44,10 +44,10 @@ import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.opensearch.rest.ProductsController.ProductPart;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geotools.data.FeatureStore;
+import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.NameImpl;
-import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.test.ImageAssert;
 import org.hamcrest.Matchers;
@@ -228,7 +228,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                 response.getHeader("location"));
 
         // check it's really there
-        assertProduct("2018-01-01T00:00:00.000+0000", "2018-01-01T00:00:00.000+0000");
+        assertProduct("2018-01-01T00:00:00.000Z", "2018-01-01T00:00:00.000Z");
     }
 
     @Test
@@ -254,14 +254,14 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals("SAS1", json.read("$.properties['eop:parentIdentifier']"));
         assertEquals("NOMINAL", json.read("$.properties['eop:acquisitionType']"));
         assertEquals(Integer.valueOf(65), json.read("$.properties['eop:orbitNumber']"));
-        assertEquals("2018-01-01T00:00:00.000+0000", json.read("$.properties['timeStart']"));
-        assertEquals("2018-01-01T00:00:00.000+0000", json.read("$.properties['timeEnd']"));
+        assertEquals("2018-01-01T00:00:00.000Z", json.read("$.properties['timeStart']"));
+        assertEquals("2018-01-01T00:00:00.000Z", json.read("$.properties['timeEnd']"));
         assertEquals("EPSG:32632", json.read("$.properties['crs']"));
         assertEquals(jsonArray("O2", "O2", "NO3", "NO3"), json.read("$.properties['atm:species']"));
         assertEquals(
                 jsonArray(250d, 500d, 250d, 500d), json.read("$.properties['atm:verticalRange']"));
 
-        SimpleFeature sf = new FeatureJSON().readFeature(json.jsonString());
+        SimpleFeature sf = GeoJSONReader.parseFeature(json.jsonString());
         ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
         assertTrue(new Envelope(-180, 180, -90, 90).equals(bounds));
     }
@@ -287,11 +287,11 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals("gsTestCollection", json.read("$.properties['eop:parentIdentifier']"));
         assertEquals("NOMINAL", json.read("$.properties['eop:acquisitionType']"));
         assertEquals(Integer.valueOf(65), json.read("$.properties['eop:orbitNumber']"));
-        assertEquals("2018-01-01T00:00:00.000+0000", json.read("$.properties['timeStart']"));
-        assertEquals("2018-01-01T00:00:00.000+0000", json.read("$.properties['timeEnd']"));
+        assertEquals("2018-01-01T00:00:00.000Z", json.read("$.properties['timeStart']"));
+        assertEquals("2018-01-01T00:00:00.000Z", json.read("$.properties['timeEnd']"));
         assertEquals("123456", json.read("$.properties['gs:test']"));
 
-        SimpleFeature sf = new FeatureJSON().readFeature(json.jsonString());
+        SimpleFeature sf = GeoJSONReader.parseFeature(json.jsonString());
         ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
         assertTrue(new Envelope(-180, 180, -90, 90).equals(bounds));
     }
@@ -309,8 +309,11 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(timeStart, json.read("$.properties['timeStart']"));
         assertEquals(timeEnd, json.read("$.properties['timeEnd']"));
         assertEquals("EPSG:32632", json.read("$.properties['crs']"));
+        // check some properties of the assets, a JSON property
+        assertEquals("Band 1 (coastal)", json.read("$.properties.assets.B01.title"));
+        assertEquals(Arrays.asList(3, 2, 1), json.read("$.properties.assets.tki.eo:bands"));
 
-        SimpleFeature sf = new FeatureJSON().readFeature(json.jsonString());
+        SimpleFeature sf = GeoJSONReader.parseFeature(json.jsonString());
         ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());
         assertTrue(new Envelope(-180, 180, -90, 90).equals(bounds));
     }
@@ -353,7 +356,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                         "rest/oseo/collections/SENTINEL2/products/" + PRODUCT_CREATE_UPDATE_ID,
                         200);
         assertEquals(Integer.valueOf(66), json.read("$.properties['eop:orbitNumber']"));
-        assertEquals("2017-01-01T00:00:00.000+0000", json.read("$.properties['timeStart']"));
+        assertEquals("2017-01-01T00:00:00.000Z", json.read("$.properties['timeStart']"));
     }
 
     @Test
@@ -770,9 +773,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                 "/efs/geoserver_data/coverages/sentinel/california/R1C2.tif",
                 json.read("$.features[1].properties.location"));
         // parse the geojson, check the geometries have been parsed correctly
-        SimpleFeatureCollection fc =
-                (SimpleFeatureCollection)
-                        new FeatureJSON().readFeatureCollection(json.jsonString());
+        SimpleFeatureCollection fc = GeoJSONReader.parseFeatureCollection(json.jsonString());
         assertEquals(2, fc.size());
         final SimpleFeatureIterator it = fc.features();
         SimpleFeature sf = it.next();
@@ -847,7 +848,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                             + PRODUCT_CREATE_UPDATE_ID,
                     response.getHeader("location"));
 
-            assertProduct("2018-01-01T00:00:00.000+0000", "2018-01-01T00:00:00.000+0000");
+            assertProduct("2018-01-01T00:00:00.000Z", "2018-01-01T00:00:00.000Z");
         } else {
             assertEquals(400, response.getStatus());
             assertThat(response.getContentAsString(), containsString("product.json"));
@@ -990,7 +991,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(200, response.getStatus());
 
         if (parts.contains(Product)) {
-            assertProduct("2018-05-01T00:00:00.000+0000", "2018-05-01T00:00:00.000+0000");
+            assertProduct("2018-05-01T00:00:00.000Z", "2018-05-01T00:00:00.000Z");
         }
         if (parts.contains(Description)) {
             assertProductDescription("2016-11-29T10:20:22.026Z / 2016-11-29T10:23:44.107Z");

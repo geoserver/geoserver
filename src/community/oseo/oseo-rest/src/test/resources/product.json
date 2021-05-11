@@ -30,7 +30,7 @@
     "eop:modificationDate" : null,
     "eop:processingDate" : null,
     "eop:sensorMode" : null,
-    "eop:archivingCenter" : "DPA"
+    "eop:archivingCenter" : "DPA",
     "eop:processingMode" : "DATA_DRIVEN",
     "eop:availabilityTime" : null,
     "eop:acquisitionStation" : null,
@@ -47,6 +47,7 @@
     "sar:maximumIncidenceAngle" : null,
     "sar:dopplerFrequency" : null,
     "sar:incidenceAngleVariation" : null,
-    "eop:resolution" : null
+    "eop:resolution" : null,
+    "assets": {"B01": {"href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/9/V/XK/2017/10/13/0/B01.jp2", "type": "image/jp2", "title": "Band 1 (coastal)", "eo:bands": [0]}, "B02": {"href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/9/V/XK/2017/10/13/0/B02.jp2", "type": "image/jp2", "title": "Band 2 (blue)", "eo:bands": [2]}, "B03": {"href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/9/V/XK/2017/10/13/0/B03.jp2", "type": "image/jp2", "title": "Band 3 (green)", "eo:bands": [2]}, "B04": {"href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/9/V/XK/2017/10/13/0/B04.jp2", "type": "image/jp2", "title": "Band 4 (red)", "eo:bands": [3]}, "B05": {"href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/9/V/XK/2017/10/13/0/B05.jp2", "type": "image/jp2", "title": "Band 5", "eo:bands": [4]}, "B06": {"href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/9/V/XK/2017/10/13/0/B06.jp2", "type": "image/jp2", "title": "Band 6", "eo:bands": [5]}, "B07": {"href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/9/V/XK/2017/10/13/0/B07.jp2", "type": "image/jp2", "title": "Band 7", "eo:bands": [6]}, "B08": {"href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/9/V/XK/2017/10/13/0/B08.jp2", "type": "image/jp2", "title": "Band 8 (nir)", "eo:bands": [7]}, "B09": {"href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/9/V/XK/2017/10/13/0/B09.jp2", "type": "image/jp2", "title": "Band 9", "eo:bands": [9]}, "B10": {"href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/9/V/XK/2017/10/13/0/B10.jp2", "type": "image/jp2", "title": "Band 10 (cirrus)", "eo:bands": [10]}, "B11": {"href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/9/V/XK/2017/10/13/0/B11.jp2", "type": "image/jp2", "title": "Band 11 (swir16)", "eo:bands": [11]}, "B12": {"href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/9/V/XK/2017/10/13/0/B11.jp2", "type": "image/jp2", "title": "Band 12 (swir22)", "eo:bands": [12]}, "B8A": {"href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/9/V/XK/2017/10/13/0/B08.jp2", "type": "image/jp2", "title": "Band 8A", "eo:bands": [8]}, "tki": {"href": "https://sentinel-s2-l1c.s3.amazonaws.com/tiles/9/V/XK/2017/10/13/0/TKI.jp2", "type": "image/jp2", "title": "True color image", "eo:bands": [3, 2, 1]}, "info": {"href": "https://roda.sentinel-hub.com/sentinel-s2-l1c/tiles/9/V/XK/2017/10/13/0/tileInfo.json", "title": "Basic JSON metadata"}, "metadata": {"href": "https://roda.sentinel-hub.com/sentinel-s2-l1c/tiles/9/V/XK/2017/10/13/0/metadata.xml", "title": "Complete XML metadata"}, "thumbnail": {"href": "https://roda.sentinel-hub.com/sentinel-s2-l1c/tiles/9/V/XK/2017/10/13/0/preview.jpg", "title": "Thumbnail"}} 
   }
 }

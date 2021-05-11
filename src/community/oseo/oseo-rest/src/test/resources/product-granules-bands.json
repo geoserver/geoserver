@@ -66,11 +66,10 @@
         ]
       },
       "properties": {
-        "location": "/efs/geoserver_data/coverages/sentinel/california/R1C2.tif"
+        "location": "/efs/geoserver_data/coverages/sentinel/california/R1C2.tif",
         "band": "B2"
       },
       "id": "GRANULE.2"
-    },
-    
+    }
   ]
 }

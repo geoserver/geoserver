@@ -58,6 +58,11 @@ public class CollectionLayerTest extends OSEORestTestSupport {
     private String resourceBase;
 
     @Override
+    protected String getLogConfiguration() {
+        return "/DEFAULT_LOGGING.properties";
+    }
+
+    @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         Map<String, String> namespaces = new HashMap<String, String>();

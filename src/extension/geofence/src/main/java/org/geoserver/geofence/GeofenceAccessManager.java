@@ -425,7 +425,7 @@ public class GeofenceAccessManager
         return lessRestrictiveRule;
     }
 
-    // get the AccessInfo from the layer's containers returning a tuple with
+    // get the AccessInfo from the layer's containers returning
     // the Geometry of the allowed area if found and the less restrictive accessInfo
     // among the ones of associated layerGroups
     private GeoserverAccessInfo getContainerRuleForLayerDirectAccess(
@@ -451,10 +451,8 @@ public class GeofenceAccessManager
                 String layer = gs.getName();
                 RuleFilter filter = buildRuleFilter(workspace, layer, user);
                 AccessInfo newAccess = rules.getAccessInfo(filter);
-                Geometry intersectArea =
-                        getAllowedAreaAsGeomLayerGroup(newAccess.getAreaWkt(), layer);
-                Geometry clipArea =
-                        getAllowedAreaAsGeomLayerGroup(newAccess.getClipAreaWkt(), layer);
+                Geometry intersectArea = getAllowedAreaAsGeomLayerGroup(newAccess.getAreaWkt(), gs);
+                Geometry clipArea = getAllowedAreaAsGeomLayerGroup(newAccess.getClipAreaWkt(), gs);
                 GeoserverAccessInfo newInfo = new GeoserverAccessInfo(newAccess);
                 newInfo.setClipArea(clipArea);
                 newInfo.setIntersectArea(intersectArea);
@@ -464,9 +462,10 @@ public class GeofenceAccessManager
         return result;
     }
 
-    private Geometry getAllowedAreaAsGeomLayerGroup(String allowedAreaWKT, String layerGroup) {
+    private Geometry getAllowedAreaAsGeomLayerGroup(
+            String allowedAreaWKT, LayerGroupContainmentCache.LayerGroupSummary gs) {
         if (allowedAreaWKT != null) {
-            LayerGroupInfo gi = catalog.getLayerGroupByName(layerGroup);
+            LayerGroupInfo gi = catalog.getLayerGroupByName(gs.getWorkspace(), gs.getName());
             CoordinateReferenceSystem crs = gi.getBounds().getCoordinateReferenceSystem();
             return getAllowedAreaAsGeom(() -> allowedAreaWKT, crs);
         }

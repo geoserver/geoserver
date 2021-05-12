@@ -46,6 +46,7 @@ import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
@@ -457,18 +458,29 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
     protected LayerGroupInfo createLakesPlacesLayerGroup(
             Catalog catalog, LayerGroupInfo.Mode mode, LayerInfo rootLayer) throws Exception {
-        return createLakesPlacesLayerGroup(catalog, "lakes_and_places", mode, rootLayer, null);
+        return createLakesPlacesLayerGroup(catalog, "lakes_and_places", mode, rootLayer);
     }
 
     protected LayerGroupInfo createLakesPlacesLayerGroup(
             Catalog catalog, String name, LayerGroupInfo.Mode mode, LayerInfo rootLayer)
             throws Exception {
-        return createLakesPlacesLayerGroup(catalog, name, mode, rootLayer, null);
+        return createLakesPlacesLayerGroup(catalog, name, null, mode, rootLayer, null);
     }
 
     protected LayerGroupInfo createLakesPlacesLayerGroup(
             Catalog catalog,
             String name,
+            WorkspaceInfo ws,
+            LayerGroupInfo.Mode mode,
+            LayerInfo rootLayer)
+            throws Exception {
+        return createLakesPlacesLayerGroup(catalog, name, ws, mode, rootLayer, null);
+    }
+
+    protected LayerGroupInfo createLakesPlacesLayerGroup(
+            Catalog catalog,
+            String name,
+            WorkspaceInfo wsInfo,
             LayerGroupInfo.Mode mode,
             LayerInfo rootLayer,
             List<StyleInfo> styleInfos)
@@ -478,7 +490,7 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
 
         LayerGroupInfo group = catalog.getFactory().createLayerGroup();
         group.setName(name);
-
+        if (wsInfo != null) group.setWorkspace(wsInfo);
         group.setMode(mode);
         if (rootLayer != null) {
             group.setRootLayer(rootLayer);

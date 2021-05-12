@@ -5,6 +5,17 @@
 
   <#include "collection_include.ftl">
   
+  <#if collection.assets??>
+    <p><b>Assets:</p></b>
+    <#assign amap = collection.assets.value?eval_json>
+    <ul>
+    <#list amap as k, v>
+      <li><a href="${v.href}">${(v.title)!k}</a>
+      </li>
+    </#list>
+    </ul>
+  </#if> 
+
   <p>More resources:</p>
   <ul>
   <li><a href="${serviceLink("collections/${collection.name.value}/queryables")}">CQL filtering queryables</a></li>

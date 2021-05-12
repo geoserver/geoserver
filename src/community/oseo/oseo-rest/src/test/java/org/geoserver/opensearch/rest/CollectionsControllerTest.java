@@ -185,7 +185,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         DocumentContext json = getAsJSONPath("/rest/oseo/collections/TEST123", 200);
 
         assertEquals("PT-123", json.read("$.properties['eo:productType']"));
-        assertEquals("2017-01-01T00:00:00.000+0000", json.read("$.properties['timeStart']"));
+        assertEquals("2017-01-01T00:00:00.000Z", json.read("$.properties['timeStart']"));
     }
 
     @Test
@@ -495,7 +495,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals("S2MS1C", json.read("$.properties['eo:productType']"));
         assertEquals("A", json.read("$.properties['eo:platformSerialIdentifier']"));
         assertEquals("MSI", json.read("$.properties['eo:instrument']"));
-        assertEquals("2012-04-23T18:25:43.511+0000", json.read("$.properties['timeStart']"));
+        assertEquals("2012-04-23T18:25:43.511Z", json.read("$.properties['timeStart']"));
         // test the JSON field
         assertEquals(
                 "https://geoserver.org/stac-examples/test123.xml",

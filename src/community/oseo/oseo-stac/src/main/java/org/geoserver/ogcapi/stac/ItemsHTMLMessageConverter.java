@@ -20,18 +20,18 @@ public class ItemsHTMLMessageConverter extends AbstractItemsHTMLMessageConverter
     }
 
     protected Template getEmptyTemplate() throws IOException {
-        return templateSupport.getTemplate(null, "items-empty.ftl", this.getClass());
+        return templateSupport.getTemplate(null, "items-empty.ftl", STACService.class);
     }
 
     protected Template getContentTemplate() throws IOException {
-        return templateSupport.getTemplate(null, "items-content.ftl", this.getClass());
+        return templateSupport.getTemplate(null, "items-content.ftl", STACService.class);
     }
 
     protected Template getFooterTemplate() throws IOException {
-        return templateSupport.getTemplate(null, "items-footer.ftl", this.getClass());
+        return templateSupport.getTemplate(null, "items-footer.ftl", STACService.class);
     }
 
     protected Template getHeaderTemplate() throws IOException {
-        return templateSupport.getTemplate(null, "items-header.ftl", this.getClass());
+        return templateSupport.getTemplate(null, "items-header.ftl", STACService.class);
     }
 }

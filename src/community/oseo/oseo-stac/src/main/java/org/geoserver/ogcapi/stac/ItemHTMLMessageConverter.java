@@ -32,7 +32,7 @@ public class ItemHTMLMessageConverter extends AbstractHTMLMessageConverter<ItemR
     @Override
     protected void writeInternal(ItemResponse value, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        Template template = templateSupport.getTemplate(null, "item.ftl", this.getClass());
+        Template template = templateSupport.getTemplate(null, "item.ftl", STACService.class);
 
         Map<String, Object> model = new HashMap<>();
         model.put("baseURL", APIRequestInfo.get().getBaseURL());

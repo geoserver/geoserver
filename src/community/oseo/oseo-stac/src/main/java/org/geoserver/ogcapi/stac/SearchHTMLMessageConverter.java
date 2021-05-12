@@ -20,18 +20,18 @@ public class SearchHTMLMessageConverter extends AbstractItemsHTMLMessageConverte
     }
 
     protected Template getEmptyTemplate() throws IOException {
-        return templateSupport.getTemplate(null, "search-empty.ftl", this.getClass());
+        return templateSupport.getTemplate(null, "search-empty.ftl", STACService.class);
     }
 
     protected Template getContentTemplate() throws IOException {
-        return templateSupport.getTemplate(null, "search-content.ftl", this.getClass());
+        return templateSupport.getTemplate(null, "search-content.ftl", STACService.class);
     }
 
     protected Template getFooterTemplate() throws IOException {
-        return templateSupport.getTemplate(null, "search-footer.ftl", this.getClass());
+        return templateSupport.getTemplate(null, "search-footer.ftl", STACService.class);
     }
 
     protected Template getHeaderTemplate() throws IOException {
-        return templateSupport.getTemplate(null, "search-header.ftl", this.getClass());
+        return templateSupport.getTemplate(null, "search-header.ftl", STACService.class);
     }
 }

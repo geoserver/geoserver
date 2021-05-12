@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 import org.geoserver.platform.ServiceException;
-import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 
@@ -175,8 +174,9 @@ public class ElevationParser {
                 if (local.equals(step)) return false;
             } else {
                 // convert
-                final DateRange local = (DateRange) element;
-                if (local.contains(step)) return false;
+                @SuppressWarnings("unchecked")
+                final NumberRange<Double> local = (NumberRange<Double>) element;
+                if (local.contains((Number) step)) return false;
             }
         }
         return result.add(step);

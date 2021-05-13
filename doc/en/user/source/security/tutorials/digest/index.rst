@@ -124,7 +124,7 @@ Test a digest authentication login
 #. Execute the same command but specify the ``--digest`` option to tell curl to use
    digest authentication rather than basic authentication::
    
-     curl --digest -v -u admin:geoserver -G "http://localhost:8080/geoserve/wfs?request=getcapabilities"
+     curl --digest -v -u admin:geoserver -G "http://localhost:8080/geoserver/wfs?request=getcapabilities"
     
    The result should be a successful authentication and contain the normal WFS capabilities response.
 

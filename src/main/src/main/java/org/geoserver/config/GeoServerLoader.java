@@ -425,25 +425,24 @@ public abstract class GeoServerLoader {
         catalog.removeListeners(ResourcePool.CacheClearingListener.class);
         catalog.removeListeners(GeoServerConfigPersister.class);
         catalog.removeListeners(GeoServerResourcePersister.class);
-        List<CatalogListener> listeners = new ArrayList<CatalogListener>(catalog.getListeners());
-
         // look for catalog.xml, if it exists assume we are dealing with
         // an old data directory
         Resource f = resourceLoader.get("catalog.xml");
+        CatalogImpl catalog2;
         if (!Resources.exists(f)) {
             // assume 2.x style data directory
             Stopwatch sw = Stopwatch.createStarted();
             LOGGER.info("Loading catalog...");
-            CatalogImpl catalog2 = (CatalogImpl) readCatalog(xp);
+            catalog2 = (CatalogImpl) readCatalog(xp);
             LOGGER.info("Read catalog in " + sw.stop());
-            // make to remove the old resource pool catalog listener
-            ((CatalogImpl) catalog).sync(catalog2);
         } else {
             // import old style catalog, register the persister now so that we start
             // with a new version of the catalog
-            CatalogImpl catalog2 = (CatalogImpl) readLegacyCatalog(f, xp);
-            ((CatalogImpl) catalog).sync(catalog2);
+            catalog2 = (CatalogImpl) readLegacyCatalog(f, xp);
         }
+        List<CatalogListener> listeners = new ArrayList<>(catalog.getListeners());
+        // make to remove the old resource pool catalog listener
+        ((CatalogImpl) catalog).sync(catalog2);
 
         // attach back the old listeners
         for (CatalogListener listener : listeners) {

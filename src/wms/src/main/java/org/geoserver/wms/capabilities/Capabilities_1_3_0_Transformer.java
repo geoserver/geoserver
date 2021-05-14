@@ -1438,7 +1438,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             handleMetadataList(metadataLinks);
 
             // add the layer group style
-            handleLayerGroupStyles(layerName);
+            if (wmsConfig.isIncludeDefaultGroupStyleInCapabilities())
+                handleLayerGroupStyles(layerName);
 
             // the layer style is not provided since the group does just have
             // one possibility, the lack of styles that will make it use

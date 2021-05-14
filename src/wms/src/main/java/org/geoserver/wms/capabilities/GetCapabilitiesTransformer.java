@@ -1276,8 +1276,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     }
                 }
             }
-
-            handleLayerGroupStyles(layerName);
+            if (wmsConfig.isIncludeDefaultGroupStyleInCapabilities())
+                handleLayerGroupStyles(layerName);
 
             handleScaleHint(layerGroup);
 

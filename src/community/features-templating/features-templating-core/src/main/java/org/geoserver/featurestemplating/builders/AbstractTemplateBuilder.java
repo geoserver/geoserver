@@ -5,6 +5,9 @@
 package org.geoserver.featurestemplating.builders;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
@@ -26,6 +29,10 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
     protected int filterContextPos = 0;
 
     protected NamespaceSupport namespaces;
+
+    protected List<TemplateBuilder> children;
+
+    protected Map<String, Object> encodingHints;
 
     public AbstractTemplateBuilder(String key, NamespaceSupport namespaces) {
         this.key = getKeyAsExpression(key);
@@ -70,9 +77,13 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
      * @param filter the filter to be setted
      * @throws CQLException
      */
-    public void setFilter(String filter) throws CQLException {
+    public void setFilter(String filter) {
         TemplateCQLManager cqlManager = new TemplateCQLManager(filter, namespaces);
-        this.filter = cqlManager.getFilterFromString();
+        try {
+            this.filter = cqlManager.getFilterFromString();
+        } catch (CQLException e) {
+            throw new RuntimeException(e);
+        }
         this.filterContextPos = cqlManager.getContextPos();
     }
 
@@ -95,7 +106,7 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
         if (key != null && !key.evaluate(null).equals(""))
             // key might be and EnvFunction or a Literal. In both cases
             // no argument is needed for the evaluation thus passing null.
-            writer.writeElementName(key.evaluate(null));
+            writer.writeElementName(key.evaluate(null), getEncodingHints());
     }
 
     public NamespaceSupport getNamespaces() {
@@ -115,5 +126,22 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
             keyExpr = null;
         }
         return keyExpr;
+    }
+
+    @Override
+    public List<TemplateBuilder> getChildren() {
+        return children;
+    }
+
+    @Override
+    public Map<String, Object> getEncodingHints() {
+        if (this.encodingHints == null) this.encodingHints = new HashMap<>();
+        return encodingHints;
+    }
+
+    @Override
+    public void addEncodingHint(String key, Object value) {
+        if (this.encodingHints == null) this.encodingHints = new HashMap<>();
+        this.encodingHints.put(key, value);
     }
 }

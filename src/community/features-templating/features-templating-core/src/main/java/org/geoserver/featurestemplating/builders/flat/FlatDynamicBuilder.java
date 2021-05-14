@@ -6,7 +6,6 @@ package org.geoserver.featurestemplating.builders.flat;
 
 import java.io.IOException;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
-import org.geoserver.featurestemplating.writers.CommonJSONWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -24,8 +23,8 @@ public class FlatDynamicBuilder extends DynamicValueBuilder implements FlatBuild
     @Override
     protected void writeValue(TemplateOutputWriter writer, Object value) throws IOException {
 
-        ((CommonJSONWriter) writer)
-                .writeElementNameAndValue(value, nameHelper.getFinalAttributeName());
+        writer.writeElementNameAndValue(
+                nameHelper.getFinalAttributeName(), value, getEncodingHints());
     }
 
     @Override

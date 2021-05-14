@@ -7,8 +7,12 @@ package org.geoserver.ogcapi.stac;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.featurestemplating.builders.TemplateBuilderMaker;
@@ -21,10 +25,14 @@ import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.FeatureSource;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.filter.FilterFactory2;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
@@ -35,9 +43,11 @@ import org.xml.sax.helpers.NamespaceSupport;
 public class STACTemplates extends AbstractTemplates {
 
     static final Logger LOGGER = Logging.getLogger(STACTemplates.class);
+    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     private Template collectionTemplate;
-    private Template itemTemplate;
+    private Template defaultItemTemplate;
+    private ConcurrentHashMap<String, Template> itemTemplates = new ConcurrentHashMap<>();
 
     ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
 
@@ -102,7 +112,7 @@ public class STACTemplates extends AbstractTemplates {
         // setup the items template
         Resource items = dd.get("templates/ogc/stac/items.json");
         copyDefault(items, "items.json");
-        this.itemTemplate = new Template(items, new TemplateReaderConfiguration(namespaces));
+        this.defaultItemTemplate = new Template(items, new TemplateReaderConfiguration(namespaces));
     }
 
     private void reloadCollectionTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces)
@@ -126,6 +136,7 @@ public class STACTemplates extends AbstractTemplates {
         // load templates lazily, on startup the OpenSearchAccess might not yet be configured
         if (collectionTemplate == null) reloadTemplates();
 
+        collectionTemplate.checkTemplate();
         RootBuilder builder = collectionTemplate.getRootBuilder();
         if (builder != null)
             validate(
@@ -144,12 +155,72 @@ public class STACTemplates extends AbstractTemplates {
         return builder;
     }
 
-    /** Returns the item template */
-    public RootBuilder getItemTemplate() throws IOException {
-        // load templates lazily, on startup the OpenSearchAccess might not yet be configured
-        if (itemTemplate == null) reloadTemplates();
+    /**
+     * Returns the list of collection names having a custom template for them. First uses the
+     *
+     * @return
+     */
+    public Set<String> getCustomItemTemplates() throws IOException {
+        Resource resource = dd.get("templates/ogc/stac/");
+        if (resource.getType() != Resource.Type.DIRECTORY) return Collections.emptySet();
 
-        RootBuilder builder = itemTemplate.getRootBuilder();
+        Set<String> candidates =
+                resource.list()
+                        .stream()
+                        .filter(r -> r.getType() == Resource.Type.RESOURCE)
+                        .map(r -> r.name())
+                        .filter(n -> n.startsWith("items-") && n.endsWith(".json"))
+                        .map(n -> n.substring(6, n.length() - 5))
+                        .collect(Collectors.toSet());
+
+        // TODO: make this visit optimizable
+        FeatureSource<FeatureType, Feature> collections =
+                accessProvider.getOpenSearchAccess().getCollectionSource();
+        UniqueVisitor visitor =
+                new UniqueVisitor(FF.property("eo:identifier", getNamespaces(collections)));
+        collections.getFeatures().accepts(visitor, null);
+        candidates.retainAll(getCollectionNames(visitor));
+
+        return candidates;
+    }
+
+    private Set<String> getCollectionNames(UniqueVisitor visitor) {
+        @SuppressWarnings("unchecked")
+        Set<Object> values = visitor.getResult().toSet();
+        return values.stream()
+                .map(o -> (String) ((o instanceof Attribute) ? ((Attribute) o).getValue() : o))
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns the item template for the specified collection
+     *
+     * @param collectionId The collection identifier, or null if no specific collection is required
+     */
+    public RootBuilder getItemTemplate(String collectionId) throws IOException {
+        // load templates lazily, on startup the OpenSearchAccess might not yet be configured
+        if (defaultItemTemplate == null) reloadTemplates();
+
+        Template template = defaultItemTemplate;
+        // See if a collection specific template has been setup, if so use it as an override
+        if (collectionId != null) {
+            Resource resource = dd.get("templates/ogc/stac/items-" + collectionId + ".json");
+            if (resource.getType().equals(Resource.Type.RESOURCE)) {
+                template = itemTemplates.get(collectionId);
+                if (template == null) {
+                    OpenSearchAccess access = accessProvider.getOpenSearchAccess();
+                    template =
+                            new Template(
+                                    resource,
+                                    new TemplateReaderConfiguration(
+                                            getNamespaces(access.getProductSource())));
+                    itemTemplates.put(collectionId, template);
+                }
+            }
+        }
+
+        template.checkTemplate();
+        RootBuilder builder = template.getRootBuilder();
         if (builder != null)
             validate(
                     builder,

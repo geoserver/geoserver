@@ -15,6 +15,7 @@ import com.jayway.jsonpath.PathNotFoundException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -23,6 +24,13 @@ import org.jsoup.select.Elements;
 import org.junit.Test;
 
 public class SearchTest extends STACTestSupport {
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        copyTemplate("/items-LANDSAT8.json");
+    }
 
     @Test
     public void testCollectionsGet() throws Exception {
@@ -405,5 +413,33 @@ public class SearchTest extends STACTestSupport {
                         "div.card-header:has(a:contains(S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04)) ~ div.card-body");
         assertTextContains(s2Body, "[data-tid='gbounds']", "-119,174, 33,333, -117,969, 34,338.");
         assertTextContains(s2Body, "[data-tid='ccover']", "7");
+    }
+
+    @Test
+    public void testSearchAllMixedTemplates() throws Exception {
+        DocumentContext doc = getAsJSONPath("ogc/stac/search?f=json", 200);
+
+        // this one has a custom template
+        DocumentContext l8Sample = readSingleContext(doc, "features[?(@.id == 'LS8_TEST.02')]");
+        checkLandsat8_02(l8Sample);
+
+        // this one uses the standard template
+        DocumentContext s2Sample =
+                readSingleContext(
+                        doc,
+                        "features[?(@.id == 'S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04')]");
+        checkSentinel2Sample(s2Sample);
+    }
+
+    @Test
+    public void testLandsat8Gsd() throws Exception {
+        // gsd is statically set to 30, default template misses is, only landsat8 should come back
+        // only one feature matching.
+        DocumentContext json =
+                getAsJSONPath("ogc/stac/search?filter=gsd = 30&filter-lang=cql-text", 200);
+
+        assertEquals(Integer.valueOf(1), json.read("numberMatched"));
+        assertEquals(Integer.valueOf(1), json.read("numberReturned"));
+        assertThat(json.read("features[*].id"), containsInAnyOrder("LS8_TEST.02"));
     }
 }

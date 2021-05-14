@@ -1,0 +1,65 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "stac_version": "$${env('stac_version', '1.0.0-rc2')}",
+      "stac_extensions": [
+        "eo",
+        "view",
+        "sat",
+        "landsat"
+      ],
+      "id": "${eop:identifier}",
+      "type": "Feature",
+      "geometry": "${footprint}",
+      "bbox": [
+        "$${minx(footprint)}",
+        "$${miny(footprint)}",
+        "$${maxx(footprint)}",
+        "$${maxy(footprint)}"
+      ],
+      "properties": {
+        "start_datetime": "$filter{timeStart is not null and timeEnd is not null and timeStart <> timeEnd},${timeStart}",
+        "end_datetime": "$filter{timeStart is not null and timeEnd is not null and timeStart <> timeEnd},${timeEnd}",
+        "datetime": "$filter{timeStart is not null and (timeEnd is null or timeStart = timeEnd)},${timeStart}",
+        "created": "${eop:creationDate}",
+        "updated": "${eop:modificationDate}",
+        "platform": "${eop:productPlatform}",
+        "instruments": [
+          // ls8 specific
+          "oli",
+          "tirs"
+        ],
+        "constellation": "$${strToLowerCase(eop:parentIdentifier)}",
+        "eo:cloud_cover": "$${opt:cloudCover / 2}",
+        "gsd": 30, // ls8 specific
+        "view:sun_azimuth": "${eop:illuminationAzimuthAngle}",
+        "view:sun_elevation": "${eop:illuminationElevationAngle}",
+        "sat:orbit_state": "$${strToLowerCase(eop:orbitDirection)}",
+        "sat:absolute_orbit": "${eop:orbitNumber}",
+        "sat:anx_datetime": "${eop:startTimeFromAscendingNode}",
+        "landsat:tier": "pre-collection",
+        "landsat:orbit": "${eop:orbitNumber}" // just to have a custom queriable
+      },
+      "collection": "${eop:parentIdentifier}",
+      "assets": "${assets}",
+      "links": [
+        {
+          "href": "$${serviceLink('ogcapi/stac/collections/%s', eop:parentIdentifier)}",
+          "rel": "collection",
+          "type": "application/json"
+        },
+        {
+          "href": "$${serviceLink('ogcapi/stac')}",
+          "rel": "root",
+          "type": "application/json"
+        },
+        {
+          "href": "$${serviceLink('ogcapi/stac/collections/%s/items/%s', eop:parentIdentifier, eop:identifier)}",
+          "rel": "self",
+          "type": "application/geo+json"
+        }
+      ]
+    }
+  ]
+}

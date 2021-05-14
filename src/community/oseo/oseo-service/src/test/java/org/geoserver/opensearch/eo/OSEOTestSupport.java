@@ -10,17 +10,22 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 import javax.servlet.Filter;
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.store.GeoServerOpenSearchTestSupport;
 import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -181,5 +186,21 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
 
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
         return dom;
+    }
+
+    /**
+     * Copies the given template from the classpath to the data directory. Lookup is relative to the
+     * test class.
+     */
+    protected void copyTemplate(String template) throws IOException {
+        GeoServerDataDirectory dd = getDataDirectory();
+        Resource target = dd.get("templates/os-eo/", template);
+        if (getClass().getResource(template) == null)
+            throw new IllegalArgumentException(
+                    "Could not find " + template + " relative to " + getClass());
+        try (InputStream is = getClass().getResourceAsStream(template);
+                OutputStream os = target.out()) {
+            IOUtils.copy(is, os);
+        }
     }
 }

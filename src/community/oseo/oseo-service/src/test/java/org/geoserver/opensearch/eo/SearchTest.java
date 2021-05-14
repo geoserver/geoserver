@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 import net.sf.json.JSONObject;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.response.AtomSearchResponse;
 import org.geoserver.opensearch.eo.response.DescriptionResponse;
 import org.geoserver.ows.util.ResponseUtils;
@@ -34,6 +35,14 @@ public class SearchTest extends OSEOTestSupport {
 
     private static final String ENCODED_ATOM_MIME =
             ResponseUtils.urlEncode(AtomSearchResponse.MIME);
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        // not used here, just checking having a custom template around is not causing side effects
+        copyTemplate("products-LANDSAT8.json");
+    }
 
     @Test
     public void testAllCollection() throws Exception {

@@ -13,11 +13,14 @@ import static org.springframework.http.HttpMethod.POST;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
+import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.platform.ServiceException;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.util.logging.Logging;
+import org.opengis.feature.Feature;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
@@ -26,6 +29,8 @@ import org.springframework.stereotype.Component;
 /** Converter for the {@link ItemsResponse} that will encode STAC items using a feature template */
 @Component
 public class TemplatedItemsConverter extends AbstractHttpMessageConverter<AbstractItemsResponse> {
+
+    static final Logger LOGGER = Logging.getLogger(TemplatedItemsConverter.class);
 
     private final STACTemplates templates;
 
@@ -49,7 +54,6 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
     protected void writeInternal(
             AbstractItemsResponse itemsResponse, HttpOutputMessage httpOutputMessage)
             throws IOException {
-        RootBuilder builder = templates.getItemTemplate();
 
         try (STACGeoJSONWriter writer =
                 new STACGeoJSONWriter(
@@ -58,7 +62,12 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
             writer.startTemplateOutput(null);
             try (FeatureIterator features = itemsResponse.getItems().features()) {
                 while (features.hasNext()) {
-                    builder.evaluate(writer, new TemplateBuilderContext(features.next()));
+                    // lookup the builder, might be specific to the parent collection
+                    Feature feature = features.next();
+                    String collectionId =
+                            (String) feature.getProperty("parentIdentifier").getValue();
+                    RootBuilder builder = templates.getItemTemplate(collectionId);
+                    builder.evaluate(writer, new TemplateBuilderContext(feature));
                 }
             }
             writer.writeEndArray();

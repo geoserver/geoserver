@@ -18,7 +18,6 @@ import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -364,7 +363,7 @@ public class STACService {
                 accessProvider.getOpenSearchAccess().getProductSource();
 
         // request parsing
-        List<Filter> filters = new ArrayList<>();
+        FilterMerger filters = new FilterMerger();
         if (sq.getCollections() != null && !sq.getCollections().isEmpty())
             filters.add(getCollectionsFilter(sq.getCollections()));
         double[] bbox = sq.getBbox();
@@ -378,7 +377,8 @@ public class STACService {
             filters.add(buildTimeFilter(sq.getDatetime()));
         }
         if (sq.getFilter() != null) {
-            Filter mapped = parseFilter(source, sq.getFilter(), sq.getFilterLang());
+            Filter mapped =
+                    parseFilter(sq.getCollections(), source, sq.getFilter(), sq.getFilterLang());
             filters.add(mapped);
         }
         // keep only enabled products
@@ -388,7 +388,7 @@ public class STACService {
         q.setStartIndex(sq.getStartIndex());
         int limit = getLimit(sq.getLimit());
         q.setMaxFeatures(limit);
-        q.setFilter(mergeFiltersAnd(filters));
+        q.setFilter(filters.and());
 
         // query the items based on the request parameters
         QueryResult qr = queryItems(source, q);
@@ -417,11 +417,13 @@ public class STACService {
     }
 
     public Filter parseFilter(
-            FeatureSource<FeatureType, Feature> source, String filter, String filterLang)
+            List<String> collectionIds,
+            FeatureSource<FeatureType, Feature> source,
+            String filter,
+            String filterLang)
             throws IOException {
-        Filter parsedFilter = filterParser.parse(filter, filterLang);
-        STACPathVisitor visitor = new STACPathVisitor(source.getSchema());
-        return (Filter) parsedFilter.accept(visitor, templates.getItemTemplate());
+        Filter parsed = filterParser.parse(filter, filterLang);
+        return new TemplatePropertyMapper(source, templates).mapProperties(collectionIds, parsed);
     }
 
     private QueryResult queryItems(
@@ -438,7 +440,7 @@ public class STACService {
                 accessProvider.getOpenSearchAccess().getProductSource();
 
         // request parsing
-        List<Filter> filters = new ArrayList<>();
+        FilterMerger filters = new FilterMerger();
         if (collectionIds != null && !collectionIds.isEmpty())
             filters.add(getCollectionsFilter(collectionIds));
         if (bbox != null) {
@@ -452,7 +454,7 @@ public class STACService {
             filters.add(buildTimeFilter(datetime));
         }
         if (filter != null) {
-            Filter mapped = parseFilter(source, filter, filterLanguage);
+            Filter mapped = parseFilter(collectionIds, source, filter, filterLanguage);
             filters.add(mapped);
         }
         // keep only enabled products
@@ -462,7 +464,7 @@ public class STACService {
         q.setStartIndex(startIndex);
         int limit = getLimit(requestedLimit);
         q.setMaxFeatures(limit);
-        q.setFilter(mergeFiltersAnd(filters));
+        q.setFilter(filters.and());
 
         return queryItems(source, q);
     }
@@ -483,12 +485,12 @@ public class STACService {
     }
 
     private Filter getCollectionsFilter(List<String> collectionIds) {
-        List<Filter> filters =
-                collectionIds
-                        .stream()
-                        .map(id -> FF.equals(FF.property("parentIdentifier"), FF.literal(id)))
-                        .collect(Collectors.toList());
-        return mergeFiltersOr(filters);
+        FilterMerger filters = new FilterMerger();
+        collectionIds
+                .stream()
+                .map(id -> FF.equals(FF.property("parentIdentifier"), FF.literal(id)))
+                .forEach(f -> filters.add(f));
+        return filters.or();
     }
 
     /**
@@ -532,26 +534,6 @@ public class STACService {
         }
     }
 
-    private Filter mergeFiltersOr(List<Filter> filters) {
-        if (filters.isEmpty()) {
-            return Filter.EXCLUDE;
-        } else if (filters.size() == 1) {
-            return filters.get(0);
-        } else {
-            return FF.or(filters);
-        }
-    }
-
-    private Filter mergeFiltersAnd(List<Filter> filters) {
-        if (filters.isEmpty()) {
-            return Filter.INCLUDE;
-        } else if (filters.size() == 1) {
-            return filters.get(0);
-        } else {
-            return FF.and(filters);
-        }
-    }
-
     @GetMapping(
         path = "collections/{collectionId}/queryables",
         name = "getCollectionQueryables",
@@ -574,7 +556,7 @@ public class STACService {
         FeatureType itemsSchema =
                 accessProvider.getOpenSearchAccess().getProductSource().getSchema();
         Queryables queryables =
-                new STACQueryablesBuilder(id, templates.getItemTemplate(), itemsSchema)
+                new STACQueryablesBuilder(id, templates.getItemTemplate(collectionId), itemsSchema)
                         .getQueryables();
         queryables.setCollectionId(collectionId);
         return queryables;
@@ -592,8 +574,10 @@ public class STACService {
         String id = ResponseUtils.buildURL(baseURL, "ogc/stac/queryables", null, RESOURCE);
         FeatureType itemsSchema =
                 accessProvider.getOpenSearchAccess().getProductSource().getSchema();
+        LOGGER.severe(
+                "Should consider the various collection specific templates here, and decide what to do for queriables that are in one collection but not in others (replace with null and simplify filter?)");
         Queryables queryables =
-                new STACQueryablesBuilder(id, templates.getItemTemplate(), itemsSchema)
+                new STACQueryablesBuilder(id, templates.getItemTemplate(null), itemsSchema)
                         .getQueryables();
         return queryables;
     }

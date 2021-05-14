@@ -36,6 +36,7 @@ import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -59,8 +60,10 @@ import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
+import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedType;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -72,6 +75,7 @@ import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.LegendInfoImpl;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
+import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.gwc.GWC;
@@ -126,6 +130,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class GeoServerTileLayerTest {
 
     static final Logger LOGGER = Logging.getLogger(GeoServerTileLayerTest.class);
+    private static final int MAX_AGE_VALUE = 123;
 
     private LayerInfoImpl layerInfo;
 
@@ -898,6 +903,85 @@ public class GeoServerTileLayerTest {
 
         verify(storageBroker, atLeastOnce()).get(any());
         verify(mockGWC, times(1)).getResponseEncoder(eq(mimeType), isA(RenderedImageMap.class));
+    }
+
+    /** Test expire web cache without any setup of LayerInfo resource. */
+    @Test
+    public void testExpireClientsDisabledLayer() {
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        int expire = layerInfoTileLayer.getExpireClients(0);
+
+        assertEquals(0, expire);
+    }
+
+    /** Test expire web cache with metadata value of LayerInfo resource. */
+    @Test
+    public void testExpireClientsEnabledLayer() {
+        ((ResourceInfoImpl) layerInfo.getResource())
+                .setMetadata(getCachingEnabledMetadata(MAX_AGE_VALUE));
+        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+        int expire = layerInfoTileLayer.getExpireClients(0);
+
+        assertEquals(MAX_AGE_VALUE, expire);
+    }
+
+    /** Test expire web cache without any setup LayerGroup. */
+    @Test
+    public void testExpireClientsDisabledLayerGroup() {
+        layerInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
+        int expire = layerInfoTileLayer.getExpireClients(0);
+        assertEquals(0, expire);
+    }
+
+    /**
+     * Test expire web cache with metadata value of LayerGroup resource. No setup of LayerInfo
+     * expiration.
+     */
+    @Test
+    public void testExpireClientsEnabledLayerGroup() {
+        layerGroup.setMetadata(getCachingEnabledMetadata(MAX_AGE_VALUE));
+        layerInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
+        int expire = layerInfoTileLayer.getExpireClients(0);
+
+        assertEquals(MAX_AGE_VALUE, expire);
+    }
+
+    /**
+     * Test expire web cache with metadata value of LayerGroup resource. Use Layer Group HTTP
+     * configuration even if any of lyaers in lyaer group has lower max age value.
+     */
+    @Test
+    public void testExpireClientsEnabledLayerGroupLayerInfoLower() {
+        ((ResourceInfoImpl) layerInfo.getResource())
+                .setMetadata(getCachingEnabledMetadata(MAX_AGE_VALUE - 1));
+        layerGroup.setMetadata(getCachingEnabledMetadata(MAX_AGE_VALUE));
+        layerInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
+        int expire = layerInfoTileLayer.getExpireClients(0);
+
+        assertEquals(MAX_AGE_VALUE, expire);
+    }
+
+    /**
+     * Test expire web cache with metadata value of LayerGroup resource. Set higher LayerInfo
+     * expiration.
+     */
+    @Test
+    public void testExpireClientsEnabledLayerGroupLayerInfoHigher() {
+        ((ResourceInfoImpl) layerInfo.getResource())
+                .setMetadata(getCachingEnabledMetadata(MAX_AGE_VALUE + 1));
+        layerGroup.setMetadata(getCachingEnabledMetadata(MAX_AGE_VALUE));
+        layerInfoTileLayer = new GeoServerTileLayer(layerGroup, defaults, gridSetBroker);
+        int expire = layerInfoTileLayer.getExpireClients(0);
+
+        assertEquals(MAX_AGE_VALUE, expire);
+    }
+
+    private MetadataMap getCachingEnabledMetadata(int maxAgeValue) {
+        Map<String, Serializable> mapItems = new HashMap<>();
+        mapItems.put(ResourceInfo.CACHING_ENABLED, Boolean.TRUE);
+        mapItems.put(ResourceInfo.CACHE_AGE_MAX, maxAgeValue);
+
+        return new MetadataMap(mapItems);
     }
 
     @Test

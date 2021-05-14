@@ -79,16 +79,35 @@ public final class MapLayerInfo {
     /** The extra constraints that can be set when an external SLD is used */
     private FeatureTypeConstraint[] layerFeatureConstraints;
 
+    private MetadataMap layerGroupMetadata;
+
     public MapLayerInfo(SimpleFeatureSource remoteSource) {
+        this(remoteSource, new MetadataMap());
+    }
+
+    /**
+     * @param remoteSource
+     * @param layerGroupMetadata override layerInfo metadata e.g. max-age
+     */
+    public MapLayerInfo(SimpleFeatureSource remoteSource, MetadataMap layerGroupMetadata) {
         this.remoteFeatureSource = remoteSource;
         this.layerInfo = null;
         name = remoteFeatureSource.getSchema().getTypeName();
         label = name;
         description = "Remote WFS";
         type = TYPE_REMOTE_VECTOR;
+        this.layerGroupMetadata = new MetadataMap(layerGroupMetadata);
     }
 
     public MapLayerInfo(LayerInfo layerInfo) {
+        this(layerInfo, new MetadataMap());
+    }
+
+    /**
+     * @param layerInfo
+     * @param layerGroupMetadata override layerInfo metadata e.g. max-age
+     */
+    public MapLayerInfo(LayerInfo layerInfo, MetadataMap layerGroupMetadata) {
         this.layerInfo = layerInfo;
         this.remoteFeatureSource = null;
         ResourceInfo resource = layerInfo.getResource();
@@ -99,6 +118,7 @@ public final class MapLayerInfo {
         this.description = resource.getAbstract();
 
         this.type = layerInfo.getType().getCode();
+        this.layerGroupMetadata = new MetadataMap(layerGroupMetadata);
     }
 
     public Style getStyle() {
@@ -230,22 +250,29 @@ public final class MapLayerInfo {
      * @return true if we should, false if we should omit the header
      */
     public boolean isCachingEnabled() {
-        if (layerInfo == null) {
-            return false;
-        }
         if (type == TYPE_REMOTE_VECTOR) {
             // we just assume remote WFS is not cacheable since it's just used
             // in feature portrayal requests (which are one off and don't have a way to
             // tell us how often the remote WFS changes)
             return false;
         }
-        ResourceInfo resource = layerInfo.getResource();
-        MetadataMap metadata = resource.getMetadata();
-        Boolean cachingEnabled = null;
-        if (metadata != null) {
-            cachingEnabled = metadata.get(ResourceInfo.CACHING_ENABLED, Boolean.class);
+
+        if (this.isCachingEnabled(this.layerGroupMetadata)) {
+            return true;
         }
-        return cachingEnabled == null ? false : cachingEnabled.booleanValue();
+
+        if (layerInfo == null) {
+            return false;
+        }
+
+        ResourceInfo resource = layerInfo.getResource();
+        return this.isCachingEnabled(resource.getMetadata());
+    }
+
+    private boolean isCachingEnabled(MetadataMap metadata) {
+        Boolean value = metadata.get(ResourceInfo.CACHING_ENABLED, Boolean.class);
+
+        return value != null ? value : false;
     }
 
     /**
@@ -257,12 +284,24 @@ public final class MapLayerInfo {
      *     0} if not set
      */
     public int getCacheMaxAge() {
+        // maxAge may be defined in layer group metadata, but caching
+        // may be disabled
+        if (this.isCachingEnabled(this.layerGroupMetadata)) {
+            return getCacheMaxAge(this.layerGroupMetadata);
+        }
+
         if (layerInfo == null) {
             return 0;
         }
+
         ResourceInfo resource = layerInfo.getResource();
-        Integer val = resource.getMetadata().get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
-        return val == null ? 0 : val;
+        return getCacheMaxAge(resource.getMetadata());
+    }
+
+    private int getCacheMaxAge(MetadataMap metadata) {
+        Integer value = metadata.get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
+
+        return value != null ? value : 0;
     }
 
     /**
@@ -339,6 +378,11 @@ public final class MapLayerInfo {
         return layerFeatureConstraints;
     }
 
+    /**
+     * Get layer info.
+     *
+     * @return layer info
+     */
     public LayerInfo getLayerInfo() {
         return layerInfo;
     }

@@ -67,7 +67,7 @@ public class MapLayerInfoKvpParser extends KvpParser {
 
                         if (skipResource(li)) continue;
 
-                        layer = new MapLayerInfo(li);
+                        layer = new MapLayerInfo(li, groupInfo.getMetadata());
                         layers.add(layer);
                     }
                 }

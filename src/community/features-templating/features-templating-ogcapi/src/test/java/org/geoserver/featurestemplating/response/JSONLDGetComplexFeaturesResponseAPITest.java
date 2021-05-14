@@ -142,24 +142,6 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
     }
 
     @Test
-    public void testJsonLdQueryOGCAPIFailsIfNotExisting() throws Exception {
-        setUpMappedFeature();
-        StringBuilder sb =
-                new StringBuilder("ogc/features/collections/")
-                        .append("gsml:MappedFeature")
-                        .append("/items?f=application%2Fld%2Bjson")
-                        .append("&filter-lang=cql-text")
-                        .append("&filter= features.notexisting")
-                        .append(" = 'name_2' ");
-        MockHttpServletResponse result = getAsServletResponse(sb.toString());
-        assertTrue(
-                result.getContentAsString()
-                        .contains(
-                                "Failed to resolve filter features.notexisting = 'name_2' against the template. "
-                                        + "Check the path specified in the filter."));
-    }
-
-    @Test
     public void testJsonLdQueryPointingToArray() throws Exception {
         setUpMappedFeature();
         StringBuilder sb =

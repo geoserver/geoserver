@@ -17,7 +17,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class JSONLDGetComplexFeaturesResponseFilteringWFSTest
-        extends TemplateJSONComplexTestSupport {
+        extends TemplateComplexTestSupport {
 
     @Test
     public void testJsonLdWithFilterOnIteratingAndComposite() throws Exception {

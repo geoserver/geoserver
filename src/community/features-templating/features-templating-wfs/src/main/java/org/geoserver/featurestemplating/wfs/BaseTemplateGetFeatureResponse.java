@@ -6,6 +6,7 @@ package org.geoserver.featurestemplating.wfs;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -21,7 +22,12 @@ import org.geoserver.wfs.WFSGetFeatureOutputFormat;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.Feature;
+import org.opengis.feature.Property;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * An abstract template response to be extended from the output specific implementation, defining
@@ -29,9 +35,11 @@ import org.opengis.feature.Feature;
  */
 public abstract class BaseTemplateGetFeatureResponse extends WFSGetFeatureOutputFormat {
 
-    private TemplateConfiguration configuration;
+    protected TemplateConfiguration configuration;
     protected TemplateGetFeatureResponseHelper helper;
     protected TemplateIdentifier identifier;
+
+    protected boolean hasGeometry;
 
     public BaseTemplateGetFeatureResponse(
             GeoServer gs, TemplateConfiguration configuration, TemplateIdentifier identifier) {
@@ -47,9 +55,9 @@ public abstract class BaseTemplateGetFeatureResponse extends WFSGetFeatureOutput
             throws ServiceException {
 
         try (TemplateOutputWriter writer = helper.getOutputWriter(output)) {
-            writer.startTemplateOutput();
-            iterateFeatureCollection(writer, featureCollection);
-            writer.endTemplateOutput();
+            writer.startTemplateOutput(null);
+            iterateFeatureCollection(writer, featureCollection, getFeature);
+            writer.endTemplateOutput(null);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -65,16 +73,24 @@ public abstract class BaseTemplateGetFeatureResponse extends WFSGetFeatureOutput
      * @throws ExecutionException
      */
     protected void iterateFeatureCollection(
-            TemplateOutputWriter writer, FeatureCollectionResponse featureCollection)
+            TemplateOutputWriter writer,
+            FeatureCollectionResponse featureCollection,
+            Operation operation)
             throws IOException, ExecutionException {
         List<FeatureCollection> collectionList = featureCollection.getFeature();
 
         for (FeatureCollection collection : collectionList) {
             FeatureTypeInfo fti = helper.getFeatureTypeInfo(collection);
-            RootBuilder root = configuration.getTemplate(fti, getMimeType(null, null));
+            RootBuilder root = configuration.getTemplate(fti, getMimeType(null, operation));
             beforeFeatureIteration(writer, root, fti);
             iterateFeatures(root, writer, collection);
         }
+    }
+
+    protected void iterateFeatureCollection(
+            TemplateOutputWriter writer, FeatureCollectionResponse featureCollection)
+            throws IOException, ExecutionException {
+        iterateFeatureCollection(writer, featureCollection, null);
     }
 
     /**
@@ -111,12 +127,89 @@ public abstract class BaseTemplateGetFeatureResponse extends WFSGetFeatureOutput
             TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo);
 
     /**
-     * Allows subclasses to perform actions before evaluation the feature
+     * Allows subclasses to perform actions before evaluatimg the feature
      *
      * @param writer the current TemplateWriter
      * @param root the current RootBuilder
      * @param feature the feature being evaluated by the builders' tree
      */
-    protected abstract void beforeEvaluation(
-            TemplateOutputWriter writer, RootBuilder root, Feature feature);
+    protected void beforeEvaluation(
+            TemplateOutputWriter writer, RootBuilder root, Feature feature) {
+        writer.incrementNumberReturned();
+        if (!hasGeometry) {
+            GeometryDescriptor descriptor = feature.getType().getGeometryDescriptor();
+            if (descriptor != null) {
+                Property geometry = feature.getProperty(descriptor.getName());
+                hasGeometry = geometry != null;
+                if (writer.getCrs() == null) {
+                    CoordinateReferenceSystem featureCrs =
+                            descriptor.getCoordinateReferenceSystem();
+                    writer.setCrs(featureCrs);
+                    writer.setAxisOrder(CRS.getAxisOrder(featureCrs));
+                }
+            }
+        }
+    }
+
+    /**
+     * Method that trigger the encoding of a FeatureCollection additional infos like numberReturned,
+     * numberMatched, CRS and boundingBox.
+     *
+     * @param writer the template writer being used to produce the format.
+     * @param featureCollection the FeatureCollectionResponse object from which eventually retrieve
+     *     the additional infos.
+     * @param getFeature the getFeature Operation from which eventually retrieve addition infos.
+     * @throws IOException
+     */
+    protected void writeAdditionalFields(
+            TemplateOutputWriter writer,
+            FeatureCollectionResponse featureCollection,
+            Operation getFeature)
+            throws IOException {
+        BigInteger totalNumberOfFeatures = featureCollection.getTotalNumberOfFeatures();
+        BigInteger featureCount =
+                (totalNumberOfFeatures != null && totalNumberOfFeatures.longValue() < 0)
+                        ? null
+                        : totalNumberOfFeatures;
+        boolean isFeatureBounding = getInfo().isFeatureBounding();
+
+        ReferencedEnvelope featuresBounds =
+                getBoundsFromFeatureCollections(featureCollection.getFeature(), isFeatureBounding);
+        writeAdditionalFieldsInternal(
+                writer, featureCollection, getFeature, featureCount, featuresBounds);
+    }
+
+    private ReferencedEnvelope getBoundsFromFeatureCollections(
+            List<FeatureCollection> featureCollectionList, boolean isFeatureBounding) {
+        ReferencedEnvelope e = null;
+        if (hasGeometry && isFeatureBounding) {
+            for (int i = 0; i < featureCollectionList.size(); i++) {
+                FeatureCollection collection = featureCollectionList.get(i);
+                if (e == null) e = collection.getBounds();
+                else e.expandToInclude(collection.getBounds());
+            }
+        }
+        return e;
+    }
+
+    /**
+     * Method that has to be overridden by subclasses, to provide specific instruction for the
+     * encoding of a FeatureCollection additional info like numberReturned, numberMatched, CRS and
+     * boundingBox.
+     *
+     * @param writer the template writer being used to produce the format.
+     * @param featureCollection the FeatureCollectionResponse object from which eventually retrieve
+     *     the additional infos.
+     * @param getFeature the getFeature Operation from which eventually retrieve addition infos.
+     * @param featureCount the featureCount. Can be null.
+     * @param bounds the featureBounds. Can be null.
+     * @throws IOException
+     */
+    protected abstract void writeAdditionalFieldsInternal(
+            TemplateOutputWriter writer,
+            FeatureCollectionResponse featureCollection,
+            Operation getFeature,
+            BigInteger featureCount,
+            ReferencedEnvelope bounds)
+            throws IOException;
 }

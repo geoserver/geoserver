@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.markup.html.tabs.AbstractTab;
@@ -66,7 +67,7 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
         super.renderHead(headerResponse);
         String onLoadJsCall =
                 "initMap('"
-                        + jsSrs
+                        + StringEscapeUtils.escapeEcmaScript(jsSrs)
                         + "', '"
                         + jsUnit
                         + "', "

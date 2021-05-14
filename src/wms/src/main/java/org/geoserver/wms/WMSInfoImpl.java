@@ -73,6 +73,8 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     private Integer remoteStyleMaxRequestTime;
     private Integer remoteStyleTimeout;
 
+    private Boolean includeDefaultGroupStyleInCapabilities;
+
     public WMSInfoImpl() {
         authorityURLs = new ArrayList<>(2);
         identifiers = new ArrayList<>(2);
@@ -307,5 +309,17 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     @Override
     public void setRemoteStyleTimeout(int remoteStyleTimeout) {
         this.remoteStyleTimeout = remoteStyleTimeout;
+    }
+
+    @Override
+    public boolean isIncludeDefaultGroupStyleInCapabilities() {
+        if (includeDefaultGroupStyleInCapabilities == null) return true;
+        return includeDefaultGroupStyleInCapabilities.booleanValue();
+    }
+
+    @Override
+    public void setIncludeDefaultGroupStyleInCapabilities(
+            boolean includeDefaultGroupStyleInCapabilities) {
+        this.includeDefaultGroupStyleInCapabilities = includeDefaultGroupStyleInCapabilities;
     }
 }

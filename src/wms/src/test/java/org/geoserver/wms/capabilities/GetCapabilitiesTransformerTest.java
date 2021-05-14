@@ -48,6 +48,7 @@ import org.geotools.util.NumberRange;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -217,6 +218,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
 
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
+        namespaces.put("wms", "http://www.opengis.net/wms");
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
         XPATH = XMLUnit.newXpathEngine();
     }
@@ -412,7 +414,104 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
     public void testLayerStyleSections() throws Exception {
         // Given
         String LAYER_GROUP_NAME = "testLayerGroup";
+        createLayerGroup(LAYER_GROUP_NAME);
 
+        // When
+        GetCapabilitiesTransformer tr =
+                new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
+        Document trDom = WMSTestSupport.transform(req, tr);
+        Element trRoot = trDom.getDocumentElement();
+
+        Capabilities_1_3_0_Transformer tr130 =
+                new Capabilities_1_3_0_Transformer(
+                        wmsConfig,
+                        baseUrl,
+                        wmsConfig.getAllowedMapFormats(),
+                        wmsConfig.getAvailableExtendedCapabilitiesProviders());
+        Document tr130Dom = WMSTestSupport.transform(req, tr130);
+        Element tr130Root = tr130Dom.getDocumentElement();
+
+        // Then
+        assertEquals("WMT_MS_Capabilities", trRoot.getNodeName());
+        assertEquals(1, trDom.getElementsByTagName("Style").getLength());
+
+        assertEquals("WMS_Capabilities", tr130Root.getNodeName());
+        assertEquals(1, tr130Dom.getElementsByTagName("Style").getLength());
+    }
+
+    @Test
+    public void testDisableDefaultLayerGroupStyle1_1() throws Exception {
+        // test that when IncludeDefaultGroupStyleInCapabilities
+        // is set to false the default layerGroup style doesn't appears in
+        // getCapabilities resp.
+        String layerGroupName = "aLayerGroup";
+        createLayerGroup(layerGroupName);
+        GetCapabilitiesTransformer tr =
+                new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
+        Document dom = WMSTestSupport.transform(req, tr);
+
+        // default the style should be present
+        String lgStyleName =
+                XPATH.evaluate("/WMT_MS_Capabilities/Capability/Layer/Layer/Style/Title", dom);
+        assertEquals("aLayerGroup style", lgStyleName);
+        WMS wms =
+                new WMS(geosConfig) {
+                    @Override
+                    public boolean isIncludeDefaultGroupStyleInCapabilities() {
+                        return false;
+                    }
+                };
+        GetCapabilitiesTransformer tr2 =
+                new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats, null);
+        Document dom2 = WMSTestSupport.transform(req, tr2);
+        lgStyleName =
+                XPATH.evaluate("/WMT_MS_Capabilities/Capability/Layer/Layer/Style/Title", dom2);
+        // the style won't appear
+        assertEquals(lgStyleName, "");
+    }
+
+    @Test
+    public void testDisableDefaultLayerGroupStyle1_3() throws Exception {
+        // test that when IncludeDefaultGroupStyleInCapabilities
+        // is set to false the default layerGroup style doesn't appears in
+        // getCapabilities resp.
+        String layerGroupName = "aLayerGroup";
+        createLayerGroup(layerGroupName);
+
+        Capabilities_1_3_0_Transformer tr =
+                new Capabilities_1_3_0_Transformer(
+                        wmsConfig,
+                        baseUrl,
+                        wmsConfig.getAllowedMapFormats(),
+                        wmsConfig.getAvailableExtendedCapabilitiesProviders());
+        Document dom = WMSTestSupport.transform(req, tr);
+
+        // default case, the style should be present
+        NodeList nodeList = dom.getElementsByTagName("Style");
+        assertEquals(1, nodeList.getLength());
+        Element styleEl = (Element) nodeList.item(0);
+        String title = styleEl.getElementsByTagName("Title").item(0).getTextContent();
+        assertEquals("aLayerGroup style", title);
+        WMS wms =
+                new WMS(geosConfig) {
+                    @Override
+                    public boolean isIncludeDefaultGroupStyleInCapabilities() {
+                        return false;
+                    }
+                };
+        Capabilities_1_3_0_Transformer tr2 =
+                new Capabilities_1_3_0_Transformer(
+                        wms,
+                        baseUrl,
+                        wms.getAllowedMapFormats(),
+                        wms.getAvailableExtendedCapabilitiesProviders());
+        Document dom2 = WMSTestSupport.transform(req, tr2);
+        nodeList = dom2.getElementsByTagName("Style");
+        // the style won't appear
+        assertEquals(0, nodeList.getLength());
+    }
+
+    private void createLayerGroup(String layerGroupName) throws FactoryException {
         StyleInfo styleInfo = this.catalog.getFactory().createStyle();
         styleInfo.setName("testStyle");
         styleInfo.setFilename("testStyle.sld");
@@ -447,32 +546,10 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         ReferencedEnvelope nativeBounds = new ReferencedEnvelope(-180, 180, -90, 90, nativeCrs);
 
         LayerGroupInfo layerGroupInfo = this.catalog.getFactory().createLayerGroup();
-        layerGroupInfo.setName(LAYER_GROUP_NAME);
+        layerGroupInfo.setName(layerGroupName);
         layerGroupInfo.setBounds(nativeBounds);
         layerGroupInfo.setMode(LayerGroupInfo.Mode.NAMED);
         layerGroupInfo.getLayers().add(layerInfo);
         this.catalog.add(layerGroupInfo);
-
-        // When
-        GetCapabilitiesTransformer tr =
-                new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
-        Document trDom = WMSTestSupport.transform(req, tr);
-        Element trRoot = trDom.getDocumentElement();
-
-        Capabilities_1_3_0_Transformer tr130 =
-                new Capabilities_1_3_0_Transformer(
-                        wmsConfig,
-                        baseUrl,
-                        wmsConfig.getAllowedMapFormats(),
-                        wmsConfig.getAvailableExtendedCapabilitiesProviders());
-        Document tr130Dom = WMSTestSupport.transform(req, tr130);
-        Element tr130Root = tr130Dom.getDocumentElement();
-
-        // Then
-        assertEquals("WMT_MS_Capabilities", trRoot.getNodeName());
-        assertEquals(1, trDom.getElementsByTagName("Style").getLength());
-
-        assertEquals("WMS_Capabilities", tr130Root.getNodeName());
-        assertEquals(1, tr130Dom.getElementsByTagName("Style").getLength());
     }
 }

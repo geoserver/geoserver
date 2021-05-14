@@ -75,7 +75,7 @@ public class GeoJSONSearchResponse extends Response {
 
     private RootBuilder getTemplate(SearchRequest request) throws IOException {
         if (request.getParentIdentifier() == null) return templates.getCollectionsTemplate();
-        return templates.getProductsTemplate();
+        return templates.getProductsTemplate(request.getParentIdentifier());
     }
 
     private void writeAdditionalFields(GeoJSONWriter w, SearchResults results) throws IOException {

@@ -43,33 +43,47 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
 
     @Override
     public Object visit(PropertyName expression, Object extraData) {
-        String propertyValue = expression.getPropertyName();
-        Object newExpression = null;
+        String propertyName = expression.getPropertyName();
         if (extraData instanceof TemplateBuilder) {
-            String[] elements;
-            if (propertyValue.indexOf(".") != -1) {
-                elements = propertyValue.split("\\.");
-            } else {
-                elements = propertyValue.split("/");
-            }
             TemplateBuilder builder = (TemplateBuilder) extraData;
-            try {
-                currentSource = null;
-                currentEl = 0;
-                newExpression = findFunction(builder, Arrays.asList(elements));
-                newExpression = findXpathArg(newExpression);
-                if (newExpression != null) {
-                    return newExpression;
-                }
-            } catch (Throwable ex) {
-                throw new RuntimeException(
-                        "Unable to evaluate the tempalte path against"
-                                + "the features template. Cause: "
-                                + ex.getMessage());
-            }
+            Object newExpression = mapPropertyThroughBuilder(propertyName, builder);
+            if (newExpression != null) return newExpression;
         }
         return getFactory(extraData)
                 .property(expression.getPropertyName(), expression.getNamespaceContext());
+    }
+
+    /**
+     * Back maps a given property through the template, to find out if it originates via an
+     * expression.
+     *
+     * @param propertyName
+     * @param builder
+     * @return
+     */
+    protected Expression mapPropertyThroughBuilder(String propertyName, TemplateBuilder builder) {
+        String[] elements;
+        if (propertyName.indexOf(".") != -1) {
+            elements = propertyName.split("\\.");
+        } else {
+            elements = propertyName.split("/");
+        }
+
+        try {
+            currentSource = null;
+            currentEl = 0;
+            Expression newExpression = findFunction(builder, Arrays.asList(elements));
+            newExpression = (Expression) findXpathArg(newExpression);
+            if (newExpression != null) {
+                return newExpression;
+            }
+        } catch (Throwable ex) {
+            throw new RuntimeException(
+                    "Unable to evaluate the json-ld path against"
+                            + "the json-ld template. Cause: "
+                            + ex.getMessage());
+        }
+        return null;
     }
 
     private Object findXpathArg(Object newExpression) {
@@ -98,8 +112,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
      * Find the corresponding function to which the template path is pointing, by iterating over
      * builder's tree
      */
-    public Object findFunction(TemplateBuilder builder, List<String> pathElements) {
-
+    public Expression findFunction(TemplateBuilder builder, List<String> pathElements) {
         int lastElI = pathElements.size() - 1;
         String lastEl = pathElements.get(lastElI);
         char[] charArr = lastEl.toCharArray();
@@ -122,7 +135,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
             if (jb instanceof DynamicValueBuilder) {
                 DynamicValueBuilder dvb = (DynamicValueBuilder) jb;
                 addFilter(dvb.getFilter());
-                if (dvb.getXpath() != null) return super.visit(dvb.getXpath(), null);
+                if (dvb.getXpath() != null) return (PropertyName) super.visit(dvb.getXpath(), null);
                 else {
                     return super.visit(dvb.getCql(), null);
                 }

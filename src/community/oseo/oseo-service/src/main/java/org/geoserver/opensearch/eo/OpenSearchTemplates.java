@@ -5,8 +5,12 @@
 package org.geoserver.opensearch.eo;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.configuration.Template;
@@ -15,19 +19,25 @@ import org.geoserver.featurestemplating.validation.AbstractTemplateValidator;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.FeatureSource;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.filter.FilterFactory2;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Provides access to the product templates used for the OpenSearch GeoJSON outputs */
 public class OpenSearchTemplates extends AbstractTemplates {
 
     static final Logger LOGGER = Logging.getLogger(OpenSearchTemplates.class);
+    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    private Template productsTemplate;
     private Template collectionsTemplate;
+    private Template defaultProductsTemplate;
+    private ConcurrentHashMap<String, Template> productsTemplates = new ConcurrentHashMap<>();
 
     public OpenSearchTemplates(GeoServerDataDirectory dd, OpenSearchAccessProvider accessProvider)
             throws IOException {
@@ -70,15 +80,73 @@ public class OpenSearchTemplates extends AbstractTemplates {
         // setup the items template
         Resource items = dd.get("templates/os-eo/products.json");
         copyDefault(items, "products.json");
-        this.productsTemplate = new Template(items, new TemplateReaderConfiguration(namespaces));
+        this.defaultProductsTemplate =
+                new Template(items, new TemplateReaderConfiguration(namespaces));
+    }
+
+    /**
+     * Returns the list of collection names having a custom template for them. First uses the
+     *
+     * @return
+     */
+    public Set<String> getCustomProductTemplates() throws IOException {
+        Resource resource = dd.get("templates/os-eo/");
+        if (resource.getType() != Resource.Type.DIRECTORY) return Collections.emptySet();
+
+        Set<String> candidates =
+                resource.list()
+                        .stream()
+                        .filter(r -> r.getType() == Resource.Type.RESOURCE)
+                        .map(r -> r.name())
+                        .filter(n -> n.startsWith("products-") && n.endsWith(".json"))
+                        .map(n -> n.substring(6, n.length() - 5))
+                        .collect(Collectors.toSet());
+
+        // TODO: make this visit optimizable
+        FeatureSource<FeatureType, Feature> collections =
+                accessProvider.getOpenSearchAccess().getCollectionSource();
+        UniqueVisitor visitor =
+                new UniqueVisitor(FF.property("eo:identifier", getNamespaces(collections)));
+        collections.getFeatures().accepts(visitor, null);
+        candidates.retainAll(getCollectionNames(visitor));
+
+        return candidates;
+    }
+
+    private Set<String> getCollectionNames(UniqueVisitor visitor) {
+        @SuppressWarnings("unchecked")
+        Set<Object> values = visitor.getResult().toSet();
+        return values.stream()
+                .map(o -> (String) ((o instanceof Attribute) ? ((Attribute) o).getValue() : o))
+                .collect(Collectors.toSet());
     }
 
     /** Returns the products template */
-    public RootBuilder getProductsTemplate() throws IOException {
+    public RootBuilder getProductsTemplate(String collectionId) throws IOException {
         // load templates lazily, on startup the OpenSearchAccess might not yet be configured
-        if (productsTemplate == null) reloadTemplates();
+        if (defaultProductsTemplate == null) reloadTemplates();
 
-        RootBuilder builder = productsTemplate.getRootBuilder();
+        Template template = defaultProductsTemplate;
+        // See if a collection specific template has been setup, if so use it as an override
+        if (collectionId != null) {
+            Resource resource = dd.get("templates/os-eo/products-" + collectionId + ".json");
+            if (resource.getType().equals(Resource.Type.RESOURCE)) {
+                template = productsTemplates.get(collectionId);
+                if (template == null) {
+                    OpenSearchAccess access = accessProvider.getOpenSearchAccess();
+                    template =
+                            new Template(
+                                    resource,
+                                    new TemplateReaderConfiguration(
+                                            getNamespaces(access.getProductSource())));
+                    productsTemplates.put(collectionId, template);
+                }
+            }
+        }
+
+        template.checkTemplate();
+
+        RootBuilder builder = template.getRootBuilder();
         if (builder != null)
             validate(
                     builder,

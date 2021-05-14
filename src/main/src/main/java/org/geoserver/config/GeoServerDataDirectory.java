@@ -103,8 +103,8 @@ public class GeoServerDataDirectory {
         return resourceLoader;
     }
 
-    public Resource get(String path) {
-        return resourceLoader.get(path);
+    public Resource get(String... path) {
+        return resourceLoader.get(Paths.path(path));
     }
 
     /** The root of the data directory. */

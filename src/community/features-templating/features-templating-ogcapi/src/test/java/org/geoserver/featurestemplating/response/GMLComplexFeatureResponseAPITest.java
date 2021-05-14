@@ -18,9 +18,9 @@ public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport
                 getAsDOM(
                         "ogc/features/collections/gsml:MappedFeature"
                                 + "/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2");
-        assertXpathCount(5, "//gsml:MappedFeature", doc);
-        assertXpathCount(5, "//gsml:samplingFrame//@xlink:href", doc);
-        assertXpathCount(5, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
+        assertXpathCount(4, "//gsml:MappedFeature", doc);
+        assertXpathCount(4, "//gsml:samplingFrame//@xlink:href", doc);
+        assertXpathCount(4, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
         assertXpathCount(4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit", doc);
         // filter on array element lithology
         assertXpathCount(2, "//gsml:lithology", doc);

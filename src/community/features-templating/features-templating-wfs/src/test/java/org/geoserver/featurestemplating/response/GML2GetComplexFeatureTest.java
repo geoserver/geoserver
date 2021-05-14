@@ -14,9 +14,9 @@ public class GML2GetComplexFeatureTest extends TemplateComplexTestSupport {
                 getAsDOM(
                         "wfs?request=GetFeature&version=1.0.0&typename=gsml:MappedFeature"
                                 + "&outputFormat=text%2Fxml%3B%20subtype%3Dgml%2F2.1.2");
-        assertXpathCount(5, "//gsml:MappedFeature", doc);
-        assertXpathCount(5, "//gsml:samplingFrame//@xlink:href", doc);
-        assertXpathCount(5, "//gsml:MappedFeature/gsml:geometry/gml:Polygon", doc);
+        assertXpathCount(4, "//gsml:MappedFeature", doc);
+        assertXpathCount(4, "//gsml:samplingFrame//@xlink:href", doc);
+        assertXpathCount(4, "//gsml:MappedFeature/gsml:geometry/gml:Polygon", doc);
         // filtered static valued attribute
         assertXpathCount(4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit", doc);
         assertXpathCount(

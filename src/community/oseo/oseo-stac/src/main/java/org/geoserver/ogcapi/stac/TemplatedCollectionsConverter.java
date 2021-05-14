@@ -56,15 +56,15 @@ public class TemplatedCollectionsConverter
                 new STACCollectionWriter(
                         new JsonFactory()
                                 .createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8))) {
-            writer.startTemplateOutput();
+            writer.startTemplateOutput(null);
             try (FeatureIterator features = collectionsResponse.getCollections().features()) {
                 while (features.hasNext()) {
                     builder.evaluate(writer, new TemplateBuilderContext(features.next()));
                 }
             }
-            writer.endArray();
+            writer.writeEndArray();
             // writeAdditionFields(writer, featureCollection, getFeature);
-            writer.endTemplateOutput();
+            writer.endTemplateOutput(null);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

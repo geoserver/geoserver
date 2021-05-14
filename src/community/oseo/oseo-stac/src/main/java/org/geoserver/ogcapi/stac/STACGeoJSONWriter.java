@@ -35,39 +35,39 @@ public class STACGeoJSONWriter extends GeoJSONWriter {
             boolean merge)
             throws IOException {
         if (href != null) {
-            startObject();
+            writeStartObject();
             if (title != null) {
-                writeFieldName("title");
+                generator.writeFieldName("title");
                 writeValue(title);
             }
             if (mimeType != null) {
-                writeFieldName("type");
+                generator.writeFieldName("type");
                 writeValue(mimeType);
             }
             if (rel != null) {
-                writeFieldName("rel");
+                generator.writeFieldName("rel");
                 writeValue(rel);
             }
             if (method != null) {
-                writeFieldName("method");
+                generator.writeFieldName("method");
                 writeValue(method);
             }
             if (body != null) {
-                writeFieldName("body");
-                startObject();
+                generator.writeFieldName("body");
+                writeStartObject();
                 for (Map.Entry<String, Object> e : body.entrySet()) {
-                    writeFieldName(e.getKey());
-                    writeObject(e.getValue());
+                    generator.writeFieldName(e.getKey());
+                    generator.writeObject(e.getValue());
                 }
-                endObject();
+                writeEndObject();
             }
             if (merge) {
-                writeFieldName("merge");
-                writeBoolean(true);
+                generator.writeFieldName("merge");
+                generator.writeBoolean(true);
             }
-            writeFieldName("href");
+            generator.writeFieldName("href");
             writeValue(href);
-            endObject();
+            writeEndObject();
         }
     }
 }

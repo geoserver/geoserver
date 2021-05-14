@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.stac;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import java.io.IOException;
+import java.util.Map;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 
 /** A writer for the collections */
@@ -16,14 +17,14 @@ public class STACCollectionWriter extends GeoJSONWriter {
     }
 
     @Override
-    public void startTemplateOutput() throws IOException {
+    public void startTemplateOutput(Map<String, Object> encodingHints) throws IOException {
         writeStartObject();
-        writeFieldName("collections");
+        generator.writeFieldName("collections");
         writeStartArray();
     }
 
     @Override
-    public void endTemplateOutput() throws IOException {
+    public void endTemplateOutput(Map<String, Object> encodingHints) throws IOException {
         writeEndObject();
     }
 }

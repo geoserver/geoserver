@@ -8,26 +8,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.featurestemplating.builders.jsonld.JSONLDRootBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
-import org.geoserver.featurestemplating.request.JSONPathVisitor;
+import org.geoserver.featurestemplating.request.TemplatePathVisitor;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
-import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 
@@ -36,7 +36,9 @@ import org.opengis.filter.FilterFactory2;
  * path has been provided to cql_filter and evaluate it against the {@link TemplateBuilder} tree to
  * get the corresponding {@link Filter}
  */
-public class JSONTemplateCallback extends AbstractDispatcherCallback {
+public class TemplateCallback extends AbstractDispatcherCallback {
+
+    private static final Logger LOGGER = Logging.getLogger(TemplateCallback.class);
 
     private Catalog catalog;
 
@@ -46,7 +48,7 @@ public class JSONTemplateCallback extends AbstractDispatcherCallback {
 
     static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
-    public JSONTemplateCallback(GeoServer gs, TemplateConfiguration configuration) {
+    public TemplateCallback(GeoServer gs, TemplateConfiguration configuration) {
         this.gs = gs;
         this.catalog = gs.getCatalog();
         this.configuration = configuration;
@@ -54,18 +56,16 @@ public class JSONTemplateCallback extends AbstractDispatcherCallback {
 
     @Override
     public Operation operationDispatched(Request request, Operation operation) {
-        if ("WFS".equalsIgnoreCase(request.getService())
-                && request.getOutputFormat() != null
-                && (request.getOutputFormat().equals(TemplateIdentifier.JSONLD.getOutputFormat())
-                        || request.getOutputFormat()
-                                .equals(TemplateIdentifier.JSON.getOutputFormat()))) {
+        if (request.getService().toUpperCase().contains("WFS")) {
             try {
                 GetFeatureRequest getFeature =
                         GetFeatureRequest.adapt(operation.getParameters()[0]);
-                List<Query> queries = getFeature.getQueries();
-                if (getFeature != null && queries != null && queries.size() > 0) {
-                    handleTemplateFiltersAndValidation(
-                            queries, request.getOutputFormat(), isValidation(request));
+                if (getFeature != null) {
+                    List<Query> queries = getFeature.getQueries();
+                    if (queries != null && queries.size() > 0) {
+                        handleTemplateFiltersAndValidation(
+                                queries, request.getOutputFormat(), isValidation(request));
+                    }
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -95,8 +95,9 @@ public class JSONTemplateCallback extends AbstractDispatcherCallback {
                 for (int i = 0; i < featureTypeInfos.size(); i++) {
                     FeatureTypeInfo fti = featureTypeInfos.get(i);
                     RootBuilder root = rootBuilders.get(i);
-                    if (validation && root instanceof JSONLDRootBuilder) {
-                        ((JSONLDRootBuilder) root).setSemanticValidation(validation);
+                    if (validation
+                            && outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat())) {
+                        root.setSemanticValidation(validation);
                     }
                     replaceTemplatePath(q, fti, root);
                 }
@@ -142,26 +143,25 @@ public class JSONTemplateCallback extends AbstractDispatcherCallback {
     private void replaceTemplatePath(Query q, FeatureTypeInfo fti, RootBuilder root) {
         try {
 
-            JSONPathVisitor visitor = new JSONPathVisitor(fti.getFeatureType());
+            TemplatePathVisitor visitor = new TemplatePathVisitor(fti.getFeatureType());
             if (q.getFilter() != null) {
                 Filter old = q.getFilter();
                 String cql = ECQL.toCQL(old);
-                if (cql.contains("features/") || cql.contains("features.")) {
-                    Filter newFilter = (Filter) old.accept(visitor, root);
-                    List<Filter> templateFilters = new ArrayList<>();
-                    templateFilters.addAll(visitor.getFilters());
-                    if (templateFilters != null && templateFilters.size() > 0) {
-                        templateFilters.add(newFilter);
-                        newFilter = ff.and(templateFilters);
-                    }
-                    q.setFilter(newFilter);
-                    if (newFilter.equals(old)) {
-                        throw new RuntimeException(
-                                "Failed to resolve filter "
-                                        + cql
-                                        + " against the template. "
-                                        + "Check the path specified in the filter.");
-                    }
+                Filter newFilter = (Filter) old.accept(visitor, root);
+                List<Filter> templateFilters = new ArrayList<>();
+                templateFilters.addAll(visitor.getFilters());
+                if (templateFilters != null && templateFilters.size() > 0) {
+                    templateFilters.add(newFilter);
+                    newFilter = ff.and(templateFilters);
+                }
+                q.setFilter(newFilter);
+                if (newFilter.equals(old)) {
+                    LOGGER.warning(
+                            "Failed to resolve filter "
+                                    + cql
+                                    + " against the template. "
+                                    + "If the property name was intended to be a template path, "
+                                    + "check that the path specified in the cql filter is correct.");
                 }
             }
         } catch (Exception e) {
@@ -172,28 +172,44 @@ public class JSONTemplateCallback extends AbstractDispatcherCallback {
     @Override
     public Response responseDispatched(
             Request request, Operation operation, Object result, Response response) {
-        if (response instanceof GeoJSONGetFeatureResponse) {
-            GetFeatureRequest getFeature = GetFeatureRequest.adapt(operation.getParameters()[0]);
-            List<Query> queries = getFeature.getQueries();
-            for (Query q : queries) {
-                List<FeatureTypeInfo> typeInfos = getFeatureTypeInfoFromQuery(q);
-                Response wrapped = wrapGeoJSONResponse(typeInfos, request.getOutputFormat());
-                if (wrapped != null) response = wrapped;
+        Object[] params = operation.getParameters();
+        if (params.length > 0) {
+            GetFeatureRequest getFeature = GetFeatureRequest.adapt(params[0]);
+            if (getFeature != null) {
+                List<Query> queries = getFeature.getQueries();
+                for (Query q : queries) {
+                    List<FeatureTypeInfo> typeInfos = getFeatureTypeInfoFromQuery(q);
+                    Response templateResponse =
+                            getTemplateResponse(typeInfos, request.getOutputFormat());
+                    if (templateResponse != null) response = templateResponse;
+                }
             }
         }
         return super.responseDispatched(request, operation, result, response);
     }
 
-    private Response wrapGeoJSONResponse(List<FeatureTypeInfo> typeInfos, String outputFormat) {
+    private Response getTemplateResponse(List<FeatureTypeInfo> typeInfos, String outputFormat) {
         Response response = null;
         try {
 
             List<RootBuilder> rootBuilders =
                     getRootBuildersFromFeatureTypeInfo(typeInfos, outputFormat);
             if (rootBuilders.size() > 0) {
-                response =
-                        new GeoJSONTemplateGetFeatureResponse(
-                                gs, configuration, TemplateIdentifier.JSON);
+                TemplateIdentifier templateIdentifier =
+                        TemplateIdentifier.getTemplateIdentifierFromOutputFormat(outputFormat);
+                switch (templateIdentifier) {
+                    case JSON:
+                    case GEOJSON:
+                        response =
+                                new GeoJSONTemplateGetFeatureResponse(
+                                        gs, configuration, templateIdentifier);
+                        break;
+                    case GML32:
+                    case GML31:
+                    case GML2:
+                        response = new GMLTemplateResponse(gs, configuration, templateIdentifier);
+                        break;
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -205,15 +221,20 @@ public class JSONTemplateCallback extends AbstractDispatcherCallback {
     // null and json-ld output is requested
     private RootBuilder ensureTemplatesExist(FeatureTypeInfo typeInfo, String outputFormat)
             throws ExecutionException {
-
-        RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
-        if (outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat()) && root == null) {
-            throw new RuntimeException(
-                    "No template found for feature type "
-                            + typeInfo.getName()
-                            + " for output format "
-                            + outputFormat);
+        TemplateIdentifier identifier =
+                TemplateIdentifier.getTemplateIdentifierFromOutputFormat(outputFormat);
+        RootBuilder rootBuilder = null;
+        if (identifier != null) {
+            rootBuilder = configuration.getTemplate(typeInfo, identifier.getOutputFormat());
+            if (outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat())
+                    && rootBuilder == null) {
+                throw new RuntimeException(
+                        "No template found for feature type "
+                                + typeInfo.getName()
+                                + " for output format "
+                                + outputFormat);
+            }
         }
-        return root;
+        return rootBuilder;
     }
 }

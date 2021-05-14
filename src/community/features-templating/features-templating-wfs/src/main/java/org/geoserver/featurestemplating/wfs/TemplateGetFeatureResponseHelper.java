@@ -9,9 +9,13 @@ import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geoserver.featurestemplating.writers.GMLTemplateWriter;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.featurestemplating.writers.JSONLDWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
@@ -39,6 +43,10 @@ public class TemplateGetFeatureResponseHelper {
     }
 
     TemplateOutputWriter getOutputWriter(OutputStream output) throws IOException {
+        return getOutputWriter(output, null);
+    }
+
+    TemplateOutputWriter getOutputWriter(OutputStream output, String version) throws IOException {
         TemplateOutputWriter outputWriter;
         switch (format) {
             case JSON:
@@ -52,8 +60,22 @@ public class TemplateGetFeatureResponseHelper {
                         new JSONLDWriter(
                                 new JsonFactory().createGenerator(output, JsonEncoding.UTF8));
                 break;
+            case GML2:
+            case GML31:
+            case GML32:
+                XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
+                try {
+                    XMLStreamWriter xMLStreamWriter =
+                            xMLOutputFactory.createXMLStreamWriter(output);
+                    outputWriter = new GMLTemplateWriter(xMLStreamWriter, version);
+                    break;
+
+                } catch (XMLStreamException e) {
+                    throw new IOException(e);
+                }
             default:
                 outputWriter = null;
+                break;
         }
         return outputWriter;
     }

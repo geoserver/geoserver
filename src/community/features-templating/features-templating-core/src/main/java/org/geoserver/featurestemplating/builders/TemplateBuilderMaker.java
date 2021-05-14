@@ -4,6 +4,8 @@
  */
 package org.geoserver.featurestemplating.builders;
 
+import static org.geoserver.featurestemplating.readers.TemplateReader.FILTERKEY;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,8 +20,6 @@ import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 import org.geoserver.featurestemplating.readers.TemplateReader;
 import org.xml.sax.helpers.NamespaceSupport;
-
-import static org.geoserver.featurestemplating.readers.TemplateReader.FILTERKEY;
 
 /** A builder of TemplateBuilder. */
 public class TemplateBuilderMaker {
@@ -128,14 +128,16 @@ public class TemplateBuilderMaker {
     }
 
     /**
-     * Parse a string to extract a filter if present and the builder content. Can be used for Static or Dynamic builders
+     * Parse a string to extract a filter if present and the builder content. Can be used for Static
+     * or Dynamic builders
+     *
      * @param contentAndFilter the string holding the builder content and eventually the filter.
      * @return this TemplateBuilderMaker.
      */
-    public TemplateBuilderMaker contentAndFilter(String contentAndFilter){
-        String filter =null;
-        String content=null;
-        if(contentAndFilter.contains(FILTERKEY)){
+    public TemplateBuilderMaker contentAndFilter(String contentAndFilter) {
+        String filter = null;
+        String content = null;
+        if (contentAndFilter.contains(FILTERKEY)) {
             contentAndFilter = contentAndFilter.replace(FILTERKEY + "{", "");
             int sepIndex = contentAndFilter.indexOf('}') + 1;
             String sep = String.valueOf(contentAndFilter.charAt(sepIndex));

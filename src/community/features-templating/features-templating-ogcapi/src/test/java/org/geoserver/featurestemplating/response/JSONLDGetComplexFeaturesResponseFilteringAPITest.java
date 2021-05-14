@@ -14,8 +14,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class JSONLDGetComplexFeaturesResponseFilteringAPITest
-        extends TemplateComplexTestSupport {
+public class JSONLDGetComplexFeaturesResponseFilteringAPITest extends TemplateComplexTestSupport {
 
     @Test
     public void testJsonLdOgcFilterConcatenation() throws Exception {

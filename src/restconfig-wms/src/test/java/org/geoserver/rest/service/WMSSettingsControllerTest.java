@@ -172,4 +172,38 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
                 deleteAsServletResponse(RestBaseController.ROOT_PATH + "/services/wms/settings")
                         .getStatus());
     }
+
+    @Test
+    public void testDisableDefaultStyleOption() throws Exception {
+        String xml =
+                "<wms>"
+                        + "<id>wms</id>"
+                        + "<enabled>true</enabled>"
+                        + "<name>WMS</name><title>GeoServer Web Map Service</title>"
+                        + "<maintainer>http://geoserver.org/comm</maintainer>"
+                        + "</wms>";
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/services/wms/settings", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/settings.xml");
+        // default should be true
+        assertXpathEvaluatesTo("true", "/wms/includeDefaultGroupStyleInCapabilities", dom);
+        String xml2 =
+                "<wms>"
+                        + "<id>wms</id>"
+                        + "<enabled>true</enabled>"
+                        + "<name>WMS</name><title>GeoServer Web Map Service</title>"
+                        + "<maintainer>http://geoserver.org/comm</maintainer>"
+                        + "<includeDefaultGroupStyleInCapabilities>false</includeDefaultGroupStyleInCapabilities>"
+                        + "</wms>";
+        response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/services/wms/settings", xml2, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/settings.xml");
+        // updated to false
+        assertXpathEvaluatesTo("false", "/wms/includeDefaultGroupStyleInCapabilities", dom);
+    }
 }

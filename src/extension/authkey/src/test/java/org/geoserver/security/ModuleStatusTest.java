@@ -16,7 +16,7 @@ public class ModuleStatusTest {
         try (ClassPathXmlApplicationContext context =
                 new ClassPathXmlApplicationContext("applicationContext.xml")) {
             assertNotNull(context);
-            
+
             Optional<ModuleStatus> status =
                     GeoServerExtensions.extensions(ModuleStatus.class, context)
                             .stream()

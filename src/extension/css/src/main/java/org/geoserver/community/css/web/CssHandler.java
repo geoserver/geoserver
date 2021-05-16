@@ -210,7 +210,6 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
 
     @Override
     public boolean isAvailable() {
-
         return true;
     }
 
@@ -221,7 +220,6 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
 
     @Override
     public Optional<String> getMessage() {
-
         return Optional.of("CSS Styling");
     }
 

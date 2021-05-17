@@ -37,7 +37,16 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class XStreamPersisterFactory implements ApplicationContextAware {
 
+    /** Cache of initializers from application context */
     private List<XStreamPersisterInitializer> initializers;
+
+    /**
+     * Application context provided during initialization.
+     *
+     * <p>This may be null during initial startup, or during tests, when {@link
+     * #setApplicationContext(ApplicationContext)} has not been called.
+     */
+    private ApplicationContext applicationContext;
 
     /** Creates an instance configured to persist XML. */
     public XStreamPersister createXMLPersister() {
@@ -52,12 +61,10 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
     /** Builds a persister and runs the initializers against it */
     private XStreamPersister buildPersister(HierarchicalStreamDriver driver) {
         XStreamPersister persister = new XStreamPersister(driver);
-
         // give the initializers a chance to register their own converters, aliases and so on
         for (XStreamPersisterInitializer initializer : getInitializers()) {
             initializer.init(persister);
         }
-
         return persister;
     }
 
@@ -65,7 +72,8 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
         if (initializers == null) {
             initializers =
                     new ArrayList<>(
-                            GeoServerExtensions.extensions(XStreamPersisterInitializer.class));
+                            GeoServerExtensions.extensions(
+                                    XStreamPersisterInitializer.class, applicationContext));
         }
 
         return initializers;
@@ -73,6 +81,7 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
         initializers =
                 new ArrayList<>(
                         GeoServerExtensions.extensions(

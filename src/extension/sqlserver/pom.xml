@@ -23,14 +23,6 @@
     </dependency>
   </dependencies>
   <build>
-    <testResources>
-      <testResource>
-        <directory>${basedir}/src/test/resources/</directory>
-        <includes>
-          <include>**/*</include>
-        </includes>
-      </testResource>
-    </testResources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

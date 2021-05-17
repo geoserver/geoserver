@@ -7,8 +7,6 @@ package org.geoserver.featurestemplating.builders;
 import static org.geoserver.featurestemplating.readers.TemplateReader.FILTERKEY;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.HashMap;
-import java.util.Map;
 import org.geoserver.featurestemplating.builders.flat.FlatCompositeBuilder;
 import org.geoserver.featurestemplating.builders.flat.FlatDynamicBuilder;
 import org.geoserver.featurestemplating.builders.flat.FlatIteratingBuilder;
@@ -25,8 +23,6 @@ import org.xml.sax.helpers.NamespaceSupport;
 public class TemplateBuilderMaker {
 
     private boolean rootBuilder;
-
-    private boolean semanticValidation;
 
     private String rootCollectionName;
 
@@ -46,17 +42,17 @@ public class TemplateBuilderMaker {
 
     private boolean rootCollection;
 
-    private Map<String, Object> encondingHints;
+    private EncodingHints encondingHints;
 
-    private Map<String, String> vendorOptions;
+    private VendorOptions vendorOptions;
 
     private NamespaceSupport namespaces;
 
     private String separator = "_";
 
     public TemplateBuilderMaker() {
-        this.encondingHints = new HashMap<>();
-        this.vendorOptions = new HashMap<>();
+        this.encondingHints = new EncodingHints();
+        this.vendorOptions = new VendorOptions();
     }
 
     public TemplateBuilderMaker(String rootCollectionName) {
@@ -231,7 +227,7 @@ public class TemplateBuilderMaker {
      * @return this TemplateBuilderMaker.
      */
     public TemplateBuilderMaker separator(String separator) {
-        this.separator = separator;
+        if (separator != null) this.separator = separator;
         return this;
     }
 
@@ -247,18 +243,6 @@ public class TemplateBuilderMaker {
         return this;
     }
 
-    /**
-     * Set a boolean telling the builder if the RootBuilder being created needs to trigger at
-     * encoding time a semantic validation of the output.
-     *
-     * @param semanticValidation true if semantic validation will be activated.
-     * @return this TemplateBuilderMaker.
-     */
-    public TemplateBuilderMaker semanticValidation(boolean semanticValidation) {
-        this.semanticValidation = semanticValidation;
-        return this;
-    }
-
     /** Reset all the attributes of this TemplateBuilderMaker. */
     public void globalReset() {
         localReset();
@@ -269,9 +253,8 @@ public class TemplateBuilderMaker {
 
     /** Reset only the attributes set to the builder that should be local to a single builder. */
     public void localReset() {
-        this.encondingHints = new HashMap<>();
-        this.vendorOptions = new HashMap<>();
-        this.semanticValidation = false;
+        this.encondingHints = new EncodingHints();
+        this.vendorOptions = new VendorOptions();
         this.filter = null;
         this.isCollection = false;
         this.rootCollection = false;
@@ -293,7 +276,6 @@ public class TemplateBuilderMaker {
         if (!vendorOptions.isEmpty()) {
             rootBuilder.addVendorOptions(vendorOptions);
         }
-        rootBuilder.setSemanticValidation(semanticValidation);
         localReset();
         return rootBuilder;
     }

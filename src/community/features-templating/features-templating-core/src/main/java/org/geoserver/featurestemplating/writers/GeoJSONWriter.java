@@ -14,6 +14,7 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.util.ISO8601Formatter;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -62,12 +63,12 @@ public class GeoJSONWriter extends CommonJSONWriter {
     }
 
     @Override
-    public void endTemplateOutput(Map<String, Object> encodingHints) throws IOException {
+    public void endTemplateOutput(EncodingHints encodingHints) throws IOException {
         endObject(null, encodingHints);
     }
 
     /**
-     * Writes a OGC link object
+     * Writes a OGC link object Writes a OGC link object
      *
      * @param href
      * @param rel

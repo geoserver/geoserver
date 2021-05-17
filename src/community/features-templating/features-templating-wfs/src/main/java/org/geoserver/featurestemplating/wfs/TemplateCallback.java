@@ -6,7 +6,6 @@ package org.geoserver.featurestemplating.wfs;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
@@ -63,8 +62,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
                 if (getFeature != null) {
                     List<Query> queries = getFeature.getQueries();
                     if (queries != null && queries.size() > 0) {
-                        handleTemplateFiltersAndValidation(
-                                queries, request.getOutputFormat(), isValidation(request));
+                        handleTemplateFilters(queries, request.getOutputFormat());
                     }
                 }
             } catch (Exception e) {
@@ -74,18 +72,8 @@ public class TemplateCallback extends AbstractDispatcherCallback {
         return super.operationDispatched(request, operation);
     }
 
-    private boolean isValidation(Request request) {
-        Map rawKvp = request.getRawKvp();
-        if (rawKvp != null) {
-            Object validation = request.getRawKvp().get("validation");
-            return validation != null ? Boolean.valueOf(validation.toString()) : false;
-        }
-        return false;
-    }
-
     // iterate over queries to eventually handle a templates query paths
-    private void handleTemplateFiltersAndValidation(
-            List<Query> queries, String outputFormat, boolean validation)
+    private void handleTemplateFilters(List<Query> queries, String outputFormat)
             throws ExecutionException {
         for (Query q : queries) {
             List<FeatureTypeInfo> featureTypeInfos = getFeatureTypeInfoFromQuery(q);
@@ -95,10 +83,6 @@ public class TemplateCallback extends AbstractDispatcherCallback {
                 for (int i = 0; i < featureTypeInfos.size(); i++) {
                     FeatureTypeInfo fti = featureTypeInfos.get(i);
                     RootBuilder root = rootBuilders.get(i);
-                    if (validation
-                            && outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat())) {
-                        root.setSemanticValidation(validation);
-                    }
                     replaceTemplatePath(q, fti, root);
                 }
             }

@@ -7,7 +7,7 @@ package org.geoserver.featurestemplating.writers;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Map;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
@@ -34,7 +34,7 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
      * @param encodingHints a map eventually holding hints about how to encode the value.
      * @throws IOException
      */
-    public abstract void writeElementName(Object elementName, Map<String, Object> encodingHints)
+    public abstract void writeElementName(Object elementName, EncodingHints encodingHints)
             throws IOException;
 
     /**
@@ -45,7 +45,7 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
      * @param encodingHints a map eventually holding hints about how to encode the value.
      * @throws IOException
      */
-    public abstract void writeElementValue(Object elementValue, Map<String, Object> encodingHints)
+    public abstract void writeElementValue(Object elementValue, EncodingHints encodingHints)
             throws IOException;
 
     /**
@@ -56,7 +56,7 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
      * @throws IOException
      */
     public abstract void writeElementNameAndValue(
-            String key, Object elementValue, Map<String, Object> encodingHints) throws IOException;
+            String key, Object elementValue, EncodingHints encodingHints) throws IOException;
 
     /**
      * Write a static content, no matter how nested.
@@ -67,8 +67,7 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
      * @throws IOException
      */
     public abstract void writeStaticContent(
-            String name, Object staticContent, Map<String, Object> encodingHints)
-            throws IOException;
+            String name, Object staticContent, EncodingHints encodingHints) throws IOException;
 
     /**
      * Write the start of an object.
@@ -77,8 +76,7 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
      * @param encodingHints a map eventually holding hints about how to encode the value.
      * @throws IOException
      */
-    public abstract void startObject(String name, Map<String, Object> encodingHints)
-            throws IOException;
+    public abstract void startObject(String name, EncodingHints encodingHints) throws IOException;
 
     /**
      * Write the end of an object.
@@ -87,8 +85,7 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
      * @param encodingHints a map eventually holding hints about how to encode the value.
      * @throws IOException
      */
-    public abstract void endObject(String name, Map<String, Object> encodingHints)
-            throws IOException;
+    public abstract void endObject(String name, EncodingHints encodingHints) throws IOException;
 
     /**
      * Start a list
@@ -97,30 +94,28 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
      * @param encodingHints a map eventually holding hints about how to encode the value.
      * @throws IOException
      */
-    public abstract void startArray(String name, Map<String, Object> encodingHints)
-            throws IOException;
+    public abstract void startArray(String name, EncodingHints encodingHints) throws IOException;
 
     /**
      * @param name the name of the array to end.
      * @param encodingHints a map eventually holding hints about how to encode the value
      * @throws IOException
      */
-    public abstract void endArray(String name, Map<String, Object> encodingHints)
-            throws IOException;
+    public abstract void endArray(String name, EncodingHints encodingHints) throws IOException;
 
     /**
      * @param encodingHints a map eventually holding hints about how to start the template output or
      *     additional data to write.
      * @throws IOException
      */
-    public abstract void startTemplateOutput(Map<String, Object> encodingHints) throws IOException;
+    public abstract void startTemplateOutput(EncodingHints encodingHints) throws IOException;
 
     /**
      * @param encodingHints a map eventually holding hints about how to end the template output or
      *     additional data to write.
      * @throws IOException
      */
-    public abstract void endTemplateOutput(Map<String, Object> encodingHints) throws IOException;
+    public abstract void endTemplateOutput(EncodingHints encodingHints) throws IOException;
 
     /**
      * Write the featureCount value to the output.
@@ -219,26 +214,12 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
         }
     }
 
-    protected boolean hasEncodingHint(Map<String, Object> encodingHints, String name) {
-        boolean result = false;
-        if (encodingHints != null) {
-            result = encodingHints.get(name) != null;
-        }
-        return result;
-    }
-
-    protected Object getEncodingHintIfPresent(Map<String, Object> encodingHints, String name) {
-        Object result = null;
-        if (encodingHints != null) {
-            result = encodingHints.get(name);
-        }
-        return result;
-    }
-
     protected <T> T getEncodingHintIfPresent(
-            Map<String, Object> encodingHints, String name, Class<T> cast) {
-        Object result = getEncodingHintIfPresent(encodingHints, name);
-        if (result != null) return cast.cast(result);
-        else return null;
+            EncodingHints encodingHints, String name, Class<T> cast) {
+        T result = null;
+        if (encodingHints != null) {
+            result = encodingHints.get(name, cast);
+        }
+        return result;
     }
 }

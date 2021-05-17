@@ -8,10 +8,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.junit.Test;
@@ -67,8 +67,8 @@ public class JsonWriterTest {
         GeoJSONWriter writer =
                 new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
         writer.startArray(null, null);
-        writer.writeStaticContent(null, "abc", Collections.emptyMap());
-        writer.writeStaticContent(null, 5, Collections.emptyMap());
+        writer.writeStaticContent(null, "abc", new EncodingHints());
+        writer.writeStaticContent(null, 5, new EncodingHints());
         writer.endArray(null, null);
         writer.close();
         String jsonString = new String(baos.toByteArray());

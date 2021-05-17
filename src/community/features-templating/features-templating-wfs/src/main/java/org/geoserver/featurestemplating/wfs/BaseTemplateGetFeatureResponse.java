@@ -127,7 +127,7 @@ public abstract class BaseTemplateGetFeatureResponse extends WFSGetFeatureOutput
             TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo);
 
     /**
-     * Allows subclasses to perform actions before evaluatimg the feature
+     * Allows subclasses to perform actions before evaluatig the feature
      *
      * @param writer the current TemplateWriter
      * @param root the current RootBuilder

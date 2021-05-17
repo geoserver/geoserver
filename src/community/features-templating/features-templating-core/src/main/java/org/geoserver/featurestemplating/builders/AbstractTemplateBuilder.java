@@ -5,9 +5,7 @@
 package org.geoserver.featurestemplating.builders;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
@@ -32,7 +30,7 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
 
     protected List<TemplateBuilder> children;
 
-    protected Map<String, Object> encodingHints;
+    protected EncodingHints encodingHints;
 
     public AbstractTemplateBuilder(String key, NamespaceSupport namespaces) {
         this.key = getKeyAsExpression(key);
@@ -134,14 +132,14 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
     }
 
     @Override
-    public Map<String, Object> getEncodingHints() {
-        if (this.encodingHints == null) this.encodingHints = new HashMap<>();
+    public EncodingHints getEncodingHints() {
+        if (this.encodingHints == null) this.encodingHints = new EncodingHints();
         return encodingHints;
     }
 
     @Override
     public void addEncodingHint(String key, Object value) {
-        if (this.encodingHints == null) this.encodingHints = new HashMap<>();
+        if (this.encodingHints == null) this.encodingHints = new EncodingHints();
         this.encodingHints.put(key, value);
     }
 }

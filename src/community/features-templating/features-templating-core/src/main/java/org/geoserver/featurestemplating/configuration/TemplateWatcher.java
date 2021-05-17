@@ -6,6 +6,7 @@ package org.geoserver.featurestemplating.configuration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.commons.io.FilenameUtils;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.readers.TemplateReader;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
@@ -33,8 +34,7 @@ public class TemplateWatcher extends FileWatcher<RootBuilder> {
      */
     @Override
     public RootBuilder parseFileContents(InputStream in) throws IOException {
-        String fileName = resource.file().toString();
-        String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+        String extension = FilenameUtils.getExtension(resource.name());
         TemplateReader reader = TemplateReaderProvider.findReader(extension, in, configuration);
         return reader.getRootBuilder();
     }

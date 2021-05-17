@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.util.ISO8601Formatter;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Attribute;
@@ -34,7 +35,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
     }
 
     @Override
-    public void writeElementName(Object elementName, Map<String, Object> encodingHints)
+    public void writeElementName(Object elementName, EncodingHints encodingHints)
             throws IOException {
         try {
             String elemName = elementName.toString();
@@ -46,7 +47,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
     }
 
     @Override
-    public void writeElementValue(Object elementValue, Map<String, Object> encodingHints)
+    public void writeElementValue(Object elementValue, EncodingHints encodingHints)
             throws IOException {
 
         writeElementNameAndValue(null, elementValue, encodingHints);
@@ -55,8 +56,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
     protected abstract void writeGeometry(Geometry writeGeometry) throws XMLStreamException;
 
     @Override
-    public void writeStaticContent(
-            String name, Object staticContent, Map<String, Object> encodingHints)
+    public void writeStaticContent(String name, Object staticContent, EncodingHints encodingHints)
             throws IOException {
         try {
             if (isEncodeAsAttribute(encodingHints))
@@ -71,12 +71,12 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
     }
 
     @Override
-    public void startObject(String name, Map<String, Object> encodingHints) throws IOException {
+    public void startObject(String name, EncodingHints encodingHints) throws IOException {
         writeElementName(name, encodingHints);
     }
 
     @Override
-    public void endObject(String name, Map<String, Object> encodingHints) throws IOException {
+    public void endObject(String name, EncodingHints encodingHints) throws IOException {
         try {
             streamWriter.writeEndElement();
         } catch (XMLStreamException e) {
@@ -85,12 +85,12 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
     }
 
     @Override
-    public void startArray(String name, Map<String, Object> encodingHints) throws IOException {
+    public void startArray(String name, EncodingHints encodingHints) throws IOException {
         writeElementName(name, encodingHints);
     }
 
     @Override
-    public void endArray(String name, Map<String, Object> encodingHints) throws IOException {
+    public void endArray(String name, EncodingHints encodingHints) throws IOException {
         try {
             streamWriter.writeEndElement();
         } catch (XMLStreamException e) {
@@ -108,7 +108,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
     }
 
     public void writeElementNameAndValue(
-            String key, Object elementValue, Map<String, Object> encodingHints) throws IOException {
+            String key, Object elementValue, EncodingHints encodingHints) throws IOException {
         boolean encodeAsAttribute = isEncodeAsAttribute(encodingHints);
         boolean repeatName = elementValue instanceof List && ((List) elementValue).size() > 1;
         boolean canClose = false;
@@ -161,8 +161,8 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
         }
     }
 
-    private void writeAsAttribute(
-            String key, Object elementValue, Map<String, Object> encodingHints) throws IOException {
+    private void writeAsAttribute(String key, Object elementValue, EncodingHints encodingHints)
+            throws IOException {
         try {
             if (key.indexOf(":") != -1) {
                 String[] splitKey = key.split(":");
@@ -185,7 +185,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
         this.schemaLocations.putAll(schemaLocations);
     }
 
-    private boolean isEncodeAsAttribute(Map<String, Object> encodingHints) {
+    private boolean isEncodeAsAttribute(EncodingHints encodingHints) {
         boolean result = false;
         Boolean encodeAsAttribute =
                 getEncodingHintIfPresent(encodingHints, ENCODE_AS_ATTRIBUTE, Boolean.class);

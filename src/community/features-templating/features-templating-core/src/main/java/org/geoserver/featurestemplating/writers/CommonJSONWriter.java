@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 import org.locationtech.jts.geom.Geometry;
@@ -28,8 +29,7 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     }
 
     @Override
-    public void writeStaticContent(
-            String key, Object staticContent, Map<String, Object> encodingHints)
+    public void writeStaticContent(String key, Object staticContent, EncodingHints encodingHints)
             throws IOException {
         if (staticContent instanceof String
                 || staticContent instanceof Number
@@ -114,7 +114,7 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     public abstract void writeGeometry(Object value) throws IOException;
 
     @Override
-    public void writeElementName(Object elementName, Map<String, Object> encodingHints)
+    public void writeElementName(Object elementName, EncodingHints encodingHints)
             throws IOException {
         if (elementName != null) generator.writeFieldName(elementName.toString());
     }
@@ -124,8 +124,7 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
      * DynamicValueBuilder}
      */
     @Override
-    public void writeElementValue(Object result, Map<String, Object> encodingHints)
-            throws IOException {
+    public void writeElementValue(Object result, EncodingHints encodingHints) throws IOException {
         writeElementNameAndValue(null, result, encodingHints);
     }
 
@@ -134,8 +133,8 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
      * DynamicValueBuilder}
      */
     @Override
-    public void writeElementNameAndValue(
-            String key, Object result, Map<String, Object> encodingHints) throws IOException {
+    public void writeElementNameAndValue(String key, Object result, EncodingHints encodingHints)
+            throws IOException {
         if (result instanceof String || result instanceof Number || result instanceof Boolean) {
             writeElementName(key, null);
             writeValue(result);
@@ -184,7 +183,7 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     }
 
     @Override
-    public void startTemplateOutput(Map<String, Object> encodingHints) throws IOException {
+    public void startTemplateOutput(EncodingHints encodingHints) throws IOException {
 
         writeStartObject();
         generator.writeFieldName("type");
@@ -194,7 +193,7 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     }
 
     @Override
-    public void endTemplateOutput(Map<String, Object> encodingHints) throws IOException {
+    public void endTemplateOutput(EncodingHints encodingHints) throws IOException {
         writeEndArray();
         writeEndObject();
     }
@@ -204,24 +203,24 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     }
 
     @Override
-    public void startObject(String name, Map<String, Object> encodingHints) throws IOException {
+    public void startObject(String name, EncodingHints encodingHints) throws IOException {
         if (name != null) writeElementName(name, encodingHints);
         writeStartObject();
     }
 
     @Override
-    public void endObject(String name, Map<String, Object> encodingHints) throws IOException {
+    public void endObject(String name, EncodingHints encodingHints) throws IOException {
         writeEndObject();
     }
 
     @Override
-    public void startArray(String name, Map<String, Object> encodingHints) throws IOException {
+    public void startArray(String name, EncodingHints encodingHints) throws IOException {
         writeElementName(name, encodingHints);
         writeStartArray();
     }
 
     @Override
-    public void endArray(String name, Map<String, Object> encodingHints) throws IOException {
+    public void endArray(String name, EncodingHints encodingHints) throws IOException {
         writeEndArray();
     }
 

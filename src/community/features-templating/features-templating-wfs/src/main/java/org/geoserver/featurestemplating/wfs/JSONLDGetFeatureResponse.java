@@ -7,6 +7,7 @@ package org.geoserver.featurestemplating.wfs;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
@@ -16,6 +17,8 @@ import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.validation.JSONLDContextValidation;
 import org.geoserver.featurestemplating.writers.JSONLDWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -55,9 +58,8 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
                             GetFeatureRequest.adapt(getFeature.getParameters()[0]));
             RootBuilder root =
                     configuration.getTemplate(info, TemplateIdentifier.JSONLD.getOutputFormat());
-            boolean validate = root.isSemanticValidation();
+            boolean validate = isSematincValidation();
             // setting it back to false
-            root.setSemanticValidation(false);
             if (validate) {
                 validate(featureCollection, root);
             }
@@ -129,5 +131,16 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return TemplateIdentifier.JSONLD.getOutputFormat();
+    }
+
+    private boolean isSematincValidation() {
+        Request request = Dispatcher.REQUEST.get();
+        Map rawKvp = request.getRawKvp();
+        Object value = rawKvp != null ? rawKvp.get("validation") : null;
+        boolean result = false;
+        if (value != null) {
+            result = Boolean.valueOf(value.toString());
+        }
+        return result;
     }
 }

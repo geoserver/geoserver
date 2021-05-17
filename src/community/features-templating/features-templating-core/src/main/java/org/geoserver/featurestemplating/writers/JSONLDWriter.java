@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Map;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geotools.filter.function.FilterFunction_toWKT;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
@@ -35,7 +35,7 @@ public class JSONLDWriter extends CommonJSONWriter {
     }
 
     @Override
-    public void startTemplateOutput(Map<String, Object> encodingHints) throws IOException {
+    public void startTemplateOutput(EncodingHints encodingHints) throws IOException {
         writeStartObject();
         String contextName = "@context";
         JsonNode context = getEncodingHintIfPresent(encodingHints, CONTEXT, JsonNode.class);

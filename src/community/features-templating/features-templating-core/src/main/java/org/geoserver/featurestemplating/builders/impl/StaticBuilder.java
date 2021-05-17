@@ -48,4 +48,8 @@ public class StaticBuilder extends AbstractTemplateBuilder {
     public JsonNode getStaticValue() {
         return staticValue;
     }
+
+    public String getStrValue() {
+        return strValue;
+    }
 }

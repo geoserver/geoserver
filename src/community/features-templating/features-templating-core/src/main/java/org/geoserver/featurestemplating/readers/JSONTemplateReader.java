@@ -4,9 +4,6 @@
  */
 package org.geoserver.featurestemplating.readers;
 
-import static org.geoserver.featurestemplating.builders.impl.RootBuilder.VendorOption.FLAT_OUTPUT;
-import static org.geoserver.featurestemplating.builders.impl.RootBuilder.VendorOption.SEPARATOR;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,6 +11,7 @@ import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilderMaker;
+import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 
 /** Produce the builder tree starting from the evaluation of json-ld template file * */
@@ -198,16 +196,11 @@ public class JSONTemplateReader implements TemplateReader {
             String[] arrOp = option.split(":");
             builder.setVendorOptions(arrOp);
         }
-        String strFlatOutput = builder.getVendorOption(FLAT_OUTPUT.getVendorOptionName());
-        if (strFlatOutput != null) {
-            boolean flatOutput = Boolean.valueOf(strFlatOutput).booleanValue();
-            maker.flatOutput(flatOutput);
-            if (flatOutput) {
-                String delimiter = builder.getVendorOption(SEPARATOR.getVendorOptionName());
-                if (delimiter != null) {
-                    maker.separator(delimiter);
-                }
-            }
-        }
+        boolean flatOutput =
+                builder.getVendorOptions()
+                        .get(VendorOptions.FLAT_OUTPUT, Boolean.class, false)
+                        .booleanValue();
+        String separator = builder.getVendorOptions().get(VendorOptions.SEPARATOR, String.class);
+        maker.flatOutput(flatOutput).separator(separator);
     }
 }

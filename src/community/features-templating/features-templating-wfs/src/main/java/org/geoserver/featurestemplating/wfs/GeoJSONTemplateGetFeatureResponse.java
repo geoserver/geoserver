@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
@@ -54,9 +55,10 @@ public class GeoJSONTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
             TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo) {
         RootBuilder rb = root;
         GeoJSONWriter jsonWriter = (GeoJSONWriter) writer;
-        String strFlatOutput =
-                rb.getVendorOption(RootBuilder.VendorOption.FLAT_OUTPUT.getVendorOptionName());
-        boolean flatOutput = strFlatOutput != null ? Boolean.valueOf(strFlatOutput) : false;
+        boolean flatOutput =
+                rb.getVendorOptions()
+                        .get(VendorOptions.FLAT_OUTPUT, Boolean.class, false)
+                        .booleanValue();
         jsonWriter.setFlatOutput(flatOutput);
     }
 

@@ -84,9 +84,6 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
                     FeatureTypeInfo typeInfo =
                             getFeatureType((String) operation.getParameters()[0]);
                     RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
-                    if (identifier.equals(TemplateIdentifier.JSONLD)) {
-                        setSemanticValidation(root, request);
-                    }
                     String filterLang = (String) request.getKvp().get("FILTER-LANG");
                     if (filterLang != null && filterLang.equalsIgnoreCase("CQL-TEXT")) {
                         String filter = (String) request.getKvp().get("FILTER");
@@ -178,14 +175,6 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
                 operation.getParameters()[i] = newFilter;
                 break;
             }
-        }
-    }
-
-    private void setSemanticValidation(RootBuilder root, Request request) {
-        Map rawKvp = request.getRawKvp();
-        Object value = rawKvp != null ? rawKvp.get("validation") : null;
-        if (value != null) {
-            root.setSemanticValidation(Boolean.valueOf(value.toString()));
         }
     }
 

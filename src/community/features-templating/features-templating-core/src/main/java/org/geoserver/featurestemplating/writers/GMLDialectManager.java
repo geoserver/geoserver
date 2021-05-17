@@ -29,7 +29,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * Helper class that allow the GMLTemplateWriter to write the output according to the gml version
  * requested.
  */
-abstract class GMLVersionManager {
+abstract class GMLDialectManager {
 
     protected XMLStreamWriter streamWriter;
 
@@ -37,48 +37,41 @@ abstract class GMLVersionManager {
 
     private String coordElementName;
 
-    private String exteriorElementName;
-
-    private String interiorElementName;
-
     protected Map<String, String> namespaces = new HashMap<>();
 
     static final String GML_PREFIX = "gml";
     static final String WFS_PREFIX = "wfs";
 
-    GMLVersionManager(
-            XMLStreamWriter streamWriter,
-            String coorElementName,
-            String exteriorElementName,
-            String interiorElementName) {
+    GMLDialectManager(XMLStreamWriter streamWriter, String coorElementName) {
         this.streamWriter = streamWriter;
         this.coordElementName = coorElementName;
-        this.exteriorElementName = exteriorElementName;
-        this.interiorElementName = interiorElementName;
+        this.namespaces.put(GML_PREFIX, getGmlNsUri());
+        this.namespaces.put(WFS_PREFIX, getWfsNsUri());
     }
 
     void writeGeometry(Geometry geometry) throws XMLStreamException {
+        String gmlNsUri = namespaces.get(GML_PREFIX);
         if (geometry instanceof Point) {
-            writePoint((Point) geometry);
+            writePoint((Point) geometry, gmlNsUri);
         } else if (geometry instanceof MultiPoint) {
-            writeMultiPoint((MultiPoint) geometry);
+            writeMultiPoint((MultiPoint) geometry, gmlNsUri);
         } else if (geometry instanceof LineString) {
-            writeLineString((LineString) geometry);
+            writeLineString((LineString) geometry, gmlNsUri);
         } else if (geometry instanceof MultiLineString) {
-            writeMultiLineString((MultiLineString) geometry);
+            writeMultiLineString((MultiLineString) geometry, gmlNsUri);
         } else if (geometry instanceof Polygon) {
-            writePolygon((Polygon) geometry);
+            writePolygon((Polygon) geometry, gmlNsUri);
         } else if (geometry instanceof MultiPolygon) {
-            writeMultiPolygon((MultiPolygon) geometry);
+            writeMultiPolygon((MultiPolygon) geometry, gmlNsUri);
         }
     }
 
-    private void writePoint(Point point) throws XMLStreamException {
-        streamWriter.writeStartElement("gml", "Point", "http://www.opengis.net/gml/3.2");
+    void writePoint(Point point, String gmlNsUri) throws XMLStreamException {
+        streamWriter.writeStartElement(GML_PREFIX, "Point", gmlNsUri);
         streamWriter.writeStartElement(
-                "gml",
+                GML_PREFIX,
                 coordElementName.equals("coordinates") ? coordElementName : "pos",
-                "http://www.opengis.net/gml/3.2");
+                gmlNsUri);
         double y = point.getY();
         double x = point.getX();
         if (axisOrder == CRS.AxisOrder.NORTH_EAST) {
@@ -90,75 +83,71 @@ abstract class GMLVersionManager {
         streamWriter.writeEndElement();
     }
 
-    private void writeMultiPoint(MultiPoint multiPoint) throws XMLStreamException {
+    void writeMultiPoint(MultiPoint multiPoint, String gmlNsUri) throws XMLStreamException {
         int nPoints = multiPoint.getNumPoints();
-        streamWriter.writeStartElement("gml", "MultiPoint", "http://www.opengis.net/gml/3.2");
+        streamWriter.writeStartElement(GML_PREFIX, "MultiPoint", gmlNsUri);
         for (int i = 0; i < nPoints; i++) {
-            streamWriter.writeStartElement("gml", "pointMember", "http://www.opengis.net/gml/3.2");
-            writePoint((Point) multiPoint.getGeometryN(i));
+            streamWriter.writeStartElement(GML_PREFIX, "pointMember", gmlNsUri);
+            writePoint((Point) multiPoint.getGeometryN(i), gmlNsUri);
             streamWriter.writeEndElement();
         }
         streamWriter.writeEndElement();
     }
 
-    private void writePolygon(Polygon polygon) throws XMLStreamException {
+    void writePolygon(Polygon polygon, String gmlNsUri) throws XMLStreamException {
         LinearRing exteriorRing = polygon.getExteriorRing();
         Coordinate[] coordinates = exteriorRing.getCoordinates();
-        streamWriter.writeStartElement("gml", "Polygon", "http://www.opengis.net/gml/3.2");
-        writePolygonRing(exteriorElementName, coordinates);
+        streamWriter.writeStartElement(GML_PREFIX, "Surface", gmlNsUri);
+        writePolygonRing("exterior", coordinates, gmlNsUri);
         int numInterior = polygon.getNumInteriorRing();
         for (int i = 0; i < numInterior; i++) {
             coordinates = polygon.getInteriorRingN(i).getCoordinates();
-            writePolygonRing(interiorElementName, coordinates);
+            writePolygonRing("interior", coordinates, gmlNsUri);
         }
         streamWriter.writeEndElement();
     }
 
-    private void writePolygonRing(String ringName, Coordinate[] coordinates)
+    void writePolygonRing(String ringName, Coordinate[] coordinates, String gmlNsUri)
             throws XMLStreamException {
-        streamWriter.writeStartElement("gml", ringName, "http://www.opengis.net/gml/3.2");
-        streamWriter.writeStartElement("gml", "LinearRing", "http://www.opengis.net/gml/3.2");
-        streamWriter.writeStartElement("gml", coordElementName, "http://www.opengis.net/gml/3.2");
+        streamWriter.writeStartElement(GML_PREFIX, ringName, gmlNsUri);
+        streamWriter.writeStartElement(GML_PREFIX, "LinearRing", gmlNsUri);
+        streamWriter.writeStartElement(GML_PREFIX, coordElementName, gmlNsUri);
         writeCoordinates(coordinates);
         streamWriter.writeEndElement();
         streamWriter.writeEndElement();
         streamWriter.writeEndElement();
     }
 
-    private void writeLineString(LineString lineString) throws XMLStreamException {
+    void writeLineString(LineString lineString, String gmlNsUri) throws XMLStreamException {
         Coordinate[] coordinates = lineString.getCoordinates();
-        streamWriter.writeStartElement("gml", "LineString", "http://www.opengis.net/gml/3.2");
-        streamWriter.writeStartElement("gml", coordElementName, "http://www.opengis.net/gml/3.2");
+        streamWriter.writeStartElement(GML_PREFIX, "LineString", gmlNsUri);
+        streamWriter.writeStartElement(GML_PREFIX, coordElementName, gmlNsUri);
         writeCoordinates(coordinates);
         streamWriter.writeEndElement();
         streamWriter.writeEndElement();
     }
 
-    private void writeMultiLineString(MultiLineString lineString) throws XMLStreamException {
+    void writeMultiLineString(MultiLineString lineString, String gmlNsUri)
+            throws XMLStreamException {
         int numGeom = lineString.getNumGeometries();
-        streamWriter.writeStartElement("gml", "MultiLineString", "http://www.opengis.net/gml/3.2");
+        streamWriter.writeStartElement(GML_PREFIX, "MultiLineString", gmlNsUri);
         for (int i = 0; i < numGeom; i++) {
-            streamWriter.writeStartElement(
-                    "gml", "LineStringMember", "http://www.opengis.net/gml/3.2");
-            writeLineString((LineString) lineString.getGeometryN(i));
+            streamWriter.writeStartElement(GML_PREFIX, "LineStringMember", gmlNsUri);
+            writeLineString((LineString) lineString.getGeometryN(i), gmlNsUri);
             streamWriter.writeEndElement();
         }
         streamWriter.writeEndElement();
     }
 
-    private void writeMultiPolygon(MultiPolygon multiPolygon) throws XMLStreamException {
+    void writeMultiPolygon(MultiPolygon multiPolygon, String gmlNsUri) throws XMLStreamException {
         int numGeom = multiPolygon.getNumGeometries();
         boolean isMultiSurface = multiPolygon instanceof MultiSurface;
         streamWriter.writeStartElement(
-                "gml",
-                isMultiSurface ? "MultiSurface" : "MultiPolygon",
-                "http://www.opengis.net/gml/3.2");
+                GML_PREFIX, isMultiSurface ? "MultiSurface" : "MultiPolygon", gmlNsUri);
         for (int i = 0; i < numGeom; i++) {
             streamWriter.writeStartElement(
-                    "gml",
-                    isMultiSurface ? "surfaceMember" : "polygonMember",
-                    "http://www.opengis.net/gml/3.2");
-            writePolygon((Polygon) multiPolygon.getGeometryN(i));
+                    GML_PREFIX, isMultiSurface ? "surfaceMember" : "polygonMember", gmlNsUri);
+            writePolygon((Polygon) multiPolygon.getGeometryN(i), gmlNsUri);
             streamWriter.writeEndElement();
         }
         streamWriter.writeEndElement();
@@ -219,11 +208,15 @@ abstract class GMLVersionManager {
         }
     }
 
-    void addNamespaces(Map<String, String> namespaces) {
-        this.namespaces.putAll(namespaces);
-    }
-
     void setAxisOrder(CRS.AxisOrder axisOrder) {
         this.axisOrder = axisOrder;
+    }
+
+    abstract String getWfsNsUri();
+
+    abstract String getGmlNsUri();
+
+    Map<String, String> getNamespaces() {
+        return this.namespaces;
     }
 }

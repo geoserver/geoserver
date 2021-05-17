@@ -5,7 +5,7 @@ import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-public class GMLGetComplexFeatureTest extends TemplateComplexTestSupport {
+public class GML3GetComplexFeatureTest extends TemplateComplexTestSupport {
 
     @Test
     public void getMappedFeature() throws IOException {
@@ -14,8 +14,11 @@ public class GMLGetComplexFeatureTest extends TemplateComplexTestSupport {
                 getAsDOM(
                         "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&outputFormat=gml3");
         assertXpathCount(5, "//gsml:MappedFeature", doc);
-        assertXpathCount(5, "//gsml:MappedFeature/gsml:geometry/gml:Polygon", doc);
-        assertXpathEvaluatesTo("GUNTHORPE FORMATION", "//gsml:MappedFeature/gml:name", doc);
+        assertXpathCount(5, "//gsml:samplingFrame//@xlink:href", doc);
+        assertXpathCount(5, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
+        // filter dynamic value element
+        assertXpathCount(1, "//gsml:MappedFeature/gml:name", doc);
+        // filtered element
         assertXpathCount(2, "//gsml:GeologicUnit", doc);
         assertXpathCount(4, "//gsml:lithology", doc);
     }

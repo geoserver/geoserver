@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs"
-                       xmlns:gml="http://www.opengis.net/gml"
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0"
+                       xmlns:gml="http://www.opengis.net/gml/3.2"
                        xmlns:gsml="urn:cgi:xmlns:CGI:GeoSciML:2.0"
                        xmlns:xs="http://www.w3.org/2001/XMLSchema"
                        xmlns:xlink="http://www.w3.org/1999/xlink"

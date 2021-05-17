@@ -11,15 +11,17 @@ import java.util.Map;
 import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.util.ISO8601Formatter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
 import org.locationtech.jts.geom.Geometry;
 
 /** A writer able to generate a GML output. */
 public class GMLTemplateWriter extends XMLTemplateWriter {
 
-    private GMLVersionManager versionManager;
+    private GMLDialectManager versionManager;
 
     public GMLTemplateWriter(XMLStreamWriter streamWriter, String outputFormat) {
         super(streamWriter);
@@ -27,19 +29,19 @@ public class GMLTemplateWriter extends XMLTemplateWriter {
                 TemplateIdentifier.getTemplateIdentifierFromOutputFormat(outputFormat);
         switch (identifier) {
             case GML32:
-                this.versionManager = new GML32VersionManager(streamWriter);
+                this.versionManager = new GML32DialectManager(streamWriter);
                 break;
             case GML31:
-                this.versionManager = new GML31VersionManager(streamWriter);
+                this.versionManager = new GML31DialectManager(streamWriter);
                 break;
             case GML2:
-                this.versionManager = new GML2VersionManager(streamWriter);
+                this.versionManager = new GML2DialectManager(streamWriter);
                 break;
         }
     }
 
     @Override
-    public void startTemplateOutput(Map<String, Object> encodingHints) throws IOException {
+    public void startTemplateOutput(EncodingHints encodingHints) throws IOException {
         try {
             streamWriter.writeStartDocument();
             streamWriter.writeStartElement("wfs", "FeatureCollection", namespaces.get("wfs"));
@@ -58,7 +60,7 @@ public class GMLTemplateWriter extends XMLTemplateWriter {
     }
 
     @Override
-    public void endTemplateOutput(Map<String, Object> encodingHints) throws IOException {
+    public void endTemplateOutput(EncodingHints encodingHints) throws IOException {
 
         try {
             streamWriter.writeEndElement();
@@ -122,6 +124,12 @@ public class GMLTemplateWriter extends XMLTemplateWriter {
     @Override
     public void addNamespaces(Map<String, String> namespaces) {
         super.addNamespaces(namespaces);
-        versionManager.addNamespaces(namespaces);
+        this.namespaces.putAll(versionManager.getNamespaces());
+    }
+
+    @Override
+    public void setAxisOrder(CRS.AxisOrder axisOrder) {
+        super.setAxisOrder(axisOrder);
+        this.versionManager.setAxisOrder(axisOrder);
     }
 }

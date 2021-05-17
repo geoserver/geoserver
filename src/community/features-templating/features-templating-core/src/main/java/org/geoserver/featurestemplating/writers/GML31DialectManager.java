@@ -10,10 +10,10 @@ import javax.xml.stream.XMLStreamWriter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-class GML31VersionManager extends GMLVersionManager {
+class GML31DialectManager extends GMLDialectManager {
 
-    GML31VersionManager(XMLStreamWriter streamWriter) {
-        super(streamWriter, "posList", "exterior", "interior");
+    GML31DialectManager(XMLStreamWriter streamWriter) {
+        super(streamWriter, "posList");
     }
 
     @Override
@@ -28,5 +28,15 @@ class GML31VersionManager extends GMLVersionManager {
     void writeBoundingBox(ReferencedEnvelope envelope, CoordinateReferenceSystem crs)
             throws IOException {
         super.writeBoundingBox(envelope, crs, false);
+    }
+
+    @Override
+    String getWfsNsUri() {
+        return "http://www.opengis.net/wfs";
+    }
+
+    @Override
+    String getGmlNsUri() {
+        return "http://www.opengis.net/gml";
     }
 }

@@ -36,7 +36,18 @@ public interface TemplateBuilder {
         return Collections.emptyList();
     }
 
+    /**
+     * Get the encoding hints held by this TemplateBuilder.
+     *
+     * @return
+     */
     Map<String, Object> getEncodingHints();
 
+    /**
+     * Add an encoding hint to the ones held by this builder.
+     *
+     * @param key the hint key.
+     * @param value the hint value.
+     */
     void addEncodingHint(String key, Object value);
 }

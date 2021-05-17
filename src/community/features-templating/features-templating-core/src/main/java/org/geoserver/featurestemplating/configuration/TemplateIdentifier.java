@@ -12,8 +12,7 @@ public enum TemplateIdentifier {
     JSONLD("application/ld+json", "json-ld-template.json"),
     GML32("application/gml+xml;version=3.2", "gml32-template.xml"),
     GML31("gml3", "gml31-template.xml"),
-    GML2("GML2text/xml;subtype=gml/2.1.2", "gml2-template.xml"),
-    XHTML("text/html", "xhtml-template.xhtml");
+    GML2("GML2text/xml;subtype=gml/2.1.2", "gml2-template.xml");
 
     private String outputFormat;
     private String filename;

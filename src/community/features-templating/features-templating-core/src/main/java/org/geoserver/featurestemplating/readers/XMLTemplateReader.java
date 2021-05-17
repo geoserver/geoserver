@@ -162,7 +162,7 @@ public class XMLTemplateReader implements TemplateReader {
     private TemplateBuilder createLeaf(String data, StartElement startElement) {
         maker.namespaces(namespaceSupport);
         if (startElement != null) {
-            maker.name(startElement.getName().toString());
+            maker.name(strName(startElement.getName()));
             String filter = getAttributeValueIfPresent(startElement, FILTER_ATTR);
             if (filter == null) {
                 maker.contentAndFilter(data);
@@ -182,8 +182,8 @@ public class XMLTemplateReader implements TemplateReader {
             if (!attribute.isNamespace()) {
                 if (canEncodeAttribute(attribute.getName())) {
                     maker.namespaces(namespaceSupport)
-                            .name(attribute.getName().toString())
-                            .textContent(attribute.getValue())
+                            .name(strName(attribute.getName()))
+                            .contentAndFilter(attribute.getValue())
                             .encodingOption(ENCODE_AS_ATTRIBUTE, true);
                     parentBuilder.addChild(maker.build());
                 }
@@ -213,9 +213,9 @@ public class XMLTemplateReader implements TemplateReader {
             Attribute attribute = attributeIterator.next();
             QName name = attribute.getName();
             if (isNamespace(name)) {
-                namespaces.put(strName(name), attribute.getValue());
+                namespaces.put(localPart(name), attribute.getValue());
             } else if (isSchemaLocation(name)) {
-                schemaLocation.put(strName(attribute.getName()), attribute.getValue());
+                schemaLocation.put(localPart(attribute.getName()), attribute.getValue());
             }
         }
         rootBuilder.addEncodingHint(NAMESPACES, namespaces);
@@ -229,13 +229,26 @@ public class XMLTemplateReader implements TemplateReader {
         return builder;
     }
 
-    String strName(QName name) {
+    String localPart(QName name) {
         String[] nameAr = name.getLocalPart().split(":");
         String strName;
         if (nameAr.length > 1) {
             strName = nameAr[1];
         } else {
             strName = name.getLocalPart();
+        }
+        return strName;
+    }
+
+    String strName(QName name) {
+        String[] nameAr = name.getLocalPart().split(":");
+        String strName;
+        if (nameAr.length > 1) {
+            strName = nameAr[0] + ":" + nameAr[1];
+        } else {
+
+            strName = name.getLocalPart();
+            if (name.getPrefix() != null) strName = name.getPrefix() + ":" + strName;
         }
         return strName;
     }

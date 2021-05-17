@@ -50,17 +50,18 @@ public class IteratingBuilder extends SourceBuilder {
         if (canWrite(context)) {
             boolean iterateKey = isIterateKey();
             String key = getKey();
-            if (!iterateKey) writer.startArray(key, encodingHints);
+            boolean isList = context.getCurrentObj() instanceof List;
+            // if this is not a context as list or we don't have
+            // iterate key hint we start the array and encode the key once here
+            if (!iterateKey || !isList) writer.startArray(key, encodingHints);
 
-            if (context.getCurrentObj() instanceof List) {
+            if (isList) {
                 evaluateCollection(writer, context, iterateKey);
             } else {
-                if (iterateKey) writer.startArray(key, encodingHints);
                 evaluateInternal(writer, context);
-                if (iterateKey) writer.endArray(key, encodingHints);
             }
 
-            if (!iterateKey) writer.endArray(key, encodingHints);
+            if (!iterateKey || !isList) writer.endArray(key, encodingHints);
         }
     }
 
@@ -80,11 +81,13 @@ public class IteratingBuilder extends SourceBuilder {
             TemplateBuilderContext childContext = new TemplateBuilderContext(o);
             childContext.setParent(context.getParent());
             if (evaluateFilter(childContext)) {
-                if (iterateKey && !rootCollection) writer.startArray(getKey(), encodingHints);
+                String key = getKey();
+                // repeat the key attribute according to the hint
+                if (iterateKey && !rootCollection) writer.startArray(key, encodingHints);
                 for (TemplateBuilder child : children) {
                     child.evaluate(writer, childContext);
                 }
-                if (iterateKey && !rootCollection) writer.endArray(getKey(), encodingHints);
+                if (iterateKey && !rootCollection) writer.endArray(key, encodingHints);
             }
         }
     }

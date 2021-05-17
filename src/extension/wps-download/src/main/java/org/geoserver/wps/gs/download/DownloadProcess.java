@@ -23,6 +23,8 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.ppio.ZipArchivePPIO;
+import org.geoserver.wps.process.RawData;
+import org.geoserver.wps.process.ResourceRawData;
 import org.geoserver.wps.resource.WPSFileResource;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.image.util.ImageUtilities;
@@ -39,6 +41,7 @@ import org.opengis.util.ProgressListener;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.MimeType;
 
 /**
  * The main DownloadProcess class.
@@ -122,8 +125,12 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
      * @return the file
      * @throws ProcessException the process exception
      */
-    @DescribeResult(name = "result", description = "Zipped output files to download")
-    public File execute(
+    @DescribeResult(
+        name = "result",
+        description = "The produced download",
+        meta = {"mimeTypes=image/tiff, application/zip", "chosenMimeType=resultFormat"}
+    )
+    public RawData execute(
             @DescribeParameter(
                         name = "layerName",
                         min = 1,
@@ -132,12 +139,16 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                     String layerName,
             @DescribeParameter(name = "filter", min = 0, description = "Optional Vector Filter")
                     Filter filter,
-            @DescribeParameter(
-                        name = "outputFormat",
-                        min = 1,
-                        description = "Output Format Mime-Type"
-                    )
+            @DescribeParameter(name = "outputFormat", min = 1, description = "format Mime-Type")
                     String mimeType,
+            @DescribeParameter(
+                        name = "resultFormat",
+                        min = 0,
+                        description =
+                                "The Mime-Type of the returned object. Default is application/zip, "
+                                        + "to archive the result"
+                    )
+                    String resultFormat,
             @DescribeParameter(name = "targetCRS", min = 0, description = "Optional Target CRS")
                     CoordinateReferenceSystem targetCRS,
             @DescribeParameter(
@@ -410,7 +421,17 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                         "Could not complete the Download Process, output file invalid! --> "
                                 + internalOutput.path());
             }
-
+            String subType = MimeType.valueOf(mimeType).getSubtype();
+            if (resultFormat != null && !resultFormat.equalsIgnoreCase("application/zip")) {
+                ResourceRawData rawData =
+                        new ResourceRawData(internalOutput, resultFormat, subType);
+                if (progressListener != null) {
+                    progressListener.complete();
+                }
+                return rawData;
+            } else {
+                resultFormat = "application/zip";
+            }
             // adding the style and zipping
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Preparing the result");
@@ -461,7 +482,7 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
             }
 
             // return
-            return result.file();
+            return new ResourceRawData(result, resultFormat, subType);
         } catch (Throwable e) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.log(Level.FINE, "Download failed");

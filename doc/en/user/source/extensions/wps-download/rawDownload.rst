@@ -394,6 +394,32 @@ This time, when issued (and process has finished on the server), the GET request
   </wps:ExecuteResponse>
 
 
+Raster Output Format and Response mime-type
++++++++++++++++++++++++++++++++++++++++++++
+By default, the Downloaded raster get finally zipped (with the zip also containing the associated sld). 
+In some cases, this can be unneeded, especially if the output TIFF already has some type of internal compression or if we simply want to get back the TIFF output file without the ancillary sld. Think about downloading an RGB TIFF: the default raster.sld style won't add anything useful to the output. In that case you can specify image/tiff in the Response's output mimeType so that the output TIFF will be provided as is.
+
+
+ .. code-block:: xml
+
+  ...
+  <wps:ResponseForm>
+    <wps:ResponseDocument storeExecuteResponse="true" status="true">
+      <wps:Output asReference="true" mimeType="image/tiff">
+        <ows:Identifier>result</ows:Identifier>
+      </wps:Output>
+    </wps:ResponseDocument>
+  </wps:ResponseForm>
+
+
+Writing buffering options
++++++++++++++++++++++++++
+By default raster pixels are encoded using a file stream writing through a default 16KB data buffer.
+You might want to change the size of the buffer by adding this property to the ``JAVA_OPTS``: ``-Dorg.geoserver.wps.download.raster.buffer.size=sizeinbytes`` where ``sizeinbytes`` is the actual value to be set, i.e. 1048576 to set a 1MB buffer.
+
+Moreover, when copying back data resources from within the WPS machinery to the final file output location, a default 16KB data buffer is being used.
+You might want to change the size of the buffer by adding this property to the ``JAVA_OPTS``: ``-Dorg.geoserver.wps.copy.buffer.size=sizeinbytes`` where ``sizeinbytes`` is the actual value to be set, i.e. 1048576 to set a 1MB buffer.
+
 .. _writing_params:
 
 Writing parameters

@@ -75,6 +75,7 @@ import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.config.util.XStreamPersister.CRSConverter;
 import org.geoserver.config.util.XStreamPersister.SRSConverter;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geotools.jdbc.RegexpValidator;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
@@ -1161,6 +1162,7 @@ public class XStreamPersisterTest {
 
     @Test
     public void testPersisterCustomization() throws Exception {
+        GeoServerExtensionsHelper.setIsSpringContext(false);
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();
 

@@ -75,8 +75,10 @@ abstract class LimitedImageOutputStream extends FilterImageOutputStream {
      * @see java.io.FilterInputStream#in
      */
     public void close() throws IOException {
-        closed = true;
-        super.close();
+        if (!isClosed()) {
+            super.close();
+            closed = true;
+        }
     }
 
     @Override

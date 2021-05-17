@@ -70,6 +70,13 @@ public class WPSResourceManager extends ProcessListenerAdapter
                 ApplicationContextAware {
     private static final Logger LOGGER = Logging.getLogger(WPSResourceManager.class);
 
+    static final int COPY_BUFFER_SIZE =
+            Integer.getInteger("org.geoserver.wps.copy.buffer.size", 16386);
+
+    public static int getCopyBufferSize() {
+        return COPY_BUFFER_SIZE;
+    }
+
     ConcurrentHashMap<String, ExecutionResources> resourceCache = new ConcurrentHashMap<>();
 
     ThreadLocal<String> executionId = new InheritableThreadLocal<>();

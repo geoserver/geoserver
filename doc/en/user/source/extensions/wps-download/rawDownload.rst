@@ -394,6 +394,32 @@ This time, when issued (and process has finished on the server), the GET request
   </wps:ExecuteResponse>
 
 
+Raster Output Format and Response mime-type
++++++++++++++++++++++++++++++++++++++++++++
+By default, the Downloaded raster gets zipped, along with the SLD style associated to the layer. 
+In some cases, this can be unnecessary, especially if the output TIFF already has some type of internal compression or if we simply want to get back the TIFF output file without the ancillary SLD. Let's consider downloading a RGB TIFF: the default raster.sld style won't add anything useful to the output. In that case it's possible to specify ``image/tiff`` in the Response's output ``mimeType``: the output TIFF will be provided as is, without extra steps of compression and file management.
+
+
+ .. code-block:: xml
+
+  ...
+  <wps:ResponseForm>
+    <wps:ResponseDocument storeExecuteResponse="true" status="true">
+      <wps:Output asReference="true" mimeType="image/tiff">
+        <ows:Identifier>result</ows:Identifier>
+      </wps:Output>
+    </wps:ResponseDocument>
+  </wps:ResponseForm>
+
+
+Writing buffering options
++++++++++++++++++++++++++
+By default raster pixels are encoded using a file stream writing through a default 16KB data buffer.
+Depending on the network and disk setup, you might want to change the size of the buffer to improve performance. This can be done by adding this property to the ``JAVA_OPTS``: ``-Dorg.geoserver.wps.download.raster.buffer.size=sizeinbytes`` where ``sizeinbytes`` is the actual value to be set, i.e. 1048576 to set a 1MB buffer.
+
+Moreover, when copying back data resources from within the WPS machinery to the final file output location, a default 16KB data buffer is being used.
+It's also possible to change the size of such buffer by adding this property to the ``JAVA_OPTS``: ``-Dorg.geoserver.wps.copy.buffer.size=sizeinbytes`` where ``sizeinbytes`` is the actual value to be set, i.e. 1048576 to set a 1MB buffer.
+
 .. _writing_params:
 
 Writing parameters
@@ -435,7 +461,10 @@ The supported writing parameters are:
    * ``Deflate``   (Lossless)
    
 
- * ``quality`` : Compression quality for lossy compression (JPEG). Value is in the range [0 : 1] where 0 is for worst quality/higher compression and 1 is for best quality/lower compression
+ * ``quality`` : Compression quality. Value is in the range [0 : 1]
+
+   * for ``JPEG`` lossy compression, 0 is for worst quality/higher compression and 1 is for best quality/lower compression. (default is 1).
+   * for ``Deflate`` lossless compression, input value in the range [0 : 1] is linearly mapped to output deflate level in the range [1 : 9]:  ``(deflate level = 1 + 8 * (quality))``, where level 1 is for best speed and level 9 is for best compression. (default level is 9)
  * ``writenodata`` : Supported value is one of true/false. Note that, by default, a `nodata TAG <https://www.awaresystems.be/imaging/tiff/tifftags/gdal_nodata.html>`_ is produced as part of the output GeoTIFF file as soon as a nodata is found in the GridCoverage2D to be written. Therefore, not specifying this parameter will result into writing nodata to preserve default behavior. Setting it to false will avoid writing that TAG.
  
 

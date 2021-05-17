@@ -9,8 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
+import org.geoserver.util.IOUtils;
 import org.geoserver.wps.process.RawData;
+import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.xsd.EncoderDelegate;
 import org.xml.sax.ContentHandler;
 
@@ -49,7 +50,7 @@ public class RawDataEncoderDelegate implements EncoderDelegate {
 
     public void encode(OutputStream os) throws IOException {
         try (InputStream stream = rawData.getInputStream()) {
-            IOUtils.copy(stream, os);
+            IOUtils.copy(stream, os, WPSResourceManager.getCopyBufferSize());
         }
     }
 

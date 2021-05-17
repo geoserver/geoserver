@@ -59,6 +59,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
     @Override
     public T process(T item) throws Exception {
+        LOGGER.log(Level.FINE, "Processing resource: {0}", item);
         if (item == null) {
             return null;
         }
@@ -67,6 +68,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         if (isNew()) {
             // Disabling additional validators
             ((CatalogImpl) getCatalog()).setExtendedValidation(false);
+            LOGGER.log(Level.FINE, "Extended validation disabled for resource: {0}", item);
 
             // Resolving Collections
             OwsUtils.resolveCollections(item);
@@ -90,28 +92,34 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
     }
 
     private T process(DataStoreInfo ds) throws Exception {
+        LOGGER.log(Level.FINE, "Processing datastore: {0}", ds);
         WorkspaceInfo ws = resolveWorkspace(ds);
 
         if (ws == null && filterIsValid()) {
             Catalog catalog = getCatalog();
             DataStoreInfo source = backupFacade.getCatalog().getDataStoreByName(ds.getName());
+            LOGGER.log(Level.FINE, "Found source datastore: {0}", source);
             if (source != null && source.getWorkspace() != null) {
                 ws = catalog.getWorkspaceByName(source.getWorkspace().getName());
                 if (ws == null) {
+                    LOGGER.log(Level.WARNING, "Workspace not found for datastore: {0}", ds);
                     return null;
                 }
                 ds.setWorkspace(ws);
                 catalog.add(ds);
-                catalog.save(catalog.getDataStore(ds.getId()));
+                DataStoreInfo addedDs = catalog.getDataStore(ds.getId());
+                catalog.save(addedDs);
+                LOGGER.log(Level.FINE, "Saved datastore into catalog: {0}", addedDs);
             }
         }
 
         if (filteredResource(getClazz().cast(ds), ws, true, StoreInfo.class)) {
+            LOGGER.log(Level.FINE, "Filtered out datastore : {0}", ds);
             return null;
         }
 
         if (!filterIsValid() && !validateDataStore(ds, isNew())) {
-            LOGGER.warning("Skipped invalid resource: " + ds);
+            LOGGER.log(Level.WARNING, "Skipped invalid resource: {0}", ds);
             logValidationExceptions(getClazz().cast(ds), null);
             return null;
         }
@@ -131,11 +139,14 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 Catalog catalog = getCatalog();
                 result = catalog.validate(style, isNew());
                 if (!result.isValid()) {
+                    LOGGER.log(Level.SEVERE, "Style is not valid: {0}", style);
+                    logValidationResult(result, style);
                     logValidationExceptions(getClazz().cast(style), null);
                     return null;
                 }
             }
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Exception during style processing.", e);
             logValidationExceptions(result, e);
             return null;
         }
@@ -155,12 +166,14 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 Catalog catalog = getCatalog();
                 result = catalog.validate(lg, isNew());
                 if (!result.isValid()) {
+                    LOGGER.log(Level.SEVERE, "LayerGroup is not valid: {0}", lg);
+                    logValidationResult(result, lg);
                     logValidationExceptions(getClazz().cast(lg), null);
                     return null;
                 }
             }
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error occurred while trying to Reload a Resource!", e);
+            LOGGER.log(Level.WARNING, "Error occurred while trying to process a Resource!", e);
             if (getCurrentJobExecution() != null) {
                 getCurrentJobExecution().addWarningExceptions(Arrays.asList(e));
             }
@@ -186,6 +199,8 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 Catalog catalog = getCatalog();
                 result = catalog.validate(layer, isNew());
                 if (!result.isValid()) {
+                    LOGGER.log(Level.SEVERE, "Layer is not valid: {0}", layer);
+                    logValidationResult(result, layer);
                     logValidationExceptions(getClazz().cast(layer), null);
                     return null;
                 }
@@ -223,6 +238,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             if (source != null && source.getStore() != null) {
                 StoreInfo store = catalog.getStoreByName(source.getStore().getName(), storeClz);
                 if (store == null) {
+                    LOGGER.log(Level.SEVERE, "Resource info not found on catalog: {0}", resource);
                     return null;
                 }
                 resource.setStore(store);
@@ -232,6 +248,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         }
 
         if (filteredResource(getClazz().cast(resource), ws, true, ResourceInfo.class)) {
+            LOGGER.log(Level.FINE, "Resource filtered out: {0}", resource);
             return null;
         }
 
@@ -253,6 +270,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             if (source != null && source.getWorkspace() != null) {
                 ws = catalog.getWorkspaceByName(source.getWorkspace().getName());
                 if (ws == null) {
+                    LOGGER.log(Level.SEVERE, "Workspace not found for store: {0}", store);
                     return null;
                 }
                 store.setWorkspace(ws);
@@ -262,6 +280,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         }
 
         if (filteredResource(getClazz().cast(store), ws, true, StoreInfo.class)) {
+            LOGGER.log(Level.FINE, "Store filtered out: {0}", store);
             return null;
         }
 
@@ -307,6 +326,10 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         ValidationResult result = null;
         try {
             result = this.getCatalog().validate(resource, isNew);
+            if (!result.isValid()) {
+                LOGGER.log(Level.SEVERE, "Workspace is not valid: {0}", resource);
+                logValidationResult(result, resource);
+            }
         } catch (Exception e) {
             LOGGER.warning(
                     "Could not validate the resource "
@@ -340,6 +363,10 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         ValidationResult result = null;
         try {
             result = this.getCatalog().validate(resource, isNew);
+            if (!result.isValid()) {
+                LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
+                logValidationResult(result, resource);
+            }
         } catch (Exception e) {
             LOGGER.warning(
                     "Could not validate the resource "
@@ -373,6 +400,10 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
         ValidationResult result = null;
         try {
             result = this.getCatalog().validate(resource, isNew);
+            if (!result.isValid()) {
+                LOGGER.log(Level.SEVERE, "Store is not valid: {0}", resource);
+                logValidationResult(result, resource);
+            }
         } catch (Exception e) {
             LOGGER.warning(
                     "Could not validate the resource "
@@ -472,5 +503,17 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             throw new IllegalArgumentException("Don't know how to extract workspace from " + item);
         }
         return ws == null ? null : getCatalog().getWorkspaceByName(ws.getName());
+    }
+
+    private void logValidationResult(ValidationResult result, CatalogInfo resourceInfo) {
+        if (result == null || result.getErrors() == null) {
+            return;
+        }
+        for (RuntimeException ex : result.getErrors()) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Exception during validation for resource info: " + resourceInfo,
+                    ex);
+        }
     }
 }

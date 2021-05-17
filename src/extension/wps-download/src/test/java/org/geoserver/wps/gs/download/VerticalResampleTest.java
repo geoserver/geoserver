@@ -20,14 +20,13 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.web.wps.VerticalCRSConfigurationPanel;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.gs.download.vertical.GeoTIFFVerticalGridShift;
 import org.geoserver.wps.gs.download.vertical.VerticalGridTransform;
 import org.geoserver.wps.gs.download.vertical.VerticalResampler;
+import org.geoserver.wps.process.RawData;
 import org.geoserver.wps.resource.WPSResourceManager;
-import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.gce.geotiff.GeoTiffReader;
@@ -96,11 +95,14 @@ public class VerticalResampleTest extends WPSTestSupport {
         reader.dispose();
     }
 
+    private WPSResourceManager getResourceManager() {
+        return GeoServerExtensions.bean(WPSResourceManager.class);
+    }
+
     @Test
     public void testVerticalResamplingMissingSourceVerticalCRS()
             throws ParseException, FactoryException {
-        final WPSResourceManager resourceManager =
-                GeoServerExtensions.bean(WPSResourceManager.class);
+        final WPSResourceManager resourceManager = getResourceManager();
         GeoServer geoserver = getGeoServer();
         DownloadEstimatorProcess limits =
                 new DownloadEstimatorProcess(new StaticDownloadServiceConfiguration(), geoserver);
@@ -125,6 +127,7 @@ public class VerticalResampleTest extends WPSTestSupport {
                                             getLayerId(HETEROGENEOUS_CRS2), // layerName
                                             null, // filter
                                             "image/tiff", // outputFormat
+                                            "image/tiff",
                                             targetCRS, // targetCRS
                                             targetCRS,
                                             bboxRoi, // roi
@@ -161,41 +164,40 @@ public class VerticalResampleTest extends WPSTestSupport {
         DownloadProcess downloadProcess = new DownloadProcess(geoserver, limits, resourceManager);
 
         // Requesting an area out of the vertical grid validity area. Pixels won't be modified
-        GeoTiffReader reader = null;
-        GridCoverage2D gc = null;
-        try {
-            String roiWkt =
-                    "POLYGON ((-101000.25 262175.25, -100000.25 262175.25, -100000.25 260300.25, -101000.25 260300.25, -101000.25 262175.25))";
-            Polygon bboxRoi = (Polygon) new WKTReader2().read(roiWkt);
-            CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:31256", true);
-            Parameters parameters = new Parameters();
-            List<Parameter> parametersList = parameters.getParameters();
-            parametersList.add(new Parameter("writenodata", "false"));
-            File rasterZip =
-                    downloadProcess.execute(
-                            getLayerId(HETEROGENEOUS_CRS2), // layerName
-                            null, // filter
-                            "image/tiff", // outputFormat
-                            targetCRS, // targetCRS
-                            targetCRS,
-                            bboxRoi, // roi
-                            false, // cropToGeometry
-                            null, // interpolation
-                            null, // targetSizeX
-                            null, // targetSizeY
-                            null, // bandSelectIndices
-                            parameters, // Writing params
-                            true,
-                            true,
-                            0d,
-                            CRS.decode("EPSG:9998", true),
-                            new NullProgressListener() // progressListener
-                            );
 
-            Assert.assertNotNull(rasterZip);
-            final File[] tiffFiles = DownloadProcessTest.extractFiles(rasterZip, "GTIFF");
-            reader = new GeoTiffReader(tiffFiles[0]);
-            gc = reader.read(null);
+        String roiWkt =
+                "POLYGON ((-101000.25 262175.25, -100000.25 262175.25, -100000.25 260300.25, -101000.25 260300.25, -101000.25 262175.25))";
+        Polygon bboxRoi = (Polygon) new WKTReader2().read(roiWkt);
+        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:31256", true);
+        Parameters parameters = new Parameters();
+        List<Parameter> parametersList = parameters.getParameters();
+        parametersList.add(new Parameter("writenodata", "false"));
+        RawData raster =
+                downloadProcess.execute(
+                        getLayerId(HETEROGENEOUS_CRS2), // layerName
+                        null, // filter
+                        "image/tiff", // outputFormat
+                        "image/tiff",
+                        targetCRS, // targetCRS
+                        targetCRS,
+                        bboxRoi, // roi
+                        false, // cropToGeometry
+                        null, // interpolation
+                        null, // targetSizeX
+                        null, // targetSizeY
+                        null, // bandSelectIndices
+                        parameters, // Writing params
+                        true,
+                        true,
+                        0d,
+                        CRS.decode("EPSG:9998", true),
+                        new NullProgressListener() // progressListener
+                        );
+        try (DownloadProcessTest.AutoCloseableResource resource =
+                        new DownloadProcessTest.AutoCloseableResource(resourceManager, raster);
+                DownloadProcessTest.AutoDisposableGeoTiffReader reader =
+                        new DownloadProcessTest.AutoDisposableGeoTiffReader(resource.getFile());
+                DownloadProcessTest.AutoDisposableGridCoverage2D gc = reader.read()) {
             RenderedImage ri = gc.getRenderedImage();
             RenderedOp extremaOp = ExtremaDescriptor.create(ri, null, 1, 1, false, 1, null);
 
@@ -205,66 +207,53 @@ public class VerticalResampleTest extends WPSTestSupport {
             double[][] extrema = (double[][]) extremaOp.getProperty("Extrema");
             assertEquals(extrema[0][0], 1, DELTA);
             assertEquals(extrema[1][0], 2, DELTA);
-
-        } finally {
-            if (gc != null) {
-                CoverageCleanerCallback.disposeCoverage(gc);
-            }
-            if (reader != null) {
-                reader.dispose();
-            }
-
-            // clean up process
-            resourceManager.finished(resourceManager.getExecutionId(true));
         }
     }
 
     @Test
     public void testVerticalResampling() throws Exception {
-        final WPSResourceManager resourceManager =
-                GeoServerExtensions.bean(WPSResourceManager.class);
+        final WPSResourceManager resourceManager = getResourceManager();
         GeoServer geoserver = getGeoServer();
         DownloadEstimatorProcess limits =
                 new DownloadEstimatorProcess(new StaticDownloadServiceConfiguration(), geoserver);
         DownloadProcess downloadProcess = new DownloadProcess(geoserver, limits, resourceManager);
 
         // Requesting an area containing a granule in native CRS and a granule in a different CRS
-        GeoTiffReader reader = null;
-        GridCoverage2D gc = null;
 
-        try {
-            String roiWkt =
-                    "POLYGON ((-102500.25 260000.25, -101000.25 260000.25, -101000.25 262500.25, -102500.25 262500.25, -102500.25 260000.25))";
-            Polygon bboxRoi = (Polygon) new WKTReader2().read(roiWkt);
-            CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:31256", true);
-            Parameters parameters = new Parameters();
-            List<Parameter> parametersList = parameters.getParameters();
-            parametersList.add(new Parameter("writenodata", "false"));
-            File rasterZip =
-                    downloadProcess.execute(
-                            getLayerId(HETEROGENEOUS_CRS2), // layerName
-                            null, // filter
-                            "image/tiff", // outputFormat
-                            targetCRS, // targetCRS
-                            targetCRS,
-                            bboxRoi, // roi
-                            false, // cropToGeometry
-                            null, // interpolation
-                            null, // targetSizeX
-                            null, // targetSizeY
-                            null, // bandSelectIndices
-                            parameters, // Writing params
-                            true,
-                            true,
-                            0d,
-                            CRS.decode("EPSG:9999", true),
-                            new NullProgressListener() // progressListener
-                            );
+        String roiWkt =
+                "POLYGON ((-102500.25 260000.25, -101000.25 260000.25, -101000.25 262500.25, -102500.25 262500.25, -102500.25 260000.25))";
+        Polygon bboxRoi = (Polygon) new WKTReader2().read(roiWkt);
+        CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:31256", true);
+        Parameters parameters = new Parameters();
+        List<Parameter> parametersList = parameters.getParameters();
+        parametersList.add(new Parameter("writenodata", "false"));
+        RawData raster =
+                downloadProcess.execute(
+                        getLayerId(HETEROGENEOUS_CRS2), // layerName
+                        null, // filter
+                        "image/tiff", // outputFormat
+                        "image/tiff",
+                        targetCRS, // targetCRS
+                        targetCRS,
+                        bboxRoi, // roi
+                        false, // cropToGeometry
+                        null, // interpolation
+                        null, // targetSizeX
+                        null, // targetSizeY
+                        null, // bandSelectIndices
+                        parameters, // Writing params
+                        true,
+                        true,
+                        0d,
+                        CRS.decode("EPSG:9999", true),
+                        new NullProgressListener() // progressListener
+                        );
+        try (DownloadProcessTest.AutoCloseableResource resource =
+                        new DownloadProcessTest.AutoCloseableResource(resourceManager, raster);
+                DownloadProcessTest.AutoDisposableGeoTiffReader reader =
+                        new DownloadProcessTest.AutoDisposableGeoTiffReader(resource.getFile());
+                DownloadProcessTest.AutoDisposableGridCoverage2D gc = reader.read()) {
 
-            Assert.assertNotNull(rasterZip);
-            final File[] tiffFiles = DownloadProcessTest.extractFiles(rasterZip, "GTIFF");
-            reader = new GeoTiffReader(tiffFiles[0]);
-            gc = reader.read(null);
             RenderedImage ri = gc.getRenderedImage();
             RenderedOp extremaOp = ExtremaDescriptor.create(ri, null, 1, 1, false, 1, null);
 
@@ -278,17 +267,6 @@ public class VerticalResampleTest extends WPSTestSupport {
             double[][] extrema = (double[][]) extremaOp.getProperty("Extrema");
             assertTrue(extrema[0][0] > 60);
             assertTrue(extrema[1][0] < 163);
-
-        } finally {
-            if (gc != null) {
-                CoverageCleanerCallback.disposeCoverage(gc);
-            }
-            if (reader != null) {
-                reader.dispose();
-            }
-
-            // clean up process
-            resourceManager.finished(resourceManager.getExecutionId(true));
         }
     }
 

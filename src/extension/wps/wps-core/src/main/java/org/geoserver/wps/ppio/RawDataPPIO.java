@@ -40,7 +40,7 @@ public class RawDataPPIO extends ComplexPPIO {
             throws Exception {
         if (asynchronous) {
             Resource tmp = resourceManager.getTemporaryResource(".bin");
-            IOUtils.copy(input, tmp.out());
+            IOUtils.copy(input, tmp.out(), WPSResourceManager.getCopyBufferSize());
             return new ResourceRawData(tmp, mimeType);
         } else {
             return new StreamRawData(mimeType, input);
@@ -52,7 +52,7 @@ public class RawDataPPIO extends ComplexPPIO {
         RawData rd = (RawData) value;
 
         try (InputStream is = rd.getInputStream()) {
-            IOUtils.copy(is, os);
+            IOUtils.copy(is, os, WPSResourceManager.getCopyBufferSize());
         }
     }
 

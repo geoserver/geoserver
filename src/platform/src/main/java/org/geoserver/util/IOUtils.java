@@ -38,6 +38,9 @@ import org.geotools.util.logging.Logging;
  * @author Andrea Aime - TOPP
  */
 public class IOUtils {
+
+    private static final int DEFAULT_BUFFER_SIZE = 16384;
+
     private static final Logger LOGGER = Logging.getLogger(IOUtils.class);
 
     protected IOUtils() {
@@ -46,7 +49,7 @@ public class IOUtils {
 
     /** Copies the provided input stream onto a file */
     public static void copy(InputStream from, File to) throws IOException {
-        copy(from, new FileOutputStream(to));
+        copy(from, new FileOutputStream(to), DEFAULT_BUFFER_SIZE);
     }
 
     /**
@@ -55,8 +58,18 @@ public class IOUtils {
      * <p>Please note that both from input stream and out output stream will be closed.
      */
     public static void copy(InputStream in, OutputStream out) throws IOException {
+        copy(in, out, DEFAULT_BUFFER_SIZE);
+    }
+
+    /**
+     * Copies the provided input stream onto an outputstream.
+     *
+     * <p>Please note that both from input stream and out output stream will be closed.
+     */
+    public static void copy(InputStream in, OutputStream out, int copyBufferSize)
+            throws IOException {
         try {
-            byte[] buffer = new byte[1024 * 16];
+            byte[] buffer = new byte[copyBufferSize];
             int bytes = 0;
             while ((bytes = in.read(buffer)) != -1) out.write(buffer, 0, bytes);
 

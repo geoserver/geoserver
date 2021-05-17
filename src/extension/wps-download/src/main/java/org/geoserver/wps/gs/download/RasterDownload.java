@@ -5,7 +5,7 @@
  */
 package org.geoserver.wps.gs.download;
 
-import it.geosolutions.imageio.stream.output.ImageOutputStreamAdapter;
+import it.geosolutions.imageio.stream.output.FileImageOutputStreamExtImpl;
 import it.geosolutions.io.output.adapter.OutputStreamAdapter;
 import it.geosolutions.jaiext.utilities.ImageLayout2;
 import java.awt.Rectangle;
@@ -91,6 +91,9 @@ import org.springframework.context.ApplicationContext;
  * @author Simone Giannecchini, GeoSolutions SAS
  */
 class RasterDownload {
+
+    private static final int BUFFER_SIZE =
+            Integer.getInteger("org.geoserver.wps.download.raster.buffer.size", 16384);
 
     private static final Logger LOGGER = Logging.getLogger(RasterDownload.class);
 
@@ -914,7 +917,7 @@ class RasterDownload {
         @SuppressWarnings("PMD.CloseResource") // This stream will be properly closed
         // when closing the os variable
         final ImageOutputStream fileImageOutputStreamExtImpl =
-                new ImageOutputStreamAdapter(output.out());
+                new FileImageOutputStreamExtImpl(output.file(), BUFFER_SIZE);
         ImageOutputStream os = null;
         // write
         try {
@@ -938,7 +941,6 @@ class RasterDownload {
             // Encoding the GridCoverage
             Map encodingParams = writeParams != null ? writeParams.getParametersMap() : null;
             complexPPIO.encode(gridCoverage, encodingParams, new OutputStreamAdapter(os));
-            os.flush();
         } finally {
             try {
                 if (os != null) {

@@ -39,7 +39,7 @@ import org.geotools.util.factory.GeoTools;
 import org.xml.sax.EntityResolver;
 
 /** Style handler for geocss. Justin Deoliveira, Boundless */
-public class CssHandler extends StyleHandler implements ModuleStatus{
+public class CssHandler extends StyleHandler implements ModuleStatus {
 
     public static final String FORMAT = "css";
 
@@ -210,7 +210,7 @@ public class CssHandler extends StyleHandler implements ModuleStatus{
 
     @Override
     public boolean isAvailable() {
-        
+
         return true;
     }
 
@@ -221,7 +221,7 @@ public class CssHandler extends StyleHandler implements ModuleStatus{
 
     @Override
     public Optional<String> getMessage() {
-       
+
         return Optional.of("CSS Styling");
     }
 

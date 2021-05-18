@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2021 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>  
+  <bean id="oracleDbExtension" class="org.geoserver.platform.ModuleStatusImpl">
+    <property name="module" value="gs-oracle" />
+    <property name="name" value="Oracle DB Extension"/>
+    <property name="component" value="Oracle DB extension"/>
+    <property name="documentation" value="data/database/oracle.html"/>
+    <property name="available" value="true"/>
+    <property name="enabled" value="true"/>
+  </bean>
+ 
+</beans>

@@ -185,4 +185,45 @@ public class CssHandler extends StyleHandler {
     public String getFileExtension() {
         return "css";
     }
+
+    @Override
+    public String getModule() {
+        return "gs-css";
+    }
+
+    @Override
+    public Optional<String> getComponent() {
+        return Optional.of("GeoServer CSS Styling");
+    }
+
+    @Override
+    public Optional<String> getVersion() {
+        Version v = GeoTools.getVersion(CssParser.class);
+        if (v == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(v.toString());
+    }
+
+    @Override
+    public boolean isAvailable() {
+
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public Optional<String> getMessage() {
+
+        return Optional.of("CSS Styling");
+    }
+
+    @Override
+    public Optional<String> getDocumentation() {
+        return Optional.of("https://docs.geoserver.org/latest/en/user/styling/css/index.html");
+    }
 }

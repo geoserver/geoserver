@@ -36,8 +36,8 @@ public class StaticBuilder extends AbstractTemplateBuilder {
 
     protected void evaluateInternal(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        if (strValue != null) writer.writeStaticContent(getKey(), strValue);
-        else writer.writeStaticContent(getKey(), staticValue);
+        if (strValue != null) writer.writeStaticContent(getKey(), strValue, getEncodingHints());
+        else writer.writeStaticContent(getKey(), staticValue, getEncodingHints());
     }
 
     /**
@@ -47,5 +47,9 @@ public class StaticBuilder extends AbstractTemplateBuilder {
      */
     public JsonNode getStaticValue() {
         return staticValue;
+    }
+
+    public String getStrValue() {
+        return strValue;
     }
 }

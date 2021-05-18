@@ -6,7 +6,10 @@ package org.geoserver.featurestemplating.builders.impl;
 
 import java.io.IOException;
 import java.util.*;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
+import org.geoserver.featurestemplating.builders.VendorOptions;
+import org.geoserver.featurestemplating.builders.flat.FlatBuilder;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 
@@ -15,30 +18,16 @@ public class RootBuilder implements TemplateBuilder {
 
     private List<TemplateBuilder> children;
 
-    private Map<String, String> vendorOptions;
+    private VendorOptions vendorOptions;
+
+    private EncodingHints encodingHints;
 
     protected List<String> supportedOptions = new ArrayList<>();
 
-    /** Enum listing available vendor options */
-    public enum VendorOption {
-        FLAT_OUTPUT("flat_output"),
-        SEPARATOR("separator");
-
-        private String vendorOptionName;
-
-        VendorOption(String vendorOptionName) {
-            this.vendorOptionName = vendorOptionName;
-        }
-
-        public String getVendorOptionName() {
-            return vendorOptionName;
-        }
-    }
-
     public RootBuilder() {
         super();
-        this.children = new ArrayList<TemplateBuilder>(2);
-        this.vendorOptions = new HashMap<>();
+        this.children = new ArrayList<>(2);
+        this.vendorOptions = new VendorOptions();
     }
 
     public void addChild(TemplateBuilder builder) {
@@ -59,43 +48,46 @@ public class RootBuilder implements TemplateBuilder {
     }
 
     /**
-     * Get the vendor option by name
-     *
-     * @param optionName the vendor option name
-     * @return
-     */
-    public String getVendorOption(String optionName) {
-        String optionValue = vendorOptions.get(optionName);
-        if (optionValue != null && optionValue.startsWith("$${")) {
-            TemplateCQLManager cqlManager = new TemplateCQLManager(optionValue, null);
-            return cqlManager.getExpressionFromString().evaluate(null).toString();
-        }
-        return optionValue;
-    }
-
-    /**
      * Set the vendor option
      *
      * @param vendorOption a string array containing vendor option name and value
      */
     public void setVendorOptions(String[] vendorOption) {
-        if (supportVendorOption(vendorOption[0])) {
-            vendorOptions.put(vendorOption[0], vendorOption[1]);
-        }
+        TemplateCQLManager cqlManager = new TemplateCQLManager(vendorOption[1], null);
+        vendorOptions.put(vendorOption[0], cqlManager.getExpressionFromString());
     }
 
-    /**
-     * Checks if vendor option is supported
-     *
-     * @param vendorOptionName the name of the vendor option
-     * @return
-     */
-    protected boolean supportVendorOption(String vendorOptionName) {
-        if (supportedOptions.contains(vendorOptionName)) return true;
-        else return false;
+    public void addVendorOption(String name, String value) {
+        vendorOptions.put(name, value);
+    }
+
+    public void addVendorOptions(VendorOptions vendorOptions) {
+        vendorOptions.putAll(vendorOptions);
     }
 
     public boolean needsReload() {
-        return false;
+        TemplateBuilder aChild = getChildren().get(0);
+        boolean isCachedFlattened = aChild instanceof FlatBuilder;
+        boolean isFlatOutput =
+                vendorOptions.get(VendorOptions.FLAT_OUTPUT, Boolean.class, false).booleanValue();
+        if (isCachedFlattened && !isFlatOutput) return true;
+        else if (!isCachedFlattened && isFlatOutput) return true;
+        else return false;
+    }
+
+    @Override
+    public void addEncodingHint(String key, Object value) {
+        if (encodingHints == null) this.encodingHints = new EncodingHints();
+        encodingHints.put(key, value);
+    }
+
+    @Override
+    public EncodingHints getEncodingHints() {
+        if (encodingHints == null) encodingHints = new EncodingHints();
+        return encodingHints;
+    }
+
+    public VendorOptions getVendorOptions() {
+        return this.vendorOptions;
     }
 }

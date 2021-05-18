@@ -5,22 +5,26 @@
 package org.geoserver.featurestemplating.wfs;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.featurestemplating.builders.jsonld.JSONLDRootBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.validation.JSONLDContextValidation;
 import org.geoserver.featurestemplating.writers.JSONLDWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.Feature;
 
 /**
@@ -52,13 +56,10 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
             FeatureTypeInfo info =
                     helper.getFirstFeatureTypeInfo(
                             GetFeatureRequest.adapt(getFeature.getParameters()[0]));
-            JSONLDRootBuilder root =
-                    (JSONLDRootBuilder)
-                            configuration.getTemplate(
-                                    info, TemplateIdentifier.JSONLD.getOutputFormat());
-            boolean validate = root.isSemanticValidation();
+            RootBuilder root =
+                    configuration.getTemplate(info, TemplateIdentifier.JSONLD.getOutputFormat());
+            boolean validate = isSematincValidation();
             // setting it back to false
-            root.setSemanticValidation(false);
             if (validate) {
                 validate(featureCollection, root);
             }
@@ -76,7 +77,7 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
         }
     }
 
-    private void validate(FeatureCollectionResponse featureCollection, JSONLDRootBuilder root)
+    private void validate(FeatureCollectionResponse featureCollection, RootBuilder root)
             throws IOException {
         JSONLDContextValidation validator = new JSONLDContextValidation();
         try (JSONLDWriter writer =
@@ -89,14 +90,11 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
     }
 
     private void write(
-            FeatureCollectionResponse featureCollection,
-            JSONLDRootBuilder root,
-            JSONLDWriter writer)
+            FeatureCollectionResponse featureCollection, RootBuilder root, JSONLDWriter writer)
             throws IOException {
-        writer.setContextHeader(root.getContextHeader());
-        writer.startTemplateOutput();
+        writer.startTemplateOutput(root.getEncodingHints());
         iterateFeatureCollection(writer, featureCollection, root);
-        writer.endTemplateOutput();
+        writer.endTemplateOutput(root.getEncodingHints());
     }
 
     @Override
@@ -120,7 +118,29 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
             TemplateOutputWriter writer, RootBuilder root, Feature feature) {}
 
     @Override
+    protected void writeAdditionalFieldsInternal(
+            TemplateOutputWriter writer,
+            FeatureCollectionResponse featureCollection,
+            Operation getFeature,
+            BigInteger featureCount,
+            ReferencedEnvelope bounds)
+            throws IOException {
+        // do nothing
+    }
+
+    @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return TemplateIdentifier.JSONLD.getOutputFormat();
+    }
+
+    private boolean isSematincValidation() {
+        Request request = Dispatcher.REQUEST.get();
+        Map rawKvp = request.getRawKvp();
+        Object value = rawKvp != null ? rawKvp.get("validation") : null;
+        boolean result = false;
+        if (value != null) {
+            result = Boolean.valueOf(value.toString());
+        }
+        return result;
     }
 }

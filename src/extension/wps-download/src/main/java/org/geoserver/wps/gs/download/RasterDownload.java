@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.IIOException;
 import javax.imageio.stream.ImageOutputStream;
 import javax.media.jai.BorderExtender;
 import javax.media.jai.ImageLayout;
@@ -941,6 +942,8 @@ class RasterDownload {
             // Encoding the GridCoverage
             Map encodingParams = writeParams != null ? writeParams.getParametersMap() : null;
             complexPPIO.encode(gridCoverage, encodingParams, new OutputStreamAdapter(os));
+        } catch (Exception e) {
+            unwrapException(e);
         } finally {
             try {
                 if (os != null) {
@@ -953,5 +956,18 @@ class RasterDownload {
             }
         }
         return output;
+    }
+
+    private void unwrapException(Exception e) throws Exception {
+        // Unwrap the IOException if present and get the originating cause.
+        // Some writers (i.e. TIFF) are hiding the exception thrown by
+        // the LimitedImageOutputStream
+        if (e instanceof ProcessException) {
+            Throwable cause = e.getCause();
+            if (cause instanceof IIOException
+                    && cause.getMessage().toUpperCase().contains("I/O ERROR")) {
+                throw new ProcessException(cause.getCause());
+            }
+        }
     }
 }

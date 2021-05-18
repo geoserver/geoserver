@@ -7,14 +7,14 @@ package org.geoserver.ogcapi.stac;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
-import org.geoserver.featurestemplating.request.JSONPathVisitor;
+import org.geoserver.featurestemplating.request.TemplatePathVisitor;
 import org.opengis.feature.type.FeatureType;
 
 /**
  * Simplified JSON mapper that assumes we're referencing directly properties inside
  * features.properties
  */
-public class STACPathVisitor extends JSONPathVisitor {
+public class STACPathVisitor extends TemplatePathVisitor {
 
     public STACPathVisitor(FeatureType type) {
         super(type);

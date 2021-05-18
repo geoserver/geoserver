@@ -6,6 +6,7 @@ package org.geoserver.featurestemplating.builders.flat;
 
 import java.io.IOException;
 import java.util.List;
+import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
@@ -31,22 +32,27 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
         if (!rootCollection) {
             context = evaluateSource(context);
             if (context.getCurrentObj() != null) {
-                if (context.getCurrentObj() instanceof List) evaluateCollection(writer, context);
+                if (context.getCurrentObj() instanceof List)
+                    evaluateCollection(writer, context, false);
                 else evaluateInternal(writer, context, 0, 1);
             }
         } else {
             if (evaluateFilter(context)) {
                 for (TemplateBuilder child : children) {
-                    if (child instanceof FlatCompositeBuilder) writer.startObject();
+                    AbstractTemplateBuilder abstractChild = (AbstractTemplateBuilder) child;
+                    if (child instanceof FlatCompositeBuilder)
+                        writer.startObject(abstractChild.getKey(), encodingHints);
                     child.evaluate(writer, context);
-                    if (child instanceof FlatCompositeBuilder) writer.endObject();
+                    if (child instanceof FlatCompositeBuilder)
+                        writer.endObject(abstractChild.getKey(), encodingHints);
                 }
             }
         }
     }
 
     @Override
-    public void evaluateCollection(TemplateOutputWriter writer, TemplateBuilderContext context)
+    public void evaluateCollection(
+            TemplateOutputWriter writer, TemplateBuilderContext context, boolean iterateKey)
             throws IOException {
 
         List elements = (List) context.getCurrentObj();

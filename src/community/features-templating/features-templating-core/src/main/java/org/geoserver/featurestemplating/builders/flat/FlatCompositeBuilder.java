@@ -27,17 +27,17 @@ public class FlatCompositeBuilder extends CompositeBuilder implements FlatBuilde
     @Override
     protected void evaluateChildren(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        if (getKey() != null && getKey().equals(AttributeNameHelper.PROPERTIES_KEY)) {
-            writeKey(writer);
-            writer.startObject();
+        String key = getKey();
+        if (key != null && key.equals(AttributeNameHelper.PROPERTIES_KEY)) {
+            writer.startObject(key, encodingHints);
         }
         for (TemplateBuilder jb : children) {
             ((FlatBuilder) jb)
                     .setParentKey(attributeNameHelper.getCompleteCompositeAttributeName());
             jb.evaluate(writer, context);
         }
-        if (getKey() != null && getKey().equals(AttributeNameHelper.PROPERTIES_KEY))
-            writer.endObject();
+        if (key != null && key.equals(AttributeNameHelper.PROPERTIES_KEY))
+            writer.endObject(key, encodingHints);
     }
 
     @Override

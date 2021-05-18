@@ -13,8 +13,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class FilteringFlatGeoJSONComplexFeaturesResponseTest
-        extends TemplateJSONComplexTestSupport {
+public class FilteringFlatGeoJSONComplexFeaturesResponseTest extends TemplateComplexTestSupport {
 
     @Test
     public void testFilteredArraysIndex() throws Exception {

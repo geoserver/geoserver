@@ -14,7 +14,7 @@ import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class GeoJSONGetComplexFeaturesResponseTest extends TemplateJSONComplexTestSupport {
+public class GeoJSONGetComplexFeaturesResponseTest extends TemplateComplexTestSupport {
 
     protected void checkMappedFeature(JSONObject feature) {
         assertNotNull(feature);

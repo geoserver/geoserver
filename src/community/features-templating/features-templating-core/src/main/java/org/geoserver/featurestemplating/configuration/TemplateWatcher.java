@@ -4,14 +4,13 @@
  */
 package org.geoserver.featurestemplating.configuration;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.commons.io.FilenameUtils;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.featurestemplating.readers.JSONTemplateReader;
+import org.geoserver.featurestemplating.readers.TemplateReader;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
+import org.geoserver.featurestemplating.readers.TemplateReaderProvider;
 import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.resource.Resource;
 
@@ -35,10 +34,8 @@ public class TemplateWatcher extends FileWatcher<RootBuilder> {
      */
     @Override
     public RootBuilder parseFileContents(InputStream in) throws IOException {
-        ObjectMapper mapper =
-                new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
-        JSONTemplateReader templateReader =
-                new JSONTemplateReader(mapper.readTree(in), configuration);
-        return templateReader.getRootBuilder();
+        String extension = FilenameUtils.getExtension(resource.name());
+        TemplateReader reader = TemplateReaderProvider.findReader(extension, in, configuration);
+        return reader.getRootBuilder();
     }
 }

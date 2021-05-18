@@ -4,22 +4,14 @@
  */
 package org.geoserver.featurestemplating.writers;
 
-import com.fasterxml.jackson.core.Base64Variant;
-import com.fasterxml.jackson.core.JsonStreamContext;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.core.SerializableString;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 import org.locationtech.jts.geom.Geometry;
@@ -27,25 +19,25 @@ import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
 
 /** Decorator for a JsonGenerator that add some functionality mainly to write JsonNode */
-public abstract class CommonJSONWriter extends com.fasterxml.jackson.core.JsonGenerator
-        implements TemplateOutputWriter {
+public abstract class CommonJSONWriter extends TemplateOutputWriter {
 
-    private com.fasterxml.jackson.core.JsonGenerator delegate;
+    protected com.fasterxml.jackson.core.JsonGenerator generator;
     private boolean flatOutput;
 
     public CommonJSONWriter(com.fasterxml.jackson.core.JsonGenerator generator) {
-        this.delegate = generator;
+        this.generator = generator;
     }
 
     @Override
-    public void writeStaticContent(String key, Object staticContent) throws IOException {
+    public void writeStaticContent(String key, Object staticContent, EncodingHints encodingHints)
+            throws IOException {
         if (staticContent instanceof String
                 || staticContent instanceof Number
                 || staticContent instanceof Date) {
             if (key == null) {
                 writeValue(staticContent);
             } else {
-                writeStringField(key, (String) staticContent);
+                generator.writeStringField(key, (String) staticContent);
             }
         } else {
             JsonNode jsonNode = (JsonNode) staticContent;
@@ -59,7 +51,7 @@ public abstract class CommonJSONWriter extends com.fasterxml.jackson.core.JsonGe
      * from the json-ld template to the json-ld output
      */
     public void writeObjectNode(String nodeName, JsonNode node) throws IOException {
-        if (nodeName != null && !nodeName.equals("")) delegate.writeFieldName(nodeName);
+        if (nodeName != null && !nodeName.equals("")) generator.writeFieldName(nodeName);
         writeStartObject();
         Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
         while (iterator.hasNext()) {
@@ -82,7 +74,7 @@ public abstract class CommonJSONWriter extends com.fasterxml.jackson.core.JsonGe
      * from the json-ld template to the json-ld output
      */
     public void writeArrayNode(String nodeName, JsonNode arNode) throws IOException {
-        if (nodeName != null && !nodeName.equals("")) delegate.writeFieldName(nodeName);
+        if (nodeName != null && !nodeName.equals("")) generator.writeFieldName(nodeName);
         writeStartArray();
         Iterator<JsonNode> arrayIterator = arNode.elements();
         while (arrayIterator.hasNext()) {
@@ -99,21 +91,21 @@ public abstract class CommonJSONWriter extends com.fasterxml.jackson.core.JsonGe
     }
 
     /**
-     * Write contents from a Json attribute's value. Used with {@link StaticBuilder}ù to write
+     * Write contents from a Json attribute's value. Used with {@link StaticBuilder} to write
      * content as it is from the json-ld template to the json-ld output
      */
     public void writeValueNode(String entryName, JsonNode valueNode) throws IOException {
-        if (entryName != null && !entryName.equals("")) delegate.writeFieldName(entryName);
+        if (entryName != null && !entryName.equals("")) generator.writeFieldName(entryName);
         if (valueNode.isTextual()) {
-            writeString(valueNode.asText());
+            generator.writeString(valueNode.asText());
         } else if (valueNode.isFloat() || valueNode.isDouble()) {
-            writeNumber(valueNode.asDouble());
+            generator.writeNumber(valueNode.asDouble());
         } else if (valueNode.isLong()) {
-            writeNumber(valueNode.asLong());
+            generator.writeNumber(valueNode.asLong());
         } else if (valueNode.isNumber()) {
-            writeNumber(valueNode.asInt());
+            generator.writeNumber(valueNode.asInt());
         } else if (valueNode.isBoolean()) {
-            writeBoolean(valueNode.asBoolean());
+            generator.writeBoolean(valueNode.asBoolean());
         }
     }
 
@@ -122,8 +114,9 @@ public abstract class CommonJSONWriter extends com.fasterxml.jackson.core.JsonGe
     public abstract void writeGeometry(Object value) throws IOException;
 
     @Override
-    public void writeElementName(Object elementName) throws IOException {
-        if (elementName != null) writeFieldName(elementName.toString());
+    public void writeElementName(Object elementName, EncodingHints encodingHints)
+            throws IOException {
+        if (elementName != null) generator.writeFieldName(elementName.toString());
     }
 
     /**
@@ -131,67 +124,76 @@ public abstract class CommonJSONWriter extends com.fasterxml.jackson.core.JsonGe
      * DynamicValueBuilder}
      */
     @Override
-    public void writeElementValue(Object result) throws IOException {
-        writeElementNameAndValue(result, null);
+    public void writeElementValue(Object result, EncodingHints encodingHints) throws IOException {
+        writeElementNameAndValue(null, result, encodingHints);
     }
 
     /**
      * Write the key and the result of an xpath or cql expression evaluation operated by the {@link
      * DynamicValueBuilder}
      */
-    public void writeElementNameAndValue(Object result, String key) throws IOException {
+    @Override
+    public void writeElementNameAndValue(String key, Object result, EncodingHints encodingHints)
+            throws IOException {
         if (result instanceof String || result instanceof Number || result instanceof Boolean) {
-            if (flatOutput) writeElementName(key);
+            writeElementName(key, null);
             writeValue(result);
         } else if (result instanceof Date) {
             Date timeStamp = (Date) result;
             String formatted = new StdDateFormat().withColonInTimeZone(true).format(timeStamp);
-            writeElementNameAndValue(formatted, key);
+            writeElementNameAndValue(key, formatted, encodingHints);
         } else if (result instanceof Geometry) {
-            if (flatOutput) writeElementName(key);
+            writeElementName(key, encodingHints);
             writeGeometry(result);
         } else if (result instanceof ComplexAttribute) {
             ComplexAttribute attr = (ComplexAttribute) result;
-            writeElementNameAndValue(attr.getValue(), key);
+            writeElementNameAndValue(key, attr.getValue(), encodingHints);
         } else if (result instanceof Attribute) {
             Attribute attr = (Attribute) result;
-            writeElementNameAndValue(attr.getValue(), key);
+            writeElementNameAndValue(key, attr.getValue(), encodingHints);
         } else if (result instanceof JsonNode) {
-            writeStaticContent(key, result);
+            writeStaticContent(key, result, encodingHints);
         } else if (result instanceof List) {
             List list = (List) result;
             if (list.size() == 1) {
-                writeElementNameAndValue(list.get(0), key);
+                writeElementNameAndValue(key, list.get(0), encodingHints);
             } else {
-                if (!flatOutput) writeStartArray();
-                for (int i = 0; i < list.size(); i++) {
-                    String itKey = null;
-                    if (flatOutput) itKey = key + "_" + (i + 1);
-                    writeElementNameAndValue(list.get(i), itKey != null ? itKey : key);
+                if (!flatOutput) {
+                    generator.writeFieldName(key);
+                    writeStartArray();
+                    for (int i = 0; i < list.size(); i++) {
+                        writeElementValue(list.get(i), encodingHints);
+                    }
+                    writeEndArray();
+                } else {
+                    for (int i = 0; i < list.size(); i++) {
+                        String itKey = null;
+                        itKey = key + "_" + (i + 1);
+                        writeElementNameAndValue(itKey, list.get(i), encodingHints);
+                    }
                 }
-                if (!flatOutput) writeEndArray();
             }
         } else if (result == null) {
-            if (flatOutput) writeElementName(key);
-            writeNull();
+            writeElementName(key, encodingHints);
+            generator.writeNull();
         } else {
-            if (flatOutput) writeElementName(key);
+            writeElementName(key, encodingHints);
             writeValue(result.toString());
         }
     }
 
     @Override
-    public void startTemplateOutput() throws IOException {
+    public void startTemplateOutput(EncodingHints encodingHints) throws IOException {
 
         writeStartObject();
-        writeFieldName("type");
-        writeString("FeatureCollection");
-        writeFieldName("features");
+        generator.writeFieldName("type");
+        generator.writeString("FeatureCollection");
+        generator.writeFieldName("features");
         writeStartArray();
     }
 
     @Override
-    public void endTemplateOutput() throws IOException {
+    public void endTemplateOutput(EncodingHints encodingHints) throws IOException {
         writeEndArray();
         writeEndObject();
     }
@@ -201,245 +203,45 @@ public abstract class CommonJSONWriter extends com.fasterxml.jackson.core.JsonGe
     }
 
     @Override
-    public com.fasterxml.jackson.core.JsonGenerator setCodec(ObjectCodec objectCodec) {
-        return delegate.setCodec(objectCodec);
-    }
-
-    @Override
-    public ObjectCodec getCodec() {
-        return delegate.getCodec();
-    }
-
-    @Override
-    public Version version() {
-        return delegate.version();
-    }
-
-    @Override
-    public com.fasterxml.jackson.core.JsonGenerator enable(Feature feature) {
-        return delegate.enable(feature);
-    }
-
-    @Override
-    public com.fasterxml.jackson.core.JsonGenerator disable(Feature feature) {
-        return delegate.disable(feature);
-    }
-
-    @Override
-    public boolean isEnabled(Feature feature) {
-        return delegate.isEnabled(feature);
-    }
-
-    @Override
-    public int getFeatureMask() {
-        return delegate.getFeatureMask();
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public com.fasterxml.jackson.core.JsonGenerator setFeatureMask(int i) {
-        return delegate.setFeatureMask(i);
-    }
-
-    @Override
-    public com.fasterxml.jackson.core.JsonGenerator useDefaultPrettyPrinter() {
-        return delegate.useDefaultPrettyPrinter();
-    }
-
-    @Override
-    public void startObject() throws IOException {
+    public void startObject(String name, EncodingHints encodingHints) throws IOException {
+        if (name != null) writeElementName(name, encodingHints);
         writeStartObject();
     }
 
     @Override
-    public void endObject() throws IOException {
+    public void endObject(String name, EncodingHints encodingHints) throws IOException {
         writeEndObject();
     }
 
     @Override
-    public void startArray() throws IOException {
+    public void startArray(String name, EncodingHints encodingHints) throws IOException {
+        writeElementName(name, encodingHints);
         writeStartArray();
     }
 
     @Override
-    public void endArray() throws IOException {
+    public void endArray(String name, EncodingHints encodingHints) throws IOException {
         writeEndArray();
     }
 
-    @Override
     public void writeStartArray() throws IOException {
-        delegate.writeStartArray();
+        generator.writeStartArray();
     }
 
-    @Override
     public void writeEndArray() throws IOException {
-        delegate.writeEndArray();
+        generator.writeEndArray();
     }
 
-    @Override
     public void writeStartObject() throws IOException {
-        delegate.writeStartObject();
+        generator.writeStartObject();
     }
 
-    @Override
     public void writeEndObject() throws IOException {
-        delegate.writeEndObject();
-    }
-
-    @Override
-    public void writeFieldName(String s) throws IOException {
-        delegate.writeFieldName(s);
-    }
-
-    @Override
-    public void writeFieldName(SerializableString serializableString) throws IOException {
-        delegate.writeFieldName(serializableString);
-    }
-
-    @Override
-    public void writeString(String s) throws IOException {
-        delegate.writeString(s);
-    }
-
-    @Override
-    public void writeString(char[] chars, int i, int i1) throws IOException {
-        delegate.writeString(chars, i, i1);
-    }
-
-    @Override
-    public void writeString(SerializableString serializableString) throws IOException {
-        delegate.writeString(serializableString);
-    }
-
-    @Override
-    public void writeRawUTF8String(byte[] bytes, int i, int i1) throws IOException {
-        delegate.writeRawUTF8String(bytes, i, i1);
-    }
-
-    @Override
-    public void writeUTF8String(byte[] bytes, int i, int i1) throws IOException {
-        delegate.writeUTF8String(bytes, i, i1);
-    }
-
-    @Override
-    public void writeRaw(String s) throws IOException {
-        delegate.writeRaw(s);
-    }
-
-    @Override
-    public void writeRaw(String s, int i, int i1) throws IOException {
-        delegate.writeRaw(s, i, i1);
-    }
-
-    @Override
-    public void writeRaw(char[] chars, int i, int i1) throws IOException {
-        delegate.writeRaw(chars, i, i1);
-    }
-
-    @Override
-    public void writeRaw(char c) throws IOException {
-        delegate.writeRaw(c);
-    }
-
-    @Override
-    public void writeRawValue(String s) throws IOException {
-        delegate.writeRawValue(s);
-    }
-
-    @Override
-    public void writeRawValue(String s, int i, int i1) throws IOException {
-        delegate.writeRawValue(s, i, i1);
-    }
-
-    @Override
-    public void writeRawValue(char[] chars, int i, int i1) throws IOException {
-        delegate.writeRaw(chars, i, i1);
-    }
-
-    @Override
-    public void writeBinary(Base64Variant base64Variant, byte[] bytes, int i, int i1)
-            throws IOException {
-        delegate.writeBinary(base64Variant, bytes, i, i1);
-    }
-
-    @Override
-    public int writeBinary(Base64Variant base64Variant, InputStream inputStream, int i)
-            throws IOException {
-        return delegate.writeBinary(base64Variant, inputStream, i);
-    }
-
-    @Override
-    public void writeNumber(int i) throws IOException {
-        delegate.writeNumber(i);
-    }
-
-    @Override
-    public void writeNumber(long l) throws IOException {
-        delegate.writeNumber(l);
-    }
-
-    @Override
-    public void writeNumber(BigInteger bigInteger) throws IOException {
-        delegate.writeNumber(bigInteger);
-    }
-
-    @Override
-    public void writeNumber(double v) throws IOException {
-        delegate.writeNumber(v);
-    }
-
-    @Override
-    public void writeNumber(float v) throws IOException {
-        delegate.writeNumber(v);
-    }
-
-    @Override
-    public void writeNumber(BigDecimal bigDecimal) throws IOException {
-        delegate.writeNumber(bigDecimal);
-    }
-
-    @Override
-    public void writeNumber(String s) throws IOException {
-        delegate.writeNumber(s);
-    }
-
-    @Override
-    public void writeBoolean(boolean b) throws IOException {
-        delegate.writeBoolean(b);
-    }
-
-    @Override
-    public void writeNull() throws IOException {
-        delegate.writeNull();
-    }
-
-    @Override
-    public void writeObject(Object o) throws IOException {
-        delegate.writeObject(o);
-    }
-
-    @Override
-    public void writeTree(TreeNode treeNode) throws IOException {
-        delegate.writeTree(treeNode);
-    }
-
-    @Override
-    public JsonStreamContext getOutputContext() {
-        return delegate.getOutputContext();
-    }
-
-    @Override
-    public void flush() throws IOException {
-        delegate.flush();
-    }
-
-    @Override
-    public boolean isClosed() {
-        return delegate.isClosed();
+        generator.writeEndObject();
     }
 
     @Override
     public void close() throws IOException {
-        delegate.close();
+        generator.close();
     }
 }

@@ -29,7 +29,7 @@ import org.opengis.filter.expression.PropertyName;
  * This visitor search for a Filter in {@link TemplateBuilder} tree using the path provided as a
  * guideline.
  */
-public class JSONPathVisitor extends DuplicatingFilterVisitor {
+public class TemplatePathVisitor extends DuplicatingFilterVisitor {
 
     protected int currentEl;
     protected String currentSource;
@@ -37,7 +37,7 @@ public class JSONPathVisitor extends DuplicatingFilterVisitor {
     boolean isSimple;
     private List<Filter> filters = new ArrayList<>();
 
-    public JSONPathVisitor(FeatureType type) {
+    public TemplatePathVisitor(FeatureType type) {
         this.isSimple = type instanceof SimpleFeatureType;
     }
 
@@ -63,8 +63,8 @@ public class JSONPathVisitor extends DuplicatingFilterVisitor {
                 }
             } catch (Throwable ex) {
                 throw new RuntimeException(
-                        "Unable to evaluate the json-ld path against"
-                                + "the json-ld template. Cause: "
+                        "Unable to evaluate the tempalte path against"
+                                + "the features template. Cause: "
                                 + ex.getMessage());
             }
         }
@@ -95,7 +95,7 @@ public class JSONPathVisitor extends DuplicatingFilterVisitor {
     }
 
     /**
-     * Find the corresponding function to which json-ld path is pointing, by iterating over
+     * Find the corresponding function to which the template path is pointing, by iterating over
      * builder's tree
      */
     public Object findFunction(TemplateBuilder builder, List<String> pathElements) {
@@ -121,18 +121,27 @@ public class JSONPathVisitor extends DuplicatingFilterVisitor {
 
             if (jb instanceof DynamicValueBuilder) {
                 DynamicValueBuilder dvb = (DynamicValueBuilder) jb;
+                addFilter(dvb.getFilter());
                 if (dvb.getXpath() != null) return super.visit(dvb.getXpath(), null);
                 else {
                     return super.visit(dvb.getCql(), null);
                 }
             } else if (jb instanceof StaticBuilder) {
-                JsonNode staticNode = ((StaticBuilder) jb).getStaticValue();
-                while (currentEl < pathElements.size()) {
-                    JsonNode child = staticNode.get(pathElements.get(currentEl - 1));
-                    staticNode = child != null ? child : staticNode;
-                    currentEl++;
+                StaticBuilder staticBuilder = (StaticBuilder) jb;
+                addFilter(staticBuilder.getFilter());
+                Expression retExpr;
+                if (staticBuilder.getStaticValue() != null) {
+                    JsonNode staticNode = staticBuilder.getStaticValue();
+                    while (currentEl < pathElements.size()) {
+                        JsonNode child = staticNode.get(pathElements.get(currentEl - 1));
+                        staticNode = child != null ? child : staticNode;
+                        currentEl++;
+                    }
+                    retExpr = ff.literal(staticNode.asText());
+                } else {
+                    retExpr = ff.literal(staticBuilder.getStrValue());
                 }
-                return FF.literal(staticNode.asText());
+                return retExpr;
             }
         }
         return null;
@@ -148,7 +157,7 @@ public class JSONPathVisitor extends DuplicatingFilterVisitor {
     }
 
     /**
-     * Find the corresponding function to which json-ld path is pointing, by iterating over
+     * Find the corresponding function to which the template path is pointing, by iterating over
      * builder's tree
      */
     private TemplateBuilder findBuilder(TemplateBuilder parent, List<String> pathElements) {

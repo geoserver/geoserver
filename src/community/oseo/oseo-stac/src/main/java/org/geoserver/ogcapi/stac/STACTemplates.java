@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.featurestemplating.builders.BuilderFactory;
+import org.geoserver.featurestemplating.builders.TemplateBuilderMaker;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.configuration.Template;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
@@ -114,8 +114,8 @@ public class STACTemplates extends AbstractTemplates {
                 new TemplateReaderConfiguration(namespaces) {
                     @Override
                     // the collections are not a GeoJSON collection, uses a different structure
-                    public BuilderFactory getBuilderFactory(boolean isJSONLD) {
-                        return new BuilderFactory(isJSONLD, "collections");
+                    public TemplateBuilderMaker getBuilderMaker() {
+                        return getBuilderMaker("collections");
                     }
                 };
         this.collectionTemplate = new Template(collections, configuration);

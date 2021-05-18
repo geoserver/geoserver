@@ -145,9 +145,9 @@ public class DynamicValueBuilderTest extends DataTestCase {
 
         DynamicValueBuilder builder =
                 new DynamicValueBuilder("key", expression, new NamespaceSupport());
-        writer.startObject();
+        writer.writeStartObject();
         builder.evaluate(writer, new TemplateBuilderContext(feature));
-        writer.endObject();
+        writer.writeEndObject();
         writer.close();
 
         // nothing has been encoded

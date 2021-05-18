@@ -12,7 +12,7 @@ import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class FlatGeoJSONComplexFeaturesResponseTest extends TemplateJSONComplexTestSupport {
+public class FlatGeoJSONComplexFeaturesResponseTest extends TemplateComplexTestSupport {
 
     protected void checkInspireMappedFeature(JSONObject feature) {
         assertNotNull(feature);

@@ -16,7 +16,7 @@ import org.junit.After;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTestSupport {
+public class JSONLDGetComplexFeaturesResponseTest extends TemplateComplexTestSupport {
 
     protected void checkMappedFeatureJSON(JSONObject feature) {
         assertNotNull(feature);

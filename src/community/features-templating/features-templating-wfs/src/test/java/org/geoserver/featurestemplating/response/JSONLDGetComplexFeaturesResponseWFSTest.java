@@ -135,20 +135,4 @@ public class JSONLDGetComplexFeaturesResponseWFSTest extends JSONLDGetComplexFea
                                 "Failed to validate template for feature type GeologicUnit. "
                                         + "Failing attribute is Key: invalidAttr Value: &amp;quot;gsml:notExisting&amp;quot;"));
     }
-
-    @Test
-    public void testJsonLdQueryFailsIfNotExisting() throws Exception {
-        setUpMappedFeature();
-        StringBuilder sb =
-                new StringBuilder("wfs?request=GetFeature&version=2.0")
-                        .append("&TYPENAME=gsml:MappedFeature&outputFormat=")
-                        .append("application%2Fld%2Bjson")
-                        .append("&cql_filter= features.notexisting IS NULL");
-        MockHttpServletResponse result = getAsServletResponse(sb.toString());
-        assertTrue(
-                result.getContentAsString()
-                        .contains(
-                                "Failed to resolve filter &amp;quot;features/notexisting&amp;quot; IS NULL against the template. "
-                                        + "Check the path specified in the filter."));
-    }
 }

@@ -22,7 +22,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public abstract class TemplateJSONComplexTestSupport extends AbstractAppSchemaTestSupport {
+public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSupport {
 
     Catalog catalog;
     FeatureTypeInfo mappedFeature;

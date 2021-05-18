@@ -52,8 +52,8 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest
         checkAdditionalInfo(result);
     }
 
+    @Ignore
     @Test
-    @Ignore // does not work! TODO: fix
     public void testGeoJSONResponseWithCustomSeparator() throws Exception {
         setUpComplex("FlatGeologicUnitWithSeparator.json", geologicUnit);
         String path =
@@ -61,7 +61,6 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest
                         + "gsml:GeologicUnit"
                         + "/items?f=application%2Fgeo%2Bjson";
         JSONObject result = (JSONObject) getJson(path);
-        print(result);
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(3, features.size());
         for (int i = 0; i < features.size(); i++) {

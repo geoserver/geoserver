@@ -201,7 +201,7 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
 
     @Override
     public Optional<String> getVersion() {
-        Version v = GeoTools.getVersion(CssHandler.class);
+        Version v = GeoTools.getVersion(CssParser.class);
         if (v == null) {
             return Optional.empty();
         }

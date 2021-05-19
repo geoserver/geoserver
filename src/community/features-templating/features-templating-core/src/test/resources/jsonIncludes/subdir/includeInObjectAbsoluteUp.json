@@ -1,0 +1,7 @@
+{
+  "name": "test for object inclusion",
+  "myObjectProperty": "$include{/object.json}",
+  "myArrayProperty": "$include{/array.json}",
+  "$includeFlat": "/object.json",
+  "end": "endMarker"
+}

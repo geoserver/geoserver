@@ -1278,7 +1278,7 @@ public class ImporterDataTest extends ImporterTestSupport {
             new PostScriptTransform("../wfs.xml", Collections.emptyList());
             fail("Should have thrown an exception");
         } catch (Exception e) {
-            assertThat(e.getMessage(), containsString("invalid .."));
+            assertThat(e.getMessage(), containsString("invalid '..'"));
         }
     }
 

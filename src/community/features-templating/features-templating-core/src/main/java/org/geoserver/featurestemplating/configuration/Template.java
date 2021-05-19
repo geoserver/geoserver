@@ -32,7 +32,7 @@ public class Template {
         try {
             this.builderTree = watcher.read();
         } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
+            throw new RuntimeException("Failure parsing " + templateFile, ioe);
         }
     }
 

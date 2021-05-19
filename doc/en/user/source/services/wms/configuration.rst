@@ -65,12 +65,12 @@ The following table shows examples of reasonable values for the request limits:
      - Encountering 100 errors is probably the result of a request trying to reproject a big data set into a projection that is not appropriate for the output extent, resulting in many reprojection failures.
 
 
-GetCapabilities Settings
-------------------------
+LayerGroup Capabilities Settings
+--------------------------------
 .. list-table::
    :widths: 20 70
 
    * - **Option**
      - **Description**
-   * - Include Default LayerGroup Style In GetCapabilities
-     - Enable/disable the encoding of the default layerGroup style in GetCapabilties responses. By default is set to enabled.
+   * - Default LayerGroup Style In GetCapabilities
+     - Enable/disable the encoding of the default LayerGroup style in GetCapabilties responses for LayerGroup with mode Named Tree, Container Tree, Earth Observation Tree. Single and Opaque groups are not affected by the option and will always show the default style. By default the option is set to enabled.

@@ -23,9 +23,9 @@ import org.geoserver.platform.resource.Resource.Type;
  */
 public class FileWatcher<T> {
     protected Resource resource;
-    private long lastModified = Long.MIN_VALUE;
-    private long lastCheck;
-    private boolean stale;
+    protected long lastModified = Long.MIN_VALUE;
+    protected long lastCheck;
+    protected boolean stale;
 
     public FileWatcher(Resource resource) {
         this.resource = resource;

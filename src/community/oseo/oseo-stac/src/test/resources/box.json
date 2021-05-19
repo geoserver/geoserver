@@ -1,0 +1,6 @@
+[
+  "$${minx(footprint)}",
+  "$${miny(footprint)}",
+  "$${maxx(footprint)}",
+  "$${maxy(footprint)}"
+]

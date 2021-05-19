@@ -303,6 +303,53 @@ The evaluation of a filter is handled by the module in the following way:
   
   * in case the expression is not matched, the content, static or dynamic, will not be set, resulting in the attribute being skipped.
 
+Including other templates
+-------------------------
+
+While developing a group of templates, it's possible to notice sections that repeat across 
+different template instances. Template inclusion allows to share the common parts, extracting them
+in a re-usable building block.
+
+Inclusion can be performed using two directives:
+
+* :code:`$include` allows to include a separate JSON template as is.
+* :code:`$includeFlat` allows to include a separate JSON template, stripping the top-most container. If a JSON object is included, then its properties are directly included in-place, which makes sense only within another object. If instead a JSON array is included, then its values are directly included in-place, which makes sense only within another array.
+
+The following JSON snippet shows the four possible syntax options for template inclusion:
+
+.. code-block:: json
+   :linenos: 
+
+    {
+       "aProperty": "$include{subProperty.json}", 
+       "$includeFlat": "propsInAnObject.json", 
+       "anArray" : [
+          "$include{arrayElement.json}", 
+          "$includeFlat{subArray.json}" 
+       ]
+    }
+
+Notes:
+
+1) The ``subProperty.json`` template (line 2) can be both an object or an array, it will be used as the new value of ``aProperty``
+2) The ``propsInAnObject.json`` template (line 3) is required to be a JSON object, its properties will be 
+   directly included in-place where the ``$includeFlat`` directive is
+3) The ``arrayElement.json`` template (line 5) can be both an object or an array, the value will be replaced
+   directly as the new element in ``anArray``. This allows creation of a JSON object as the array
+   element, or the creation of a nested array.
+4) The ``subArray.json`` template (line 6) must be an array itself, the container array will be stripped and
+   its values directly integrated inside ``anArray``.
+
+Template names can be plain, as in this example, refer to sub-directories, or be absolute. 
+Examples of valid template references are:
+
+* ``subProperty.json``
+* ``./subProperty.json``
+* ``./blocks/aBlock.json``
+* ``/templates/test/aBlock.json``
+
+However it's currently not possible to climb up the directory hierarchy using relative references, 
+so a reference like ``../myParentBlock.json`` will be rejected. 
 
 Inspire GeoJSON Output
 ----------------------

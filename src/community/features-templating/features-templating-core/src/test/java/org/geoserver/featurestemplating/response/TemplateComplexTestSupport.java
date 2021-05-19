@@ -4,6 +4,9 @@
  */
 package org.geoserver.featurestemplating.response;
 
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -94,9 +97,9 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         // in case of GEOSJSON response with ogcapi, the output format is not
         // set to MockHttpServlet request, so skipping
         if (contentType != null)
-            assertTrue(
-                    contentType.equals("application/json")
-                            || contentType.equals("application/geo+json"));
+            assertThat(
+                    contentType,
+                    anyOf(equalTo("application/json"), equalTo("application/geo+json")));
         return json(response);
     }
 

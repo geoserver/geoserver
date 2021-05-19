@@ -9,6 +9,7 @@ import static org.geoserver.featurestemplating.builders.EncodingHints.ITERATE_KE
 import static org.geoserver.featurestemplating.builders.EncodingHints.NAMESPACES;
 import static org.geoserver.featurestemplating.builders.EncodingHints.SCHEMA_LOCATION;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,7 +35,7 @@ import org.xml.sax.helpers.NamespaceSupport;
  */
 public class XMLTemplateReader implements TemplateReader {
 
-    private XMLEventReader reader;
+    private RootBuilder rootBuilder;
     private TemplateBuilderMaker maker;
     private Stack<StartElement> elementsStack;
     private NamespaceSupport namespaceSupport;
@@ -52,61 +53,58 @@ public class XMLTemplateReader implements TemplateReader {
 
     private static final String SCHEMA_LOCATION_ATTR = "xsi:schemaLocation";
 
-    public XMLTemplateReader(XMLEventReader reader, NamespaceSupport namespaceSupport) {
-        this.reader = reader;
+    public XMLTemplateReader(XMLEventReader reader, NamespaceSupport namespaceSupport)
+            throws IOException {
         this.elementsStack = new Stack<>();
         this.maker = new TemplateBuilderMaker();
         this.namespaceSupport = namespaceSupport;
         this.parsedElements = new ArrayList<>();
+        try {
+            try {
+                this.rootBuilder = new RootBuilder();
+                iterateReader(reader, rootBuilder);
+            } finally {
+                reader.close();
+            }
+        } catch (XMLStreamException e) {
+            throw new IOException("Failed to read XML template", e);
+        }
     }
 
     @Override
     public RootBuilder getRootBuilder() {
-        RootBuilder rootBuilder = new RootBuilder();
-
-        try {
-            iterateReader(rootBuilder);
-        } finally {
-            try {
-                reader.close();
-            } catch (XMLStreamException e) {
-                e.printStackTrace();
-            }
-        }
         return rootBuilder;
     }
 
-    private void iterateReader(TemplateBuilder builder) {
-        try {
-            while (reader.hasNext()) {
-                XMLEvent event = reader.nextEvent();
-                if (event.isStartElement()) handleStartElement(event.asStartElement(), builder);
-                else if (event.isCharacters()) {
-                    Characters characters = event.asCharacters();
-                    if (!characters.isIgnorableWhiteSpace()
-                            && !characters.isWhiteSpace()
-                            && !characters.isEntityReference())
-                        templateBuilderFromCharacterElement(event.asCharacters(), builder);
-                } else if (event.isEndElement()) {
-                    EndElement endElement = event.asEndElement();
-                    boolean alreadyParsed = alreadyParsed(endElement);
-                    if (!alreadyParsed && !elementsStack.isEmpty()) {
+    private void iterateReader(XMLEventReader reader, TemplateBuilder builder)
+            throws XMLStreamException {
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) handleStartElement(reader, event.asStartElement(), builder);
+            else if (event.isCharacters()) {
+                Characters characters = event.asCharacters();
+                if (!characters.isIgnorableWhiteSpace()
+                        && !characters.isWhiteSpace()
+                        && !characters.isEntityReference())
+                    templateBuilderFromCharacterElement(reader, event.asCharacters(), builder);
+            } else if (event.isEndElement()) {
+                EndElement endElement = event.asEndElement();
+                boolean alreadyParsed = alreadyParsed(endElement);
+                if (!alreadyParsed && !elementsStack.isEmpty()) {
+                    templateBuilderFromElement(elementsStack.pop(), builder);
+                } else {
+                    while (!elementsStack.isEmpty()) {
                         templateBuilderFromElement(elementsStack.pop(), builder);
-                    } else {
-                        while (!elementsStack.isEmpty()) {
-                            templateBuilderFromElement(elementsStack.pop(), builder);
-                        }
-                        break;
                     }
+                    break;
                 }
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 
     private void templateBuilderFromCharacterElement(
-            Characters characters, TemplateBuilder currentParent) {
+            XMLEventReader reader, Characters characters, TemplateBuilder currentParent)
+            throws XMLStreamException {
         String data = characters.getData();
         StartElement element = elementsStack.pop();
         TemplateBuilder leafBuilder;
@@ -116,20 +114,22 @@ public class XMLTemplateReader implements TemplateReader {
         parsedElements.add(element);
         currentParent.addChild(leafBuilder);
         addAttributeAsChildrenBuilder(element.getAttributes(), leafBuilder);
-        iterateReader(currentParent);
+        iterateReader(reader, currentParent);
     }
 
-    private void handleStartElement(StartElement startElement, TemplateBuilder currentParent) {
+    private void handleStartElement(
+            XMLEventReader reader, StartElement startElement, TemplateBuilder currentParent)
+            throws XMLStreamException {
         if (startElement.getName().toString().equals(FEATURE_COLL_ELEMENT)) {
             currentParent =
                     builderFromFeatureCollectionElement(startElement, (RootBuilder) currentParent);
-            iterateReader(currentParent);
+            iterateReader(reader, currentParent);
         } else if (!elementsStack.isEmpty()) {
             StartElement previous = !elementsStack.isEmpty() ? elementsStack.pop() : null;
             currentParent = templateBuilderFromElement(previous, currentParent);
             parsedElements.add(previous);
             elementsStack.add(startElement);
-            iterateReader(currentParent);
+            iterateReader(reader, currentParent);
         } else {
             elementsStack.add(startElement);
         }

@@ -1,0 +1,4 @@
+{
+  "name": "recursive inclusion test",
+  "sub": "$include{recurse.json}"
+}

@@ -1,0 +1,11 @@
+{
+  "name": "test for nested inclusion",
+  "obj1": "$include{includeInObject.json}",
+  "obj2": "$include{includeInArray.json}",
+  "obj3": {
+    "o3First": "first",
+    "$includeFlat": "includeInObject.json",
+    "o3Last": "last"
+  },
+  "topLevelEnd": "endMarker"
+}

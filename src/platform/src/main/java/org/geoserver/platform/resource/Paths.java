@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for handling Resource paths in a consistent fashion.
@@ -163,15 +164,14 @@ public class Paths {
                 continue; // skip null names
             }
             if (INVALID.contains(item)) {
-                throw new IllegalArgumentException("Contains invalid " + item + " path: " + buf);
+                reportInvalidPath(names, item);
             }
             if (!VALID.matcher(item).matches()) {
-                throw new IllegalArgumentException("Contains invalid " + item + " path: " + buf);
+                reportInvalidPath(names, item);
             }
             if (!WARN.matcher(item).matches()) {
                 if (strictPath) {
-                    throw new IllegalArgumentException(
-                            "Contains invalid " + item + " path: " + buf);
+                    return reportInvalidPath(names, item);
                 }
             }
             buf.append(item);
@@ -180,6 +180,14 @@ public class Paths {
             }
         }
         return buf.toString();
+    }
+
+    private static String reportInvalidPath(List<String> names, String item) {
+        throw new IllegalArgumentException(
+                "Contains invalid '"
+                        + item
+                        + "' path: "
+                        + names.stream().collect(Collectors.joining("/")));
     }
 
     /**

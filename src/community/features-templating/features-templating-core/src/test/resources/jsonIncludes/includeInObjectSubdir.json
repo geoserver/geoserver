@@ -1,0 +1,7 @@
+{
+  "name": "test for object inclusion",
+  "myObjectProperty": "$include{subdir/subobject.json}",
+  "myArrayProperty": "$include{subdir/subarray.json}",
+  "$includeFlat": "object.json",
+  "end": "endMarker"
+}

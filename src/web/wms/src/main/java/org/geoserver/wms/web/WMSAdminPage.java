@@ -384,7 +384,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 new TextField<>("remoteStyleMaxRequestTime");
         remoteStylesMaxRequestTime.add(RangeValidator.minimum(1));
         form.add(remoteStylesMaxRequestTime);
-        form.add(new CheckBox("includeDefaultGroupStyleInCapabilities"));
+        form.add(new CheckBox("defaultGroupStyleEnabled"));
     }
 
     @Override

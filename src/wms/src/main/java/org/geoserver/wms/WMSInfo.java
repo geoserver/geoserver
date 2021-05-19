@@ -201,12 +201,11 @@ public interface WMSInfo extends ServiceInfo {
     /** Sets the remote style timeout in milliseconds * */
     void setRemoteStyleTimeout(int time);
 
-    default boolean isIncludeDefaultGroupStyleInCapabilities() {
+    default boolean isDefaultGroupStyleEnabled() {
         return true;
     }
 
-    default void setIncludeDefaultGroupStyleInCapabilities(
-            boolean includeDefaultGroupStyleInCapabilities) {
+    default void setDefaultGroupStyleEnabled(boolean defaultGroupStyleEnabled) {
         // if not implemented nothing to do
     }
 }

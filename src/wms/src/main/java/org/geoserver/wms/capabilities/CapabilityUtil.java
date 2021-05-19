@@ -26,7 +26,7 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public final class CapabilityUtil {
 
-    protected static final String LAYER_GROUP_STYLE_NAME = "";
+    protected static final String LAYER_GROUP_STYLE_NAME = "default-style";
     protected static final String LAYER_GROUP_STYLE_TITLE_PREFIX = "";
     protected static final String LAYER_GROUP_STYLE_TITLE_SUFFIX = " style";
     protected static final String LAYER_GROUP_STYLE_ABSTRACT_PREFIX = "Default style for ";

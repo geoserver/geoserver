@@ -155,11 +155,11 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testIncludeDefaultGroupStyleInCapabilitiesDisabled() throws Exception {
-        assertTrue(wms.isIncludeDefaultGroupStyleInCapabilities());
+        assertTrue(wms.isDefaultGroupStyleEnabled());
         tester.startPage(WMSAdminPage.class);
         FormTester ft = tester.newFormTester("form");
-        ft.setValue("includeDefaultGroupStyleInCapabilities", false);
+        ft.setValue("defaultGroupStyleEnabled", false);
         ft.submit("submit");
-        assertFalse(wms.isIncludeDefaultGroupStyleInCapabilities());
+        assertFalse(wms.isDefaultGroupStyleEnabled());
     }
 }

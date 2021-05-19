@@ -186,14 +186,14 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
         assertEquals(200, response.getStatus());
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/settings.xml");
         // default should be true
-        assertXpathEvaluatesTo("true", "/wms/includeDefaultGroupStyleInCapabilities", dom);
+        assertXpathEvaluatesTo("true", "/wms/defaultGroupStyleEnabled", dom);
         String xml2 =
                 "<wms>"
                         + "<id>wms</id>"
                         + "<enabled>true</enabled>"
                         + "<name>WMS</name><title>GeoServer Web Map Service</title>"
                         + "<maintainer>http://geoserver.org/comm</maintainer>"
-                        + "<includeDefaultGroupStyleInCapabilities>false</includeDefaultGroupStyleInCapabilities>"
+                        + "<defaultGroupStyleEnabled>false</defaultGroupStyleEnabled>"
                         + "</wms>";
         response =
                 putAsServletResponse(
@@ -202,6 +202,6 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
 
         dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/settings.xml");
         // updated to false
-        assertXpathEvaluatesTo("false", "/wms/includeDefaultGroupStyleInCapabilities", dom);
+        assertXpathEvaluatesTo("false", "/wms/defaultGroupStyleEnabled", dom);
     }
 }

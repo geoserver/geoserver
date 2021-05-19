@@ -1276,12 +1276,19 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     }
                 }
             }
-            if (wmsConfig.isIncludeDefaultGroupStyleInCapabilities())
-                handleLayerGroupStyles(layerName);
+            if (encodeGroupDefaultStyle(layerGroup)) handleLayerGroupStyles(layerName);
 
             handleScaleHint(layerGroup);
 
             end("Layer");
+        }
+
+        private boolean encodeGroupDefaultStyle(LayerGroupInfo lgi) {
+            LayerGroupInfo.Mode mode = lgi.getMode();
+            boolean opaqueOrSingle =
+                    mode.equals(LayerGroupInfo.Mode.SINGLE)
+                            || mode.equals(LayerGroupInfo.Mode.OPAQUE_CONTAINER);
+            return opaqueOrSingle || wmsConfig.isDefaultGroupStyleEnabled();
         }
 
         protected Set<LayerInfo> getLayersInGroups(List<LayerGroupInfo> layerGroups) {
@@ -1728,7 +1735,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          */
         private void handleLayerGroupStyles(String layerName) {
             start("Style");
-            element("Name", LAYER_GROUP_STYLE_NAME);
+            element("Name", LAYER_GROUP_STYLE_NAME.concat("-").concat(layerName));
             element(
                     "Title",
                     LAYER_GROUP_STYLE_TITLE_PREFIX

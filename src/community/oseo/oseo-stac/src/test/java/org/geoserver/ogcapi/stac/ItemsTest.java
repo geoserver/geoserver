@@ -28,6 +28,9 @@ public class ItemsTest extends STACTestSupport {
         super.onSetUp(testData);
 
         copyTemplate("/items-LANDSAT8.json");
+        copyTemplate("/items-SAS1.json");
+        copyTemplate("/box.json");
+        copyTemplate("/parentLink.json");
     }
 
     @Test
@@ -311,5 +314,33 @@ public class ItemsTest extends STACTestSupport {
                 json.read("features[*].id"),
                 containsInAnyOrder(
                         "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01"));
+    }
+
+    @Test
+    public void testSAS1ItemsJSON() throws Exception {
+        // this one has a custom template with relative imports for the bbox and a link
+        DocumentContext json = getAsJSONPath("ogc/stac/collections/SAS1/items", 200);
+
+        assertEquals("FeatureCollection", json.read("type"));
+
+        // check it's only landsat8 data
+        List<String> collections = json.read("features[*].collection");
+        assertThat(new HashSet<>(collections), containsInAnyOrder("SAS1"));
+        assertEquals(Integer.valueOf(2), json.read("features.length()", Integer.class));
+
+        // read single reference feature, will test only peculiarities of this
+        DocumentContext item =
+                readSingleContext(json, "features[?(@.id == 'SAS1_20180227102021.02')]");
+
+        // the bbox is in an included template
+        assertEquals(Integer.valueOf(-180), item.read("bbox[0]", Integer.class));
+        assertEquals(Integer.valueOf(-90), item.read("bbox[1]", Integer.class));
+        assertEquals(Integer.valueOf(180), item.read("bbox[2]", Integer.class));
+        assertEquals(Integer.valueOf(90), item.read("bbox[3]", Integer.class));
+
+        // the parent link is included as well
+        DocumentContext link = readSingleContext(item, "links[?(@.rel == 'collection')]");
+        assertEquals(
+                "http://localhost:8080/geoserver/ogcapi/stac/collections/SAS1", link.read("href"));
     }
 }

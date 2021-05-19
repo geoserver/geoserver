@@ -23,6 +23,8 @@ public class JSONTemplateReader implements TemplateReader {
 
     public static final String FILTERKEY = "$filter";
 
+    public static final String INCLUDEKEY = "$include";
+
     public static final String EXPRSTART = "${";
 
     public static final String VENDOROPTION = "$VendorOptions";

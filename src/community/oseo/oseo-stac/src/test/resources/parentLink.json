@@ -1,0 +1,5 @@
+{
+  "href": "$${serviceLink('ogcapi/stac/collections/%s', eop:parentIdentifier)}",
+  "rel": "collection",
+  "type": "application/json"
+}

@@ -1,19 +1,22 @@
-package org.geoserver.terradata;
+/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
+package org.geoserver.mysql;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.Optional;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ModuleStatus;
-import org.geotools.data.teradata.TeradataDataStoreFactory;
+import org.geotools.data.mysql.MySQLDataStoreFactory;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ModuleStatusTest {
     @Test
     public void test() {
-
-        TeradataDataStoreFactory fac = new TeradataDataStoreFactory();
+        MySQLDataStoreFactory fac = new MySQLDataStoreFactory();
         Boolean expect;
         if (fac.isAvailable()) {
             expect = Boolean.TRUE;
@@ -26,7 +29,7 @@ public class ModuleStatusTest {
             Optional<ModuleStatus> status =
                     GeoServerExtensions.extensions(ModuleStatus.class, context)
                             .stream()
-                            .filter(s -> s.getModule().equalsIgnoreCase("gs-teradata"))
+                            .filter(s -> s.getModule().equalsIgnoreCase("gs-mysql"))
                             .findFirst();
             assertEquals(expect, status.isPresent());
         }

@@ -1,9 +1,10 @@
-/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
- * This code is licensed under the GPL 2.0 license, available at the root
- * application directory.
+/*
+ * (c) 2021 Open Source Geospatial Foundation - all rights reserved This code is licensed under the
+ * GPL 2.0 license, available at the root application directory.
  */
-package org.geoserver.community.css.web;
+package org.geoserver.flow;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Optional;
@@ -15,15 +16,13 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class ModuleStatusTest {
     @Test
     public void test() {
-
         try (ClassPathXmlApplicationContext context =
-                new ClassPathXmlApplicationContext(
-                        "sldservice-applicationContext.xml", "applicationContext.xml")) {
-
+                new ClassPathXmlApplicationContext("applicationContext.xml", this.getClass())) {
+            assertNotNull(context);
             Optional<ModuleStatus> status =
                     GeoServerExtensions.extensions(ModuleStatus.class, context)
                             .stream()
-                            .filter(s -> s.getModule().equalsIgnoreCase("gs-css"))
+                            .filter(s -> s.getModule().equalsIgnoreCase("gs-control-flow"))
                             .findFirst();
             assertTrue(status.isPresent());
         }

@@ -14,5 +14,7 @@
 
     <!-- IP blacklist filter -->
     <bean id="ipBlacklistFilter" class="org.geoserver.flow.controller.IpBlacklistFilter" />
-	
+    
+    <!--  set module status up -->
+	<bean id="controlExtension" class="org.geoserver.flow.ControlModuleStatus"/>
 </beans>

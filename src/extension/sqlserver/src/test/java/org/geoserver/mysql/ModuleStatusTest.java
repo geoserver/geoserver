@@ -1,17 +1,24 @@
 package org.geoserver.mysql;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Optional;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ModuleStatus;
+import org.geotools.data.sqlserver.SQLServerDataStoreFactory;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ModuleStatusTest {
     @Test
     public void test() {
-
+        SQLServerDataStoreFactory fac = new SQLServerDataStoreFactory();
+        Boolean expect;
+        if (fac.isAvailable()) {
+            expect = Boolean.TRUE;
+        } else {
+            expect = Boolean.FALSE;
+        }
         try (ClassPathXmlApplicationContext context =
                 new ClassPathXmlApplicationContext("applicationContext.xml")) {
 
@@ -20,7 +27,7 @@ public class ModuleStatusTest {
                             .stream()
                             .filter(s -> s.getModule().equalsIgnoreCase("gs-sqlserver"))
                             .findFirst();
-            assertTrue(status.isPresent());
+            assertEquals(expect, status.isPresent());
         }
     }
 }

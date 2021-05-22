@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.community.css.web;
+package org.geoserver.dxf;
 
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
@@ -10,6 +10,6 @@ import org.junit.Test;
 public class ModuleStatusTest extends GeoServerSystemTestSupport{
     @Test
     public void test() {
-        assertModuleStatus("gs-css", "CSS");
+        assertModuleStatus("gs-dxf", "DXF Extension");
     }
 }

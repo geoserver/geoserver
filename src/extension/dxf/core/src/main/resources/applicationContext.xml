@@ -11,5 +11,11 @@
   <bean id="DXFOutputFormat" class="org.geoserver.wfs.response.DXFOutputFormat">
   	<constructor-arg ref="geoServer"/>
   </bean>
-  
+  <bean id="DxfExtension" class="org.geoserver.platform.ModuleStatusImpl">
+    <property name="module" value="gs-dxf" />
+    <property name="name" value="DXF Extension"/>
+    <property name="component" value="DXF extension"/>
+    <property name="available" value="true"/>
+    <property name="enabled" value="true"/>
+  </bean>
 </beans>

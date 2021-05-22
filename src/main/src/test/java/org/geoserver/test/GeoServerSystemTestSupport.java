@@ -2553,9 +2553,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         for (ModuleStatus statusBean : GeoServerExtensions.extensions(ModuleStatus.class)) {
             if (statusBean.getModule().equals(moduleId)) {
                 requiredModuleWasFound = true;
-                assertEquals(moduleName, statusBean.getName());
+                assertEquals("Incorrect module name found", moduleName, statusBean.getName());
             }
         }
-        assertTrue(requiredModuleWasFound);
+        assertTrue("Module "+moduleId+" not found", requiredModuleWasFound);
     }
 }

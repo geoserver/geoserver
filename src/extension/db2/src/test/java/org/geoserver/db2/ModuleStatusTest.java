@@ -5,6 +5,7 @@
 package org.geoserver.db2;
 
 import static org.junit.Assert.assertEquals;
+
 import java.util.Optional;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ModuleStatus;
@@ -13,11 +14,12 @@ import org.geotools.data.db2.DB2NGDataStoreFactory;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class ModuleStatusTest extends GeoServerSystemTestSupport{
+public class ModuleStatusTest extends GeoServerSystemTestSupport {
     @Test
     public void testStatus() {
-        assertModuleStatus("gs-db2", "DB2 Extension");  
+        assertModuleStatus("gs-db2", "DB2 Extension");
     }
+
     @Test
     public void test() {
 

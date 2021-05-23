@@ -10,4 +10,4 @@ GeoServer连接到各种来源并从各种来源发布数据。本节将讨论�
    :maxdepth: 2
 
    webadmin/index
-
+   vector/index

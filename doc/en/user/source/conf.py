@@ -54,7 +54,7 @@ version = '2.20'
 release = '2.20-SNAPSHOT'
 
 # Used in build and documentation links
-branch = 'master'
+branch = 'main'
 
 # Users don't need to see the "SNAPSHOT" notation when it's there
 if release.find('SNAPSHOT') != -1:
@@ -210,7 +210,7 @@ html_context = {
   'display_github': True,
   'github_user': 'geoserver',
   'github_repo': 'geoserver',
-  'github_version': 'master',
+  'github_version': 'main',
   'conf_py_path': 'doc/en/user/source'
 }
 

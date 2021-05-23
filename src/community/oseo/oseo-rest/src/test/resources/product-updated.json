@@ -31,7 +31,7 @@
     "eop:modificationDate" : null,
     "eop:processingDate" : null,
     "eop:sensorMode" : null,
-    "eop:archivingCenter" : "DPA"
+    "eop:archivingCenter" : "DPA",
     "eop:processingMode" : "DATA_DRIVEN",
     "eop:availabilityTime" : null,
     "eop:acquisitionStation" : null,

@@ -1,0 +1,20 @@
+<assembly>
+    <id>mongodb-schemaless-plugin</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>release/target/dependency</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>gs-schemaless-*.jar</include>
+                <include>gt-mongodb-*.jar</include>
+                <include>*mongo*.jar</include>
+                <include>*bson*.jar</include>
+                <include></include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly>

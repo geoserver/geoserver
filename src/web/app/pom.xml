@@ -1790,7 +1790,7 @@
         </dependency>
         <dependency>
           <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-schemaless-mongo</artifactId>
+          <artifactId>gs-mongodb-schemaless</artifactId>
           <version>${project.version}</version>
         </dependency>
       </dependencies>
@@ -1802,6 +1802,16 @@
           <groupId>org.geoserver.community</groupId>
           <artifactId>gs-web-service-auth</artifactId>
           <version>${gs.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>gwc-mbtiles</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-gwc-mbtiles</artifactId>
+          <version>${project.version}</version>
         </dependency>
       </dependencies>
     </profile>

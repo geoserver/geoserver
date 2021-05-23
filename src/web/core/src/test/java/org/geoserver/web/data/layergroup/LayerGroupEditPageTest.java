@@ -17,11 +17,14 @@ import java.util.Objects;
 import java.util.function.Function;
 import org.apache.wicket.Component;
 import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -390,6 +393,55 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
                             && Objects.equals(keyword.getLanguage(), "pt")
                             && Objects.equals(keyword.getVocabulary(), "vocab2");
                 });
+    }
+
+    @Test
+    public void testHTTPCaches() {
+        // create a new layer group page
+        LayerGroupEditPage page = new LayerGroupEditPage();
+        tester.startPage(page);
+        tester.assertRenderedPage(LayerGroupEditPage.class);
+        // check that keywords editor panel was rendered
+        // tester.assertComponent("publishedinfo:tabs:panel:keywords", KeywordsEditor.class);
+        // add layer group entries
+        page.lgEntryPanel
+                .getEntries()
+                .add(
+                        new LayerGroupEntry(
+                                getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
+        // add layer group mandatory parameters
+        FormTester form = tester.newFormTester("publishedinfo");
+        form.setValue("tabs:panel:name", "httpcaches-layer-group");
+        form.setValue("tabs:panel:bounds:minX", "-180");
+        form.setValue("tabs:panel:bounds:minY", "-90");
+        form.setValue("tabs:panel:bounds:maxX", "180");
+        form.setValue("tabs:panel:bounds:maxY", "90");
+        form.setValue("tabs:panel:bounds:crsContainer:crs:srs", "EPSG:4326");
+
+        tester.clickLink("publishedinfo:tabs:tabs-container:tabs:1:link");
+
+        form = tester.newFormTester("publishedinfo");
+
+        tester.assertComponent(
+                "publishedinfo:tabs:panel:theList:1:content:cacheAgeMax", TextField.class);
+        tester.assertComponent(
+                "publishedinfo:tabs:panel:theList:1:content:cachingEnabled", CheckBox.class);
+
+        form.setValue("tabs:panel:theList:1:content:cachingEnabled", "on");
+        form.setValue("tabs:panel:theList:1:content:cacheAgeMax", "1234");
+
+        // save the layer group
+        form.submit("save");
+
+        tester.assertNoErrorMessage();
+
+        // get the create layer group from the catalog
+        LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName("httpcaches-layer-group");
+        assertThat(layerGroup, notNullValue());
+        assertEquals(
+                Integer.valueOf(1234),
+                layerGroup.getMetadata().get(FeatureTypeInfo.CACHE_AGE_MAX, Integer.class));
+        assertTrue(layerGroup.getMetadata().get(FeatureTypeInfo.CACHING_ENABLED, Boolean.class));
     }
 
     @Test

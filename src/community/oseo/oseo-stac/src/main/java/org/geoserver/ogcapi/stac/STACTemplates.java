@@ -7,26 +7,32 @@ package org.geoserver.ogcapi.stac;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.emf.common.util.URI;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.featurestemplating.builders.BuilderFactory;
+import org.geoserver.featurestemplating.builders.TemplateBuilderMaker;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.configuration.Template;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.featurestemplating.validation.AbstractTemplateValidator;
+import org.geoserver.opensearch.eo.AbstractTemplates;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.FeatureSource;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.filter.FilterFactory2;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
@@ -34,21 +40,20 @@ import org.xml.sax.helpers.NamespaceSupport;
 
 /** Provides access to the collection and item templates used for the STAC JSON outputs */
 @Component
-public class STACTemplates {
+public class STACTemplates extends AbstractTemplates {
 
     static final Logger LOGGER = Logging.getLogger(STACTemplates.class);
+    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    private final OpenSearchAccessProvider accessProvider;
-    private final GeoServerDataDirectory dd;
     private Template collectionTemplate;
-    private Template itemTemplate;
+    private Template defaultItemTemplate;
+    private ConcurrentHashMap<String, Template> itemTemplates = new ConcurrentHashMap<>();
 
     ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
 
     public STACTemplates(GeoServerDataDirectory dd, OpenSearchAccessProvider accessProvider)
             throws IOException {
-        this.accessProvider = accessProvider;
-        this.dd = dd;
+        super(dd, accessProvider);
     }
 
     /** Copies over all HTML templates, to allow customization */
@@ -107,7 +112,7 @@ public class STACTemplates {
         // setup the items template
         Resource items = dd.get("templates/ogc/stac/items.json");
         copyDefault(items, "items.json");
-        this.itemTemplate = new Template(items, new TemplateReaderConfiguration(namespaces));
+        this.defaultItemTemplate = new Template(items, new TemplateReaderConfiguration(namespaces));
     }
 
     private void reloadCollectionTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces)
@@ -119,20 +124,11 @@ public class STACTemplates {
                 new TemplateReaderConfiguration(namespaces) {
                     @Override
                     // the collections are not a GeoJSON collection, uses a different structure
-                    public BuilderFactory getBuilderFactory(boolean isJSONLD) {
-                        return new BuilderFactory(isJSONLD, "collections");
+                    public TemplateBuilderMaker getBuilderMaker() {
+                        return getBuilderMaker("collections");
                     }
                 };
         this.collectionTemplate = new Template(collections, configuration);
-    }
-
-    private void copyDefault(Resource collections, String defaultTemplate) throws IOException {
-        if (collections.getType() == Resource.Type.UNDEFINED) {
-            try (InputStream is = STACTemplates.class.getResourceAsStream(defaultTemplate);
-                    OutputStream os = collections.out()) {
-                IOUtils.copy(is, os);
-            }
-        }
     }
 
     /** Returns the collections template */
@@ -140,6 +136,7 @@ public class STACTemplates {
         // load templates lazily, on startup the OpenSearchAccess might not yet be configured
         if (collectionTemplate == null) reloadTemplates();
 
+        collectionTemplate.checkTemplate();
         RootBuilder builder = collectionTemplate.getRootBuilder();
         if (builder != null)
             validate(
@@ -158,12 +155,72 @@ public class STACTemplates {
         return builder;
     }
 
-    /** Returns the item template */
-    public RootBuilder getItemTemplate() throws IOException {
-        // load templates lazily, on startup the OpenSearchAccess might not yet be configured
-        if (itemTemplate == null) reloadTemplates();
+    /**
+     * Returns the list of collection names having a custom template for them. First uses the
+     *
+     * @return
+     */
+    public Set<String> getCustomItemTemplates() throws IOException {
+        Resource resource = dd.get("templates/ogc/stac/");
+        if (resource.getType() != Resource.Type.DIRECTORY) return Collections.emptySet();
 
-        RootBuilder builder = itemTemplate.getRootBuilder();
+        Set<String> candidates =
+                resource.list()
+                        .stream()
+                        .filter(r -> r.getType() == Resource.Type.RESOURCE)
+                        .map(r -> r.name())
+                        .filter(n -> n.startsWith("items-") && n.endsWith(".json"))
+                        .map(n -> n.substring(6, n.length() - 5))
+                        .collect(Collectors.toSet());
+
+        // TODO: make this visit optimizable
+        FeatureSource<FeatureType, Feature> collections =
+                accessProvider.getOpenSearchAccess().getCollectionSource();
+        UniqueVisitor visitor =
+                new UniqueVisitor(FF.property("eo:identifier", getNamespaces(collections)));
+        collections.getFeatures().accepts(visitor, null);
+        candidates.retainAll(getCollectionNames(visitor));
+
+        return candidates;
+    }
+
+    private Set<String> getCollectionNames(UniqueVisitor visitor) {
+        @SuppressWarnings("unchecked")
+        Set<Object> values = visitor.getResult().toSet();
+        return values.stream()
+                .map(o -> (String) ((o instanceof Attribute) ? ((Attribute) o).getValue() : o))
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns the item template for the specified collection
+     *
+     * @param collectionId The collection identifier, or null if no specific collection is required
+     */
+    public RootBuilder getItemTemplate(String collectionId) throws IOException {
+        // load templates lazily, on startup the OpenSearchAccess might not yet be configured
+        if (defaultItemTemplate == null) reloadTemplates();
+
+        Template template = defaultItemTemplate;
+        // See if a collection specific template has been setup, if so use it as an override
+        if (collectionId != null) {
+            Resource resource = dd.get("templates/ogc/stac/items-" + collectionId + ".json");
+            if (resource.getType().equals(Resource.Type.RESOURCE)) {
+                template = itemTemplates.get(collectionId);
+                if (template == null) {
+                    OpenSearchAccess access = accessProvider.getOpenSearchAccess();
+                    template =
+                            new Template(
+                                    resource,
+                                    new TemplateReaderConfiguration(
+                                            getNamespaces(access.getProductSource())));
+                    itemTemplates.put(collectionId, template);
+                }
+            }
+        }
+
+        template.checkTemplate();
+        RootBuilder builder = template.getRootBuilder();
         if (builder != null)
             validate(
                     builder,
@@ -179,48 +236,5 @@ public class STACTemplates {
                     accessProvider.getOpenSearchAccess().getProductSource());
 
         return builder;
-    }
-
-    private void validate(
-            RootBuilder root,
-            AbstractTemplateValidator validator,
-            FeatureSource<FeatureType, Feature> source)
-            throws IOException {
-        if (root != null) {
-            boolean isValid = validator.validateTemplate(root);
-            if (!isValid) {
-                throw new RuntimeException(
-                        "Failed to validate template for "
-                                + validator.getTypeName()
-                                + ". Failing attribute is "
-                                + URI.decode(validator.getFailingAttribute())
-                                + "\n"
-                                + availableAttributesSuffix(
-                                        source.getSchema(), getNamespaces(source)));
-            }
-        }
-    }
-
-    private String availableAttributesSuffix(Object ctx, NamespaceSupport ns) {
-        if (ctx instanceof FeatureType) {
-            FeatureType ft = (FeatureType) ctx;
-            String values =
-                    ft.getDescriptors()
-                            .stream()
-                            .map(ad -> attributeName(ad, ns))
-                            .collect(Collectors.joining(", "));
-            if (!StringUtils.isEmpty(values)) return " Available attributes: " + values;
-        }
-        return "";
-    }
-
-    protected String attributeName(PropertyDescriptor ad, NamespaceSupport ns) {
-        String name = ad.getName().getLocalPart();
-        String uri = ad.getName().getNamespaceURI();
-        if (ns != null && uri != null && !StringUtils.isEmpty(ns.getPrefix(uri))) {
-            name = ns.getPrefix(uri) + ":" + name;
-        }
-
-        return name;
     }
 }

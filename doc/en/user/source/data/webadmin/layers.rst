@@ -221,6 +221,8 @@ Cache parameters that apply to the HTTP response from client requests.
 
 * **Response Cache Headers**— If selected, GeoServer will not request the same tile twice within the time specified in :guilabel:`Cache Time`. One hour measured in seconds (3600), is the default value for :guilabel:`Cache Time`.
 
+.. figure:: img/data_http_response_caching_settings.png
+
 Root Layer in Capabilities
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Capabilities documents in GeoServer always have a top level (root) Layer element that works as a container of all the available layers and groups.

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
+import org.geoserver.featurestemplating.builders.JSONFieldSupport;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geotools.feature.ComplexAttributeImpl;
@@ -40,6 +41,8 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
             this.cql = cqlManager.getExpressionFromString();
         } else if (expression.startsWith("${")) {
             this.xpath = cqlManager.getAttributeExpressionFromString();
+        } else {
+            throw new IllegalArgumentException("Invalid value: " + expression);
         }
         this.contextPos = cqlManager.getContextPos();
     }
@@ -67,8 +70,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
      */
     protected void writeValue(TemplateOutputWriter writer, Object value) throws IOException {
         if (canWriteValue(value)) {
-            writeKey(writer);
-            writer.writeElementValue(value);
+            writer.writeElementNameAndValue(getKey(), value, getEncodingHints());
         }
     }
 
@@ -94,7 +96,9 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
         }
         Object result = null;
         try {
-            result = xpath.evaluate(context.getCurrentObj());
+            Object contextObject = context.getCurrentObj();
+            result = xpath.evaluate(contextObject);
+            result = JSONFieldSupport.parseWhenJSON(xpath, contextObject, result);
         } catch (Exception e) {
             LOGGER.log(
                     Level.INFO,
@@ -118,7 +122,9 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
                 context = context.getParent();
                 i++;
             }
-            result = cql.evaluate(context.getCurrentObj());
+            Object contextObject = context.getCurrentObj();
+            result = cql.evaluate(contextObject);
+            result = JSONFieldSupport.parseWhenJSON(cql, contextObject, result);
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Unable to evaluate expression. Exception: {0}", e.getMessage());
         }

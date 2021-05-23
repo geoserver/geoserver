@@ -1,7 +1,7 @@
-Installing the Schemaless Features module
+Installing the Schemaless Mongo module
 =========================================
 
-#. Download :download_community:`schemaless-features-plugin` nightly GeoServer community module `builds <https://build.geoserver.org/geoserver/main/community-latest/>`__).
+#. Download :download_community:`mongodb-schemaless` nightly GeoServer community module.
    
    .. warning:: Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example geoserver-|release|-schemaless-features-plugin.zip above).
 

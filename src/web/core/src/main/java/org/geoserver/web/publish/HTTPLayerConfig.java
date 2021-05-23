@@ -19,20 +19,20 @@ public class HTTPLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
     private static final long serialVersionUID = -907171664833447962L;
 
-    public HTTPLayerConfig(String id, IModel<LayerInfo> model) {
+    public HTTPLayerConfig(String id, IModel<LayerInfo> model, String metadataPropertyName) {
         super(id, model);
         add(
                 new CheckBox(
                         ResourceInfo.CACHING_ENABLED,
                         new MapModel<>(
-                                new PropertyModel<>(model, "resource.metadata"),
+                                new PropertyModel<>(model, metadataPropertyName),
                                 "cachingEnabled")));
 
         TextField<Long> maxAge =
                 new TextField<>(
                         ResourceInfo.CACHE_AGE_MAX,
                         new MapModel<>(
-                                new PropertyModel<>(model, "resource.metadata"), "cacheAgeMax"),
+                                new PropertyModel<>(model, metadataPropertyName), "cacheAgeMax"),
                         Long.class);
         maxAge.add(RangeValidator.range(0l, Long.MAX_VALUE));
         add(maxAge);

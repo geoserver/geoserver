@@ -876,9 +876,7 @@ class GMLTransformer extends TransformerBase {
                 // do we have already a a NO_DATA value at hand?
                 NoDataContainer noDataProperty = CoverageUtilities.getNoDataProperty(gc2d);
                 if (noDataProperty != null) {
-                    String nodata =
-                            Double.valueOf(noDataProperty.getAsSingleValue())
-                                    .toString(); // TODO test me
+                    String nodata = String.valueOf(noDataProperty.getAsSingleValue());
                     final AttributesImpl nodataAttr = new AttributesImpl();
                     nodataAttr.addAttribute(
                             "",

@@ -43,13 +43,12 @@
         "sar:polarizations": "${sar:polarisationChannels}", // should be an array, what to do here?
         "sar:product_type": "$filter{eop:parentIdentifier = 'SENTINEL1'},GRD",
         "sar:observation_direction" : "$${strToLowerCase(sar:antennaLookDirection)}",
-        "sat:orbit_state": "$${strToLowerCase(eo:orbitDirection)",
+        "sat:orbit_state": "$${strToLowerCase(eop:orbitDirection)}",
         "sat:absolute_orbit": "${eop:orbitNumber}",
         "sat:anx_datetime": "${eop:startTimeFromAscendingNode}" // eoCompletionTimeFromAscendingNode?
       },
       "collection": "${eop:parentIdentifier}",
-      "assets": {
-      },
+      "assets": "${assets}",
       "links": [
         {
           "href": "$${serviceLink('ogcapi/stac/collections/%s', eop:parentIdentifier)}",

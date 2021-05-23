@@ -8,7 +8,6 @@ package org.geoserver.gwc.layer;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Throwables.throwIfUnchecked;
-import static org.geoserver.gwc.GWC.tileLayerName;
 import static org.geoserver.ows.util.ResponseUtils.buildURL;
 import static org.geoserver.ows.util.ResponseUtils.params;
 
@@ -16,10 +15,12 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import java.awt.Dimension;
 import java.io.IOException;
+import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,18 +32,23 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
 import org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback;
@@ -81,11 +87,14 @@ import org.geowebcache.layer.ExpirationRule;
 import org.geowebcache.layer.LayerListenerList;
 import org.geowebcache.layer.MetaTile;
 import org.geowebcache.layer.ProxyLayer;
+import org.geowebcache.layer.TileJSONProvider;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.TileLayerListener;
 import org.geowebcache.layer.meta.ContactInformation;
 import org.geowebcache.layer.meta.LayerMetaInformation;
 import org.geowebcache.layer.meta.MetadataURL;
+import org.geowebcache.layer.meta.TileJSON;
+import org.geowebcache.layer.meta.VectorLayerMetadata;
 import org.geowebcache.layer.updatesource.UpdateSourceDefinition;
 import org.geowebcache.locks.LockProvider.Lock;
 import org.geowebcache.mime.FormatModifier;
@@ -95,6 +104,9 @@ import org.geowebcache.util.GWCVars;
 import org.geowebcache.util.ServletUtils;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.ResponseUtils;
 
@@ -102,7 +114,7 @@ import org.vfny.geoserver.util.ResponseUtils;
  * GeoServer {@link TileLayer} implementation. Delegates to {@link GeoServerTileLayerInfo} for layer
  * configuration.
  */
-public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
+public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSONProvider {
 
     private static final Logger LOGGER = Logging.getLogger(GeoServerTileLayer.class);
     public static final int ENV_TX_POINTS =
@@ -328,48 +340,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     public boolean isQueryable() {
         boolean queryable = GWC.get().isQueryable(this);
         return queryable;
-    }
-
-    private ReferencedEnvelope getLatLonBbox() throws IllegalStateException {
-        final CoordinateReferenceSystem wgs84LonFirst;
-        try {
-            final boolean longitudeFirst = true;
-            wgs84LonFirst = CRS.decode("EPSG:4326", longitudeFirst);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        ReferencedEnvelope latLongBbox;
-        final PublishedInfo publishedInfo = getPublishedInfo();
-        if (publishedInfo instanceof LayerGroupInfo) {
-            LayerGroupInfo groupInfo = (LayerGroupInfo) publishedInfo;
-            try {
-                ReferencedEnvelope bounds = groupInfo.getBounds();
-                boolean lenient = true;
-                latLongBbox = bounds.transform(wgs84LonFirst, lenient);
-            } catch (Exception e) {
-                String msg =
-                        "Can't get lat long bounds for layer group " + tileLayerName(groupInfo);
-                LOGGER.log(Level.WARNING, msg, e);
-                throw new IllegalStateException(msg, e);
-            }
-        } else {
-            ResourceInfo resourceInfo = getResourceInfo();
-            latLongBbox = resourceInfo.getLatLonBoundingBox();
-            if (null == latLongBbox) {
-                latLongBbox = new ReferencedEnvelope(wgs84LonFirst);
-            }
-            if (null == latLongBbox.getCoordinateReferenceSystem()) {
-                ReferencedEnvelope tmp = new ReferencedEnvelope(wgs84LonFirst);
-                tmp.init(
-                        latLongBbox.getMinX(),
-                        latLongBbox.getMaxX(),
-                        latLongBbox.getMinY(),
-                        latLongBbox.getMaxY());
-                latLongBbox = tmp;
-            }
-        }
-        return latLongBbox;
     }
 
     /**
@@ -852,7 +822,9 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     /** @see org.geowebcache.layer.TileLayer#getGridSubsets() */
     @Override
     public Set<String> getGridSubsets() {
-        return new HashSet<>(gridSubsets().keySet());
+        Set<XMLGridSubset> gridSubsets = info.getGridSubsets();
+        if (gridSubsets == null) return Collections.emptySet();
+        return gridSubsets.stream().map(ss -> ss.getGridSetName()).collect(Collectors.toSet());
     }
 
     @Override
@@ -916,14 +888,18 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         this._subSets.set(null);
     }
 
+    /** Can be called to notify the layer bounds changed. Resets the grid subsets cache. */
+    public void boundsChanged() {
+        this._subSets.set(null);
+    }
+
     /**
      * Actually computes the layer's {@link GridSubset}s. This method is intended as a helper for
      * {@link #gridSubsets()} to compute the mappings atomically in a lock-free way
      */
     private Map<String, GridSubset> computeGridSubsets() {
-        ReferencedEnvelope latLongBbox = getLatLonBbox();
         try {
-            return getGrids(latLongBbox, gridSetBroker);
+            return getGrids(gridSetBroker);
         } catch (ConfigurationException e) {
             String msg = "Can't create grids for '" + getName() + "': " + e.getMessage();
             LOGGER.log(Level.WARNING, msg, e);
@@ -932,10 +908,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         }
     }
 
-    private Map<String, GridSubset> getGrids(
-            final ReferencedEnvelope latLonBbox, final GridSetBroker gridSetBroker)
+    private Map<String, GridSubset> getGrids(final GridSetBroker gridSetBroker)
             throws ConfigurationException {
-
         Set<XMLGridSubset> cachedGridSets = info.getGridSubsets();
         if (cachedGridSets.isEmpty()) {
             return Collections.emptyMap();
@@ -1189,8 +1163,15 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         }
     }
 
-    /** Returns the max age of a layer group by looking for the minimum max age of its components */
+    /**
+     * Returns the max age of a layer group using layer group configuration or by looking for the
+     * minimum max age of its components
+     */
     private int getGroupMaxAge(LayerGroupInfo lg) {
+        if (isCachingEnabled(lg.getMetadata())) {
+            return getCacheMaxAge(lg.getMetadata());
+        }
+
         int maxAge = Integer.MAX_VALUE;
         for (PublishedInfo pi : lg.getLayers()) {
             int piAge;
@@ -1217,17 +1198,23 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
     /** Returns the max age for the specified layer */
     private int getLayerMaxAge(LayerInfo li) {
         MetadataMap metadata = li.getResource().getMetadata();
-        Object enabled = metadata.get(ResourceInfo.CACHING_ENABLED);
-        if (enabled != null && enabled.toString().equalsIgnoreCase("true")) {
-            Integer maxAge = metadata.get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
-            if (maxAge != null) {
-                return maxAge;
-            } else {
-                return 0;
-            }
+        if (isCachingEnabled(metadata)) {
+            return getCacheMaxAge(metadata);
         }
 
         return 0;
+    }
+
+    private boolean isCachingEnabled(MetadataMap metadata) {
+        Boolean value = metadata.get(ResourceInfo.CACHING_ENABLED, Boolean.class);
+
+        return value != null ? value : false;
+    }
+
+    private int getCacheMaxAge(MetadataMap metadata) {
+        Integer value = metadata.get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
+
+        return value != null ? value : 0;
     }
 
     /**
@@ -1521,5 +1508,116 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
         }
         // no HTTP request is in progress
         return null;
+    }
+
+    @Override
+    public boolean supportsTileJSON() {
+        return getGridSubsetForSRS(SRS.getEPSG3857()) != null
+                || getGridSubsetForSRS(SRS.getEPSG900913()) != null;
+    }
+
+    @Override
+    public TileJSON getTileJSON() {
+        TileJSON tileJSON = new TileJSON();
+        tileJSON.setName(getName());
+        LayerMetaInformation metaInformation = getMetaInformation();
+        if (metaInformation != null) {
+            tileJSON.setDescription(metaInformation.getDescription());
+        }
+        BoundingBox wgs84Bounds = getBounds(SRS.getEPSG4326());
+        PublishedInfo publishedInfo = getPublishedInfo();
+        PublishedType type = publishedInfo.getType();
+        List<VectorLayerMetadata> metadataLayers = new ArrayList<>();
+        if (type == PublishedType.VECTOR) {
+            setVectorLayers(publishedInfo, metadataLayers);
+        } else if (type == PublishedType.GROUP) {
+            setVectorLayersGroup(publishedInfo, metadataLayers);
+        }
+        if (!metadataLayers.isEmpty()) {
+            tileJSON.setLayers(metadataLayers);
+        }
+
+        tileJSON.setBounds(
+                new double[] {
+                    wgs84Bounds.getMinX(),
+                    wgs84Bounds.getMinY(),
+                    wgs84Bounds.getMaxX(),
+                    wgs84Bounds.getMaxY()
+                });
+
+        return tileJSON;
+    }
+
+    private void setVectorLayers(
+            PublishedInfo publishedInfo, List<VectorLayerMetadata> metadataLayers) {
+        ResourceInfo resource = getResource(publishedInfo);
+        if (resource instanceof FeatureTypeInfo) {
+            addVectorLayerMetadata((FeatureTypeInfo) resource, metadataLayers);
+        }
+    }
+
+    private void setVectorLayersGroup(
+            PublishedInfo publishedInfo, List<VectorLayerMetadata> metadataLayers) {
+        LayerGroupInfo layerGroupInfo = null;
+        if (Proxy.isProxyClass(publishedInfo.getClass())) {
+            layerGroupInfo = (LayerGroupInfo) ModificationProxy.unwrap(publishedInfo);
+        } else if (publishedInfo instanceof LayerGroupInfo) {
+            layerGroupInfo = (LayerGroupInfo) publishedInfo;
+        }
+        if (layerGroupInfo != null) {
+            List<PublishedInfo> layers = layerGroupInfo.getLayers();
+            List<FeatureTypeInfo> featureTypes = new ArrayList<>();
+            ResourceInfo resource;
+            for (PublishedInfo layer : layers) {
+                resource = getResource(layer);
+                if (!(resource instanceof FeatureTypeInfo)) {
+                    // leave the method as soon as we find a not-vector layer
+                    return;
+                }
+                featureTypes.add((FeatureTypeInfo) resource);
+            }
+
+            for (FeatureTypeInfo featureTypeInfo : featureTypes) {
+                addVectorLayerMetadata(featureTypeInfo, metadataLayers);
+            }
+        }
+    }
+
+    private ResourceInfo getResource(PublishedInfo publishedInfo) {
+        ResourceInfo resource = null;
+        if (Proxy.isProxyClass(publishedInfo.getClass())) {
+            LayerInfo inner = (LayerInfo) ModificationProxy.unwrap(publishedInfo);
+            resource = inner.getResource();
+        } else if (publishedInfo instanceof LayerInfo) {
+            resource = ((LayerInfo) publishedInfo).getResource();
+        }
+        return resource;
+    }
+
+    private void addVectorLayerMetadata(
+            FeatureTypeInfo featureTypeInfo, List<VectorLayerMetadata> metadataLayers) {
+        VectorLayerMetadata metadata = null;
+        final ResourcePool resourcePool = catalog.getResourcePool();
+        final FeatureType featureType;
+        try {
+            featureType = resourcePool.getFeatureType(featureTypeInfo);
+            Collection<PropertyDescriptor> descriptors = featureType.getDescriptors();
+            Map<String, String> fields = new HashMap<>();
+            for (PropertyDescriptor pd : descriptors) {
+                if (!(pd instanceof GeometryDescriptor)) {
+                    String pdName = pd.getName().toString();
+                    String typeName = pd.getType().getBinding().getSimpleName();
+                    fields.put(pdName, typeName);
+                }
+            }
+            metadata = new VectorLayerMetadata();
+            metadata.setId(featureTypeInfo.getName());
+            metadata.setFields(fields);
+        } catch (IOException e) {
+            LOGGER.log(Level.INFO, "Could not parse featureType " + featureTypeInfo, e);
+        }
+        if (metadata != null) {
+            metadataLayers.add(metadata);
+        }
     }
 }

@@ -23,8 +23,8 @@ If you want to use the clustering extension while sharing the same data dir that
 but you'll have to remember to use the ``CLUSTER_CONFIG_DIR`` system variable, and set it
 to a different folder for each instance, e.g.:
 
-* set ``-DGEOSERVER_CONFIG_DIR=/path/to/cluster/config/dir/1`` on the first node, 
-* set ``-DGEOSERVER_CONFIG_DIR=/path/to/cluster/config/dir/2`` on the second node
+* set ``-DCLUSTER_CONFIG_DIR=/path/to/cluster/config/dir/1`` on the first node, 
+* set ``-DCLUSTER_CONFIG_DIR=/path/to/cluster/config/dir/2`` on the second node
 * and so on
 
 The directories do not need to exist, GeoServer will create and populate them on

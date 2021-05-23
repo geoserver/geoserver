@@ -7,8 +7,10 @@ package org.geoserver.opensearch.eo;
 import java.util.HashSet;
 import java.util.Map;
 import org.geoserver.opensearch.eo.response.AtomSearchResponse;
+import org.geoserver.opensearch.eo.response.GeoJSONSearchResponse;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.springframework.util.StringUtils;
@@ -19,6 +21,9 @@ import org.springframework.util.StringUtils;
  * @author Andrea Aime - GeoSolutions
  */
 public class OSEODispatcherCallback extends AbstractDispatcherCallback {
+
+    private static final String PARENT_ID = "parentId";
+    private static final String PARENT_IDENTIFIER = "parentIdentifier";
 
     @Override
     public Service serviceDispatched(Request request, Service service) throws ServiceException {
@@ -32,7 +37,8 @@ public class OSEODispatcherCallback extends AbstractDispatcherCallback {
                     request.setRawKvp(kvp);
                 } else if ("search".equals(request.getRequest())) {
                     kvp.put("service", "oseo");
-                    kvp.put("httpAccept", AtomSearchResponse.MIME);
+                    if (!kvp.containsKey("httpAccept"))
+                        kvp.put("httpAccept", AtomSearchResponse.MIME);
                 }
                 // make sure the raw kvp is not empty, ever (the current code
                 // leaves it empty if the request has no search params)
@@ -49,7 +55,40 @@ public class OSEODispatcherCallback extends AbstractDispatcherCallback {
                     }
                 }
             }
+
+            // backwards compatibility, parentId got renamed to parentIdentifier
+            if (rawKvp != null
+                    && rawKvp.containsKey(PARENT_ID)
+                    && !rawKvp.containsKey(PARENT_IDENTIFIER)) {
+                rawKvp.put(PARENT_IDENTIFIER, rawKvp.get(PARENT_ID));
+            }
+            if (kvp != null && kvp.containsKey(PARENT_ID) && !kvp.containsKey(PARENT_IDENTIFIER)) {
+                kvp.put(PARENT_IDENTIFIER, kvp.get(PARENT_ID));
+            }
         }
         return service;
+    }
+
+    @Override
+    public Operation operationDispatched(Request request, Operation operation) {
+        // set the output format from httpAccept, to make multiple output formats for a single
+        // response work in the OGC dispatcher
+        String format = (String) request.getKvp().get("httpAccept");
+        boolean searchRequest = "search".equals(request.getRequest());
+        if (format != null) {
+            // leniency for shortcut names
+            if ("atom".equals(format) && searchRequest) {
+                request.setOutputFormat(AtomSearchResponse.MIME);
+            } else if ("json".equals(format) && searchRequest) {
+                request.setOutputFormat(GeoJSONSearchResponse.MIME);
+            } else {
+                request.setOutputFormat(format);
+            }
+        } else if (searchRequest) {
+            // default to atom for backwards compatibility
+            request.setOutputFormat(AtomSearchResponse.MIME);
+        }
+
+        return operation;
     }
 }

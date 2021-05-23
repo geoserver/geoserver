@@ -16,8 +16,11 @@ import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
+import net.sf.json.JSONObject;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.response.AtomSearchResponse;
 import org.geoserver.opensearch.eo.response.DescriptionResponse;
+import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.filter.text.cql2.CQL;
@@ -30,10 +33,21 @@ import org.w3c.dom.Document;
 
 public class SearchTest extends OSEOTestSupport {
 
+    private static final String ENCODED_ATOM_MIME =
+            ResponseUtils.urlEncode(AtomSearchResponse.MIME);
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        // not used here, just checking having a custom template around is not causing side effects
+        copyTemplate("products-LANDSAT8.json");
+    }
+
     @Test
     public void testAllCollection() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse("oseo/search?httpAccept=" + AtomSearchResponse.MIME);
+                getAsServletResponse("oseo/search?httpAccept=" + ENCODED_ATOM_MIME);
         assertEquals(AtomSearchResponse.MIME, response.getContentType());
         assertEquals(200, response.getStatus());
 
@@ -165,7 +179,7 @@ public class SearchTest extends OSEOTestSupport {
     @Test
     public void testAllCollectionCountZero() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse("oseo/search?count=0&httpAccept=" + AtomSearchResponse.MIME);
+                getAsServletResponse("oseo/search?count=0&httpAccept=" + ENCODED_ATOM_MIME);
         assertEquals(AtomSearchResponse.MIME, response.getContentType());
         assertEquals(200, response.getStatus());
 
@@ -202,7 +216,7 @@ public class SearchTest extends OSEOTestSupport {
 
         // run request, we should get 3 feeds but only two links
         MockHttpServletResponse response =
-                getAsServletResponse("oseo/search?httpAccept=" + AtomSearchResponse.MIME);
+                getAsServletResponse("oseo/search?httpAccept=" + ENCODED_ATOM_MIME);
         assertEquals(AtomSearchResponse.MIME, response.getContentType());
         assertEquals(200, response.getStatus());
 
@@ -326,7 +340,7 @@ public class SearchTest extends OSEOTestSupport {
 
     @Test
     public void testGeoUidCollectionQuery() throws Exception {
-        Document dom = getAsDOM("oseo/search?uid=LANDSAT8&httpAccept=" + AtomSearchResponse.MIME);
+        Document dom = getAsDOM("oseo/search?uid=LANDSAT8&httpAccept=" + ENCODED_ATOM_MIME);
         // print(dom);
 
         // basics
@@ -367,7 +381,7 @@ public class SearchTest extends OSEOTestSupport {
         Document dom =
                 getAsDOM(
                         "oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04&httpAccept="
-                                + AtomSearchResponse.MIME);
+                                + ENCODED_ATOM_MIME);
         // print(dom);
 
         // check that filtering worked and offerings have been properly grouped
@@ -407,15 +421,14 @@ public class SearchTest extends OSEOTestSupport {
         Document dom =
                 getAsDOM(
                         "oseo/search?parentId=LANDSAT8&uid=LS8_TEST.DISABLED&httpAccept="
-                                + AtomSearchResponse.MIME);
+                                + ENCODED_ATOM_MIME);
         // no results, the product is there, but disabled
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("0")));
     }
 
     @Test
     public void testAllSentinel2Products() throws Exception {
-        Document dom =
-                getAsDOM("oseo/search?parentId=SENTINEL2&httpAccept=" + AtomSearchResponse.MIME);
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&httpAccept=" + ENCODED_ATOM_MIME);
         // print(dom);
 
         assertFirstPageSentinel2Products(dom);
@@ -501,9 +514,7 @@ public class SearchTest extends OSEOTestSupport {
     @Test
     public void testAllSentinel2ProductsCountZero() throws Exception {
         Document dom =
-                getAsDOM(
-                        "oseo/search?parentId=SENTINEL2&count=0&httpAccept="
-                                + AtomSearchResponse.MIME);
+                getAsDOM("oseo/search?parentId=SENTINEL2&count=0&httpAccept=" + ENCODED_ATOM_MIME);
         // print(dom);
 
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("19")));
@@ -519,7 +530,7 @@ public class SearchTest extends OSEOTestSupport {
         Document dom =
                 getAsDOM(
                         "oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept="
-                                + AtomSearchResponse.MIME);
+                                + ENCODED_ATOM_MIME);
         // print(dom);
 
         // check basics
@@ -897,6 +908,7 @@ public class SearchTest extends OSEOTestSupport {
         Document dom =
                 getAsOpenSearchException(
                         "oseo/quicklook?parentId=LANDSAT8&uid=LS8_TEST.DISABLED", 404);
+        print(dom);
         assertThat(
                 dom,
                 hasXPath(
@@ -1001,5 +1013,21 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(
                 dom,
                 hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180226102021.01")));
+    }
+
+    @Test
+    public void testSearchJSONInvalidParameter() throws Exception {
+        JSONObject response =
+                (JSONObject)
+                        getAsJSON(
+                                "oseo/search?parentId=SENTINEL2&uid=123&timeStart=abcde&httpAccept=json",
+                                400);
+        assertEquals("Exception", response.getString("type"));
+        JSONObject exception = response.getJSONArray("exceptions").getJSONObject(0);
+        assertEquals("InvalidParameterValue", exception.getString("exceptionCode"));
+        assertEquals(
+                "Invalid expression for start time, use a ISO time or date instead: abcde",
+                exception.getString("exceptionText"));
+        assertEquals("timeStart", exception.getString("locator"));
     }
 }

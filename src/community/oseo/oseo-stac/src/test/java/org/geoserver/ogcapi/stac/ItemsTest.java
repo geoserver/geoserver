@@ -13,30 +13,24 @@ import com.jayway.jsonpath.DocumentContext;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
-import net.minidev.json.JSONArray;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.hamcrest.Matchers;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ItemsTest extends STACTestSupport {
 
-    static TimeZone currentTimeZone;
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
 
-    @BeforeClass
-    public static void setupGMT() {
-        currentTimeZone = TimeZone.getDefault();
-        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
-    }
-
-    @AfterClass
-    public static void resetTimeZone() {
-        TimeZone.setDefault(currentTimeZone);
+        copyTemplate("/items-LANDSAT8.json");
+        copyTemplate("/items-SAS1.json");
+        copyTemplate("/box.json");
+        copyTemplate("/parentLink.json");
     }
 
     @Test
@@ -99,73 +93,32 @@ public class ItemsTest extends STACTestSupport {
         assertEquals("Could not locate item LS8_TEST.DISABLED", json.read("description"));
     }
 
-    private void checkSentinel2Sample(DocumentContext s2Sample) {
-        // ... geometry
-        assertEquals("Polygon", s2Sample.read("geometry.type"));
-        JSONArray coordinates = s2Sample.read("geometry.coordinates");
-        JSONArray shell = (JSONArray) coordinates.get(0);
-        assertPoint(-117.9694, 33.3476, (JSONArray) shell.get(0));
-        assertPoint(-117.9806, 34.3377, (JSONArray) shell.get(1));
-        assertPoint(-119.1738, 34.3224, (JSONArray) shell.get(2));
-        assertPoint(-119.1489, 33.3328, (JSONArray) shell.get(3));
-        assertPoint(-117.9694, 33.3476, (JSONArray) shell.get(4));
-        // ... bbox
-        assertEquals(-119.17378, s2Sample.read("bbox[0]", Double.class), EPS);
-        assertEquals(33.332767, s2Sample.read("bbox[1]", Double.class), EPS);
-        assertEquals(-117.969376, s2Sample.read("bbox[2]", Double.class), EPS);
-        assertEquals(34.337738, s2Sample.read("bbox[3]", Double.class), EPS);
-        // ... time range (single value)
-        assertEquals("2017-03-08T18:54:21.026+00:00", s2Sample.read("properties.datetime"));
-        // ... instrument related
-        assertEquals("sentinel-2a", s2Sample.read("properties.platform"));
-        assertEquals("sentinel2", s2Sample.read("properties.constellation"));
-        List<String> instruments = s2Sample.read("properties.instruments");
-        assertThat(instruments, Matchers.containsInAnyOrder("msi"));
-        // ... eo
-        assertEquals(Integer.valueOf(7), s2Sample.read("properties.eo:cloud_cover", Integer.class));
-        // ... links
-        assertEquals(
-                "http://localhost:8080/geoserver/ogcapi/stac/collections/SENTINEL2",
-                readSingle(s2Sample, "links[?(@.rel == 'collection')].href"));
-        assertEquals(
-                "application/json", readSingle(s2Sample, "links[?(@.rel == 'collection')].type"));
-        assertEquals(
-                "http://localhost:8080/geoserver/ogcapi/stac",
-                readSingle(s2Sample, "links[?(@.rel == 'root')].href"));
-        assertEquals("application/json", readSingle(s2Sample, "links[?(@.rel == 'root')].type"));
-        assertEquals(
-                "http://localhost:8080/geoserver/ogcapi/stac/collections/SENTINEL2/items/S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
-                readSingle(s2Sample, "links[?(@.rel == 'self')].href"));
-        assertEquals(
-                "application/geo+json", readSingle(s2Sample, "links[?(@.rel == 'self')].type"));
-    }
-
     @Test
     public void testLandsat8ItemsJSON() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/collections/LANDSAT8/items", 200);
 
         assertEquals("FeatureCollection", json.read("type"));
 
-        // check it's only sentinel2 data
+        // check it's only landsat8 data
         List<String> collections = json.read("features[*].collection");
         assertThat(new HashSet<>(collections), containsInAnyOrder("LANDSAT8"));
         assertEquals(Integer.valueOf(1), json.read("features.length()", Integer.class));
 
         // read single reference feature, will test only peculiarities of this
         DocumentContext l8Sample = readSingleContext(json, "features[?(@.id == 'LS8_TEST.02')]");
-        // ... instrument related
-        assertEquals("LANDSAT_8", l8Sample.read("properties.platform"));
-        List<String> instruments = l8Sample.read("properties.instruments");
-        assertThat(instruments, Matchers.containsInAnyOrder("oli", "tirs"));
-        assertEquals("landsat8", l8Sample.read("properties.constellation"));
-        // creation and modification
-        assertEquals("2017-02-26T10:24:58.000+00:00", l8Sample.read("properties.created"));
-        assertEquals("2017-02-28T10:24:58.000+00:00", l8Sample.read("properties.updated"));
+        checkLandsat8_02(l8Sample);
     }
 
-    private void assertPoint(double x, double y, JSONArray coordinate) {
-        assertEquals(x, (Double) coordinate.get(0), EPS);
-        assertEquals(y, (Double) coordinate.get(1), EPS);
+    @Test
+    public void testLandsat8ItemJSON() throws Exception {
+        DocumentContext json =
+                getAsJSONPath("ogc/stac/collections/LANDSAT8/items/LS8_TEST.02", 200);
+
+        assertEquals("Feature", json.read("type"));
+
+        // it's the expected feature
+        assertEquals("LS8_TEST.02", json.read("id"));
+        checkLandsat8_02(json);
     }
 
     @Test
@@ -361,5 +314,33 @@ public class ItemsTest extends STACTestSupport {
                 json.read("features[*].id"),
                 containsInAnyOrder(
                         "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01"));
+    }
+
+    @Test
+    public void testSAS1ItemsJSON() throws Exception {
+        // this one has a custom template with relative imports for the bbox and a link
+        DocumentContext json = getAsJSONPath("ogc/stac/collections/SAS1/items", 200);
+
+        assertEquals("FeatureCollection", json.read("type"));
+
+        // check it's only landsat8 data
+        List<String> collections = json.read("features[*].collection");
+        assertThat(new HashSet<>(collections), containsInAnyOrder("SAS1"));
+        assertEquals(Integer.valueOf(2), json.read("features.length()", Integer.class));
+
+        // read single reference feature, will test only peculiarities of this
+        DocumentContext item =
+                readSingleContext(json, "features[?(@.id == 'SAS1_20180227102021.02')]");
+
+        // the bbox is in an included template
+        assertEquals(Integer.valueOf(-180), item.read("bbox[0]", Integer.class));
+        assertEquals(Integer.valueOf(-90), item.read("bbox[1]", Integer.class));
+        assertEquals(Integer.valueOf(180), item.read("bbox[2]", Integer.class));
+        assertEquals(Integer.valueOf(90), item.read("bbox[3]", Integer.class));
+
+        // the parent link is included as well
+        DocumentContext link = readSingleContext(item, "links[?(@.rel == 'collection')]");
+        assertEquals(
+                "http://localhost:8080/geoserver/ogcapi/stac/collections/SAS1", link.read("href"));
     }
 }

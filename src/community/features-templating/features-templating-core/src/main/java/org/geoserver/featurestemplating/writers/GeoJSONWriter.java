@@ -14,51 +14,47 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.util.ISO8601Formatter;
 import org.geotools.geojson.geom.GeometryJSON;
-import org.geotools.gml2.SrsSyntax;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** Implements its superclass methods to write a valid GeoJSON output */
 public class GeoJSONWriter extends CommonJSONWriter {
-
-    private long numberReturned;
-
-    private CoordinateReferenceSystem crs;
-
-    private CRS.AxisOrder axisOrder = CRS.AxisOrder.EAST_NORTH;
 
     public GeoJSONWriter(JsonGenerator generator) {
         super(generator);
     }
 
     @Override
-    protected void writeValue(Object value) throws IOException {
+    public void writeValue(Object value) throws IOException {
         if (value instanceof String) {
-            writeString((String) value);
+            generator.writeString((String) value);
         } else if (value instanceof Integer) {
-            writeNumber((Integer) value);
+            generator.writeNumber((Integer) value);
         } else if (value instanceof Double) {
-            writeNumber((Double) value);
+            generator.writeNumber((Double) value);
         } else if (value instanceof Float) {
-            writeNumber((Float) value);
+            generator.writeNumber((Float) value);
         } else if (value instanceof Long) {
-            writeNumber((Long) value);
+            generator.writeNumber((Long) value);
         } else if (value instanceof BigInteger) {
-            writeNumber((BigInteger) value);
+            generator.writeNumber((BigInteger) value);
         } else if (value instanceof BigDecimal) {
-            writeNumber((BigDecimal) value);
+            generator.writeNumber((BigDecimal) value);
         } else if (value instanceof Boolean) {
-            writeBoolean((Boolean) value);
+            generator.writeBoolean((Boolean) value);
+        } else if (value instanceof Date) {
+            generator.writeString(new ISO8601Formatter().format(value));
+        } else {
+            generator.writeString(value.toString());
         }
     }
 
     @Override
-    protected void writeGeometry(Object value) throws IOException {
+    public void writeGeometry(Object value) throws IOException {
         GeometryJSON geomJson = new GeometryJSON();
         String strGeom = geomJson.toString((Geometry) value);
         ObjectMapper mapper = new ObjectMapper();
@@ -67,12 +63,12 @@ public class GeoJSONWriter extends CommonJSONWriter {
     }
 
     @Override
-    public void endTemplateOutput() throws IOException {
-        endObject();
+    public void endTemplateOutput(EncodingHints encodingHints) throws IOException {
+        endObject(null, encodingHints);
     }
 
     /**
-     * Writes a OGC link object
+     * Writes a OGC link object Writes a OGC link object
      *
      * @param href
      * @param rel
@@ -84,91 +80,83 @@ public class GeoJSONWriter extends CommonJSONWriter {
     public void writeLink(String href, String rel, String mimeType, String title, String method)
             throws IOException {
         if (href != null) {
-            startObject();
+            writeStartObject();
             if (title != null) {
-                writeFieldName("title");
+                generator.writeFieldName("title");
                 writeValue(title);
             }
             if (mimeType != null) {
-                writeFieldName("type");
+                generator.writeFieldName("type");
                 writeValue(mimeType);
             }
             if (rel != null) {
-                writeFieldName("rel");
+                generator.writeFieldName("rel");
                 writeValue(rel);
             }
             if (method != null) {
-                writeFieldName("method");
+                generator.writeFieldName("method");
                 writeValue(method);
             }
-            writeFieldName("href");
+            generator.writeFieldName("href");
             writeValue(href);
-            endObject();
+            writeEndObject();
         }
     }
 
     public void writePagingLinks(String mimeType, String previous, String next) throws IOException {
 
-        writeFieldName("links");
-        startArray();
+        generator.writeFieldName("links");
+        writeStartArray();
         writeLink(previous, "previous", mimeType, "previous page", null);
         writeLink(next, "next", mimeType, "next page", null);
-        endArray();
+        writeEndArray();
     }
 
     public void writeCollectionCounts(BigInteger featureCount) throws IOException {
         // counts
         if (featureCount != null && featureCount.longValue() > 0) {
-            writeFieldName("totalFeatures");
+            generator.writeFieldName("totalFeatures");
             writeValue(featureCount);
-            writeFieldName("numberMatched");
+            generator.writeFieldName("numberMatched");
             writeValue(featureCount);
         } else {
-            writeFieldName("totalFeatures");
+            generator.writeFieldName("totalFeatures");
             writeValue("unknown");
         }
         writeNumberReturned();
     }
 
     public void writeNumberReturned() throws IOException {
-        writeFieldName("numberReturned");
+        generator.writeFieldName("numberReturned");
         writeValue(numberReturned);
     }
 
     public void writeTimeStamp() throws IOException {
-        writeFieldName("timeStamp");
+        generator.writeFieldName("timeStamp");
         writeValue(new ISO8601Formatter().format(new Date()));
     }
 
-    public void writeCrs() throws FactoryException, IOException {
-        writeFieldName("crs");
+    public void writeCrs() throws IOException {
+        generator.writeFieldName("crs");
         if (crs != null) {
-            String identifier = null;
-            Integer code = CRS.lookupEpsgCode(crs, true);
-            if (code != null) {
-                if (code != null) {
-                    identifier = SrsSyntax.OGC_URN.getPrefix() + code;
-                }
-            } else {
-                identifier = CRS.lookupIdentifier(crs, true);
-            }
-            startObject();
-            writeFieldName("type");
+            String identifier = getCRSIdentifier(crs);
+            writeStartObject();
+            generator.writeFieldName("type");
             writeValue("name");
-            writeFieldName("properties");
-            startObject();
-            writeFieldName("name");
+            generator.writeFieldName("properties");
+            writeStartObject();
+            generator.writeFieldName("name");
             writeValue(identifier);
-            endObject(); // end properties
-            endObject(); // end crs
+            writeEndObject(); // end properties
+            writeEndObject(); // end crs
         } else {
-            writeNull();
+            generator.writeNull();
         }
     }
 
-    public void writeBoundingBox(Envelope env) throws IOException {
-        writeFieldName("bbox");
-        startArray();
+    public void writeCollectionBounds(ReferencedEnvelope env) throws IOException {
+        generator.writeFieldName("bbox");
+        writeStartArray();
         if (axisOrder == CRS.AxisOrder.NORTH_EAST) {
             writeValue(env.getMinY());
             writeValue(env.getMinX());
@@ -180,13 +168,13 @@ public class GeoJSONWriter extends CommonJSONWriter {
             writeValue(env.getMaxX());
             writeValue(env.getMaxY());
         }
-        endArray();
+        writeEndArray();
     }
 
     public void writeStaticContent(String key, Object staticContent, String separator)
             throws IOException {
         if (separator == null || staticContent instanceof String)
-            super.writeStaticContent(key, staticContent);
+            super.writeStaticContent(key, staticContent, null);
         else {
             JsonNode jsonNode = (JsonNode) staticContent;
             if (jsonNode.isArray()) {
@@ -238,21 +226,5 @@ public class GeoJSONWriter extends CommonJSONWriter {
                 writeArrayNodeFlat(newEntryName, childNode, separator);
             }
         }
-    }
-
-    public void incrementNumberReturned() {
-        numberReturned++;
-    }
-
-    public CoordinateReferenceSystem getCrs() {
-        return crs;
-    }
-
-    public void setCrs(CoordinateReferenceSystem crs) {
-        this.crs = crs;
-    }
-
-    public void setAxisOrder(CRS.AxisOrder axisOrder) {
-        this.axisOrder = axisOrder;
     }
 }

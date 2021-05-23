@@ -17,7 +17,7 @@
 
   <modules>
     <module>schemaless-core</module>
-    <module>schemaless-mongo</module>
+    <module>mongodb-schemaless</module>
   </modules>
 
 </project>

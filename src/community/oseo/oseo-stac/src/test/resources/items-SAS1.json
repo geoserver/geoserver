@@ -1,0 +1,51 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "stac_version": "$${env('stac_version', '1.0.0-rc2')}",
+      "stac_extensions": [
+        "eo",
+        "view",
+        "sat",
+        "landsat"
+      ],
+      "id": "${eop:identifier}",
+      "type": "Feature",
+      "geometry": "${footprint}",
+      "bbox": "$include{box.json}",
+      "properties": {
+        "start_datetime": "$filter{timeStart is not null and timeEnd is not null and timeStart <> timeEnd},${timeStart}",
+        "end_datetime": "$filter{timeStart is not null and timeEnd is not null and timeStart <> timeEnd},${timeEnd}",
+        "datetime": "$filter{timeStart is not null and (timeEnd is null or timeStart = timeEnd)},${timeStart}",
+        "created": "${eop:creationDate}",
+        "updated": "${eop:modificationDate}",
+        "platform": "${eop:productPlatform}",
+        "instruments": [
+          "sas123",
+          "sas456"
+        ],
+        "constellation": "$${strToLowerCase(eop:parentIdentifier)}",
+        "view:sun_azimuth": "${eop:illuminationAzimuthAngle}",
+        "view:sun_elevation": "${eop:illuminationElevationAngle}",
+        "sat:orbit_state": "$${strToLowerCase(eop:orbitDirection)}",
+        "sat:absolute_orbit": "${eop:orbitNumber}",
+        "sat:anx_datetime": "${eop:startTimeFromAscendingNode}"
+      },
+      "collection": "${eop:parentIdentifier}",
+      "assets": "${assets}",
+      "links": [
+        "$include{parentLink.json}",
+        {
+          "href": "$${serviceLink('ogcapi/stac')}",
+          "rel": "root",
+          "type": "application/json"
+        },
+        {
+          "href": "$${serviceLink('ogcapi/stac/collections/%s/items/%s', eop:parentIdentifier, eop:identifier)}",
+          "rel": "self",
+          "type": "application/geo+json"
+        }
+      ]
+    }
+  ]
+}

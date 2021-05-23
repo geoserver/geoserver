@@ -94,7 +94,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
 
     public static final String COUNT_KEY = "count";
 
-    public static final String PARENT_ID_KEY = "parentId";
+    public static final String PARENT_ID_KEY = "parentIdentifier";
 
     private Set<String> NOT_FILTERS = new HashSet<>(Arrays.asList(START_INDEX.key, COUNT_KEY));
 
@@ -680,7 +680,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
     }
 
     private Collection<Parameter<?>> getSearchParameters(SearchRequest request) throws IOException {
-        String parentId = request.getParentId();
+        String parentId = request.getParentIdentifier();
         if (parentId == null) {
             return oseo.getCollectionSearchParameters();
         } else {

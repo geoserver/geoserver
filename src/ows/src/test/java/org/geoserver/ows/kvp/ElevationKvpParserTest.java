@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.geoserver.platform.ServiceException;
 import org.geotools.util.NumberRange;
 import org.junit.Assert;
 import org.junit.Test;
@@ -65,5 +66,44 @@ public class ElevationKvpParserTest {
         Assert.assertEquals(4.0, elements.get(3));
         Assert.assertEquals(5.0, elements.get(4));
         Assert.assertEquals(8.9, elements.get(5));
+    }
+
+    @Test
+    public void testInfiniteLoopZeroInterval() {
+        String value = "0/0/0";
+        ServiceException e =
+                Assert.assertThrows(
+                        ServiceException.class,
+                        () -> new ElevationKvpParser("ELEVATION").parse(value));
+        Assert.assertEquals(
+                "Exceeded 100 iterations parsing elevations, bailing out.", e.getMessage());
+        Assert.assertEquals(ServiceException.INVALID_PARAMETER_VALUE, e.getCode());
+        Assert.assertEquals("elevation", e.getLocator());
+    }
+
+    @Test
+    public void testInfiniteLoopPositiveInfinity() {
+        String value = "Infinity/Infinity/1";
+        ServiceException e =
+                Assert.assertThrows(
+                        ServiceException.class,
+                        () -> new ElevationKvpParser("ELEVATION").parse(value));
+        Assert.assertEquals(
+                "Exceeded 100 iterations parsing elevations, bailing out.", e.getMessage());
+        Assert.assertEquals(ServiceException.INVALID_PARAMETER_VALUE, e.getCode());
+        Assert.assertEquals("elevation", e.getLocator());
+    }
+
+    @Test
+    public void testInfiniteLoopNegativeInfinity() {
+        String value = "-Infinity/-Infinity/1";
+        ServiceException e =
+                Assert.assertThrows(
+                        ServiceException.class,
+                        () -> new ElevationKvpParser("ELEVATION").parse(value));
+        Assert.assertEquals(
+                "Exceeded 100 iterations parsing elevations, bailing out.", e.getMessage());
+        Assert.assertEquals(ServiceException.INVALID_PARAMETER_VALUE, e.getCode());
+        Assert.assertEquals("elevation", e.getLocator());
     }
 }

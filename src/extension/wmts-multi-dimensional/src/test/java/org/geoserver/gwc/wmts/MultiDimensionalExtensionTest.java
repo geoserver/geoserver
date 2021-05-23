@@ -10,7 +10,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,6 +37,9 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
+import org.geowebcache.io.XMLBuilder;
+import org.geowebcache.layer.TileLayer;
+import org.geowebcache.layer.TileLayerDispatcher;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -1263,5 +1268,18 @@ public class MultiDimensionalExtensionTest extends TestsSupport {
         // print(dom);
         assertXpathEvaluatesTo(CUSTOM_DIMENSION_NAME, "/md:DomainValues/ows:Identifier", dom);
         assertXpathEvaluatesTo("CustomDimValueA", "/md:DomainValues/md:Domain", dom);
+    }
+
+    @Test
+    public void testTileLayerNotInstanceOfGeoServerTileLayer() throws IOException {
+        TileLayer tileLayer = mock(TileLayer.class);
+        TileLayerDispatcher tld = mock(TileLayerDispatcher.class);
+        XMLBuilder xml = new XMLBuilder(new StringBuilder());
+        MultiDimensionalExtension extension =
+                new MultiDimensionalExtension(getGeoServer(), getWMS(), getCatalog(), tld);
+        // No exception is thrown when the layer isn't a GeoServerTileLayer whilst
+        // the call below  was used to throw an exception when dealing with different
+        // TileLayer implementations
+        extension.encodeLayer(xml, tileLayer);
     }
 }

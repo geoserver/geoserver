@@ -1,0 +1,11 @@
+{
+  "name": "test for array inclusion",
+  "arrayProperty": [
+    "first",
+    "$include{object.json}",
+    "$include{array.json}",
+    "$includeFlat{array.json}",
+    "last"
+  ],
+  "end": "endMarker"
+}

@@ -64,6 +64,7 @@ public abstract class SchemalessFeatureMapper<T> {
             String attrName,
             boolean isCollection) {
         typeBuilder
+                .nillable(true)
                 .namespaceURI(namespaceURI)
                 .name(capitalizeName(attrName) + PROPERTY_TYPE_SUFFIX)
                 .superType(GMLSchema.ABSTRACTFEATURETYPE_TYPE);
@@ -75,6 +76,7 @@ public abstract class SchemalessFeatureMapper<T> {
         parentType.addPropertyDescriptor(descriptorProperty);
 
         typeBuilder
+                .nillable(true)
                 .namespaceURI(namespaceURI)
                 .name(capitalizeName(attrName) + TYPE_SUFFIX)
                 .superType(GMLSchema.ABSTRACTGMLTYPE_TYPE);
@@ -103,18 +105,28 @@ public abstract class SchemalessFeatureMapper<T> {
      * @param attrName the name of the attribute
      * @param value the value
      * @param parentType the parentType to which append the descriptor of the attribute
+     * @param isCollection true if the attribute being encode can contain multiple values false
+     *     otherwise
      * @return the simple Attribute
      */
     protected Attribute buildSimpleAttribute(
-            String namespaceURI, String attrName, Object value, DynamicComplexType parentType) {
+            String namespaceURI,
+            String attrName,
+            Object value,
+            DynamicComplexType parentType,
+            boolean isCollection) {
         Name name = new NameImpl(namespaceURI, attrName);
         PropertyDescriptor attrDescriptor = parentType.getDescriptor(name);
-        if (attrDescriptor == null) {
+        boolean shouldRemove =
+                attrDescriptor != null
+                        && attrDescriptor.getType().getBinding().equals(Object.class);
+        if (shouldRemove) parentType.removePropertyDescriptor(attrDescriptor);
+        if (attrDescriptor == null || shouldRemove) {
             typeBuilder
                     .binding(value.getClass())
                     .name(attrName)
                     .namespaceURI(namespaceURI)
-                    .maxOccurs(1)
+                    .maxOccurs(isCollection ? Integer.MAX_VALUE : 1)
                     .minOccurs(0);
             AttributeType attrType = typeBuilder.buildType();
             attrDescriptor = typeBuilder.buildDescriptor(attrType.getName(), attrType);
@@ -122,10 +134,43 @@ public abstract class SchemalessFeatureMapper<T> {
                 parentType.addPropertyDescriptor(attrDescriptor);
             }
         }
-        if (!value.getClass().equals(attrDescriptor.getType().getBinding())) {
+        Class<?> binding = attrDescriptor.getType().getBinding();
+        if (!binding.equals(Object.class) && !value.getClass().equals(binding)) {
             value = Converters.convert(value, attrDescriptor.getType().getBinding());
         }
         attributeBuilder.setDescriptor((AttributeDescriptor) attrDescriptor);
         return attributeBuilder.buildSimple(null, value);
+    }
+
+    protected Attribute buildSimpleAttribute(
+            String namespaceURI, String attrName, Object value, DynamicComplexType parentType) {
+        return buildSimpleAttribute(namespaceURI, attrName, value, parentType, false);
+    }
+
+    /**
+     * Builds a simple attribute based on a null value.
+     *
+     * @param namespaceURI the namespaceURI.
+     * @param attrName the name of the attribute.
+     * @param parentType the parent ComplexType.
+     * @return an Attribute holding a null value.
+     */
+    protected Attribute buildNullAttribute(
+            String namespaceURI, String attrName, DynamicComplexType parentType) {
+        typeBuilder
+                .binding(Object.class)
+                .name(attrName)
+                .namespaceURI(namespaceURI)
+                .maxOccurs(1)
+                .minOccurs(0)
+                .nillable(true);
+        AttributeType attrType = typeBuilder.buildType();
+        PropertyDescriptor attrDescriptor =
+                typeBuilder.buildDescriptor(attrType.getName(), attrType);
+        if (parentType instanceof DynamicComplexType) {
+            parentType.addPropertyDescriptor(attrDescriptor);
+        }
+        attributeBuilder.setDescriptor((AttributeDescriptor) attrDescriptor);
+        return attributeBuilder.buildSimple(null, null);
     }
 }

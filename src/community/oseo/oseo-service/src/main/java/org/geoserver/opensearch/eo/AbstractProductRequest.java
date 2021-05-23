@@ -14,7 +14,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 public class AbstractProductRequest {
 
-    String parentId;
+    String parentIdentifier;
 
     String id;
 
@@ -30,12 +30,12 @@ public class AbstractProductRequest {
         this.baseUrl = baseUrl;
     }
 
-    public String getParentId() {
-        return parentId;
+    public String getParentIdentifier() {
+        return parentIdentifier;
     }
 
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
+    public void setParentIdentifier(String parentIdentifier) {
+        this.parentIdentifier = parentIdentifier;
     }
 
     public String getHttpAccept() {

@@ -192,9 +192,12 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
             featuresInfo =
                     encodeSimpleFeatures(jsonWriter, resultsList, isFeatureBounding(), operation);
         } else {
+
+            ComplexGeoJsonWriterOptions complexWriterOptions =
+                    getComplexGeoJsonWriterOptions(resultsList);
             // encode collection with complex features
             ComplexGeoJsonWriter complexWriter =
-                    new ComplexGeoJsonWriter(jsonWriter) {
+                    new ComplexGeoJsonWriter(jsonWriter, complexWriterOptions) {
 
                         @Override
                         protected void writeExtraFeatureProperties(
@@ -577,5 +580,19 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
     @Override
     protected String getExtension(FeatureCollectionResponse response) {
         return "json";
+    }
+
+    private ComplexGeoJsonWriterOptions getComplexGeoJsonWriterOptions(
+            List<FeatureCollection> resultsList) {
+        List<ComplexGeoJsonWriterOptions> settings =
+                GeoServerExtensions.extensions(ComplexGeoJsonWriterOptions.class);
+        ComplexGeoJsonWriterOptions chosen = null;
+        for (ComplexGeoJsonWriterOptions setting : settings) {
+            if (setting.canHandle(resultsList)) chosen = setting;
+        }
+        if (chosen == null) chosen = new DefaultComplexGeoJsonWriterOptions();
+        if (LOGGER.isLoggable(Level.FINE))
+            LOGGER.log(Level.FINE, "Chosen ComplexGeoJsonWriterOptions " + chosen.getClass());
+        return chosen;
     }
 }

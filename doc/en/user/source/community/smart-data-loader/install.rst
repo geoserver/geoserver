@@ -8,11 +8,11 @@ The Smart Data Loader extension is listed among the other extension downloads on
 
 The installation process is similar to other GeoServer extensions:
 
-#. Download the :download_extension:`smart-data-loader`
+#. Download the Smart Data Loader nightly GeoServer community module from :download_community:`smart-data-loader`.
    
    Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
 
-#. Make user you have donwloaded/installed the :download_extension:`app-schema`)
+#. Make user you have downloaded/installed the :download_extension:`app-schema`)
 
 #. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.
    Make sure you do not create any sub-directories during the extraction process.

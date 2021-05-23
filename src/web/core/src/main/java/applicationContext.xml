@@ -284,13 +284,20 @@
   <bean id="httpLayerConfigPanel" class="org.geoserver.web.publish.LayerConfigurationPanelInfo">
     <property name="id" value="http" />
     <property name="titleKey" value="publish.layer.config.http" />
-    <property name="componentClass" value="org.geoserver.web.publish.HTTPLayerConfig" />
+    <property name="componentClass" value="org.geoserver.web.publish.LayerHTTPLayerConfig" />
   </bean>
   
   <bean id="rootLayerConfigPanel" class="org.geoserver.web.publish.CommonPublishedConfigurationPanelInfo">
     <property name="id" value="http" />
     <property name="titleKey" value="publish.layer.config.rootLayer" />
     <property name="componentClass" value="org.geoserver.web.publish.RootLayerConfig" />
+  </bean>
+
+  <!-- LayerGroup configuration panels -->
+  <bean id="httpLayerGroupConfigPanel" class="org.geoserver.web.publish.LayerGroupConfigurationPanelInfo">
+    <property name="id" value="http" />
+    <property name="titleKey" value="publish.layer.config.http" />
+    <property name="componentClass" value="org.geoserver.web.publish.LayerGroupHTTPLayerConfig" />
   </bean>
 
   <!-- Data store panels. Used to set up custom icons for the different vector 

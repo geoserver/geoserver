@@ -1207,7 +1207,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          */
         private void handleLayerGroupStyles(String layerName) {
             start("Style");
-            element("Name", LAYER_GROUP_STYLE_NAME);
+            element("Name", LAYER_GROUP_STYLE_NAME.concat("-").concat(layerName));
             element(
                     "Title",
                     LAYER_GROUP_STYLE_TITLE_PREFIX
@@ -1438,7 +1438,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             handleMetadataList(metadataLinks);
 
             // add the layer group style
-            handleLayerGroupStyles(layerName);
+            if (encodeGroupDefaultStyle(layerGroup)) handleLayerGroupStyles(layerName);
 
             // the layer style is not provided since the group does just have
             // one possibility, the lack of styles that will make it use
@@ -1461,6 +1461,14 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
 
             end("Layer");
+        }
+
+        private boolean encodeGroupDefaultStyle(LayerGroupInfo lgi) {
+            LayerGroupInfo.Mode mode = lgi.getMode();
+            boolean opaqueOrSingle =
+                    mode.equals(LayerGroupInfo.Mode.SINGLE)
+                            || mode.equals(LayerGroupInfo.Mode.OPAQUE_CONTAINER);
+            return opaqueOrSingle || wmsConfig.isDefaultGroupStyleEnabled();
         }
 
         protected void handleAttribution(PublishedInfo layer) {

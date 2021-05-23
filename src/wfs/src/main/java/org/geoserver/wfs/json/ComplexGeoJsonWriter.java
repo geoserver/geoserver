@@ -13,12 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.StreamSupport;
-import org.geotools.data.DataStoreFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
@@ -43,7 +38,6 @@ class ComplexGeoJsonWriter {
 
     static final Logger LOGGER = Logging.getLogger(ComplexGeoJsonWriter.class);
 
-    private static Class<?> NON_FEATURE_TYPE_PROXY;
     private static final String DATATYPE = "@dataType";
     /**
      * A string constant for representing a not needed key name because object is being added inside
@@ -51,39 +45,21 @@ class ComplexGeoJsonWriter {
      */
     private static final String INSIDE_ARRAY_ATTRIBUTE = "${inside-array}";
 
-    static {
-        try {
-            NON_FEATURE_TYPE_PROXY =
-                    Class.forName("org.geotools.data.complex.config.NonFeatureTypeProxy");
-        } catch (ClassNotFoundException e) {
-            // might be ok if the app-schema datastore is not around
-            if (StreamSupport.stream(
-                            Spliterators.spliteratorUnknownSize(
-                                    DataStoreFinder.getAllDataStores(), Spliterator.ORDERED),
-                            false)
-                    .anyMatch(
-                            f ->
-                                    f != null
-                                            && f.getClass()
-                                                    .getSimpleName()
-                                                    .equals("AppSchemaDataAccessFactory"))) {
-                LOGGER.log(
-                        Level.FINE,
-                        "Could not find NonFeatureTypeProxy yet App-schema is around, probably the class changed name, package or does not exist anymore",
-                        e);
-            }
-            NON_FEATURE_TYPE_PROXY = null;
-        }
-    }
-
     private final GeoJSONBuilder jsonWriter;
 
     private boolean geometryFound = false;
     private CoordinateReferenceSystem crs;
     private long featuresCount = 0;
 
-    public ComplexGeoJsonWriter(GeoJSONBuilder jsonWriter) {
+    private final ComplexGeoJsonWriterOptions settings;
+
+    public ComplexGeoJsonWriter(GeoJSONBuilder jsonWriter, ComplexGeoJsonWriterOptions settings) {
         this.jsonWriter = jsonWriter;
+        this.settings = settings;
+    }
+
+    public ComplexGeoJsonWriter(GeoJSONBuilder jsonWriter) {
+        this(jsonWriter, new DefaultComplexGeoJsonWriterOptions());
     }
 
     public void write(List<FeatureCollection> collections) {
@@ -645,8 +621,10 @@ class ComplexGeoJsonWriter {
             key(name);
             jsonWriter.object();
             // encode the datatype
-            jsonWriter.key(DATATYPE);
-            jsonWriter.value(getSimplifiedTypeName(attribute.getType().getName()));
+            if (settings.encodeComplexAttributeType()) {
+                jsonWriter.key(DATATYPE);
+                jsonWriter.value(getSimplifiedTypeName(attribute.getType().getName()));
+            }
             // let's see if we have actually some properties to encode
             if (attribute.getProperties() != null && !attribute.getProperties().isEmpty()) {
                 // encode the object properties, since this is not a top feature or a
@@ -667,8 +645,7 @@ class ComplexGeoJsonWriter {
      */
     private boolean isFullFeature(ComplexAttribute attribute) {
         return attribute instanceof Feature
-                && (NON_FEATURE_TYPE_PROXY == null
-                        || !NON_FEATURE_TYPE_PROXY.isInstance(attribute.getType()));
+                && !settings.encodeNestedFeatureAsProperty(attribute.getType());
     }
 
     /**

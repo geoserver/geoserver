@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 import org.geoserver.platform.ServiceException;
-import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 
@@ -118,7 +117,15 @@ public class ElevationParser {
                     Double step;
                     int j = 0;
                     while ((step = j * increment + begin) <= end) {
-                        addValue(values, step);
+                        if (!addValue(values, step) && j >= maxValues) {
+                            // prevent infinite loops
+                            throw new ServiceException(
+                                    "Exceeded "
+                                            + maxValues
+                                            + " iterations parsing elevations, bailing out.",
+                                    ServiceException.INVALID_PARAMETER_VALUE,
+                                    "elevation");
+                        }
                         j++;
 
                         checkMaxElevations(values, maxValues);
@@ -153,19 +160,20 @@ public class ElevationParser {
         }
     }
 
-    private void addValue(Collection<Double> result, Double step) {
+    private boolean addValue(Collection<Double> result, Double step) {
         for (final Object element : result) {
             if (element instanceof Double) {
                 // convert
                 final Double local = (Double) element;
-                if (local.equals(step)) return;
+                if (local.equals(step)) return false;
             } else {
                 // convert
-                final DateRange local = (DateRange) element;
-                if (local.contains(step)) return;
+                @SuppressWarnings("unchecked")
+                final NumberRange<Double> local = (NumberRange<Double>) element;
+                if (local.contains((Number) step)) return false;
             }
         }
-        result.add(step);
+        return result.add(step);
     }
 
     private void addPeriod(Collection<Object> result, NumberRange<Double> newRange) {

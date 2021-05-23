@@ -383,7 +383,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                     newLayers.add(new MapLayerInfo((LayerInfo) o));
                 } else if (o instanceof LayerGroupInfo) {
                     for (LayerInfo l : ((LayerGroupInfo) o).layers()) {
-                        newLayers.add(new MapLayerInfo(l));
+                        newLayers.add(new MapLayerInfo(l, ((LayerGroupInfo) o).getMetadata()));
                     }
                 } else if (o instanceof MapLayerInfo) {
                     // it was a remote OWS layer, add it directly
@@ -575,6 +575,12 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                     }
                 }
                 getMap.setStyles(newStyles);
+                if (newFilters != null
+                        && !newFilters.isEmpty()
+                        && getMap.getCQLFilter() != null
+                        && !getMap.getCQLFilter().isEmpty()) {
+                    getMap.setCQLFilter(newFilters);
+                }
                 getMap.setFilter(newFilters);
                 getMap.setSortBy(newSortBy);
             }
@@ -1021,7 +1027,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             } else if (o instanceof LayerGroupInfo) {
                 List<LayerInfo> subLayers = ((LayerGroupInfo) o).layers();
                 for (LayerInfo layer : subLayers) {
-                    currLayer = new MapLayerInfo(layer);
+                    currLayer = new MapLayerInfo(layer, ((LayerGroupInfo) o).getMetadata());
                     layers.add(currLayer);
                     Style style = findStyleOf(request, currLayer, styleName, styledLayers);
                     styles.add(style);

@@ -5,11 +5,13 @@
 package org.geoserver.opensearch.rest;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geotools.data.geojson.GeoJSONReader;
+import org.geotools.data.geojson.GeoJSONWriter;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.geojson.feature.FeatureJSON;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -33,14 +35,17 @@ public class OseoGeoJSONCollectionConverter extends BaseMessageConverter<Object>
     protected void writeInternal(Object t, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         SimpleFeatureCollection fc = (SimpleFeatureCollection) t;
-        FeatureJSON json = new FeatureJSON();
-        json.writeFeatureCollection((FeatureCollection) fc, outputMessage.getBody());
+        try (GeoJSONWriter writer = new GeoJSONWriter(outputMessage.getBody())) {
+            writer.setPrettyPrinting(true);
+            writer.writeFeatureCollection(fc);
+        }
     }
 
     @Override
     protected Object readInternal(Class<? extends Object> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
-        return new FeatureJSON().readFeatureCollection(inputMessage.getBody());
+        return GeoJSONReader.parseFeatureCollection(
+                IOUtils.toString(inputMessage.getBody(), StandardCharsets.UTF_8));
     }
 
     @Override

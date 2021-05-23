@@ -30,7 +30,12 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
         polygons = getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
         page =
                 new FormTestPage(
-                        (ComponentBuilder) id -> new HTTPLayerConfig(id, new Model<>(polygons)));
+                        (ComponentBuilder)
+                                id ->
+                                        new HTTPLayerConfig(
+                                                id,
+                                                new Model<>(polygons),
+                                                LayerHTTPLayerConfig.RESOURCE_METADATA));
         tester.startPage(page);
     }
 
@@ -53,7 +58,12 @@ public class HTTPLayerConfigTest extends GeoServerWicketTestSupport {
                 getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
         FormTestPage page =
                 new FormTestPage(
-                        (ComponentBuilder) id -> new HTTPLayerConfig(id, new Model<>(polygons)));
+                        (ComponentBuilder)
+                                id ->
+                                        new HTTPLayerConfig(
+                                                id,
+                                                new Model<>(polygons),
+                                                LayerHTTPLayerConfig.RESOURCE_METADATA));
         tester.startPage(page);
         tester.assertComponent("form:panel:cacheAgeMax", TextField.class);
 

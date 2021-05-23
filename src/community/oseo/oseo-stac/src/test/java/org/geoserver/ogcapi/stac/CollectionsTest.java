@@ -11,8 +11,10 @@ import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.data.Query;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
@@ -21,6 +23,14 @@ import org.jsoup.select.Elements;
 import org.junit.Test;
 
 public class CollectionsTest extends STACTestSupport {
+
+    @Test
+    public void testTemplatesCopy() throws Exception {
+        GeoServerDataDirectory dd = getDataDirectory();
+        Resource templates = dd.get("templates/ogc/stac");
+        assertEquals(Resource.Type.RESOURCE, templates.get("collections.json").getType());
+        assertEquals(Resource.Type.RESOURCE, templates.get("items.json").getType());
+    }
 
     @Test
     public void testCollectionsHTML() throws Exception {
@@ -118,8 +128,8 @@ public class CollectionsTest extends STACTestSupport {
         assertEquals(89, s2bbox.read("$[0][3]"), 0d);
         // Sentinel 2 temporal range
         DocumentContext s2time = readContext(s2, "extent.temporal.interval");
-        assertEquals("2015-07-01T08:20:21.000+00:00", s2time.read("$[0][0]"));
-        assertEquals("2016-02-26T09:20:21.000+00:00", s2time.read("$[0][1]"));
+        assertEquals("2015-07-01T10:20:21.000+00:00", s2time.read("$[0][0]"));
+        assertEquals("2016-02-26T10:20:21.000+00:00", s2time.read("$[0][1]"));
         // the providers for sentinel2
         assertEquals(2, (int) s2.read("providers.length()", Integer.class));
         assertEquals(

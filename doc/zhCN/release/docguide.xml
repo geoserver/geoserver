@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+  <id>docguide</id>
+  <baseDirectory>geoserver-${project.version}-docguide</baseDirectory>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory></directory>
+      <includes>
+        <include>LICENSE.md</include> <!-- CC -->
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target</directory>
+      <includes>
+        <include>VERSION*</include>
+      </includes>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>release</directory>
+      <includes>
+        <include>README.txt</include> <!-- CC -->
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target</directory>
+      <includes>
+        <include>VERSION*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>target/docguide/html</directory>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>

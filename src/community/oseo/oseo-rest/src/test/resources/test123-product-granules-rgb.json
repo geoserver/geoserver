@@ -31,7 +31,7 @@
         ]
       },
       "properties": {
-        "location": "$resources/rgb.tif",
+        "location": "$resources/rgb.tif"
       },
       "id": "GRANULE.1"
     }

@@ -1,0 +1,48 @@
+{
+  "_id": { "$oid" : "58e5889ce4b02461ad5af084"},
+  "id": "5",
+  "name": "station 5",
+  "inferredAttribute2": "ok",
+  "groupAttribute": "groupAttribute2",
+  "groupAttribute2": "groupAttribute21",
+  "numericValue": 50.0,
+  "simpleArrayString": [
+    "stringOne",
+    "stringTwo"
+  ],
+  "contact": {
+    "mail": "station1@mail.com"
+  },
+  "geometry": {
+    "coordinates": [
+      92,
+      10
+    ],
+    "type": "Point"
+  },
+  "anotherNullableField": {
+    "value": null
+  },
+  "measurements": [
+    {
+      "name": "temp",
+      "unit": "c",
+      "values": [
+        {
+          "time": 1482146800,
+          "value": 20
+        }
+      ]
+    },
+    {
+      "name": "wind",
+      "unit": "km/h",
+      "values": [
+        {
+          "time": 1482146833,
+          "value": 155
+        }
+      ]
+    }
+  ]
+}

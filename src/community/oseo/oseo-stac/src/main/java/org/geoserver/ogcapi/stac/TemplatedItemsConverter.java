@@ -13,11 +13,14 @@ import static org.springframework.http.HttpMethod.POST;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
+import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.platform.ServiceException;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.util.logging.Logging;
+import org.opengis.feature.Feature;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
@@ -26,6 +29,8 @@ import org.springframework.stereotype.Component;
 /** Converter for the {@link ItemsResponse} that will encode STAC items using a feature template */
 @Component
 public class TemplatedItemsConverter extends AbstractHttpMessageConverter<AbstractItemsResponse> {
+
+    static final Logger LOGGER = Logging.getLogger(TemplatedItemsConverter.class);
 
     private final STACTemplates templates;
 
@@ -49,21 +54,25 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
     protected void writeInternal(
             AbstractItemsResponse itemsResponse, HttpOutputMessage httpOutputMessage)
             throws IOException {
-        RootBuilder builder = templates.getItemTemplate();
 
         try (STACGeoJSONWriter writer =
                 new STACGeoJSONWriter(
                         new JsonFactory()
                                 .createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8))) {
-            writer.startTemplateOutput();
+            writer.startTemplateOutput(null);
             try (FeatureIterator features = itemsResponse.getItems().features()) {
                 while (features.hasNext()) {
-                    builder.evaluate(writer, new TemplateBuilderContext(features.next()));
+                    // lookup the builder, might be specific to the parent collection
+                    Feature feature = features.next();
+                    String collectionId =
+                            (String) feature.getProperty("parentIdentifier").getValue();
+                    RootBuilder builder = templates.getItemTemplate(collectionId);
+                    builder.evaluate(writer, new TemplateBuilderContext(feature));
                 }
             }
-            writer.endArray();
+            writer.writeEndArray();
             writeAdditionFields(writer, itemsResponse);
-            writer.endTemplateOutput();
+            writer.endTemplateOutput(null);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -72,19 +81,19 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
     private void writeAdditionFields(STACGeoJSONWriter w, AbstractItemsResponse ir)
             throws IOException {
         // number matched
-        w.writeFieldName("numberMatched");
-        w.writeNumber(ir.getNumberMatched());
+        w.writeElementName("numberMatched", null);
+        w.writeElementValue(ir.getNumberMatched(), null);
         // number returned
-        w.writeFieldName("numberReturned");
+        w.writeElementName("numberReturned", null);
         int numberReturned = ir.getItems().size();
-        w.writeNumber(numberReturned);
+        w.writeElementValue(numberReturned, null);
         // stac infos
-        w.writeFieldName("stac_version");
-        w.writeString(STACService.STAC_VERSION);
+        w.writeElementName("stac_version", null);
+        w.writeElementValue(STACService.STAC_VERSION, null);
 
         // links
-        w.writeFieldName("links");
-        w.startArray();
+        w.writeElementName("links", null);
+        w.writeStartArray();
 
         String type = GEOJSON_VALUE;
         if (ir.isPost()) {
@@ -101,6 +110,6 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
             if (ir.getNext() != null) w.writeLink(ir.getNext(), REL_NEXT, type, null, null);
             if (ir.getSelf() != null) w.writeLink(ir.getSelf(), REL_SELF, type, null, null);
         }
-        w.endArray();
+        w.writeEndArray();
     }
 }

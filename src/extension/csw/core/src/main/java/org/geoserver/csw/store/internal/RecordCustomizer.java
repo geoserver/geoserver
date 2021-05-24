@@ -50,27 +50,23 @@ public class RecordCustomizer extends FeatureCustomizer {
 
     @Override
     public void customizeFeature(Feature feature, CatalogInfo resource) {
-        CloseableIterator<String> links = null;
         List<Property> newReferencesList = new ArrayList<>();
         String link = null;
         try {
-            links = downloadLinkHandler.generateDownloadLinks(resource);
-            if (links == null) {
-                // No need to update the feature
-                return;
-            }
-            while (links.hasNext()) {
-                link = links.next();
-                newReferencesList.add(createReferencesElement(link));
-            }
-        } finally {
-            if (links != null) {
-                try {
-                    links.close();
-                } catch (IOException e) {
-                    // ignore it
+            try (CloseableIterator<String> links =
+                    downloadLinkHandler.generateDownloadLinks(resource)) {
+                if (links == null) {
+                    // No need to update the feature
+                    return;
+                }
+                while (links.hasNext()) {
+                    link = links.next();
+                    newReferencesList.add(createReferencesElement(link));
                 }
             }
+
+        } catch (IOException e) {
+            // ignore it (happens only on close)
         }
 
         List<Property> propertyList = new ArrayList<>();

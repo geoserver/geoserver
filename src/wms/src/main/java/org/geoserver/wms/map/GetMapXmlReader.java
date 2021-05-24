@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
@@ -722,20 +723,14 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         List<SAXException> errors = null;
 
         try {
-            FileInputStream in = null;
-
-            try {
-                in = new FileInputStream(f);
+            try (FileInputStream in = new FileInputStream(f)) {
                 errors = validator.validateSLD(in);
-            } finally {
-                if (in != null) {
-                    in.close();
-                }
             }
 
             if (!errors.isEmpty()) {
-                in = new FileInputStream(f);
-                throw new ServiceException(SLDValidator.getErrorMessage(in, errors));
+                try (InputStream in = new FileInputStream(f)) {
+                    throw new ServiceException(SLDValidator.getErrorMessage(in, errors));
+                }
             }
         } catch (IOException e) {
             String msg =
@@ -755,20 +750,14 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
         List<SAXException> errors = null;
 
         try {
-            FileInputStream in = null;
-
-            try {
-                in = new FileInputStream(f);
+            try (FileInputStream in = new FileInputStream(f)) {
                 errors = validator.validateGETMAP(in);
-            } finally {
-                if (in != null) {
-                    in.close();
-                }
             }
 
             if (!errors.isEmpty()) {
-                in = new FileInputStream(f);
-                throw new ServiceException(GETMAPValidator.getErrorMessage(in, errors));
+                try (FileInputStream in = new FileInputStream(f)) {
+                    throw new ServiceException(GETMAPValidator.getErrorMessage(in, errors));
+                }
             }
         } catch (IOException e) {
             String msg =

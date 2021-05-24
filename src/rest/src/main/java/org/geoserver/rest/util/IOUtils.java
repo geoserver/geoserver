@@ -406,30 +406,9 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
         if (destinationFile.getAbsolutePath().equalsIgnoreCase(sourceFile.getAbsolutePath()))
             throw new IllegalArgumentException("Cannot copy a file on itself");
 
-        FileChannel source = new RandomAccessFile(sourceFile, "r").getChannel();
-        FileChannel destination = new RandomAccessFile(destinationFile, "rw").getChannel();
-        try {
-            copyFileChannel(size, source, destination);
-        } finally {
-            try {
-                if (source != null) {
-                    try {
-                        source.close();
-                    } catch (Throwable t) {
-                        if (LOGGER.isLoggable(Level.INFO))
-                            LOGGER.log(Level.INFO, t.getLocalizedMessage(), t);
-                    }
-                }
-            } finally {
-                if (destination != null) {
-                    try {
-                        destination.close();
-                    } catch (Throwable t) {
-                        if (LOGGER.isLoggable(Level.INFO))
-                            LOGGER.log(Level.INFO, t.getLocalizedMessage(), t);
-                    }
-                }
-            }
+        try (FileChannel src = new RandomAccessFile(sourceFile, "r").getChannel();
+                FileChannel dst = new RandomAccessFile(destinationFile, "rw").getChannel()) {
+            copyFileChannel(size, src, dst);
         }
     }
 

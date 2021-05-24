@@ -86,57 +86,39 @@ public class GeoServerUserDao implements UserDetailsService {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         Resource propFile = loader.get("security/users.properties");
 
-        InputStream is = null;
-        OutputStream os = null;
-        try {
-            if (propFile.getType() == Type.RESOURCE) {
-                // we're probably dealing with an old data dir, create
-                // the file without
-                // changing the username and password if possible
-                Properties p = new Properties();
-                GeoServerInfo global = GeoServerExtensions.bean(GeoServer.class).getGlobal();
-                if ((global != null)
-                        && (global.getAdminUsername() != null)
-                        && !global.getAdminUsername().trim().equals("")) {
-                    p.put(
-                            global.getAdminUsername(),
-                            global.getAdminPassword() + ",ROLE_ADMINISTRATOR");
-                } else {
-                    p.put("admin", "geoserver,ROLE_ADMINISTRATOR");
-                }
+        if (propFile.getType() == Type.RESOURCE) {
+            // we're probably dealing with an old data dir, create
+            // the file without
+            // changing the username and password if possible
+            Properties p = new Properties();
+            GeoServerInfo global = GeoServerExtensions.bean(GeoServer.class).getGlobal();
+            if ((global != null)
+                    && (global.getAdminUsername() != null)
+                    && !global.getAdminUsername().trim().equals("")) {
+                p.put(global.getAdminUsername(), global.getAdminPassword() + ",ROLE_ADMINISTRATOR");
+            } else {
+                p.put("admin", "geoserver,ROLE_ADMINISTRATOR");
+            }
 
-                os = propFile.out();
+            try (OutputStream os = propFile.out()) {
                 p.store(os, "Format: name=password,ROLE1,...,ROLEN");
-                os.close();
+            }
 
-                // setup a sample service.properties
-                Resource serviceFile = loader.get("security/service.properties");
-                os = serviceFile.out();
-                is = GeoServerUserDao.class.getResourceAsStream("serviceTemplate.properties");
+            // setup a sample service.properties
+            Resource serviceFile = loader.get("security/service.properties");
+            try (InputStream is =
+                            GeoServerUserDao.class.getResourceAsStream(
+                                    "serviceTemplate.properties");
+                    OutputStream os = serviceFile.out()) {
                 byte[] buffer = new byte[1024];
                 int count = 0;
                 while ((count = is.read(buffer)) > 0) {
                     os.write(buffer, 0, count);
                 }
-                return propFile;
-            } else {
-                throw new FileNotFoundException("Unable to find security/users.properties");
             }
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException ei) {
-                    /* nothing to do */
-                }
-            }
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException eo) {
-                    /* nothing to do */
-                }
-            }
+            return propFile;
+        } else {
+            throw new FileNotFoundException("Unable to find security/users.properties");
         }
     }
 
@@ -193,14 +175,11 @@ public class GeoServerUserDao implements UserDetailsService {
 
     /** Writes down the current users map to file system */
     public void storeUsers() throws IOException {
-        OutputStream os = null;
-        try {
-            // turn back the users into a users map
-            Properties p = storeUsersToProperties(userMap);
-
-            // write out to the data dir
-            Resource propFile = userDefinitionsFile.getResource();
-            os = propFile.out();
+        // turn back the users into a users map
+        Properties p = storeUsersToProperties(userMap);
+        // write out to the data dir
+        Resource propFile = userDefinitionsFile.getResource();
+        try (OutputStream os = propFile.out()) {
             p.store(os, null);
         } catch (Exception e) {
             if (e instanceof IOException) throw (IOException) e;
@@ -208,8 +187,6 @@ public class GeoServerUserDao implements UserDetailsService {
                 throw (IOException)
                         new IOException("Could not write updated users list to file system")
                                 .initCause(e);
-        } finally {
-            if (os != null) os.close();
         }
     }
 

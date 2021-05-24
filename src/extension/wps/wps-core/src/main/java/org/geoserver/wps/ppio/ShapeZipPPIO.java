@@ -78,10 +78,8 @@ public class ShapeZipPPIO extends BinaryPPIO {
         File tempDir = IOUtils.createTempDirectory("shpziptemp");
 
         // unzip to the temporary directory
-        ZipInputStream zis = null;
         File shapeFile = null;
-        try {
-            zis = new ZipInputStream(input);
+        try (ZipInputStream zis = new ZipInputStream(input)) {
             ZipEntry entry = null;
 
             while ((entry = zis.getNextEntry()) != null) {
@@ -104,10 +102,6 @@ public class ShapeZipPPIO extends BinaryPPIO {
                     }
                 }
                 zis.closeEntry();
-            }
-        } finally {
-            if (zis != null) {
-                zis.close();
             }
         }
 

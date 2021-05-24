@@ -180,17 +180,11 @@ public class LegendSampleImpl implements CatalogListener, LegendSample, GeoServe
             BufferedImage image = (BufferedImage) ((LegendGraphic) legendGraphic).getLegend();
 
             PNGWriter writer = new PNGWriter();
-            OutputStream outStream = null;
-            try {
-                Resource sampleFile = sampleLegendFolder.get(getSampleFileName(style));
-                outStream = sampleFile.out();
+            Resource sampleFile = sampleLegendFolder.get(getSampleFileName(style));
+            try (OutputStream outStream = sampleFile.out()) {
                 writer.writePNG(image, outStream, 0.0f, FilterType.FILTER_NONE);
                 removeStyleSampleInvalidation(style);
                 return new Dimension(image.getWidth(), image.getHeight());
-            } finally {
-                if (outStream != null) {
-                    outStream.close();
-                }
             }
         }
 

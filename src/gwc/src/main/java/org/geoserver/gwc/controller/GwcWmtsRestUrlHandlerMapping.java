@@ -5,14 +5,11 @@
 package org.geoserver.gwc.controller;
 
 import java.lang.reflect.Method;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.ows.LocalWorkspace;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -84,9 +81,6 @@ public final class GwcWmtsRestUrlHandlerMapping extends RequestMappingHandlerMap
      */
     private static final class Wrapper extends HttpServletRequestWrapper {
 
-        // regex expression that matches a layer name in a WMTS REST URI
-        private final Pattern URI_LAYER_PATTERN = Pattern.compile("rest/wmts/([^/]+)/]");
-
         private final String requestUri;
 
         Wrapper(HttpServletRequest request, Catalog catalog, String workspaceName) {
@@ -99,21 +93,6 @@ public final class GwcWmtsRestUrlHandlerMapping extends RequestMappingHandlerMap
         public String getRequestURI() {
             // return the global request URL, i.e. no workspace on it
             return requestUri;
-        }
-
-        private String adaptQueryUri(Catalog catalog, String queryUri, String workspaceName) {
-            // remove the virtual service workspace from the URL
-            queryUri = queryUri.replace(workspaceName + "/", "");
-            // prefix layers in the URI with the local workspace prefix
-            Matcher matcher = URI_LAYER_PATTERN.matcher(requestUri);
-            if (!matcher.find()) {
-                // no layers in the URI, we are done
-                return queryUri;
-            }
-            // we have layers in the URI let's adapt them
-            String layerName = matcher.group(0);
-            layerName = CatalogConfiguration.removeWorkspacePrefix(layerName, catalog);
-            return matcher.replaceFirst("rest/wmts/" + workspaceName + ":" + layerName);
         }
     }
 

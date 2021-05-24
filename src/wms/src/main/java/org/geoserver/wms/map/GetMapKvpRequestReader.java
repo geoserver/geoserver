@@ -441,51 +441,40 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
 
             URL styleUrl = getMap.getStyleUrl();
 
-            InputStream input = null;
-            if (styleUrl.getProtocol().toLowerCase().indexOf("http") == 0) {
-                input = getHttpInputStream(styleUrl);
-            } else {
-                try {
-                    input = Requests.getInputStream(styleUrl);
-                } catch (Exception ex) {
-                    LOGGER.log(Level.WARNING, "Exception while getting SLD.", ex);
-                    // KMS: Replace with a generic exception so it can't be used to port scan the
-                    // local
-                    // network.
-                    throw new ServiceException("Error while getting SLD.");
-                }
-            }
-            if (input != null) {
-                try (InputStreamReader reader = new InputStreamReader(input)) {
-                    if (getMap.getValidateSchema().booleanValue()) {
-                        List<Exception> errors = validateStyle(input, getMap);
-                        if ((errors != null) && (!errors.isEmpty())) {
-                            throw new ServiceException(SLDValidator.getErrorMessage(input, errors));
+            try (InputStream input = getStream(styleUrl)) {
+                if (input != null) {
+                    try (InputStreamReader reader = new InputStreamReader(input)) {
+                        if (getMap.getValidateSchema().booleanValue()) {
+                            List<Exception> errors = validateStyle(input, getMap);
+                            if ((errors != null) && (!errors.isEmpty())) {
+                                throw new ServiceException(
+                                        SLDValidator.getErrorMessage(input, errors));
+                            }
                         }
-                    }
 
-                    StyledLayerDescriptor sld = parseStyle(getMap, reader);
-                    processSld(getMap, requestedLayerInfos, sld, styleNameList);
-                } catch (Exception ex) {
-                    final Level l = Level.WARNING;
-                    // KMS: Kludge here to allow through certain exceptions without being hidden.
-                    if (ex.getCause() instanceof SAXException) {
-                        if (ex.getCause().getMessage().contains("Entity resolution disallowed")) {
-                            throw ex;
+                        StyledLayerDescriptor sld = parseStyle(getMap, reader);
+                        processSld(getMap, requestedLayerInfos, sld, styleNameList);
+                    } catch (Exception ex) {
+                        final Level l = Level.WARNING;
+                        // KMS: Kludge here to allow through certain exceptions without being
+                        // hidden.
+                        if (ex.getCause() instanceof SAXException) {
+                            if (ex.getCause()
+                                    .getMessage()
+                                    .contains("Entity resolution disallowed")) {
+                                throw ex;
+                            }
+                        }
+                        LOGGER.log(l, "Exception while getting SLD.", ex);
+                        // KMS: Replace with a generic exception so it can't be used to port scan
+                        // the local network.
+                        if (LOGGER.isLoggable(l)) {
+                            throw new ServiceException(
+                                    "Error while getting SLD.  See the log for details.");
+                        } else {
+                            throw new ServiceException("Error while getting SLD.");
                         }
                     }
-                    LOGGER.log(l, "Exception while getting SLD.", ex);
-                    // KMS: Replace with a generic exception so it can't be used to port scan the
-                    // local
-                    // network.
-                    if (LOGGER.isLoggable(l)) {
-                        throw new ServiceException(
-                                "Error while getting SLD.  See the log for details.");
-                    } else {
-                        throw new ServiceException("Error while getting SLD.");
-                    }
-                } finally {
-                    input.close();
                 }
             }
             // set filter in, we'll check consistency later
@@ -723,14 +712,30 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         return getMap;
     }
 
+    private InputStream getStream(URL styleUrl) throws IOException {
+        InputStream input;
+        if (styleUrl.getProtocol().toLowerCase().indexOf("http") == 0) {
+            input = getHttpInputStream(styleUrl);
+        } else {
+            try {
+                input = Requests.getInputStream(styleUrl);
+            } catch (Exception ex) {
+                LOGGER.log(Level.WARNING, "Exception while getting SLD.", ex);
+                // KMS: Replace with a generic exception so it can't be used to port scan the
+                // local
+                // network.
+                throw new ServiceException("Error while getting SLD.");
+            }
+        }
+        return input;
+    }
+
     private InputStream getHttpInputStream(URL styleUrl) throws IOException {
         InputStream input = null;
         HttpCacheContext cacheContext = HttpCacheContext.create();
-        CloseableHttpResponse response = null;
-        try {
-            HttpGet httpget = new HttpGet(styleUrl.toExternalForm());
-            response = executeRequest(cacheContext, httpget);
 
+        HttpGet httpget = new HttpGet(styleUrl.toExternalForm());
+        try (CloseableHttpResponse response = executeRequest(cacheContext, httpget)) {
             if (cacheContext != null) {
                 CacheResponseStatus responseStatus = cacheContext.getCacheResponseStatus();
                 if (responseStatus != null) {
@@ -776,10 +781,6 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
             // local
             // network.
             throw new ServiceException("Error while getting SLD.");
-        } finally {
-            if (response != null) {
-                response.close();
-            }
         }
     }
 

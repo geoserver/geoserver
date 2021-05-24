@@ -323,7 +323,7 @@ public class Transaction {
         // commit
         boolean committed = false;
 
-        try {
+        try { // NOPMD - Transaction is a field, cannot use TryWithResources
             if (exception != null) {
                 transaction.rollback();
             } else {

@@ -154,12 +154,8 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
     public void writeFeatures(SimpleFeatureCollection fColl, FeatureTypeStyle[] ftsList)
             throws IOException, AbortedException {
         SimpleFeature ft;
-        SimpleFeatureIterator iter = null;
-        try {
-            SimpleFeatureType featureType = fColl.getSchema();
-
-            // iterates through the single features
-            iter = fColl.features();
+        SimpleFeatureType featureType = fColl.getSchema();
+        try (SimpleFeatureIterator iter = fColl.features()) {
             while (iter.hasNext()) {
                 ft = iter.next();
                 Geometry geo = (Geometry) ft.getDefaultGeometry();
@@ -183,11 +179,6 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
             LOGGER.fine("encoded " + featureType.getTypeName());
         } catch (NoSuchElementException ex) {
             throw new DataSourceException(ex.getMessage(), ex);
-        } finally {
-            if (iter != null) {
-                // make sure we always close
-                iter.close();
-            }
         }
     }
 

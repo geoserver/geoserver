@@ -3007,13 +3007,11 @@ public class DownloadProcessTest extends WPSTestSupport {
                         "download-services");
 
         // unzip to the temporary directory
-        ZipInputStream zis = null;
         File shapeFile = null;
         File zipFile = null;
 
         // extract shp-zip file
-        try {
-            zis = new ZipInputStream(input);
+        try (ZipInputStream zis = new ZipInputStream(input)) {
             ZipEntry entry = null;
 
             // Cycle on all the entries and copies the input shape in the target directory
@@ -3032,24 +3030,14 @@ public class DownloadProcessTest extends WPSTestSupport {
                     int count;
                     byte[] data = new byte[4096];
                     // write the files to the disk
-                    FileOutputStream fos = null;
-                    try {
-                        fos = new FileOutputStream(file);
+                    try (FileOutputStream fos = new FileOutputStream(file)) {
                         while ((count = zis.read(data)) != -1) {
                             fos.write(data, 0, count);
                         }
                         fos.flush();
-                    } finally {
-                        if (fos != null) {
-                            fos.close();
-                        }
                     }
                 }
                 zis.closeEntry();
-            }
-        } finally {
-            if (zis != null) {
-                zis.close();
             }
         }
 

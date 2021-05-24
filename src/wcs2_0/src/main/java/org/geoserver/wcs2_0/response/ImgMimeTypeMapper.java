@@ -51,10 +51,8 @@ public class ImgMimeTypeMapper implements CoverageMimeTypeMapper {
             }
         }
 
-        ImageInputStream inStream = null;
         ImageReader reader = null;
-        try {
-            inStream = ImageIO.createImageInputStream(sourceFile);
+        try (ImageInputStream inStream = ImageIO.createImageInputStream(sourceFile)) {
             if (inStream == null) {
                 return null;
             }
@@ -77,16 +75,6 @@ public class ImgMimeTypeMapper implements CoverageMimeTypeMapper {
                 LOGGER.warning("Unable to map mime type for coverage: " + cInfo.toString());
             }
         } finally {
-            try {
-                if (inStream != null) {
-                    inStream.close();
-                }
-            } catch (Exception e) {
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
-                }
-            }
-
             try {
                 if (reader != null) {
                     reader.dispose();

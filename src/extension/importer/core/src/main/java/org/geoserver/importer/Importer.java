@@ -1312,7 +1312,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         // using this exception to throw at the end
         Throwable error = null;
         Transaction transaction = new DefaultTransaction();
-        try {
+        try { // NOPMD - Want to catch error handling transaction closing
 
             SimpleFeatureType featureType = task.getFeatureType();
             task.setOriginalLayerName(featureType.getTypeName());

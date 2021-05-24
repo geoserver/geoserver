@@ -613,10 +613,24 @@ public class ImportProcess implements GeoServerProcess {
         // exact mapping to be performed
         Map<String, String> mapping = buildAttributeMapping(sourceType, targetType);
 
+        copyFeatures(features, listener, ds, targetType, mapping);
+
+        return targetType;
+    }
+
+    // cannot use in try/resource, just to rollback
+    @SuppressWarnings({"PMD.CloseResource", "PMD.UseTryWithResources"})
+    private void copyFeatures(
+            SimpleFeatureCollection features,
+            ProgressListener listener,
+            DataStore ds,
+            SimpleFeatureType targetType,
+            Map<String, String> mapping)
+            throws IOException {
         // start a transaction and fill the target with the input features
         SimpleFeatureStore fstore =
                 (SimpleFeatureStore) ds.getFeatureSource(targetType.getTypeName());
-        @SuppressWarnings("PMD.CloseResource") // cannot use in try/resource, just to rollback
+
         Transaction t = new DefaultTransaction();
         fstore.setTransaction(t);
         boolean complete = false;
@@ -643,8 +657,6 @@ public class ImportProcess implements GeoServerProcess {
             }
             t.close();
         }
-
-        return targetType;
     }
 
     private void checkForCancellation(ProgressListener listener) {

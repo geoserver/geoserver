@@ -2222,9 +2222,8 @@ public class CatalogImpl implements Catalog {
             throws IllegalArgumentException {
 
         final Integer limit = Integer.valueOf(2);
-        CloseableIterator<T> it = list(type, filter, null, limit, null);
         T result = null;
-        try {
+        try (CloseableIterator<T> it = list(type, filter, null, limit, null)) {
             if (it.hasNext()) {
                 result = it.next();
                 if (it.hasNext()) {
@@ -2232,8 +2231,6 @@ public class CatalogImpl implements Catalog {
                             "Specified query predicate resulted in more than one object");
                 }
             }
-        } finally {
-            it.close();
         }
         return result;
     }

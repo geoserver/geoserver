@@ -111,27 +111,16 @@ public class GeoTIFFMapResponse extends RenderedImageMapResponse {
         }
 
         // writing it out
-        final ImageOutputStream imageOutStream =
-                ImageIOExt.createImageOutputStream(image, outStream);
-        if (imageOutStream == null) {
-            throw new ServiceException("Unable to create ImageOutputStream.");
-        }
-
         GeoTiffWriter writer = null;
+        try (ImageOutputStream imageOutStream =
+                ImageIOExt.createImageOutputStream(image, outStream)) {
+            if (imageOutStream == null) {
+                throw new ServiceException("Unable to create ImageOutputStream.");
+            }
 
-        // write it out
-        try {
             writer = new GeoTiffWriter(imageOutStream);
             writer.write(gc, null);
         } finally {
-            try {
-                imageOutStream.close();
-            } catch (Throwable e) {
-                // eat exception to release resources silently
-                if (LOGGER.isLoggable(Level.FINEST))
-                    LOGGER.log(Level.FINEST, "Unable to properly close output stream", e);
-            }
-
             try {
                 if (writer != null) writer.dispose();
             } catch (Throwable e) {

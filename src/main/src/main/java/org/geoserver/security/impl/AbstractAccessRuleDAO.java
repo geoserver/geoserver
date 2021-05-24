@@ -122,14 +122,12 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
 
     /** Writes the rules back to file system */
     public void storeRules() throws IOException {
-        OutputStream os = null;
-        try {
-            // turn back the users into a users map
-            Properties p = toProperties();
+        // turn back the users into a users map
+        Properties p = toProperties();
 
-            // write out to the data dir
-            Resource propFile = securityDir.get(propertyFileName);
-            os = propFile.out();
+        // write out to the data dir
+        Resource propFile = securityDir.get(propertyFileName);
+        try (OutputStream os = propFile.out()) {
             p.store(os, null);
             lastModified = System.currentTimeMillis();
         } catch (Exception e) {
@@ -138,8 +136,6 @@ public abstract class AbstractAccessRuleDAO<R extends Comparable<R>> {
                 throw (IOException)
                         new IOException("Could not write rules to " + propertyFileName)
                                 .initCause(e);
-        } finally {
-            if (os != null) os.close();
         }
     }
 

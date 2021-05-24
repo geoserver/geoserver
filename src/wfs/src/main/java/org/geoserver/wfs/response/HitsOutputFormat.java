@@ -87,14 +87,10 @@ public class HitsOutputFormat extends WFSResponse {
     private BigInteger countFeature(FeatureCollectionResponse fct) {
         BigInteger count = BigInteger.valueOf(0);
         for (int fcIndex = 0; fcIndex < fct.getFeature().size(); fcIndex++) {
-            FeatureIterator i = null;
-            try {
-                for (i = (fct.getFeature().get(fcIndex).features()); i.hasNext(); i.next()) {
+            try (FeatureIterator i = (fct.getFeature().get(fcIndex).features())) {
+                while (i.hasNext()) {
                     count = count.add(BigInteger.ONE);
-                }
-            } finally {
-                if (i != null) {
-                    i.close();
+                    i.next();
                 }
             }
         }

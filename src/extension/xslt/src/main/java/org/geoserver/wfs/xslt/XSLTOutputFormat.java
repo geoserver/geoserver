@@ -211,8 +211,8 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
         }
 
         // prepare the stream connections, so that we can do the transformation on the fly
-        PipedInputStream pis = new PipedInputStream();
-        try (PipedOutputStream pos = new PipedOutputStream(pis)) {
+        try (PipedInputStream pis = new PipedInputStream();
+                PipedOutputStream pos = new PipedOutputStream(pis)) {
 
             // submit the source output format execution, tracking exceptions
             Future<Void> future =
@@ -229,8 +229,6 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
                 transformer.transform(new StreamSource(pis), new StreamResult(output));
             } catch (TransformerException e) {
                 transformerException = e;
-            } finally {
-                pis.close();
             }
 
             // now handle exceptions, starting from the source

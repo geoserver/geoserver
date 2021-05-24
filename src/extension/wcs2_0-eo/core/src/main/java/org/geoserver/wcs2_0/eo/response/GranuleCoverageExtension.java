@@ -86,7 +86,6 @@ public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension 
         CoverageInfo info = null;
         if (isEOEnabled()) {
             if (codec.getGranuleCoverage(coverageId) != null && codec.isValidDataset(ci)) {
-                SimpleFeatureIterator it = null;
                 try {
                     // Getting the structured coverage reader
                     StructuredGridCoverage2DReader reader =
@@ -103,10 +102,11 @@ public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension 
                     if (!collection.isEmpty()) {
                         List<DimensionDescriptor> descriptors =
                                 getActiveDimensionDescriptor(ci, reader, name);
-                        it = collection.features();
-                        if (it.hasNext()) {
-                            SimpleFeature feature = it.next();
-                            info = new GranuleCoverageInfo(ci, feature, descriptors);
+                        try (SimpleFeatureIterator it = collection.features()) {
+                            if (it.hasNext()) {
+                                SimpleFeature feature = it.next();
+                                info = new GranuleCoverageInfo(ci, feature, descriptors);
+                            }
                         }
                     }
                     if (info == null) {
@@ -122,16 +122,6 @@ public class GranuleCoverageExtension implements WCS20DescribeCoverageExtension 
                         LOGGER.log(Level.SEVERE, e.getMessage(), e);
                     }
                     throw new WCS20Exception(e);
-                } finally {
-                    if (it != null) {
-                        try {
-                            it.close();
-                        } catch (Exception e) {
-                            if (LOGGER.isLoggable(Level.SEVERE)) {
-                                LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                            }
-                        }
-                    }
                 }
             }
         }

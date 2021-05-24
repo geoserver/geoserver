@@ -104,8 +104,6 @@ public class FileStrategy implements ServiceStrategy {
             throw new IllegalStateException("flush should only be called after getDestination");
         }
 
-        InputStream copy = null;
-
         try {
             safe.flush();
             safe.close();
@@ -113,42 +111,31 @@ public class FileStrategy implements ServiceStrategy {
 
             // service succeeded in producing a response!
             // copy result to the real output stream
-            copy = new BufferedInputStream(new FileInputStream(temp));
+            try (InputStream copy = new BufferedInputStream(new FileInputStream(temp))) {
 
-            @SuppressWarnings("PMD.CloseResource") // managed by servlet container
-            OutputStream out = response.getOutputStream();
-            out = new BufferedOutputStream(out, 1024 * 1024);
+                @SuppressWarnings("PMD.CloseResource") // managed by servlet container
+                OutputStream out = response.getOutputStream();
+                out = new BufferedOutputStream(out, 1024 * 1024);
 
-            byte[] buffer = new byte[BUFF_SIZE];
-            int b;
+                byte[] buffer = new byte[BUFF_SIZE];
+                int b;
 
-            while ((b = copy.read(buffer, 0, BUFF_SIZE)) > 0) {
-                out.write(buffer, 0, b);
+                while ((b = copy.read(buffer, 0, BUFF_SIZE)) > 0) {
+                    out.write(buffer, 0, b);
+                }
+
+                // Speed Writer closes output Stream
+                // I would prefer to leave that up to doService...
+                out.flush();
             }
-
-            // Speed Writer closes output Stream
-            // I would prefer to leave that up to doService...
-            out.flush();
-
-            // out.close();
         } catch (IOException ioe) {
             throw ioe;
         } finally {
-            if (copy != null) {
-                try {
-                    copy.close();
-                } catch (Exception ex) {
-                }
-            }
-
-            copy = null;
-
             if ((temp != null) && temp.exists()) {
                 temp.delete();
             }
 
             temp = null;
-            response = null;
             safe = null;
         }
     }

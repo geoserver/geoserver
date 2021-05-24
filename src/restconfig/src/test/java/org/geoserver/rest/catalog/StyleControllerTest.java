@@ -1093,23 +1093,16 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getStyleByName("foo").getDateCreated());
 
         Resource style = getDataDirectory().style(getCatalog().getStyleByName("foo"));
-        InputStream in = style.in();
-
         props = new Properties();
-        try {
+        try (InputStream in = style.in()) {
             props.load(in);
             assertEquals("point", props.getProperty("type"));
-        } finally {
-            in.close();
         }
 
-        in = style.in();
-        try {
+        try (InputStream in = style.in()) {
             out = new StringWriter();
             IOUtils.copy(in, out, "UTF-8");
             assertFalse(out.toString().startsWith("#comment!"));
-        } finally {
-            in.close();
         }
     }
 
@@ -1173,22 +1166,16 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertEquals(200, response.getStatus());
 
         Resource style = getDataDirectory().style(getCatalog().getStyleByName("foo"));
-        InputStream in = style.in();
-        try {
+        try (InputStream in = style.in()) {
             props = new Properties();
             props.load(in);
             assertEquals("line", props.getProperty("type"));
-        } finally {
-            in.close();
         }
 
-        in = style.in();
-        try {
+        try (InputStream in = style.in()) {
             out = new StringWriter();
             IOUtils.copy(in, out, "UTF-8");
             assertFalse(out.toString().startsWith("#comment!"));
-        } finally {
-            in.close();
         }
     }
 
@@ -1213,22 +1200,16 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
         assertEquals(200, response.getStatus());
 
         Resource style = getDataDirectory().style(getCatalog().getStyleByName("foo"));
-        InputStream in = style.in();
-        try {
+        try (InputStream in = style.in()) {
             props = new Properties();
             props.load(in);
             assertEquals("line", props.getProperty("type"));
-        } finally {
-            in.close();
         }
 
-        in = style.in();
-        try {
+        try (InputStream in = style.in()) {
             out = new StringWriter();
             IOUtils.copy(in, out, "UTF-8");
             assertTrue(out.toString().startsWith("#comment!"));
-        } finally {
-            in.close();
         }
     }
 

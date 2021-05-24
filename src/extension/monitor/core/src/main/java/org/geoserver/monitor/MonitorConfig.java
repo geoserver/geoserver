@@ -285,12 +285,9 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
         } else if (props != null) {
             File monitoringConfigurationFile =
                     Resources.file(resourceLoader.get(MonitorConfig.PROPERTYFILENAME), true);
-            OutputStream out = Files.out(monitoringConfigurationFile);
-            try {
+            try (OutputStream out = Files.out(monitoringConfigurationFile)) {
                 props.store(out, "");
-            } finally {
                 out.flush();
-                out.close();
             }
         }
     }

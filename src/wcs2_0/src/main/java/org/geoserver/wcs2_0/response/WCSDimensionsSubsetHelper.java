@@ -898,9 +898,8 @@ public class WCSDimensionsSubsetHelper {
         // Getting the granules for that query; Loop over the granules to create subRequest with
         // single elements dimensions sets
         final SimpleFeatureCollection collection = source.getGranules(query);
-        final SimpleFeatureIterator iterator = collection.features();
         final List<GridCoverageRequest> requests = new ArrayList<>();
-        try {
+        try (SimpleFeatureIterator iterator = collection.features()) {
             while (iterator.hasNext()) {
                 final SimpleFeature feature = iterator.next();
 
@@ -918,8 +917,6 @@ public class WCSDimensionsSubsetHelper {
                 updateDimensions(subRequest, feature, structuredReader, coverageName);
                 requests.add(subRequest);
             }
-        } finally {
-            iterator.close();
         }
         return requests;
     }

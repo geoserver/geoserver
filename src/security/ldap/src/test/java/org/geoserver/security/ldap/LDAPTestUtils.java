@@ -148,26 +148,12 @@ public class LDAPTestUtils {
 
     /** Checks if a network host / port is already occupied. */
     private static boolean portIsBusy(String host, int port) {
-        ServerSocket ss = null;
-        DatagramSocket ds = null;
-        try {
-            ss = new ServerSocket(port);
+        try (ServerSocket ss = new ServerSocket(port);
+                DatagramSocket ds = new DatagramSocket(port)) {
             ss.setReuseAddress(true);
-            ds = new DatagramSocket(port);
             ds.setReuseAddress(true);
             return false;
         } catch (IOException e) {
-        } finally {
-            if (ds != null) {
-                ds.close();
-            }
-            if (ss != null) {
-                try {
-                    ss.close();
-                } catch (IOException e) {
-                    /* should not be thrown */
-                }
-            }
         }
         return true;
     }

@@ -50,7 +50,6 @@ import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.coverage.grid.GridGeometry;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.vfny.geoserver.util.ResponseUtils;
 import org.vfny.geoserver.wcs.WcsException;
@@ -610,14 +609,6 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                 element("wcs:requestResponseCRSs", CRS.lookupIdentifier(crs, false));
             }
             end("wcs:supportedCRSs");
-        }
-
-        private String urnIdentifier(final CoordinateReferenceSystem crs) throws FactoryException {
-            String authorityAndCode = CRS.lookupIdentifier(crs, false);
-            String code = authorityAndCode.substring(authorityAndCode.lastIndexOf(":") + 1);
-            // we don't specify the version, but we still need to put a space
-            // for it in the urn form, that's why we have :: before the code
-            return "urn:ogc:def:crs:EPSG::" + code;
         }
 
         /** @param ci */

@@ -911,51 +911,38 @@ class RasterDownload {
             LOGGER.log(Level.FINE, "Writing file in a temporary folder");
         }
         final Resource output = resourceManager.getTemporaryResource("." + extension);
-
-        // the limit output stream will throw an exception if the process is trying to writer more
-        // than the max allowed bytes
-
-        @SuppressWarnings("PMD.CloseResource") // This stream will be properly closed
-        // when closing the os variable
-        final ImageOutputStream fileImageOutputStreamExtImpl =
-                new FileImageOutputStreamExtImpl(output.file(), BUFFER_SIZE);
-        ImageOutputStream os = null;
-        // write
-        try {
-            // If limit is defined, LimitedImageOutputStream is used
-            if (limit > DownloadServiceConfiguration.NO_LIMIT) {
-                os =
-                        new LimitedImageOutputStream(fileImageOutputStreamExtImpl, limit) {
-
-                            @Override
-                            protected void raiseError(long pSizeMax, long pCount)
-                                    throws IOException {
-                                IOException e =
-                                        new IOException(
-                                                "Download Exceeded the maximum HARD allowed size!");
-                                throw e;
-                            }
-                        };
-            } else {
-                os = fileImageOutputStreamExtImpl;
-            }
+        try (ImageOutputStream os = getImageOutputStream(limit, output)) {
             // Encoding the GridCoverage
             Map encodingParams = writeParams != null ? writeParams.getParametersMap() : null;
             complexPPIO.encode(gridCoverage, encodingParams, new OutputStreamAdapter(os));
         } catch (Exception e) {
             unwrapException(e);
-        } finally {
-            try {
-                if (os != null) {
-                    os.close();
-                }
-            } catch (Exception e) {
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
-                }
-            }
         }
         return output;
+    }
+
+    private ImageOutputStream getImageOutputStream(long limit, Resource output) throws IOException {
+        @SuppressWarnings("PMD.CloseResource") // wrapped and returned along with "os"
+        ImageOutputStream fileImageOutputStreamExtImpl =
+                new FileImageOutputStreamExtImpl(output.file(), BUFFER_SIZE);
+
+        // If limit is defined, LimitedImageOutputStream is used
+        if (limit > DownloadServiceConfiguration.NO_LIMIT) {
+            // the limit output stream will throw an exception if the process is trying to writer
+            // more
+            // than the max allowed bytes
+            return new LimitedImageOutputStream(fileImageOutputStreamExtImpl, limit) {
+
+                @Override
+                protected void raiseError(long pSizeMax, long pCount) throws IOException {
+                    IOException e =
+                            new IOException("Download Exceeded the maximum HARD allowed size!");
+                    throw e;
+                }
+            };
+        } else {
+            return fileImageOutputStreamExtImpl;
+        }
     }
 
     private void unwrapException(Exception e) throws Exception {

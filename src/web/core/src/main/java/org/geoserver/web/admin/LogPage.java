@@ -141,16 +141,14 @@ public class LogPage extends GeoServerSecuredPage {
 
         @Override
         protected String load() {
-            BufferedReader br = null;
-            try {
-                // load the logs line by line, keep only the last 1000 lines
-                LinkedList<String> lineList = new LinkedList<>();
+            // load the logs line by line, keep only the last 1000 lines
+            LinkedList<String> lineList = new LinkedList<>();
 
-                if (!logFile.exists()) {
-                    return "";
-                }
+            if (!logFile.exists()) {
+                return "";
+            }
 
-                br = new BufferedReader(new FileReader(logFile));
+            try (BufferedReader br = new BufferedReader(new FileReader(logFile))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     lineList.addLast(line);
@@ -167,14 +165,6 @@ public class LogPage extends GeoServerSecuredPage {
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Failed to load log file contents", e);
                 return e.getMessage();
-            } finally {
-                if (br != null) {
-                    try {
-                        br.close();
-                    } catch (Exception e) {
-                        // ignore
-                    }
-                }
             }
         }
     }

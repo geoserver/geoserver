@@ -6,7 +6,6 @@
 package org.vfny.geoserver.wfs.servlets;
 
 import com.google.common.annotations.VisibleForTesting;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -170,9 +169,8 @@ public class TestWfsPost extends HttpServlet {
         } else {
             response.setContentType("application/xml");
 
-            BufferedReader xmlIn = null;
             PrintWriter xmlOut = null;
-            try {
+            try { // NOPMD - worried try-with-resource could close the connection
                 URL u = new URL(urlString);
                 validateURL(request, urlString, getProxyBaseURL());
                 java.net.HttpURLConnection acon = (java.net.HttpURLConnection) u.openConnection();
@@ -260,17 +258,6 @@ public class TestWfsPost extends HttpServlet {
                 PrintWriter out = response.getWriter();
                 out.print(errorResponse(e));
             } finally {
-                try {
-                    if (xmlIn != null) {
-                        xmlIn.close();
-                    }
-                } catch (Exception e1) {
-                    LOGGER.log(Level.FINE, "Internal failure dealing with the request", e1);
-                    @SuppressWarnings("PMD.CloseResource") // managed by the servlet
-                    PrintWriter out = response.getWriter();
-                    out.print(errorResponse(e1));
-                }
-
                 try {
                     if (xmlOut != null) {
                         xmlOut.close();

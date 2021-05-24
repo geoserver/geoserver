@@ -52,7 +52,7 @@ public class SLDValidator {
      * version in StylesEditorAction. This will kick out a VERY LARGE errorMessage.
      */
     public static String getErrorMessage(Reader xml, List<? extends Exception> errors) {
-        BufferedReader reader = null;
+
         StringBuffer result = new StringBuffer();
         result.append("Your SLD is not valid.\n");
         result.append(
@@ -63,9 +63,7 @@ public class SLDValidator {
                 "(4) Make sure your first tag imports the correct namespaces.  ie. xmlns:sld=\"http://www.opengis.net/sld\" for EVERY NAMESPACE \n");
         result.append("\n");
 
-        try {
-            reader = new BufferedReader(xml);
-
+        try (BufferedReader reader = new BufferedReader(xml)) {
             String line = reader.readLine();
             int linenumber = 1;
             int exceptionNum = 0;
@@ -153,14 +151,6 @@ public class SLDValidator {
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "", e);
-        } finally {
-            try {
-                if (reader != null) {
-                    reader.close();
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "", e);
-            }
         }
 
         return result.toString();

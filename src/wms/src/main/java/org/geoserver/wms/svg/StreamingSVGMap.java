@@ -114,7 +114,6 @@ public class StreamingSVGMap extends WebMap {
         FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
         for (Layer layer : layers) {
-            SimpleFeatureIterator featureReader = null;
             SimpleFeatureSource fSource = (SimpleFeatureSource) layer.getFeatureSource();
             SimpleFeatureType schema = fSource.getSchema();
 
@@ -133,7 +132,6 @@ public class StreamingSVGMap extends WebMap {
                 finalQuery.setStartIndex(definitionQuery.getStartIndex());
 
                 LOGGER.fine("obtaining FeatureReader for " + schema.getTypeName());
-                featureReader = fSource.getFeatures(finalQuery).features();
                 LOGGER.fine("got FeatureReader, now writing");
 
                 String groupId = schema.getTypeName();
@@ -150,8 +148,11 @@ public class StreamingSVGMap extends WebMap {
 
                 writeDefs(schema);
 
-                writer.writeFeatures(fSource.getSchema(), featureReader, styleName);
-                writer.write("</g>\n");
+                try (SimpleFeatureIterator featureReader =
+                        fSource.getFeatures(finalQuery).features()) {
+                    writer.writeFeatures(fSource.getSchema(), featureReader, styleName);
+                    writer.write("</g>\n");
+                }
             } catch (IOException ex) {
                 throw ex;
             } catch (Throwable t) {
@@ -160,10 +161,6 @@ public class StreamingSVGMap extends WebMap {
                 IOException ioe = new IOException("UNCAUGHT exception: " + t.getMessage());
                 ioe.setStackTrace(t.getStackTrace());
                 throw ioe;
-            } finally {
-                if (featureReader != null) {
-                    featureReader.close();
-                }
             }
         }
     }

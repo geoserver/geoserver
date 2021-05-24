@@ -408,23 +408,17 @@ public class IOUtils {
                     continue;
                 }
 
-                InputStream stream = zipFile.getInputStream(entry);
-                FileOutputStream fos = new FileOutputStream(newFile);
-                try {
+                try (InputStream stream = zipFile.getInputStream(entry);
+                        FileOutputStream fos = new FileOutputStream(newFile)) {
                     byte[] buf = new byte[1024];
                     int len;
 
                     while ((len = stream.read(buf)) >= 0) saveCompressedStream(buf, fos, len);
-
+                    fos.flush();
                 } catch (IOException e) {
                     IOException ioe = new IOException("Not valid archive file type.");
                     ioe.initCause(e);
                     throw ioe;
-                } finally {
-                    fos.flush();
-                    fos.close();
-
-                    stream.close();
                 }
             }
         }

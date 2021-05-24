@@ -65,9 +65,7 @@ class PALFileLoader {
     public PALFileLoader(Resource file) {
         if (file.getType() != Type.RESOURCE)
             throw new IllegalArgumentException("The provided file does not exist.");
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(file.in()));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.in()))) {
             // header
             boolean loadNext = false;
             String temp = trimNextLine(reader);
@@ -137,14 +135,6 @@ class PALFileLoader {
                         new IndexColorModel(8, mapsize, colorMap[0], colorMap[1], colorMap[2]);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getLocalizedMessage(), e);
-
-        } finally {
-            if (reader != null)
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    LOGGER.log(Level.INFO, e.getLocalizedMessage(), e);
-                }
         }
     }
 

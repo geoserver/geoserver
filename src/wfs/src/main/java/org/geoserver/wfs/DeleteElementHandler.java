@@ -148,10 +148,8 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                 // would be extra work when doing release mode ALL.
                 //
                 DataStore data = (DataStore) store.getDataStore();
-                FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
-                        data.getFeatureWriter(typeName, filter, store.getTransaction());
-
-                try {
+                try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer =
+                        data.getFeatureWriter(typeName, filter, store.getTransaction())) {
                     while (writer.hasNext()) {
                         String fid = writer.next().getID();
                         Set<FeatureId> featureIds = new HashSet<>();
@@ -160,8 +158,6 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                         writer.remove();
                         deleted++;
                     }
-                } finally {
-                    writer.close();
                 }
 
                 store.removeFeatures(filter);

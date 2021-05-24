@@ -18,17 +18,11 @@ public class GeofenceTestUtils {
             throws URISyntaxException, FileNotFoundException, IOException {
         File configFile = new File(GeofenceTestUtils.class.getResource("/" + fileName).toURI());
 
-        BufferedReader reader = null;
         StringBuilder content = new StringBuilder();
-        try {
-            reader = new BufferedReader(new FileReader(configFile));
+        try (BufferedReader reader = new BufferedReader(new FileReader(configFile))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 content.append(line.trim());
-            }
-        } finally {
-            if (reader != null) {
-                reader.close();
             }
         }
         return content.toString();
@@ -37,17 +31,11 @@ public class GeofenceTestUtils {
     public static String readConfig(File configFile)
             throws URISyntaxException, FileNotFoundException, IOException {
 
-        BufferedReader reader = null;
         StringBuilder content = new StringBuilder();
-        try {
-            reader = new BufferedReader(new FileReader(configFile));
+        try (BufferedReader reader = new BufferedReader(new FileReader(configFile))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 content.append(line.trim());
-            }
-        } finally {
-            if (reader != null) {
-                reader.close();
             }
         }
         return content.toString();

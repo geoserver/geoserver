@@ -61,14 +61,11 @@ class FeaturesTransformer extends TransformerBase {
                                 "xmlns:wmts", "http://www.opengis.net/wmts/1.0"
                             });
             start("wmts:FeatureCollection", nameSpaces);
-            FeatureIterator iterator = domains.getFeatureCollection().features();
-            try {
+            try (FeatureIterator iterator = domains.getFeatureCollection().features()) {
                 while (iterator.hasNext()) {
                     SimpleFeature simpleFeature = (SimpleFeature) iterator.next();
                     handleFeature(simpleFeature, domains.getDimensions());
                 }
-            } finally {
-                iterator.close();
             }
             end("wmts:FeatureCollection");
         }

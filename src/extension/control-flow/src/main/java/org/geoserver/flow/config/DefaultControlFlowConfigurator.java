@@ -310,12 +310,9 @@ public class DefaultControlFlowConfigurator
         } else if (this.configFile != null && this.configFile.getProperties() != null) {
             File controlFlowConfigurationFile =
                     Resources.file(resourceLoader.get(PROPERTYFILENAME), true);
-            OutputStream out = Files.out(controlFlowConfigurationFile);
-            try {
+            try (OutputStream out = Files.out(controlFlowConfigurationFile)) {
                 this.configFile.getProperties().store(out, "");
-            } finally {
                 out.flush();
-                out.close();
             }
         }
     }

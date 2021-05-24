@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.CachedTile;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -315,50 +314,48 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
         Tile parent = tile.getParent();
         Set<String> parentFids = getUpwardFids(parent, conn);
         Set<String> currFids = new HashSet<>();
-        FeatureIterator fi = null;
-        try {
-            // grab the features
-            FeatureSource fs = featureType.getFeatureSource(null, null);
-            GeometryDescriptor geom = fs.getSchema().getGeometryDescriptor();
-            CoordinateReferenceSystem nativeCrs = geom.getCoordinateReferenceSystem();
+        // grab the features
+        FeatureSource fs = featureType.getFeatureSource(null, null);
+        GeometryDescriptor geom = fs.getSchema().getGeometryDescriptor();
+        CoordinateReferenceSystem nativeCrs = geom.getCoordinateReferenceSystem();
 
-            ReferencedEnvelope nativeTileEnvelope = null;
+        ReferencedEnvelope nativeTileEnvelope = null;
 
-            if (!CRS.equalsIgnoreMetadata(Tile.WGS84, nativeCrs)) {
-                try {
-                    nativeTileEnvelope = tile.getEnvelope().transform(nativeCrs, true);
-                } catch (ProjectionException pe) {
-                    // the WGS84 envelope of the tile is too big for this project,
-                    // let's intersect it with the declared lat/lon bounds then
-                    LOGGER.log(
-                            Level.INFO,
-                            "Could not reproject the current tile bounds "
-                                    + tile.getEnvelope()
-                                    + " to the native SRS, intersecting with "
-                                    + "the layer declared lat/lon bounds and retrying");
+        if (!CRS.equalsIgnoreMetadata(Tile.WGS84, nativeCrs)) {
+            try {
+                nativeTileEnvelope = tile.getEnvelope().transform(nativeCrs, true);
+            } catch (ProjectionException pe) {
+                // the WGS84 envelope of the tile is too big for this project,
+                // let's intersect it with the declared lat/lon bounds then
+                LOGGER.log(
+                        Level.INFO,
+                        "Could not reproject the current tile bounds "
+                                + tile.getEnvelope()
+                                + " to the native SRS, intersecting with "
+                                + "the layer declared lat/lon bounds and retrying");
 
-                    // let's compare against the declared data bounds then
-                    ReferencedEnvelope llEnv = featureType.getLatLonBoundingBox();
-                    Envelope reduced = tile.getEnvelope().intersection(llEnv);
-                    if (reduced.isNull() || reduced.getWidth() == 0 || reduced.getHeight() == 0) {
-                        // no overlap, no party, the tile will be empty
-                        return Collections.emptySet();
-                    }
-
-                    // there is some overlap, let's try the reprojection again.
-                    // if even this fails, the user has evidently setup the
-                    // geographics bounds improperly
-                    ReferencedEnvelope refRed =
-                            new ReferencedEnvelope(
-                                    reduced, tile.getEnvelope().getCoordinateReferenceSystem());
-                    nativeTileEnvelope = refRed.transform(nativeCrs, true);
+                // let's compare against the declared data bounds then
+                ReferencedEnvelope llEnv = featureType.getLatLonBoundingBox();
+                Envelope reduced = tile.getEnvelope().intersection(llEnv);
+                if (reduced.isNull() || reduced.getWidth() == 0 || reduced.getHeight() == 0) {
+                    // no overlap, no party, the tile will be empty
+                    return Collections.emptySet();
                 }
-            } else {
-                nativeTileEnvelope = tile.getEnvelope();
+
+                // there is some overlap, let's try the reprojection again.
+                // if even this fails, the user has evidently setup the
+                // geographics bounds improperly
+                ReferencedEnvelope refRed =
+                        new ReferencedEnvelope(
+                                reduced, tile.getEnvelope().getCoordinateReferenceSystem());
+                nativeTileEnvelope = refRed.transform(nativeCrs, true);
             }
+        } else {
+            nativeTileEnvelope = tile.getEnvelope();
+        }
 
-            fi = getSortedFeatures(geom, tile.getEnvelope(), nativeTileEnvelope, conn);
-
+        try (FeatureIterator fi =
+                getSortedFeatures(geom, tile.getEnvelope(), nativeTileEnvelope, conn)) {
             // if the crs is not wgs84, we'll need to transform the point
             MathTransform tx = null;
             double[] coords = new double[2];
@@ -388,9 +385,8 @@ public abstract class CachedHierarchyRegionatingStrategy implements RegionatingS
                 if (tx != null) tx.transform(coords, 0, coords, 0, 1);
                 if (tile.contains(coords[0], coords[1])) currFids.add(f.getID());
             }
-        } finally {
-            if (fi != null) fi.close();
         }
+
         return currFids;
     }
 

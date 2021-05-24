@@ -974,18 +974,14 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
 
     /** Parses a stream into a String */
     protected String string(InputStream input) throws Exception {
-        BufferedReader reader = null;
         StringBuffer sb = new StringBuffer();
         char[] buf = new char[8192];
-        try {
-            reader = new BufferedReader(new InputStreamReader(input));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
                 sb.append("\n");
             }
-        } finally {
-            if (reader != null) reader.close();
         }
         return sb.toString();
     }

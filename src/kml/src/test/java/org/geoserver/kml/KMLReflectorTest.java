@@ -510,27 +510,23 @@ public class KMLReflectorTest extends WMSTestSupport {
         MockHttpServletResponse response = getAsServletResponse(requestUrl);
         assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
 
-        ZipFile zipFile = null;
-        try {
-            // create the kmz
-            File tempDir =
-                    org.geoserver.util.IOUtils.createRandomDirectory(
-                            "./target", "kmplacemark", "test");
-            tempDir.deleteOnExit();
+        // create the kmz
+        File tempDir =
+                org.geoserver.util.IOUtils.createRandomDirectory("./target", "kmplacemark", "test");
+        tempDir.deleteOnExit();
 
-            File zip = new File(tempDir, "kmz.zip");
-            zip.deleteOnExit();
+        File zip = new File(tempDir, "kmz.zip");
+        zip.deleteOnExit();
 
-            try (FileOutputStream output = new FileOutputStream(zip)) {
-                FileUtils.writeByteArrayToFile(zip, getBinary(response));
-                output.flush();
-            }
+        try (FileOutputStream output = new FileOutputStream(zip)) {
+            FileUtils.writeByteArrayToFile(zip, getBinary(response));
+            output.flush();
+        }
 
-            assertTrue(zip.exists());
+        assertTrue(zip.exists());
 
-            // unzip and test it
-            zipFile = new ZipFile(zip);
-
+        // unzip and test it
+        try (ZipFile zipFile = new ZipFile(zip)) {
             ZipEntry entry = zipFile.getEntry("wms.kml");
             assertNotNull(entry);
             assertNotNull(zipFile.getEntry("images/layers_0.png"));
@@ -561,11 +557,6 @@ public class KMLReflectorTest extends WMSTestSupport {
                         "3", "count(//kml:Placemark//kml:Point)", document);
             } else {
                 assertEquals(0, document.getElementsByTagName("Placemark").getLength());
-            }
-
-        } finally {
-            if (zipFile != null) {
-                zipFile.close();
             }
         }
     }

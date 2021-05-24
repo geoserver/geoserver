@@ -41,24 +41,17 @@ public class JDBCTestSupport {
 
     public static void dropExistingTables(AbstractJDBCService service, Connection con)
             throws IOException {
-        PreparedStatement ps = null;
         try {
             for (String stmt : service.getOrderedNamesForDrop()) {
-                try {
-                    ps = service.getDDLStatement(stmt, con);
+                try (PreparedStatement ps = service.getDDLStatement(stmt, con)) {
                     ps.execute();
-                    ps.close();
                 } catch (SQLException ex) {
+                    // ignore
                 }
             }
             con.commit();
         } catch (SQLException ex) {
             throw new IOException(ex);
-        } finally {
-            try {
-                if (ps != null) ps.close();
-            } catch (SQLException ex) {
-            }
         }
     }
 

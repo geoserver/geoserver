@@ -161,12 +161,10 @@ public class LockFeature {
                     throw new WFSException(request, e);
                 }
 
-                FeatureIterator reader = null;
                 int numberLocked = -1;
-
-                try {
-                    for (reader = features.features(); reader.hasNext(); ) {
-                        SimpleFeature feature = (SimpleFeature) reader.next();
+                try (FeatureIterator fi = features.features()) {
+                    while (fi.hasNext()) {
+                        SimpleFeature feature = (SimpleFeature) fi.next();
 
                         FeatureId fid = fid(feature.getID());
                         Id fidFilter = fidFilter(fid);
@@ -236,10 +234,6 @@ public class LockFeature {
                     }
                 } catch (IOException ioe) {
                     throw new WFSException(request, ioe);
-                } finally {
-                    if (reader != null) {
-                        reader.close();
-                    }
                 }
 
                 // refresh lock times, so they all start the same instant and we
@@ -248,9 +242,7 @@ public class LockFeature {
                 // lock
                 // feature response has been totally written
                 if (numberLocked > 0) {
-                    Transaction t = new DefaultTransaction();
-
-                    try {
+                    try (Transaction t = new DefaultTransaction()) {
                         try {
                             t.addAuthorization(fLock.getAuthorization());
                             DataStore dataStore = (DataStore) source.getDataStore();
@@ -260,12 +252,6 @@ public class LockFeature {
                         }
                     } catch (IOException e) {
                         throw new WFSException(request, e);
-                    } finally {
-                        try {
-                            t.close();
-                        } catch (IOException e) {
-                            throw new WFSException(request, e);
-                        }
                     }
                 }
             }
@@ -328,20 +314,13 @@ public class LockFeature {
                     continue; // locks not supported
                 }
 
-                Transaction t = new DefaultTransaction("Refresh " + meta.getWorkspace().getName());
-
-                try {
+                try (Transaction t =
+                        new DefaultTransaction("Refresh " + meta.getWorkspace().getName())) {
                     t.addAuthorization(lockId);
                     lockingManager.release(lockId, t);
 
                 } catch (IOException e) {
                     LOGGER.log(Level.WARNING, e.getMessage(), e);
-                } finally {
-                    try {
-                        t.close();
-                    } catch (IOException closeException) {
-                        LOGGER.log(Level.FINEST, closeException.getMessage(), closeException);
-                    }
                 }
             }
         } catch (Exception e) {
@@ -467,9 +446,8 @@ public class LockFeature {
                     }
                 }
 
-                Transaction t = new DefaultTransaction("Refresh " + meta.getWorkspace().getName());
-
-                try {
+                try (Transaction t =
+                        new DefaultTransaction("Refresh " + meta.getWorkspace().getName())) {
                     t.addAuthorization(lockId);
 
                     if (lockingManager.refresh(lockId, t)) {
@@ -477,12 +455,6 @@ public class LockFeature {
                     }
                 } catch (IOException e) {
                     LOGGER.log(Level.WARNING, e.getMessage(), e);
-                } finally {
-                    try {
-                        t.close();
-                    } catch (IOException closeException) {
-                        LOGGER.log(Level.FINEST, closeException.getMessage(), closeException);
-                    }
                 }
             }
         } catch (Exception e) {

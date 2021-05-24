@@ -115,25 +115,18 @@ final class TurboJpegImageWorker extends ImageWorker {
                 (TurboJpegImageWriter) TURBO_JPEG_SPI.createWriterInstance();
         // Compression is available on both lib
         TurboJpegImageWriteParam iwp = (TurboJpegImageWriteParam) writer.getDefaultWriteParam();
-        final ImageOutputStreamAdapter2 outStream = new ImageOutputStreamAdapter2(destination);
         iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
         iwp.setCompressionType("JPEG");
         iwp.setCompressionQuality(compressionRate); // We can control quality here.
 
         if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Writing image out...");
 
-        try {
+        try (ImageOutputStreamAdapter2 outStream = new ImageOutputStreamAdapter2(destination)) {
             writer.setOutput(outStream);
             writer.write(null, new IIOImage(image, null, null), iwp);
         } finally {
             try {
                 writer.dispose();
-            } catch (Throwable e) {
-                if (LOGGER.isLoggable(Level.FINE))
-                    LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
-            }
-            try {
-                outStream.close();
             } catch (Throwable e) {
                 if (LOGGER.isLoggable(Level.FINE))
                     LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);

@@ -327,17 +327,11 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
 
     @Override
     public int size() {
-        FeatureIterator<F> fi = null;
         int count = 0;
-        try {
-            fi = features();
+        try (FeatureIterator<F> fi = features()) {
             while (fi.hasNext()) {
                 fi.next();
                 count++;
-            }
-        } finally {
-            if (fi != null) {
-                fi.close();
             }
         }
 
@@ -346,10 +340,8 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
 
     @Override
     public ReferencedEnvelope getBounds() {
-        FeatureIterator<F> fi = null;
         ReferencedEnvelope bounds = null;
-        try {
-            fi = features();
+        try (FeatureIterator<F> fi = features()) {
             while (fi.hasNext()) {
                 Feature f = fi.next();
                 ReferencedEnvelope re = ReferencedEnvelope.reference(f.getBounds());
@@ -358,10 +350,6 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
                 } else {
                     bounds.expandToInclude(re);
                 }
-            }
-        } finally {
-            if (fi != null) {
-                fi.close();
             }
         }
 

@@ -473,7 +473,7 @@ public abstract class AbstractNetCDFEncoder implements NetCDFEncoder {
         // end of define mode
         writer.create();
 
-        try {
+        try { // NOPMD - writer is a field, cannot use try-with-resources
             // Setting values
             for (NetCDFDimensionsManager.NetCDFDimensionMapping mapper :
                     dimensionsManager.getDimensions()) {

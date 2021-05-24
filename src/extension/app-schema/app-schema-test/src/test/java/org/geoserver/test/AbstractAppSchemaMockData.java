@@ -372,20 +372,10 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      */
     private void copy(String content, String location) {
         File file = new File(data, location);
-        FileWriter writer = null;
-        try {
-            writer = new FileWriter(file);
+        try (FileWriter writer = new FileWriter(file)) {
             writer.write(content);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
         }
     }
 

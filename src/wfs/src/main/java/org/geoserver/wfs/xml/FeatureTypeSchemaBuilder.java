@@ -188,7 +188,7 @@ public abstract class FeatureTypeSchemaBuilder {
 
         if (baseUrl == null) baseUrl = gs.getService(WFSInfo.class).getSchemaBaseURL();
 
-        if (ns2featureTypeInfos.entrySet().size() == 0) {
+        if (ns2featureTypeInfos.entrySet().isEmpty()) {
             // for WFS 2.0 encoding to work we need to have at least a dependency on GML and
             // a target namespace. We are going to use the GML one.
             importGMLSchema(schema, factory, baseUrl);

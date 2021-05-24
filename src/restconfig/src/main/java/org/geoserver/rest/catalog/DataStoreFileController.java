@@ -405,7 +405,7 @@ public class DataStoreFileController extends AbstractStoreUploadController {
 
                     @SuppressWarnings("PMD.CloseResource") // no try-with-resource to rollback
                     Transaction tx = new DefaultTransaction();
-                    try {
+                    try { // NOPMD - tx used in catch too, cannot use try-with-resources
                         SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
                         featureStore.setTransaction(tx);
 

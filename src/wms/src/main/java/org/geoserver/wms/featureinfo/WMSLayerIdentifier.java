@@ -93,11 +93,10 @@ public class WMSLayerIdentifier implements LayerIdentifier<SimpleFeatureCollecti
         // delegate to the web map layer as there's quite a bit of reprojection magic
         // code
         // that we want to be consistently reproduced for GetFeatureInfo as well
-        final InputStream is =
-                ml.getFeatureInfo(
-                        bbox, width, height, x, y, "application/vnd.ogc.gml", maxFeatures);
         List<FeatureCollection> results = new ArrayList<>();
-        try {
+        try (InputStream is =
+                ml.getFeatureInfo(
+                        bbox, width, height, x, y, "application/vnd.ogc.gml", maxFeatures)) {
             Parser parser = new Parser(new WFSConfiguration_1_0());
             parser.setStrict(false);
             parser.setEntityResolver(resolverProvider.getEntityResolver());
@@ -131,8 +130,6 @@ public class WMSLayerIdentifier implements LayerIdentifier<SimpleFeatureCollecti
             }
         } catch (Throwable t) {
             LOGGER.log(Level.SEVERE, "Tried to parse GML2 response, but failed", t);
-        } finally {
-            is.close();
         }
 
         // let's see if we need to reproject

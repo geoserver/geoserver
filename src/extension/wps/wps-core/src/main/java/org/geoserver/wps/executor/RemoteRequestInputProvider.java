@@ -67,7 +67,7 @@ public class RemoteRequestInputProvider extends AbstractInputProvider {
 
         // execute the request
         listener.started();
-        try {
+        try { // NOPMD - Hard to isolate a try-with-resource on the code below (for input, refInput)
             if ("file".equalsIgnoreCase(destination.getProtocol())) {
                 File file = URLs.urlToFile(destination);
                 if (maxSize > 0 && maxSize < file.length()) {

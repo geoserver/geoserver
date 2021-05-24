@@ -45,9 +45,9 @@ import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.data.DataAccess;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
-import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
@@ -441,18 +441,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
         Query q = new Query(vtName);
         q.setPropertyNames(geometries);
         q.setMaxFeatures(1);
-        SimpleFeatureIterator it = null;
-        SimpleFeature f = null;
-        try {
-            it = store.getFeatureSource(vtName).getFeatures(q).features();
-            if (it.hasNext()) {
-                f = it.next();
-            }
-        } finally {
-            if (it != null) {
-                it.close();
-            }
-        }
+        SimpleFeature f = DataUtilities.first(store.getFeatureSource(vtName).getFeatures(q));
 
         // did we get more information?
         if (f == null) {

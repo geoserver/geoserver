@@ -22,15 +22,12 @@ import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geoserver.wcs2_0.GetCoverage;
 import org.geoserver.wcs2_0.WCS20Const;
 import org.geoserver.wcs2_0.exception.WCS20Exception;
 import org.geoserver.wcs2_0.util.EnvelopeAxesLabelsMapper;
 import org.geoserver.wcs2_0.util.NCNameResourceCodec;
-import org.geoserver.wcs2_0.util.RequestUtils;
 import org.geoserver.wcs2_0.util.WCS20DescribeCoverageExtension;
-import org.geotools.coverage.GridSampleDimension;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
@@ -290,19 +287,6 @@ public class WCS20DescribeCoverageTransformer extends GMLTransformer {
                 end("wcs:CoverageDescription");
             } catch (Exception e) {
                 throw new WcsException(e);
-            }
-        }
-
-        private GridSampleDimension[] getSampleDimensions(GridCoverage2DReader reader)
-                throws Exception {
-            GridCoverage2D coverage = null;
-            try {
-                coverage = RequestUtils.readSampleGridCoverage(reader);
-                return coverage.getSampleDimensions();
-            } finally {
-                if (coverage != null) {
-                    CoverageCleanerCallback.addCoverages(coverage);
-                }
             }
         }
 

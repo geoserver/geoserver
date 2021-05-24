@@ -88,10 +88,6 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
         // get a writer
         final ImageWriter writer = writerSPI.createWriterInstance();
 
-        // getting a stream caching in memory
-        final ImageOutputStream ioutstream = ImageIOExt.createImageOutputStream(image, outStream);
-        if (ioutstream == null) throw new ServiceException("Unable to create ImageOutputStream.");
-
         // tiff
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("Writing tiff image ...");
@@ -101,18 +97,13 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
         image = applyPalette(image, mapContent, IMAGE_TIFF8, false);
 
         // write it out
-        try {
+        try ( // getting a stream caching in memory
+        final ImageOutputStream ioutstream = ImageIOExt.createImageOutputStream(image, outStream)) {
+            if (ioutstream == null)
+                throw new ServiceException("Unable to create ImageOutputStream.");
             writer.setOutput(ioutstream);
             writer.write(image);
         } finally {
-            try {
-                ioutstream.close();
-            } catch (Throwable e) {
-                // eat exception to release resources silently
-                if (LOGGER.isLoggable(Level.FINEST))
-                    LOGGER.log(Level.FINEST, "Unable to properly close output stream", e);
-            }
-
             try {
 
                 writer.dispose();

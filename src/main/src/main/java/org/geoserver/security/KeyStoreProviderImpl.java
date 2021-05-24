@@ -415,20 +415,20 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
         }
 
         // Try to open with new password
-        InputStream fin = newKSFile.in();
+
         char[] passwd = securityManager.getMasterPassword();
-
         try {
-            KeyStore newKS = KeyStore.getInstance(KEYSTORETYPE);
-            newKS.load(fin, passwd);
+            try (InputStream fin = newKSFile.in()) {
+                KeyStore newKS = KeyStore.getInstance(KEYSTORETYPE);
+                newKS.load(fin, passwd);
 
-            // to be sure, decrypt all keys
-            Enumeration<String> enumeration = newKS.aliases();
-            while (enumeration.hasMoreElements()) {
-                newKS.getKey(enumeration.nextElement(), passwd);
+                // to be sure, decrypt all keys
+                Enumeration<String> enumeration = newKS.aliases();
+                while (enumeration.hasMoreElements()) {
+                    newKS.getKey(enumeration.nextElement(), passwd);
+                }
             }
-            fin.close();
-            fin = null;
+
             if (oldKSFile.delete() == false) {
                 LOGGER.severe("cannot delete " + oldKSFile.path());
                 return;
@@ -451,13 +451,6 @@ public class KeyStoreProviderImpl implements BeanNameAware, KeyStoreProvider {
             throw new RuntimeException(ex);
         } finally {
             securityManager.disposePassword(passwd);
-            if (fin != null) {
-                try {
-                    fin.close();
-                } catch (IOException ex) {
-                    // give up
-                }
-            }
         }
     }
 }

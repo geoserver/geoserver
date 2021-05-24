@@ -143,19 +143,10 @@ public class GeoServerExceptions {
                 }
 
                 URL url = e.nextElement();
-                InputStream in = url.openStream();
-                try {
+                try (InputStream in = url.openStream()) {
                     props.load(in);
                 } catch (Exception ex) {
                     LOGGER.log(Level.WARNING, "Error loading properties from: ", url);
-                } finally {
-                    if (in != null) {
-                        try {
-                            in.close();
-                        } catch (Exception ex2) {
-                            LOGGER.log(Level.FINEST, ex2.getMessage(), ex2);
-                        }
-                    }
                 }
             }
             return props != null ? new PropResourceBundle(props) : null;

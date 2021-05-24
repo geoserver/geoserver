@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -44,24 +43,17 @@ public class FeatureDataConverter {
 
     static {
         final HashSet<String> words = new HashSet<>();
-        final InputStream wordStream =
-                FeatureDataConverter.class.getResourceAsStream("oracle_reserved_words.txt");
-        final Reader wordReader = new InputStreamReader(wordStream, Charset.forName("UTF-8"));
-        final BufferedReader bufferedWordReader = new BufferedReader(wordReader);
-
-        String word;
-        try {
+        try (InputStream wordStream =
+                        FeatureDataConverter.class.getResourceAsStream(
+                                "oracle_reserved_words.txt");
+                Reader wordReader = new InputStreamReader(wordStream, Charset.forName("UTF-8"));
+                BufferedReader bufferedWordReader = new BufferedReader(wordReader)) {
+            String word;
             while ((word = bufferedWordReader.readLine()) != null) {
                 words.add(word);
             }
         } catch (IOException e) {
             throw new RuntimeException("Unable to load Oracle reserved words", e);
-        } finally {
-            try {
-                bufferedWordReader.close();
-            } catch (IOException e) {
-                LOGGER.log(Level.WARNING, "Error while closing Oracle reserved words file", e);
-            }
         }
         ORACLE_RESERVED_WORDS = Collections.unmodifiableSet(words);
     }

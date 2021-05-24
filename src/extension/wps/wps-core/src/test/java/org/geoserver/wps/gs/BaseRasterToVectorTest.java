@@ -104,26 +104,20 @@ public abstract class BaseRasterToVectorTest extends WPSTestSupport {
         params.put("create spatial index", Boolean.TRUE);
 
         ShapefileDataStore store = null;
-        Transaction transaction = null;
         try {
             store = (ShapefileDataStore) dataStoreFactory.createNewDataStore(params);
             store.createSchema(fc.getSchema());
 
             final SimpleFeatureStore featureStore =
                     (SimpleFeatureStore) store.getFeatureSource(fc.getSchema().getName());
-            transaction = featureStore.getTransaction();
+            try (Transaction transaction = featureStore.getTransaction()) {
 
-            featureStore.addFeatures(fc);
+                featureStore.addFeatures(fc);
+                transaction.commit();
+            }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "", e);
         } finally {
-
-            if (transaction != null) {
-
-                transaction.commit();
-                transaction.close();
-            }
-
             if (store != null) {
                 store.dispose();
             }

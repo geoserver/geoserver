@@ -133,9 +133,8 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
         assertEquals(KMZMapOutputFormat.MIME_TYPE, response.getContentType());
         assertEquals("inline; filename=result.kmz", response.getHeader("Content-disposition"));
 
-        ZipInputStream zis =
-                new ZipInputStream(new ByteArrayInputStream(response.getContentAsByteArray()));
-        try {
+        try (ZipInputStream zis =
+                new ZipInputStream(new ByteArrayInputStream(response.getContentAsByteArray()))) {
             // first entry, the kml document itself
             ZipEntry entry = zis.getNextEntry();
             assertEquals("wms.kml", entry.getName());
@@ -158,8 +157,6 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
             // check the output, same as mapMultiName
             ImageAssert.assertEquals(new File(SAMPLES + "mapMultiName.png"), image, 100);
-        } finally {
-            zis.close();
         }
     }
 

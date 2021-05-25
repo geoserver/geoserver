@@ -461,7 +461,10 @@ The supported writing parameters are:
    * ``Deflate``   (Lossless)
    
 
- * ``quality`` : Compression quality for lossy compression (JPEG). Value is in the range [0 : 1] where 0 is for worst quality/higher compression and 1 is for best quality/lower compression
+ * ``quality`` : Compression quality. Value is in the range [0 : 1]
+
+   * for ``JPEG`` lossy compression, 0 is for worst quality/higher compression and 1 is for best quality/lower compression. (default is 1).
+   * for ``Deflate`` lossless compression, input value in the range [0 : 1] is linearly mapped to output deflate level in the range [1 : 9]:  ``(deflate level = 1 + 8 * (quality))``, where level 1 is for best speed and level 9 is for best compression. (default level is 9)
  * ``writenodata`` : Supported value is one of true/false. Note that, by default, a `nodata TAG <https://www.awaresystems.be/imaging/tiff/tifftags/gdal_nodata.html>`_ is produced as part of the output GeoTIFF file as soon as a nodata is found in the GridCoverage2D to be written. Therefore, not specifying this parameter will result into writing nodata to preserve default behavior. Setting it to false will avoid writing that TAG.
  
 

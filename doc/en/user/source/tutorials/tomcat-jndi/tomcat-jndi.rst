@@ -99,10 +99,10 @@ Configuring a PostgreSQL connection pool
 
 In this example a PostgreSQL connection pool will be configured. 
 
-For configuring the JNDI pool you need to remove the Postgres JDBC driver (it should be named :file:`postgresql-X.X-XXX.jdbc3.jar`) from the GeoServer
+For configuring the JNDI pool you need to move the Postgres JDBC driver (it should be named :file:`postgresql-XX.X.X.jar`) from the GeoServer
 :file:`WEB-INF/lib` folder and put it into the :file:`{TOMCAT_HOME}/lib` folder.
 
-Then the following code must be written in the Tomcat configuration file :file:`{TOMCAT_HOME}/conf/context.xml`
+Then the following code must be added to the Tomcat configuration file :file:`{TOMCAT_HOME}/conf/context.xml` inside a Context tag.
 
 .. code-block:: xml
   
@@ -137,7 +137,7 @@ First, choose the *PostGIS (JNDI)* datastore and give it a name:
 .. figure:: postgis_start.png
    :align: center
 
-Then configure the associated params:
+Then configure the associated parameters. The value for jndiReferenceName corresponds to the Resource name given in :file:`{TOMCAT_HOME}/conf/context.xml`.  
 
 .. figure:: postgis_conf.png
    :align: center

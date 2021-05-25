@@ -434,3 +434,40 @@ The functionality allows also to manipulate dynamically filters and expression. 
 
 Xpaths can be manipulated as well to be totally or partially replaced: :code:`$${xpath(env('xpath','gsml:ControlledConcept/gsml:name')}` or :code:`$${xpath(strConcat('env('gsml:ControlledConcept',xpath','/gsml:name')))}`.
 
+JSON based properties
+---------------------
+
+Certain databases have native support for JSON fields. For example, PostgreSQL has both a JSON
+and a JSONB type. The JSON templating machinery can recognize these fields and export them
+as JSON blocks, for direct substitution in the output.
+
+It is also possible to pick a JSON attribute and use the ``jsonPointer`` function to extract either
+a property or a whole JSON subtree from it. See the `JSON Pointer RFC <https://datatracker.ietf.org/doc/html/rfc6901>`_ 
+for more details about valid expressions.
+
+Here is an example of using JSON properties:
+
+.. code-block:: json
+   :linenos:
+
+   {
+      "assets": "${assets}",
+      "links": [
+        "$${jsonPointer(others, '/fullLink')}",
+        {
+          "href": "$${jsonPointer(others, '/otherLink/href')}",
+          "rel": "metadata",
+          "title": "$${jsonPointer(others, '/otherLink/title')}",
+          "type": "text/xml"
+        }
+      ]
+   }
+
+Some references:
+
+- ``Line 1`` uses ``assets``, a property that can contain a JSON tree of any shape, which will be 
+  expanded in place.
+- ``Line 4`` inserts a full JSON object in the array. The object is a sub-tree of the ``others`` property,
+  which is a complex JSON document with several extra properties (could be a generic containers for
+  properties not fitting the fixed database schema).
+- ``Line 6`` and ``Line 8`` extract from the ``others`` property specific string values. 

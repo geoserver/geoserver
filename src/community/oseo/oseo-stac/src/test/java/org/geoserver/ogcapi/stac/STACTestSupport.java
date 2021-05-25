@@ -116,6 +116,23 @@ public class STACTestSupport extends OGCApiTestSupport {
         // check bits unique to the LS8 template
         assertEquals(Integer.valueOf(30), l8_02.read("properties.gsd"));
         assertEquals("pre-collection", l8_02.read("properties['landsat:tier']"));
+
+        // check one assets bit
+        DocumentContext mtl = readContext(l8_02, "assets.MTL");
+        String mtlLink =
+                "https://landsat-pds.s3.us-west-2.amazonaws.com/c1/L8/218/077/LC08_L1TP_218077_20210511_20210511_01_T1/LC08_L1TP_218077_20210511_20210511_01_T1_MTL.txt";
+        assertEquals(mtlLink, mtl.read("href"));
+        assertEquals("text/plain", mtl.read("type"));
+
+        // check extraction of full json objects using the jsonPointer
+        DocumentContext mtlInLinks = readSingleContext(l8_02, "links[?(@.type == 'text/plain')]");
+        assertEquals(mtlLink, mtlInLinks.read("href"));
+        assertEquals("MTL Metadata", mtlInLinks.read("title"));
+
+        // and of a single value
+        DocumentContext customMtl = readSingleContext(l8_02, "links[?(@.rel == 'custom-mtl')]");
+        assertEquals("MTL Metadata", customMtl.read("title"));
+        assertEquals("text/csv", customMtl.read("type"));
     }
 
     /**

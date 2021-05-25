@@ -58,6 +58,13 @@
           "href": "$${serviceLink('ogcapi/stac/collections/%s/items/%s', eop:parentIdentifier, eop:identifier)}",
           "rel": "self",
           "type": "application/geo+json"
+        },
+        "$${jsonPointer(assets, '/MTL')}",
+        {
+          "href": "http://fake.org/link",
+          "rel": "custom-mtl",
+          "title": "$${jsonPointer(assets, '/MTL/title')}",
+          "type": "text/csv"
         }
       ]
     }

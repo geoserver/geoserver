@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geotools.filter.function.JsonPointerFunction;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Attribute;
@@ -18,7 +19,10 @@ import org.opengis.feature.ComplexAttribute;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.expression.Expression;
 
-/** Supports handling Feature properties backed by JSON columns. Currently supports */
+/**
+ * Supports handling Feature properties backed by JSON columns. Currently supports native JSON and
+ * JSONB fields from PostgresSQL, as well as usage of the <code>jsonPointer</code> function
+ */
 public class JSONFieldSupport {
 
     static final Logger LOGGER = Logging.getLogger(JSONFieldSupport.class);
@@ -42,11 +46,12 @@ public class JSONFieldSupport {
         try {
             if (contextObject instanceof ComplexAttribute) {
                 // see if there is an indication it was a JSON field
-                if (isJSONField(
-                        Optional.ofNullable(((ComplexAttribute) contextObject).getType())
-                                .map(ct -> expression.evaluate(ct))
-                                .filter(d -> d instanceof PropertyDescriptor)
-                                .map(d -> (PropertyDescriptor) d))) {
+                if (expression instanceof JsonPointerFunction
+                        || isJSONField(
+                                Optional.ofNullable(((ComplexAttribute) contextObject).getType())
+                                        .map(ct -> expression.evaluate(ct))
+                                        .filter(d -> d instanceof PropertyDescriptor)
+                                        .map(d -> (PropertyDescriptor) d))) {
                     return parseJSON(result);
                 }
             } else if (result instanceof Attribute) {
@@ -94,9 +99,7 @@ public class JSONFieldSupport {
     private static String getJSON(Object value) {
         if (value instanceof Attribute) {
             return Converters.convert(((Attribute) value).getValue(), String.class);
-        } else if (value instanceof String) {
-            return (String) value;
         }
-        return null;
+        return Converters.convert(value, String.class);
     }
 }

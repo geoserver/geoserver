@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
@@ -136,6 +137,13 @@ public class DynamicValueBuilderTest extends DataTestCase {
         JSONObject obj = json.getJSONObject("key");
         assertEquals(1, obj.getInt("a"));
         assertEquals(Arrays.asList(1, 2, 3), obj.getJSONArray("b"));
+    }
+
+    @Test
+    public void testJSONPointer() throws Exception {
+        JSONObject json = encodeDynamic("$${jsonPointer(jf, '/b')}", jsonFieldComplexFeature);
+        JSONArray obj = json.getJSONArray("key");
+        assertEquals(Arrays.asList(1, 2, 3), obj);
     }
 
     private JSONObject encodeDynamic(String expression, Feature feature) throws IOException {

@@ -7,9 +7,9 @@ To install the CSW ISO extension:
 
 #. If you do not have the CSW extension yet, get it first. Visit the GeoServer `Download <http://geoserver.org/download>`_ and navigate to the download page for the version of GeoServer your are using. The **csw** download is listed under extensions. The file name is called :file:`geoserver-*-csw-plugin.zip`, where ``*`` matches the version number of GeoServer you are using.
 
-#. Additionally, download   the **csw-iso** community extension from the appropiate `nightly build <https://build.geoserver.org/geoserver/>`_. The file name is called :file:`geoserver-*-csw-plugin.zip`, where ``*`` matches the version number of GeoServer you are using. 
+#. Additionally, download   the **csw-iso** community extension from the appropiate `nightly build <https://build.geoserver.org/geoserver/>`_. The file name is called :file:`geoserver-*-SNAPSHOT-csw-iso-plugin.zip`, where ``*`` matches the version number of GeoServer you are using. 
 
-#. Extract this these files and place the JARs in ``WEB-INF/lib``.
+#. Extract these zip files and place all the JARs in ``WEB-INF/lib``.
 
 #. Perform any configuration required by your servlet container, and then restart.
 

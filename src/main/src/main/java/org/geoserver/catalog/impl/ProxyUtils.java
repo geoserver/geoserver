@@ -9,10 +9,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.util.ClassUtils;
 
 /**
  * Utility class for working with proxies.
@@ -83,11 +83,12 @@ public class ProxyUtils {
     public static <T> T createProxy(T proxyObject, Class<? extends T> clazz, InvocationHandler h) {
         try {
             // proxy all interfaces implemented by the source object
-            List<Class<?>> proxyInterfaces = Arrays.asList(proxyObject.getClass().getInterfaces());
+            List<Class<?>> proxyInterfaces =
+                    new ArrayList<>(ClassUtils.getAllInterfacesAsSet(proxyObject));
 
             // ensure that the specified class is included
             boolean add = true;
-            for (Class<?> interfce : proxyObject.getClass().getInterfaces()) {
+            for (Class<?> interfce : proxyInterfaces) {
                 if (clazz.isAssignableFrom(interfce)) {
                     add = false;
                     break;

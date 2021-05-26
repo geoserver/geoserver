@@ -8,12 +8,14 @@ package org.geoserver.catalog.impl;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.geoserver.catalog.Catalog;
@@ -28,7 +30,9 @@ import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.security.decorators.SecuredLayerGroupInfo;
 import org.geotools.feature.NameImpl;
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,6 +76,12 @@ public class LocalWorkspaceCatalogTest {
         expect(lg1.getName()).andReturn("lg1").anyTimes();
         expect(lg1.getWorkspace()).andReturn(ws1).anyTimes();
         replay(lg1);
+
+        // secured wrapped around lg1. These wrappers can be returned by the
+        // secure catalog
+        SecuredLayerGroupInfo slg1 =
+                new SecuredLayerGroupInfo(
+                        lg1, null, Collections.emptyList(), Collections.emptyList());
 
         LayerGroupInfo lg2 = createNiceMock(LayerGroupInfo.class);
         expect(lg2.getName()).andReturn("lg2").anyTimes();
@@ -128,9 +138,12 @@ public class LocalWorkspaceCatalogTest {
         expect(cat.getStyleByName("s2")).andReturn(null).anyTimes();
 
         expect(cat.getLayerGroupByName("ws1", "lg1")).andReturn(lg1).anyTimes();
+        expect(cat.getLayerGroupByName("ws1", "slg1")).andReturn(slg1).anyTimes();
         expect(cat.getLayerGroupByName(ws1, "lg1")).andReturn(lg1).anyTimes();
         expect(cat.getLayerGroupByName("ws1:lg1")).andReturn(lg1).anyTimes();
+        expect(cat.getLayerGroupByName("ws1:slg1")).andReturn(lg1).anyTimes();
         expect(cat.getLayerGroupByName("lg1")).andReturn(null).anyTimes();
+        expect(cat.getLayerGroupByName("slg1")).andReturn(null).anyTimes();
 
         expect(cat.getLayerGroupByName("ws2", "lg2")).andReturn(lg2).anyTimes();
         expect(cat.getLayerGroupByName(ws2, "lg2")).andReturn(lg2).anyTimes();
@@ -211,6 +224,9 @@ public class LocalWorkspaceCatalogTest {
         assertNotNull(catalog.getLayerGroupByName("lg1"));
         assertNotNull(catalog.getLayerGroupByName("ws1:lg1"));
         assertNull(catalog.getLayerGroupByName("lg2"));
+        LayerGroupInfo slg1 = catalog.getLayerGroupByName("slg1");
+        assertNotNull(slg1);
+        assertThat(slg1, CoreMatchers.instanceOf(LayerGroupInfo.class));
 
         LocalWorkspace.remove();
         assertNull(catalog.getLayerGroupByName("lg1"));

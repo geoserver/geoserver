@@ -24,6 +24,7 @@ import org.geoserver.ogcapi.features.FeaturesLandingPage;
 import org.geoserver.ogcapi.tiles.TileMatrixSets;
 import org.geoserver.ogcapi.tiles.TilesDocument;
 import org.geoserver.ogcapi.tiles.TilesLandingPage;
+import org.geoserver.ogcapi.tiles.TilesService;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.context.ApplicationListener;
@@ -50,6 +51,7 @@ public class TiledFeaturesExtension
 
     private final FreemarkerTemplateSupport templateSupport;
     private TiledFeatureService tiledFeatures;
+    private TilesService tilesService;
 
     public TiledFeaturesExtension(FreemarkerTemplateSupport templateSupport) {
         this.templateSupport = templateSupport;
@@ -149,6 +151,13 @@ public class TiledFeaturesExtension
 
     public void extendConformanceClasses(ConformanceDocument conformance) {
         conformance.getConformsTo().add(ConformanceClass.CORE);
+        ConformanceDocument cd = tilesService.conformance();
+        cd.getConformsTo()
+                .forEach(
+                        c -> {
+                            if (!conformance.getConformsTo().contains(c))
+                                conformance.getConformsTo().add(c);
+                        });
     }
 
     private void extendCollectionDocument(CollectionDocument collection) {
@@ -171,5 +180,6 @@ public class TiledFeaturesExtension
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         this.tiledFeatures = event.getApplicationContext().getBean(TiledFeatureService.class);
+        this.tilesService = event.getApplicationContext().getBean(TilesService.class);
     }
 }

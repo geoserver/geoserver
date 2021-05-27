@@ -83,6 +83,9 @@ public class TilesService {
 
     static final Logger LOGGER = Logging.getLogger(TilesService.class);
 
+    public static final String CC_TILE_CORE =
+            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core";
+
     public static final String CC_TILESET =
             "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset";
     public static final String CC_MULTITILES =
@@ -147,6 +150,7 @@ public class TilesService {
                 Arrays.asList(
                         ConformanceClass.CORE,
                         ConformanceClass.COLLECTIONS,
+                        CC_TILE_CORE,
                         CC_TILESET,
                         CC_MULTITILES,
                         CC_INFO);

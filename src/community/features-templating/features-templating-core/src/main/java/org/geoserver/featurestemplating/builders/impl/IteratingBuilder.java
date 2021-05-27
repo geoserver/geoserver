@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
+import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -146,5 +147,10 @@ public class IteratingBuilder extends SourceBuilder {
     private boolean isIterateKey() {
         Object iterateKey = getEncodingHints().get(ITERATE_KEY);
         return iterateKey != null && Boolean.valueOf(iterateKey.toString()).booleanValue();
+    }
+
+    @Override
+    public Object accept(TemplateVisitor visitor, Object value) {
+        return visitor.visit(this, value);
     }
 }

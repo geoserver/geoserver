@@ -241,14 +241,16 @@ public class XMLTemplateReader implements TemplateReader {
     }
 
     String strName(QName name) {
+
         String[] nameAr = name.getLocalPart().split(":");
         String strName;
         if (nameAr.length > 1) {
             strName = nameAr[0] + ":" + nameAr[1];
         } else {
-
             strName = name.getLocalPart();
-            if (name.getPrefix() != null) strName = name.getPrefix() + ":" + strName;
+            String prefix = name.getPrefix();
+            if (prefix != null && !prefix.trim().equals(""))
+                strName = name.getPrefix() + ":" + strName;
         }
         return strName;
     }

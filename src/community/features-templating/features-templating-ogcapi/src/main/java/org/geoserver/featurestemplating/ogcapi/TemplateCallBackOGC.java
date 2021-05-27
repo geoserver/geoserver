@@ -7,9 +7,12 @@ package org.geoserver.featurestemplating.ogcapi;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -149,7 +152,6 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
             String strFilter, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
             throws IOException, CQLException {
         TemplatePathVisitor visitor = new TemplatePathVisitor(typeInfo.getFeatureType());
-        /* Todo find a better way to replace json-ld path with corresponding template attribute*/
         // Get filter from string in order to make it accept the visitor
         Filter old = XCQL.toFilter(strFilter);
         Filter f = (Filter) old.accept(visitor, root);
@@ -165,9 +167,9 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
             templateFilters.add(f);
             f = FF.and(templateFilters);
         }
-        // Taking back a string from Function cause
+        // Taking back a string from the Filter cause
         // OGC API get a string cql filter from query string
-        String newFilter = TemplateCQLManager.removeQuotes(ECQL.toCQL(f)).replaceAll("/", ".");
+        String newFilter = fixPropertyNames(ECQL.toCQL(f));
         newFilter = TemplateCQLManager.quoteXpathAttribute(newFilter);
         for (int i = 0; i < operation.getParameters().length; i++) {
             Object p = operation.getParameters()[i];
@@ -176,6 +178,25 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
                 break;
             }
         }
+    }
+
+    // since the toCQL method quotes the propertynames and that
+    // they need to be provided to the ogcapi controller with dot separator
+    // this methods remove the quotes and replace slash with dots.
+    private String fixPropertyNames(String cqlFilter) {
+        Map<String, String> replacements = new HashMap<>();
+        Pattern p = Pattern.compile("\"([^\"]*)\"");
+        Matcher m = p.matcher(cqlFilter);
+        while (m.find()) {
+            String matched = m.group(1);
+            String quoted = "\"" + matched + "\"";
+            replacements.put(quoted, matched.replaceAll("/", "."));
+        }
+        for (String toReplace : replacements.keySet()) {
+            String replacement = replacements.get(toReplace);
+            cqlFilter = cqlFilter.replace(toReplace, replacement);
+        }
+        return cqlFilter;
     }
 
     @Override

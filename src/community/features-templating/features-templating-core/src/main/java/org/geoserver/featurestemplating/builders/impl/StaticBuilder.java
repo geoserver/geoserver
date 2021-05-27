@@ -7,6 +7,7 @@ package org.geoserver.featurestemplating.builders.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
+import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -51,5 +52,10 @@ public class StaticBuilder extends AbstractTemplateBuilder {
 
     public String getStrValue() {
         return strValue;
+    }
+
+    @Override
+    public Object accept(TemplateVisitor visitor, Object value) {
+        return visitor.visit(this, value);
     }
 }

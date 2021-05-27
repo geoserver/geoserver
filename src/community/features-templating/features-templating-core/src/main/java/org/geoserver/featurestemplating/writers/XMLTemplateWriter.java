@@ -64,6 +64,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
             else {
                 streamWriter.writeStartElement(name);
                 streamWriter.writeCharacters(staticContent.toString());
+                streamWriter.writeEndElement();
             }
         } catch (XMLStreamException e) {
             throw new IOException(e);
@@ -107,12 +108,15 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
         }
     }
 
+    @Override
     public void writeElementNameAndValue(
             String key, Object elementValue, EncodingHints encodingHints) throws IOException {
         boolean encodeAsAttribute = isEncodeAsAttribute(encodingHints);
         boolean repeatName = elementValue instanceof List && ((List) elementValue).size() > 1;
         boolean canClose = false;
-        if (key != null && !repeatName && !encodeAsAttribute) writeElementName(key, encodingHints);
+        if (key != null && !repeatName && !encodeAsAttribute) {
+            writeElementName(key, encodingHints);
+        }
         try {
             if (elementValue instanceof String
                     || elementValue instanceof Number
@@ -145,7 +149,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
                         encodeAsAttribute ? key : null, attr.getValue(), encodingHints);
             } else if (elementValue instanceof List) {
                 List list = (List) elementValue;
-                if (!repeatName) {
+                if (!repeatName && !list.isEmpty()) {
                     writeElementNameAndValue(key, list.get(0), encodingHints);
                 } else {
                     for (int i = 0; i < list.size(); i++) {
@@ -164,14 +168,20 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
     private void writeAsAttribute(String key, Object elementValue, EncodingHints encodingHints)
             throws IOException {
         try {
-            if (key.indexOf(":") != -1) {
+            if (key.indexOf(":") != -1 && !key.contains("xmlns")) {
                 String[] splitKey = key.split(":");
                 streamWriter.writeAttribute(
                         splitKey[0],
                         namespaces.get(splitKey[0]),
                         splitKey[1],
                         elementValue.toString());
-            } else streamWriter.writeAttribute(key, elementValue.toString());
+            } else {
+                if (key.contains("xmlns")) {
+                    streamWriter.writeNamespace(key.split(":")[1], elementValue.toString());
+                } else {
+                    streamWriter.writeAttribute(key, elementValue.toString());
+                }
+            }
         } catch (XMLStreamException e) {
             throw new IOException(e);
         }

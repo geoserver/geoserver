@@ -5,6 +5,7 @@
 package org.geoserver.featurestemplating.builders;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
@@ -35,6 +36,7 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
     public AbstractTemplateBuilder(String key, NamespaceSupport namespaces) {
         this.key = getKeyAsExpression(key);
         this.namespaces = namespaces;
+        this.children = new ArrayList<>();
     }
 
     /**
@@ -83,6 +85,16 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
             throw new RuntimeException(e);
         }
         this.filterContextPos = cqlManager.getContextPos();
+    }
+
+    /**
+     * Set the filter to the builder
+     *
+     * @param filter the filter to be setted
+     * @throws CQLException
+     */
+    public void setFilter(Filter filter) {
+        this.filter = filter;
     }
 
     /**
@@ -141,5 +153,11 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
     public void addEncodingHint(String key, Object value) {
         if (this.encodingHints == null) this.encodingHints = new EncodingHints();
         this.encodingHints.put(key, value);
+    }
+
+    @Override
+    public void addChild(TemplateBuilder builder) {
+        if (this.children == null) this.children = new ArrayList<>();
+        this.children.add(builder);
     }
 }

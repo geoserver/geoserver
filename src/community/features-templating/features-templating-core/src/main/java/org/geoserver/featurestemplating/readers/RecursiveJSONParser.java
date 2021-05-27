@@ -117,7 +117,7 @@ public class RecursiveJSONParser {
                     throw new IllegalArgumentException(
                             "The value of a "
                                     + INCLUDE_FLAT_KEY
-                                    + " key must be the pat of the file being included");
+                                    + " key must be the path of the file being included");
                 }
                 JsonNode processed = new RecursiveJSONParser(this, node.asText()).parse();
                 Iterator<String> fields = processed.fieldNames();

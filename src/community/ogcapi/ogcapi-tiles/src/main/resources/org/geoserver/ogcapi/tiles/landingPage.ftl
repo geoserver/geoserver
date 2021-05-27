@@ -11,7 +11,7 @@
   </p>
        
   <div class="row my-3">
-    <div class="col-6 col-xl-3">
+    <div class="col-6 col-xl-3 mb-3">
       <div class="card h-100">
         <div class="card-body">
           <h2>API definition</h2>
@@ -24,7 +24,7 @@
       </div>
     </div>
     
-    <div class="col-6 col-xl-3">
+    <div class="col-6 col-xl-3 mb-3">
       <div class="card h-100">
         <div class="card-body">
           <h2>Tile matrix sets</h2>
@@ -37,7 +37,7 @@
       </div>
     </div>
 
-    <div class="col-6 col-xl-3">
+    <div class="col-6 col-xl-3 mb-3">
       <div class="card h-100">
         <div class="card-body">
           <h2>Tiled Collections</h2>
@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <div class="col-6 col-xl-3">
+    <div class="col-6 col-xl-3 mb-3">
       <div class="card h-100">
         <div class="card-body">
           <#include "landingpage-conformance.ftl">

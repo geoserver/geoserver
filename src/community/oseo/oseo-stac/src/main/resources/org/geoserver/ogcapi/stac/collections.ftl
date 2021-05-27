@@ -11,7 +11,7 @@
     <#list model.collections.features as collection>
     <#assign a = collection.attributes />
     <div class="col-xs-12 col-md-6 col-lg-4 pb-4">
-      <div class="card h-100">
+      <div class="card h-100  mb-3">
         <div class="card-header">
           <h2><a href="${serviceLink("collections/${a.name.value}")}">${a.name.value}</a></h2>
         </div>

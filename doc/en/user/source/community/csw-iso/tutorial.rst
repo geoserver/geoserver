@@ -8,7 +8,7 @@ This tutorial will show how to use the CSW module with the ISO Metadata Profile 
 Configuration
 -------------
 
-In the :file:`<data_dir>/csw` directory, create a new file named :file:`MD_Metadata` (ISO Metadata Profile mapping file) with the following contents::
+In the :file:`<data_dir>/csw` directory, create a new file named :file:`MD_Metadata.properties` (ISO Metadata Profile mapping file) with the following contents::
 
   @fileIdentifier.CharacterString=prefixedName
   identificationInfo.AbstractMD_Identification.citation.CI_Citation.title.CharacterString=title

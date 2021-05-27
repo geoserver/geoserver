@@ -7,7 +7,7 @@ Each GeoServer release is supported with bug fixes for a year, with releases mad
 | Version     | Supported          | Available               |
 | ----------- | ------------------ |------------------------ |
 | stable      | :white_check_mark: | six months              |
-| maintenance | :white_check_mark: | tweleve months          |
+| maintenance | :white_check_mark: | twelve months           |
 | archived    | :x:                |                         |
 
 This approach provides ample time for upgrading ensuring you are always working with a supported GeoServer release.

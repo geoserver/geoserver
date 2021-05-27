@@ -4,6 +4,8 @@
  */
 package org.geoserver.ogcapi.tiles;
 
+import static org.geoserver.ogcapi.tiles.TiledCollectionDocument.REL_TILESETS_MAP;
+import static org.geoserver.ogcapi.tiles.TiledCollectionDocument.REL_TILESETS_VECTOR;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
@@ -38,7 +40,11 @@ public class CollectionTest extends TilesTestSupport {
 
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/collections/cite:Lakes/map/tiles?f=application%2Fjson",
-                readSingle(json, "$.links[?(@.rel=='tiles' && @.type=='application/json')].href"));
+                readSingle(
+                        json,
+                        "$.links[?(@.rel=='"
+                                + REL_TILESETS_MAP
+                                + "' && @.type=='application/json')].href"));
     }
 
     @Test
@@ -50,7 +56,11 @@ public class CollectionTest extends TilesTestSupport {
 
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/collections/cite:Forests/tiles?f=application%2Fjson",
-                readSingle(json, "$.links[?(@.rel=='tiles' && @.type=='application/json')].href"));
+                readSingle(
+                        json,
+                        "$.links[?(@.rel=='"
+                                + REL_TILESETS_VECTOR
+                                + "' && @.type=='application/json')].href"));
     }
 
     public void testRoadsCollectionJson(DocumentContext json) {
@@ -65,14 +75,21 @@ public class CollectionTest extends TilesTestSupport {
                 json.read("$.extent.spatial.crs", String.class));
 
         // check the tiles link (both data and map tiles)
-        List<String> tilesLinks =
-                json.read("$.links[?(@.rel=='tiles' && @.type=='application/json')].href");
-        assertEquals(2, tilesLinks.size());
-        assertThat(
-                tilesLinks,
-                Matchers.containsInAnyOrder(
-                        "http://localhost:8080/geoserver/ogc/tiles/collections/cite:RoadSegments/tiles?f=application%2Fjson",
-                        "http://localhost:8080/geoserver/ogc/tiles/collections/cite:RoadSegments/map/tiles?f=application%2Fjson"));
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/tiles/collections/cite:RoadSegments/map/tiles?f=application%2Fjson",
+                readSingle(
+                        json,
+                        "$.links[?(@.rel=='"
+                                + REL_TILESETS_MAP
+                                + "' && @.type=='application/json')].href"));
+        // check the tiles link (both data and map tiles)
+        assertEquals(
+                "http://localhost:8080/geoserver/ogc/tiles/collections/cite:RoadSegments/tiles?f=application%2Fjson",
+                readSingle(
+                        json,
+                        "$.links[?(@.rel=='"
+                                + REL_TILESETS_VECTOR
+                                + "' && @.type=='application/json')].href"));
 
         // styles
         assertEquals(Integer.valueOf(2), json.read("$.styles.size()"));
@@ -124,7 +141,10 @@ public class CollectionTest extends TilesTestSupport {
 
         // check the tiles link (only map tiles for the time being)
         List<String> tilesLinks =
-                json.read("$.links[?(@.rel=='tiles' && @.type=='application/json')].href");
+                json.read(
+                        "$.links[?(@.rel=='"
+                                + REL_TILESETS_MAP
+                                + "' && @.type=='application/json')].href");
         assertEquals(1, tilesLinks.size());
         assertThat(
                 tilesLinks,

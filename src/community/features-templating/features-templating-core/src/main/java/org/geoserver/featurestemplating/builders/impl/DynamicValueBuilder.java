@@ -58,6 +58,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
             } else if (cql != null) {
                 o = evaluateExpressions(context);
             }
+            addChildrenEvaluationToEncodingHints(writer, context);
             writeValue(writer, o);
         }
     }

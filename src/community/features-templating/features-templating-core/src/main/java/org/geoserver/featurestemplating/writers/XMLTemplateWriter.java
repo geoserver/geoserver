@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.util.ISO8601Formatter;
 import org.locationtech.jts.geom.Geometry;
@@ -63,6 +64,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
                 writeAsAttribute(name, staticContent, encodingHints);
             else {
                 streamWriter.writeStartElement(name);
+                evaluateChildren(encodingHints);
                 streamWriter.writeCharacters(staticContent.toString());
                 streamWriter.writeEndElement();
             }
@@ -116,6 +118,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
         boolean canClose = false;
         if (key != null && !repeatName && !encodeAsAttribute) {
             writeElementName(key, encodingHints);
+            evaluateChildren(encodingHints);
         }
         try {
             if (elementValue instanceof String
@@ -201,5 +204,15 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
                 getEncodingHintIfPresent(encodingHints, ENCODE_AS_ATTRIBUTE, Boolean.class);
         if (encodeAsAttribute != null) result = encodeAsAttribute.booleanValue();
         return result;
+    }
+
+    private void evaluateChildren(EncodingHints encodingHints) throws IOException {
+        AbstractTemplateBuilder.ChildrenEvaluation eval =
+                encodingHints.get(
+                        EncodingHints.CHILDREN_EVALUATION,
+                        AbstractTemplateBuilder.ChildrenEvaluation.class);
+        if (eval != null) {
+            eval.evaluate();
+        }
     }
 }

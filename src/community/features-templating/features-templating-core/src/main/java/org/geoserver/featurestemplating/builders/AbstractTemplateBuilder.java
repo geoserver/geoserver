@@ -160,4 +160,28 @@ public abstract class AbstractTemplateBuilder implements TemplateBuilder {
         if (this.children == null) this.children = new ArrayList<>();
         this.children.add(builder);
     }
+
+    protected void addChildrenEvaluationToEncodingHints(
+            TemplateOutputWriter writer, TemplateBuilderContext context) {
+        if (children != null && !children.isEmpty()) {
+            ChildrenEvaluation childrenEvaluation = getChildrenEvaluation(writer, context);
+            getEncodingHints().put(EncodingHints.CHILDREN_EVALUATION, childrenEvaluation);
+        }
+    }
+
+    protected ChildrenEvaluation getChildrenEvaluation(
+            TemplateOutputWriter writer, TemplateBuilderContext context) {
+        ChildrenEvaluation action =
+                () -> {
+                    for (TemplateBuilder b : children) {
+                        b.evaluate(writer, context);
+                    }
+                };
+        return action;
+    }
+
+    @FunctionalInterface
+    public interface ChildrenEvaluation {
+        void evaluate() throws IOException;
+    }
 }

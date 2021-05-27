@@ -37,6 +37,7 @@ public class StaticBuilder extends AbstractTemplateBuilder {
 
     protected void evaluateInternal(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
+        addChildrenEvaluationToEncodingHints(writer, context);
         if (strValue != null) writer.writeStaticContent(getKey(), strValue, getEncodingHints());
         else writer.writeStaticContent(getKey(), staticValue, getEncodingHints());
     }

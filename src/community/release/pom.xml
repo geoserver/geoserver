@@ -222,11 +222,10 @@
       <version>${project.version}</version>
     </dependency>
     <!-- <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-notification</artifactId>
-     <version>${project.version}</version>
-   </dependency> -->
-<<<<<<< HEAD
+         <groupId>org.geoserver.community</groupId>
+         <artifactId>gs-notification</artifactId>
+         <version>${project.version}</version>
+       </dependency> -->
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-notification-common</artifactId>
@@ -288,69 +287,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-=======
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-notification-common</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-notification-geonode</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-ows-simulate</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-jdbc-metrics</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-oseo-core</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-web-oseo</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-oseo-rest</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-oseo-stac</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-nsg-wmts-profile</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-nsg-wfs-profile</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-netcdf-ghrsst</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-wfs3</artifactId>
-     <version>${project.version}</version>
-   </dependency>
-   <dependency>
->>>>>>> c4fd0aaec7... STAC: filtering and pagination on the items resource, search resource (json and html), backmapping properties from JSON templates
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-s3-geotiff</artifactId>
       <version>${project.version}</version>
@@ -427,7 +363,17 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-features-templating</artifactId>
+      <artifactId>gs-features-templating-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-features-templating-wfs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-features-templating-ogcapi</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

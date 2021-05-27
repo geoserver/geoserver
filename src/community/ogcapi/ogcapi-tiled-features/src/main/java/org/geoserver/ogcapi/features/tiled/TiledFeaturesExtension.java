@@ -22,6 +22,7 @@ import org.geoserver.ogcapi.features.CollectionDocument;
 import org.geoserver.ogcapi.features.CollectionsDocument;
 import org.geoserver.ogcapi.features.FeaturesLandingPage;
 import org.geoserver.ogcapi.tiles.TileMatrixSets;
+import org.geoserver.ogcapi.tiles.TiledCollectionDocument;
 import org.geoserver.ogcapi.tiles.TilesDocument;
 import org.geoserver.ogcapi.tiles.TilesLandingPage;
 import org.geoserver.ogcapi.tiles.TilesService;
@@ -169,7 +170,7 @@ public class TiledFeaturesExtension
                     "Tiles metadata as ",
                     "dataTiles",
                     null,
-                    "tiles");
+                    TiledCollectionDocument.REL_TILESETS_VECTOR);
         }
     }
 

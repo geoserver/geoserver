@@ -16,6 +16,7 @@ public class TileMatrixSetLink {
 
     String tileMatrixSet;
     String tileMatrixSetURI;
+    String tileMatrixSetDefinition;
     List<TileMatrixSetLimit> tileMatrixSetLimits = new ArrayList<>();
 
     public TileMatrixSetLink(

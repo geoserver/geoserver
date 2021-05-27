@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
 import org.geoserver.data.test.MockData;
+import org.geoserver.ogcapi.tiles.TiledCollectionDocument;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
@@ -24,7 +25,9 @@ public class CollectionsTest extends TiledFeaturesTestSupport {
                 "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/tiles?f=application%2Fjson",
                 readSingle(
                         json,
-                        "$.collections[?(@.id == 'cite:RoadSegments')].links[?(@.rel=='tiles' && @.type=='application/json')].href"));
+                        "$.collections[?(@.id == 'cite:RoadSegments')].links[?(@.rel=='"
+                                + TiledCollectionDocument.REL_TILESETS_VECTOR
+                                + "' && @.type=='application/json')].href"));
     }
 
     @Test

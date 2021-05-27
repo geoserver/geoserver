@@ -44,6 +44,12 @@ import org.springframework.http.HttpStatus;
 @JsonPropertyOrder({"id", "title", "description", "extent", "links", "styles"})
 public class TiledCollectionDocument extends AbstractCollectionDocument<TileLayer> {
     static final Logger LOGGER = Logging.getLogger(TiledCollectionDocument.class);
+
+    public static final String REL_TILESETS_MAP =
+            "http://www.opengis.net/def/rel/ogc/1.0/tilesets-map";
+    public static final String REL_TILESETS_VECTOR =
+            "http://www.opengis.net/def/rel/ogc/1.0/tilesets-vector";
+
     WMS wms;
     TileLayer layer;
     List<StyleDocument> styles = new ArrayList<>();
@@ -94,7 +100,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                         "Tiles metadata as ",
                         "dataTiles",
                         null,
-                        "tiles");
+                        REL_TILESETS_VECTOR);
             }
 
             // map tiles links (a layer might not have image tiles configured, need to check)
@@ -106,7 +112,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                         "Map tiles metadata as ",
                         "mapTiles",
                         null,
-                        "tiles");
+                        REL_TILESETS_MAP);
             }
 
             // style links

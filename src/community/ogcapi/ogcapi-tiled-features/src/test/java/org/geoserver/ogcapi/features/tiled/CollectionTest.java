@@ -4,6 +4,7 @@
  */
 package org.geoserver.ogcapi.features.tiled;
 
+import static org.geoserver.ogcapi.tiles.TiledCollectionDocument.REL_TILESETS_VECTOR;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
@@ -26,7 +27,11 @@ public class CollectionTest extends TiledFeaturesTestSupport {
 
         // check the tiles link has been added
         assertThat(
-                readSingle(json, "links[?(@.rel=='tiles' && @.type=='application/json')].href"),
+                readSingle(
+                        json,
+                        "links[?(@.rel=='"
+                                + REL_TILESETS_VECTOR
+                                + "' && @.type=='application/json')].href"),
                 equalTo(
                         "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/tiles?f=application%2Fjson"));
     }

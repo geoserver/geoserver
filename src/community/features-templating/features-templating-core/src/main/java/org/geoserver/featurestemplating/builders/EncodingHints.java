@@ -23,6 +23,8 @@ public class EncodingHints extends HashMap<String, Object> {
 
     public static final String ITERATE_KEY = "INTERATE_KEY";
 
+    public static final String CHILDREN_EVALUATION = "CHILDREN_EVALUATION";
+
     /**
      * Check if the hint is present.
      *

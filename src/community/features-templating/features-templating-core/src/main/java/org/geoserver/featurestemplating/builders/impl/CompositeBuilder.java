@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
+import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -89,6 +90,11 @@ public class CompositeBuilder extends SourceBuilder {
     @Override
     public List<TemplateBuilder> getChildren() {
         return children;
+    }
+
+    @Override
+    public Object accept(TemplateVisitor visitor, Object value) {
+        return visitor.visit(this, value);
     }
 
     @Override

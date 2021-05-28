@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0"
+                       xmlns:gml="http://www.opengis.net/gml/3.2"
+                       xmlns:gsml="urn:cgi:xmlns:CGI:GeoSciML:2.0"
+                       xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                       xmlns:xlink="http://www.w3.org/1999/xlink"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/wfs.xsd urn:cgi:xmlns:CGI:GeoSciML:2.0 http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+    <wfs:member>
+        <gsml:MappedFeature gml:id="${ID}" gft:isCollection="true" gft:source="MappedFeaturePropertyfile">
+            <gml:name xmlns:gml="http://www.opengis.net/gml">$${strConcat('mf.', propertyPath('LEX_D'))}</gml:name>
+            <gsml:samplingFrame xlink:href="urn:cgi:feature:CGI:EarthNaturalSurface" />
+            <gsml:specification gft:source="GeologicUnit" gft:isCollection="true">
+                <gsml:GeologicUnit gft:isCollection="true">
+                    <gml:description>${TEXTDESCRIPTION}</gml:description>
+                    <gml:name>${NAME}</gml:name>
+                    <gsml:purpose>instance</gsml:purpose>
+                    <gsml:composition gft:source="CompositionPart" gft:isCollection="true">
+                        <gsml:CompositionPart gft:isCollection="true">
+                            <gsml:role codeSpace="urn:cgi:classifierScheme:Example:CompositionPartRole">${COMPONENT_ROLE}</gsml:role>
+                            <gsml:lithology gft:source="ControlledConcept" gft:filter="NAME = 'name_cc_3'" gft:isCollection="true">
+                                <gsml:ControlledConcept gft:isCollection="true">
+                                    <gsml:name>${NAME}</gsml:name>
+                                    <gsml:vocabulary xlink:href="@xlink:href"/>
+                                </gsml:ControlledConcept>
+                            </gsml:lithology>
+                        </gsml:CompositionPart>
+                    </gsml:composition>
+                </gsml:GeologicUnit>
+            </gsml:specification>
+            <gsml:geometry>${SHAPE}</gsml:geometry>
+        </gsml:MappedFeature>
+    </wfs:member>
+</wfs:FeatureCollection>

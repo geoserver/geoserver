@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.JSONFieldSupport;
+import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geotools.feature.ComplexAttributeImpl;
@@ -57,6 +58,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
             } else if (cql != null) {
                 o = evaluateExpressions(context);
             }
+            addChildrenEvaluationToEncodingHints(writer, context);
             writeValue(writer, o);
         }
     }
@@ -171,5 +173,18 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
         }
         if (o == null) return false;
         return true;
+    }
+
+    public void setCql(Expression cql) {
+        this.cql = cql;
+    }
+
+    public void setXpath(AttributeExpressionImpl xpath) {
+        this.xpath = xpath;
+    }
+
+    @Override
+    public Object accept(TemplateVisitor visitor, Object value) {
+        return visitor.visit(this, value);
     }
 }

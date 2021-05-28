@@ -52,7 +52,7 @@
               },
               {
                 "gsml:role": {
-                  "value": "${gsml:role}",
+                  "value": "${../gsml:CompositionPart/gsml:role}",
                   "@codeSpace": "urn:cgi:classifierScheme:Example:CompositionPartRole"
                 },
                 "proportion": {

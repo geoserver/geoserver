@@ -9,7 +9,7 @@
 
   <ul>
   <#list model.tileMatrixSets as tileMatrixSet>
-      <li><a href="${serviceLink("/tileMatrixSets/${tileMatrixSet.encodedId}", "text/html")}">${tileMatrixSet.identifier}</a></LI>
+      <li><a href="${serviceLink("/tileMatrixSets/${tileMatrixSet.encodedId}", "text/html")}">${tileMatrixSet.id}</a></LI>
   </#list>
   </ul>
 <#include "common-footer.ftl">

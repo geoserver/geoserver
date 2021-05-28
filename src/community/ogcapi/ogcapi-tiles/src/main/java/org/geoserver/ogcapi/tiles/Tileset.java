@@ -8,8 +8,10 @@ import static org.geoserver.ows.util.ResponseUtils.appendPath;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.JsonNode;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractDocument;
@@ -21,11 +23,6 @@ import org.geowebcache.grid.GridSubset;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.meta.TileJSON;
 import org.geowebcache.mime.MimeType;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Tileset extends AbstractDocument {
 
@@ -108,7 +105,13 @@ public class Tileset extends AbstractDocument {
             if (styleId == null) {
                 addSelfLinks("ogc/tiles/collections/" + id + "/map/tiles/" + tileMatrixId);
             } else {
-                addSelfLinks("ogc/tiles/collections/" + id + "/styles/" + styleId + "/map/tiles/" + tileMatrixId);
+                addSelfLinks(
+                        "ogc/tiles/collections/"
+                                + id
+                                + "/styles/"
+                                + styleId
+                                + "/map/tiles/"
+                                + tileMatrixId);
             }
         } else {
             throw new IllegalArgumentException("Cannot handle data type: " + dataType);
@@ -118,7 +121,8 @@ public class Tileset extends AbstractDocument {
             // links depend on the data type
             List<MimeType> tileTypes = tileLayer.getMimeTypes();
             if (dataType == DataType.vector) {
-                tileTypes.stream()
+                tileTypes
+                        .stream()
                         .filter(mt -> mt.isVector())
                         .collect(Collectors.toList())
                         .forEach(
@@ -143,10 +147,12 @@ public class Tileset extends AbstractDocument {
                         "describedBy");
             } else if (dataType == DataType.map) {
                 List<MimeType> imageFormats =
-                        tileTypes.stream()
+                        tileTypes
+                                .stream()
                                 .filter(mt -> !mt.isVector())
                                 .collect(Collectors.toList());
-                String base = styleId != null ? "/styles/" + styleId + "/map/tiles/" : "/map/tiles/";
+                String base =
+                        styleId != null ? "/styles/" + styleId + "/map/tiles/" : "/map/tiles/";
                 imageFormats.forEach(
                         imageFormat ->
                                 addTilesLinkForFormat(
@@ -263,7 +269,7 @@ public class Tileset extends AbstractDocument {
     public String getStyleId() {
         return styleId;
     }
-    
+
     @JsonIgnore
     public String getTileMatrixId() {
         return tileMatrixId;

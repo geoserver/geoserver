@@ -11,7 +11,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import com.jayway.jsonpath.DocumentContext;
-
+import java.util.Arrays;
+import java.util.List;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -24,9 +25,6 @@ import org.geoserver.wms.WMS;
 import org.geotools.feature.NameImpl;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class TilesetDescriptionTest extends TilesTestSupport {
 

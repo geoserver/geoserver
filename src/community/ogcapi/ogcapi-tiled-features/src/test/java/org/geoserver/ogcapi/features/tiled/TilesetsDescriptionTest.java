@@ -33,18 +33,18 @@ public class TilesetsDescriptionTest extends TiledFeaturesTestSupport {
 
         // check some of the basic tile matrix sets are there
         assertThat(
-                json.read("tileMatrixSets[*].identifier"),
+                json.read("tileMatrixSets[*].id"),
                 hasItems("GlobalCRS84Pixel", "EPSG:4326", "EPSG:900913"));
 
         // verify a specific one
         assertThat(
                 json.read(
-                        "tileMatrixSets[?(@.identifier == 'EPSG:4326')].links[?(@.type == 'application/json')].href"),
+                        "tileMatrixSets[?(@.id == 'EPSG:4326')].links[?(@.type == 'application/json')].href"),
                 contains(
                         "http://localhost:8080/geoserver/ogc/tiles/tileMatrixSets/EPSG%3A4326?f=application%2Fjson"));
         assertThat(
                 json.read(
-                        "tileMatrixSets[?(@.identifier == 'EPSG:4326')].links[?(@.type == 'application/json')].rel"),
+                        "tileMatrixSets[?(@.id == 'EPSG:4326')].links[?(@.type == 'application/json')].rel"),
                 contains("tileMatrixSet"));
     }
 
@@ -69,22 +69,22 @@ public class TilesetsDescriptionTest extends TiledFeaturesTestSupport {
                 hasItems("application/x-yaml"));
 
         // check basic properties
-        assertThat(json.read("identifier"), equalTo("EPSG:4326"));
+        assertThat(json.read("id"), equalTo("EPSG:4326"));
         assertThat(
                 json.read("supportedCRS"), equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
         assertThat(json.read("title"), startsWith("A default WGS84"));
 
         // check a tile matrix definitions
-        assertThat(json.read("tileMatrix[0].identifier"), equalTo("EPSG:4326:0"));
+        assertThat(json.read("tileMatrices[0].id"), equalTo("EPSG:4326:0"));
         assertThat(
-                json.read("tileMatrix[0].scaleDenominator", Double.class),
+                json.read("tileMatrices[0].scaleDenominator", Double.class),
                 closeTo(2.7954112E8, 1e3));
-        assertThat(json.read("tileMatrix[0].tileWidth"), equalTo(256));
-        assertThat(json.read("tileMatrix[0].tileWidth"), equalTo(256));
-        assertThat(json.read("tileMatrix[0].matrixWidth"), equalTo(2));
-        assertThat(json.read("tileMatrix[0].matrixHeight"), equalTo(1));
+        assertThat(json.read("tileMatrices[0].tileWidth"), equalTo(256));
+        assertThat(json.read("tileMatrices[0].tileWidth"), equalTo(256));
+        assertThat(json.read("tileMatrices[0].matrixWidth"), equalTo(2));
+        assertThat(json.read("tileMatrices[0].matrixHeight"), equalTo(1));
         assertThat(
-                json.read("tileMatrix[0].topLeftCorner"),
+                json.read("tileMatrices[0].pointOfOrigin"),
                 contains(closeTo(90, 0), closeTo(-180, 0)));
     }
 

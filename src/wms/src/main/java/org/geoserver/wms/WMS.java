@@ -1865,4 +1865,8 @@ public class WMS implements ApplicationContextAware {
 
         return result;
     }
+
+    public boolean isDefaultGroupStyleEnabled() {
+        return getServiceInfo().isDefaultGroupStyleEnabled();
+    }
 }

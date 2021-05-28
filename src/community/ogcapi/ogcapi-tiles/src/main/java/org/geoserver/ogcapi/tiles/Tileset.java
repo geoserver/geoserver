@@ -4,12 +4,12 @@
  */
 package org.geoserver.ogcapi.tiles;
 
+import static org.geoserver.ows.util.ResponseUtils.appendPath;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractDocument;
@@ -22,9 +22,16 @@ import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.meta.TileJSON;
 import org.geowebcache.mime.MimeType;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class Tileset extends AbstractDocument {
 
     public static final String TILE_REL = "item";
+    private final String styleId;
+    private final String tileMatrixId;
 
     /** The type of tileset, according to the spec */
     public enum DataType {
@@ -44,11 +51,23 @@ public class Tileset extends AbstractDocument {
             WMS wms,
             TileLayer tileLayer,
             DataType dataType,
-            String gridSubsetId,
+            String tileMatrixId,
             boolean addDetails) {
-        GridSubset gridSubset = tileLayer.getGridSubset(gridSubsetId);
-        this.gridSubsetId = gridSubsetId;
+        this(wms, tileLayer, dataType, tileMatrixId, null, addDetails);
+    }
+
+    public Tileset(
+            WMS wms,
+            TileLayer tileLayer,
+            DataType dataType,
+            String tileMatrixId,
+            String styleId,
+            boolean addDetails) {
+        GridSubset gridSubset = tileLayer.getGridSubset(tileMatrixId);
+        this.gridSubsetId = tileMatrixId;
         this.dataType = dataType;
+        this.styleId = styleId;
+        this.tileMatrixId = tileMatrixId;
         String baseURL = APIRequestInfo.get().getBaseURL();
 
         // TODO: link definition to local URL, but if the matrix is a well known one,
@@ -83,18 +102,23 @@ public class Tileset extends AbstractDocument {
                 tileLayer instanceof GeoServerTileLayer
                         ? ((GeoServerTileLayer) tileLayer).getContextualName()
                         : tileLayer.getName();
-        if (dataType == DataType.vector)
-            addSelfLinks("ogc/tiles/collections/" + id + "/tiles/" + gridSubsetId);
-        else if (dataType == DataType.map)
-            addSelfLinks("ogc/tiles/collections/" + id + "/map/tiles/" + gridSubsetId);
-        else throw new IllegalArgumentException("Cannot handle data type: " + dataType);
+        if (dataType == DataType.vector) {
+            addSelfLinks("ogc/tiles/collections/" + id + "/tiles/" + tileMatrixId);
+        } else if (dataType == DataType.map) {
+            if (styleId == null) {
+                addSelfLinks("ogc/tiles/collections/" + id + "/map/tiles/" + tileMatrixId);
+            } else {
+                addSelfLinks("ogc/tiles/collections/" + id + "/styles/" + styleId + "/map/tiles/" + tileMatrixId);
+            }
+        } else {
+            throw new IllegalArgumentException("Cannot handle data type: " + dataType);
+        }
 
         if (addDetails) {
             // links depend on the data type
             List<MimeType> tileTypes = tileLayer.getMimeTypes();
             if (dataType == DataType.vector) {
-                tileTypes
-                        .stream()
+                tileTypes.stream()
                         .filter(mt -> mt.isVector())
                         .collect(Collectors.toList())
                         .forEach(
@@ -103,12 +127,15 @@ public class Tileset extends AbstractDocument {
                                                 this.id,
                                                 baseURL,
                                                 dataFormat.getFormat(),
-                                                "/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+                                                appendPath(
+                                                        "/tiles/",
+                                                        tileMatrixId,
+                                                        "/{tileMatrix}/{tileRow}/{tileCol}"),
                                                 TILE_REL));
 
                 // tileJSON
                 addLinksFor(
-                        "ogc/tiles/collections/" + id + "/tiles/{tileMatrixSetId}/metadata",
+                        "ogc/tiles/collections/" + id + "/tiles/" + tileMatrixId + "/metadata",
                         TileJSON.class,
                         "Tiles metadata as ",
                         "metadata",
@@ -116,17 +143,20 @@ public class Tileset extends AbstractDocument {
                         "describedBy");
             } else if (dataType == DataType.map) {
                 List<MimeType> imageFormats =
-                        tileTypes
-                                .stream()
+                        tileTypes.stream()
                                 .filter(mt -> !mt.isVector())
                                 .collect(Collectors.toList());
+                String base = styleId != null ? "/styles/" + styleId + "/map/tiles/" : "/map/tiles/";
                 imageFormats.forEach(
                         imageFormat ->
                                 addTilesLinkForFormat(
                                         this.id,
                                         baseURL,
                                         imageFormat.getFormat(),
-                                        "/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+                                        appendPath(
+                                                base,
+                                                tileMatrixId,
+                                                "/{tileMatrix}/{tileRow}/{tileCol}"),
                                         TILE_REL));
 
                 // add the info links (might be needed only for maps, but we always have a style
@@ -138,14 +168,15 @@ public class Tileset extends AbstractDocument {
                                                 this.id,
                                                 baseURL,
                                                 infoFormat,
-                                                "/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}/info",
+                                                appendPath(
+                                                        base,
+                                                        tileMatrixId,
+                                                        "/{tileMatrix}/{tileRow}/{tileCol}/info"),
                                                 "info"));
 
                 // tileJSON
                 addLinksFor(
-                        "ogc/tiles/collections/"
-                                + id
-                                + "/map/{styleId}/tiles/{tileMatrixSetId}/metadata",
+                        "ogc/tiles/collections/" + id + base + tileMatrixId + "/metadata",
                         TileJSON.class,
                         "Tiles metadata as ",
                         "metadata",
@@ -226,5 +257,15 @@ public class Tileset extends AbstractDocument {
         Link link = new Link(apiUrl, rel, format, layerName + " tiles as " + format);
         link.setTemplated(true);
         addLink(link);
+    }
+
+    @JsonIgnore
+    public String getStyleId() {
+        return styleId;
+    }
+    
+    @JsonIgnore
+    public String getTileMatrixId() {
+        return tileMatrixId;
     }
 }

@@ -35,6 +35,10 @@
             <li>Layer does not support filtering.</li>
             </#if>
           </ul>
+          
+          <#if model.mapTiles>
+          <p><a href="${model.getLinkUrl('styles', 'text/html')!}">Styles available in this collection</a></p>
+          </#if>
 
           Tiles available for this collection:
           <ul>
@@ -42,7 +46,7 @@
             <li><a href="${model.getLinkUrl('dataTiles', 'text/html')!}">Data tiles</a></li> 
           </#if>
           <#if model.mapTiles>
-            <li><a href="${model.getLinkUrl('mapTiles', 'text/html')!}">Map tiles</a></li>
+            <li><a href="${model.getLinkUrl('mapTiles', 'text/html')!}">Map tiles in default style</a></li>
           </#if>
           </ul>
         </div>

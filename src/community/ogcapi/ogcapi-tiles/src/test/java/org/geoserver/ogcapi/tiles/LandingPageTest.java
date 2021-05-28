@@ -33,18 +33,22 @@ public class LandingPageTest extends TilesTestSupport {
                         "getApi",
                         "describeCollection",
                         "getCollections",
+                        "getCollectionStyles",
                         "getLandingPage",
                         "getConformanceDeclaration",
                         "describeTilesets",
                         "describeTileset",
-                        "describeMapTilesets",
+                        "describeDefaultMapTilesets",
+                        "describeStyledMapTilesets",
                         "describeMapTileset",
                         "getTile",
-                        "getMapTile",
+                        "getDefaultMapTile",
+                        "getStyledMapTile",
                         "getTileMatrixSet",
                         "getTileMatrixSets",
                         "getQueryables",
-                        "getTilesMetadata"));
+                        "getTilesMetadata",
+                        "describeDefaultMapTilesets"));
     }
 
     @Test
@@ -64,7 +68,7 @@ public class LandingPageTest extends TilesTestSupport {
         DocumentContext json = getAsJSONPath("ogc/tiles?f=json", 200);
         checkJSONLandingPage(json);
     }
-
+    
     @Test
     public void testLandingPageWorkspaceSpecific() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/tiles", 200);

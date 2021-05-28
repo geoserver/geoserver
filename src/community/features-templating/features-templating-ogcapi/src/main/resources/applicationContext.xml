@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean id="jsonCallbackOGC"
+          class="org.geoserver.featurestemplating.ogcapi.TemplateCallBackOGC">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="templateConfiguration"/>
+    </bean>
+
+</beans>

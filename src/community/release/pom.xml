@@ -222,10 +222,10 @@
       <version>${project.version}</version>
     </dependency>
     <!-- <dependency>
-     <groupId>org.geoserver.community</groupId>
-     <artifactId>gs-notification</artifactId>
-     <version>${project.version}</version>
-   </dependency> -->
+         <groupId>org.geoserver.community</groupId>
+         <artifactId>gs-notification</artifactId>
+         <version>${project.version}</version>
+       </dependency> -->
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-notification-common</artifactId>
@@ -363,7 +363,17 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-features-templating</artifactId>
+      <artifactId>gs-features-templating-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-features-templating-wfs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-features-templating-ogcapi</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

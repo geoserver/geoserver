@@ -11,6 +11,9 @@
       <includes>	
         <include>gs-ogcapi-*.jar</include>
         <include>gt-jdbc-h2-*.jar</include>
+        <!-- to parse JTS geometries embedded in larger JSON documents 
+             that are not necessarily GeoJSON collections or features -->
+        <include>gt-geojsondatastore-*.jar</include>
         <include>swagger-core-*.jar</include>
         <include>jackson-dataformat-*.jar</include>
         <include>jackson-databind-*.jar</include>

@@ -14,10 +14,11 @@ import static org.junit.Assert.assertEquals;
 import com.jayway.jsonpath.DocumentContext;
 import java.util.Arrays;
 import org.geoserver.data.test.MockData;
+import org.geoserver.ogcapi.tiles.Tileset;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
-public class TileDescriptionTest extends TiledFeaturesTestSupport {
+public class TilesetDescriptionTest extends TiledFeaturesTestSupport {
 
     @Test
     public void testGetTileMatrixSets() throws Exception {
@@ -94,7 +95,7 @@ public class TileDescriptionTest extends TiledFeaturesTestSupport {
     public void getDataTilesMetadata() throws Exception {
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         DocumentContext json =
-                getAsJSONPath("ogc/features/collections/" + roadSegments + "/tiles", 200);
+                getAsJSONPath("ogc/features/collections/" + roadSegments + "/tiles/EPSG:4326", 200);
 
         // check the raw tiles links
         assertEquals(
@@ -106,11 +107,11 @@ public class TileDescriptionTest extends TiledFeaturesTestSupport {
         // test self link and links to alternate formats and
         assertThat(
                 json.read(
-                        "links[?(@.type == 'application/json' && @.href =~ /.*ogc\\/features\\/collections\\/cite:RoadSegments\\/tiles\\?.*/)].rel"),
+                        "links[?(@.type == 'application/json' && @.href =~ /.*ogc\\/features\\/collections\\/cite:RoadSegments\\/tiles\\/EPSG:4326\\?.*/)].rel"),
                 containsInAnyOrder("self"));
         assertThat(
                 json.read(
-                        "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/features\\/collections\\/cite:RoadSegments\\/tiles\\?.*/ && @.rel == 'alternate')].type"),
+                        "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/features\\/collections\\/cite:RoadSegments\\/tiles\\/EPSG:4326\\?.*/ && @.rel == 'alternate')].type"),
                 hasItems("application/x-yaml"));
 
         // test the describedBy template
@@ -125,7 +126,7 @@ public class TileDescriptionTest extends TiledFeaturesTestSupport {
                         json,
                         "$.links[?(@.rel=='describedBy' && @.type=='application/json')].templated"));
 
-        checkRoadSegmentsTileMatrix(json);
+        checkRoadSegmentsTileMatrix(json, Tileset.DataType.vector);
     }
 
     @Test
@@ -136,18 +137,15 @@ public class TileDescriptionTest extends TiledFeaturesTestSupport {
         // TODO: add ids in the elemnets and check contents using jSoup
     }
 
-    public void checkRoadSegmentsTileMatrix(DocumentContext json) {
+    public void checkRoadSegmentsTileMatrix(DocumentContext json, Tileset.DataType dataType) {
         // check the tile matrices
-        assertEquals(Integer.valueOf(2), json.read("$.tileMatrixSetLinks.size()"));
-        // EPSG:4326
-        assertEquals("EPSG:4326", json.read("$.tileMatrixSetLinks[0].tileMatrixSet"));
-        assertEquals(
-                "http://localhost:8080/geoserver/ogc/features/tileMatrixSets/EPSG%3A4326",
-                json.read("$.tileMatrixSetLinks[0].tileMatrixSetURI"));
-        assertEquals(
-                Integer.valueOf(22),
-                json.read("$.tileMatrixSetLinks[0].tileMatrixSetLimits.size()"));
-        String crs84Limit0 = "$.tileMatrixSetLinks[0].tileMatrixSetLimits[0]";
+        String matrixDefinition =
+                "http://localhost:8080/geoserver/ogc/features/tileMatrixSets/EPSG%3A4326";
+        assertEquals(matrixDefinition, json.read("tileMatrixSetURI"));
+        assertEquals(matrixDefinition, json.read("tileMatrixSetDefinition"));
+        assertEquals(dataType.toString(), json.read("dataType"));
+        assertEquals(Integer.valueOf(22), json.read("tileMatrixSetLimits.size()"));
+        String crs84Limit0 = "tileMatrixSetLimits[0]";
         assertEquals("EPSG:4326:0", json.read(crs84Limit0 + ".tileMatrix"));
         // both tiles as it spans the origin
         assertEquals(Integer.valueOf(0), json.read(crs84Limit0 + ".minTileRow"));
@@ -155,19 +153,12 @@ public class TileDescriptionTest extends TiledFeaturesTestSupport {
         assertEquals(Integer.valueOf(0), json.read(crs84Limit0 + ".minTileCol"));
         assertEquals(Integer.valueOf(1), json.read(crs84Limit0 + ".maxTileCol"));
         // one more zoom level just for satefy
-        String crs84Limit10 = "$.tileMatrixSetLinks[0].tileMatrixSetLimits[10]";
+        String crs84Limit10 = "tileMatrixSetLimits[10]";
         assertEquals("EPSG:4326:10", json.read(crs84Limit10 + ".tileMatrix"));
         assertEquals(Integer.valueOf(511), json.read(crs84Limit10 + ".minTileRow"));
         assertEquals(Integer.valueOf(512), json.read(crs84Limit10 + ".maxTileRow"));
         assertEquals(Integer.valueOf(1023), json.read(crs84Limit10 + ".minTileCol"));
         assertEquals(Integer.valueOf(1024), json.read(crs84Limit10 + ".maxTileCol"));
-        // checking one in web marcator too (only one root tile)
-        String webMercatorLimit10 = "$.tileMatrixSetLinks[1].tileMatrixSetLimits[10]";
-        assertEquals("EPSG:900913:10", json.read(webMercatorLimit10 + ".tileMatrix"));
-        assertEquals(Integer.valueOf(511), json.read(webMercatorLimit10 + ".minTileRow"));
-        assertEquals(Integer.valueOf(512), json.read(webMercatorLimit10 + ".maxTileRow"));
-        assertEquals(Integer.valueOf(511), json.read(webMercatorLimit10 + ".minTileCol"));
-        assertEquals(Integer.valueOf(512), json.read(webMercatorLimit10 + ".maxTileCol"));
     }
 
     @Test

@@ -12,10 +12,10 @@ import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.tiles.TileMatrixSetDocument;
-import org.geoserver.ogcapi.tiles.TileMatrixSetLink;
 import org.geoserver.ogcapi.tiles.TileMatrixSets;
 import org.geoserver.ogcapi.tiles.TilesDocument;
 import org.geoserver.ogcapi.tiles.TilesService;
+import org.geoserver.ogcapi.tiles.Tileset;
 import org.geoserver.wfs.WFSInfo;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.layer.TileLayer;
@@ -79,7 +79,7 @@ public class TiledFeatureService {
         return response;
     }
 
-    @GetMapping(path = "collections/{collectionId}/tiles", name = "describeTiles")
+    @GetMapping(path = "collections/{collectionId}/tiles", name = "describeTilesets")
     @ResponseBody
     @HTMLResponseBody(
         templateName = "tiles.ftl",
@@ -92,18 +92,44 @@ public class TiledFeatureService {
             throw new APIException(
                     "NotATileLayer", collectionId + " is not a tiled layer", HttpStatus.NOT_FOUND);
         }
-        TilesDocument response = delegate.describeTiles(collectionId);
+        TilesDocument response = delegate.describeTilesets(collectionId);
         rebaseLinks(response);
-        for (TileMatrixSetLink tmsLink : response.getTileMatrixSetLinks()) {
-            String uri = tmsLink.getTileMatrixSetURI();
+        for (Tileset tileset : response.getTilesets()) {
+            String uri = tileset.getTileMatrixSetURI();
             if (uri.contains("tiles/tileMatrixSets")) {
                 String rebasedURI =
                         uri.replace("/tiles/tileMatrixSets", "/features/tileMatrixSets");
-                tmsLink.setTileMatrixSetURI(rebasedURI);
+                tileset.setTileMatrixSetURI(rebasedURI);
+                tileset.setTileMatrixSetDefinition(rebasedURI);
             }
+            rebaseLinks(tileset);
         }
 
         return response;
+    }
+
+    @GetMapping(path = "collections/{collectionId}/tiles/{tileMatrixId}", name = "describeTileset")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "tileset.ftl", fileName = "tileset.html")
+    public Tileset describeTileset(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "tileMatrixId") String tileMatrixId)
+            throws FactoryException, TransformException, IOException {
+        if (!isTiledVectorLayer(collectionId)) {
+            throw new APIException(
+                    "NotATileLayer", collectionId + " is not a tiled layer", HttpStatus.NOT_FOUND);
+        }
+        Tileset tileset = delegate.describeTileset(collectionId, tileMatrixId);
+        rebaseLinks(tileset);
+        String uri = tileset.getTileMatrixSetURI();
+        if (uri.contains("tiles/tileMatrixSets")) {
+            String rebasedURI = uri.replace("/tiles/tileMatrixSets", "/features/tileMatrixSets");
+            tileset.setTileMatrixSetURI(rebasedURI);
+            tileset.setTileMatrixSetDefinition(rebasedURI);
+        }
+        rebaseLinks(tileset);
+
+        return tileset;
     }
 
     @GetMapping(

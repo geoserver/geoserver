@@ -16,6 +16,7 @@
         <include>jackson-dataformat-yaml*.jar</include>
         <include>javax.annotation-api*.jar</include>
         <include>jackson-annotations*.jar</include>
+        <include>snakeyaml-*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

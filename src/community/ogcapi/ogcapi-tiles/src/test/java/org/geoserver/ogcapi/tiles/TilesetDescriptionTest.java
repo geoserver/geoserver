@@ -11,8 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import com.jayway.jsonpath.DocumentContext;
-import java.util.Arrays;
-import java.util.List;
+
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -26,6 +25,9 @@ import org.geotools.feature.NameImpl;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class TilesetDescriptionTest extends TilesTestSupport {
 
     @Test
@@ -36,7 +38,7 @@ public class TilesetDescriptionTest extends TilesTestSupport {
 
         // check the raw tiles links
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}?f=application%2Fvnd.mapbox-vector-tile",
+                "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/tiles/EPSG:4326/{tileMatrix}/{tileRow}/{tileCol}?f=application%2Fvnd.mapbox-vector-tile",
                 readSingle(
                         json,
                         "$.links[?(@.rel=='item' && @.type=='application/vnd.mapbox-vector-tile')].href"));
@@ -53,7 +55,7 @@ public class TilesetDescriptionTest extends TilesTestSupport {
 
         // test the describedBy template
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/tiles/collections/cite:RoadSegments/tiles/{tileMatrixSetId}/metadata?f=application%2Fjson",
+                "http://localhost:8080/geoserver/ogc/tiles/collections/cite:RoadSegments/tiles/EPSG:4326/metadata?f=application%2Fjson",
                 readSingle(
                         json,
                         "$.links[?(@.rel=='describedBy' && @.type=='application/json')].href"));
@@ -138,17 +140,17 @@ public class TilesetDescriptionTest extends TilesTestSupport {
 
         // check the rendered tiles links
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}?f=image%2Fpng",
+                "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/map/tiles/EPSG:4326/{tileMatrix}/{tileRow}/{tileCol}?f=image%2Fpng",
                 readSingle(json, "$.links[?(@.rel=='item' && @.type=='image/png')].href"));
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}?f=image%2Fjpeg",
+                "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/map/tiles/EPSG:4326/{tileMatrix}/{tileRow}/{tileCol}?f=image%2Fjpeg",
                 readSingle(json, "$.links[?(@.rel=='item' && @.type=='image/jpeg')].href"));
         // check the info links for the rendered outputs
         List<String> infoFormats =
                 ((WMS) GeoServerExtensions.bean("wms")).getAvailableFeatureInfoFormats();
         for (String infoFormat : infoFormats) {
             assertEquals(
-                    "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/map/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}/info?f="
+                    "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/map/tiles/EPSG:4326/{tileMatrix}/{tileRow}/{tileCol}/info?f="
                             + ResponseUtils.urlEncode(infoFormat),
                     readSingle(
                             json,
@@ -157,7 +159,7 @@ public class TilesetDescriptionTest extends TilesTestSupport {
 
         // test the describedBy template
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/tiles/collections/cite:RoadSegments/map/{styleId}/tiles/{tileMatrixSetId}/metadata?f=application%2Fjson&tileFormat={tileFormat}",
+                "http://localhost:8080/geoserver/ogc/tiles/collections/cite:RoadSegments/map/tiles/EPSG:4326/metadata?f=application%2Fjson&tileFormat={tileFormat}",
                 readSingle(
                         json,
                         "$.links[?(@.rel=='describedBy' && @.type=='application/json')].href"));

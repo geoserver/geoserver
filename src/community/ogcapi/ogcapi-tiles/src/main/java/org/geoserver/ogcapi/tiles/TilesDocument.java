@@ -4,42 +4,64 @@
  */
 package org.geoserver.ogcapi.tiles;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.tiles.Tileset.DataType;
 import org.geoserver.wms.WMS;
 import org.geowebcache.layer.TileLayer;
-import org.geowebcache.mime.MimeType;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TilesDocument extends AbstractDocument {
 
-    List<Tileset> tilesets;
+    private final DataType dataType;
+    private final List<Tileset> tilesets;
+    private final String styleId;
 
     public TilesDocument(WMS wms, TileLayer tileLayer, DataType dataType) {
+        this(wms, tileLayer, dataType, null);
+    }
+
+    public TilesDocument(WMS wms, TileLayer tileLayer, DataType dataType, String styleId) {
         this.tilesets =
-                tileLayer
-                        .getGridSubsets()
-                        .stream()
-                        .map(subsetId -> new Tileset(wms, tileLayer, dataType, subsetId, false))
+                tileLayer.getGridSubsets().stream()
+                        .map(subsetId -> new Tileset(wms, tileLayer, dataType, subsetId, styleId, false))
                         .collect(Collectors.toList());
         this.id =
                 tileLayer instanceof GeoServerTileLayer
                         ? ((GeoServerTileLayer) tileLayer).getContextualName()
                         : tileLayer.getName();
+        this.styleId = styleId;
+        this.dataType = dataType;
 
         // links depend on the data type
-        List<MimeType> tileTypes = tileLayer.getMimeTypes();
         if (dataType == DataType.vector) {
             addSelfLinks("ogc/tiles/collections/" + id + "/tiles");
         } else if (dataType == DataType.map) {
-            addSelfLinks("ogc/tiles/collections/" + id + "/map/tiles");
+            if (styleId != null) {
+                addSelfLinks("ogc/tiles/collections/" + id + "/styles/" + styleId + "/map/tiles");    
+            } else {
+                addSelfLinks("ogc/tiles/collections/" + id + "/map/tiles");
+            }
+            
 
         } else {
             throw new IllegalArgumentException(
                     "Tiles of this type are not yet supported: " + dataType);
         }
+    }
+
+    @JsonIgnore
+    public String getStyleId() {
+        return styleId;
+    }
+
+    @JsonIgnore
+    public DataType getDataType() {
+        return dataType;
     }
 
     public List<Tileset> getTilesets() {

@@ -114,6 +114,9 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                         null,
                         REL_TILESETS_MAP);
             }
+            
+            // styles document links
+            addLinksFor("ogc/tiles/collections/" + id + "/styles", StylesDocument.class, "Styles for this layer as ", "styles", null, "styles");
 
             // style links
             if (tileLayer instanceof GeoServerTileLayer) {

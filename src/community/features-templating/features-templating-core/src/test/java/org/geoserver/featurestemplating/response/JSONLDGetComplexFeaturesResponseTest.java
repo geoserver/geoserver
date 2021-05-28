@@ -16,16 +16,18 @@ import org.junit.After;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class JSONLDGetComplexFeaturesResponseTest extends TemplateJSONComplexTestSupport {
+public class JSONLDGetComplexFeaturesResponseTest extends TemplateComplexTestSupport {
 
     protected void checkMappedFeatureJSON(JSONObject feature) {
         assertNotNull(feature);
-        assertNotNull(feature.getString("@id"));
+        String id = feature.getString("@id");
+        assertNotNull(id);
         JSONObject geom = (JSONObject) feature.get("geometry");
         assertNotNull(geom);
         assertEquals(String.valueOf(geom.get("@type")), "Polygon");
         assertNotNull(geom.get("wkt"));
         checkSimpleArrayWithDynamicValues(feature);
+        if ("mf5".equals(id)) return; // this feature lacks the whole setup
         JSONObject geologicUnit = feature.getJSONObject("gsml:GeologicUnit");
         String geologicUnitDescr = geologicUnit.getString("description");
         assertNotNull(geologicUnitDescr);

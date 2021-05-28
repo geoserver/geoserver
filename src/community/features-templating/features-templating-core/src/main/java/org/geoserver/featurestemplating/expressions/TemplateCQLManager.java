@@ -14,11 +14,11 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
-import org.geotools.filter.visitor.DefaultFilterVisitor;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.Function;
 import org.opengis.filter.expression.Literal;
 import org.opengis.filter.expression.PropertyName;
 import org.xml.sax.helpers.NamespaceSupport;
@@ -74,7 +74,7 @@ public class TemplateCQLManager {
 
         // clean the function to obtain a cql expression without xpath() syntax
         Expression cql = extractCqlExpressions(cleanCQL(this.strCql, strXpathFun, literalXpath));
-        DefaultFilterVisitor visitor = new TemplatingExpressionVisitor();
+        TemplatingExpressionVisitor visitor = new TemplatingExpressionVisitor();
         cql.accept(visitor, null);
         return cql;
     }
@@ -93,8 +93,7 @@ public class TemplateCQLManager {
         String cleanedCql = cleanCQL(this.strCql, xpathFunction, literalXpath);
         Filter templateFilter = XCQL.toFilter(cleanedCql);
         TemplatingExpressionVisitor visitor = new TemplatingExpressionVisitor();
-        templateFilter.accept(visitor, null);
-        return templateFilter;
+        return (Filter) templateFilter.accept(visitor, null);
     }
 
     /**
@@ -234,7 +233,10 @@ public class TemplateCQLManager {
                             "Invalid empty cql expression ${} at " + (i - 1));
 
                 try {
-                    result.add(ECQL.toExpression(sb.toString()));
+                    Expression parsed = ECQL.toExpression(sb.toString());
+                    TemplatingExpressionVisitor visitor = new TemplatingExpressionVisitor();
+                    Expression namespaced = (Expression) parsed.accept(visitor, null);
+                    result.add(namespaced);
                     sb.setLength(0);
                 } catch (CQLException e) {
                     throw new IllegalArgumentException("Invalid cql expression '" + sb + "'", e);
@@ -282,11 +284,6 @@ public class TemplateCQLManager {
             char curr = cqlFilter.charAt(i);
             if (curr != '\"') {
                 strBuilder.append(curr);
-            } else {
-                if (i != cqlFilter.length()
-                        && i > 0
-                        && cqlFilter.charAt(i - 1) != ' '
-                        && cqlFilter.charAt(i + 1) != ' ') strBuilder.append(curr);
             }
         }
         return strBuilder.toString();
@@ -369,13 +366,17 @@ public class TemplateCQLManager {
         return xpath;
     }
 
-    private final class TemplatingExpressionVisitor extends DefaultFilterVisitor {
+    /** Can be used to force namespace support into parsed CQL expressions */
+    private final class TemplatingExpressionVisitor extends DuplicatingFilterVisitor {
+
         @Override
-        public Object visit(PropertyName expression, Object data) {
+        public Object visit(PropertyName expression, Object extraData) {
             if (expression instanceof XpathFunction) {
-                ((XpathFunction) expression).setNamespaceContext(namespaces);
+                XpathFunction f = (XpathFunction) visit(((Function) expression), extraData);
+                f.setNamespaceContext(namespaces);
+                return f;
             }
-            return super.visit(expression, data);
+            return getFactory(extraData).property(expression.getPropertyName(), namespaces);
         }
     }
 }

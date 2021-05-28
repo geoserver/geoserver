@@ -5,14 +5,19 @@
 package org.geoserver.featurestemplating.builders.impl;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
+import org.geoserver.featurestemplating.builders.JSONFieldSupport;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
+import org.geotools.feature.ComplexAttributeImpl;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.expression.*;
+import org.opengis.feature.Attribute;
+import org.opengis.feature.ComplexAttribute;
+import org.opengis.filter.expression.Expression;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Evaluates xpath and cql functions, writing their results to the output. */
@@ -36,6 +41,8 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
             this.cql = cqlManager.getExpressionFromString();
         } else if (expression.startsWith("${")) {
             this.xpath = cqlManager.getAttributeExpressionFromString();
+        } else {
+            throw new IllegalArgumentException("Invalid value: " + expression);
         }
         this.contextPos = cqlManager.getContextPos();
     }
@@ -63,8 +70,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
      */
     protected void writeValue(TemplateOutputWriter writer, Object value) throws IOException {
         if (canWriteValue(value)) {
-            writeKey(writer);
-            writer.writeElementValue(value);
+            writer.writeElementNameAndValue(getKey(), value, getEncodingHints());
         }
     }
 
@@ -90,7 +96,9 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
         }
         Object result = null;
         try {
-            result = xpath.evaluate(context.getCurrentObj());
+            Object contextObject = context.getCurrentObj();
+            result = xpath.evaluate(contextObject);
+            result = JSONFieldSupport.parseWhenJSON(xpath, contextObject, result);
         } catch (Exception e) {
             LOGGER.log(
                     Level.INFO,
@@ -114,7 +122,9 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
                 context = context.getParent();
                 i++;
             }
-            result = cql.evaluate(context.getCurrentObj());
+            Object contextObject = context.getCurrentObj();
+            result = cql.evaluate(contextObject);
+            result = JSONFieldSupport.parseWhenJSON(cql, contextObject, result);
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Unable to evaluate expression. Exception: {0}", e.getMessage());
         }
@@ -128,7 +138,18 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
      * @return true if can write the value else false
      */
     protected boolean canWriteValue(Object value) {
-        return true;
+        if (value instanceof ComplexAttributeImpl) {
+            return canWriteValue(((ComplexAttribute) value).getValue());
+        } else if (value instanceof Attribute) {
+            return canWriteValue(((Attribute) value).getValue());
+        } else if (value instanceof List && ((List) value).size() == 0) {
+            if (((List) value).size() == 0) return false;
+            else return true;
+        } else if (value == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public NamespaceSupport getNamespaces() {
@@ -137,5 +158,18 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
 
     public int getContextPos() {
         return contextPos;
+    }
+
+    public boolean checkNotNullValue(TemplateBuilderContext context) {
+        Object o = null;
+        if (xpath != null) {
+
+            o = evaluateXPath(context);
+
+        } else if (cql != null) {
+            o = evaluateExpressions(context);
+        }
+        if (o == null) return false;
+        return true;
     }
 }

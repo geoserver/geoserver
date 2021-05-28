@@ -4,7 +4,7 @@
 
 <beans>
 
-    <bean id="jsonCallback" class="org.geoserver.featurestemplating.wfs.JSONTemplateCallback">
+    <bean id="jsonCallback" class="org.geoserver.featurestemplating.wfs.TemplateCallback">
         <constructor-arg ref="geoServer"/>
         <constructor-arg ref="templateConfiguration"/>
     </bean>

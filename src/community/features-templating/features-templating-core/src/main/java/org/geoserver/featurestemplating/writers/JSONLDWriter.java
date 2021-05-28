@@ -5,10 +5,15 @@
 
 package org.geoserver.featurestemplating.writers;
 
+import static org.geoserver.featurestemplating.builders.EncodingHints.CONTEXT;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
+import java.math.BigInteger;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geotools.filter.function.FilterFunction_toWKT;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /** Implements its superclass methods to write a valid json-ld output */
 public class JSONLDWriter extends CommonJSONWriter {
@@ -17,34 +22,56 @@ public class JSONLDWriter extends CommonJSONWriter {
         super(generator);
     }
 
-    private JsonNode contextHeader;
-
     @Override
-    protected void writeValue(Object value) throws IOException {
-        writeString(String.valueOf(value));
+    public void writeValue(Object value) throws IOException {
+        generator.writeString(String.valueOf(value));
     }
 
     @Override
-    protected void writeGeometry(Object value) throws IOException {
+    public void writeGeometry(Object value) throws IOException {
         FilterFunction_toWKT toWKT = new FilterFunction_toWKT();
         String wkt = (String) toWKT.evaluate(value);
-        writeString(wkt);
+        generator.writeString(wkt);
     }
 
     @Override
-    public void startTemplateOutput() throws IOException {
+    public void startTemplateOutput(EncodingHints encodingHints) throws IOException {
         writeStartObject();
         String contextName = "@context";
-        if (contextHeader.isArray()) writeArrayNode(contextName, contextHeader);
-        else if (contextHeader.isObject()) writeObjectNode(contextName, contextHeader);
-        else writeValueNode(contextName, contextHeader);
-        writeFieldName("type");
-        writeString("FeatureCollection");
-        writeFieldName("features");
+        JsonNode context = getEncodingHintIfPresent(encodingHints, CONTEXT, JsonNode.class);
+        if (context != null) {
+            if (context.isArray()) writeArrayNode(contextName, context);
+            else if (context.isObject()) writeObjectNode(contextName, context);
+            else writeValueNode(contextName, context);
+        }
+        generator.writeFieldName("type");
+        generator.writeString("FeatureCollection");
+        generator.writeFieldName("features");
         writeStartArray();
     }
 
-    public void setContextHeader(JsonNode contextHeader) {
-        this.contextHeader = contextHeader;
+    @Override
+    public void writeCollectionCounts(BigInteger featureCount) throws IOException {
+        // do nothing
+    }
+
+    @Override
+    public void writeCrs() throws IOException {
+        // do nothing
+    }
+
+    @Override
+    public void writeCollectionBounds(ReferencedEnvelope bounds) throws IOException {
+        // do nothing
+    }
+
+    @Override
+    public void writeTimeStamp() throws IOException {
+        // do nothing
+    }
+
+    @Override
+    public void writeNumberReturned() throws IOException {
+        // do nothing
     }
 }

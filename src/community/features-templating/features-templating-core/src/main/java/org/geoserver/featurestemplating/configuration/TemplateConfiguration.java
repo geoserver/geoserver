@@ -17,6 +17,7 @@ import org.eclipse.emf.common.util.URI;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
+import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.featurestemplating.validation.TemplateValidator;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.complex.feature.type.ComplexFeatureTypeImpl;
@@ -55,7 +56,11 @@ public class TemplateConfiguration {
                                         Resource resource =
                                                 getDataDirectory()
                                                         .get(key.getResource(), key.getPath());
-                                        Template template = new Template(resource, namespaces);
+                                        Template template =
+                                                new Template(
+                                                        resource,
+                                                        new TemplateReaderConfiguration(
+                                                                namespaces));
                                         return template;
                                     }
                                 });
@@ -67,7 +72,9 @@ public class TemplateConfiguration {
      */
     public RootBuilder getTemplate(FeatureTypeInfo typeInfo, String outputFormat)
             throws ExecutionException {
-        String fileName = getTemplateName(outputFormat);
+        String fileName =
+                TemplateIdentifier.getTemplateIdentifierFromOutputFormat(outputFormat)
+                        .getFilename();
         CacheKey key = new CacheKey(typeInfo, fileName);
         Template template = templateCache.get(key);
         if (template.checkTemplate()) templateCache.put(key, template);
@@ -151,17 +158,5 @@ public class TemplateConfiguration {
         public int hashCode() {
             return Objects.hash(resource, path);
         }
-    }
-
-    private String getTemplateName(String outputFormat) {
-        String templateName = "";
-        if (outputFormat.equals(TemplateIdentifier.JSON.getOutputFormat()))
-            templateName = TemplateIdentifier.JSON.getFilename();
-        else if (outputFormat.equals(TemplateIdentifier.GEOJSON.getOutputFormat()))
-            templateName = TemplateIdentifier.GEOJSON.getFilename();
-        else if (outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat())) {
-            templateName = TemplateIdentifier.JSONLD.getFilename();
-        }
-        return templateName;
     }
 }

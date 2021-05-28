@@ -8,8 +8,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.junit.Test;
@@ -49,13 +51,29 @@ public class JsonWriterTest {
                 new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
         writer.writeStartObject();
         for (Property prop : f.getProperties()) {
-            writer.writeFieldName(prop.getName().toString());
+            writer.writeElementName(prop.getName().toString(), null);
             writer.writeValue(prop.getValue());
         }
-        writer.endObject();
+        writer.endObject(null, null);
         writer.close();
         String jsonString = new String(baos.toByteArray());
         JSONObject json = (JSONObject) JSONSerializer.toJSON(jsonString);
         assertEquals(json.getString("url"), "http://some/url/to.test");
+    }
+
+    @Test
+    public void testStaticArray() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        GeoJSONWriter writer =
+                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        writer.startArray(null, null);
+        writer.writeStaticContent(null, "abc", new EncodingHints());
+        writer.writeStaticContent(null, 5, new EncodingHints());
+        writer.endArray(null, null);
+        writer.close();
+        String jsonString = new String(baos.toByteArray());
+        JSONArray json = (JSONArray) JSONSerializer.toJSON(jsonString);
+        assertEquals("abc", json.get(0));
+        assertEquals(Integer.valueOf(5), json.get(1));
     }
 }

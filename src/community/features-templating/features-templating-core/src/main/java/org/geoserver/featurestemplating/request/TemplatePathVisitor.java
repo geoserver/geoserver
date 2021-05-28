@@ -29,7 +29,7 @@ import org.opengis.filter.expression.PropertyName;
  * This visitor search for a Filter in {@link TemplateBuilder} tree using the path provided as a
  * guideline.
  */
-public class JSONPathVisitor extends DuplicatingFilterVisitor {
+public class TemplatePathVisitor extends DuplicatingFilterVisitor {
 
     protected int currentEl;
     protected String currentSource;
@@ -37,38 +37,52 @@ public class JSONPathVisitor extends DuplicatingFilterVisitor {
     boolean isSimple;
     private List<Filter> filters = new ArrayList<>();
 
-    public JSONPathVisitor(FeatureType type) {
+    public TemplatePathVisitor(FeatureType type) {
         this.isSimple = type instanceof SimpleFeatureType;
     }
 
     public Object visit(PropertyName expression, Object extraData) {
-        String propertyValue = expression.getPropertyName();
-        Object newExpression = null;
+        String propertyName = expression.getPropertyName();
         if (extraData instanceof TemplateBuilder) {
-            String[] elements;
-            if (propertyValue.indexOf(".") != -1) {
-                elements = propertyValue.split("\\.");
-            } else {
-                elements = propertyValue.split("/");
-            }
             TemplateBuilder builder = (TemplateBuilder) extraData;
-            try {
-                currentSource = null;
-                currentEl = 0;
-                newExpression = findFunction(builder, Arrays.asList(elements));
-                newExpression = findXpathArg(newExpression);
-                if (newExpression != null) {
-                    return newExpression;
-                }
-            } catch (Throwable ex) {
-                throw new RuntimeException(
-                        "Unable to evaluate the json-ld path against"
-                                + "the json-ld template. Cause: "
-                                + ex.getMessage());
-            }
+            Object newExpression = mapPropertyThroughBuilder(propertyName, builder);
+            if (newExpression != null) return newExpression;
         }
         return getFactory(extraData)
                 .property(expression.getPropertyName(), expression.getNamespaceContext());
+    }
+
+    /**
+     * Back maps a given property through the template, to find out if it originates via an
+     * expression.
+     *
+     * @param propertyName
+     * @param builder
+     * @return
+     */
+    protected Expression mapPropertyThroughBuilder(String propertyName, TemplateBuilder builder) {
+        String[] elements;
+        if (propertyName.indexOf(".") != -1) {
+            elements = propertyName.split("\\.");
+        } else {
+            elements = propertyName.split("/");
+        }
+
+        try {
+            currentSource = null;
+            currentEl = 0;
+            Expression newExpression = findFunction(builder, Arrays.asList(elements));
+            newExpression = (Expression) findXpathArg(newExpression);
+            if (newExpression != null) {
+                return newExpression;
+            }
+        } catch (Throwable ex) {
+            throw new RuntimeException(
+                    "Unable to evaluate the json-ld path against"
+                            + "the json-ld template. Cause: "
+                            + ex.getMessage());
+        }
+        return null;
     }
 
     private Object findXpathArg(Object newExpression) {
@@ -94,11 +108,10 @@ public class JSONPathVisitor extends DuplicatingFilterVisitor {
     }
 
     /**
-     * Find the corresponding function to which json-ld path is pointing, by iterating over
+     * Find the corresponding function to which the template path is pointing, by iterating over
      * builder's tree
      */
-    public Object findFunction(TemplateBuilder builder, List<String> pathElements) {
-
+    public Expression findFunction(TemplateBuilder builder, List<String> pathElements) {
         int lastElI = pathElements.size() - 1;
         String lastEl = pathElements.get(lastElI);
         char[] charArr = lastEl.toCharArray();
@@ -120,18 +133,27 @@ public class JSONPathVisitor extends DuplicatingFilterVisitor {
 
             if (jb instanceof DynamicValueBuilder) {
                 DynamicValueBuilder dvb = (DynamicValueBuilder) jb;
-                if (dvb.getXpath() != null) return super.visit(dvb.getXpath(), null);
+                addFilter(dvb.getFilter());
+                if (dvb.getXpath() != null) return (PropertyName) super.visit(dvb.getXpath(), null);
                 else {
                     return super.visit(dvb.getCql(), null);
                 }
             } else if (jb instanceof StaticBuilder) {
-                JsonNode staticNode = ((StaticBuilder) jb).getStaticValue();
-                while (currentEl < pathElements.size()) {
-                    JsonNode child = staticNode.get(pathElements.get(currentEl - 1));
-                    staticNode = child != null ? child : staticNode;
-                    currentEl++;
+                StaticBuilder staticBuilder = (StaticBuilder) jb;
+                addFilter(staticBuilder.getFilter());
+                Expression retExpr;
+                if (staticBuilder.getStaticValue() != null) {
+                    JsonNode staticNode = staticBuilder.getStaticValue();
+                    while (currentEl < pathElements.size()) {
+                        JsonNode child = staticNode.get(pathElements.get(currentEl - 1));
+                        staticNode = child != null ? child : staticNode;
+                        currentEl++;
+                    }
+                    retExpr = ff.literal(staticNode.asText());
+                } else {
+                    retExpr = ff.literal(staticBuilder.getStrValue());
                 }
-                return FF.literal(staticNode.asText());
+                return retExpr;
             }
         }
         return null;
@@ -147,7 +169,7 @@ public class JSONPathVisitor extends DuplicatingFilterVisitor {
     }
 
     /**
-     * Find the corresponding function to which json-ld path is pointing, by iterating over
+     * Find the corresponding function to which the template path is pointing, by iterating over
      * builder's tree
      */
     private TemplateBuilder findBuilder(TemplateBuilder parent, List<String> pathElements) {

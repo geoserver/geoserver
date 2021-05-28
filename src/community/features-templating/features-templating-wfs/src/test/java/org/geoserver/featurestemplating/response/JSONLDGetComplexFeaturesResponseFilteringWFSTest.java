@@ -16,8 +16,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class JSONLDGetComplexFeaturesResponseFilteringWFSTest
-        extends TemplateJSONComplexTestSupport {
+public class JSONLDGetComplexFeaturesResponseFilteringWFSTest extends TemplateComplexTestSupport {
 
     @Test
     public void testJsonLdWithFilterOnIteratingAndComposite() throws Exception {
@@ -37,13 +36,13 @@ public class JSONLDGetComplexFeaturesResponseFilteringWFSTest
         int size = features.size();
         for (int i = 0; i < size; i++) {
             JSONObject feature = features.getJSONObject(i);
-            if (i + 1 != size) {
-                assertEquals(feature.size(), 5);
+            if (i + 1 != 4) {
+                assertEquals(5, feature.size());
                 assertNull(feature.get("gsml:GeologicUnit"));
             } else {
-                // last feature is the one having the condition matched
+                // second to last feature is the one having the condition matched
                 // thus GeologicUnit got encoded.
-                assertEquals(feature.size(), 6);
+                assertEquals(6, feature.size());
                 Object geologicUnit = feature.get("gsml:GeologicUnit");
                 assertNotNull(feature.get("gsml:GeologicUnit"));
 

@@ -1,0 +1,35 @@
+{
+  "providers": [
+    {
+      "$filter": "name = 'LANDSAT8'",
+      "name": "USGS",
+      "url": "https://landsat.usgs.gov/",
+      "roles": [
+        "producer"
+      ]
+    },
+    {
+      "name": "$${strSubstring(name, 1, 5)}",
+      "url": "https://landsat.usgs.gov/",
+      "roles": [
+        "producer"
+      ]
+    },
+    {
+      "$filter": "xpath('name') = 'SENTINEL2'",
+      "name": "European Union/ESA/Copernicus",
+      "roles": [
+        "producer",
+        "licensor"
+      ],
+      "url": "https://sentinel.esa.int/web/sentinel/user-guides/sentinel-2-msi"
+    },
+    {
+      "name": "GeoServer",
+      "url": "https://www.geoserver.org/",
+      "roles": [
+        "host"
+      ]
+    }
+  ]
+}

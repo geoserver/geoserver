@@ -5,7 +5,7 @@
 package org.geoserver.featurestemplating.builders;
 
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Optional;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geotools.filter.AttributeExpressionImpl;
@@ -18,11 +18,9 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
 
     private Expression source;
 
-    protected List<TemplateBuilder> children;
-
     public SourceBuilder(String key, NamespaceSupport namespaces) {
         super(key, namespaces);
-        this.children = new LinkedList<TemplateBuilder>();
+        this.children = new LinkedList<>();
     }
 
     /**
@@ -62,11 +60,6 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
         this.children.add(builder);
     }
 
-    @Override
-    public List<TemplateBuilder> getChildren() {
-        return children;
-    }
-
     /**
      * Get the source as an Expression
      *
@@ -89,7 +82,7 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
 
         if (source instanceof AttributeExpressionImpl)
             return ((AttributeExpressionImpl) source).getPropertyName();
-        else return source.evaluate(null).toString();
+        else return Optional.ofNullable(source.evaluate(null)).map(o -> o.toString()).orElse(null);
     }
 
     /**

@@ -58,7 +58,8 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         setUpComplex(fileName, "gsml", ft);
     }
 
-    protected void setUpComplex(String fileName, String workspace, FeatureTypeInfo ft)
+    protected void setUpComplex(
+            String fileName, String workspace, String templateFileName, FeatureTypeInfo ft)
             throws IOException {
         File file =
                 dd.getResourceLoader()
@@ -69,9 +70,14 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
                                         + ft.getStore().getName()
                                         + "/"
                                         + ft.getName(),
-                                getTemplateFileName());
+                                templateFileName);
 
         dd.getResourceLoader().copyFromClassPath(fileName, file, getClass());
+    }
+
+    protected void setUpComplex(String fileName, String workspace, FeatureTypeInfo ft)
+            throws IOException {
+        setUpComplex(fileName, workspace, getTemplateFileName(), ft);
     }
 
     protected JSON getJsonLd(String path) throws Exception {

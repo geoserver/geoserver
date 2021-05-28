@@ -1,3 +1,4 @@
 org.geoserver.featurestemplating.expressions.ReprojectFunction
 org.geoserver.featurestemplating.expressions.XpathFunction
 org.geoserver.featurestemplating.expressions.ServiceLinkFunction
+org.geoserver.featurestemplating.expressions.PropertyPathFunction

@@ -47,16 +47,21 @@ public class TemplateCQLManager {
 
     public static final String XPATH_FUN_START = "xpath(";
 
+    public static final String PROPERTY_FUN_START = "propertyPath(";
+
     /**
      * Create a PropertyName from a String
      *
      * @return
      */
     public AttributeExpressionImpl getAttributeExpressionFromString() {
-        String strXpath = extractXpath(this.strCql);
-        this.contextPos = determineContextPos(strXpath);
-        strXpath = removeBackDots(strXpath);
-        return new AttributeExpressionImpl(strXpath, namespaces);
+        String property = extractProperty(this.strCql);
+        if (property.indexOf(".") != -1 && property.indexOf("/") == -1)
+            property = replaceDotSeparatorWithSlash(property);
+        this.contextPos = determineContextPos(property);
+        property = removeBackDots(property);
+        if (property.indexOf(".") != -1) property = property.replaceAll("\\.", "/");
+        return new AttributeExpressionImpl(property, namespaces);
     }
 
     /**
@@ -65,15 +70,25 @@ public class TemplateCQLManager {
      * @return
      */
     public Expression getExpressionFromString() {
+        // TODO XPath and PropertyPath function are used here as pattern to recognize strings
+        // in filter to be managed and converted to real PropertyName.
+        // This is due the reference to previous context through ../ that is handled in the
+        // DynamicValueBuilder
+        // and due backwards mapping integration with OGCApi filter handling. This should be
+        // changed the two function should be used as function and be able to evaluate the reference
+        // to previous context avoiding this string manipulation that is done here.
+
         // takes xpath fun from cql
-        String strXpathFun = extractXpathFromCQL(this.strCql);
-        boolean isXpath = strXpathFun.indexOf(XPATH_FUN_START) != -1;
-        if (isXpath) this.contextPos = determineContextPos(strXpathFun);
+        String strPropertyNameFun = extractPropertyNameFunction(this.strCql);
+        String propertyWithSlash = replaceDotSeparatorWithSlashInFunction(strPropertyNameFun);
+        if (containsAPropertyNameFunction(propertyWithSlash))
+            this.contextPos = determineContextPos(propertyWithSlash);
         // takes the literal argument of xpathFun
-        String literalXpath = removeBackDots(strXpathFun);
+        String literalXpath = removeBackDots(propertyWithSlash);
 
         // clean the function to obtain a cql expression without xpath() syntax
-        Expression cql = extractCqlExpressions(cleanCQL(this.strCql, strXpathFun, literalXpath));
+        Expression cql =
+                extractCqlExpressions(cleanCQL(this.strCql, strPropertyNameFun, literalXpath));
         TemplatingExpressionVisitor visitor = new TemplatingExpressionVisitor();
         cql.accept(visitor, null);
         return cql;
@@ -86,11 +101,12 @@ public class TemplateCQLManager {
      * @throws CQLException
      */
     public Filter getFilterFromString() throws CQLException {
-        String xpathFunction = extractXpathFromCQL(this.strCql);
-        if (xpathFunction.indexOf(XPATH_FUN_START) != -1)
-            contextPos = determineContextPos(xpathFunction);
-        String literalXpath = removeBackDots(xpathFunction);
-        String cleanedCql = cleanCQL(this.strCql, xpathFunction, literalXpath);
+        String propertyNameFun = extractPropertyNameFunction(this.strCql);
+        String propertyWithSlash = replaceDotSeparatorWithSlashInFunction(propertyNameFun);
+        if (containsAPropertyNameFunction(propertyWithSlash))
+            contextPos = determineContextPos(propertyWithSlash);
+        String literalPn = removeBackDots(propertyWithSlash);
+        String cleanedCql = cleanCQL(this.strCql, propertyNameFun, literalPn);
         Filter templateFilter = XCQL.toFilter(cleanedCql);
         TemplatingExpressionVisitor visitor = new TemplatingExpressionVisitor();
         return (Filter) templateFilter.accept(visitor, null);
@@ -123,13 +139,13 @@ public class TemplateCQLManager {
         return result;
     }
 
-    private String extractXpath(String xpath) {
+    private String extractProperty(String property) {
         boolean inXpath = false;
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < xpath.length(); i++) {
-            final char curr = xpath.charAt(i);
-            final boolean isLast = (i == xpath.length() - 1);
-            final char next = isLast ? 0 : xpath.charAt(i + 1);
+        for (int i = 0; i < property.length(); i++) {
+            final char curr = property.charAt(i);
+            final boolean isLast = (i == property.length() - 1);
+            final char next = isLast ? 0 : property.charAt(i + 1);
 
             if (curr == '\\') {
                 if (isLast)
@@ -277,26 +293,14 @@ public class TemplateCQLManager {
         return catenateExpressions(splitCqlExpressions(expression));
     }
 
-    public static String removeQuotes(String cqlFilter) {
-        cqlFilter = cqlFilter.replaceFirst("\"", "");
-        StringBuilder strBuilder = new StringBuilder();
-        for (int i = 0; i < cqlFilter.length(); i++) {
-            char curr = cqlFilter.charAt(i);
-            if (curr != '\"') {
-                strBuilder.append(curr);
-            }
-        }
-        return strBuilder.toString();
-    }
-
     /**
      * Clean a CQL from the xpath function syntax to make the xpath suitable to be encoded as a
      * PropertyName
      */
     private String cleanCQL(String cql, String toReplace, String replacement) {
-        if (cql.indexOf(XPATH_FUN_START) != -1)
-            return cql.replace(toReplace, replacement).replaceAll("\\.\\./", "");
-        else return cql;
+        if (containsAPropertyNameFunction(cql))
+            cql = cql.replace(toReplace, replacement).replaceAll("\\.\\./", "");
+        return cql;
     }
 
     public static String removeBackDots(String xpath) {
@@ -305,12 +309,13 @@ public class TemplateCQLManager {
     }
 
     /** Extract the xpath function from CQL Expression if present */
-    private String extractXpathFromCQL(String expression) {
-        int xpathI = expression.indexOf(XPATH_FUN_START);
-        if (xpathI != -1) {
-            int xpathI2 = expression.indexOf(")", xpathI);
-            String strXpath = expression.substring(xpathI, xpathI2 + 1);
-            return strXpath;
+    private String extractPropertyNameFunction(String expression) {
+        int propertyI = expression.indexOf(XPATH_FUN_START);
+        if (propertyI == -1) propertyI = expression.indexOf(PROPERTY_FUN_START);
+        if (propertyI != -1) {
+            int propertyI2 = expression.indexOf(")", propertyI);
+            String strProperty = expression.substring(propertyI, propertyI2 + 1);
+            return strProperty;
         }
         return expression;
     }
@@ -378,5 +383,41 @@ public class TemplateCQLManager {
             }
             return getFactory(extraData).property(expression.getPropertyName(), namespaces);
         }
+    }
+
+    private String replaceDotSeparatorWithSlashInFunction(String propertyName) {
+        if (propertyName.indexOf(PROPERTY_FUN_START) != -1
+                && propertyName.indexOf(".") != -1
+                && propertyName.indexOf("/") == -1) {
+            propertyName = propertyName.replaceAll(" ", "");
+            int startPath =
+                    propertyName.indexOf(PROPERTY_FUN_START) + (PROPERTY_FUN_START + "'").length();
+            int endPath = propertyName.lastIndexOf("')");
+            String content = propertyName.substring(startPath, endPath);
+            String replaced = replaceDotSeparatorWithSlash(content);
+            propertyName = propertyName.replace(content, replaced);
+        }
+        return propertyName;
+    }
+
+    private String replaceDotSeparatorWithSlash(String propertyName) {
+        char[] chars = propertyName.toCharArray();
+        StringBuilder sb = new StringBuilder("");
+        for (int i = 0; i < chars.length; i++) {
+            char current = chars[i];
+            char prev = ' ';
+            char next = ' ';
+            if (i > 0) prev = chars[i - 1];
+            if (i < chars.length - 1) next = chars[i + 1];
+            if (current == '.') {
+                if (((i + 1) % 3) == 0 || (prev != '.' && next != '.')) sb.append("/");
+                else sb.append(current);
+            } else sb.append(current);
+        }
+        return sb.toString();
+    }
+
+    private boolean containsAPropertyNameFunction(String cql) {
+        return cql.indexOf(XPATH_FUN_START) != -1 || cql.indexOf(PROPERTY_FUN_START) != -1;
     }
 }

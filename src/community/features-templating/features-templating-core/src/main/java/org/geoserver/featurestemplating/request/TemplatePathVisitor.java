@@ -79,8 +79,8 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
             }
         } catch (Throwable ex) {
             throw new RuntimeException(
-                    "Unable to evaluate the json-ld path against"
-                            + "the json-ld template. Cause: "
+                    "Unable to evaluate template path against"
+                            + "the template. Cause: "
                             + ex.getMessage());
         }
         return null;

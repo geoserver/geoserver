@@ -22,6 +22,20 @@ public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport
         assertXpathCount(5, "//gsml:samplingFrame//@xlink:href", doc);
         assertXpathCount(5, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
         assertXpathCount(4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit", doc);
+
+        assertXpathCount(
+                4,
+                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gml:description/@xlink:href",
+                doc);
+        assertXpathCount(
+                4,
+                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent",
+                doc);
+        assertXpathCount(
+                4,
+                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent/@xlink:title",
+                doc);
+
         // filter on array element lithology
         assertXpathCount(2, "//gsml:lithology", doc);
     }

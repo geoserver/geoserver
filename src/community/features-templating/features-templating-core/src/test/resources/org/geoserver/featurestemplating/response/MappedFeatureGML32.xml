@@ -12,8 +12,9 @@
             <gsml:samplingFrame xlink:href="urn:cgi:feature:CGI:EarthNaturalSurface" />
             <gsml:specification gft:source="gsml:specification" gft:isCollection="true">
                 <gsml:GeologicUnit gft:source="gsml:GeologicUnit" gft:isCollection="true">
-                    <gml:description>${gml:description}</gml:description>
+                    <gml:description xlink:href="http://static_content.org">${gml:description}</gml:description>
                     <gml:name>${gml:name}</gml:name>
+                    <gsml:staticContent xlink:title="${gml:name[0]}">static content</gsml:staticContent>
                     <gsml:purpose>${gsml:purpose}</gsml:purpose>
                     <gsml:composition gft:source="gsml:composition" gft:isCollection="true">
                         <gsml:CompositionPart gft:source="gsml:CompositionPart" gft:isCollection="true">

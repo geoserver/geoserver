@@ -1,6 +1,8 @@
 package org.geoserver.featurestemplating.validation;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
@@ -19,6 +21,8 @@ import org.opengis.filter.expression.PropertyName;
 /** Base class for template validation against a target feature type */
 public abstract class AbstractTemplateValidator {
     private String failingAttribute;
+
+    private List<String> sourcesFound = new ArrayList<>();
 
     public boolean validateTemplate(RootBuilder root) {
         try {
@@ -119,11 +123,13 @@ public abstract class AbstractTemplateValidator {
      */
     private AttributeExpressionImpl getSourceToValidate(SourceBuilder sb, String strSource) {
         AttributeExpressionImpl source = (AttributeExpressionImpl) sb.getSource();
+        String sourcePart = sb.getStrSource();
         if (strSource == null) {
-            strSource = sb.getStrSource();
+            strSource = sourcePart;
         } else {
-            strSource += "/" + sb.getStrSource();
+            strSource += "/" + sourcePart;
         }
+        sourcesFound.add(sourcePart);
         return new AttributeExpressionImpl(strSource, source.getNamespaceContext());
     }
 
@@ -158,10 +164,12 @@ public abstract class AbstractTemplateValidator {
         int i = 0;
         String newSource = source;
         if (newSource != null) {
+            int lastSource = sourcesFound.size() - 1;
             while (i < contextPos) {
+                String toReplace = sourcesFound.get(lastSource - i);
                 strXpath = strXpath.replaceFirst("\\.\\./", "");
                 if (newSource.lastIndexOf('/') != -1) {
-                    newSource = source.substring(0, source.lastIndexOf('/'));
+                    newSource = source.replace("/" + toReplace, "");
                 } else {
                     newSource = "";
                 }

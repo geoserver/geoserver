@@ -55,11 +55,6 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
         return source.evaluate(o);
     }
 
-    @Override
-    public void addChild(TemplateBuilder builder) {
-        this.children.add(builder);
-    }
-
     /**
      * Get the source as an Expression
      *

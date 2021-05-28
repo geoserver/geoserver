@@ -1,0 +1,71 @@
+{
+  "@context": {
+    "gsp": "http://www.opengis.net/ont/geosparql#",
+    "sf": "http://www.opengis.net/ont/sf#",
+    "schema": "https://schema.org/",
+    "dc": "http://purl.org/dc/terms/",
+    "Feature": "gsp:Feature",
+    "FeatureCollection": "schema:Collection",
+    "Point": "sf:Point",
+    "wkt": "gsp:asWKT",
+    "features": {
+      "@container": "@set",
+      "@id": "schema:hasPart"
+    },
+    "geometry": "sf:geometry",
+    "description": "dc:description",
+    "title": "dc:title",
+    "name": "schema:name"
+  },
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "$source": "MappedFeaturePropertyfile"
+    },
+    {
+      "$${env('id','@id')}": "${ID}",
+      "@type": [
+        "Feature",
+        "gsml:MappedFeature",
+        "http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature"
+      ],
+      "name": "${LEX_D}",
+      "gsml:GeologicUnit": {
+        "$source": "GeologicUnit",
+        "@id": "${@id}",
+        "description": "${TEXTDESCRIPTION}",
+        "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
+        "gsml:composition": [
+          {
+            "$source": "CompositionPart"
+          },
+
+              {
+                "gsml:role": {
+                  "value": "${COMPONENT_ROLE}",
+                  "staticValue": "$filter{propertyPath('...TEXTDESCRIPTION') LIKE 'Olivine basalt%'},staticValue"
+                },
+                "lithology": [
+                  {
+                    "$source": "ControlledConcept"
+                  },
+                  {
+                    "name": {
+                      "value": "${NAME}",
+                      "@lang": "en"
+                    },
+                    "vocabulary": {
+                      "@href": "urn:ogc:def:nil:OGC::missing"
+                    }
+                  }
+                ]
+              }
+          ]
+      },
+      "geometry": {
+        "@type": "Polygon",
+        "wkt": "$${toWKT(SHAPE)}"
+      }
+    }
+  ]
+}

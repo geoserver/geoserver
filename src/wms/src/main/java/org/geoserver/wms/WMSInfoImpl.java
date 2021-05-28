@@ -73,6 +73,8 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     private Integer remoteStyleMaxRequestTime;
     private Integer remoteStyleTimeout;
 
+    private Boolean defaultGroupStyleEnabled;
+
     public WMSInfoImpl() {
         authorityURLs = new ArrayList<AuthorityURLInfo>(2);
         identifiers = new ArrayList<LayerIdentifierInfo>(2);
@@ -280,5 +282,16 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     @Override
     public void setRemoteStyleTimeout(int remoteStyleTimeout) {
         this.remoteStyleTimeout = remoteStyleTimeout;
+    }
+
+    @Override
+    public boolean isDefaultGroupStyleEnabled() {
+        if (defaultGroupStyleEnabled == null) return true;
+        return defaultGroupStyleEnabled.booleanValue();
+    }
+
+    @Override
+    public void setDefaultGroupStyleEnabled(boolean defaultGroupStyleEnabled) {
+        this.defaultGroupStyleEnabled = defaultGroupStyleEnabled;
     }
 }

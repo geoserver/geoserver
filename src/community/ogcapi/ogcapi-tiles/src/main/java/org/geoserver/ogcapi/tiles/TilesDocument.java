@@ -5,15 +5,13 @@
 package org.geoserver.ogcapi.tiles;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.tiles.Tileset.DataType;
 import org.geoserver.wms.WMS;
 import org.geowebcache.layer.TileLayer;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class TilesDocument extends AbstractDocument {
 
@@ -27,8 +25,13 @@ public class TilesDocument extends AbstractDocument {
 
     public TilesDocument(WMS wms, TileLayer tileLayer, DataType dataType, String styleId) {
         this.tilesets =
-                tileLayer.getGridSubsets().stream()
-                        .map(subsetId -> new Tileset(wms, tileLayer, dataType, subsetId, styleId, false))
+                tileLayer
+                        .getGridSubsets()
+                        .stream()
+                        .map(
+                                subsetId ->
+                                        new Tileset(
+                                                wms, tileLayer, dataType, subsetId, styleId, false))
                         .collect(Collectors.toList());
         this.id =
                 tileLayer instanceof GeoServerTileLayer
@@ -42,11 +45,10 @@ public class TilesDocument extends AbstractDocument {
             addSelfLinks("ogc/tiles/collections/" + id + "/tiles");
         } else if (dataType == DataType.map) {
             if (styleId != null) {
-                addSelfLinks("ogc/tiles/collections/" + id + "/styles/" + styleId + "/map/tiles");    
+                addSelfLinks("ogc/tiles/collections/" + id + "/styles/" + styleId + "/map/tiles");
             } else {
                 addSelfLinks("ogc/tiles/collections/" + id + "/map/tiles");
             }
-            
 
         } else {
             throw new IllegalArgumentException(

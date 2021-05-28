@@ -6,7 +6,10 @@ package org.geoserver.ogcapi.tiles;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -15,11 +18,6 @@ import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.StyleDocument;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geowebcache.layer.TileLayer;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /** Contains the list of styles for a given collection */
 @JsonPropertyOrder({"styles", "links"})

@@ -6,6 +6,21 @@ package org.geoserver.ogcapi.tiles;
 
 import static org.geowebcache.conveyor.Conveyor.CacheResult.MISS;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.channels.Channels;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -57,29 +72,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.channels.Channels;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-
-import io.swagger.v3.oas.models.OpenAPI;
-
 @APIService(
-        service = "Tiles",
-        version = "1.0",
-        landingPage = "ogc/tiles",
-        serviceClass = TilesServiceInfo.class)
+    service = "Tiles",
+    version = "1.0",
+    landingPage = "ogc/tiles",
+    serviceClass = TilesServiceInfo.class
+)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/tiles")
 public class TilesService {
 
@@ -93,6 +91,13 @@ public class TilesService {
     public static final String CC_MULTITILES =
             "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/multitiles";
     public static final String CC_INFO = "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/info";
+
+    public static final String CC_TILES_TILE_MATRIX_SET =
+            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tmxs";
+    public static final String CC_TILE_MATRIX_SET =
+            "http://www.opengis.net/spec/tilematrixset/1.0/conf/tilematrixset";
+    public static final String CC_TILE_MATRIX_SET_JSON =
+            "http://www.opengis.net/spec/tilematrixset/1.0/conf/json-tilematrixset";
 
     private static final String DISPLAY_NAME = "OGC API Tiles";
 
@@ -130,13 +135,14 @@ public class TilesService {
     }
 
     @GetMapping(
-            path = "api",
-            name = "getApi",
-            produces = {
-                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-                "application/x-yaml",
-                MediaType.TEXT_XML_VALUE
-            })
+        path = "api",
+        name = "getApi",
+        produces = {
+            OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
+            "application/x-yaml",
+            MediaType.TEXT_XML_VALUE
+        }
+    )
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
@@ -154,7 +160,10 @@ public class TilesService {
                         CC_TILE_CORE,
                         CC_TILESET,
                         CC_MULTITILES,
-                        CC_INFO);
+                        CC_INFO,
+                        CC_TILES_TILE_MATRIX_SET,
+                        CC_TILE_MATRIX_SET,
+                        CC_TILE_MATRIX_SET_JSON);
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
@@ -231,8 +240,9 @@ public class TilesService {
     }
 
     @GetMapping(
-            path = "collections/{collectionId}/styles/{styleId}/map/tiles",
-            name = "describeStyledMapTilesets")
+        path = "collections/{collectionId}/styles/{styleId}/map/tiles",
+        name = "describeStyledMapTilesets"
+    )
     @ResponseBody
     @HTMLResponseBody(templateName = "tiles-style.ftl", fileName = "tiles.html")
     public TilesDocument describeStyledMapTilesets(
@@ -246,8 +256,9 @@ public class TilesService {
     }
 
     @GetMapping(
-            path = "collections/{collectionId}/map/tiles/{tileMatrixId}",
-            name = "describeMapTileset")
+        path = "collections/{collectionId}/map/tiles/{tileMatrixId}",
+        name = "describeMapTileset"
+    )
     @ResponseBody
     @HTMLResponseBody(templateName = "tileset.ftl", fileName = "tileset.html")
     public Tileset describeMapTileset(
@@ -261,8 +272,9 @@ public class TilesService {
     }
 
     @GetMapping(
-            path = "collections/{collectionId}/styles/{styleId}/map/tiles/{tileMatrixId}",
-            name = "describeMapTileset")
+        path = "collections/{collectionId}/styles/{styleId}/map/tiles/{tileMatrixId}",
+        name = "describeMapTileset"
+    )
     @ResponseBody
     @HTMLResponseBody(templateName = "tileset-style.ftl", fileName = "tileset.html")
     public Tileset describeStyledMapTileset(
@@ -299,9 +311,10 @@ public class TilesService {
     }
 
     @GetMapping(
-            path =
-                    "/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
-            name = "getTile")
+        path =
+                "/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+        name = "getTile"
+    )
     @ResponseBody
     public ResponseEntity<byte[]> getRawTile(
             @PathVariable(name = "collectionId") String collectionId,
@@ -325,9 +338,10 @@ public class TilesService {
     }
 
     @GetMapping(
-            path =
-                    "/collections/{collectionId}/map/styles/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
-            name = "getStyledMapTile")
+        path =
+                "/collections/{collectionId}/map/styles/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+        name = "getStyledMapTile"
+    )
     @ResponseBody
     public ResponseEntity<byte[]> getStyledMapTile(
             @PathVariable(name = "collectionId") String collectionId,
@@ -352,9 +366,10 @@ public class TilesService {
     }
 
     @GetMapping(
-            path =
-                    "/collections/{collectionId}/map/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
-            name = "getDefaultMapTile")
+        path =
+                "/collections/{collectionId}/map/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+        name = "getDefaultMapTile"
+    )
     @ResponseBody
     public ResponseEntity<byte[]> getDefaultMapTileTile(
             @PathVariable(name = "collectionId") String collectionId,
@@ -513,7 +528,9 @@ public class TilesService {
         // we might use the exact filter provided in input, but it should round trip ok
         // and makes it easier to support multiple filter languages in the future
         String cqlSpec = ECQL.toCQL(filter);
-        return tileLayer.getParameterFilters().stream()
+        return tileLayer
+                .getParameterFilters()
+                .stream()
                 .filter(pf -> pf.getKey().equalsIgnoreCase("CQL_FILTER") && pf.applies((cqlSpec)))
                 .map(
                         pf -> {
@@ -530,7 +547,9 @@ public class TilesService {
     }
 
     private boolean supportsCQLFilter(TileLayer tileLayer, String cqlSpec) {
-        return tileLayer.getParameterFilters().stream()
+        return tileLayer
+                .getParameterFilters()
+                .stream()
                 .anyMatch(pf -> pf.getKey().equalsIgnoreCase("CQL_FILTER") && pf.applies(cqlSpec));
     }
 
@@ -549,7 +568,9 @@ public class TilesService {
         } else {
             // look for the other possible values
             Optional<ParameterFilter> styles =
-                    tileLayer.getParameterFilters().stream()
+                    tileLayer
+                            .getParameterFilters()
+                            .stream()
                             .filter(pf -> "styles".equalsIgnoreCase(pf.getKey()))
                             .findFirst();
             if (!styles.isPresent() || !styles.get().applies(styleId)) {
@@ -671,7 +692,9 @@ public class TilesService {
     public static MimeType getRequestedFormat(
             TileLayer tileLayer, boolean renderedTile, List<MediaType> requestedTypes) {
         Map<MediaType, MimeType> layerTypes =
-                tileLayer.getMimeTypes().stream()
+                tileLayer
+                        .getMimeTypes()
+                        .stream()
                         .filter(mt -> renderedTile ? !mt.isVector() : mt.isVector())
                         .collect(
                                 Collectors.toMap(
@@ -745,8 +768,9 @@ public class TilesService {
     }
 
     @GetMapping(
-            path = "/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}/metadata",
-            name = "getTilesMetadata")
+        path = "/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}/metadata",
+        name = "getTilesMetadata"
+    )
     @ResponseBody
     public TileJSON getTileJSON(
             @PathVariable(name = "collectionId") String collectionId,
@@ -759,8 +783,9 @@ public class TilesService {
     }
 
     @GetMapping(
-            path = "/collections/{collectionId}/tiles/{tileMatrixSetId}/metadata",
-            name = "getTilesMetadata")
+        path = "/collections/{collectionId}/tiles/{tileMatrixSetId}/metadata",
+        name = "getTilesMetadata"
+    )
     @ResponseBody
     public TileJSON getTileJSON(
             @PathVariable(name = "collectionId") String collectionId,

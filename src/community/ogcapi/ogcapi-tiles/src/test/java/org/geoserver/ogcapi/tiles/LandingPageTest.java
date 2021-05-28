@@ -47,8 +47,7 @@ public class LandingPageTest extends TilesTestSupport {
                         "getTileMatrixSet",
                         "getTileMatrixSets",
                         "getQueryables",
-                        "getTilesMetadata",
-                        "describeDefaultMapTilesets"));
+                        "getTilesMetadata"));
     }
 
     @Test
@@ -68,7 +67,7 @@ public class LandingPageTest extends TilesTestSupport {
         DocumentContext json = getAsJSONPath("ogc/tiles?f=json", 200);
         checkJSONLandingPage(json);
     }
-    
+
     @Test
     public void testLandingPageWorkspaceSpecific() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/tiles", 200);

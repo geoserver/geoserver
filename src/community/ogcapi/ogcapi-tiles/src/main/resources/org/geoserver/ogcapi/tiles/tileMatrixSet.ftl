@@ -4,7 +4,7 @@
 
   <h2>${model.identifier}</h2>
   <p class="my-4">
-    Tile matrix set definition for ${model.identifier}, expressed in ${model.supportedCRS}
+    Tile matrix set definition for ${model.id}, expressed in ${model.supportedCRS}
     <#if model.title??>${model.title}</#if>
     The tile matrix composing the set are reported in the following table.
   </p>
@@ -23,11 +23,11 @@
         </tr>
       </thead>
       <tbody>
-      <#list model.tileMatrix as matrix>
+      <#list model.tileMatrices as matrix>
         <tr>
-          <td>${matrix.identifier}</td>
+          <td>${matrix.id}</td>
           <td>${matrix.scaleDenominator}</td>
-          <td>${matrix.topLeftCorner[0]} ${matrix.topLeftCorner[1]}</td>
+          <td>${matrix.pointOfOrigin[0]} ${matrix.pointOfOrigin[1]}</td>
           <td>${matrix.tileWidth}</td>
           <td>${matrix.tileHeight}</td>
           <td>${matrix.matrixWidth}</td>

@@ -20,14 +20,13 @@ public class TileMatrixSetDocument extends AbstractDocument {
     private String title;
     private String abstrac;
     private String[] keywords;
-    private String identifier;
     private String supportedCRS;
     private String wellKnownScaleSet;
-    private final List<TileMatrixEntry> tileMatrix = new ArrayList<>();
+    private final List<TileMatrixEntry> tileMatrices = new ArrayList<>();
 
     public TileMatrixSetDocument(GridSet gridSet, boolean summary) {
-        this.identifier = gridSet.getName();
-        this.title = Optional.ofNullable(gridSet.getDescription()).orElse(identifier);
+        this.id = gridSet.getName();
+        this.title = Optional.ofNullable(gridSet.getDescription()).orElse(id);
         if (gridSet.getSrs().getNumber() == 4326) {
             this.supportedCRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
         } else {
@@ -36,7 +35,7 @@ public class TileMatrixSetDocument extends AbstractDocument {
         }
         // TODO: see if the current CRS matches a well konwn scale set or not
 
-        String path = "ogc/tiles/tileMatrixSets/" + ResponseUtils.urlEncode(identifier);
+        String path = "ogc/tiles/tileMatrixSets/" + ResponseUtils.urlEncode(id);
         if (summary) {
             addLinksFor(
                     path,
@@ -48,7 +47,7 @@ public class TileMatrixSetDocument extends AbstractDocument {
         } else {
             addSelfLinks(path, MediaType.APPLICATION_JSON);
             for (int z = 0; z < gridSet.getNumLevels(); z++) {
-                tileMatrix.add(new TileMatrixEntry(gridSet, z));
+                tileMatrices.add(new TileMatrixEntry(gridSet, z));
             }
         }
     }
@@ -65,10 +64,6 @@ public class TileMatrixSetDocument extends AbstractDocument {
         return keywords;
     }
 
-    public String getIdentifier() {
-        return identifier;
-    }
-
     public String getSupportedCRS() {
         return supportedCRS;
     }
@@ -77,26 +72,27 @@ public class TileMatrixSetDocument extends AbstractDocument {
         return wellKnownScaleSet;
     }
 
-    public List<TileMatrixEntry> getTileMatrix() {
-        return tileMatrix;
+    public List<TileMatrixEntry> getTileMatrices() {
+        return tileMatrices;
     }
 
     @Override
     public String getEncodedId() {
-        if (identifier == null) {
+        if (id == null) {
             return null;
         }
-        return ResponseUtils.urlEncode(identifier);
+        return ResponseUtils.urlEncode(id);
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class TileMatrixEntry {
-        private String identifier;
+        private String id;
         private String title;
         private String abstrac;
         private String[] keywords;
         private double scaleDenominator;
-        private double[] topLeftCorner;
+        private String cornerOfOrigin = "topLeft";
+        private double[] pointOfOrigin;
         private int tileWidth;
         private int tileHeight;
         private long matrixWidth;
@@ -104,17 +100,17 @@ public class TileMatrixSetDocument extends AbstractDocument {
 
         public TileMatrixEntry(GridSet gridSet, int z) {
             Grid grid = gridSet.getGrid(z);
-            this.identifier = grid.getName();
+            this.id = grid.getName();
             this.scaleDenominator = grid.getScaleDenominator();
-            this.topLeftCorner = gridSet.getOrderedTopLeftCorner(z);
+            this.pointOfOrigin = gridSet.getOrderedTopLeftCorner(z);
             this.tileWidth = gridSet.getTileWidth();
             this.tileHeight = gridSet.getTileHeight();
             this.matrixWidth = grid.getNumTilesWide();
             this.matrixHeight = grid.getNumTilesHigh();
         }
 
-        public String getIdentifier() {
-            return identifier;
+        public String getId() {
+            return id;
         }
 
         public String getTitle() {
@@ -133,8 +129,8 @@ public class TileMatrixSetDocument extends AbstractDocument {
             return scaleDenominator;
         }
 
-        public double[] getTopLeftCorner() {
-            return topLeftCorner;
+        public double[] getPointOfOrigin() {
+            return pointOfOrigin;
         }
 
         public int getTileWidth() {
@@ -151,6 +147,10 @@ public class TileMatrixSetDocument extends AbstractDocument {
 
         public long getMatrixHeight() {
             return matrixHeight;
+        }
+
+        public String getCornerOfOrigin() {
+            return cornerOfOrigin;
         }
     }
 }

@@ -8,11 +8,9 @@ import static org.geoserver.ogcapi.tiles.TiledCollectionDocument.REL_TILESETS_MA
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
-
+import java.util.List;
 import org.geoserver.data.test.MockData;
 import org.junit.Test;
-
-import java.util.List;
 
 public class GetStylesTest extends TilesTestSupport {
 
@@ -38,6 +36,9 @@ public class GetStylesTest extends TilesTestSupport {
         DocumentContext json = getAsJSONPath("ogc/tiles/collections/" + forestsId + "/styles", 200);
 
         // no tile links should be available from here
-        assertEquals(0, json.read("styles[*].links[?(@.rel=='" + REL_TILESETS_MAP + "')]", List.class).size());
+        assertEquals(
+                0,
+                json.read("styles[*].links[?(@.rel=='" + REL_TILESETS_MAP + "')]", List.class)
+                        .size());
     }
 }

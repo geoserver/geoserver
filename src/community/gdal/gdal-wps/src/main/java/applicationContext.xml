@@ -11,5 +11,12 @@
             <ref bean="gdalCoverageResponseDelegate" />
         </constructor-arg>
     </bean>
-
+	<bean id="GDALWPSExtension"
+		class="org.geoserver.platform.ModuleStatusImpl">
+		<property name="module" value="gs-gdal-wps" />
+		<property name="name" value="GDAL WPS Extension" />
+		<property name="component" value="GDAL WPS extension" />
+		<property name="available" value="true" />
+		<property name="enabled" value="true" />
+	</bean>
 </beans>

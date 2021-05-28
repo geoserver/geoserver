@@ -19,4 +19,11 @@
     <bean id="HTMLImageMapResponse"  scope="singleton" 
       class="org.vfny.geoserver.wms.responses.map.htmlimagemap.HTMLImageMapResponse">
     </bean>
+    <bean id="ImageMapExtension" class="org.geoserver.platform.ModuleStatusImpl">
+    <property name="module" value="gs-imagemap" />
+    <property name="name" value="ImageMap Extension"/>
+    <property name="component" value="ImageMap plugin"/>
+    <property name="available" value="true"/>
+    <property name="enabled" value="true"/>
+  </bean>
 </beans>

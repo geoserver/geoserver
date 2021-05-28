@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="ImporterCoreExtension"
+		class="org.geoserver.platform.ModuleStatusImpl">
+		<property name="module" value="gs-importer-core" />
+		<property name="name" value="Importer Core Extension" />
+		<property name="component" value="Importer Core plugin" />
+		<property name="available" value="true" />
+		<property name="enabled" value="true" />
+	</bean>
+</beans>

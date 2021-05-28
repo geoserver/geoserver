@@ -39,7 +39,6 @@
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-csv</artifactId>
-      <version>${gt.version}</version>
     </dependency>
     <dependency>
       <groupId>net.sourceforge.javacsv</groupId>
@@ -81,6 +80,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+
   </dependencies>
 
   <profiles>

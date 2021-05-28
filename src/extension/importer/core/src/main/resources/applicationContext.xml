@@ -2,10 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-  <bean class="org.geoserver.platform.ModuleStatusImpl">
-    <constructor-arg index="0" value="gs-importer-core"/>
-    <constructor-arg index="1" value="Importer Core"/>
-  </bean>
+  
   <!-- 
    core importer setup
     -->
@@ -23,5 +20,13 @@
   <bean id="geoJsonFormat" class="org.geoserver.importer.format.GeoJSONFormat" />
 
   <bean id="spatialFileExtensionsProvider" class="org.geoserver.importer.SpatialFileExtensionsProvider" />
-
+  
+  <bean id="ImporterCoreExtension"
+	class="org.geoserver.platform.ModuleStatusImpl">
+	<property name="module" value="gs-importer-core" />
+	<property name="name" value="Importer Core Extension" />
+	<property name="component" value="Importer Core plugin" />
+	<property name="available" value="true" />
+	<property name="enabled" value="true" />
+  </bean>
 </beans>

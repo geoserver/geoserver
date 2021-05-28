@@ -99,7 +99,7 @@ public class TiledFeaturesExtension
             } else if (document instanceof CollectionsDocument) {
                 extendCollectionsDocument((CollectionsDocument) document);
             } else if (document instanceof FeaturesLandingPage) {
-                extendLandingpage((AbstractDocument) document);
+                extendLandingpage(document);
             }
         }
     }

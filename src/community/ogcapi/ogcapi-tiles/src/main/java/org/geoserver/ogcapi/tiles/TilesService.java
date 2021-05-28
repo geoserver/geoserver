@@ -184,24 +184,54 @@ public class TilesService {
         return new TiledCollectionsDocument(geoServer, wms, gwc);
     }
 
-    @GetMapping(path = "collections/{collectionId}/tiles", name = "describeTiles")
+    @GetMapping(path = "collections/{collectionId}/tiles", name = "describeTilesets")
     @ResponseBody
     @HTMLResponseBody(templateName = "tiles.ftl", fileName = "tiles.html")
-    public TilesDocument describeTiles(@PathVariable(name = "collectionId") String collectionId)
+    public TilesDocument describeTilesets(@PathVariable(name = "collectionId") String collectionId)
             throws FactoryException, TransformException, IOException {
         TileLayer tileLayer = getTileLayer(collectionId);
-        TilesDocument tiles = new TilesDocument(wms, tileLayer, TilesDocument.Type.RawTiles);
+        TilesDocument tiles = new TilesDocument(wms, tileLayer, Tileset.DataType.vector);
 
         return tiles;
     }
 
-    @GetMapping(path = "collections/{collectionId}/map/tiles", name = "describeMapTiles")
+    @GetMapping(path = "collections/{collectionId}/tiles/{tileMatrixId}", name = "describeTileset")
     @ResponseBody
-    @HTMLResponseBody(templateName = "tiles.ftl", fileName = "tiles.html")
-    public TilesDocument describeMapTiles(@PathVariable(name = "collectionId") String collectionId)
+    @HTMLResponseBody(templateName = "tileset.ftl", fileName = "tileset.html")
+    public Tileset describeTileset(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "tileMatrixId") String tileMatrixId)
             throws FactoryException, TransformException, IOException {
         TileLayer tileLayer = getTileLayer(collectionId);
-        TilesDocument tiles = new TilesDocument(wms, tileLayer, TilesDocument.Type.RenderedTiles);
+        Tileset tiles = new Tileset(wms, tileLayer, Tileset.DataType.vector, tileMatrixId, true);
+
+        return tiles;
+    }
+
+    @GetMapping(path = "collections/{collectionId}/map/tiles", name = "describeMapTilesets")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "tiles.ftl", fileName = "tiles.html")
+    public TilesDocument describeMapTilesets(
+            @PathVariable(name = "collectionId") String collectionId)
+            throws FactoryException, TransformException, IOException {
+        TileLayer tileLayer = getTileLayer(collectionId);
+        TilesDocument tiles = new TilesDocument(wms, tileLayer, Tileset.DataType.map);
+
+        return tiles;
+    }
+
+    @GetMapping(
+        path = "collections/{collectionId}/map/tiles/{tileMatrixId}",
+        name = "describeMapTileset"
+    )
+    @ResponseBody
+    @HTMLResponseBody(templateName = "tileset.ftl", fileName = "tileset.html")
+    public Tileset describeMapTileset(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "tileMatrixId") String tileMatrixId)
+            throws FactoryException, TransformException, IOException {
+        TileLayer tileLayer = getTileLayer(collectionId);
+        Tileset tiles = new Tileset(wms, tileLayer, Tileset.DataType.map, tileMatrixId, true);
 
         return tiles;
     }

@@ -4,9 +4,15 @@
  */
 package org.geoserver.ogcapi.tiles;
 
+import static org.geoserver.data.test.MockData.CITE_PREFIX;
+import static org.geoserver.data.test.MockData.CITE_URI;
+
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import javax.xml.namespace.QName;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
@@ -20,6 +26,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ogcapi.OGCApiTestSupport;
+import org.geotools.feature.NameImpl;
 import org.geowebcache.filter.parameters.RegexParameterFilter;
 import org.geowebcache.mime.ApplicationMime;
 import org.geowebcache.mime.ImageMime;
@@ -30,6 +37,16 @@ public class TilesTestSupport extends OGCApiTestSupport {
     protected static final String NATURE_GROUP = "nature";
     protected static final String BASIC_STYLE_GROUP = "BasicStyleGroup";
     protected static final String BASIC_STYLE_GROUP_STYLE = "BasicStyleGroupStyle";
+
+    static final String FOREST_WITH_SCALES_STYLE = "ForestsWithScaleDenominator";
+
+    static final String LAKES_WITH_SCALES_STYLE = "LakesWithScaleDenominator";
+
+    static final String NATURES_ZOOM_GROUP = "NatureZoom";
+
+    public static QName FORESTS_ZOOM = new QName(CITE_URI, "ForestsZoom", CITE_PREFIX);
+
+    public static QName LAKES_ZOOM = new QName(CITE_URI, "LakesZoom", CITE_PREFIX);
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -101,6 +118,35 @@ public class TilesTestSupport extends OGCApiTestSupport {
         new CatalogBuilder(catalog).calculateLayerGroupBounds(lg);
         catalog.add(lg);
         addVectorTileFormats(BASIC_STYLE_GROUP, false);
+
+        testData.addStyle(FOREST_WITH_SCALES_STYLE, getClass(), getCatalog());
+        testData.addStyle(LAKES_WITH_SCALES_STYLE, getClass(), getCatalog());
+
+        Map<SystemTestData.LayerProperty, Object> properties = new HashMap<>();
+        properties.put(SystemTestData.LayerProperty.STYLE, FOREST_WITH_SCALES_STYLE);
+        testData.addVectorLayer(
+                FORESTS_ZOOM, properties, "ForestsZoomTest.properties", getClass(), catalog);
+        properties.put(SystemTestData.LayerProperty.STYLE, LAKES_WITH_SCALES_STYLE);
+        testData.addVectorLayer(
+                LAKES_ZOOM, properties, "LakesZoomTest.properties", getClass(), catalog);
+
+        LayerInfo lakesZoom =
+                catalog.getLayerByName(
+                        new NameImpl(LAKES_ZOOM.getNamespaceURI(), LAKES_ZOOM.getLocalPart()));
+        LayerInfo forestsZoom =
+                catalog.getLayerByName(
+                        new NameImpl(FORESTS_ZOOM.getNamespaceURI(), FORESTS_ZOOM.getLocalPart()));
+
+        addVectorTileFormats(getLayerId(LAKES_ZOOM), true);
+        addVectorTileFormats(getLayerId(FORESTS_ZOOM), true);
+
+        createsLayerGroup(
+                catalog,
+                NATURES_ZOOM_GROUP,
+                null,
+                null,
+                null,
+                Arrays.asList(lakesZoom, forestsZoom));
     }
 
     protected void addVectorTileFormats(String layerId, boolean clear) {

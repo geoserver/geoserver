@@ -29,4 +29,13 @@
        class="org.geoserver.monitor.OpenSessionInViewFilter">
        <property name="sessionFactoryBeanName" value="hibSessionFactory"/>
     </bean>
+    
+    <bean id="MonitorHibernateExtension"
+		class="org.geoserver.platform.ModuleStatusImpl">
+		<property name="module" value="gs-monitor-hibernate" />
+		<property name="name" value="Monitor Hibernate Extension" />
+		<property name="component" value="Monitor Hibernate plugin" />
+		<property name="available" value="true" />
+		<property name="enabled" value="true" />
+	</bean>
 </beans>

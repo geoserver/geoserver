@@ -6,10 +6,14 @@
 package org.geoserver.netcdfout;
 
 import static org.junit.Assert.assertTrue;
-
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
-public class NetCDFOutStatusTest {
+public class NetCDFOutStatusTest extends GeoServerSystemTestSupport{
+    @Test
+    public void test() {
+        assertModuleStatus("gs-netcdf-out", "WCS NetCDF output Module");
+    }
     @Test
     public void testNetCDFOutStatus() {
         NetCDFOutStatus status = new NetCDFOutStatus();

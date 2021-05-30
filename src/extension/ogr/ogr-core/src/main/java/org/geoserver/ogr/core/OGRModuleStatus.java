@@ -9,7 +9,7 @@ import java.util.Optional;
 import org.geoserver.platform.ModuleStatus;
 import org.geoserver.platform.ModuleStatusImpl;
 
-public class OGRModuleStatus extends ModuleStatusImpl implements ModuleStatus{
+public class OGRModuleStatus extends ModuleStatusImpl implements ModuleStatus {
 
     @Override
     public String getModule() {
@@ -21,7 +21,6 @@ public class OGRModuleStatus extends ModuleStatusImpl implements ModuleStatus{
         return "OGR Core Module";
     }
 
-
     @Override
     public boolean isAvailable() {
         return true;
@@ -31,7 +30,6 @@ public class OGRModuleStatus extends ModuleStatusImpl implements ModuleStatus{
     public boolean isEnabled() {
         return true;
     }
-
 
     @Override
     public Optional<String> getDocumentation() {

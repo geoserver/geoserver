@@ -55,4 +55,12 @@
 
   <context:component-scan base-package="org.geoserver.wfs.xslt.rest"/>
 
+  <bean id="xsltExtension"
+		class="org.geoserver.platform.ModuleStatusImpl">
+		<property name="module" value="gs-xslt" />
+		<property name="name" value="XLST based WFS output format" />
+		<property name="component" value="XLST based WFS output format extension" />
+		<property name="available" value="true" />
+		<property name="enabled" value="true" />
+  </bean>
 </beans>

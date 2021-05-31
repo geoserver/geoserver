@@ -16,4 +16,12 @@
           <bean class="org.geoserver.web.AdminComponentAuthorizer"/>
         </property>
     </bean>
+    <bean id="WebResourceExtension"
+		class="org.geoserver.platform.ModuleStatusImpl">
+		<property name="module" value="gs-web-resource" />
+		<property name="name" value="GeoServer Resource Browser Extension" />
+		<property name="component" value="GeoServer Resource Browser Extension" />
+		<property name="available" value="true" />
+		<property name="enabled" value="true" />
+	</bean>
 </beans>

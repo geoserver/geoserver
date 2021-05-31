@@ -51,4 +51,13 @@
 
   <bean id="inspireGridSetLoader" class="org.geoserver.inspire.wmts.InspireGridSetLoader">
   </bean>
+  
+  <bean id="InsiperExtension"
+		class="org.geoserver.platform.ModuleStatusImpl">
+		<property name="module" value="gs-inspire" />
+		<property name="name" value="Inspire Extension" />
+		<property name="component" value="Inspire plugin" />
+		<property name="available" value="true" />
+		<property name="enabled" value="true" />
+	</bean>
 </beans>

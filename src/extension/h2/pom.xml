@@ -31,6 +31,15 @@
       <groupId>org.geotools.jdbc</groupId>
       <artifactId>gt-jdbc-h2</artifactId>
     </dependency>
+
+    <!-- used for testing the REST api -->
+    <!-- test dependencies -->
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-restconfig</artifactId>
+      <version>${gs.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
@@ -38,15 +47,47 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
     </dependency>
-    <!-- used for testing the REST api -->
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-restconfig</artifactId>
+      <artifactId>gs-wms</artifactId>
       <version>${gs.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.web</groupId>
+      <artifactId>gs-web-core</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
   </dependencies>

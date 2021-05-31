@@ -129,5 +129,12 @@
     <bean id="loggingMetricsConfigurator" class="org.mapfish.print.metrics.LoggingMetricsConfigurator"  lazy-init="false"/>
     <bean id="jvmMetricsConfigurator" class="org.mapfish.print.metrics.JvmMetricsConfigurator" lazy-init="false"/>
     <bean id="jmlMetricsReporter" class="org.mapfish.print.metrics.JmxMetricsReporter" lazy-init="false"/>
-
+	<bean id="PrintExtension"
+		class="org.geoserver.platform.ModuleStatusImpl">
+		<property name="module" value="gs-printing" />
+		<property name="name" value="Printing Extension" />
+		<property name="component" value="Printing plugin" />
+		<property name="available" value="true" />
+		<property name="enabled" value="true" />
+	</bean>
 </beans>

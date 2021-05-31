@@ -1,0 +1,18 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+    
+
+    <bean id="ysldExtension"
+		class="org.geoserver.platform.ModuleStatusImpl">
+		<property name="module" value="gs-ysld" />
+		<property name="name" value="YSLD GeoServer Plugin" />
+		<property name="component" value="YSLD GeoServer Plugin" />
+		<property name="available" value="true" />
+		<property name="enabled" value="true" />
+  </bean>
+    <!--<bean class="org.geoserver.web.HeaderContribution">-->
+        <!--<property name="scope" value="com.boundlessgeo.ysld.YsldHandler"/>-->
+        <!--<property name="javaScriptFilename" value="yaml.js"/>-->
+    <!--</bean>-->
+</beans>

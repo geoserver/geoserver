@@ -18,4 +18,11 @@
   </bean>
 
   <bean class="org.geoserver.gwc.web.blob.S3BlobStoreType" />
+  <bean id="GWC-S3Extension" class="org.geoserver.platform.ModuleStatusImpl">
+    <property name="module" value="gs-gwc-s3" />
+    <property name="name" value="GeoWebCache S3 Extension"/>
+    <property name="component" value="GeoWebCache S3 support plugin"/>
+    <property name="available" value="true"/>
+    <property name="enabled" value="true"/>
+  </bean>
 </beans>

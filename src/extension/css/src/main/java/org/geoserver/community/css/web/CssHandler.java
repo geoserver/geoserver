@@ -18,12 +18,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.SLDHandler;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.StyleType;
 import org.geoserver.catalog.Styles;
+import org.geoserver.platform.ModuleStatus;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.styling.ResourceLocator;
@@ -33,10 +35,11 @@ import org.geotools.styling.css.CssParser;
 import org.geotools.styling.css.CssTranslator;
 import org.geotools.styling.css.Stylesheet;
 import org.geotools.util.Version;
+import org.geotools.util.factory.GeoTools;
 import org.xml.sax.EntityResolver;
 
 /** Style handler for geocss. Justin Deoliveira, Boundless */
-public class CssHandler extends StyleHandler {
+public class CssHandler extends StyleHandler implements ModuleStatus {
 
     public static final String FORMAT = "css";
 
@@ -184,5 +187,44 @@ public class CssHandler extends StyleHandler {
     @Override
     public String getFileExtension() {
         return "css";
+    }
+
+    @Override
+    public String getModule() {
+        return "gs-css";
+    }
+
+    @Override
+    public Optional<String> getComponent() {
+        return Optional.of("GeoServer CSS Styling");
+    }
+
+    @Override
+    public Optional<String> getVersion() {
+        Version v = GeoTools.getVersion(CssParser.class);
+        if (v == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(v.toString());
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public Optional<String> getMessage() {
+        return Optional.of("CSS Styling");
+    }
+
+    @Override
+    public Optional<String> getDocumentation() {
+        return Optional.of("https://docs.geoserver.org/latest/en/user/styling/css/index.html");
     }
 }

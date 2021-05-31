@@ -44,5 +44,13 @@
     </property>
   </bean>
 
-
+<bean id="h2Extension" class="org.geoserver.platform.ModuleStatusImpl">
+    <property name="module" value="gs-h2" />
+    <property name="name" value="H2 Extension"/>
+    <property name="component" value="H2 extension"/>
+    
+    <property name="available" value="true"/>
+    <property name="enabled" value="true"/>
+  </bean>
+  
 </beans>

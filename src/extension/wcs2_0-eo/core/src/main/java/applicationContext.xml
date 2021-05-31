@@ -64,4 +64,13 @@
     <constructor-arg index="1" ref="wcsEoCoverageResourceCodec" />
   </bean>  
 
+	<bean id="WCSEOExtension"
+		class="org.geoserver.platform.ModuleStatusImpl">
+		<property name="module" value="gs-wcs2_0-eo-core" />
+		<property name="name" value="Web Coverage Service 2.0 Earth Observation extensions" />
+		<property name="component" value="Web Coverage Service 2.0 Earth Observation extensions" />
+		<property name="available" value="true" />
+		<property name="enabled" value="true" />
+	</bean>
+	
 </beans>

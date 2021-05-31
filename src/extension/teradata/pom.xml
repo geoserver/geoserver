@@ -31,7 +31,7 @@
     <dependency>
       <groupId>org.geoserver.web</groupId>
       <artifactId>gs-web-core</artifactId>
-      <version>${project.version}</version>
+
     </dependency>
   </dependencies>
 

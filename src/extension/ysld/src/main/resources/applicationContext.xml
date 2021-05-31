@@ -13,7 +13,14 @@
     <bean id="gwcZoomContextFinder" class="org.geoserver.ysld.GWCZoomContextFinder">
       <constructor-arg ref="gwcGridSetBroker"/>
     </bean>
-    
+    <bean id="ysldExtension"
+		class="org.geoserver.platform.ModuleStatusImpl">
+		<property name="module" value="gs-ysld" />
+		<property name="name" value="YSLD GeoServer Plugin" />
+		<property name="component" value="YSLD GeoServer Plugin" />
+		<property name="available" value="true" />
+		<property name="enabled" value="true" />
+  </bean>
     <!--<bean class="org.geoserver.web.HeaderContribution">-->
         <!--<property name="scope" value="com.boundlessgeo.ysld.YsldHandler"/>-->
         <!--<property name="javaScriptFilename" value="yaml.js"/>-->

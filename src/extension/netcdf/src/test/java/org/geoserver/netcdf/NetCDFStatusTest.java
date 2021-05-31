@@ -7,21 +7,27 @@ package org.geoserver.netcdf;
 
 import static org.junit.Assert.assertTrue;
 
+import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
-public class NetCDFStatusTest {
+public class NetCDFStatusTest extends GeoServerSystemTestSupport {
+    @Test
+    public void test() {
+        assertModuleStatus("gs-netcdf", "NetCDF Coverage format");
+    }
 
     @Test
     public void testNetCDFStatus() {
-        NetCDFStatus status = new NetCDFStatus();
+
+        NetCDFStatus nStatus = new NetCDFStatus();
 
         // these should always return "something"
-        assertTrue(status.getModule().length() > 0);
-        assertTrue(status.getName().length() > 0);
-        assertTrue(status.getComponent().get().length() > 0);
-        assertTrue(status.getMessage().get().length() > 0);
+        assertTrue(nStatus.getModule().length() > 0);
+        assertTrue(nStatus.getName().length() > 0);
+        assertTrue(nStatus.getComponent().get().length() > 0);
+        assertTrue(nStatus.getMessage().get().length() > 0);
 
-        assertTrue(status.getVersion().isPresent());
-        assertTrue(status.getMessage().get().contains("NETCDF-4 Binary"));
+        assertTrue(nStatus.getVersion().isPresent());
+        assertTrue(nStatus.getMessage().get().contains("NETCDF-4 Binary"));
     }
 }

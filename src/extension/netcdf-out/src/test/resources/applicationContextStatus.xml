@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (c) 2001 - 2013 Vito
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="NetCDFOutExtension"
+		class="org.geoserver.netcdfout.NetCDFOutStatus"/>
+</beans>

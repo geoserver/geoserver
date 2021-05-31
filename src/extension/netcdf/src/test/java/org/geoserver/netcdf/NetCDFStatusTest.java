@@ -6,14 +6,16 @@
 package org.geoserver.netcdf;
 
 import static org.junit.Assert.assertTrue;
+
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Test;
 
-public class NetCDFStatusTest extends GeoServerSystemTestSupport{
+public class NetCDFStatusTest extends GeoServerSystemTestSupport {
     @Test
     public void test() {
         assertModuleStatus("gs-netcdf", "NetCDF Coverage format");
     }
+
     @Test
     public void testNetCDFStatus() {
 

@@ -5,15 +5,32 @@
 
 package org.geoserver.netcdfout;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import org.geoserver.test.GeoServerSystemTestSupport;
-import org.junit.Test;
 
-public class NetCDFOutStatusTest extends GeoServerSystemTestSupport{
+import java.util.Optional;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ModuleStatus;
+import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class NetCDFOutStatusTest {
+
     @Test
     public void test() {
-        assertModuleStatus("gs-netcdf-out", "WCS NetCDF output Module");
+        try (ClassPathXmlApplicationContext context =
+                new ClassPathXmlApplicationContext("applicationContextStatus.xml")) {
+            assertNotNull(context);
+
+            Optional<ModuleStatus> status =
+                    GeoServerExtensions.extensions(ModuleStatus.class, context)
+                            .stream()
+                            .filter(s -> s.getModule().equalsIgnoreCase("gs-netcdf-out"))
+                            .findFirst();
+            assertTrue(status.isPresent());
+        }
     }
+
     @Test
     public void testNetCDFOutStatus() {
         NetCDFOutStatus status = new NetCDFOutStatus();

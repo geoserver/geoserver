@@ -9,7 +9,7 @@
  */
 package org.geoserver.gsr.model.symbol;
 
-import org.geotools.data.Base64;
+import org.geotools.util.Base64;
 
 /** @author Juan Marin, OpenGeo */
 public class PictureMarkerSymbol extends MarkerSymbol {

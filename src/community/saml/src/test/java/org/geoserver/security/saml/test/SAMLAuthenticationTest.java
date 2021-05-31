@@ -44,7 +44,7 @@ import org.geoserver.security.filter.GeoServerLogoutFilter;
 import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.saml.SAMLAuthenticationFilter;
 import org.geoserver.security.saml.SAMLAuthenticationFilterConfig;
-import org.geotools.data.Base64;
+import org.geotools.util.Base64;
 import org.hamcrest.CoreMatchers;
 import org.joda.time.DateTime;
 import org.junit.AfterClass;

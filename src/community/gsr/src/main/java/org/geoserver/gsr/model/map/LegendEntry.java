@@ -26,7 +26,7 @@ import org.geoserver.gsr.model.symbol.SimpleLineSymbol;
 import org.geoserver.gsr.model.symbol.SimpleMarkerSymbol;
 import org.geoserver.gsr.model.symbol.SimpleMarkerSymbolEnum;
 import org.geoserver.gsr.model.symbol.Symbol;
-import org.geotools.data.Base64;
+import org.geotools.util.Base64;
 
 class LegendEntry {
 

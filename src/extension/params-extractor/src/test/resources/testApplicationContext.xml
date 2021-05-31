@@ -16,4 +16,12 @@ application directory.
         <constructor-arg ref="geoServerResourceLoader"/>
     </bean>
     <bean id="geoServerExtensions" class="org.geoserver.platform.GeoServerExtensions"/>
+    <bean id="ParamExtExtension"
+		class="org.geoserver.platform.ModuleStatusImpl">
+		<property name="module" value="gs-params-extractor" />
+		<property name="name" value="Parameters Extractor Extension" />
+		<property name="component" value="Parameters Extractor plugin" />
+		<property name="available" value="true" />
+		<property name="enabled" value="true" />
+	</bean>
 </beans>

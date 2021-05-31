@@ -28,7 +28,4 @@ public class ModuleStatusTest {
             assertTrue(status.isPresent());
         }
     }
-    /*
-     * public void test() { assertModuleStatus("gs-imagemap", "ImageMap Extension"); }
-     */
 }

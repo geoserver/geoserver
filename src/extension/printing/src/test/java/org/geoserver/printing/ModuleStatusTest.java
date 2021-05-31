@@ -4,12 +4,28 @@
  */
 package org.geoserver.printing;
 
-import org.geoserver.test.GeoServerSystemTestSupport;
-import org.junit.Test;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-public class ModuleStatusTest extends GeoServerSystemTestSupport {
+import java.util.Optional;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.ModuleStatus;
+import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class ModuleStatusTest {
     @Test
     public void test() {
-        assertModuleStatus("gs-printing", "Printing Extension");
+        try (ClassPathXmlApplicationContext context =
+                new ClassPathXmlApplicationContext("applicationContext.xml")) {
+            assertNotNull(context);
+
+            Optional<ModuleStatus> status =
+                    GeoServerExtensions.extensions(ModuleStatus.class, context)
+                            .stream()
+                            .filter(s -> s.getModule().equalsIgnoreCase("gs-printing"))
+                            .findFirst();
+            assertTrue(status.isPresent());
+        }
     }
 }

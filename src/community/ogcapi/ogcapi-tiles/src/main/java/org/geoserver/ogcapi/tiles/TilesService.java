@@ -480,7 +480,7 @@ public class TilesService {
 
         // setup general GWC headers
         LinkedHashMap<String, String> tmpHeaders = new LinkedHashMap<>();
-        GWC.setCacheControlHeaders(tmpHeaders, tileLayer);
+        GWC.setCacheControlHeaders(tmpHeaders, tileLayer, (int) tileIndex[2]);
         GWC.setConditionalGetHeaders(
                 tmpHeaders, tile, etag, httpRequest.getHeader("If-Modified-Since"));
         GWC.setCacheMetadataHeaders(tmpHeaders, tile, tileLayer);

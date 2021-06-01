@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,6 +44,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +58,7 @@ import javax.media.jai.RenderedOp;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -69,6 +72,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
+import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
@@ -84,6 +88,9 @@ import org.geoserver.gwc.dispatch.GwcServiceDispatcherCallback;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Request;
+import org.geoserver.util.DimensionWarning;
+import org.geoserver.util.DimensionWarning.WarningType;
+import org.geoserver.util.HTTPWarningAppender;
 import org.geoserver.wms.GetLegendGraphicOutputFormat;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
@@ -858,51 +865,147 @@ public class GeoServerTileLayerTest {
         }
     }
 
-    @Test
     @SuppressWarnings({"unchecked", "rawtypes"})
+    protected class GetTileMockTester {
+
+        protected MimeType mimeType;
+        protected StorageBroker storageBroker;
+
+        public GetTileMockTester() throws Exception {
+            Resource mockResult = mock(Resource.class);
+            ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
+            Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), any()))
+                    .thenReturn(mockResult);
+
+            BufferedImage image = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
+            RenderedImageMap fakeDispatchedMap =
+                    new RenderedImageMap(new WMSMapContent(), image, "image/png");
+
+            RenderedImageMapResponse fakeResponseEncoder = mock(RenderedImageMapResponse.class);
+            this.mimeType = MimeType.createFromFormat("image/png");
+            when(mockGWC.getResponseEncoder(eq(mimeType), any())).thenReturn(fakeResponseEncoder);
+
+            this.storageBroker = mock(StorageBroker.class);
+            when(storageBroker.get(any())).thenReturn(false);
+
+            layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+            configureLayer(layerInfoTileLayer);
+
+            MockHttpServletRequest servletReq = new MockHttpServletRequest();
+            HttpServletResponse servletResp = new MockHttpServletResponse();
+            long[] tileIndex = {0, 0, 0};
+
+            ConveyorTile tile =
+                    new ConveyorTile(
+                            storageBroker,
+                            layerInfoTileLayer.getName(),
+                            "EPSG:4326",
+                            tileIndex,
+                            mimeType,
+                            null,
+                            servletReq,
+                            servletResp);
+
+            GeoServerTileLayer.WEB_MAP.set(fakeDispatchedMap);
+            ConveyorTile returned = layerInfoTileLayer.getTile(tile);
+            assertNotNull(returned);
+            assertNotNull(returned.getBlob());
+            assertEquals(CacheResult.MISS, returned.getCacheResult());
+            assertEquals(200, returned.getStatus());
+
+            performAssertions();
+        }
+
+        protected void configureLayer(GeoServerTileLayer layerInfoTileLayer) {
+            // do nothing by default
+        }
+
+        /** By default, checks that the tile has been cached permanently */
+        protected void performAssertions() throws Exception {
+            verify(storageBroker, atLeastOnce()).get(any());
+            verify(storageBroker, times(1)).put(Mockito.any());
+            verify(storageBroker, never()).putTransient(Mockito.any());
+            verify(mockGWC, times(1)).getResponseEncoder(eq(mimeType), isA(RenderedImageMap.class));
+        }
+    }
+
+    @Test
     public void testGetTile() throws Exception {
+        new GetTileMockTester();
+    }
 
-        Resource mockResult = mock(Resource.class);
-        ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
-        Mockito.when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
+    private FeatureTypeInfo getMockTimeFeatureType() {
+        FeatureTypeInfo resource = mock(FeatureTypeInfo.class);
+        MetadataMap metadata = new MetadataMap();
+        DimensionInfoImpl dimension = new DimensionInfoImpl();
+        dimension.setUnits("mockUnit");
+        metadata.put(ResourceInfo.TIME, dimension);
+        when(resource.getMetadata()).thenReturn(metadata);
+        return resource;
+    }
 
-        BufferedImage image = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
-        RenderedImageMap fakeDispatchedMap =
-                new RenderedImageMap(new WMSMapContent(), image, "image/png");
+    @Test
+    public void testGetTileWarningNoSkip() throws Exception {
+        // no skips setup, will cache permanently
+        new GetTileMockTester() {
 
-        RenderedImageMapResponse fakeResponseEncoder = mock(RenderedImageMapResponse.class);
-        MimeType mimeType = MimeType.createFromFormat("image/png");
-        when(mockGWC.getResponseEncoder(eq(mimeType), any())).thenReturn(fakeResponseEncoder);
+            @Override
+            protected void configureLayer(GeoServerTileLayer layerInfoTileLayer) {
+                layerInfoTileLayer.getInfo().setCacheWarningSkips(Collections.emptySet());
 
-        StorageBroker storageBroker = mock(StorageBroker.class);
-        when(storageBroker.get(any())).thenReturn(false);
+                FeatureTypeInfo resource = getMockTimeFeatureType();
+                HTTPWarningAppender.addWarning(
+                        DimensionWarning.defaultValue(resource, "time", new Date()));
+            }
+        };
+    }
 
-        layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
+    @Test
+    public void testGetTileWarningMismatchedSkip() throws Exception {
+        // skips on nearest, gets a warning as default, caches permanently
+        new GetTileMockTester() {
 
-        MockHttpServletRequest servletReq = new MockHttpServletRequest();
-        HttpServletResponse servletResp = new MockHttpServletResponse();
-        long[] tileIndex = {0, 0, 0};
+            @Override
+            protected void configureLayer(GeoServerTileLayer layerInfoTileLayer) {
+                layerInfoTileLayer
+                        .getInfo()
+                        .setCacheWarningSkips(Collections.singleton(WarningType.Nearest));
 
-        ConveyorTile tile =
-                new ConveyorTile(
-                        storageBroker,
-                        layerInfoTileLayer.getName(),
-                        "EPSG:4326",
-                        tileIndex,
-                        mimeType,
-                        null,
-                        servletReq,
-                        servletResp);
+                FeatureTypeInfo resource = getMockTimeFeatureType();
+                HTTPWarningAppender.addWarning(
+                        DimensionWarning.defaultValue(resource, "time", new Date()));
+            }
+        };
+    }
 
-        GeoServerTileLayer.WEB_MAP.set(fakeDispatchedMap);
-        ConveyorTile returned = layerInfoTileLayer.getTile(tile);
-        assertNotNull(returned);
-        assertNotNull(returned.getBlob());
-        assertEquals(CacheResult.MISS, returned.getCacheResult());
-        assertEquals(200, returned.getStatus());
+    @Test
+    public void testGetTileWarningSkip() throws Exception {
+        // skips on nearest and default, gets a warning as default, no persistent cache occurs
+        new GetTileMockTester() {
 
-        verify(storageBroker, atLeastOnce()).get(any());
-        verify(mockGWC, times(1)).getResponseEncoder(eq(mimeType), isA(RenderedImageMap.class));
+            @Override
+            protected void configureLayer(GeoServerTileLayer layerInfoTileLayer) {
+                layerInfoTileLayer
+                        .getInfo()
+                        .setCacheWarningSkips(
+                                new HashSet<>(
+                                        Arrays.asList(WarningType.Nearest, WarningType.Default)));
+
+                FeatureTypeInfo resource = getMockTimeFeatureType();
+                HTTPWarningAppender.addWarning(
+                        DimensionWarning.defaultValue(resource, "time", new Date()));
+            }
+
+            // check only transient caching has been performed
+            @Override
+            protected void performAssertions() throws Exception {
+                verify(storageBroker, atLeastOnce()).get(any());
+                verify(storageBroker, never()).put(Mockito.any());
+                verify(storageBroker, times(1)).putTransient(Mockito.any());
+                verify(mockGWC, times(1))
+                        .getResponseEncoder(eq(mimeType), isA(RenderedImageMap.class));
+            }
+        };
     }
 
     /** Test expire web cache without any setup of LayerInfo resource. */

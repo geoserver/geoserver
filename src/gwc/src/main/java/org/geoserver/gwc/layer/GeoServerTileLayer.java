@@ -58,6 +58,8 @@ import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.rest.RequestInfo;
+import org.geoserver.util.DimensionWarning;
+import org.geoserver.util.HTTPWarningAppender;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
@@ -125,6 +127,7 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
     public static final String GWC_SEED_INTERCEPT_TOKEN = "GWC_SEED_INTERCEPT";
 
     public static final ThreadLocal<WebMap> WEB_MAP = new ThreadLocal<>();
+    public static final ThreadLocal<Set<DimensionWarning>> DIMENSION_WARNINGS = new ThreadLocal<>();
 
     private String configErrorMessage;
 
@@ -585,10 +588,6 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
             ConveyorTile tile, final boolean tryCache, final int metaX, final int metaY)
             throws GeoWebCacheException, IOException {
 
-        final GridSubset gridSubset = getGridSubset(tile.getGridSetId());
-        final int zLevel = (int) tile.getTileIndex()[2];
-        tile.setMetaTileCacheOnly(!gridSubset.shouldCacheAtZoom(zLevel));
-
         if (tryCache && tryCacheFetch(tile)) {
             return finalizeTile(tile);
         }
@@ -619,6 +618,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                     map = dispatchGetMap(tile, metaTile);
                     checkNotNull(map, "Did not obtain a WebMap from GeoServer's Dispatcher");
                     metaTile.setWebMap(map);
+
+                    setupCachingStrategy(tile);
                     saveTiles(metaTile, tile, requestTime);
                 } catch (Exception e) {
                     Throwables.throwIfInstanceOf(e, GeoWebCacheException.class);
@@ -634,6 +635,29 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         }
 
         return finalizeTile(tile);
+    }
+
+    /**
+     * Based on configuration, sets caching to be permanent on blobstore, or to use the transient
+     * metatile cache instead. Must be called after dispatching the GetMap request, in order to have
+     * warnings available in the response.
+     */
+    private void setupCachingStrategy(ConveyorTile tile) {
+        // skip cache based on gridset caching levels configuration
+        final GridSubset gridSubset = getGridSubset(tile.getGridSetId());
+        final int zLevel = (int) tile.getTileIndex()[2];
+
+        if (!gridSubset.shouldCacheAtZoom(zLevel)) {
+            LOGGER.fine("Skipping tile caching because zoom level is not configured for caching");
+            tile.setMetaTileCacheOnly(true);
+            return;
+        }
+
+        Set<DimensionWarning.WarningType> warningSkips = info.getCacheWarningSkips();
+        if (warningSkips != null && HTTPWarningAppender.anyMatch(warningSkips)) {
+            LOGGER.fine("Skipping tile caching due to a WMS dimension warning");
+            tile.setMetaTileCacheOnly(true);
+        }
     }
 
     private String buildLockKey(ConveyorTile tile, GeoServerMetaTile metaTile) {
@@ -676,6 +700,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
             if (!(map instanceof WebMap)) {
                 throw new IllegalStateException("Expected: RenderedImageMap, got " + map);
             }
+            Set<DimensionWarning> warnings = DIMENSION_WARNINGS.get();
+            if (warnings != null) warnings.forEach(w -> HTTPWarningAppender.addWarning(w));
         } finally {
             WEB_MAP.remove();
         }
@@ -763,7 +789,11 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
         }
 
         if (tile.servletResp != null) {
-            setExpirationHeader(tile.servletResp, (int) tile.getTileIndex()[2]);
+            // do not call setExpirationHeaders from superclass, we have a more complex logic
+            // to determine caching headers here
+            Map<String, String> headers = new HashMap<>();
+            GWC.setCacheControlHeaders(headers, this, (int) tile.getTileIndex()[2]);
+            headers.forEach((k, v) -> tile.servletResp.setHeader(k, v));
             setTileIndexHeader(tile);
         }
 

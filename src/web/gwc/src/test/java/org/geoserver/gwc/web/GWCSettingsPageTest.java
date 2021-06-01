@@ -6,6 +6,7 @@
 package org.geoserver.gwc.web;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -22,12 +23,14 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.gwc.ConfigurableLockProvider;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.util.DimensionWarning.WarningType;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geowebcache.locks.MemoryLockProvider;
 import org.geowebcache.locks.NIOLockProvider;
 import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -539,5 +542,29 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         GWCSettingsPage page = new GWCSettingsPage();
         tester.startPage(page);
         tester.assertVisible("form:cachingOptionsPanel:container:configs:blobstores:container");
+    }
+
+    @Test
+    public void testSaveWarningSkips() {
+        GWCSettingsPage page = new GWCSettingsPage();
+
+        // Start the page
+        tester.startPage(page);
+        print(page, true, true, true);
+
+        FormTester ft = tester.newFormTester("form");
+        String checksPath = "cachingOptionsPanel:container:configs:warningSkips:warningSkipsGroup";
+        ft.select(checksPath, 0);
+        ft.select(checksPath, 2);
+        ft.submit("submit");
+
+        tester.assertNoErrorMessage();
+
+        // check skips have been configured
+        GWC gwc = GWC.get();
+        GWCConfig gwcConfig = gwc.getConfig();
+        assertThat(
+                gwcConfig.getCacheWarningSkips(),
+                Matchers.containsInAnyOrder(WarningType.Default, WarningType.FailedNearest));
     }
 }

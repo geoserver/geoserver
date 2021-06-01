@@ -50,6 +50,7 @@ import org.geoserver.gwc.layer.CatalogLayerEventListener;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.util.DimensionWarning.WarningType;
 import org.geoserver.web.wicket.GeoServerDialog;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geowebcache.config.BlobStoreInfo;
@@ -319,6 +320,11 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         IModel<Integer> expireClientsModel = new PropertyModel<>(getModel(), "expireClients");
         expireClients = new TextField<>("expireClients", expireClientsModel);
         configs.add(expireClients);
+
+        // cache skips
+        IModel<Set<WarningType>> warningSkipsModel =
+                new PropertyModel<>(getModel(), "cacheWarningSkips");
+        configs.add(new WarningSkipsPanel("warningSkips", warningSkipsModel));
 
         IModel<Set<XMLGridSubset>> gridSubsetsModel =
                 new PropertyModel<>(getModel(), "gridSubsets");

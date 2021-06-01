@@ -4,10 +4,9 @@
  */
 package org.geoserver.util;
 
+import static org.geoserver.util.HTTPWarningAppender.addWarning;
 import static org.geoserver.util.NearestMatchFinder.FilterDirection.HIGHEST_AMONG_LOWERS;
 import static org.geoserver.util.NearestMatchFinder.FilterDirection.LOWEST_AMONG_HIGHER;
-import static org.geoserver.util.NearestMatchWarningAppender.WarningType.Nearest;
-import static org.geoserver.util.NearestMatchWarningAppender.WarningType.NotFound;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -298,10 +297,9 @@ public abstract class NearestMatchFinder {
      *     timeout.
      */
     public List<Object> getMatches(
-            String layerName,
-            DimensionInfo dimension,
-            List<Object> values,
+            ResourceInfo resource,
             String dimensionName,
+            List<Object> values,
             final int maxOutputTime)
             throws IOException {
         // if there is a max time set to produce an output, use it on this match,
@@ -313,14 +311,12 @@ public abstract class NearestMatchFinder {
             if (nearest == null) {
                 // no way to specify there is no match yet, so we'll use the original value, which
                 // will not match
-                NearestMatchWarningAppender.addWarning(
-                        layerName, dimensionName, null, dimension.getUnits(), NotFound);
+                addWarning(DimensionWarning.notFound(resource, dimensionName));
                 result.add(value);
             } else if (value.equals(nearest)) {
                 result.add(value);
             } else {
-                NearestMatchWarningAppender.addWarning(
-                        layerName, dimensionName, nearest, dimension.getUnits(), Nearest);
+                addWarning(DimensionWarning.nearest(resource, dimensionName, nearest));
                 result.add(nearest);
             }
 

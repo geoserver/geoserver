@@ -96,6 +96,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
         assertThat(unmarshalled, sameProperty(info, "gridSubsets"));
         assertThat(unmarshalled, sameProperty(info, "mimeFormats"));
         assertThat(unmarshalled, sameProperty(info, "parameterFilters"));
+        assertThat(unmarshalled, sameProperty(info, "cacheWarningSkips"));
         assertThat(unmarshalled, equalTo(info));
 
         assertThat("cachedStyles", unmarshalled.cachedStyles(), equalTo(info.cachedStyles()));

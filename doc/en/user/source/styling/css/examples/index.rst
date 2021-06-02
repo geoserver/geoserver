@@ -10,5 +10,6 @@ The following pages contain CSS styling examples grouped by specific topics.
 
    randomfills
    transformation
+   extrude
    kml
    misc

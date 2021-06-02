@@ -32,11 +32,11 @@ public class S3BlobStorePanel extends Panel {
         add(new TextField<>("bucket").setRequired(true).add(titleModifier("bucket.title")));
         add(
                 new TextField<>("awsAccessKey")
-                        .setRequired(true)
+                        .setRequired(false)
                         .add(titleModifier("awsAccessKey.title")));
         add(
                 new TextField<>("awsSecretKey")
-                        .setRequired(true)
+                        .setRequired(false)
                         .add(titleModifier("awsSecretKey.title")));
         add(new TextField<>("prefix").add(titleModifier("prefix.title")));
         add(new TextField<>("endpoint").add(titleModifier("endpoint.title")));

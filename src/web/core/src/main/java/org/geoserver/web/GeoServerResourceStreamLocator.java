@@ -9,7 +9,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -62,7 +65,8 @@ public class GeoServerResourceStreamLocator extends ResourceStreamLocator {
                         URL url = urls.nextElement();
 
                         try (InputStream in = url.openStream()) {
-                            properties.load(in);
+                            Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8);
+                            properties.load(reader);
                         }
                     }
 

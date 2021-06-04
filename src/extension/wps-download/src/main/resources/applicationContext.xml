@@ -38,6 +38,7 @@
 	
 	<bean id="downloadMapProcess" class="org.geoserver.wps.gs.download.DownloadMapProcess">
 		<constructor-arg index="0" ref="geoServer"/>
+		<constructor-arg index="1" ref="httpWarningAppender"/>
 	</bean>
 
 	<bean id="downloadAnimationProcess" class="org.geoserver.wps.gs.download.DownloadAnimationProcess">
@@ -45,7 +46,8 @@
 		<constructor-arg index="1" ref="wpsResourceManager"/>
 		<constructor-arg index="2" ref="downloadServiceConfigurationWatcher" />
 	</bean>
-
+	
+	<bean id="animationMetadataPPIO" class="org.geoserver.wps.gs.download.AnimationMetadataPPIO"/>
 
 	<!-- The PPIO that need to be registered into SPI because of their dependencies -->
 	<bean id="archiveZipPPIO" class="org.geoserver.wps.ppio.ZipArchivePPIO">
@@ -86,5 +88,6 @@
 		<property name="componentClass" value="org.geoserver.web.wps.DownloadLimitsPanel"/>
 		<property name="serviceClass" value="org.geoserver.wps.WPSInfo"/>
 	</bean>
+	
     
 </beans>

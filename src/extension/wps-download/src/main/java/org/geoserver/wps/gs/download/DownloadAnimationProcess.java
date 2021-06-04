@@ -6,6 +6,7 @@ package org.geoserver.wps.gs.download;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.File;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -23,10 +24,14 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.util.HTTPWarningAppender;
 import org.geoserver.wps.WPSException;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.process.RawData;
@@ -38,6 +43,7 @@ import org.geotools.ows.wms.WebMapServer;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
+import org.geotools.process.factory.DescribeResults;
 import org.geotools.util.DateRange;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.logging.Logging;
@@ -70,14 +76,17 @@ public class DownloadAnimationProcess implements GeoServerProcess {
     private final WPSResourceManager resourceManager;
     private final DateTimeFormatter formatter;
     private final DownloadServiceConfigurationGenerator confiGenerator;
+    private final HTTPWarningAppender warningAppender;
 
     public DownloadAnimationProcess(
             DownloadMapProcess mapper,
             WPSResourceManager resourceManager,
-            DownloadServiceConfigurationGenerator downloadServiceConfigurationGenerator) {
+            DownloadServiceConfigurationGenerator downloadServiceConfigurationGenerator,
+            HTTPWarningAppender warningAppender) {
         this.mapper = mapper;
         this.resourceManager = resourceManager;
         this.confiGenerator = downloadServiceConfigurationGenerator;
+        this.warningAppender = warningAppender;
         // java 8 formatters are thread safe
         this.formatter =
                 DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
@@ -85,12 +94,20 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                         .withZone(ZoneId.of("GMT"));
     }
 
-    @DescribeResult(
-        name = "result",
-        description = "The animation",
-        meta = {"mimeTypes=" + VIDEO_MP4, "chosenMimeType=format"}
-    )
-    public RawData execute(
+    @DescribeResults({
+        @DescribeResult(
+            name = "result",
+            description = "The animation",
+            type = RawData.class,
+            meta = {"mimeTypes=" + VIDEO_MP4, "chosenMimeType=format"}
+        ),
+        @DescribeResult(
+            name = "metadata",
+            type = AnimationMetadata.class,
+            description = "Animation metadata, including dimension match warnings"
+        )
+    })
+    public Map<String, Object> execute(
             @DescribeParameter(
                         name = "bbox",
                         min = 1,
@@ -193,12 +210,17 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                             }
                             return null;
                         });
+        Request request = Dispatcher.REQUEST.get();
+        AnimationMetadata metadata = new AnimationMetadata();
         try {
+            int frameCounter = 0;
             for (Object parsedTime : parsedTimes) {
-                // turn parsed time into a specification and generate a "WMS" like request based on
-                // it
+                // turn parsed time into a specification, generates a "WMS" like request based on it
                 String mapTime = toWmsTimeSpecification(parsedTime);
                 LOGGER.log(Level.FINE, "Building frame for time %s", mapTime);
+                // clean up eventual previous warnings
+                warningAppender.init(request);
+
                 RenderedImage image =
                         mapper.buildImage(
                                 bbox,
@@ -211,9 +233,12 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                                 "image/png",
                                 new DefaultProgressListener(),
                                 serverCache);
+                ImageIO.write(
+                        image, "PNG", new File("/tmp/frame" + System.currentTimeMillis() + ".png"));
                 BufferedImage frame = toBufferedImage(image);
                 LOGGER.log(Level.FINE, "Got frame %s", frame);
                 renderingQueue.put(frame);
+                metadata.accumulateWarnings(frameCounter++);
 
                 // exit sooner in case of cancellation, encoding abort is handled in finally
                 if (listener.isCanceled()) return null;
@@ -226,10 +251,17 @@ public class DownloadAnimationProcess implements GeoServerProcess {
             // force encoding thread to stop in case we got here due to an exception
             abortEncoding.set(true);
             executor.shutdown();
+            warningAppender.finished(request);
         }
         enc.finish();
 
-        return new ResourceRawData(output, VIDEO_MP4, "mp4");
+        // it's a derived property, but XStream does not like to use getters
+        metadata.setWarningsFound(!metadata.getWarnings().isEmpty());
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("result", new ResourceRawData(output, VIDEO_MP4, "mp4"));
+        result.put("metadata", metadata);
+        return result;
     }
 
     private BufferedImage toBufferedImage(RenderedImage image) {

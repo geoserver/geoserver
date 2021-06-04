@@ -320,7 +320,7 @@
   	<constructor-arg ref="catalog"/>
   </bean>
 
-  <bean id="nearestMatchWarningAppender" class="org.geoserver.util.HTTPWarningAppender"/>
+  <bean id="httpWarningAppender" class="org.geoserver.util.HTTPWarningAppender"/>
 
   <bean id="coverageReaderFileConverter" class="org.geoserver.catalog.CoverageReaderFileConverter">
     <constructor-arg ref="catalog"/>

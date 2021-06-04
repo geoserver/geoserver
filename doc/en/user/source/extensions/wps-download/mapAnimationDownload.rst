@@ -225,3 +225,114 @@ Decoration Layout
 | The decorators draw on the image one after the other, so the order of the decorators in the layout file is important: the first decorator output will appear under the others.
 | Decorators are described in detail in the :ref:`wms_decorations` section.
 
+
+Secondary output: animation metadata
+++++++++++++++++++++++++++++++++++++
+
+The process offers also a secondary output, called ``metadata``, which can be used to determine
+if there were any issue related to the requested times. The warnings are issued when the layer
+has a "nearest match" behavior activated, with an eventual search range.
+
+In case the requested time could not be matched exactly, a warning will be issued that might contain:
+
+- An indication that a nearby time has been used, and which time that is.
+- An indication that no time was found, that was sufficiently close to the requested one, according
+  to the search range specification in the layer "nearest match" configuration.
+
+In order to get both outputs, the following response form is recommended, which requires
+a reference (a link) for the animation, while the warnings are included inline:
+
+ .. code-block:: xml
+
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <wps:Execute version="1.0.0" service="WPS"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0"
+                 xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0"
+                 xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml"
+                 xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1"
+                 xmlns:xlink="http://www.w3.org/1999/xlink"
+                 xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+      <ows:Identifier>gs:DownloadAnimation</ows:Identifier>
+      <!-- Inputs section removed for brevity -->
+      <wps:ResponseForm>
+        <wps:ResponseDocument>
+          <wps:Output asReference="true">
+            <ows:Identifier>result</ows:Identifier>
+          </wps:Output>
+          <wps:Output>
+            <ows:Identifier>metadata</ows:Identifier>
+          </wps:Output>
+        </wps:ResponseDocument>
+      </wps:ResponseForm>
+    </wps:Execute>
+
+A sample response, reporting warnings and the frame count where they happened, follows:
+
+ .. code-block:: xml
+
+
+    <?xml version="1.0" encoding="UTF-8"?><wps:ExecuteResponse xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" service="WPS" serviceInstance="http://localhost:8080/geoserver/ows?" version="1.0.0" xml:lang="en">
+      <wps:Process wps:processVersion="1.0.0">
+        <ows:Identifier>gs:DownloadAnimation</ows:Identifier>
+        <ows:Title>Animation Download Process</ows:Title>
+        <ows:Abstract>Builds an animation given a set of layer definitions, area of interest, size and a series of times for animation frames.</ows:Abstract>
+      </wps:Process>
+      <wps:Status creationTime="2021-06-07T16:50:47.391Z">
+        <wps:ProcessSucceeded>Process succeeded.</wps:ProcessSucceeded>
+      </wps:Status>
+      <wps:ProcessOutputs>
+        <wps:Output>
+          <ows:Identifier>result</ows:Identifier>
+          <ows:Title>The animation</ows:Title>
+          <wps:Reference href="http://localhost:8080/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionResult&amp;executionId=b98eded5-8122-442b-a6c7-87a872779153&amp;outputId=result.mp4&amp;mimetype=video%2Fmp4" mimeType="video/mp4"/>
+        </wps:Output>
+        <wps:Output>
+          <ows:Identifier>metadata</ows:Identifier>
+          <ows:Title>Animation metadata, including dimension match warnings</ows:Title>
+          <wps:Data>
+            <wps:ComplexData mimeType="text/xml">
+              <AnimationMetadata>
+                <Warnings>
+                  <FrameWarning>
+                    <LayerName>sf:bmtime</LayerName>JNDIDataSourceFactory
+                    <DimensionName>time</DimensionName>
+                    <Value class="Date">2004-02-01T00:00:00.000Z</Value>
+                    <WarningType>Nearest</WarningType>
+                    <Frame>0</Frame>
+                  </FrameWarning>
+                  <FrameWarning>
+                    <LayerName>sf:bmtime</LayerName>
+                    <DimensionName>time</DimensionName>
+                    <WarningType>FailedNearest</WarningType>
+                    <Frame>1</Frame>
+                  </FrameWarning>
+                  <FrameWarning>
+                    <LayerName>sf:bmtime</LayerName>
+                    <DimensionName>time</DimensionName>
+                    <Value class="Date">2004-04-01T00:00:00.000Z</Value>
+                    <WarningType>Nearest</WarningType>
+                    <Frame>2</Frame>
+                  </FrameWarning>
+                  <FrameWarning>
+                    <LayerName>sf:bmtime</LayerName>
+                    <DimensionName>time</DimensionName>
+                    <Value class="Date">2004-05-01T00:00:00.000Z</Value>
+                    <WarningType>Nearest</WarningType>
+                    <Frame>3</Frame>
+                  </FrameWarning>
+                </Warnings>
+                <WarningsFound>true</WarningsFound>
+              </AnimationMetadata>
+            </wps:ComplexData>
+          </wps:Data>
+        </wps:Output>
+      </wps:ProcessOutputs>
+    </wps:ExecuteResponse>
+
+In the above output, frames 0, 2 and 3 were nearest matched to an available time, being specified
+in the ``Value`` field, while the time requested for frame number 1 was too far away from any
+available time, resulting in a ``NearestFail``. The frame is still present in the animation, but
+will likely be blank.
+In case multiple time based layers are requested in the animation, there might be multiple warnings
+for each frame.

@@ -54,7 +54,14 @@ public class BaseDownloadImageProcessTest extends WPSTestSupport {
         // add a bluemarble four months mosaic
         testData.addRasterLayer(BMTIME, "bm_time.zip", null, null, getClass(), catalog);
         setupRasterDimension(
-                BMTIME, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+                BMTIME,
+                ResourceInfo.TIME,
+                DimensionPresentation.LIST,
+                null,
+                null,
+                null,
+                true,
+                "P3D");
 
         // a world covering layer with no dimensions
         testData.addVectorLayer(

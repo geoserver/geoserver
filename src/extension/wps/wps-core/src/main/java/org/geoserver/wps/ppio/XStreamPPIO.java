@@ -26,6 +26,10 @@ public class XStreamPPIO extends XMLPPIO {
         super(type, type, element);
     }
 
+    protected XStreamPPIO(Class<?> type, String element) {
+        super(type, type, new QName(element));
+    }
+
     @Override
     public void encode(Object object, ContentHandler handler) throws Exception {
         // prepare xml encoding
@@ -51,7 +55,7 @@ public class XStreamPPIO extends XMLPPIO {
                         return new UppercaseTagMapper(new PackageStrippingMapper(next));
                     };
                 };
-
+        stream.allowTypes(new Class[] {getType()});
         return stream;
     }
 

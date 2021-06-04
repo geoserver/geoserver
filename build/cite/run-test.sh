@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # fail on error
-set -e
+# set -e
 
 TE_LOG_DIR="$TE_BASE/users/teamengine"
 TE_FORMS_DIR="$TE_BASE/forms"
@@ -20,10 +20,11 @@ _show_logs() {
     -session=s0001
 }
 
+set -o pipefail
 _parse_logs(){
-  _show_logs | grep -iv "Failed"
+  _show_logs | grep -iw "Failed"
   local grep_exit_code=$?
-  if [ "$grep_exit_code" -ne "0" ]; then
+  if [ "$grep_exit_code" -eq "0" ]; then
       echo "Failed tests found in logs! (grep exit code: $grep_exit_code)" >&2
       return 3
   else
@@ -56,6 +57,7 @@ _run() {
 
   return $rc
 }
+set +o pipefail
 
 wms11 () {
   echo $0

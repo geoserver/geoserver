@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.PlanarImage;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.resource.Resource;
@@ -107,12 +108,26 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                     Integer headerHeight,
             @DescribeParameter(
                         name = "time",
-                        min = 1,
+                        min = 0,
                         description =
                                 "Map time specification (a range with "
                                         + "periodicity or a list of time values)"
                     )
                     String time,
+            @DescribeParameter(
+                        name = "animateParam",
+                        min = 0,
+                        max = 1,
+                        description = "The URL parameter / variable used to animate the map"
+                    )
+                    String animateParam,
+            @DescribeParameter(
+                        name = "animateValues",
+                        min = 0,
+                        description =
+                                "The comma separated values used to animate over the animateParam"
+                    )
+                    String animateValues,
             @DescribeParameter(name = "width", min = 1, description = "Output width", minValue = 1)
                     int width,
             @DescribeParameter(
@@ -159,8 +174,18 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                 new AWTSequenceEncoder(NIOUtils.writableChannel(output.file()), frameRate);
 
         DownloadServiceConfiguration configuration = confiGenerator.getConfiguration();
-        TimeParser timeParser = new TimeParser(configuration.getMaxAnimationFrames());
-        Collection parsedTimes = timeParser.parse(time);
+        int totalTimes;
+        Collection parsedTimes = null;
+        if (!StringUtils.isEmpty(time)) {
+            TimeParser timeParser = new TimeParser(configuration.getMaxAnimationFrames());
+            parsedTimes = timeParser.parse(time);
+            totalTimes = parsedTimes.size();
+        } else if (!StringUtils.isEmpty(animateParam) && !StringUtils.isEmpty(animateValues)) {
+            totalTimes = animateValues.split(",").length;
+        } else {
+            throw new WPSException("Neither time nor animateParam and animateValues given");
+        }
+
         progressListener.started();
         Map<String, WebMapServer> serverCache = new HashMap<>();
 
@@ -175,7 +200,6 @@ public class DownloadAnimationProcess implements GeoServerProcess {
         Future<Void> future =
                 executor.submit(
                         () -> {
-                            int totalTimes = parsedTimes.size();
                             int count = 1;
                             BufferedImage frame;
                             while ((frame = renderingQueue.take()) != STOP) {
@@ -194,16 +218,24 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                             return null;
                         });
         try {
-            for (Object parsedTime : parsedTimes) {
-                // turn parsed time into a specification and generate a "WMS" like request based on
-                // it
-                String mapTime = toWmsTimeSpecification(parsedTime);
+            for (int i = 0; i < totalTimes; i++) {
+                String mapTime = null;
+                String animateValue = null;
+                if (parsedTimes != null) {
+                    // turn parsed time into a specification and generate a "WMS" like request based
+                    // on it
+                    mapTime = toWmsTimeSpecification(parsedTimes.toArray()[i]);
+                } else {
+                    animateValue = animateValues.split(",")[i];
+                }
                 LOGGER.log(Level.FINE, "Building frame for time %s", mapTime);
                 RenderedImage image =
                         mapper.buildImage(
                                 bbox,
                                 decorationName,
                                 mapTime,
+                                animateParam,
+                                animateValue,
                                 width,
                                 height,
                                 headerHeight,

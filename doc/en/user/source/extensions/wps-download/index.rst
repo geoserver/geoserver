@@ -6,7 +6,7 @@ WPS Download plugin
 WPS Download plugin provides some useful features for easily downloading:
 * Raster or Vector layer as zip files
 * Large maps as images
-* Time based animation
+* Time or variable based animation
 The module also provides facilities to control the output file size.
 
 Installing the WPS Download extension
@@ -34,7 +34,7 @@ This module provides the following WPS process:
  * ``gs:Download`` : can be used for downloading Raster and Vector Layers
  * ``gs:DownloadEstimator`` : can be used for checking if the downloaded file does not exceeds the configured limits.
  * ``gs:DownloadMap``: allows to download a large map with the same composition found on the client side (eventually along with an asynchronous call)
- * ``gs:DownloadAnimation``: allows to download a map with the same composition found on the client side, with animation over a give set of times
+ * ``gs:DownloadAnimation``: allows to download a map with the same composition found on the client side, with animation over a give set of times or SLD-variable values
  
 Configuring the limits
 ----------------------

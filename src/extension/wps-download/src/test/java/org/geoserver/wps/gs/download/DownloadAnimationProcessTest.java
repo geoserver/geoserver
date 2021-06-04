@@ -94,6 +94,52 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
     }
 
     @Test
+    public void testAnimateVariables() throws Exception {
+        String xml =
+                IOUtils.toString(getClass().getResourceAsStream("animateVariables.xml"), "UTF-8");
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("video/mp4", response.getContentType());
+
+        // JCodec API works off files only...
+        File testFile = new File("target/animateVariables.mp4");
+        FileUtils.writeByteArrayToFile(testFile, response.getContentAsByteArray());
+
+        // check frames and duration
+        Format f = JCodecUtil.detectFormat(testFile);
+        try (Demuxer d = JCodecUtil.createDemuxer(f, testFile)) {
+            DemuxerTrack vt = d.getVideoTracks().get(0);
+            DemuxerTrackMeta dtm = vt.getMeta();
+            assertEquals(30, dtm.getTotalFrames());
+            assertEquals(1, dtm.getTotalDuration(), 0d);
+
+            // grab frames for checking
+            File source =
+                    new File(
+                            "src/test/resources/org/geoserver/wps/gs/download/animateVariables.zip");
+            FrameGrab grabber = FrameGrab.createFrameGrab(NIOUtils.readableChannel(testFile));
+            // first
+            BufferedImage frame1 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+            BufferedImage expected1 = grabImageFromZip(source, "animateVariables00001.png");
+            ImageAssert.assertEquals(expected1, frame1, 100);
+            // second
+            grabber.seekToFramePrecise(9);
+            BufferedImage frame10 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+            BufferedImage expected2 = grabImageFromZip(source, "animateVariables00010.png");
+            ImageAssert.assertEquals(expected2, frame10, 100);
+            // third
+            grabber.seekToFramePrecise(19);
+            BufferedImage frame20 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+            BufferedImage expected3 = grabImageFromZip(source, "animateVariables00020.png");
+            ImageAssert.assertEquals(expected3, frame20, 100);
+            // fourth
+            grabber.seekToFramePrecise(29);
+            BufferedImage frame30 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+            BufferedImage expected4 = grabImageFromZip(source, "animateVariables00030.png");
+            ImageAssert.assertEquals(expected4, frame30, 100);
+        }
+    }
+
+    @Test
     public void testAnimateFrameLimits() throws Exception {
         // set a limit of 1 frame
         GeoServerDataDirectory dd = getDataDirectory();

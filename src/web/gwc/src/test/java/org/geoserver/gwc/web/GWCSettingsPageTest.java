@@ -63,6 +63,7 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
     public void cleanup() throws IOException {
         GWC gwc = GWC.get();
         GWCConfig config = gwc.getConfig();
+        config.setCacheLayersByDefault(true);
         config.setLockProviderName(null);
         config.setInnerCachingEnabled(false);
         gwc.saveConfig(config);
@@ -546,11 +547,8 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testSaveWarningSkips() {
-        GWCSettingsPage page = new GWCSettingsPage();
-
         // Start the page
-        tester.startPage(page);
-        print(page, true, true, true);
+        tester.startPage(GWCSettingsPage.class);
 
         FormTester ft = tester.newFormTester("form");
         String checksPath = "cachingOptionsPanel:container:configs:warningSkips:warningSkipsGroup";

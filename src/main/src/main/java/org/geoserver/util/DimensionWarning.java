@@ -31,7 +31,6 @@ public class DimensionWarning {
     WarningType warningType;
 
     public static DimensionWarning nearest(ResourceInfo r, String dimensionName, Object value) {
-        DimensionInfo d = r.getMetadata().get(dimensionName, DimensionInfo.class);
         return new DimensionWarning(r, dimensionName, value, WarningType.Nearest);
     }
 

@@ -288,10 +288,9 @@ public abstract class NearestMatchFinder {
     /**
      * Get the nearest matches on the given dimension, provided a List of values.
      *
-     * @param layerName the name of the Layer
-     * @param dimension the dimensionInfo instance where the search will occur.
-     * @param values the reference values for the nearest match search
+     * @param resource the resource being nearest matched
      * @param dimensionName the name of the dimension
+     * @param values the reference values for the nearest match search
      * @param maxOutputTime a max time (in seconds) to produce the output. A ServiceException will
      *     be thrown if the matches search is exceeding the specified time. Set to -1 for no
      *     timeout.

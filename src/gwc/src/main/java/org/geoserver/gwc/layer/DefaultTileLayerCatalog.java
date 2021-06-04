@@ -143,7 +143,6 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         serializer.allowTypes(new Class[] {DimensionWarning.WarningType.class});
         // have to use a string here because UnmodifiableSet is private
         serializer.allowTypes(new String[] {"java.util.Collections$UnmodifiableSet"});
-        serializer.allowTypes(new Class[] {DimensionWarning.WarningType.class});
         serializer.addDefaultImplementation(LinkedHashSet.class, Set.class);
         serializer.alias("warning", DimensionWarning.WarningType.class);
         return serializer;

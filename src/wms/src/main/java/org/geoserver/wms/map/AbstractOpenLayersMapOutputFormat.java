@@ -14,7 +14,7 @@ import freemarker.template.TemplateException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -184,7 +184,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
 
             template.setOutputEncoding("UTF-8");
             ByteArrayOutputStream buff = new ByteArrayOutputStream();
-            template.process(map, new OutputStreamWriter(buff, Charset.forName("UTF-8")));
+            template.process(map, new OutputStreamWriter(buff, StandardCharsets.UTF_8));
             RawMap result = new RawMap(mapContent, buff, getMimeType());
             return result;
         } catch (TemplateException e) {

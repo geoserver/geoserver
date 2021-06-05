@@ -7,7 +7,7 @@
 package org.geoserver.security.filter;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -91,11 +91,7 @@ public class GeoServerBasicAuthenticationFilter extends GeoServerCompositeFilter
         String header = request.getHeader("Authorization");
         if ((header != null) && header.startsWith("Basic ")) {
             byte[] base64Token = null;
-            try {
-                base64Token = header.substring(6).getBytes("UTF-8");
-            } catch (UnsupportedEncodingException e1) {
-                throw new RuntimeException(e1);
-            }
+            base64Token = header.substring(6).getBytes(StandardCharsets.UTF_8);
             String token = new String(Base64.getDecoder().decode(base64Token));
 
             String username = "";
@@ -117,8 +113,12 @@ public class GeoServerBasicAuthenticationFilter extends GeoServerCompositeFilter
             String digestString = null;
             try {
                 MessageDigest md = (MessageDigest) digest.clone();
-                digestString = new String(Hex.encode(md.digest(buff.toString().getBytes("utf-8"))));
-            } catch (UnsupportedEncodingException | CloneNotSupportedException e) {
+                digestString =
+                        new String(
+                                Hex.encode(
+                                        md.digest(
+                                                buff.toString().getBytes(StandardCharsets.UTF_8))));
+            } catch (CloneNotSupportedException e) {
                 throw new RuntimeException(e);
             }
             buff = new StringBuffer(username);

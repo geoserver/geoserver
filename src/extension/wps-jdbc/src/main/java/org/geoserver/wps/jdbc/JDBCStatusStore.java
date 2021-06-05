@@ -4,12 +4,13 @@
  */
 package org.geoserver.wps.jdbc;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -383,7 +384,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
                 buf.append("\n");
             }
 
-            builder.set(STACK_TRACE, buf.toString().getBytes(Charset.forName("UTF-8")));
+            builder.set(STACK_TRACE, buf.toString().getBytes(UTF_8));
         }
         SimpleFeature feature = builder.buildFeature(null);
         return feature;
@@ -488,7 +489,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
         byte[] r = (byte[]) attrs.get(STACK_TRACE);
         ArrayList<StackTraceElement> trace = new ArrayList<>();
 
-        for (String line : new String(r, Charset.forName("UTF-8")).split("\n")) {
+        for (String line : new String(r, UTF_8).split("\n")) {
             String[] parts = line.split(STACKTRACESEPERATOR);
             String declaringClass = parts[0];
             String fileName = parts[1];

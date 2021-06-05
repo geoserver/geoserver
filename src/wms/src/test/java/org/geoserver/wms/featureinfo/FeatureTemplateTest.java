@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.data.test.MockData;
@@ -103,7 +103,7 @@ public class FeatureTemplateTest extends WMSTestSupport {
         FeatureTemplate template = new FeatureTemplate();
         String defaultHeightTemplate;
         try (InputStream is = FeatureTemplate.class.getResourceAsStream("height.ftl")) {
-            defaultHeightTemplate = IOUtils.toString(is, Charset.forName("UTF8"));
+            defaultHeightTemplate = IOUtils.toString(is, StandardCharsets.UTF_8);
         }
         assertTrue(
                 template.isTemplateEmpty(

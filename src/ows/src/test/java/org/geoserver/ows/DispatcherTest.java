@@ -5,6 +5,7 @@
  */
 package org.geoserver.ows;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -312,7 +313,7 @@ public class DispatcherTest {
             request.setMethod("POST");
             request.setRequestURI("http://localhost/geoserver/ows");
             request.setContentType("application/xml");
-            request.setContent(body.getBytes("UTF-8"));
+            request.setContent(body.getBytes(UTF_8));
 
             MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -377,7 +378,7 @@ public class DispatcherTest {
             request.setMethod("POST");
             request.setRequestURI("http://localhost/geoserver/ows");
             request.setContentType("application/xml");
-            request.setContent(body.getBytes("UTF-8"));
+            request.setContent(body.getBytes(UTF_8));
 
             MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -556,7 +557,7 @@ public class DispatcherTest {
             request.setContentType("application/xml");
             request.setContent(
                     "<h:Hello service='hello' message='Hello world!' xmlns:h='http://hello.org' />"
-                            .getBytes("UTF-8"));
+                            .getBytes(UTF_8));
             request.setRequestURI("http://localhost/geoserver/hello");
 
             dispatcher.handleRequest(request, response);
@@ -564,7 +565,7 @@ public class DispatcherTest {
 
             request.setContent(
                     "<h:Hello service='hello' message='Hello world!' xmlns:h='http://hello.org/v2' />"
-                            .getBytes("UTF-8"));
+                            .getBytes(UTF_8));
 
             response = new MockHttpServletResponse();
             dispatcher.handleRequest(request, response);
@@ -970,7 +971,7 @@ public class DispatcherTest {
             MockHttpServletResponse response = new MockHttpServletResponse();
 
             request.setContentType("application/xml");
-            request.setContent("<h:Hello xmlns:h='http:/hello.org' />".getBytes("UTF-8"));
+            request.setContent("<h:Hello xmlns:h='http:/hello.org' />".getBytes(UTF_8));
             request.setRequestURI("http://localhost/geoserver/hello");
 
             response = new MockHttpServletResponse();

@@ -20,6 +20,7 @@ package org.geoserver.filters;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.logging.Logger;
 import javax.servlet.ServletOutputStream;
@@ -165,7 +166,7 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
         }
 
         stream = createOutputStream();
-        writer = new PrintWriter(new OutputStreamWriter(stream, "UTF-8"));
+        writer = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.UTF_8));
         return (writer);
     }
 

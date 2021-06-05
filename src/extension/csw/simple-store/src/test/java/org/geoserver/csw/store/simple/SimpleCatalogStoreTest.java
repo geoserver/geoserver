@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -357,7 +358,7 @@ public class SimpleCatalogStoreTest {
         item = store.getRepositoryItem("urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
         assertNotNull(item);
         assertEquals("application/xml", item.getMime());
-        String contents = IOUtils.toString(item.getContents(), "UTF-8");
+        String contents = IOUtils.toString(item.getContents(), StandardCharsets.UTF_8);
         String expected =
                 "This is a random comment that will show up only when fetching the repository item";
         assertTrue(contents.contains(expected));

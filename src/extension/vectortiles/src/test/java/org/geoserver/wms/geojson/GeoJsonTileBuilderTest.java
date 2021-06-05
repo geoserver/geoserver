@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import java.awt.Rectangle;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.map.RawMap;
@@ -61,7 +62,7 @@ public class GeoJsonTileBuilderTest {
         map.writeTo(bos);
         bos.close();
 
-        String out = new String(bos.toByteArray(), "UTF-8");
+        String out = new String(bos.toByteArray(), StandardCharsets.UTF_8);
         return out;
     }
 }

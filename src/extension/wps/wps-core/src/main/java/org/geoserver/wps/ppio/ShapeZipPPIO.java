@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -68,7 +69,7 @@ public class ShapeZipPPIO extends BinaryPPIO {
             return Charset.forName(charsetName);
         } else {
             // if not specified let's use the shapefile default one
-            return Charset.forName("ISO-8859-1");
+            return StandardCharsets.ISO_8859_1;
         }
     }
 

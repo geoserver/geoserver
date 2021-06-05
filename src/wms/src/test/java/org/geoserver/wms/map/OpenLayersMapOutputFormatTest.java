@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
@@ -374,7 +375,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         RawMap rawMap = mapProducer.produceMap(map);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         rawMap.writeTo(bos);
-        return new String(bos.toByteArray(), "UTF-8");
+        return new String(bos.toByteArray(), StandardCharsets.UTF_8);
     }
 
     String getAsHTMLOL3(WMSMapContent map) throws IOException {
@@ -383,7 +384,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         RawMap rawMap = mapProducer.produceMap(map);
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         rawMap.writeTo(bos);
-        return new String(bos.toByteArray(), "UTF-8");
+        return new String(bos.toByteArray(), StandardCharsets.UTF_8);
     }
 
     @Test

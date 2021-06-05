@@ -5,6 +5,8 @@
  */
 package org.geoserver.community.css.web;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -52,23 +54,23 @@ public class CssHandler extends StyleHandler implements ModuleStatus {
             TEMPLATES.put(
                     StyleType.POINT,
                     IOUtils.toString(
-                            CssHandler.class.getResourceAsStream("template_point.css"), "UTF-8"));
+                            CssHandler.class.getResourceAsStream("template_point.css"), UTF_8));
             TEMPLATES.put(
                     StyleType.POLYGON,
                     IOUtils.toString(
-                            CssHandler.class.getResourceAsStream("template_polygon.css"), "UTF-8"));
+                            CssHandler.class.getResourceAsStream("template_polygon.css"), UTF_8));
             TEMPLATES.put(
                     StyleType.LINE,
                     IOUtils.toString(
-                            CssHandler.class.getResourceAsStream("template_line.css"), "UTF-8"));
+                            CssHandler.class.getResourceAsStream("template_line.css"), UTF_8));
             TEMPLATES.put(
                     StyleType.RASTER,
                     IOUtils.toString(
-                            CssHandler.class.getResourceAsStream("template_raster.css"), "UTF-8"));
+                            CssHandler.class.getResourceAsStream("template_raster.css"), UTF_8));
             TEMPLATES.put(
                     StyleType.GENERIC,
                     IOUtils.toString(
-                            CssHandler.class.getResourceAsStream("template_generic.css"), "UTF-8"));
+                            CssHandler.class.getResourceAsStream("template_generic.css"), UTF_8));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the css style templates", e);
         }

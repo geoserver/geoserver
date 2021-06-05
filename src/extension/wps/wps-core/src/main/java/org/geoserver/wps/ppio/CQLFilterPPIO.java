@@ -8,6 +8,7 @@ package org.geoserver.wps.ppio;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.filter.Filter;
@@ -31,12 +32,12 @@ public class CQLFilterPPIO extends CDataPPIO {
     @Override
     public void encode(Object value, OutputStream os) throws IOException {
         String cql = ECQL.toCQL((Filter) value);
-        os.write(cql.getBytes("UTF-8"));
+        os.write(cql.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
     public Object decode(InputStream input) throws Exception {
-        return decode(IOUtils.toString(input, "UTF-8"));
+        return decode(IOUtils.toString(input, StandardCharsets.UTF_8));
     }
 
     @Override

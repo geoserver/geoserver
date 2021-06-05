@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -128,7 +129,7 @@ public class Dispatcher extends AbstractController {
     /** thread local variable for the request */
     public static final ThreadLocal<Request> REQUEST = new InheritableThreadLocal<>();
 
-    static final Charset UTF8 = Charset.forName("UTF-8");
+    static final Charset UTF8 = StandardCharsets.UTF_8;
 
     /** The amount of bytes to be read to determine the proper xml reader in POST request */
     int XML_LOOKAHEAD = 8192;

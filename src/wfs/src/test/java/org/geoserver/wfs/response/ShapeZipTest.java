@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -780,7 +781,7 @@ public class ShapeZipTest extends WFSTestSupport {
                 try {
                     final String name = entry.getName();
                     if (name.toLowerCase().endsWith(fileName.toLowerCase())) {
-                        String unzippedFileContents = IOUtils.toString(zis, "UTF-8");
+                        String unzippedFileContents = IOUtils.toString(zis, StandardCharsets.UTF_8);
                         assertEquals(expectedContent, unzippedFileContents);
                         return;
                     }

@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -640,7 +641,7 @@ public class XStreamPersister {
     public void save(Object obj, OutputStream out) throws IOException {
         // unwrap dynamic proxies
         Object unwrapped = unwrapProxies(obj);
-        xs.toXML(unwrapped, new OutputStreamWriter(out, "UTF-8"));
+        xs.toXML(unwrapped, new OutputStreamWriter(out, StandardCharsets.UTF_8));
     }
 
     /**

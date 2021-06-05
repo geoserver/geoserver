@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotEquals;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.security.GeoServerSecurityTestSupport;
 import org.geoserver.test.SystemTest;
@@ -39,7 +40,7 @@ public class URLMasterPasswordProviderTest extends GeoServerSecurityTestSupport 
         mpp.setName(config.getName());
         mpp.doSetMasterPassword("geoserver".toCharArray());
 
-        String encoded = IOUtils.toString(new FileInputStream(tmp), "UTF-8");
+        String encoded = IOUtils.toString(new FileInputStream(tmp), StandardCharsets.UTF_8);
         assertNotEquals("geoserver", encoded);
 
         char[] passwd = mpp.doGetMasterPassword();

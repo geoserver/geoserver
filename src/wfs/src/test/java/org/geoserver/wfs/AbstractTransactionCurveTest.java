@@ -4,6 +4,7 @@
  */
 package org.geoserver.wfs;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -44,7 +45,7 @@ public abstract class AbstractTransactionCurveTest extends WFSCurvesTestSupport 
 
     @Test
     public void testInsertArc() throws Exception {
-        String xml = IOUtils.toString(getClass().getResourceAsStream("insertArc.xml"), "UTF-8");
+        String xml = IOUtils.toString(getClass().getResourceAsStream("insertArc.xml"), UTF_8);
         Document dom = postAsDOM("wfs", xml);
 
         // print(dom);
@@ -63,8 +64,7 @@ public abstract class AbstractTransactionCurveTest extends WFSCurvesTestSupport 
     @Test
     public void testUpdateCompoundCurve() throws Exception {
         String xml =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("updateCompoundCurve.xml"), "UTF-8");
+                IOUtils.toString(getClass().getResourceAsStream("updateCompoundCurve.xml"), UTF_8);
         Document dom = postAsDOM("wfs", xml);
 
         // print(dom);
@@ -97,7 +97,7 @@ public abstract class AbstractTransactionCurveTest extends WFSCurvesTestSupport 
     @Test
     public void testInsertCurvePolygon() throws Exception {
         String xml =
-                IOUtils.toString(getClass().getResourceAsStream("insertCurvePolygon.xml"), "UTF-8");
+                IOUtils.toString(getClass().getResourceAsStream("insertCurvePolygon.xml"), UTF_8);
         Document dom = postAsDOM("wfs", xml);
 
         // print(dom);
@@ -122,7 +122,7 @@ public abstract class AbstractTransactionCurveTest extends WFSCurvesTestSupport 
     @Test
     public void testInsertMultiCurve() throws Exception {
         String xml =
-                IOUtils.toString(getClass().getResourceAsStream("insertMultiCurve.xml"), "UTF-8");
+                IOUtils.toString(getClass().getResourceAsStream("insertMultiCurve.xml"), UTF_8);
         Document dom = postAsDOM("wfs", xml);
 
         // print(dom);

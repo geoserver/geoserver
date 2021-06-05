@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import net.sf.json.JSONArray;
@@ -340,7 +341,7 @@ public class ImportControllerTest extends ImporterTestSupport {
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("POST");
         if (body != null && !body.isEmpty()) {
-            request.setContent(body.getBytes("UTF-8"));
+            request.setContent(body.getBytes(StandardCharsets.UTF_8));
         }
         return dispatch(request);
     }

@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNotNull;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import javax.imageio.ImageIO;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -49,7 +50,8 @@ public class SLDWithInlineFeatureTest extends GeoServerSystemTestSupport {
     public void testGetMapPostEntityExpansion() throws Exception {
         String body =
                 IOUtils.toString(
-                        getClass().getResourceAsStream("GetMapExternalEntity.xml"), "UTF-8");
+                        getClass().getResourceAsStream("GetMapExternalEntity.xml"),
+                        StandardCharsets.UTF_8);
         MockHttpServletResponse response = postAsServletResponse("wms", body);
         // should fail with an error message pointing at entity resolution
         assertEquals("application/vnd.ogc.se_xml", response.getContentType());

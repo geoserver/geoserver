@@ -14,6 +14,7 @@ import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -141,7 +142,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
                     IOUtils.toString(
                             OpenLayersPreviewPanel.class.getResourceAsStream(
                                     "style-editor-legend.xml"),
-                            "UTF-8");
+                            StandardCharsets.UTF_8);
             try (OutputStream os = legend.out()) {
                 IOUtils.write(legendLayout, os, "UTF-8");
             }

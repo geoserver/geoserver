@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -62,7 +63,7 @@ public class DXFPPIOTest extends WPSTestSupport {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         ppio.encode(features, os);
         assertNotNull(os.toByteArray());
-        String dxf = new String(os.toByteArray(), "UTF-8");
+        String dxf = new String(os.toByteArray(), StandardCharsets.UTF_8);
         checkSequence(dxf, new String[] {"BLOCKS", "LWPOLYLINE"}, 0);
     }
 

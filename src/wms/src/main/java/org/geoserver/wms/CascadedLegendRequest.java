@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.logging.Logger;
 import net.sf.json.JSONArray;
@@ -88,8 +88,7 @@ public final class CascadedLegendRequest extends LegendRequest {
                     client.get(new URL(super.getLegendInfo().getOnlineResource()));
             try (InputStream is = jsonResponse.getResponseStream();
                     BufferedReader bufferedReader =
-                            new BufferedReader(
-                                    new InputStreamReader(is, Charset.forName("UTF-8")))) {
+                            new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
                 StringBuilder sb = new StringBuilder();
                 int cp;
                 while ((cp = bufferedReader.read()) != -1) {

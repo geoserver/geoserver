@@ -4,6 +4,8 @@
  */
 package org.geoserver.security.filter;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ public class GeoServerBasicAuthenticationFilterTest {
         buff.append(authenticationFilter.getName());
         MessageDigest digest = MessageDigest.getInstance("MD5");
         String digestString =
-                new String(Hex.encode(digest.digest(buff.toString().getBytes("utf-8"))));
+                new String(Hex.encode(digest.digest(buff.toString().getBytes(UTF_8))));
         expected = USERNAME + digestString;
     }
 

@@ -1,5 +1,6 @@
 package org.geoserver.web;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -80,7 +81,7 @@ public class GeoServerWicketOnlineTestSupport {
         }
 
         // Verify that we have logged in successfuly
-        String homePage = IOUtils.toString(huc.getInputStream(), "UTF-8");
+        String homePage = IOUtils.toString(huc.getInputStream(), UTF_8);
         assertTrue(homePage.contains("Logged in as <span>" + username + "</span>"));
 
         // Return the JSESSIONID for the authenticated session

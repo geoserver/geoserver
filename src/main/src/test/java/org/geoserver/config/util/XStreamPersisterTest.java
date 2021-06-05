@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -540,7 +541,9 @@ public class XStreamPersisterTest {
                         + "</style>";
 
         StyleInfo style =
-                persister.load(new ByteArrayInputStream(xml.getBytes("UTF-8")), StyleInfo.class);
+                persister.load(
+                        new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)),
+                        StyleInfo.class);
         assertEquals(SLDHandler.FORMAT, style.getFormat());
         assertEquals(SLDHandler.VERSION_10, style.getFormatVersion());
     }

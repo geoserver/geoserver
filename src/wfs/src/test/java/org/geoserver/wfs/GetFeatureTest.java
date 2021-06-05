@@ -13,6 +13,7 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -67,7 +68,7 @@ public class GetFeatureTest extends WFSTestSupport {
         String body = "request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs";
         MockHttpServletRequest request = createRequest("wfs");
         request.setMethod("POST");
-        request.setContent(body.getBytes("UTF-8"));
+        request.setContent(body.getBytes(StandardCharsets.UTF_8));
         // this is normally done by the servlet container, but the mock system won't do it
         request.addParameter("request", "GetFeature");
         request.addParameter("typename", "cdf:Fifteen");

@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -400,7 +401,7 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         }
         final Resource tmp = file.parent().get(file.name() + ".tmp");
         try {
-            try (Writer writer = new OutputStreamWriter(tmp.out(), "UTF-8")) {
+            try (Writer writer = new OutputStreamWriter(tmp.out(), StandardCharsets.UTF_8)) {
                 serializer.toXML(real, writer);
             }
         } catch (Exception e) {
@@ -458,7 +459,8 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
         }
         GeoServerTileLayerInfoImpl info;
         try (Reader reader =
-                new InputStreamReader(new ByteArrayInputStream(res.getContents()), "UTF-8")) {
+                new InputStreamReader(
+                        new ByteArrayInputStream(res.getContents()), StandardCharsets.UTF_8)) {
             info = (GeoServerTileLayerInfoImpl) unmarshaller.fromXML(reader);
         }
 

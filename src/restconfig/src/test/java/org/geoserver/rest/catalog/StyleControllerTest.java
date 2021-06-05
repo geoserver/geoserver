@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -338,7 +339,9 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPostExternalEntityAsSLD() throws Exception {
-        String xml = IOUtils.toString(TestData.class.getResource("externalEntities.sld"), "UTF-8");
+        String xml =
+                IOUtils.toString(
+                        TestData.class.getResource("externalEntities.sld"), StandardCharsets.UTF_8);
 
         MockHttpServletResponse response =
                 postAsServletResponse(

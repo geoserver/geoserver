@@ -5,6 +5,7 @@
  */
 package org.geoserver.catalog;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 import java.awt.Color;
@@ -77,23 +78,23 @@ public class SLDHandler extends StyleHandler {
             TEMPLATES.put(
                     StyleType.POINT,
                     IOUtils.toString(
-                            SLDHandler.class.getResourceAsStream("template_point.sld"), "UTF-8"));
+                            SLDHandler.class.getResourceAsStream("template_point.sld"), UTF_8));
             TEMPLATES.put(
                     StyleType.POLYGON,
                     IOUtils.toString(
-                            SLDHandler.class.getResourceAsStream("template_polygon.sld"), "UTF-8"));
+                            SLDHandler.class.getResourceAsStream("template_polygon.sld"), UTF_8));
             TEMPLATES.put(
                     StyleType.LINE,
                     IOUtils.toString(
-                            SLDHandler.class.getResourceAsStream("template_line.sld"), "UTF-8"));
+                            SLDHandler.class.getResourceAsStream("template_line.sld"), UTF_8));
             TEMPLATES.put(
                     StyleType.RASTER,
                     IOUtils.toString(
-                            SLDHandler.class.getResourceAsStream("template_raster.sld"), "UTF-8"));
+                            SLDHandler.class.getResourceAsStream("template_raster.sld"), UTF_8));
             TEMPLATES.put(
                     StyleType.GENERIC,
                     IOUtils.toString(
-                            SLDHandler.class.getResourceAsStream("template_generic.sld"), "UTF-8"));
+                            SLDHandler.class.getResourceAsStream("template_generic.sld"), UTF_8));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the style templates", e);
         }

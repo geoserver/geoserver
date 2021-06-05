@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import net.opengis.cat.csw20.DescribeRecordType;
 import org.geoserver.config.GeoServer;
@@ -46,7 +46,7 @@ public class DescribeRecordResponse extends Response {
             throws IOException, ServiceException {
         AttributeDescriptor[] descriptors = (AttributeDescriptor[]) value;
 
-        Writer writer = new OutputStreamWriter(output, Charset.forName("UTF-8"));
+        Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
 
         // find the root of the schema location
         DescribeRecordType request = (DescribeRecordType) operation.getParameters()[0];

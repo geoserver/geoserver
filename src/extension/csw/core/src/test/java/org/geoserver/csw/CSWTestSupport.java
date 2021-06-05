@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import javax.xml.transform.dom.DOMSource;
@@ -82,7 +83,7 @@ public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
     /** Loads the specified resource into a string */
     protected String getResourceAsString(String resourceLocation) throws IOException {
         try (InputStream is = getClass().getResourceAsStream(resourceLocation)) {
-            return IOUtils.toString(is, "UTF-8");
+            return IOUtils.toString(is, StandardCharsets.UTF_8);
         }
     }
 

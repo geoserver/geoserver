@@ -13,6 +13,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.wicket.AttributeModifier;
@@ -350,7 +351,9 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
 
                     char[] buffer = new char[1024];
                     try {
-                        Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                        Reader reader =
+                                new BufferedReader(
+                                        new InputStreamReader(is, StandardCharsets.UTF_8));
                         int n;
                         while ((n = reader.read(buffer)) != -1) {
                             writer.write(buffer, 0, n);

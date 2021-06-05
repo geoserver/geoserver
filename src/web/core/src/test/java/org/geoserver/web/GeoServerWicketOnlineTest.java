@@ -4,6 +4,7 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import net.sf.json.JSONObject;
@@ -86,7 +87,7 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
                         "web/wicket/bookmarkable/org.geoserver.security.web.service.NewServiceAccessRulePage",
                         jsessionid,
                         null);
-        IOUtils.toString(connection.getInputStream(), "UTF-8");
+        IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
         // Fetch index from response URL after redirects are handled
         int i = Integer.parseInt(connection.getURL().getQuery());
         connection.disconnect();
@@ -123,7 +124,7 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
         }
         connection = doPost(connection, body);
         if (connection.getResponseCode() < 400) {
-            IOUtils.toString(connection.getInputStream(), "UTF-8");
+            IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
         }
         connection.disconnect();
 
@@ -154,7 +155,7 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
         connection.setRequestProperty("Wicket-FocusedElementId", "id3c");
         connection = doPost(connection, body);
         if (connection.getResponseCode() < 400) {
-            IOUtils.toString(connection.getInputStream(), "UTF-8");
+            IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
         }
         connection.disconnect();
 
@@ -178,7 +179,7 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
         }
         connection = doPost(connection, body);
         if (connection.getResponseCode() < 400) {
-            IOUtils.toString(connection.getInputStream(), "UTF-8");
+            IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
         }
         connection.disconnect();
     }
@@ -208,7 +209,7 @@ public class GeoServerWicketOnlineTest extends GeoServerWicketOnlineTestSupport 
                 "Authorization",
                 "Basic " + new String(Base64.encodeBytes(("admin:geoserver").getBytes())));
         connection = doGet(connection);
-        String response = IOUtils.toString(connection.getInputStream(), "UTF-8");
+        String response = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
         connection.disconnect();
 
         JSONObject jsonObject = JSONObject.fromObject(response);

@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
@@ -37,7 +38,7 @@ public class RequestWrapperTestSupport {
         request.setContentType("application/x-www-form-urlencoded");
 
         request.setMethod("POST");
-        request.setContent(body.getBytes("UTF-8"));
+        request.setContent(body.getBytes(StandardCharsets.UTF_8));
 
         MockHttpSession session = new MockHttpSession(new MockServletContext());
         request.setSession(session);

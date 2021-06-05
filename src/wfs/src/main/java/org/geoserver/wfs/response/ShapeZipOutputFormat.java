@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -432,7 +433,7 @@ public class ShapeZipOutputFormat extends WFSGetFeatureOutputFormat
         }
 
         // if not specified let's use the shapefile default one
-        return result != null ? result : Charset.forName("ISO-8859-1");
+        return result != null ? result : StandardCharsets.ISO_8859_1;
     }
 
     @Override

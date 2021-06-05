@@ -6,6 +6,8 @@
 
 package org.geoserver.ysld;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -43,26 +45,23 @@ public class YsldHandler extends StyleHandler {
             TEMPLATES.put(
                     StyleType.POINT,
                     IOUtils.toString(
-                            YsldHandler.class.getResourceAsStream("template_point.ysld"), "UTF-8"));
+                            YsldHandler.class.getResourceAsStream("template_point.ysld"), UTF_8));
             TEMPLATES.put(
                     StyleType.POLYGON,
                     IOUtils.toString(
-                            YsldHandler.class.getResourceAsStream("template_polygon.ysld"),
-                            "UTF-8"));
+                            YsldHandler.class.getResourceAsStream("template_polygon.ysld"), UTF_8));
             TEMPLATES.put(
                     StyleType.LINE,
                     IOUtils.toString(
-                            YsldHandler.class.getResourceAsStream("template_line.ysld"), "UTF-8"));
+                            YsldHandler.class.getResourceAsStream("template_line.ysld"), UTF_8));
             TEMPLATES.put(
                     StyleType.RASTER,
                     IOUtils.toString(
-                            YsldHandler.class.getResourceAsStream("template_raster.ysld"),
-                            "UTF-8"));
+                            YsldHandler.class.getResourceAsStream("template_raster.ysld"), UTF_8));
             TEMPLATES.put(
                     StyleType.GENERIC,
                     IOUtils.toString(
-                            YsldHandler.class.getResourceAsStream("template_generic.ysld"),
-                            "UTF-8"));
+                            YsldHandler.class.getResourceAsStream("template_generic.ysld"), UTF_8));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the style templates", e);
         }

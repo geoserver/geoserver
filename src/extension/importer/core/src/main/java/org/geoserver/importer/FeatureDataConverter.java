@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -46,7 +46,7 @@ public class FeatureDataConverter {
         try (InputStream wordStream =
                         FeatureDataConverter.class.getResourceAsStream(
                                 "oracle_reserved_words.txt");
-                Reader wordReader = new InputStreamReader(wordStream, Charset.forName("UTF-8"));
+                Reader wordReader = new InputStreamReader(wordStream, StandardCharsets.UTF_8);
                 BufferedReader bufferedWordReader = new BufferedReader(wordReader)) {
             String word;
             while ((word = bufferedWordReader.readLine()) != null) {

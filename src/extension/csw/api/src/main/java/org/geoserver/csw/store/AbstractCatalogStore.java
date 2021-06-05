@@ -5,8 +5,10 @@
  */
 package org.geoserver.csw.store;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -77,16 +79,12 @@ public abstract class AbstractCatalogStore implements CatalogStore {
                 .accepts(
                         feature -> {
                             Property prop = (Property) property.evaluate(feature);
-                            if (prop != null)
-                                try {
-                                    values.add(
-                                            new String(
-                                                    ((String) prop.getValue())
-                                                            .getBytes("ISO-8859-1"),
-                                                    "UTF-8"));
-                                } catch (UnsupportedEncodingException e) {
-                                    throw new RuntimeException(e);
-                                }
+                            if (prop != null) {
+                                values.add(
+                                        new String(
+                                                ((String) prop.getValue()).getBytes(ISO_8859_1),
+                                                UTF_8));
+                            }
                         },
                         null);
 

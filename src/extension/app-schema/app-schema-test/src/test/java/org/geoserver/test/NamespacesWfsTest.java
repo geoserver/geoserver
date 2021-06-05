@@ -4,6 +4,7 @@
  */
 package org.geoserver.test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -286,7 +287,7 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
                         getClass()
                                 .getClassLoader()
                                 .getResourceAsStream("test-data/stations/stations_two_queries.xml"),
-                        "UTF-8");
+                        UTF_8);
         Document document = postAsDOM("wfs", wfsQuery);
         checkCount(
                 WFS20_XPATH_ENGINE,
@@ -322,7 +323,7 @@ public final class NamespacesWfsTest extends StationsAppSchemaTestSupport {
                                 .getClassLoader()
                                 .getResourceAsStream(
                                         "test-data/stations/stations_two_queries_1.1.xml"),
-                        "UTF-8");
+                        UTF_8);
         Document document = postAsDOM("wfs", wfsQuery);
         String output = toString(document);
         checkCount(

@@ -18,6 +18,7 @@ import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -706,7 +707,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("POST");
         request.setContentType(contentType);
-        request.setContent(body.getBytes("UTF-8"));
+        request.setContent(body.getBytes(StandardCharsets.UTF_8));
         request.addHeader("Content-type", contentType);
 
         return dispatch(request);
@@ -1001,7 +1002,8 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         tx.setOutputProperty(OutputKeys.INDENT, "yes");
 
         tx.transform(
-                new DOMSource(dom), new StreamResult(new OutputStreamWriter(System.out, "utf-8")));
+                new DOMSource(dom),
+                new StreamResult(new OutputStreamWriter(System.out, StandardCharsets.UTF_8)));
     }
 
     /** Utility method to print out the contents of an input stream. */
@@ -1225,7 +1227,7 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
             int code, String method, String path, String body, String type) throws Exception {
         MockHttpServletRequest request = createRequest(path);
         request.setMethod(method);
-        request.setContent(body.getBytes("UTF-8"));
+        request.setContent(body.getBytes(StandardCharsets.UTF_8));
         request.setContentType(type);
 
         CodeExpectingHttpServletResponse response =

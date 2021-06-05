@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
@@ -84,7 +85,9 @@ public class MBStyleControllerTest extends GeoServerSystemTestSupport {
         assertEquals(MBStyleHandler.MIME_TYPE, response.getContentType());
         String responseContent = response.getContentAsString();
         String expected =
-                IOUtils.toString(this.getClass().getResourceAsStream("teststyle.json"), "UTF-8");
+                IOUtils.toString(
+                        this.getClass().getResourceAsStream("teststyle.json"),
+                        StandardCharsets.UTF_8);
         assertEquals(expected, responseContent);
     }
 

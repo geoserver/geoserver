@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +55,7 @@ public class FilePublisherTest {
         File file = new File(parent, fname);
         file.deleteOnExit();
         try (FileOutputStream fout = new FileOutputStream(file)) {
-            fout.write(fname.getBytes("UTF-8"));
+            fout.write(fname.getBytes(StandardCharsets.UTF_8));
         }
         return path;
     }

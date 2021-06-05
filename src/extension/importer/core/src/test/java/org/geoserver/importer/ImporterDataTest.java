@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -725,7 +726,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         File gmlFile = new File("./target/states.gml2.gml");
         try (InputStream in =
                 ImporterDataTest.class.getResourceAsStream("test-data/gml/states.gml2.gml")) {
-            String gml = IOUtils.toString(in, "UTF-8");
+            String gml = IOUtils.toString(in, StandardCharsets.UTF_8);
             gml = gml.replace("${schemaLocation}", schemaFile.getCanonicalPath());
             FileUtils.writeStringToFile(gmlFile, gml, "UTF-8");
         }
@@ -748,7 +749,7 @@ public class ImporterDataTest extends ImporterTestSupport {
         File gmlFile = new File("./target/states.gml3.gml");
         try (InputStream in =
                 ImporterDataTest.class.getResourceAsStream("test-data/gml/states.gml3.gml")) {
-            String gml = IOUtils.toString(in, "UTF-8");
+            String gml = IOUtils.toString(in, StandardCharsets.UTF_8);
             gml = gml.replace("${schemaLocation}", schemaFile.getCanonicalPath());
             FileUtils.writeStringToFile(gmlFile, gml, "UTF-8");
         }

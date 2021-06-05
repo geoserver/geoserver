@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.web.data;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -517,7 +518,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testValidateEntityExpansion() throws Exception {
-        String xml = IOUtils.toString(TestData.class.getResource("externalEntities.sld"), "UTF-8");
+        String xml = IOUtils.toString(TestData.class.getResource("externalEntities.sld"), UTF_8);
 
         // tester.debugComponentTrees();
         tester.newFormTester("styleForm")

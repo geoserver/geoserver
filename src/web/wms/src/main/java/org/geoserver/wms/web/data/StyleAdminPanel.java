@@ -4,6 +4,8 @@
  */
 package org.geoserver.wms.web.data;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -535,7 +537,7 @@ public class StyleAdminPanel extends StyleEditTabPanel {
                     stylePage.editor.reset();
                     stylePage.setRawStyle(
                             new InputStreamReader(
-                                    new ByteArrayInputStream(bout.toByteArray()), "UTF-8"));
+                                    new ByteArrayInputStream(bout.toByteArray()), UTF_8));
                     target.appendJavaScript(
                             String.format(
                                     "if (document.gsEditors) { document.gsEditors.editor.setOption('mode', '%s'); }",

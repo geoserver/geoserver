@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.BiConsumer;
@@ -322,7 +323,8 @@ public class CoverageStoreFileUploadTest extends CatalogRESTTestSupport {
         request.setMethod("POST");
         request.setContentType("text/plain");
         request.setContent(
-                ("file:///" + outputDirectory.dir().getAbsolutePath()).getBytes("UTF-8"));
+                ("file:///" + outputDirectory.dir().getAbsolutePath())
+                        .getBytes(StandardCharsets.UTF_8));
         request.addHeader("Content-type", "text/plain");
         // Get The response
         dispatch(request);

@@ -4,6 +4,7 @@
  */
 package org.geoserver.geoserver.authentication.auth;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -53,7 +54,7 @@ public class GeofencePersisterSerializationTest {
                         + "<workspace>geonode</workspace>"
                         + "</Rule>";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes("UTF-8"));
+        ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(UTF_8));
 
         JaxbRule rule = persister.load(bais, JaxbRule.class);
 
@@ -98,7 +99,7 @@ public class GeofencePersisterSerializationTest {
         persister.save(rule, baos);
         baos.flush();
 
-        String xml = new String(baos.toByteArray(), "UTF-8");
+        String xml = new String(baos.toByteArray(), UTF_8);
 
         // System.err.println(xml);
         assertTrue(xml.contains("pippo"));
@@ -122,7 +123,7 @@ public class GeofencePersisterSerializationTest {
         persister.save(ruleList, baos);
         baos.flush();
 
-        xml = new String(baos.toByteArray(), "UTF-8");
+        xml = new String(baos.toByteArray(), UTF_8);
 
         // System.err.println(xml);
         assertTrue(xml.contains("topolino"));

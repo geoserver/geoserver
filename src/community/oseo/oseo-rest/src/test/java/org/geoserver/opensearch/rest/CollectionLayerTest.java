@@ -16,6 +16,7 @@ import com.jayway.jsonpath.DocumentContext;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -136,7 +137,7 @@ public class CollectionLayerTest extends OSEORestTestSupport {
     }
 
     protected String getTestStringData(String location) throws IOException {
-        return IOUtils.toString(getClass().getResourceAsStream(location), "UTF-8");
+        return IOUtils.toString(getClass().getResourceAsStream(location), StandardCharsets.UTF_8);
     }
 
     @Test

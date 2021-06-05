@@ -4,6 +4,7 @@
  */
 package org.geoserver.wps.gs.download;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -55,7 +56,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
     @Test
     public void testAnimateBmTime() throws Exception {
         String xml =
-                IOUtils.toString(getClass().getResourceAsStream("animateBlueMarble.xml"), "UTF-8");
+                IOUtils.toString(getClass().getResourceAsStream("animateBlueMarble.xml"), UTF_8);
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("video/mp4", response.getContentType());
 
@@ -106,7 +107,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
         try {
             String xml =
                     IOUtils.toString(
-                            getClass().getResourceAsStream("animateBlueMarble.xml"), "UTF-8");
+                            getClass().getResourceAsStream("animateBlueMarble.xml"), UTF_8);
             Document dom = postAsDOM("wps", xml);
             // print(dom);
             XMLAssert.assertXpathExists("//wps:ProcessFailed", dom);
@@ -126,7 +127,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
     @Test
     public void testAnimateDecoration() throws Exception {
         String xml =
-                IOUtils.toString(getClass().getResourceAsStream("animateDecoration.xml"), "UTF-8");
+                IOUtils.toString(getClass().getResourceAsStream("animateDecoration.xml"), UTF_8);
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("video/mp4", response.getContentType());
 
@@ -154,8 +155,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
     public void testAnimateTimestamped() throws Exception {
         String xml =
                 IOUtils.toString(
-                        getClass().getResourceAsStream("animateBlueMarbleTimestamped.xml"),
-                        "UTF-8");
+                        getClass().getResourceAsStream("animateBlueMarbleTimestamped.xml"), UTF_8);
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("video/mp4", response.getContentType());
 

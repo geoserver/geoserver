@@ -4,7 +4,7 @@
  */
 package org.geoserver.mapml;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.http.MediaType;
@@ -20,7 +20,7 @@ public final class MapMLConstants {
 
     /** format MediaType */
     public static final MediaType MAPML_MEDIA_TYPE =
-            new MediaType("text", "mapml", Charset.forName("UTF-8"));
+            new MediaType("text", "mapml", StandardCharsets.UTF_8);
 
     /** format name */
     public static final String FORMAT_NAME = "MAPML";

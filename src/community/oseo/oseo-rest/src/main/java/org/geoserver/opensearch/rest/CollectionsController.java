@@ -4,13 +4,13 @@
  */
 package org.geoserver.opensearch.rest;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYERS_PROPERTY_NAME;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -713,7 +713,7 @@ public class CollectionsController extends AbstractOpenSearchController {
         if (metadataProperty != null && metadataProperty.getValue() instanceof String) {
             String value = (String) metadataProperty.getValue();
             response.setContentType("text/xml");
-            StreamUtils.copy(value, Charset.forName("UTF-8"), response.getOutputStream());
+            StreamUtils.copy(value, UTF_8, response.getOutputStream());
         } else {
             throw new ResourceNotFoundException(
                     "Metadata for collection '" + collection + "' could not be found");
@@ -772,7 +772,7 @@ public class CollectionsController extends AbstractOpenSearchController {
         if (descriptionProperty != null && descriptionProperty.getValue() instanceof String) {
             String value = (String) descriptionProperty.getValue();
             response.setContentType("text/html");
-            StreamUtils.copy(value, Charset.forName("UTF-8"), response.getOutputStream());
+            StreamUtils.copy(value, UTF_8, response.getOutputStream());
         } else {
             throw new ResourceNotFoundException(
                     "Description for collection '" + collection + "' could not be found");

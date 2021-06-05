@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geotools.data.wfs.internal.v2_0.storedquery.ParameterMappingDefaultValue;
@@ -50,7 +51,7 @@ public class WFSCascadedStoredQueryConfigurationParserTest {
                         + "  </storedQueryParameterMappings>\n"
                         + "</storedQueryConfiguration>";
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes("UTF-8"));
+        ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
 
         StoredQueryConfiguration configuration =
                 persister.load(bais, StoredQueryConfiguration.class);
@@ -109,7 +110,7 @@ public class WFSCascadedStoredQueryConfigurationParserTest {
         persister.save(mockConfiguration, baos);
         baos.flush();
 
-        String xml = new String(baos.toByteArray(), "UTF-8");
+        String xml = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 
         // System.err.println(xml);
         assertTrue(xml.contains("numberFormat"));

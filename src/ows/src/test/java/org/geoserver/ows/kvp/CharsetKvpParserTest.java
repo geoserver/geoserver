@@ -6,6 +6,7 @@
 package org.geoserver.ows.kvp;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,7 +25,7 @@ public class CharsetKvpParserTest {
     public void testUTF8() throws Exception {
         Charset charset = (Charset) parser.parse("UTF-8");
         Assert.assertNotNull(charset);
-        Assert.assertEquals(Charset.forName("UTF-8"), charset);
+        Assert.assertEquals(StandardCharsets.UTF_8, charset);
     }
 
     @Test

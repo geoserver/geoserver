@@ -5,6 +5,7 @@
  */
 package org.geoserver.gwc;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
@@ -622,10 +623,10 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletRequest request = createRequest(url);
         request.setMethod("POST");
         request.setContentType("application/x-www-form-urlencoded");
-        request.setContent(formData.getBytes("UTF-8"));
+        request.setContent(formData.getBytes(UTF_8));
 
         BufferedRequestWrapper wrapper =
-                new BufferedRequestWrapper(request, "UTF-8", formData.getBytes("UTF-8"));
+                new BufferedRequestWrapper(request, "UTF-8", formData.getBytes(UTF_8));
 
         MockHttpServletResponse sr = dispatch(wrapper);
 
@@ -715,10 +716,10 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletRequest request = createRequest(url);
         request.setMethod("POST");
         request.setContentType("application/x-www-form-urlencoded");
-        request.setContent(formData.getBytes("UTF-8"));
+        request.setContent(formData.getBytes(UTF_8));
 
         BufferedRequestWrapper wrapper =
-                new BufferedRequestWrapper(request, "UTF-8", formData.getBytes("UTF-8"));
+                new BufferedRequestWrapper(request, "UTF-8", formData.getBytes(UTF_8));
 
         MockHttpServletResponse sr = dispatch(wrapper);
 

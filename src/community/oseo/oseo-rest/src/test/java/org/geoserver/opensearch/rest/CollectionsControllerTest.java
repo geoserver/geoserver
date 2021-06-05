@@ -4,6 +4,7 @@
  */
 package org.geoserver.opensearch.rest;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
@@ -124,7 +125,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testCreateInvalidAttributeSyntax() throws Exception {
-        String testData = new String(getTestData("/collection.json"), "UTF-8");
+        String testData = new String(getTestData("/collection.json"), UTF_8);
         // inject an invalid attribute name
         String invalidTestData = testData.replace("primary", "1:2:primary");
         MockHttpServletResponse response =
@@ -136,7 +137,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testCreateInvalidAttributePrefix() throws Exception {
-        String testData = new String(getTestData("/collection.json"), "UTF-8");
+        String testData = new String(getTestData("/collection.json"), UTF_8);
         // inject an invalid attribute name
         String invalidTestData = testData.replace("eo:productType", "abc:productType");
         MockHttpServletResponse response =
@@ -148,7 +149,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testCreateInvalidAttributeName() throws Exception {
-        String testData = new String(getTestData("/collection.json"), "UTF-8");
+        String testData = new String(getTestData("/collection.json"), UTF_8);
         // inject an invalid attribute name
         String invalidTestData = testData.replace("eo:productType", "eo:newProductType");
         MockHttpServletResponse response =

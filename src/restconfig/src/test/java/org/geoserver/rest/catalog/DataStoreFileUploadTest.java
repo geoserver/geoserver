@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -363,7 +363,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
         if (in != null) {
             byte[] original = toBytes(in);
 
-            String originalAsString = new String(original, Charset.forName("UTF-8"));
+            String originalAsString = new String(original, StandardCharsets.UTF_8);
             // modify paths in the original mapping file
             String modifiedAsString =
                     originalAsString
@@ -371,7 +371,7 @@ public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
                             .replace("commonSchemas_new/", "../commonSchemas_new/")
                             .replace("mappedPolygons.oasis", "../mappedPolygons.oasis");
 
-            byte[] modified = modifiedAsString.getBytes(Charset.forName("UTF-8"));
+            byte[] modified = modifiedAsString.getBytes(StandardCharsets.UTF_8);
 
             return modified;
         } else {

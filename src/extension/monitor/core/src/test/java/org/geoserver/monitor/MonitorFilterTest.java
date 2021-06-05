@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -354,7 +355,7 @@ public class MonitorFilterTest {
         // and throws NullPointerException. It should probably do something useful like return an
         // empty stream or throw
         // IOException.
-        req.setContent(body.getBytes("UTF-8"));
+        req.setContent(body.getBytes(StandardCharsets.UTF_8));
         req.setAttribute(RenderTimeStatistics.ID, createStatistcis());
         if (referer != null) req.addHeader("Referer", referer);
         return req;

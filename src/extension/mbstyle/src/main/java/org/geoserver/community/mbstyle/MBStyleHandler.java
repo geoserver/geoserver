@@ -4,6 +4,8 @@
  */
 package org.geoserver.community.mbstyle;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -41,27 +43,26 @@ public class MBStyleHandler extends StyleHandler {
                     StyleType.GENERIC,
                     IOUtils.toString(
                             MBStyleHandler.class.getResourceAsStream("template_generic.json"),
-                            "UTF-8"));
+                            UTF_8));
             TEMPLATES.put(
                     StyleType.POINT,
                     IOUtils.toString(
                             MBStyleHandler.class.getResourceAsStream("template_point.json"),
-                            "UTF-8"));
+                            UTF_8));
             TEMPLATES.put(
                     StyleType.POLYGON,
                     IOUtils.toString(
                             MBStyleHandler.class.getResourceAsStream("template_polygon.json"),
-                            "UTF-8"));
+                            UTF_8));
             TEMPLATES.put(
                     StyleType.LINE,
                     IOUtils.toString(
-                            MBStyleHandler.class.getResourceAsStream("template_line.json"),
-                            "UTF-8"));
+                            MBStyleHandler.class.getResourceAsStream("template_line.json"), UTF_8));
             TEMPLATES.put(
                     StyleType.RASTER,
                     IOUtils.toString(
                             MBStyleHandler.class.getResourceAsStream("template_raster.json"),
-                            "UTF-8"));
+                            UTF_8));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the style templates", e);
         }

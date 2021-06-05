@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.rmi.server.UID;
 import java.security.InvalidKeyException;
 import java.text.DateFormat;
@@ -1696,7 +1697,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         Resource pwDigestFile = security().get(MASTER_PASSWD_DIGEST_FILENAME);
         if (pwDigestFile.getType() == Type.RESOURCE) {
             try (InputStream fin = pwDigestFile.in()) {
-                return IOUtils.toString(fin, "UTF-8");
+                return IOUtils.toString(fin, StandardCharsets.UTF_8);
             }
         } else {
             // compute and store

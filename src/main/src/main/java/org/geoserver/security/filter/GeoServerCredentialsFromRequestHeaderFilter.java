@@ -6,6 +6,7 @@ package org.geoserver.security.filter;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -208,8 +209,11 @@ public class GeoServerCredentialsFromRequestHeaderFilter extends GeoServerSecuri
         String digestString = null;
         try {
             MessageDigest md = (MessageDigest) digest.clone();
-            digestString = new String(Hex.encode(md.digest(buff.toString().getBytes("utf-8"))));
-        } catch (UnsupportedEncodingException | CloneNotSupportedException e) {
+            digestString =
+                    new String(
+                            Hex.encode(
+                                    md.digest(buff.toString().getBytes(StandardCharsets.UTF_8))));
+        } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
         buff = new StringBuffer(username);

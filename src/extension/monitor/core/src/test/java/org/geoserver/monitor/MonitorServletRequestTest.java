@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.servlet.ServletInputStream;
 import org.apache.commons.io.IOUtils;
@@ -135,7 +136,7 @@ public class MonitorServletRequestTest {
 
         MonitorServletRequest request = new MonitorServletRequest(mock, 1024);
         try (InputStream is = request.getInputStream()) {
-            assertEquals(THE_REQUEST, IOUtils.toString(is, "UTF-8"));
+            assertEquals(THE_REQUEST, IOUtils.toString(is, StandardCharsets.UTF_8));
         }
         assertArrayEquals(THE_REQUEST.getBytes(), request.getBodyContent());
     }

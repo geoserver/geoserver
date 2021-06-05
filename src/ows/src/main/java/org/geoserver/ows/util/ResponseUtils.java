@@ -11,6 +11,7 @@ import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -469,12 +470,7 @@ public class ResponseUtils {
     public static String urlEncode(String value, char... exclude) {
         StringBuilder resultStr = new StringBuilder();
         byte[] encArray;
-        try {
-            encArray = value.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(
-                    "This is unexpected", e); /* should not happen¸ UTF-8 is always supported */
-        }
+        encArray = value.getBytes(StandardCharsets.UTF_8);
         for (byte enc : encArray) {
             if (enc >= 'A' && enc <= 'Z'
                     || enc >= 'a' && enc <= 'z'

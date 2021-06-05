@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
@@ -224,7 +225,7 @@ public class TransformRestTest extends XSLTTestSupport {
         TransformInfo info = repository.getTransformInfo("general");
         String actual;
         try (InputStream is = repository.getTransformSheet(info)) {
-            actual = IOUtils.toString(is, "UTF-8");
+            actual = IOUtils.toString(is, StandardCharsets.UTF_8);
         }
 
         assertEquals(xslt, actual);

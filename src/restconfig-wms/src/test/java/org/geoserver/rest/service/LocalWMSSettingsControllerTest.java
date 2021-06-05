@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.nio.charset.StandardCharsets;
 import net.sf.json.JSON;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -184,7 +185,7 @@ public class LocalWMSSettingsControllerTest extends CatalogRESTTestSupport {
         String xml =
                 IOUtils.toString(
                         LocalWMSSettingsControllerTest.class.getResourceAsStream("wms.xml"),
-                        "UTF-8");
+                        StandardCharsets.UTF_8);
         MockHttpServletResponse response =
                 putAsServletResponse(
                         RestBaseController.ROOT_PATH + "/services/wms/workspaces/sf/settings",

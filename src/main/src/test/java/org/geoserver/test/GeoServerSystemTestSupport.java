@@ -5,6 +5,7 @@
  */
 package org.geoserver.test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -1218,7 +1219,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("POST");
         request.setContentType(contentType);
-        request.setContent(body.getBytes("UTF-8"));
+        request.setContent(body.getBytes(UTF_8));
 
         return dispatch(request);
     }
@@ -1228,7 +1229,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("POST");
         request.setContentType(contentType);
-        request.setContent(body.getBytes("UTF-8"));
+        request.setContent(body.getBytes(UTF_8));
         return dispatch(request, charset);
     }
 
@@ -1740,7 +1741,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
             int code, String method, String path, String body, String type) throws Exception {
         MockHttpServletRequest request = createRequest(path);
         request.setMethod(method);
-        request.setContent(body.getBytes("UTF-8"));
+        request.setContent(body.getBytes(UTF_8));
         request.setContentType(type);
 
         CodeExpectingHttpServletResponse response =

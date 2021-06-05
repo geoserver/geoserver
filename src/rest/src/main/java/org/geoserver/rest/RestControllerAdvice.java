@@ -6,7 +6,7 @@ package org.geoserver.rest;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -86,7 +86,7 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
         }
         response.setStatus(404);
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-        StreamUtils.copy(message, Charset.forName("UTF-8"), os);
+        StreamUtils.copy(message, StandardCharsets.UTF_8, os);
     }
 
     @ExceptionHandler(RestException.class)
@@ -102,7 +102,7 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
             response.setStatus(e.getStatus().value());
         }
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-        StreamUtils.copy(e.getMessage(), Charset.forName("UTF-8"), os);
+        StreamUtils.copy(e.getMessage(), StandardCharsets.UTF_8, os);
     }
 
     @ExceptionHandler(Exception.class)
@@ -123,6 +123,6 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
 
         response.setStatus(500);
         response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-        StreamUtils.copy(e.getMessage(), Charset.forName("UTF-8"), os);
+        StreamUtils.copy(e.getMessage(), StandardCharsets.UTF_8, os);
     }
 }

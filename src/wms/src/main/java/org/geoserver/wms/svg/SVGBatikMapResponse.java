@@ -8,6 +8,7 @@ package org.geoserver.wms.svg;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -36,7 +37,7 @@ public final class SVGBatikMapResponse extends AbstractMapResponse {
         BatikSVGMap map = (BatikSVGMap) value;
         try {
             SVGGraphics2D graphics = map.getGraphics();
-            graphics.stream(new OutputStreamWriter(output, "UTF-8"));
+            graphics.stream(new OutputStreamWriter(output, StandardCharsets.UTF_8));
         } finally {
             map.dispose();
         }

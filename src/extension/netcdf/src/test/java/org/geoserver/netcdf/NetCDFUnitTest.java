@@ -1,5 +1,6 @@
 package org.geoserver.netcdf;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 
 import java.io.OutputStreamWriter;
@@ -48,7 +49,7 @@ public class NetCDFUnitTest extends GeoServerSystemTestSupport {
         Resource aliasResource = getDataDirectory().get(NetCDFUnitFormat.NETCDF_UNIT_ALIASES);
         Properties p = new Properties();
         p.put("celsius", "g*(m/s)^2");
-        try (OutputStreamWriter osw = new OutputStreamWriter(aliasResource.out(), "UTF8")) {
+        try (OutputStreamWriter osw = new OutputStreamWriter(aliasResource.out(), UTF_8)) {
             p.store(osw, null);
         }
         try {
@@ -70,7 +71,7 @@ public class NetCDFUnitTest extends GeoServerSystemTestSupport {
         Resource aliasResource = getDataDirectory().get(NetCDFUnitFormat.NETCDF_UNIT_ALIASES);
         Properties p = new Properties();
         p.put("celsius", "g*(m/s)^2");
-        try (OutputStreamWriter osw = new OutputStreamWriter(aliasResource.out(), "UTF8")) {
+        try (OutputStreamWriter osw = new OutputStreamWriter(aliasResource.out(), UTF_8)) {
             p.store(osw, null);
         }
         try {
@@ -93,7 +94,7 @@ public class NetCDFUnitTest extends GeoServerSystemTestSupport {
                 getDataDirectory().get(NetCDFUnitFormat.NETCDF_UNIT_REPLACEMENTS);
         Properties p = new Properties();
         p.put("celsius", "g*(m/s)^2");
-        try (OutputStreamWriter osw = new OutputStreamWriter(replacementsResource.out(), "UTF8")) {
+        try (OutputStreamWriter osw = new OutputStreamWriter(replacementsResource.out(), UTF_8)) {
             p.store(osw, null);
         }
         try {

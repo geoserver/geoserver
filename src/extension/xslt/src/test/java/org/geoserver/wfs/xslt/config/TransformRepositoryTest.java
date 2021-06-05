@@ -17,6 +17,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -270,7 +271,9 @@ public class TransformRepositoryTest {
         File xslt = new File(testRoot, "test-tx.xslt");
         assertTrue(xslt.exists());
 
-        String expected = IOUtils.toString(getClass().getResourceAsStream("test.xslt"), "UTF-8");
+        String expected =
+                IOUtils.toString(
+                        getClass().getResourceAsStream("test.xslt"), StandardCharsets.UTF_8);
         String actual = FileUtils.readFileToString(xslt, "UTF-8");
         assertEquals(expected, actual);
 

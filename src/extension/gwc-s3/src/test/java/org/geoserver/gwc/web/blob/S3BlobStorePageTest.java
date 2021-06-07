@@ -173,4 +173,38 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
 
         GWC.get().removeBlobStores(Collections.singleton("yourblobstore"));
     }
+
+    /**
+     * Test for the S3 BlobStore Panel when no credentials are given and authorization follows AWS
+     * Default Credential Chain Based on testNew test case
+     *
+     * @author Mikko Kolehmainen
+     */
+    @Test
+    public void testNewWithoutCredentials() throws ConfigurationException {
+        BlobStorePage page = new BlobStorePage();
+
+        tester.startPage(page);
+        executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "1");
+
+        FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
+        formTester.setValue("name", "myblobstore");
+        formTester.setValue("enabled", false);
+        formTester.setValue("blobSpecificPanel:bucket", "mybucket");
+        /*  Leave credentials empty */
+        formTester.select("blobSpecificPanel:accessType", 1);
+        tester.executeAjaxEvent("blobConfigContainer:blobStoreForm:save", "click");
+
+        List<BlobStoreInfo> blobStores = GWC.get().getBlobStores();
+        BlobStoreInfo config = blobStores.get(0);
+        assertTrue(config instanceof S3BlobStoreInfo);
+        assertEquals("myblobstore", config.getName());
+        assertEquals("mybucket", ((S3BlobStoreInfo) config).getBucket());
+        assertEquals(null, ((S3BlobStoreInfo) config).getAwsAccessKey());
+        assertEquals(null, ((S3BlobStoreInfo) config).getAwsSecretKey());
+        assertEquals(50, ((S3BlobStoreInfo) config).getMaxConnections().intValue());
+        assertEquals("PRIVATE", ((S3BlobStoreInfo) config).getAccess().toString());
+
+        GWC.get().removeBlobStores(Collections.singleton("myblobstore"));
+    }
 }

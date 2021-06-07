@@ -349,17 +349,17 @@ The tool supports other options as well, they can be discovered by running the t
   
 Caching
 -------
-When opening a NetCDF file, metadata and structures need to be setup, such as the Coordinate Reference System and related Coordinate Systems, the optional datastore configuration, the coverages structure (schemas and dimensions). Depending on the complexity of the file itself, those can be time consuming tasks. Operations that are continuously and repeatedly access the same files will be impacted by that. Therefore, starting with GeoServer 2.20.x a caching mechanism has been setup. 
+When opening a NetCDF file, metadata and structures need to be setup, such as the Coordinate Reference System and related Coordinate Systems, the optional datastore configuration, the coverages structure (schemas and dimensions). Depending on the complexity of the file itself, those can be time consuming tasks. Operations that are continuously and repeatedly accessing the same files will be impacted by that. Therefore, starting with GeoServer 2.20.x, a caching mechanism has been setup. 
 
-Some entities that can be considered *static* are internally cached once parsed: they include the netcdf datastore configuration setup on top of the datastore properties file, the indexer built on top of the auxiliary xml file, as well as the unit of measure of the variables. 
+Some entities that can be considered *static* are internally cached once parsed: they include the NetCDF datastore configuration setup on top of the datastore properties file, the indexer built on top of the auxiliary xml file, as well as the unit of measure of the variables. 
 
-.. note:: Make sure to do a GeoServer reload if one of these config files get modified or updated, to make sure that the cache get cleaned and the configs get updated.
+.. note:: Make sure to do a GeoServer reload if one of these config files get modified or updated, to clean the cache and allow the new settings to be used.
 
 File Caching
 ^^^^^^^^^^^^
-An additional level of caching can be manually enabled, so that NetCDF Files can be cached and re-used. Actually, the object being cached is not the whole file but a NetcdfDataset object, which is built on top of parsed metadata including coordinate system info. Whenever a NetCDF dataset is being accessed, a cached instance is provided and released back to the cache-pool once done. So if there are 10 concurrent requests accessing the same NetCDF file, up to 10 different NetCDF dataset cached instances will be used.
+An additional level of caching can be manually enabled, so that NetCDF Files can be cached and re-used. The object being cached is not the whole file, but a ``NetcdfDataset`` object, which is built on top of parsed metadata, including coordinate system info. Whenever a NetCDF dataset is being accessed, a cached instance is provided and released back to the cache-pool once done. So if there are 10 concurrent requests accessing the same NetCDF file, up to 10 different NetCDF dataset cached instances will be used.
 
-These JAVA_OPTS can be set to enable and configure the file caching:
+These Java system variables can be set to enable and configure the file caching:
 
 * ``org.geotools.coverage.io.netcdf.cachefile`` : boolean. set it to true to enable the dataset caching. (default: false, no files caching)
 * ``org.geotools.coverage.io.netcdf.cache.min`` : integer value representing the minimum number of datasets to be kept in cache (default: 200).

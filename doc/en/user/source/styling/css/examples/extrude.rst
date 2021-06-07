@@ -17,26 +17,30 @@ The last step was to add an offset to the geometry producing the lighter grey ar
 .. code-block:: css
 
 	@mode "Flat";
-	/* EXTRUDING THE POLYGON *
+	/* EXTRUDING THE POLYGON */
 	* {
 	  fill: #7B7B7B;
-	  fill-geometry: [isometric(the_geom, PERSONS/8000000)];
-
+	  fill-geometry: [isometric(the_geom, PERSONS/8M)];
 	  stroke: #636363;
-	  stroke-geometry: [isometric(the_geom, PERSONS/8000000)];
+	  stroke-geometry: [isometric(the_geom, PERSONS/8M)];
 	  stroke-opacity:0.7;
 	  sort-by: PERSONS;  
 	  z-index:0;
 	}
-	/* ADDING TOP SURFACE *
+	/* ADDING TOP SURFACE */
 	* {
-	  fill-geometry: [offset(the_geom, 0, PERSONS/8000000)];
-	  stroke-geometry: [offset(the_geom, 0, PERSONS/8000000)];
+	  fill-geometry: [offset(the_geom, 0, PERSONS/8M)];
+	  stroke-geometry: [offset(the_geom, 0, PERSONS/8M)];
 	  fill: #CACCCD;
 	  stroke: #000000;
 	  stroke-opacity: 0.7;
 	  sort-by: PERSONS;
 	  z-index:0;
+	  label: [STATE_ABBR];
+	  font-family: 'Dialog';
+	  font-weight: 'Bold';
+	  halo-color: white;
+	  halo-radius: 1;
 	}
 
 .. figure:: images/extrude_usa.png

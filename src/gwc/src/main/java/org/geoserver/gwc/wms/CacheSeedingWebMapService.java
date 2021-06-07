@@ -13,6 +13,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.util.HTTPWarningAppender;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
@@ -59,6 +60,8 @@ public class CacheSeedingWebMapService implements MethodInterceptor {
                 rawKvp != null && rawKvp.containsKey(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN);
         if (isSeedingRequest) {
             GeoServerTileLayer.WEB_MAP.set(map);
+            GeoServerTileLayer.DIMENSION_WARNINGS.set(HTTPWarningAppender.getWarnings());
+
             // returning null makes the Dispatcher ignore further processing the request
             return null;
         }

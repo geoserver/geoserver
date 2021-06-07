@@ -14,6 +14,7 @@ import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.util.DimensionWarning.WarningType;
 import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.XMLGridSubset;
 import org.geowebcache.filter.parameters.ParameterFilter;
@@ -225,4 +226,18 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
      * @param inMemoryCached is the layer cached in-memory
      */
     void setInMemoryCached(boolean inMemoryCached);
+
+    /**
+     * Set of dimension warnings that would cause the layer to avoid caching the tlie
+     *
+     * @return
+     */
+    Set<WarningType> getCacheWarningSkips();
+
+    /**
+     * Sets the types of warning that would cause a cache skip
+     *
+     * @param skips
+     */
+    void setCacheWarningSkips(Set<WarningType> skips);
 }

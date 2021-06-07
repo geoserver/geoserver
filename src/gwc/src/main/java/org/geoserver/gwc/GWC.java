@@ -51,7 +51,6 @@ import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
@@ -81,6 +80,7 @@ import org.geoserver.security.WMSAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geoserver.security.decorators.SecuredLayerInfo;
 import org.geoserver.threadlocals.ThreadLocalsTransfer;
+import org.geoserver.util.HTTPWarningAppender;
 import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
@@ -140,6 +140,7 @@ import org.geowebcache.storage.DefaultStorageFinder;
 import org.geowebcache.storage.StorageBroker;
 import org.geowebcache.storage.StorageException;
 import org.geowebcache.storage.TileRange;
+import org.geowebcache.util.ServletUtils;
 import org.locationtech.jts.densify.Densifier;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -2625,14 +2626,36 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         return tileBreeder.getRunningAndPendingTasks();
     }
 
-    public static void setCacheControlHeaders(Map<String, String> map, TileLayer layer) {
-        Integer cacheAgeMax = getCacheAge(layer);
-        log.log(Level.FINE, "Using cacheAgeMax {0}", cacheAgeMax);
-        if (cacheAgeMax != null) {
-            map.put("Cache-Control", "max-age=" + cacheAgeMax);
+    public static void setCacheControlHeaders(
+            Map<String, String> map, TileLayer layer, int zoomLevel) {
+        if (skipCaching(layer)) {
+            setupNoCacheHeaders(map);
         } else {
-            map.put("Cache-Control", "no-cache");
+            Integer cacheAgeMax = getCacheAge(layer, zoomLevel);
+            log.log(Level.FINE, "Using cacheAgeMax {0}", cacheAgeMax);
+            if (cacheAgeMax != null) {
+                map.put("Cache-Control", "max-age=" + cacheAgeMax + ", must-revalidate");
+                map.put("Expires", ServletUtils.makeExpiresHeader(cacheAgeMax));
+            } else {
+                setupNoCacheHeaders(map);
+            }
         }
+    }
+
+    private static boolean skipCaching(TileLayer layer) {
+        // pre-conditions, there is a set of cache skip configs, and warnings have been issued
+        if (!(layer instanceof GeoServerTileLayer) || HTTPWarningAppender.getWarnings().isEmpty())
+            return false;
+
+        // check if any of the warnings configured has been accumulated
+        GeoServerTileLayer gtl = (GeoServerTileLayer) layer;
+        return HTTPWarningAppender.anyMatch(gtl.getInfo().getCacheWarningSkips());
+    }
+
+    private static void setupNoCacheHeaders(Map<String, String> map) {
+        map.put("Cache-Control", "no-cache, no-store, must-revalidate");
+        map.put("Pragma", "no-cache");
+        map.put("Expires", "0");
     }
 
     /**
@@ -2705,25 +2728,10 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
         map.put("geowebcache-crs", gridSubset.getSRS().toString());
     }
 
-    private static Integer getCacheAge(TileLayer layer) {
-        Integer cacheAge = null;
-        if (layer instanceof GeoServerTileLayer) {
-            PublishedInfo published = ((GeoServerTileLayer) layer).getPublishedInfo();
-            // configuring caching does not appear possible for layergroup
-            if (published instanceof LayerInfo) {
-                LayerInfo layerInfo = (LayerInfo) published;
-                MetadataMap metadata = layerInfo.getResource().getMetadata();
-                Boolean enabled = metadata.get(ResourceInfo.CACHING_ENABLED, Boolean.class);
-                if (enabled != null && enabled) {
-                    cacheAge =
-                            layerInfo
-                                    .getResource()
-                                    .getMetadata()
-                                    .get(ResourceInfo.CACHE_AGE_MAX, Integer.class);
-                }
-            }
-        }
-        return cacheAge;
+    private static Integer getCacheAge(TileLayer layer, int zoomLevel) {
+        int value = layer.getExpireClients(zoomLevel);
+        if (value == 0) return null;
+        return value;
     }
 
     /** Computes and returns the etag of a tile given its byte contents */

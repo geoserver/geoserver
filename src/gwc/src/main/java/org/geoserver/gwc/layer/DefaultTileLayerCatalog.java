@@ -21,6 +21,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +47,7 @@ import org.geoserver.platform.resource.ResourceNotification.Event;
 import org.geoserver.platform.resource.ResourceNotification.Kind;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.platform.resource.Resources.ExtensionFilter;
+import org.geoserver.util.DimensionWarning;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.config.ContextualConfigurationProvider.Context;
 import org.geowebcache.config.XMLConfiguration;
@@ -139,8 +141,11 @@ public class DefaultTileLayerCatalog implements TileLayerCatalog {
     private XStream newXStream() {
         XStream serializer = this.xstreamProvider.get();
         serializer.allowTypeHierarchy(GeoServerTileLayerInfo.class);
+        serializer.allowTypes(new Class[] {DimensionWarning.WarningType.class});
         // have to use a string here because UnmodifiableSet is private
         serializer.allowTypes(new String[] {"java.util.Collections$UnmodifiableSet"});
+        serializer.addDefaultImplementation(LinkedHashSet.class, Set.class);
+        serializer.alias("warning", DimensionWarning.WarningType.class);
         return serializer;
     }
 

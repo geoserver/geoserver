@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -50,6 +51,8 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
+import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -58,6 +61,7 @@ import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
@@ -76,6 +80,8 @@ import org.geoserver.ows.Request;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.geoserver.util.DimensionWarning;
+import org.geoserver.wms.WMSDimensionsTestSupport;
 import org.geotools.feature.NameImpl;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.GeoWebCacheExtensions;
@@ -141,6 +147,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     static QName BASIC_POLYGONS_NO_CRS =
             new QName(MockData.CITE_URI, "BasicPolygonsNoCrs", MockData.CITE_PREFIX);
 
+    static QName V_TIME_ELEVATION = new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
+
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
@@ -197,6 +205,13 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         group.setName("stylegroup");
         new LayerGroupHelper(group).calculateBounds();
         catalog.add(group);
+
+        testData.addVectorLayer(
+                V_TIME_ELEVATION,
+                null,
+                "TimeElevation.properties",
+                WMSDimensionsTestSupport.class,
+                catalog);
 
         // clean up the recorded http requests
         HttpRequestRecorderCallback.reset();
@@ -292,6 +307,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testCachingHeadersSingleLayerNoHeaders() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        // setup no caching
         setCachingMetadata(layerId, false, -1);
 
         MockHttpServletResponse sr =
@@ -301,7 +317,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                                 + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
-        assertNull(sr.getHeader("Cache-Control"));
+        assertEquals("no-cache, no-store, must-revalidate", sr.getHeader("Cache-Control"));
     }
 
     @Test
@@ -555,7 +571,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         MockHttpServletResponse response = getAsServletResponse(path);
         String cacheControl = response.getHeader("Cache-Control");
-        assertEquals("max-age=3456", cacheControl);
+        assertEquals("max-age=3456, must-revalidate", cacheControl);
         assertNotNull(response.getHeader("Last-Modified"));
 
         ((LayerInfo) tileLayer.getPublishedInfo())
@@ -563,8 +579,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 .getMetadata()
                 .put(ResourceInfo.CACHING_ENABLED, "false");
         response = getAsServletResponse(path);
-        cacheControl = response.getHeader("Cache-Control");
-        assertEquals("no-cache", cacheControl);
+        checkNoCacheHeaders(response);
 
         // make sure a boolean is handled, too - see comment in CachingWebMapService
         ((LayerInfo) tileLayer.getPublishedInfo())
@@ -572,8 +587,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                 .getMetadata()
                 .put(ResourceInfo.CACHING_ENABLED, Boolean.FALSE);
         response = getAsServletResponse(path);
-        cacheControl = response.getHeader("Cache-Control");
-        assertEquals("no-cache", cacheControl);
+        checkNoCacheHeaders(response);
     }
 
     @Test
@@ -2220,5 +2234,77 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals("image/png", response.getContentType());
         assertNotNull(response.getHeader("geowebcache-tile-index"));
         assertTrue(response.getHeader("geowebcache-cache-result").equalsIgnoreCase("HIT"));
+    }
+
+    @Test
+    public void testDimensionWarningsCacheSkip() throws Exception {
+        // add dimensions in the catalog
+        String layerId = getLayerId(V_TIME_ELEVATION);
+        FeatureTypeInfo vte = getCatalog().getFeatureTypeByName(layerId);
+        addDimension(vte, ResourceInfo.TIME, "time");
+        addDimension(vte, ResourceInfo.ELEVATION, "elevation");
+        getCatalog().save(vte);
+
+        // Add dimensions filters to the tile layer
+        GeoServerTileLayer tileLayer = (GeoServerTileLayer) GWC.get().getTileLayerByName(layerId);
+        GeoServerTileLayerInfo info = tileLayer.getInfo();
+        StringParameterFilter time = new StringParameterFilter();
+        time.setKey("time");
+        time.setValues(Arrays.asList("2016-02-23T03:00:00.000Z"));
+        info.addParameterFilter(time);
+        StringParameterFilter elevation = new StringParameterFilter();
+        elevation.setKey("elevation");
+        elevation.setValues(Arrays.asList("500"));
+        info.addParameterFilter(elevation);
+        info.setCacheWarningSkips(
+                new HashSet<>(
+                        Arrays.asList(
+                                DimensionWarning.WarningType.Default,
+                                DimensionWarning.WarningType.Nearest,
+                                DimensionWarning.WarningType.FailedNearest)));
+        GWC.get().save(tileLayer);
+
+        // go for a request that has no time and no elevation, the defaults should kick in and
+        // cause warnings to be added
+        MockHttpServletResponse sr =
+                getAsServletResponse(
+                        "gwc/service/wmts?request=GetTile&layer="
+                                + layerId
+                                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        assertEquals(200, sr.getStatus());
+        assertEquals("image/png", sr.getContentType());
+        assertEquals("MISS", sr.getHeader("geowebcache-cache-result"));
+        assertThat(
+                sr.getHeaders("Warning"),
+                Matchers.containsInAnyOrder(
+                        "99 Default value used: time=2011-05-04T00:00:00.000Z  (sf:TimeElevation)",
+                        "99 Default value used: elevation=0.0  (sf:TimeElevation)"));
+        checkNoCacheHeaders(sr);
+
+        // given the settings, it should not have been cached, so a second request should cause
+        // another miss
+        sr =
+                getAsServletResponse(
+                        "gwc/service/wmts?request=GetTile&layer="
+                                + layerId
+                                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        assertEquals(200, sr.getStatus());
+        assertEquals("image/png", sr.getContentType());
+        assertEquals("MISS", sr.getHeader("geowebcache-cache-result"));
+        checkNoCacheHeaders(sr);
+    }
+
+    private void checkNoCacheHeaders(MockHttpServletResponse sr) {
+        assertEquals("no-cache, no-store, must-revalidate", sr.getHeader("Cache-control"));
+        assertEquals("no-cache", sr.getHeader("Pragma"));
+        assertEquals("0", sr.getHeader("Expires"));
+    }
+
+    private void addDimension(FeatureTypeInfo vte, String dimensionName, String attribute) {
+        DimensionInfo di = new DimensionInfoImpl();
+        di.setEnabled(true);
+        di.setAttribute(attribute);
+        di.setPresentation(DimensionPresentation.LIST);
+        vte.getMetadata().put(dimensionName, di);
     }
 }

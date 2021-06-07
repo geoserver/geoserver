@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.config.util.XStreamPersister;
@@ -19,6 +21,7 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.util.DimensionWarning;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 
@@ -110,7 +113,12 @@ public class GWCConfigPersister {
         xs.alias("defaultVectorCacheFormats", HashSet.class);
         xs.alias("defaultOtherCacheFormats", HashSet.class);
         xs.alias("InnerCacheConfiguration", CacheConfiguration.class);
-        xs.allowTypes(new Class[] {GWCConfig.class, CacheConfiguration.class});
+        xs.alias("warning", DimensionWarning.WarningType.class);
+        xs.allowTypes(
+                new Class[] {
+                    GWCConfig.class, CacheConfiguration.class, DimensionWarning.WarningType.class
+                });
+        xs.addDefaultImplementation(LinkedHashSet.class, Set.class);
     }
 
     private Resource getConfigRoot() {

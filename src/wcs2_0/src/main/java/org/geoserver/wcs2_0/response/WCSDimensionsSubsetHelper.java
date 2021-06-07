@@ -472,7 +472,9 @@ public class WCSDimensionsSubsetHelper {
                 // Sending 1 value, expecting 1 value
                 List<Object> dates =
                         getNearestTimeMatch(
-                                coverageInfo, timeDimension, Collections.singletonList(timeSubset));
+                                coverageInfo,
+                                ResourceInfo.TIME,
+                                Collections.singletonList(timeSubset));
                 if (dates != null && !dates.isEmpty()) {
                     Object result = dates.get(0);
                     timeSubset =
@@ -486,12 +488,12 @@ public class WCSDimensionsSubsetHelper {
     }
 
     private List<Object> getNearestTimeMatch(
-            ResourceInfo coverage, DimensionInfo dimension, List<Object> queryRanges)
+            ResourceInfo coverage, String dimensionName, List<Object> queryRanges)
             throws IOException {
+        DimensionInfo dimension = coverage.getMetadata().get(dimensionName, DimensionInfo.class);
         NearestMatchFinder finder = NearestMatchFinder.get(coverage, dimension, ResourceInfo.TIME);
         if (finder != null) {
-            return finder.getMatches(
-                    coverage.prefixedName(), dimension, queryRanges, ResourceInfo.TIME, -1);
+            return finder.getMatches(coverage, dimensionName, queryRanges, -1);
         } else {
             return Collections.emptyList();
         }

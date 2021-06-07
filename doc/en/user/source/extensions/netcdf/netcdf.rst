@@ -346,3 +346,24 @@ parameters will have to be provided in a second property file, along with the li
 The tool supports other options as well, they can be discovered by running the tool without any parameter::
 
   java -cp <path-to-geoserver>/WEB-INF/lib/*.jar org.geotools.coverage.io.netcdf.tools.H2Migrate -m <path-to-mosaic-directory> -is <indexPropertyFile> -isn <storeNameForIndex> -v
+  
+Caching
+-------
+When opening a NetCDF file, metadata and structures need to be setup, such as the Coordinate Reference System and related Coordinate Systems, the optional datastore configuration, the coverages structure (schemas and dimensions). Depending on the complexity of the file itself, those can be time consuming tasks. Operations that are continuously and repeatedly accessing the same files will be impacted by that. Therefore, starting with GeoServer 2.20.x, a caching mechanism has been setup. 
+
+Some entities that can be considered *static* are internally cached once parsed: they include the NetCDF datastore configuration setup on top of the datastore properties file, the indexer built on top of the auxiliary xml file, as well as the unit of measure of the variables. 
+
+.. note:: Make sure to do a GeoServer reload if one of these config files get modified or updated, to clean the cache and allow the new settings to be used.
+
+File Caching
+^^^^^^^^^^^^
+An additional level of caching can be manually enabled, so that NetCDF Files can be cached and re-used. The object being cached is not the whole file, but a ``NetcdfDataset`` object, which is built on top of parsed metadata, including coordinate system info. Whenever a NetCDF dataset is being accessed, a cached instance is provided and released back to the cache-pool once done. So if there are 10 concurrent requests accessing the same NetCDF file, up to 10 different NetCDF dataset cached instances will be used.
+
+These Java system variables can be set to enable and configure the file caching:
+
+* ``org.geotools.coverage.io.netcdf.cachefile`` : boolean. set it to true to enable the dataset caching. (default: false, no files caching)
+* ``org.geotools.coverage.io.netcdf.cache.min`` : integer value representing the minimum number of datasets to be kept in cache (default: 200).
+* ``org.geotools.coverage.io.netcdf.cache.max`` : integer value representing the maximum number of datasets to be kept in cache before a cleanup get triggered (default: 300).
+* ``org.geotools.coverage.io.netcdf.cache.cleanup.period`` : integer value representing the time period (in seconds) before the next cache cleanup occurs (0 for no periodic cleanup, default is 12 minutes)
+
+.. note:: When enabling the file caching and setting up an ImageMosaic of NetCDFs, consider disabling the Deferred Loading from the coverage configuration so that the underlying readers get access to the NetCDF dataset and release them as soon as the read is done.

@@ -86,7 +86,6 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
                     SimpleFeatureType target =
                             SimpleFeatureTypeBuilder.retype(
                                     sfc.getSchema(), mixed.getPropertyNames());
-
                     ReTypingFeatureCollection retyped = new ReTypingFeatureCollection(sfc, target);
                     return (FeatureCollection) SecuredObjects.secure(retyped, policy);
                 } else {

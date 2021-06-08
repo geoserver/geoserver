@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.security.AccessLevel;
-import org.geoserver.security.AccessLimits;
 import org.geoserver.security.VectorAccessLimits;
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.data.DataAccess;
@@ -22,11 +21,9 @@ import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.store.ReTypingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.collection.ClippedFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
@@ -77,8 +74,9 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
         final Query mixed = mixQueries(query, readQuery);
         int limitedAttributeSize = mixed.getProperties() != null ? mixed.getProperties().size() : 0;
         final FeatureCollection<T, F> fc = delegate.getFeatures(mixed);
-        FeatureCollection<T, F> result = null;
-        if (fc != null) {
+        if (fc == null) {
+            return null;
+        } else {
             if (limitedAttributeSize > 0
                     && fc.getSchema().getDescriptors().size() > limitedAttributeSize) {
                 if (fc instanceof SimpleFeatureCollection) {
@@ -88,11 +86,9 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
                     SimpleFeatureType target =
                             SimpleFeatureTypeBuilder.retype(
                                     sfc.getSchema(), mixed.getPropertyNames());
-                    @SuppressWarnings("unchecked")
-                    FeatureCollection<T, F> retyped =
-                            (FeatureCollection<T, F>) new ReTypingFeatureCollection(sfc, target);
 
-                    result = (FeatureCollection<T, F>) SecuredObjects.secure(retyped, policy);
+                    ReTypingFeatureCollection retyped = new ReTypingFeatureCollection(sfc, target);
+                    return (FeatureCollection) SecuredObjects.secure(retyped, policy);
                 } else {
                     List<PropertyName> readProps = readQuery.getProperties();
                     List<PropertyName> queryProps = query.getProperties();
@@ -106,42 +102,12 @@ public class SecuredFeatureSource<T extends FeatureType, F extends Feature>
                                         + "by security (because they are required by the schema). "
                                         + "Either the security setup is broken or you have a security breach");
                     }
-                    result = (FeatureCollection) SecuredObjects.secure(fc, policy);
+                    return (FeatureCollection) SecuredObjects.secure(fc, policy);
                 }
             } else {
-                result = (FeatureCollection) SecuredObjects.secure(fc, policy);
+                return (FeatureCollection) SecuredObjects.secure(fc, policy);
             }
         }
-        AccessLimits limits = policy.getLimits();
-        if (limits instanceof VectorAccessLimits) {
-            VectorAccessLimits vectorLimits = (VectorAccessLimits) limits;
-            result = decoratesForClipping(vectorLimits, result);
-        }
-        return result;
-    }
-
-    @SuppressWarnings("unchecked")
-    private FeatureCollection<T, F> decoratesForClipping(
-            VectorAccessLimits limits, FeatureCollection<T, F> collection) {
-        if (!(collection instanceof SimpleFeatureCollection)) return collection;
-        Geometry clipFilter = limits.getClipVectorFilter();
-        Geometry intersectFilter = limits.getIntersectVectorFilter();
-        if (clipFilter != null) {
-            if (intersectFilter != null) {
-                collection =
-                        (FeatureCollection<T, F>)
-                                new ClipIntersectsFeatureCollection(
-                                        (SimpleFeatureCollection) collection,
-                                        clipFilter,
-                                        intersectFilter);
-            } else {
-                collection =
-                        (FeatureCollection<T, F>)
-                                new ClippedFeatureCollection(
-                                        (SimpleFeatureCollection) collection, clipFilter, false);
-            }
-        }
-        return collection;
     }
 
     protected Query getReadQuery() {

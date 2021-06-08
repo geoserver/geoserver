@@ -84,10 +84,8 @@ import org.locationtech.jts.io.WKTReader;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.PropertyName;
-import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -336,24 +334,19 @@ public class GeofenceAccessManager
 
         RuleFilter ruleFilter = buildRuleFilter(workspace, layer, user);
         AccessInfo rule = rules.getAccessInfo(ruleFilter);
-
-        boolean directAccess = containers == null || containers.isEmpty();
         Pair<Geometry, AccessInfo> containerRule =
-                getAllowedAreaAndAccessInfoFromContainers(info, containers, user, directAccess);
-
+                getAllowedAreaAndAccessInfoFromContainers(info, containers, user);
         if (rule == null) rule = AccessInfo.DENY_ALL;
 
         AccessLimits limits;
         if (info instanceof LayerGroupInfo) {
             limits = buildLayerGroupAccessLimits(rule, containerRule);
         } else if (info instanceof ResourceInfo) {
-            limits =
-                    buildResourceAccessLimits(
-                            (ResourceInfo) info, rule, containerRule, directAccess);
+            limits = buildResourceAccessLimits((ResourceInfo) info, rule, containerRule);
         } else {
             limits =
                     buildResourceAccessLimits(
-                            ((LayerInfo) info).getResource(), rule, containerRule, directAccess);
+                            ((LayerInfo) info).getResource(), rule, containerRule);
         }
 
         LOGGER.log(
@@ -371,20 +364,17 @@ public class GeofenceAccessManager
             accessLimits = buildLayerGroupAccessLimits(AccessInfo.ALLOW_ALL, null);
         else if (info instanceof ResourceInfo)
             accessLimits =
-                    buildResourceAccessLimits(
-                            (ResourceInfo) info, AccessInfo.ALLOW_ALL, null, false);
+                    buildResourceAccessLimits((ResourceInfo) info, AccessInfo.ALLOW_ALL, null);
         else
             accessLimits =
                     buildResourceAccessLimits(
-                            ((LayerInfo) info).getResource(), AccessInfo.ALLOW_ALL, null, false);
+                            ((LayerInfo) info).getResource(), AccessInfo.ALLOW_ALL, null);
         return accessLimits;
     }
 
     private Pair<Geometry, AccessInfo> getAllowedAreaAndAccessInfoFromContainers(
-            CatalogInfo resource,
-            List<LayerGroupInfo> containers,
-            Authentication user,
-            boolean directAccess) {
+            CatalogInfo resource, List<LayerGroupInfo> containers, Authentication user) {
+        boolean directAccess = containers == null || containers.isEmpty();
         Request req = Dispatcher.REQUEST.get();
         String service = req != null ? req.getService() : null;
         boolean isWms = service != null && service.equalsIgnoreCase("WMS");
@@ -416,8 +406,7 @@ public class GeofenceAccessManager
             RuleFilter filter = buildRuleFilter(workspace, layer, user);
             AccessInfo accessInfo = rules.getAccessInfo(filter);
             allowedArea =
-                    getAllowedAreaAsGeom(
-                            accessInfo, lgi.getBounds().getCoordinateReferenceSystem());
+                    getReprojectArea(accessInfo, lgi.getBounds().getCoordinateReferenceSystem());
             lessRestrictiveRule =
                     getLessRestrictiveRule(
                             lessRestrictiveRule, new MutablePair<>(allowedArea, accessInfo));
@@ -468,7 +457,7 @@ public class GeofenceAccessManager
         if (allowedAreaWKT != null) {
             LayerGroupInfo gi = catalog.getLayerGroupByName(gs.getWorkspace(), gs.getName());
             CoordinateReferenceSystem crs = gi.getBounds().getCoordinateReferenceSystem();
-            return getAllowedAreaAsGeom(layerGroupInfo, crs);
+            return getReprojectArea(layerGroupInfo, crs);
         }
 
         return null;
@@ -513,41 +502,10 @@ public class GeofenceAccessManager
         } else if (newAllowedArea == null) {
             result = newAccess;
         } else {
-            // allowed area might be in different projections so when enlarging it
-            // reprojection might be needed
-            Geometry mergedAllowedArea = reprojectAndUnion(currentAllowedArea, newAllowedArea);
+            Geometry mergedAllowedArea = currentAllowedArea.union(newAllowedArea);
             current.setLeft(mergedAllowedArea);
             result = current;
         }
-        return result;
-    }
-
-    // check if newArea geometry needs to be reprojected
-    // then perform the union
-    private Geometry reprojectAndUnion(Geometry current, Geometry newArea) {
-        if (current.getSRID() != newArea.getSRID()) {
-            try {
-                CoordinateReferenceSystem target = CRS.decode("EPSG:" + current.getSRID());
-                CoordinateReferenceSystem source = CRS.decode("EPSG:" + newArea.getSRID());
-                MathTransform transformation = CRS.findMathTransform(source, target);
-                newArea = JTS.transform(newArea, transformation);
-                newArea.setSRID(current.getSRID());
-            } catch (FactoryException e) {
-                throw new RuntimeException(
-                        "Unable to merge allowed areas: can't reproject from "
-                                + newArea.getSRID()
-                                + " to "
-                                + current.getSRID());
-            } catch (TransformException e) {
-                throw new RuntimeException(
-                        "Unable to merge allowed areas: error during transformation from "
-                                + newArea.getSRID()
-                                + " to "
-                                + current.getSRID());
-            }
-        }
-        Geometry result = current.union(newArea);
-        result.setSRID(current.getSRID());
         return result;
     }
 
@@ -584,15 +542,10 @@ public class GeofenceAccessManager
      * @param info the ResourceInfo object for which the AccessLimits are requested
      * @param rule the AccessInfo associated to the resource
      * @param containerRule a tuple with the container's allowedArea Geometry and AccessInfo
-     * @param reprojectForDirectAccess a boolean value to determine whether the allowed area might
-     *     need to be reprojected due the possible difference between container and resource CRS
      * @return the AccessLimits of the Resource
      */
     AccessLimits buildResourceAccessLimits(
-            ResourceInfo info,
-            AccessInfo rule,
-            Pair<Geometry, AccessInfo> containerRule,
-            boolean reprojectForDirectAccess) {
+            ResourceInfo info, AccessInfo rule, Pair<Geometry, AccessInfo> containerRule) {
 
         GrantType actualGrant = getGrant(rule, containerRule);
         boolean includeFilter = actualGrant == GrantType.ALLOW || actualGrant == GrantType.LIMIT;
@@ -618,23 +571,8 @@ public class GeofenceAccessManager
         // reproject the area if necessary
         CoordinateReferenceSystem crs = getCrsFromInfo(info);
         Geometry containersAllowedArea = containerRule != null ? containerRule.getLeft() : null;
-
-        Geometry allowedArea = null;
-        if (containersAllowedArea != null && reprojectForDirectAccess) {
-            try {
-                // direct access, allowed Area might be in container CRS
-                // that can be different from the resource one
-                allowedArea = reprojectGeometry(containersAllowedArea, crs);
-            } catch (Exception e) {
-                throw new RuntimeException(
-                        "Failed to reproject area from container CRS to resource CRS");
-            }
-        } else if (containersAllowedArea != null && !reprojectForDirectAccess) {
-            allowedArea = containersAllowedArea;
-        } else {
-            allowedArea = getAllowedAreaAsGeom(rule, crs);
-        }
-
+        Geometry reprojArea =
+                containersAllowedArea == null ? getReprojectArea(rule, crs) : containersAllowedArea;
         CatalogMode catalogMode = getCatalogMode(rule, containerRule);
 
         LOGGER.log(
@@ -645,8 +583,8 @@ public class GeofenceAccessManager
         AccessLimits accessLimits = null;
         if (info instanceof FeatureTypeInfo) {
             // merge the area among the filters
-            if (allowedArea != null) {
-                Filter areaFilter = FF.intersects(FF.property(""), FF.literal(allowedArea));
+            if (reprojArea != null) {
+                Filter areaFilter = FF.intersects(FF.property(""), FF.literal(reprojArea));
                 readFilter = mergeFilter(readFilter, areaFilter);
                 writeFilter = mergeFilter(writeFilter, areaFilter);
             }
@@ -658,14 +596,14 @@ public class GeofenceAccessManager
         } else if (info instanceof CoverageInfo) {
             accessLimits =
                     new CoverageAccessLimits(
-                            catalogMode, readFilter, toMultiPoly(allowedArea), null);
+                            catalogMode, readFilter, toMultiPoly(reprojArea), null);
 
         } else if (info instanceof WMSLayerInfo) {
             accessLimits =
-                    new WMSAccessLimits(catalogMode, readFilter, toMultiPoly(allowedArea), true);
+                    new WMSAccessLimits(catalogMode, readFilter, toMultiPoly(reprojArea), true);
 
         } else if (info instanceof WMTSLayerInfo) {
-            accessLimits = new WMTSAccessLimits(catalogMode, readFilter, toMultiPoly(allowedArea));
+            accessLimits = new WMTSAccessLimits(catalogMode, readFilter, toMultiPoly(reprojArea));
         } else {
             throw new IllegalArgumentException("Don't know how to handle resource " + info);
         }
@@ -785,7 +723,7 @@ public class GeofenceAccessManager
         return ruleFilter;
     }
 
-    private Geometry getAllowedAreaAsGeom(AccessInfo rule, CoordinateReferenceSystem resourceCrs) {
+    private Geometry getReprojectArea(AccessInfo rule, CoordinateReferenceSystem resourceCrs) {
         // reproject the area if necessary
         Geometry reprojArea = null;
         String areaWkt = rule != null ? rule.getAreaWkt() : null;
@@ -793,48 +731,25 @@ public class GeofenceAccessManager
             try {
 
                 // Geometry area = rule.getArea();
-                reprojArea = parseAllowedArea(areaWkt);
+                WKTReader wktReader = new WKTReader();
+                reprojArea = wktReader.read(areaWkt);
 
                 if (reprojArea != null) {
-                    reprojArea = reprojectGeometry(reprojArea, resourceCrs);
+                    // rule area is always expressed as 4326
+                    CoordinateReferenceSystem geomCrs = CRS.decode("EPSG:4326");
+                    if ((resourceCrs != null) && !CRS.equalsIgnoreMetadata(geomCrs, resourceCrs)) {
+                        MathTransform mt = CRS.findMathTransform(geomCrs, resourceCrs, true);
+                        reprojArea = JTS.transform(reprojArea, mt);
+                    }
                 }
+            } catch (ParseException e) {
+                throw new RuntimeException("Failed to unmarshal the restricted area wkt", e);
             } catch (Exception e) {
                 throw new RuntimeException(
                         "Failed to reproject the restricted area to the layer's native SRS", e);
             }
         }
         return reprojArea;
-    }
-
-    private Geometry reprojectGeometry(Geometry geometry, CoordinateReferenceSystem targetCRS)
-            throws FactoryException, TransformException {
-        CoordinateReferenceSystem geomCrs = CRS.decode("EPSG:" + geometry.getSRID());
-        if ((targetCRS != null) && !CRS.equalsIgnoreMetadata(geomCrs, targetCRS)) {
-            MathTransform mt = CRS.findMathTransform(geomCrs, targetCRS, true);
-            geometry = JTS.transform(geometry, mt);
-            Integer srid = CRS.lookupEpsgCode(targetCRS, false);
-            geometry.setSRID(srid);
-        }
-        return geometry;
-    }
-
-    private Geometry parseAllowedArea(String allowedArea) {
-        Geometry result = null;
-        WKTReader wktReader = new WKTReader();
-        try {
-            if (allowedArea.indexOf("SRID") != -1) {
-                String[] allowedAreaParts = allowedArea.split(";");
-                result = wktReader.read(allowedAreaParts[1]);
-                int srid = Integer.valueOf(allowedAreaParts[0].split("=")[1]);
-                result.setSRID(srid);
-            } else {
-                result = wktReader.read(allowedArea);
-                result.setSRID(4326);
-            }
-        } catch (ParseException e) {
-            throw new RuntimeException("Failed to unmarshal the restricted area wkt", e);
-        }
-        return result;
     }
 
     private MultiPolygon toMultiPoly(Geometry reprojArea) {

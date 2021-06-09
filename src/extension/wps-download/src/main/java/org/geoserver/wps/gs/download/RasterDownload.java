@@ -956,5 +956,6 @@ class RasterDownload {
                 throw new ProcessException(cause.getCause());
             }
         }
+        throw e;
     }
 }

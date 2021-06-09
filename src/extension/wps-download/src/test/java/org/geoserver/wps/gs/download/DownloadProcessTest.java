@@ -2129,7 +2129,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                     new NullProgressListener() // progressListener
                     );
 
-            assertFalse(true);
+            fail("Should have failed with an exception!");
         } catch (ProcessException e) {
             Assert.assertEquals(
                     "org.geotools.process.ProcessException: java.io.IOException: Download"
@@ -2218,7 +2218,7 @@ public class DownloadProcessTest extends WPSTestSupport {
                     );
 
             // exception should have been thrown at this stage
-            assertFalse(true);
+            fail("Should have failed with an exception");
         } catch (ProcessException e) {
             Assert.assertEquals(
                     "org.geotools.process.ProcessException: java.io.IOException: Download"

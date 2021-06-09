@@ -19,7 +19,6 @@ import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.core.model.RuleLimits;
 import org.geoserver.geofence.core.model.enums.CatalogMode;
 import org.geoserver.geofence.core.model.enums.GrantType;
-import org.geoserver.geofence.core.model.enums.SpatialFilterType;
 import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.web.GeoServerApplication;
@@ -249,11 +248,7 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         return rule;
     }
 
-    public void save(
-            Long ruleId,
-            MultiPolygon allowedArea,
-            SpatialFilterType spatialFilterType,
-            CatalogMode catalogMode) {
+    public void save(Long ruleId, MultiPolygon allowedArea, CatalogMode catalogMode) {
         Rule rule = adminService().get(ruleId);
         RuleLimits ruleLimits = rule.getRuleLimits();
         if (ruleLimits == null) {
@@ -261,7 +256,6 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
             ruleLimits.setRule(rule);
         }
         ruleLimits.setAllowedArea(allowedArea);
-        ruleLimits.setSpatialFilterType(spatialFilterType);
         ruleLimits.setCatalogMode(catalogMode);
         adminService().setLimits(ruleId, ruleLimits);
     }

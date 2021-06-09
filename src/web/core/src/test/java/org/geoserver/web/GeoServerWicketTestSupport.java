@@ -6,7 +6,7 @@
 package org.geoserver.web;
 
 import static org.geoserver.web.GeoServerApplication.GEOSERVER_CSRF_DISABLED;
-
+import java.util.ArrayList;
 import java.util.Locale;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
@@ -121,6 +121,39 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         ComponentContentFinder finder = new ComponentContentFinder(content);
         root.visitChildren(componentClass, finder);
         return finder.candidate;
+    }
+
+    /**
+     * Returns the first child component found, that matches the desired target clas
+     *
+     * @param container The component container
+     * @param targetClass The desired component's class
+     * @return The first child component matching the target class, or null if not found
+     */
+    protected String getComponentPath(
+            WebMarkupContainer container, Class<? extends Component> targetClass) {
+        AtomicReference<String> result = new AtomicReference<>();
+        container.visitChildren(
+                (component, visit) -> {
+                    if (targetClass.isInstance(component)) {
+                        result.set(component.getPageRelativePath());
+                        visit.stop();
+                    }
+                });
+        return result.get();
+    }
+    
+    protected String getNthComponentPath(
+            WebMarkupContainer container, Class<? extends Component> targetClass, int n) {
+        ArrayList<String> results = new ArrayList<>();
+        
+        container.visitChildren(
+                (component, visit) -> {
+                    if (targetClass.isInstance(component)) {
+                        results.add(component.getPageRelativePath());
+                    }
+                });
+        return results.get(n);
     }
 
     class ComponentContentFinder implements IVisitor<Component, Void> {

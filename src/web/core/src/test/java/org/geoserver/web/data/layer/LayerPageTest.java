@@ -82,7 +82,8 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         assertEquals("cite", workspaces.get(1));
 
         // select second layer
-        String checkBoxPath = "table:listContainer:items:6:selectItemContainer:selectItem";
+        //a better way to get "table:listContainer:items:6:selectItemContainer:selectItem";
+        String checkBoxPath = getNthComponentPath(table, CheckBox.class, 1);
         CheckBox selector = (CheckBox) tester.getComponentFromLastRenderedPage(checkBoxPath);
         // dirty trick, how to set a form component value without a form
         tester.getRequest().setParameter(selector.getInputName(), "true");

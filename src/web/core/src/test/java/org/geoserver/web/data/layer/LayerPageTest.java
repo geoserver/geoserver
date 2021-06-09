@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.Type;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
@@ -82,9 +81,6 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         assertEquals("cite", workspaces.get(1));
 
         // select second layer
-        // a better way to get "table:listContainer:items:6:selectItemContainer:selectItem";
-        String checkBoxPath = getNthComponentPath(table, CheckBox.class, 1);
-        CheckBox selector = (CheckBox) tester.getComponentFromLastRenderedPage(checkBoxPath);
 
         table.selectIndex(1);
         assertEquals(1, table.getSelection().size());

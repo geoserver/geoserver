@@ -350,7 +350,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      */
     protected void onSelectionUpdate(AjaxRequestTarget target) {
         // by default do nothing
-        System.out.println("select called on "+target);
+        System.out.println("select called on " + target);
     }
 
     /**

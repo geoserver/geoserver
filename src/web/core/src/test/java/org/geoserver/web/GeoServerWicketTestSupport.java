@@ -6,7 +6,7 @@
 package org.geoserver.web;
 
 import static org.geoserver.web.GeoServerApplication.GEOSERVER_CSRF_DISABLED;
-
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.wicket.Component;
@@ -144,6 +144,19 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
                     }
                 });
         return result.get();
+    }
+    
+    protected String getNthComponentPath(
+            WebMarkupContainer container, Class<? extends Component> targetClass, int n) {
+        ArrayList<String> results = new ArrayList<>();
+        
+        container.visitChildren(
+                (component, visit) -> {
+                    if (targetClass.isInstance(component)) {
+                        results.add(component.getPageRelativePath());
+                    }
+                });
+        return results.get(n);
     }
 
     class ComponentContentFinder implements IVisitor<Component, Void> {

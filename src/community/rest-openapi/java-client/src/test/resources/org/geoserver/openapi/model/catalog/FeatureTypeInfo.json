@@ -22,13 +22,16 @@
 			"vocabulary": "spanish"
 		}
 	],
-	"metadataLinks": [
-		{
-			"type": "text\/plain",
-			"metadataType": "ISO19115:2003",
-			"content": "http:\/\/geoserver.org"
-		}
-	],
+	"metadataLinks": {
+		"metadataLink": [
+			{
+     		    "about": "Sample Metadata Title",
+				"type": "text\/plain",
+				"metadataType": "ISO19115:2003",
+				"content": "http:\/\/geoserver.org"
+			}
+		]
+	},
 	"dataLinks": [
 		{
 			"type": "text\/plain",

@@ -10,10 +10,8 @@ import org.geoserver.openapi.v1.model.DoubleArrayResponse;
 import org.geoserver.openapi.v1.model.NamedLink;
 import org.geoserver.openapi.v1.model.ResourceResponseKeywords;
 import org.geoserver.openapi.v1.model.StringArrayResponse;
-import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper
 public interface ResourceResponseMapper {
 
     public default List<String> map(StringArrayResponse r) {

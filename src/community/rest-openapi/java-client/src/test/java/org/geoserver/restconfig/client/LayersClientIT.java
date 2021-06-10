@@ -3,6 +3,7 @@ package org.geoserver.restconfig.client;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ import org.geoserver.openapi.model.catalog.StyleInfo;
 import org.geoserver.openapi.v1.model.Layer;
 import org.geoserver.openapi.v1.model.Layer.TypeEnum;
 import org.geoserver.openapi.v1.model.MetadataEntry;
+import org.geoserver.openapi.v1.model.MetadataResponse;
 import org.geoserver.openapi.v1.model.NamedLink;
 import org.geoserver.openapi.v1.model.WorkspaceSummary;
 import org.junit.After;
@@ -57,11 +59,11 @@ public class LayersClientIT {
 
     public @Before void before() {
         Assume.assumeTrue(support.isAlive());
+        support.client().setDebugRequests(true);
         WorkspacesClient workspaces = support.client().workspaces();
         DataStoresClient dataStores = support.client().dataStores();
         FeatureTypesClient featureTyes = support.client().featureTypes();
         this.layers = support.client().layers();
-
         String wsname =
                 String.format("%s-ws1-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
 
@@ -204,20 +206,42 @@ public class LayersClientIT {
                 layers.getLayer(ws.getName(), roadsFT.getName())
                         .orElseThrow(NoSuchElementException::new);
 
-        List<MetadataEntry> mdResponse = layerResponse.getMetadata();
-        assertTrue(mdResponse == null || mdResponse.isEmpty());
+        MetadataResponse mdResponse = layerResponse.getMetadata();
+        assertNull(mdResponse);
 
         LayerInfo info = new LayerInfo();
         info.setName(layerResponse.getName());
         Map<String, String> mdmap = new HashMap<>();
         mdmap.put("cacheAgeMax", "3600");
         mdmap.put("cachingEnabled", "true");
-        info.setMetadata(mdmap);
+        info.setMetadata(new HashMap<>(mdmap));
 
         layers.updateLayer(ws.getName(), info.getName(), info);
 
         layerResponse = layers.getLayer(ws.getName(), info.getName()).get();
-        mdResponse = layerResponse.getMetadata();
+        assertMetadataMapContains(layerResponse, mdmap);
+
+        mdmap.put("newProp", "newVal");
+
+        info = new LayerInfo();
+        info.setName(layerResponse.getName());
+        info.setMetadata(new HashMap<>(mdmap));
+
+        layers.updateLayer(ws.getName(), info.getName(), info);
+
+        layerResponse = layers.getLayer(ws.getName(), info.getName()).get();
+        assertMetadataMapContains(layerResponse, mdmap);
+    }
+
+    private void assertMetadataMapContains(Layer layerResponse, Map<String, String> mdmap) {
+        MetadataResponse mdResponse = layerResponse.getMetadata();
         assertNotNull(mdResponse);
+        List<MetadataEntry> entry = mdResponse.getEntry();
+        assertNotNull(entry);
+        Map<String, String> actual =
+                entry.stream()
+                        .collect(
+                                Collectors.toMap(MetadataEntry::getAtKey, MetadataEntry::getValue));
+        mdmap.forEach((k, v) -> assertEquals(v, actual.get(k)));
     }
 }

@@ -2,11 +2,13 @@ package org.geoserver.restconfig.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.net.URI;
 import java.security.SecureRandom;
 import org.geoserver.openapi.model.catalog.DataStoreInfo;
 import org.geoserver.openapi.model.catalog.FeatureTypeInfo;
+import org.geoserver.openapi.model.catalog.MetadataLinks;
 import org.geoserver.openapi.v1.model.WorkspaceSummary;
 import org.junit.After;
 import org.junit.Assume;
@@ -40,13 +42,13 @@ public class FeatureTypesClientIT {
 
     private WorkspacesClient workspaces;
     private DataStoresClient dataStores;
-    private FeatureTypesClient featureTyes;
+    private FeatureTypesClient featureTypes;
 
     public @Before void before() {
         Assume.assumeTrue(support.isAlive());
         this.workspaces = support.client().workspaces();
         this.dataStores = support.client().dataStores();
-        this.featureTyes = support.client().featureTypes();
+        this.featureTypes = support.client().featureTypes();
 
         String wsname1 =
                 String.format("%s-ws1-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
@@ -89,7 +91,7 @@ public class FeatureTypesClientIT {
                         .store(new DataStoreInfo().name("roadsStoreWs1"));
         roads.setName(null);
         this.ex.expect(ServerException.BadRequest.class);
-        this.featureTyes.create(ws1.getName(), roads);
+        this.featureTypes.create(ws1.getName(), roads);
     }
 
     public @Test void createRequiresStore() {
@@ -98,7 +100,7 @@ public class FeatureTypesClientIT {
         roads.setNativeName("roads");
         this.ex.expect(IllegalArgumentException.class);
         this.ex.expectMessage("Target store not provided");
-        this.featureTyes.create(ws1.getName(), roads);
+        this.featureTypes.create(ws1.getName(), roads);
     }
 
     public @Test void createBadStoreName() {
@@ -109,7 +111,7 @@ public class FeatureTypesClientIT {
         this.ex.expect(ServerException.NotFound.class);
         //		server is not sending this message, but it logs it
         //		ex.expectMessage("No such data store");
-        this.featureTyes.create(ws1.getName(), roads);
+        this.featureTypes.create(ws1.getName(), roads);
     }
 
     /**
@@ -130,14 +132,14 @@ public class FeatureTypesClientIT {
                         .nativeName(nativeFeatureTypeName)
                         .store(new DataStoreInfo().name(storeName));
         {
-            FeatureTypeInfo ft1ws1 = this.featureTyes.create(ws1.getName(), streamsWorkspace1);
+            FeatureTypeInfo ft1ws1 = this.featureTypes.create(ws1.getName(), streamsWorkspace1);
             assertEquals(nativeFeatureTypeName, ft1ws1.getName());
             assertEquals(storeName, ft1ws1.getStore().getName());
             assertEquals(ws1.getName(), ft1ws1.getStore().getWorkspace().getName());
             assertEquals(ws1.getName(), ft1ws1.getNamespace().getPrefix());
         }
         {
-            FeatureTypeInfo ft1ws2 = this.featureTyes.create(ws2.getName(), streamsWorkspace2);
+            FeatureTypeInfo ft1ws2 = this.featureTypes.create(ws2.getName(), streamsWorkspace2);
             assertEquals(nativeFeatureTypeName, ft1ws2.getName());
             assertEquals(storeName, ft1ws2.getStore().getName());
             assertEquals(ws2.getName(), ft1ws2.getStore().getWorkspace().getName());
@@ -145,7 +147,7 @@ public class FeatureTypesClientIT {
         }
         {
             FeatureTypeInfo ft2ws1 =
-                    this.featureTyes.create(ws1.getName(), streamsWorkspace1.name("name2"));
+                    this.featureTypes.create(ws1.getName(), streamsWorkspace1.name("name2"));
             assertEquals("name2", ft2ws1.getName());
             assertEquals(storeName, ft2ws1.getStore().getName());
             assertEquals(ws1.getName(), ft2ws1.getStore().getWorkspace().getName());
@@ -153,7 +155,7 @@ public class FeatureTypesClientIT {
         }
         {
             FeatureTypeInfo ft2ws2 =
-                    this.featureTyes.create(ws2.getName(), streamsWorkspace2.name("name2"));
+                    this.featureTypes.create(ws2.getName(), streamsWorkspace2.name("name2"));
             assertEquals("name2", ft2ws2.getName());
             assertEquals(storeName, ft2ws2.getStore().getName());
             assertEquals(ws2.getName(), ft2ws2.getStore().getWorkspace().getName());
@@ -173,8 +175,8 @@ public class FeatureTypesClientIT {
                         .nativeName("roads")
                         .store(new DataStoreInfo().name("roadsStoreWs2"));
 
-        this.featureTyes.create(ws1.getName(), roadsws1);
-        this.featureTyes.create(ws2.getName(), roadsws2);
+        this.featureTypes.create(ws1.getName(), roadsws1);
+        this.featureTypes.create(ws2.getName(), roadsws2);
     }
 
     public @Test void createMinimalInformationNativeAndPublishedName() {
@@ -189,8 +191,8 @@ public class FeatureTypesClientIT {
                         .name("roads-345")
                         .store(new DataStoreInfo().name("roadsStoreWs2"));
 
-        this.featureTyes.create(ws1.getName(), roadsws1);
-        this.featureTyes.create(ws2.getName(), roadsws2);
+        this.featureTypes.create(ws1.getName(), roadsws1);
+        this.featureTypes.create(ws2.getName(), roadsws2);
     }
 
     public @Test void createFullInformation() {
@@ -202,7 +204,13 @@ public class FeatureTypesClientIT {
         roads.setStore(new DataStoreInfo().name("roadsStoreWs1"));
         roads.setSrs("EPSG:4326");
 
-        FeatureTypeInfo created = featureTyes.create(ws1.getName(), roads);
+        MetadataLinks metadataLinks = new MetadataLinks();
+        metadataLinks.addMetadataLinkItem(support.newMetadataLink(1));
+        metadataLinks.addMetadataLinkItem(support.newMetadataLink(2));
+
+        roads.setMetadataLinks(metadataLinks);
+
+        FeatureTypeInfo created = featureTypes.create(ws1.getName(), roads);
         assertNotNull(created);
         assertEquals(roads.getName(), created.getName());
         assertEquals(roads.getNativeName(), created.getNativeName());
@@ -211,6 +219,11 @@ public class FeatureTypesClientIT {
         assertEquals(roads.getStore().getName(), created.getStore().getName());
         assertEquals(ws1.getName(), created.getStore().getWorkspace().getName());
         assertEquals(roads.getSrs(), created.getSrs());
+
+        MetadataLinks mdlinks = created.getMetadataLinks();
+        assertNotNull(mdlinks);
+        assertNotNull(mdlinks.getMetadataLink());
+        assertEquals(2, mdlinks.getMetadataLink().size());
     }
 
     public @Test void update() {
@@ -225,14 +238,39 @@ public class FeatureTypesClientIT {
                         .nativeName("roads")
                         .store(new DataStoreInfo().name("roadsStoreWs2"));
 
-        this.featureTyes.create(ws1.getName(), roadsws1);
-        this.featureTyes.create(ws2.getName(), roadsws2);
+        this.featureTypes.create(ws1.getName(), roadsws1);
+        this.featureTypes.create(ws2.getName(), roadsws2);
 
         roadsws1.setName("new name");
         roadsws1.setTitle("New Title");
         String currentName = "roads";
-        FeatureTypeInfo updated = this.featureTyes.update(ws1.getName(), currentName, roadsws1);
+        FeatureTypeInfo updated = this.featureTypes.update(ws1.getName(), currentName, roadsws1);
         assertEquals("new name", updated.getName());
         assertEquals("New Title", updated.getTitle());
+    }
+
+    public @Test void updateMetadataLinks() {
+        FeatureTypeInfo roads = new FeatureTypeInfo().name("roads");
+        roads.setNativeName("roads");
+        roads.setTitle("title");
+        roads.setAbstract("abstract");
+        roads.setStore(new DataStoreInfo().name("roadsStoreWs1"));
+        roads.setSrs("EPSG:4326");
+
+        FeatureTypeInfo created = featureTypes.create(ws1.getName(), roads);
+        assertNull(created.getMetadataLinks());
+
+        MetadataLinks metadataLinks = new MetadataLinks();
+        metadataLinks.addMetadataLinkItem(support.newMetadataLink(1));
+        metadataLinks.addMetadataLinkItem(support.newMetadataLink(2));
+        roads.setMetadataLinks(metadataLinks);
+
+        FeatureTypeInfo updated = featureTypes.update(ws1.getName(), created.getName(), roads);
+        assertEquals(metadataLinks, updated.getMetadataLinks());
+
+        metadataLinks.getMetadataLink().remove(0);
+        updated = featureTypes.update(ws1.getName(), created.getName(), roads);
+        assertEquals(metadataLinks, updated.getMetadataLinks());
+        assertEquals(1, updated.getMetadataLinks().getMetadataLink().size());
     }
 }

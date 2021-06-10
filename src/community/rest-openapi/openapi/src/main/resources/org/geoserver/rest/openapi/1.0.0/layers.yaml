@@ -265,9 +265,7 @@ components:
           type: boolean
           description: Controls layer transparency (whether the layer is opaque or transparent).
         metadata:
-          type: array
-          items:
-            $ref: '#/components/schemas/MetadataEntry'
+          $ref: "catalogresponses.yaml#/components/schemas/MetadataResponse"
         attribution:
           $ref: "catalog.yaml#/components/schemas/AttributionInfo"
         authorityURLs:
@@ -311,18 +309,3 @@ components:
                             }
                         }
                     }
-
-    MetadataEntry:
-      type: object
-      title: entry
-      properties:
-        '@key':
-          title: key
-          type: string
-          enum:
-          - buffer
-          description: Key used for metadata entry, additional keys are added over time
-        $:
-          title: text
-          type: string
-          description: Text value for provided key Valid text depends on key used. Example  {'@key'='buffer','$'='5'}") or 5

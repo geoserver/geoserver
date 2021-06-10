@@ -14,6 +14,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.geoserver.openapi.model.catalog.MetadataLinkInfo;
 import org.geoserver.openapi.model.catalog.WorkspaceInfo;
 import org.geoserver.openapi.v1.model.ComponentVersion;
 import org.junit.Rule;
@@ -53,7 +54,8 @@ public class IntegrationTestSupport extends ExternalResource {
         this.adminPassword = resolve("geoserver_admin_password", this.adminPassword);
 
         this.client = new GeoServerClient(apiUrl).setBasicAuth(this.adminName, this.adminPassword);
-        this.client.setDebugRequests(false);
+        this.client.logToStdErr();
+        this.client.setDebugRequests(true);
     }
 
     protected @Override void after() {
@@ -139,5 +141,23 @@ public class IntegrationTestSupport extends ExternalResource {
 
     static boolean isEmpty(final CharSequence cs) {
         return cs == null || cs.length() == 0;
+    }
+
+    public MetadataLinkInfo newMetadataLink(int sampleIndex) {
+        return newMetadataLink(
+                "Test link #" + sampleIndex,
+                "http://test.com/mdlink#" + sampleIndex,
+                "ISO19115:2003",
+                "text/plain");
+    }
+
+    public MetadataLinkInfo newMetadataLink(
+            String about, String contentURL, String metadataType, String contentType) {
+        MetadataLinkInfo mdl = new MetadataLinkInfo();
+        mdl.setAbout(about);
+        mdl.setContent(contentURL);
+        mdl.setMetadataType(metadataType);
+        mdl.setType(contentType);
+        return mdl;
     }
 }

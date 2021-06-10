@@ -43,7 +43,7 @@ public class DimensionWarning {
         return new DimensionWarning(r, dimensionName, null, WarningType.FailedNearest);
     }
 
-    private DimensionWarning(
+    protected DimensionWarning(
             ResourceInfo resource, String dimensionName, Object value, WarningType warningType) {
         this.layerName = resource.prefixedName();
         this.dimensionName = dimensionName;
@@ -51,6 +51,14 @@ public class DimensionWarning {
         DimensionInfo di = resource.getMetadata().get(getKey(dimensionName), DimensionInfo.class);
         this.unit = di.getUnits();
         this.warningType = warningType;
+    }
+
+    protected DimensionWarning(DimensionWarning other) {
+        this.layerName = other.layerName;
+        this.dimensionName = other.dimensionName;
+        this.value = other.value;
+        this.unit = other.unit;
+        this.warningType = other.warningType;
     }
 
     private String getKey(String dimensionName) {

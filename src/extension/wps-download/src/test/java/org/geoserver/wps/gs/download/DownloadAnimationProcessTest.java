@@ -5,11 +5,13 @@
 package org.geoserver.wps.gs.download;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +37,7 @@ import org.jcodec.common.DemuxerTrack;
 import org.jcodec.common.DemuxerTrackMeta;
 import org.jcodec.common.Format;
 import org.jcodec.common.JCodecUtil;
+import org.jcodec.common.io.FileChannelWrapper;
 import org.jcodec.common.io.NIOUtils;
 import org.jcodec.scale.AWTUtil;
 import org.junit.Test;
@@ -42,6 +45,16 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
+
+    public interface ThrowingBiConsumer<T, U> {
+
+        void accept(T t, U u) throws Exception;
+    }
+
+    @Override
+    protected String getLogConfiguration() {
+        return "/DEFAULT_LOGGING.properties";
+    }
 
     @Test
     public void testDescribeProcess() throws Exception {
@@ -58,6 +71,13 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
         String xml =
                 IOUtils.toString(getClass().getResourceAsStream("animateBlueMarble.xml"), UTF_8);
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertAnimationMonths2345(response, this::assertDefaultFrames);
+    }
+
+    private void assertAnimationMonths2345(
+            MockHttpServletResponse response, ThrowingBiConsumer<File, FrameGrab> assertor)
+            throws Exception {
+        assertEquals(200, response.getStatus());
         assertEquals("video/mp4", response.getContentType());
 
         // JCodec API works off files only...
@@ -74,23 +94,149 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
             // grab frames for checking
             File source = new File("src/test/resources/org/geoserver/wps/gs/download/bm_time.zip");
-            FrameGrab grabber = FrameGrab.createFrameGrab(NIOUtils.readableChannel(testFile));
-            // first
-            BufferedImage frame1 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
-            BufferedImage expected1 = grabImageFromZip(source, "world.200402.3x5400x2700.tiff");
-            ImageAssert.assertEquals(expected1, frame1, 100);
-            // second
-            BufferedImage frame2 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
-            BufferedImage expected2 = grabImageFromZip(source, "world.200403.3x5400x2700.tiff");
-            ImageAssert.assertEquals(expected2, frame2, 100);
-            // third
-            BufferedImage frame3 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
-            BufferedImage expected3 = grabImageFromZip(source, "world.200404.3x5400x2700.tiff");
-            ImageAssert.assertEquals(expected3, frame3, 100);
-            // fourth
-            BufferedImage frame4 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
-            BufferedImage expected4 = grabImageFromZip(source, "world.200405.3x5400x2700.tiff");
-            ImageAssert.assertEquals(expected4, frame4, 100);
+            try (FileChannelWrapper fc = NIOUtils.readableChannel(testFile)) {
+                FrameGrab grabber = FrameGrab.createFrameGrab(fc);
+                assertor.accept(source, grabber);
+            }
+        }
+    }
+
+    private void assertDefaultFrames(File source, FrameGrab grabber) throws IOException {
+        // first
+        BufferedImage frame1 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+        BufferedImage expected1 = getImageFromZip(source, "world.200402.3x5400x2700.tiff");
+        ImageAssert.assertEquals(expected1, frame1, 100);
+        // second
+        BufferedImage frame2 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+        BufferedImage expected2 = getImageFromZip(source, "world.200403.3x5400x2700.tiff");
+        ImageAssert.assertEquals(expected2, frame2, 100);
+        // third
+        BufferedImage frame3 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+        BufferedImage expected3 = getImageFromZip(source, "world.200404.3x5400x2700.tiff");
+        ImageAssert.assertEquals(expected3, frame3, 100);
+        // fourth
+        BufferedImage frame4 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+        BufferedImage expected4 = getImageFromZip(source, "world.200405.3x5400x2700.tiff");
+        ImageAssert.assertEquals(expected4, frame4, 100);
+    }
+
+    @Test
+    public void testAnimateBmTimeMetadata() throws Exception {
+        String xml =
+                IOUtils.toString(
+                        getClass().getResourceAsStream("animateBlueMarbleMetadata.xml"), UTF_8);
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("application/xml", response.getContentType());
+        Document dom = dom(response, true);
+        print(dom);
+
+        // check the animation is produced as normal, de-referencing the link
+        String fullLocation =
+                XMLUnit.newXpathEngine()
+                        .evaluate("//wps:Output[ows:Identifier='result']/wps:Reference/@href", dom);
+        String testLocation = getTestReference(fullLocation);
+        assertAnimationMonths2345(getAsServletResponse(testLocation), this::assertDefaultFrames);
+
+        // the metadata is in-line and should be
+        assertXpathExists(
+                "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/AnimationMetadata/Warnings",
+                dom);
+        assertXpathEvaluatesTo(
+                "0",
+                "count(//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/AnimationMetadata/Warnings/*)",
+                dom);
+        assertXpathEvaluatesTo(
+                "false",
+                "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/AnimationMetadata/WarningsFound",
+                dom);
+    }
+
+    /** Strips a full URL to a reduced version that works with the test harness */
+    private String getTestReference(String fullLocation) {
+        return fullLocation.substring(fullLocation.indexOf('?') - 3);
+    }
+
+    @Test
+    public void testAnimateBmTimeMetadataWarnings() throws Exception {
+        String xml =
+                IOUtils.toString(
+                        getClass().getResourceAsStream("animateBlueMarbleMetadataWarnings.xml"),
+                        UTF_8);
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("application/xml", response.getContentType());
+        Document dom = dom(response, true);
+        print(dom);
+
+        // check the animation is produced as normal, de-referencing the link
+        String fullLocation =
+                XMLUnit.newXpathEngine()
+                        .evaluate("//wps:Output[ows:Identifier='result']/wps:Reference/@href", dom);
+        String testLocation = getTestReference(fullLocation);
+        assertAnimationMonths2345(
+                getAsServletResponse(testLocation),
+                (zip, grabber) -> {
+                    // first
+                    BufferedImage frame1 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+                    BufferedImage expected1 = getImageFromZip(zip, "world.200402.3x5400x2700.tiff");
+                    ImageAssert.assertEquals(expected1, frame1, 100);
+                    // second is a missed match, should be empty
+                    BufferedImage frame2 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+                    assertAlmostBlank(frame2);
+                    // third
+                    BufferedImage frame3 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+                    BufferedImage expected3 = getImageFromZip(zip, "world.200404.3x5400x2700.tiff");
+                    ImageAssert.assertEquals(expected3, frame3, 100);
+                    // fourth
+                    BufferedImage frame4 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+                    BufferedImage expected4 = getImageFromZip(zip, "world.200405.3x5400x2700.tiff");
+                    ImageAssert.assertEquals(expected4, frame4, 100);
+                });
+
+        // the metadata is in-line and should be
+        assertXpathExists(
+                "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/AnimationMetadata/Warnings",
+                dom);
+        assertXpathEvaluatesTo(
+                "4",
+                "count(//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/AnimationMetadata/Warnings/*)",
+                dom);
+        String prefix =
+                "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/AnimationMetadata/Warnings/FrameWarning";
+        // first warning, nearest
+        assertXpathEvaluatesTo("sf:bmtime", prefix + "[1]/LayerName", dom);
+        assertXpathEvaluatesTo("time", prefix + "[1]/DimensionName", dom);
+        assertXpathEvaluatesTo("2004-02-01T00:00:00.000Z", prefix + "[1]/Value", dom);
+        assertXpathEvaluatesTo("Nearest", prefix + "[1]/WarningType", dom);
+        assertXpathEvaluatesTo("0", prefix + "[1]/Frame", dom);
+        // second warning
+        assertXpathEvaluatesTo("sf:bmtime", prefix + "[2]/LayerName", dom);
+        assertXpathEvaluatesTo("time", prefix + "[2]/DimensionName", dom);
+        assertXpathEvaluatesTo("FailedNearest", prefix + "[2]/WarningType", dom);
+        assertXpathEvaluatesTo("1", prefix + "[2]/Frame", dom);
+        // flag about warnings
+        assertXpathEvaluatesTo(
+                "true",
+                "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/AnimationMetadata/WarningsFound",
+                dom);
+    }
+
+    /**
+     * Checks for an empty frame, accounting for lossy compression (so not all colors will be
+     * white). Uses a very rough manhattan distance in RGB, the output was also checked manually,
+     * there is a number of darker round spots in it)
+     *
+     * @param image
+     */
+    private void assertAlmostBlank(BufferedImage image) {
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                Color rgb = new Color(image.getRGB(x, y));
+                double d =
+                        Math.abs(rgb.getRed() - 255)
+                                + Math.abs(rgb.getGreen() - 255)
+                                + Math.abs(rgb.getBlue() - 255);
+                assertTrue(d < 170);
+            }
         }
     }
 
@@ -179,7 +325,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
         }
     }
 
-    BufferedImage grabImageFromZip(File file, String entryName) throws IOException {
+    BufferedImage getImageFromZip(File file, String entryName) throws IOException {
         try (ZipFile zipFile = new ZipFile(file)) {
 
             Enumeration<? extends ZipEntry> entries = zipFile.entries();

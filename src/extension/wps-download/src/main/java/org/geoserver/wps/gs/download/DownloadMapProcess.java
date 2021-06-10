@@ -34,11 +34,13 @@ import javax.media.jai.PlanarImage;
 import org.geoserver.config.GeoServer;
 import org.geoserver.kml.KMLEncoder;
 import org.geoserver.kml.KmlEncodingContext;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
+import org.geoserver.util.HTTPWarningAppender;
 import org.geoserver.wms.GetMap;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMS;
@@ -86,12 +88,13 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
 
     private final WMS wms;
     private final GetMapKvpRequestReader getMapReader;
+    private final HTTPWarningAppender warningAppender;
     private Service service;
     // defaulting to a stateless but reliable http client
     private Supplier<org.geotools.http.HTTPClient> httpClientSupplier =
             () -> HTTPClientFinder.createClient();
 
-    public DownloadMapProcess(GeoServer geoServer) {
+    public DownloadMapProcess(GeoServer geoServer, HTTPWarningAppender warningAppender) {
         // TODO: make these configurable
         this.wms =
                 new WMS(geoServer) {
@@ -106,6 +109,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                     }
                 };
         this.getMapReader = new GetMapKvpRequestReader(wms);
+        this.warningAppender = warningAppender;
     }
 
     /** This process returns a potentially large map */
@@ -175,38 +179,47 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             progressListener = new DefaultProgressListener();
         }
 
-        // assemble image
-        RenderedImage result =
-                buildImage(
-                        bbox,
-                        decorationName,
-                        time,
-                        width,
-                        height,
-                        headerHeight,
-                        layers,
-                        format,
-                        progressListener,
-                        new HashMap<>());
-
-        // encode output (by faking a normal request)
-        GetMapRequest request = new GetMapRequest();
-        request.setRawKvp(Collections.emptyMap());
-        request.setFormat(format);
-        WMSMapContent mapContent = new WMSMapContent(request);
         try {
-            mapContent.getViewport().setBounds(bbox);
-            Operation operation = new Operation("GetMap", service, null, new Object[] {request});
-            if (kmlOutput) {
-                return buildKMLResponse(bbox, result, mapContent, operation);
-            } else {
-                RawData response = buildImageResponse(format, result, mapContent, operation);
-                if (response != null) {
-                    return response;
+            // clean up eventual previous warnings
+            warningAppender.init(Dispatcher.REQUEST.get());
+
+            // assemble image
+            RenderedImage result =
+                    buildImage(
+                            bbox,
+                            decorationName,
+                            time,
+                            width,
+                            height,
+                            headerHeight,
+                            layers,
+                            format,
+                            progressListener,
+                            new HashMap<>());
+
+            // encode output (by faking a normal request)
+            GetMapRequest request = new GetMapRequest();
+            request.setRawKvp(Collections.emptyMap());
+            request.setFormat(format);
+            WMSMapContent mapContent = new WMSMapContent(request);
+            try {
+                mapContent.getViewport().setBounds(bbox);
+                Operation operation =
+                        new Operation("GetMap", service, null, new Object[] {request});
+                if (kmlOutput) {
+                    return buildKMLResponse(bbox, result, mapContent, operation);
+                } else {
+                    RawData response = buildImageResponse(format, result, mapContent, operation);
+                    if (response != null) {
+                        return response;
+                    }
                 }
+            } finally {
+                mapContent.dispose();
             }
         } finally {
-            mapContent.dispose();
+            // avoid accumulation of warnings in the executor thread that run this request
+            warningAppender.finished(Dispatcher.REQUEST.get());
         }
 
         // we got here, no supported format found
@@ -290,7 +303,6 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             ProgressListener progressListener,
             Map<String, WebMapServer> serverCache)
             throws Exception {
-
         // build GetMap template parameters
         CaseInsensitiveMap template = new CaseInsensitiveMap(new HashMap());
         template.put("service", "WMS");

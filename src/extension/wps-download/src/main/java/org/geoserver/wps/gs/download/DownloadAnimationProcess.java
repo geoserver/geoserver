@@ -6,7 +6,6 @@ package org.geoserver.wps.gs.download;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.File;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -24,7 +23,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.media.jai.PlanarImage;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.geoserver.ows.Dispatcher;
@@ -236,10 +234,6 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                                     "image/png",
                                     new DefaultProgressListener(),
                                     serverCache);
-                    ImageIO.write(
-                            image,
-                            "PNG",
-                            new File("/tmp/frame" + System.currentTimeMillis() + ".png"));
                     BufferedImage frame = toBufferedImage(image);
                     LOGGER.log(Level.FINE, "Got frame %s", frame);
                     renderingQueue.put(frame);

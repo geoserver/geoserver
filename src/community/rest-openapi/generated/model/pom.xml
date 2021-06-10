@@ -10,7 +10,7 @@
   <packaging>jar</packaging>
   <name>OpenAPI generated Catalog and Config object model</name>
   <properties>
-    <openapi-base-folder>${project.parent.parent.basedir}/openapi/1.0.0</openapi-base-folder>
+    <openapi-base-folder>${project.parent.parent.basedir}/openapi/src/main/resources/org/geoserver/rest/openapi/1.0.0</openapi-base-folder>
   </properties>
   <dependencies>
     <dependency>

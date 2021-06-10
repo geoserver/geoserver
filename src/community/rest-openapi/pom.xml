@@ -12,6 +12,7 @@
   <packaging>pom</packaging>
   <name>OpenAPI REST config client parent pom</name>
   <modules>
+    <module>openapi</module>
     <module>generated</module>
     <module>java-client</module>
   </modules>

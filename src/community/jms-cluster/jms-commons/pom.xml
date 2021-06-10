@@ -19,6 +19,10 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-platform</artifactId>
+    </dependency>
 
     <!-- http://x-stream.github.io/jira/571/ -->
     <dependency>

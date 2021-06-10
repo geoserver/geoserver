@@ -18,23 +18,14 @@
   <name>Community Space</name>
 
   <dependencies>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-platform</artifactId>
-    </dependency>
+    <!-- Do not add any other dependency here, modules shall explicitly declare their dependencies -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-cql</artifactId>
-    </dependency>
   </dependencies>
-
   <build>
-
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>

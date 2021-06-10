@@ -25,9 +25,7 @@
         "updated": "${eop:modificationDate}",
         "platform": "${eop:productPlatform}",
         "instruments": [
-          "$filter{eop:parentIdentifier = 'SENTINEL2'},msi",
-          "$filter{eop:parentIdentifier = 'LANDSAT8'},oli",
-          "$filter{eop:parentIdentifier = 'LANDSAT8'},tirs"
+          "${eo:collection/eo:instrument}"
         ],
         "constellation": "$${strToLowerCase(eop:parentIdentifier)}",
         "eo:cloud_cover": "${opt:cloudCover}",

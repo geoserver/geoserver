@@ -21,6 +21,8 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -322,6 +324,50 @@ public class JDBCOpenSearchAccessTest {
         assertPropertyNamespace(schema, "track", GENERIC.getNamespace());
         assertPropertyNamespace(schema, "polarisationMode", RADAR.getNamespace());
         assertPropertyNamespace(schema, "test", GS_PRODUCT.getNamespace());
+
+        PropertyDescriptor cd = schema.getDescriptor(OpenSearchAccess.COLLECTION_PROPERTY_NAME);
+        assertNotNull(cd);
+        assertEquals(OpenSearchAccess.COLLECTION_PROPERTY_NAME, cd.getType().getName());
+    }
+
+    @Test
+    public void testProductReadingNoJoins() throws Exception {
+        Query q = new Query();
+        String id = "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TVG_N02.01";
+        q.setFilter(
+                FF.equals(
+                        FF.property(new NameImpl(GENERIC.getNamespace(), "identifier")),
+                        FF.literal(id)));
+        Feature feature = DataUtilities.first(osAccess.getProductSource().getFeatures(q));
+        assertEquals("DATA_DRIVEN", feature.getProperty("processingMode").getValue());
+        assertEquals(id, feature.getProperty("identifier").getValue());
+        assertEquals("SENTINEL2", feature.getProperty("parentIdentifier").getValue());
+    }
+
+    @Test
+    public void testProductReadingJoins() throws Exception {
+        Query q = new Query();
+        q.setProperties(
+                Arrays.asList(
+                        FF.property(new NameImpl(GENERIC.getNamespace(), "identifier")),
+                        FF.property(new NameImpl(GENERIC.getNamespace(), "processingMode")),
+                        FF.property(new NameImpl(GENERIC.getNamespace(), "parentIdentifier")),
+                        FF.property(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME),
+                        FF.property(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME),
+                        FF.property(OpenSearchAccess.COLLECTION_PROPERTY_NAME)));
+        String id = "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TVG_N02.01";
+        q.setFilter(
+                FF.equals(
+                        FF.property(new NameImpl(GENERIC.getNamespace(), "identifier")),
+                        FF.literal(id)));
+        Feature feature = DataUtilities.first(osAccess.getProductSource().getFeatures(q));
+        assertEquals("DATA_DRIVEN", feature.getProperty("processingMode").getValue());
+        assertEquals(id, feature.getProperty("identifier").getValue());
+        assertEquals("SENTINEL2", feature.getProperty("parentIdentifier").getValue());
+        Feature collection = (Feature) feature.getProperty("collection");
+        assertNotNull(collection);
+        assertEquals("SENTINEL2", collection.getProperty("identifier").getValue());
+        assertEquals("S2MSI1C", collection.getProperty("productType").getValue());
     }
 
     @Test

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Feign.Builder;
 import feign.FeignException;
+import feign.Logger;
 import feign.Logger.Level;
 import feign.Request.Body;
 import feign.RequestInterceptor;
@@ -177,6 +178,10 @@ public class GeoServerClient {
 
     public void setDebugRequests(boolean debug) {
         api().getFeignBuilder().logLevel(debug ? Level.FULL : Level.NONE);
+    }
+
+    public void logToStdErr() {
+        api().getFeignBuilder().logger(new Logger.ErrorLogger());
     }
 
     /**

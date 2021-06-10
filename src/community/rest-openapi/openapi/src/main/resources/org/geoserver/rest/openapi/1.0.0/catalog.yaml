@@ -207,20 +207,32 @@ components:
           content:
             type: string
 
+    MetadataLinks:
+      type: object
+      description: Wraps a collection of metadata links for the resource.
+      properties:
+        metadataLink:
+          type: array
+          items:
+            $ref: "catalog.yaml#/components/schemas/MetadataLinkInfo"
+            
     MetadataLinkInfo:
       type: object
       description: A metadata link.
       properties:
-        id:
-          type: string
-          description: Metadata identifier
         about:
           type: string
+          description: Human readable title
         content:
           type: string
+          description: URL for the metadata record/resource
         metadataType:
           type: string
-          
+          description: Metadata standard (e.g. ISO19115:2003)
+          default: 'ISO19115:2003'
+        type:
+          type: string
+          description: Content-Type (e.g. text/plain, application/xml)
     EnvelopeInfo:
       type: object
       properties:
@@ -250,8 +262,33 @@ components:
     
     MetadataMap:
       type: object
-      additionalProperties:
-        type: string
+      properties:
+        entry:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetadataEntry'
+      example:
+        entry:
+        - '@key': kml.regionateFeatureLimit
+          $: '10'
+        - '@key': cacheAgeMax
+          $: '3600'
+        - '@key': cachingEnabled
+          $: 'true'
+        - '@key': indexingEnabled
+          $: 'false'
+        - '@key': dirName
+          $: tasmania_roads
+    MetadataEntry:
+      type: object
+      title: entry
+      properties:
+        '@key':
+          title: key
+          type: string
+        $:
+          title: text
+          type: string
     
     ProjectionPolicy:
       type: string
@@ -312,12 +349,10 @@ components:
           $ref: "#/components/schemas/EnvelopeInfo"
         nativeBoundingBox:
           $ref: "#/components/schemas/EnvelopeInfo"
-#        metadata:
-#          $ref: "#/components/schemas/MetadataMap"
-        metadatalinks:
-          type: array
-          items:
-            $ref: "#/components/schemas/MetadataLinkInfo"
+        metadata:
+          $ref: "#/components/schemas/MetadataMap"
+        metadataLinks:
+            $ref: "#/components/schemas/MetadataLinks"
         nativeCRS:
           type: string
           description: The native coordinate reference system object of the resource, in WKT format
@@ -429,8 +464,8 @@ components:
           description: name of the file the style originates from.
         legend:
           $ref: "#/components/schemas/LegendInfo"
-#        metadata:
-#          $ref: "#/components/schemas/MetadataMap"
+        metadata:
+          $ref: "#/components/schemas/MetadataMap"
 
     Version:
       type: object
@@ -612,7 +647,5 @@ components:
                 $ref: "#/components/schemas/StyleInfo"
             bounds:
               $ref: "#/components/schemas/EnvelopeInfo"
-            metadatalinks:
-              type: array
-              items:
-                $ref: "#/components/schemas/MetadataLinkInfo"
+            metadataLinks:
+                $ref: "#/components/schemas/MetadataLinks"

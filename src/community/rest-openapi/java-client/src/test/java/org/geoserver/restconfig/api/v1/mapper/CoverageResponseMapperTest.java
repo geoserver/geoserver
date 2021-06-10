@@ -55,7 +55,7 @@ public class CoverageResponseMapperTest extends SerializationTest {
         assertEquals(expected.getKeywords(), mapped.getKeywords());
         assertEquals(expected.getLatLonBoundingBox(), mapped.getLatLonBoundingBox());
 
-        assertEquals(expected.getMetadatalinks(), mapped.getMetadatalinks());
+        assertEquals(expected.getMetadataLinks(), mapped.getMetadataLinks());
         assertEquals(expected.getName(), mapped.getName());
 
         // ignore the isolated property, doesn't come in the response.

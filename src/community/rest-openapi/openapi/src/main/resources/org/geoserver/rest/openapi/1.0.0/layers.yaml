@@ -265,7 +265,7 @@ components:
           type: boolean
           description: Controls layer transparency (whether the layer is opaque or transparent).
         metadata:
-          $ref: "catalogresponses.yaml#/components/schemas/MetadataResponse"
+          $ref: "catalog.yaml#/components/schemas/MetadataMap"
         attribution:
           $ref: "catalog.yaml#/components/schemas/AttributionInfo"
         authorityURLs:

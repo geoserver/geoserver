@@ -116,9 +116,8 @@ components:
           $ref: '#/components/schemas/CRSResponse'
         projectionPolicy:
           $ref: "catalog.yaml#/components/schemas/ProjectionPolicy"
-        #REVISIT: looks like metadata may come as an array or a single object, sigh. e.g. "metadata": {"entry": {"@key": "k1","$": "v1"}} or "metadata": {"entry": [{"@key": "k1","$": "v1"},{"@key": "k2","$": "v2"}]}
-#        metadata:
-#          $ref: '#/components/schemas/MetadataResponse'
+        metadata:
+          $ref: 'catalog.yaml#/components/schemas/MetadataMap'
         store:
           $ref: '#/components/schemas/NamedLink'
         serviceConfiguration:
@@ -263,35 +262,6 @@ components:
               type: number
               format: double
 
-    MetadataResponse:
-      type: object
-      properties:
-        entry:
-          type: array
-          items:
-            $ref: '#/components/schemas/MetadataEntry'
-      example:
-        entry:
-        - '@key': kml.regionateFeatureLimit
-          $: '10'
-        - '@key': cacheAgeMax
-          $: '3600'
-        - '@key': cachingEnabled
-          $: 'true'
-        - '@key': indexingEnabled
-          $: 'false'
-        - '@key': dirName
-          $: tasmania_roads
-    MetadataEntry:
-      type: object
-      title: entry
-      properties:
-        '@key':
-          title: key
-          type: string
-        $:
-          title: text
-          type: string
     StringArrayResponse:
       type: object
       properties:

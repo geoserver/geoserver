@@ -12,7 +12,6 @@ import org.mapstruct.Mapping;
 public interface FeatureTypeResponseMapper extends ResourceResponseMapper {
 
     @Mapping(source = "attributes.attribute", target = "attributes")
-    //    @Mapping(source = "metadataLinks.metadataLink", target = "metadataLinks")
     FeatureTypeInfo map(FeatureTypeResponse source);
 
     public default DataStoreInfo namedLinkToDataStoreInfo(NamedLink namedLink) {

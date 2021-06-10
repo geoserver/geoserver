@@ -262,8 +262,33 @@ components:
     
     MetadataMap:
       type: object
-      additionalProperties:
-        type: string
+      properties:
+        entry:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetadataEntry'
+      example:
+        entry:
+        - '@key': kml.regionateFeatureLimit
+          $: '10'
+        - '@key': cacheAgeMax
+          $: '3600'
+        - '@key': cachingEnabled
+          $: 'true'
+        - '@key': indexingEnabled
+          $: 'false'
+        - '@key': dirName
+          $: tasmania_roads
+    MetadataEntry:
+      type: object
+      title: entry
+      properties:
+        '@key':
+          title: key
+          type: string
+        $:
+          title: text
+          type: string
     
     ProjectionPolicy:
       type: string
@@ -324,8 +349,8 @@ components:
           $ref: "#/components/schemas/EnvelopeInfo"
         nativeBoundingBox:
           $ref: "#/components/schemas/EnvelopeInfo"
-#        metadata:
-#          $ref: "#/components/schemas/MetadataMap"
+        metadata:
+          $ref: "#/components/schemas/MetadataMap"
         metadataLinks:
             $ref: "#/components/schemas/MetadataLinks"
         nativeCRS:
@@ -439,8 +464,8 @@ components:
           description: name of the file the style originates from.
         legend:
           $ref: "#/components/schemas/LegendInfo"
-#        metadata:
-#          $ref: "#/components/schemas/MetadataMap"
+        metadata:
+          $ref: "#/components/schemas/MetadataMap"
 
     Version:
       type: object

@@ -55,6 +55,8 @@
 	    "LayerInfoAllOf": "org.geoserver.openapi.model.catalog.LayerInfoAllOf",
 	    "LayerInfo": "org.geoserver.openapi.model.catalog.LayerInfo",
 	    "LegendInfo": "org.geoserver.openapi.model.catalog.LegendInfo",
+	    "MetadataMap": "org.geoserver.openapi.model.catalog.MetadataMap",
+	    "MetadataEntry": "org.geoserver.openapi.model.catalog.MetadataEntry",
 	    "MetadataLinkInfo": "org.geoserver.openapi.model.catalog.MetadataLinkInfo",
 	    "NamespaceInfo": "org.geoserver.openapi.model.catalog.NamespaceInfo",
 	    "NumberRange": "org.geoserver.openapi.model.catalog.NumberRange",

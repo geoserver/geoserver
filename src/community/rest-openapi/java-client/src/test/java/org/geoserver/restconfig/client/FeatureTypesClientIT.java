@@ -4,11 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.io.IOException;
 import java.net.URI;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.HashSet;
 import org.geoserver.openapi.model.catalog.DataStoreInfo;
 import org.geoserver.openapi.model.catalog.FeatureTypeInfo;
+import org.geoserver.openapi.model.catalog.MetadataEntry;
 import org.geoserver.openapi.model.catalog.MetadataLinks;
+import org.geoserver.openapi.model.catalog.MetadataMap;
 import org.geoserver.openapi.v1.model.WorkspaceSummary;
 import org.junit.After;
 import org.junit.Assume;
@@ -109,8 +114,8 @@ public class FeatureTypesClientIT {
                         .nativeName("roads")
                         .store(new DataStoreInfo().name("bad-store-name"));
         this.ex.expect(ServerException.NotFound.class);
-        //		server is not sending this message, but it logs it
-        //		ex.expectMessage("No such data store");
+        // server is not sending this message, but it logs it
+        // ex.expectMessage("No such data store");
         this.featureTypes.create(ws1.getName(), roads);
     }
 
@@ -272,5 +277,43 @@ public class FeatureTypesClientIT {
         updated = featureTypes.update(ws1.getName(), created.getName(), roads);
         assertEquals(metadataLinks, updated.getMetadataLinks());
         assertEquals(1, updated.getMetadataLinks().getMetadataLink().size());
+    }
+
+    public @Test void updateLayerMetadatamap_SetCacheMaxAge() throws IOException {
+        FeatureTypeInfo roads = new FeatureTypeInfo().name("roads");
+        roads.setNativeName("roads");
+        roads.setTitle("title");
+        roads.setAbstract("abstract");
+        roads.setStore(new DataStoreInfo().name("roadsStoreWs1"));
+        roads.setSrs("EPSG:4326");
+
+        FeatureTypeInfo created = featureTypes.create(ws1.getName(), roads);
+        assertNull(created.getMetadata());
+
+        MetadataMap metadata = new MetadataMap().entry(new ArrayList<>());
+        metadata.getEntry().add(new MetadataEntry().atKey("cacheAgeMax").value("3600"));
+        metadata.getEntry().add(new MetadataEntry().atKey("cachingEnabled").value("true"));
+        roads.setMetadata(metadata);
+
+        FeatureTypeInfo updated = featureTypes.update(ws1.getName(), created.getName(), roads);
+        assertEquals(
+                new HashSet<>(metadata.getEntry()),
+                new HashSet<>(updated.getMetadata().getEntry()));
+
+        metadata.getEntry().remove(1);
+        metadata.getEntry().add(new MetadataEntry().atKey("test").value("val"));
+
+        updated = featureTypes.update(ws1.getName(), created.getName(), roads);
+        assertEquals(
+                new HashSet<>(metadata.getEntry()),
+                new HashSet<>(updated.getMetadata().getEntry()));
+
+        metadata.getEntry().clear();
+        metadata.getEntry().add(new MetadataEntry().atKey("test2").value("val2"));
+        updated = featureTypes.update(ws1.getName(), created.getName(), roads);
+
+        assertEquals(
+                new HashSet<>(metadata.getEntry()),
+                new HashSet<>(updated.getMetadata().getEntry()));
     }
 }

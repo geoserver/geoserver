@@ -18,7 +18,6 @@ public interface CoverageResponseMapper extends ResourceResponseMapper {
         defaultExpression =
                 "java(source.getParameters() == null? null : (String)source.getParameters().get(\"nativeCoverageName\"))"
     )
-    //    @Mapping(source = "metadataLinks.metadataLink", target = "metadataLinks")
     CoverageInfo map(CoverageResponse source);
 
     public default CoverageStoreInfo namedLinkToCoverageStoreInfo(NamedLink namedLink) {

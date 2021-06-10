@@ -159,4 +159,14 @@ public class FeatureTypesClient {
         }
         return typeLinks;
     }
+
+    public void delete(@NonNull String workspaceName, @NonNull String featureTypeName) {
+        Boolean recurse = false;
+        api().deleteFeatureType(workspaceName, featureTypeName, recurse);
+    }
+
+    public void deleteRecursively(@NonNull String workspaceName, @NonNull String featureTypeName) {
+        Boolean recurse = true;
+        api().deleteFeatureType(workspaceName, featureTypeName, recurse);
+    }
 }

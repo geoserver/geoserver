@@ -11,6 +11,7 @@ import org.geoserver.openapi.model.catalog.FeatureTypeInfo;
 import org.geoserver.openapi.v1.client.FeaturetypesApi;
 import org.geoserver.openapi.v1.model.FeatureTypeInfoWrapper;
 import org.geoserver.openapi.v1.model.FeatureTypeList;
+import org.geoserver.openapi.v1.model.FeatureTypeResponse;
 import org.geoserver.openapi.v1.model.FeatureTypeResponseWrapper;
 import org.geoserver.openapi.v1.model.FeatureTypesListWrapper;
 import org.geoserver.openapi.v1.model.NamedLink;
@@ -50,7 +51,8 @@ public class FeatureTypesClient {
 
         FeatureTypeResponseWrapper wrapper =
                 api().getFeatureTypeByDefaultStore(workspaceName, info.getName(), true);
-        return mapper.map(wrapper.getFeatureType());
+        FeatureTypeResponse responseObject = wrapper.getFeatureType();
+        return mapper.map(responseObject);
     }
 
     /**
@@ -139,8 +141,11 @@ public class FeatureTypesClient {
         FeatureTypeList featureTypesByStore = null;
         try {
             String list = null;
+            // it's odd that client call is in charge of telling the server whether to log a
+            // warning/error or not
+            Boolean quietOnNotFound = Boolean.TRUE;
             featureTypesByStore =
-                    api().getFeatureTypesByStore(workspace, storeName, list, Boolean.TRUE);
+                    api().getFeatureTypesByStore(workspace, storeName, list, quietOnNotFound);
         } catch (Exception e) {
             log.debug(
                     "Got api error due to geoserver incompatible encoding of empty lists: {}",

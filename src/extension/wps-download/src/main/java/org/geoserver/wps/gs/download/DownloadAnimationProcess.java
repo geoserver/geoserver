@@ -48,6 +48,7 @@ import org.geotools.util.DateRange;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.logging.Logging;
 import org.jcodec.api.awt.AWTSequenceEncoder;
+import org.jcodec.common.io.FileChannelWrapper;
 import org.jcodec.common.io.NIOUtils;
 import org.jcodec.common.model.Rational;
 import org.opengis.util.ProgressListener;
@@ -172,96 +173,101 @@ public class DownloadAnimationProcess implements GeoServerProcess {
         final Resource output = resourceManager.getTemporaryResource("mp4");
         Rational frameRate = getFrameRate(fps);
 
-        AWTSequenceEncoder enc =
-                new AWTSequenceEncoder(NIOUtils.writableChannel(output.file()), frameRate);
+        try (FileChannelWrapper out = NIOUtils.writableChannel(output.file())) {
+            AWTSequenceEncoder enc = new AWTSequenceEncoder(out, frameRate);
 
-        DownloadServiceConfiguration configuration = confiGenerator.getConfiguration();
-        TimeParser timeParser = new TimeParser(configuration.getMaxAnimationFrames());
-        Collection parsedTimes = timeParser.parse(time);
-        progressListener.started();
-        Map<String, WebMapServer> serverCache = new HashMap<>();
+            DownloadServiceConfiguration configuration = confiGenerator.getConfiguration();
+            TimeParser timeParser = new TimeParser(configuration.getMaxAnimationFrames());
+            Collection parsedTimes = timeParser.parse(time);
+            progressListener.started();
+            Map<String, WebMapServer> serverCache = new HashMap<>();
 
-        // Have two threads work on encoding. The current thread builds the frames, and submits
-        // them into a small queue that the encoder thread picks from
-        BlockingQueue<BufferedImage> renderingQueue = new LinkedBlockingDeque<>(1);
-        BasicThreadFactory threadFactory =
-                new BasicThreadFactory.Builder().namingPattern("animation-encoder-%d").build();
-        ExecutorService executor = Executors.newSingleThreadExecutor(threadFactory);
-        // a way to get out of the encoding loop in case an exception happens during frame rendering
-        AtomicBoolean abortEncoding = new AtomicBoolean(false);
-        Future<Void> future =
-                executor.submit(
-                        () -> {
-                            int totalTimes = parsedTimes.size();
-                            int count = 1;
-                            BufferedImage frame;
-                            while ((frame = renderingQueue.take()) != STOP) {
-                                enc.encodeImage(frame);
-                                listener.progress(90 * (((float) count) / totalTimes));
-                                listener.setTask(
-                                        new SimpleInternationalString(
-                                                "Generated frames "
-                                                        + count
-                                                        + " out of "
-                                                        + totalTimes));
-                                count++;
-                                // handling exit due to WPS cancellation, or to exceptions
-                                if (listener.isCanceled() || abortEncoding.get()) return null;
-                            }
-                            return null;
-                        });
-        Request request = Dispatcher.REQUEST.get();
-        AnimationMetadata metadata = new AnimationMetadata();
-        try {
-            int frameCounter = 0;
-            for (Object parsedTime : parsedTimes) {
-                // turn parsed time into a specification, generates a "WMS" like request based on it
-                String mapTime = toWmsTimeSpecification(parsedTime);
-                LOGGER.log(Level.FINE, "Building frame for time %s", mapTime);
-                // clean up eventual previous warnings
-                warningAppender.init(request);
+            // Have two threads work on encoding. The current thread builds the frames, and submits
+            // them into a small queue that the encoder thread picks from
+            BlockingQueue<BufferedImage> renderingQueue = new LinkedBlockingDeque<>(1);
+            BasicThreadFactory threadFactory =
+                    new BasicThreadFactory.Builder().namingPattern("animation-encoder-%d").build();
+            ExecutorService executor = Executors.newSingleThreadExecutor(threadFactory);
+            // a way to get out of the encoding loop in case an exception happens during frame
+            // rendering
+            AtomicBoolean abortEncoding = new AtomicBoolean(false);
+            Future<Void> future =
+                    executor.submit(
+                            () -> {
+                                int totalTimes = parsedTimes.size();
+                                int count = 1;
+                                BufferedImage frame;
+                                while ((frame = renderingQueue.take()) != STOP) {
+                                    enc.encodeImage(frame);
+                                    listener.progress(90 * (((float) count) / totalTimes));
+                                    listener.setTask(
+                                            new SimpleInternationalString(
+                                                    "Generated frames "
+                                                            + count
+                                                            + " out of "
+                                                            + totalTimes));
+                                    count++;
+                                    // handling exit due to WPS cancellation, or to exceptions
+                                    if (listener.isCanceled() || abortEncoding.get()) return null;
+                                }
+                                return null;
+                            });
+            Request request = Dispatcher.REQUEST.get();
+            AnimationMetadata metadata = new AnimationMetadata();
+            try {
+                int frameCounter = 0;
+                for (Object parsedTime : parsedTimes) {
+                    // turn parsed time into a specification, generates a "WMS" like request based
+                    // on it
+                    String mapTime = toWmsTimeSpecification(parsedTime);
+                    LOGGER.log(Level.FINE, "Building frame for time %s", mapTime);
+                    // clean up eventual previous warnings
+                    warningAppender.init(request);
 
-                RenderedImage image =
-                        mapper.buildImage(
-                                bbox,
-                                decorationName,
-                                mapTime,
-                                width,
-                                height,
-                                headerHeight,
-                                layers,
-                                "image/png",
-                                new DefaultProgressListener(),
-                                serverCache);
-                ImageIO.write(
-                        image, "PNG", new File("/tmp/frame" + System.currentTimeMillis() + ".png"));
-                BufferedImage frame = toBufferedImage(image);
-                LOGGER.log(Level.FINE, "Got frame %s", frame);
-                renderingQueue.put(frame);
-                metadata.accumulateWarnings(frameCounter++);
+                    RenderedImage image =
+                            mapper.buildImage(
+                                    bbox,
+                                    decorationName,
+                                    mapTime,
+                                    width,
+                                    height,
+                                    headerHeight,
+                                    layers,
+                                    "image/png",
+                                    new DefaultProgressListener(),
+                                    serverCache);
+                    ImageIO.write(
+                            image,
+                            "PNG",
+                            new File("/tmp/frame" + System.currentTimeMillis() + ".png"));
+                    BufferedImage frame = toBufferedImage(image);
+                    LOGGER.log(Level.FINE, "Got frame %s", frame);
+                    renderingQueue.put(frame);
+                    metadata.accumulateWarnings(frameCounter++);
 
-                // exit sooner in case of cancellation, encoding abort is handled in finally
-                if (listener.isCanceled()) return null;
+                    // exit sooner in case of cancellation, encoding abort is handled in finally
+                    if (listener.isCanceled()) return null;
+                }
+                renderingQueue.put(STOP);
+                // wait for encoder to finish
+                future.get();
+                progressListener.progress(100);
+            } finally {
+                // force encoding thread to stop in case we got here due to an exception
+                abortEncoding.set(true);
+                executor.shutdown();
+                warningAppender.finished(request);
             }
-            renderingQueue.put(STOP);
-            // wait for encoder to finish
-            future.get();
-            progressListener.progress(100);
-        } finally {
-            // force encoding thread to stop in case we got here due to an exception
-            abortEncoding.set(true);
-            executor.shutdown();
-            warningAppender.finished(request);
+            enc.finish();
+
+            // it's a derived property, but XStream does not like to use getters
+            metadata.setWarningsFound(!metadata.getWarnings().isEmpty());
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("result", new ResourceRawData(output, VIDEO_MP4, "mp4"));
+            result.put("metadata", metadata);
+            return result;
         }
-        enc.finish();
-
-        // it's a derived property, but XStream does not like to use getters
-        metadata.setWarningsFound(!metadata.getWarnings().isEmpty());
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("result", new ResourceRawData(output, VIDEO_MP4, "mp4"));
-        result.put("metadata", metadata);
-        return result;
     }
 
     private BufferedImage toBufferedImage(RenderedImage image) {

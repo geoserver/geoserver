@@ -37,6 +37,7 @@ import org.jcodec.common.DemuxerTrack;
 import org.jcodec.common.DemuxerTrackMeta;
 import org.jcodec.common.Format;
 import org.jcodec.common.JCodecUtil;
+import org.jcodec.common.io.FileChannelWrapper;
 import org.jcodec.common.io.NIOUtils;
 import org.jcodec.scale.AWTUtil;
 import org.junit.Test;
@@ -93,8 +94,10 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
             // grab frames for checking
             File source = new File("src/test/resources/org/geoserver/wps/gs/download/bm_time.zip");
-            FrameGrab grabber = FrameGrab.createFrameGrab(NIOUtils.readableChannel(testFile));
-            assertor.accept(source, grabber);
+            try (FileChannelWrapper fc = NIOUtils.readableChannel(testFile)) {
+                FrameGrab grabber = FrameGrab.createFrameGrab(fc);
+                assertor.accept(source, grabber);
+            }
         }
     }
 

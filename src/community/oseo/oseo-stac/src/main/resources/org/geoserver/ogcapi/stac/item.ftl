@@ -3,7 +3,7 @@
   <h2>${item.attributes.identifier.value}</h2>
   <#include "item_include.ftl">
 
-  <#if item.assets??>
+  <#if item.assets.value?has_content>
     <p><b>Assets:</p></b>
     <#assign amap = item.assets.value?eval_json>
     <ul>

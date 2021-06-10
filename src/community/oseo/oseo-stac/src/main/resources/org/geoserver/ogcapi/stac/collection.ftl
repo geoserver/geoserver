@@ -5,7 +5,7 @@
 
   <#include "collection_include.ftl">
   
-  <#if collection.assets??>
+  <#if collection.assets.value?has_content>
     <p><b>Assets:</p></b>
     <#assign amap = collection.assets.value?eval_json>
     <ul>

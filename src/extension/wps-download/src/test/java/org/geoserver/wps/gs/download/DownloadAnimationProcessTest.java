@@ -50,6 +50,11 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
         void accept(T t, U u) throws Exception;
     }
 
+    @Override
+    protected String getLogConfiguration() {
+        return "/DEFAULT_LOGGING.properties";
+    }
+
     @Test
     public void testDescribeProcess() throws Exception {
         Document d =

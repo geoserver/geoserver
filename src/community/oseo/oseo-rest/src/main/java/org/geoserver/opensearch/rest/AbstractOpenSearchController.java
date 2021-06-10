@@ -378,8 +378,17 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
             ab.setDescriptor((AttributeDescriptor) pd);
             Object originalValue = feature.getAttribute(sourceName);
             Object converted = convert(originalValue, pd.getType().getBinding());
-            Attribute attribute = ab.buildSimple(null, converted);
-            builder.append(pd.getName(), attribute);
+            // features need to have an identifier for the creation to work, if null must be skipped
+            if (pd.getType() instanceof FeatureType) {
+                if (converted instanceof Feature) {
+                    Feature f = (Feature) converted;
+                    Attribute attribute = ab.buildSimple(f.getIdentifier().getID(), converted);
+                    builder.append(pd.getName(), attribute);
+                }
+            } else {
+                Attribute attribute = ab.buildSimple(null, converted);
+                builder.append(pd.getName(), attribute);
+            }
         }
         // if not otherwise specified, collections and products are enabled
         if (feature.getAttribute("enabled") == null) {

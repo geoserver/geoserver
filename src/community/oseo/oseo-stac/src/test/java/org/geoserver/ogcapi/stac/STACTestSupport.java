@@ -163,7 +163,7 @@ public class STACTestSupport extends OGCApiTestSupport {
         assertEquals("sentinel-2a", s2Sample.read("properties.platform"));
         assertEquals("sentinel2", s2Sample.read("properties.constellation"));
         List<String> instruments = s2Sample.read("properties.instruments");
-        assertThat(instruments, Matchers.containsInAnyOrder("msi"));
+        assertThat(instruments, Matchers.containsInAnyOrder("MSI"));
         // ... eo
         assertEquals(Integer.valueOf(7), s2Sample.read("properties.eo:cloud_cover", Integer.class));
         // ... links

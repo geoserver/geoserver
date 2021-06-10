@@ -11,6 +11,8 @@
     </li>
     <li><b>Properties</b>:
       <ul>
+        <#assign ca=a.collection.rawValue>
+        <#if ca.instrument.value??><li data-tid='instrument'>Instrument: ${ca.instrument.value}</#if>
         <#if a.cloudCover.value??><li data-tid='ccover'>Cloud cover: ${a.cloudCover.value}</#if> 
         <#if a.illuminationAzimuthAngle.value?has_content><li>Sun azimuth: ${a.illuminationAzimuthAngle.value}</#if>
         <#if a.illuminationElevationAngle.rawValue?has_content><li>Sun elevation: ${a.illuminationElevationAngle.value}</#if>

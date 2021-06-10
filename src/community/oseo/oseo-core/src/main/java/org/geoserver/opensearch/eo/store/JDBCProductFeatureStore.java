@@ -22,6 +22,7 @@ import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Attribute;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
@@ -79,11 +80,24 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
     protected Query mapToSimpleCollectionQuery(Query query, boolean addJoins) throws IOException {
         Query result = super.mapToSimpleCollectionQuery(query, addJoins);
 
-        // join to quicklook table if necessary
+        // join to quicklook table if necessary (use an outer join as it might be missing)
         if (addJoins && hasOutputProperty(query, OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, false)) {
             Filter filter = FF.equal(FF.property("id"), FF.property("quicklook.tid"), true);
             Join join = new Join("product_thumb", filter);
+            join.setType(Join.Type.OUTER);
             join.setAlias("quicklook");
+            result.getJoins().add(join);
+        }
+
+        if (addJoins
+                && hasOutputProperty(query, OpenSearchAccess.COLLECTION_PROPERTY_NAME, false)) {
+            Filter filter =
+                    FF.equal(
+                            FF.property("eoParentIdentifier"),
+                            FF.property("collection.eoIdentifier"),
+                            true);
+            Join join = new Join("collection", filter);
+            join.setAlias("collection");
             result.getJoins().add(join);
         }
 
@@ -105,6 +119,30 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
                             schema.getDescriptor(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME));
             Attribute attribute = ab.buildSimple(null, quicklookFeature.getAttribute("thumb"));
             builder.append(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME, attribute);
+        }
+
+        // collection extraction
+        Object collection = fi.getAttribute("collection");
+        if (collection instanceof SimpleFeature) {
+            try {
+                FeatureType collectionType =
+                        (FeatureType)
+                                getSchema()
+                                        .getDescriptor(
+                                                JDBCOpenSearchAccess.COLLECTION_PROPERTY_NAME)
+                                        .getType();
+                JDBCCollectionFeatureStore collectionSource =
+                        (JDBCCollectionFeatureStore)
+                                ((JDBCOpenSearchAccess) getDataStore()).getCollectionSource();
+                ComplexFeatureBuilder cb = new ComplexFeatureBuilder(collectionType);
+                SimpleFeature sf = (SimpleFeature) collection;
+                collectionSource.mapPropertiesToComplex(cb, sf);
+                Feature collectionFeature =
+                        cb.buildFeature((String) sf.getAttribute("eoIdentifier"));
+                builder.append(OpenSearchAccess.COLLECTION_PROPERTY_NAME, collectionFeature);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to access collection schema", e);
+            }
         }
     }
 

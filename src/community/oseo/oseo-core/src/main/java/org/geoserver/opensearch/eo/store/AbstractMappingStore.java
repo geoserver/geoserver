@@ -412,7 +412,8 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     public FeatureCollection<FeatureType, Feature> getFeatures(Query query) throws IOException {
         // first get the ids of the features we are going to return, no joins to support paging
         Query idsQuery = mapToSimpleCollectionQuery(query, false);
-        // idsQuery.setProperties(Query.NO_PROPERTIES); (no can do, there are mandatory fields)
+        // uncommenting causes a ClassCastException, need to figure out why
+        // idsQuery.setPropertyNames("eoIdentifier"); //  (no can do, there are mandatory fields)
         SimpleFeatureCollection idFeatureCollection =
                 getDelegateCollectionSource().getFeatures(idsQuery);
 
@@ -492,6 +493,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     /** Performs the common mappings, subclasses can override to add more */
     protected void mapPropertiesToComplex(ComplexFeatureBuilder builder, SimpleFeature fi) {
         AttributeBuilder ab = new AttributeBuilder(FEATURE_FACTORY);
+        FeatureType schema = builder.getFeatureType();
         for (PropertyDescriptor pd : schema.getDescriptors()) {
             if (!(pd instanceof AttributeDescriptor)) {
                 continue;

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.opensearch.eo.ProductClass;
@@ -522,33 +523,8 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         final String dbSchema = delegate.getDatabaseSchema();
         // build the joining SQL
         StringJoiner attributes = new StringJoiner(", ");
-        // collection attributes
-        ContentFeatureSource collectionSource = delegate.getFeatureSource(collectionTableName);
-        for (AttributeDescriptor ad : collectionSource.getSchema().getAttributeDescriptors()) {
-            if (ad.getLocalName().startsWith(JDBCOpenSearchAccess.EO_PREFIX)) {
-                String column = encodeColumn(dialect, "collection", ad.getLocalName());
-                if (ad.getLocalName().equals("eoIdentifier")) {
-                    attributes.add(column + " as \"collectionEoIdentifier\"");
-                } else if (!"eoAcquisitionStation".equals(ad.getLocalName())) {
-                    // add everything that's not duplicate
-                    attributes.add(column);
-                }
-            }
-        }
-        // product attributes
-        ContentFeatureSource productSource = delegate.getFeatureSource(productTableName);
-        for (AttributeDescriptor ad : productSource.getSchema().getAttributeDescriptors()) {
-            final String localName = ad.getLocalName();
-            if (localName.startsWith(JDBCOpenSearchAccess.EO_PREFIX)
-                    || "timeStart".equals(localName)
-                    || "timeEnd".equals(localName)
-                    || "crs".equals(localName)
-                    || (productClass != null && localName.startsWith(productClass.getPrefix()))
-                    || (productClass == null && matchesAnyProductClass(localName))) {
-                String column = encodeColumn(dialect, "product", localName);
-                attributes.add(column);
-            }
-        }
+        Set<String> names = new HashSet<>();
+
         // granule attributes
         SimpleFeatureType granuleSchema = delegate.getSchema(granuleTableName);
         String productIdColumn = null;
@@ -562,8 +538,9 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
             } else if ("product_id".equalsIgnoreCase(localName)) {
                 productIdColumn = localName;
             } else {
-                String column = encodeColumn(dialect, "granule", ad.getLocalName());
+                String column = encodeColumn(dialect, "granule", localName);
                 attributes.add(column);
+                names.add(localName);
             }
             if ("the_geom".equalsIgnoreCase(localName)) {
                 theGeomName = localName;
@@ -572,8 +549,45 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
             }
         }
 
+        // product attributes
+        ContentFeatureSource productSource = delegate.getFeatureSource(productTableName);
+        for (AttributeDescriptor ad : productSource.getSchema().getAttributeDescriptors()) {
+            final String localName = ad.getLocalName();
+            if (localName.startsWith(JDBCOpenSearchAccess.EO_PREFIX)
+                    || "timeStart".equals(localName)
+                    || "timeEnd".equals(localName)
+                    || "crs".equals(localName)
+                    || (productClass != null && localName.startsWith(productClass.getPrefix()))
+                    || (productClass == null && matchesAnyProductClass(localName))) {
+                String column = encodeColumn(dialect, "product", localName);
+                attributes.add(column);
+                names.add(localName);
+            }
+        }
+
+        // collection attributes
+        ContentFeatureSource collectionSource = delegate.getFeatureSource(collectionTableName);
+        for (AttributeDescriptor ad : collectionSource.getSchema().getAttributeDescriptors()) {
+            String localName = ad.getLocalName();
+            if (localName.startsWith(JDBCOpenSearchAccess.EO_PREFIX)) {
+                String column = encodeColumn(dialect, "collection", localName);
+                if (names.contains(localName)) {
+                    int counter = 1;
+                    String base = "collection" + WordUtils.capitalize(localName);
+                    String alias = base;
+                    while (names.contains(alias)) {
+                        alias = base + counter++;
+                    }
+                    attributes.add(column + " as \"" + alias + "\"");
+                    names.add(alias);
+                } else {
+                    attributes.add(column);
+                }
+            }
+        }
+
         StringBuffer sb = new StringBuffer("SELECT ");
-        sb.append(attributes.toString());
+        sb.append(attributes);
         sb.append("\n");
         sb.append(" FROM ");
         encodeTableName(dialect, dbSchema, granuleTableName, sb);

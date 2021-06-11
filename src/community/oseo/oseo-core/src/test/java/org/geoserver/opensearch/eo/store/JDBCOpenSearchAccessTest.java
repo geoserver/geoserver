@@ -468,6 +468,12 @@ public class JDBCOpenSearchAccessTest {
                 mappings, hasEntry(equalToIgnoringCase("THE_GEOM"), equalTo(Polygon.class)));
         // check that we have the extra properties for hetero mosaics
         MatcherAssert.assertThat(mappings, hasEntry(equalTo("crs"), equalTo(String.class)));
+        // check for columns that have an instance in both product and collection
+        MatcherAssert.assertThat(
+                mappings, hasEntry(equalTo("collectionEoIdentifier"), equalTo(String.class)));
+        MatcherAssert.assertThat(
+                mappings,
+                hasEntry(equalTo("collectionEoAcquisitionStation"), equalTo(String.class)));
     }
 
     private void assertPropertyNamespace(FeatureType schema, String name, String namespaceURI) {

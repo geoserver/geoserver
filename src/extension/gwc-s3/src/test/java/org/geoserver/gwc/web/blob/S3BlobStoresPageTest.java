@@ -85,6 +85,9 @@ public class S3BlobStoresPageTest extends GeoServerWicketTestSupport {
         BlobStoresPage page = new BlobStoresPage();
 
         BlobStoreInfo dummy1 = dummyStore1();
+        if (GWC.get().getBlobStores().contains(dummy1)) {
+            GWC.get().removeBlobStores(Collections.singleton(ID_DUMMY1));
+        }
         GWC.get().addBlobStore(dummy1);
 
         List<BlobStoreInfo> blobStores = GWC.get().getBlobStores();
@@ -138,13 +141,17 @@ public class S3BlobStoresPageTest extends GeoServerWicketTestSupport {
         // sort descending on id
         tester.clickLink("storesPanel:listContainer:sortableLinks:0:header:link", true);
         tester.clickLink("storesPanel:listContainer:sortableLinks:0:header:link", true);
-
+        executeExactAjaxEventBehavior(
+                "storesPanel:listContainer:items:1:selectItemContainer:selectItem",
+                "click",
+                "true");
         // select
         CheckBox selector =
                 ((CheckBox)
                         tester.getComponentFromLastRenderedPage(
                                 "storesPanel:listContainer:items:1:selectItemContainer:selectItem"));
         tester.getRequest().setParameter(selector.getInputName(), "true");
+        tester.getRequest().setMethod("get");
         tester.executeAjaxEvent(selector, "click");
 
         assertEquals(1, table.getSelection().size());
@@ -166,7 +173,10 @@ public class S3BlobStoresPageTest extends GeoServerWicketTestSupport {
         // sort descending on id
         tester.clickLink("storesPanel:listContainer:sortableLinks:0:header:link", true);
         tester.clickLink("storesPanel:listContainer:sortableLinks:0:header:link", true);
-
+        executeExactAjaxEventBehavior(
+                "storesPanel:listContainer:items:2:selectItemContainer:selectItem",
+                "click",
+                "true");
         // select
         // super.print(page, false, false, true);
         selector =
@@ -174,6 +184,7 @@ public class S3BlobStoresPageTest extends GeoServerWicketTestSupport {
                         tester.getComponentFromLastRenderedPage(
                                 "storesPanel:listContainer:items:2:selectItemContainer:selectItem"));
         tester.getRequest().setParameter(selector.getInputName(), "true");
+        tester.getRequest().setMethod("get");
         tester.executeAjaxEvent(selector, "click");
 
         // click delete

@@ -127,13 +127,19 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
         // sort descending on id
         tester.clickLink("storesPanel:listContainer:sortableLinks:0:header:link", true);
         tester.clickLink("storesPanel:listContainer:sortableLinks:0:header:link", true);
-
+        print(tester.getLastRenderedPage(), true, true);
+        executeExactAjaxEventBehavior(
+                "storesPanel:listContainer:items:1:selectItemContainer:selectItem",
+                "click",
+                "true");
         // select
         CheckBox selector =
                 ((CheckBox)
                         tester.getComponentFromLastRenderedPage(
                                 "storesPanel:listContainer:items:1:selectItemContainer:selectItem"));
+
         tester.getRequest().setParameter(selector.getInputName(), "true");
+        tester.getRequest().setMethod("get");
         tester.executeAjaxEvent(selector, "click");
 
         assertEquals(1, table.getSelection().size());
@@ -163,6 +169,7 @@ public class BlobStoresPageTest extends GeoServerWicketTestSupport {
                         tester.getComponentFromLastRenderedPage(
                                 "storesPanel:listContainer:items:2:selectItemContainer:selectItem"));
         tester.getRequest().setParameter(selector.getInputName(), "true");
+        tester.getRequest().setMethod("get");
         tester.executeAjaxEvent(selector, "click");
 
         // click delete

@@ -39,6 +39,7 @@ import org.geotools.coverage.grid.io.GranuleSource;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
 import org.geotools.data.Query;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.util.URLs;
 import org.junit.Test;
 import org.opengis.filter.Filter;
@@ -307,6 +308,9 @@ public class ImporterMosaicTest extends ImporterTestSupport {
     public void testHarvestNetCDFWithAuxiliaryNetCDFStore() throws Exception {
         Catalog catalog = getCatalog();
         // same as test above, but using a auxiliary datastore for netcdf internal indexes
+        // Adding the same layer with different config. cleaning the cache
+        NetCDFUtilities.clearCaches();
+
         getTestData()
                 .addRasterLayer(
                         POLYPHEMUS,

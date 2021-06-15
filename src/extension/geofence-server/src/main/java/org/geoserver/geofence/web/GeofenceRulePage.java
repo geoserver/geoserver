@@ -16,7 +16,6 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.extensions.markup.html.form.palette.Palette;
 import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
@@ -572,7 +571,6 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                             && layerChoice.getConvertedInput() != null;
 
                             ruleFormModel.getObject().layerDetails.attributes.clear();
-                            boolean isRaster = false;
                             if (layerChoice.getConvertedInput() != null) {
                                 PublishedInfo info =
                                         getCatalog()
@@ -581,29 +579,14 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                                         Predicates.equal(
                                                                 "name",
                                                                 layerChoice.getConvertedInput()));
-                                switch (info.getType()) {
-                                    case VECTOR:
-                                    case REMOTE:
-                                        ruleFormModel.getObject().layerDetails.layerType =
-                                                LayerType.VECTOR;
-                                        break;
-                                    case RASTER:
-                                    case WMS:
-                                    case WMTS:
-                                        ruleFormModel.getObject().layerDetails.layerType =
-                                                LayerType.RASTER;
-                                        isRaster = true;
-                                        break;
-                                    case GROUP:
-                                        ruleFormModel.getObject().layerDetails.layerType =
-                                                LayerType.LAYERGROUP;
-                                        break;
-                                }
+                                LayerDetailsFormData layerDetails =
+                                        ruleFormModel.getObject().layerDetails;
+                                LayerType layerType = setLayerType(info, layerDetails);
                                 ResourceInfo resource =
                                         info instanceof LayerInfo
                                                 ? ((LayerInfo) info).getResource()
                                                 : null;
-                                if (isRaster) {
+                                if (layerType != null && layerType.equals(LayerType.RASTER)) {
                                     spatialFilterTypeChoice.setModelObject(SpatialFilterType.CLIP);
                                     spatialFilterTypeChoice.setEnabled(false);
                                 } else {
@@ -744,6 +727,24 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         }
     }
 
+    LayerType setLayerType(PublishedInfo info, LayerDetailsFormData layerDetails) {
+        switch (info.getType()) {
+            case VECTOR:
+            case REMOTE:
+                layerDetails.layerType = LayerType.VECTOR;
+                break;
+            case RASTER:
+            case WMS:
+            case WMTS:
+                layerDetails.layerType = LayerType.RASTER;
+                break;
+            case GROUP:
+                layerDetails.layerType = LayerType.LAYERGROUP;
+                break;
+        }
+        return layerDetails.layerType;
+    }
+
     protected class LayerDetailsPanel extends Panel {
 
         private static final long serialVersionUID = 2996490022169801394L;
@@ -775,47 +776,65 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                         protected void onUpdate(AjaxRequestTarget target) {
                             container.setVisible(layerDetailsCheck.getConvertedInput());
                             target.add(container);
+                            RuleFormData rule = ruleFormModel.getObject();
+                            if (layerDetailsCheck.getConvertedInput().booleanValue()) {
+                                PublishedInfo info =
+                                        getCatalog()
+                                                .get(
+                                                        PublishedInfo.class,
+                                                        Predicates.equal(
+                                                                "name", rule.rule.getLayer()));
+                                LayerDetailsFormData layerDetailsFormData = rule.layerDetails;
+                                LayerType layerType = layerDetailsFormData.layerType;
+                                if (layerType == null)
+                                    layerType = setLayerType(info, rule.layerDetails);
+                                boolean enableFiltersAndStyles =
+                                        isFilterAndStylesEnabled(layerType);
+                                Component readFilter = container.get("cqlFilterRead");
+                                readFilter.setEnabled(enableFiltersAndStyles);
+                                Component writeFilter = container.get("cqlFilterWrite");
+                                writeFilter.setEnabled(enableFiltersAndStyles);
+                                Component defaultStyles = container.get("defaultStyle");
+                                defaultStyles.setEnabled(enableFiltersAndStyles);
+                                Component allowedStyles = container.get("allowedStyles");
+                                allowedStyles.setEnabled(enableFiltersAndStyles);
+                                boolean isRaster = isRasterType(layerType);
+                                @SuppressWarnings("unchecked")
+                                DropDownChoice<SpatialFilterType> spatialFilterType =
+                                        (DropDownChoice<SpatialFilterType>)
+                                                container.get("spatialFilterType");
+                                if (isRaster) {
+                                    spatialFilterType.setModelObject(SpatialFilterType.CLIP);
+                                    spatialFilterType.setEnabled(false);
+                                } else {
+                                    spatialFilterType.setEnabled(true);
+                                    spatialFilterType.setModelObject(SpatialFilterType.INTERSECT);
+                                }
+                                target.add(
+                                        readFilter,
+                                        writeFilter,
+                                        defaultStyles,
+                                        allowedStyles,
+                                        spatialFilterType);
+                            }
                         }
                     });
 
-            DropDownChoice<LayerType> layerType =
-                    new DropDownChoice<>(
-                            "layerType",
-                            ruleFormModel.bind("layerDetails.layerType"),
-                            Arrays.asList(LayerType.values()),
-                            new LayerTypeRenderer());
-            boolean isNullType = ruleFormModel.getObject().layerDetails.layerType == null;
-            layerType.setEnabled(isNullType);
-            layerType.add(
-                    new AjaxFormComponentUpdatingBehavior("onchange") {
-                        @Override
-                        protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
-                            boolean enableFiltersAndStyles =
-                                    !layerType.getValue().equals(LayerType.LAYERGROUP.name());
-                            Component readFilter = container.get("cqlFilterRead");
-                            readFilter.setEnabled(enableFiltersAndStyles);
-                            Component writeFilter = container.get("cqlFilterWrite");
-                            writeFilter.setEnabled(enableFiltersAndStyles);
-                            Component defaultStyles = container.get("defaultStyle");
-                            defaultStyles.setEnabled(enableFiltersAndStyles);
-                            Component allowedStyles = container.get("allowedStyles");
-                            ajaxRequestTarget.add(
-                                    readFilter, writeFilter, defaultStyles, allowedStyles);
-                            boolean isRaster = layerType.getValue().equals(LayerType.RASTER.name());
-                            Component spatialFilterType = container.get("spatialFilterType");
-                            Component spatialFilterTypeLabel =
-                                    container.get("spatialFilterTypeLabel");
-                            spatialFilterType.setVisible(!isRaster);
-                            spatialFilterTypeLabel.setVisible(!isRaster);
-                        }
-                    });
-            container.add(layerType);
-
+            Label layerTypeLabel =
+                    new Label("layerType", ruleFormModel.bind("layerDetails.layerType"));
+            container.add(layerTypeLabel);
+            LayerDetailsFormData layerDetailsFormData =
+                    ruleFormModel.getObject() != null
+                            ? ruleFormModel.getObject().layerDetails
+                            : null;
+            boolean enableFilterAndStyles = isFilterAndStylesEnabled(layerDetailsFormData);
             DropDownChoice<String> defaultStyle =
                     new DropDownChoice<>(
                             "defaultStyle",
                             ruleFormModel.bind("layerDetails.defaultStyle"),
                             getStyles());
+            defaultStyle.setOutputMarkupId(true);
+            defaultStyle.setEnabled(enableFilterAndStyles);
             container.add(defaultStyle);
 
             Palette<String> allowedStyles =
@@ -845,28 +864,22 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                     new ResourceModel("ExtraStylesPalette.availableHeader"));
                         }
                     };
+            allowedStyles.setOutputMarkupId(true);
+            allowedStyles.setEnabled(enableFilterAndStyles);
             container.add(allowedStyles);
             allowedStyles.add(new DefaultTheme());
-            boolean isLayerGroup =
-                    !isNullType
-                            ? ruleFormModel
-                                    .getObject()
-                                    .layerDetails
-                                    .layerType
-                                    .equals(LayerType.LAYERGROUP)
-                            : false;
             TextArea<String> cqlFilterRead =
                     new TextArea<>(
                             "cqlFilterRead", ruleFormModel.bind("layerDetails.cqlFilterRead"));
             cqlFilterRead.setOutputMarkupId(true);
-            cqlFilterRead.setEnabled(!isLayerGroup);
+            cqlFilterRead.setEnabled(enableFilterAndStyles);
             container.add(cqlFilterRead);
 
             TextArea<String> cqlFilterWrite =
                     new TextArea<>(
                             "cqlFilterWrite", ruleFormModel.bind("layerDetails.cqlFilterWrite"));
             cqlFilterWrite.setOutputMarkupId(true);
-            cqlFilterWrite.setEnabled(!isLayerGroup);
+            cqlFilterWrite.setEnabled(enableFilterAndStyles);
             container.add(cqlFilterWrite);
             TextArea<String> allowedArea =
                     new TextArea<>("allowedArea", ruleFormModel.bind("layerDetails.allowedArea"));
@@ -878,20 +891,15 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                             ruleFormModel.bind("layerDetails.spatialFilterType"),
                             Arrays.asList(SpatialFilterType.values()),
                             new SpatialFilterTypeRendered());
-            boolean isRaster =
-                    !isNullType
-                            ? ruleFormModel
-                                    .getObject()
-                                    .layerDetails
-                                    .layerType
-                                    .equals(LayerType.RASTER)
-                            : false;
+            boolean isRaster = isRasterType(layerDetailsFormData);
             if (isRaster) {
                 spatialFilterTypeChoice.setModelObject(SpatialFilterType.CLIP);
                 spatialFilterTypeChoice.setEnabled(false);
             } else {
                 spatialFilterTypeChoice.setEnabled(true);
             }
+            spatialFilterTypeChoice.setOutputMarkupId(true);
+            spatialFilterTypeChoice.setOutputMarkupPlaceholderTag(true);
             container.add(spatialFilterTypeChoice);
 
             container.add(
@@ -944,27 +952,30 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
         }
     }
 
+    private boolean isFilterAndStylesEnabled(LayerDetailsFormData detailsFormData) {
+        if (detailsFormData == null) return false;
+        return isFilterAndStylesEnabled(detailsFormData.layerType);
+    }
+
+    private boolean isFilterAndStylesEnabled(LayerType layerType) {
+        return layerType != null && !layerType.equals(LayerType.LAYERGROUP);
+    }
+
+    private boolean isRasterType(LayerDetailsFormData detailsFormData) {
+        if (detailsFormData == null) return false;
+        return isRasterType(detailsFormData.layerType);
+    }
+
+    private boolean isRasterType(LayerType layerType) {
+        return layerType != null && layerType.equals(LayerType.RASTER);
+    }
+
     private ArrayList<String> getStyles() {
         ArrayList<String> styleNames = new ArrayList<>();
         for (StyleInfo si : getCatalog().getStyles()) {
             styleNames.add(si.getName());
         }
         return styleNames;
-    }
-
-    /** Makes sure we see translated text, by the raw name is used for the model */
-    protected class LayerTypeRenderer extends ChoiceRenderer<LayerType> {
-        private static final long serialVersionUID = -7478943956804313995L;
-
-        @Override
-        public Object getDisplayValue(LayerType object) {
-            return new ParamResourceModel(object.name(), getPage()).getObject();
-        }
-
-        @Override
-        public String getIdValue(LayerType object, int index) {
-            return object.name();
-        }
     }
 
     /** Makes sure we see translated text, by the raw name is used for the model */

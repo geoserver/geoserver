@@ -23,17 +23,13 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.DimensionFilterBuilder;
-import org.geoserver.gwc.layer.CatalogConfiguration;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.wmts.dimensions.Dimension;
 import org.geoserver.gwc.wmts.dimensions.DimensionsUtils;
-import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.util.KvpMap;
 import org.geoserver.ows.util.KvpUtils;
-import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.WMS;
 import org.geotools.data.Query;
 import org.geotools.factory.CommonFactoryFinder;
@@ -198,7 +194,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
 
     @Override
     public void encodeLayer(XMLBuilder xmlBuilder, TileLayer tileLayer) throws IOException {
-        LayerInfo layerInfo = getLayerInfo(tileLayer, tileLayer.getName());
+        LayerInfo layerInfo = getLayerInfo(tileLayer);
         if (layerInfo == null) {
             // dimension are not supported for this layer (maybe is a layer group)
             return;
@@ -217,7 +213,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         // getting and parsing the mandatory parameters
         String layerName = (String) conveyor.getParameter("layer", true);
         TileLayer tileLayer = tileLayerDispatcher.getTileLayer(layerName);
-        LayerInfo layerInfo = getLayerInfo(tileLayer, layerName);
+        LayerInfo layerInfo = getLayerInfo(tileLayer);
         Set<String> requestedDomains = getRequestedDomains(conveyor.getParameter("domains", false));
         // getting this layer dimensions along with its values
         List<Dimension> dimensions =
@@ -250,7 +246,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         // getting and parsing the mandatory parameters
         String layerName = (String) conveyor.getParameter("layer", true);
         TileLayer tileLayer = tileLayerDispatcher.getTileLayer(layerName);
-        LayerInfo layerInfo = getLayerInfo(tileLayer, layerName);
+        LayerInfo layerInfo = getLayerInfo(tileLayer);
         Set<String> requestedDomains = getRequestedDomains(conveyor.getParameter("domain", true));
         // getting this layer dimensions along with its values
         List<Dimension> dimensions =
@@ -525,31 +521,21 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
         conveyor.getResponse().setContentType("text/xml; subtype=gml/3.1.1");
     }
 
-    private LayerInfo getLayerInfo(TileLayer tileLayer, String layerName) {
+    private LayerInfo getLayerInfo(TileLayer tileLayer) {
+        // There isn't anything we can do if it isn't a GeoServer tilelayer
+        if (!(tileLayer instanceof GeoServerTileLayer)) {
+            return null;
+        }
+
         // let's see if we can get the layer info from the tile layer
-        if (tileLayer != null && tileLayer instanceof GeoServerTileLayer) {
-            PublishedInfo publishedInfo = ((GeoServerTileLayer) tileLayer).getPublishedInfo();
-            if (!(publishedInfo instanceof LayerInfo)) {
-                // dimensions are not supported for layers groups
-                return null;
-            }
-            // go through the catalog to make sure we get all the wrapping necessary, including
-            // security
-            return catalog.getLayer(publishedInfo.getId());
+        PublishedInfo publishedInfo = ((GeoServerTileLayer) tileLayer).getPublishedInfo();
+        if (!(publishedInfo instanceof LayerInfo)) {
+            // dimensions are not supported for layers groups
+            return null;
         }
-        // let's see if we are in the context of a virtual service
-        WorkspaceInfo localWorkspace = LocalWorkspace.get();
-        if (localWorkspace != null) {
-            // we need to make sure that the layer name is prefixed with the local workspace
-            layerName = CatalogConfiguration.removeWorkspacePrefix(layerName, catalog);
-            layerName = localWorkspace.getName() + ":" + layerName;
-        }
-        LayerInfo layerInfo = catalog.getLayerByName(layerName);
-        if (layerInfo == null) {
-            // the catalog is not aware of this layer, there is nothing we can do
-            throw new ServiceException(String.format("Unknown layer '%s'.", layerName));
-        }
-        return layerInfo;
+        // go through the catalog to make sure we get all the wrapping necessary, including
+        // security
+        return catalog.getLayer(publishedInfo.getId());
     }
 
     /**

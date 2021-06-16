@@ -7,6 +7,7 @@ package org.geoserver.web;
 
 import static org.geoserver.web.GeoServerApplication.GEOSERVER_CSRF_DISABLED;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.wicket.Component;
@@ -146,6 +147,19 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
         return result.get();
     }
 
+    protected String getNthComponentPath(
+            WebMarkupContainer container, Class<? extends Component> targetClass, int n) {
+        ArrayList<String> results = new ArrayList<>();
+
+        container.visitChildren(
+                (component, visit) -> {
+                    if (targetClass.isInstance(component)) {
+                        results.add(component.getPageRelativePath());
+                    }
+                });
+        return results.get(n);
+    }
+
     class ComponentContentFinder implements IVisitor<Component, Void> {
         Component candidate;
         Object content;
@@ -194,13 +208,19 @@ public abstract class GeoServerWicketTestSupport extends GeoServerSecurityTestSu
     }
 
     /** Execute Ajax Event Behavior with attached value. */
+    protected void executeExactAjaxEventBehavior(String path, String event, String value) {
+        tester.getRequest().setParameter(path, value);
+        tester.getRequest().setMethod("GET");
+        tester.executeAjaxEvent(path, event);
+    }
+    /** Execute Ajax Event Behavior with attached value. */
     protected void executeAjaxEventBehavior(String path, String event, String value) {
         String[] ids = path.split(":");
         String id = ids[ids.length - 1];
         tester.getRequest().setParameter(id, value);
+        tester.getRequest().setMethod("GET");
         tester.executeAjaxEvent(path, event);
     }
-
     /**
      * Sets the value of a form component that might not be included in a form (because maybe we are
      * using it via Ajax). By itself it just prepares the stage for a subsequent Ajax request

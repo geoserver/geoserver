@@ -15,7 +15,7 @@ import org.apache.commons.io.IOUtils;
  * @see GeoServerWicketOnlineTest
  */
 public class GeoServerWicketOnlineTestSupport {
-    protected static final String GEOSERVER_BASE_URL = "http://localhost:8080/geoserver";
+    protected static final String GEOSERVER_BASE_URL = "http://localhost:9090/geoserver";
 
     protected boolean isOnline() {
         try {

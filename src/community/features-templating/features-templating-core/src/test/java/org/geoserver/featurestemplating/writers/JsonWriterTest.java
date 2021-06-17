@@ -1,25 +1,36 @@
 package org.geoserver.featurestemplating.writers;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import org.geoserver.featurestemplating.builders.EncodingHints;
+import org.geoserver.featurestemplating.builders.impl.RootBuilder;
+import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
+import org.geoserver.featurestemplating.readers.JSONTemplateReader;
+import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
+import org.xml.sax.helpers.NamespaceSupport;
 
 public class JsonWriterTest {
 
@@ -30,6 +41,8 @@ public class JsonWriterTest {
         tb.add("integer", Integer.class);
         tb.add("double", Double.class);
         tb.add("url", URI.class);
+        tb.add("intArray", Integer[].class);
+        tb.add("strArray", String[].class);
         tb.setName("schema");
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(tb.buildFeatureType());
         GeometryFactory factory = new GeometryFactory();
@@ -39,11 +52,15 @@ public class JsonWriterTest {
         fb.set("integer", 1);
         fb.set("double", 0.0);
         fb.set("url", new URI("http://some/url/to.test"));
+        fb.set(
+                "intArray",
+                new Integer[] {Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(2)});
+        fb.set("strArray", new String[] {"one", "two", "three"});
         return fb.buildFeature("1");
     }
 
     @Test
-    public void testJsonWriterEncodesURL() throws URISyntaxException, IOException {
+    public void testJsonLDWriterEncodesURL() throws URISyntaxException, IOException {
         // test that values of URL types are correctly encoded
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         SimpleFeature f = createSimpleFeature();
@@ -59,6 +76,88 @@ public class JsonWriterTest {
         String jsonString = new String(baos.toByteArray());
         JSONObject json = (JSONObject) JSONSerializer.toJSON(jsonString);
         assertEquals(json.getString("url"), "http://some/url/to.test");
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testJsonWriterEncodesArrays() throws URISyntaxException, IOException {
+        // test that values of URL types are correctly encoded
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        SimpleFeature f = createSimpleFeature();
+        GeoJSONWriter writer =
+                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        writer.writeStartObject();
+        for (Property prop : f.getProperties()) {
+            writer.writeElementName(prop.getName().toString(), null);
+            writer.writeValue(prop.getValue());
+        }
+        writer.endObject(null, null);
+        writer.close();
+        String jsonString = new String(baos.toByteArray());
+        JSONObject json = (JSONObject) JSONSerializer.toJSON(jsonString);
+
+        List<Integer> intArray = json.getJSONArray("intArray");
+        assertThat(
+                intArray,
+                Matchers.hasItems(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(2)));
+
+        List<String> strArray = json.getJSONArray("strArray");
+        assertThat(strArray, Matchers.hasItems("one", "two", "three"));
+    }
+
+    @Test
+    public void testArrayIntegration() throws URISyntaxException, IOException {
+        // load the template
+        NamespaceSupport namespaceSuport = new NamespaceSupport();
+        namespaceSuport.declarePrefix("", "http://www.geoserver.org");
+        InputStream is = getClass().getResource("arrayTemplate.json").openStream();
+        ObjectMapper mapper =
+                new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
+        JSONTemplateReader templateReader =
+                new JSONTemplateReader(
+                        mapper.readTree(is), new TemplateReaderConfiguration(namespaceSuport));
+        RootBuilder builder = templateReader.getRootBuilder();
+
+        // write the output
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        GeoJSONWriter writer =
+                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        SimpleFeature sf = createSimpleFeature();
+        builder.evaluate(writer, new TemplateBuilderContext(sf));
+        writer.close();
+
+        String jsonString = new String(baos.toByteArray());
+        System.out.println(jsonString);
+        JSONObject json = (JSONObject) JSONSerializer.toJSON(jsonString);
+
+        // straight array expansion tests
+        List<Integer> intArray = json.getJSONArray("intArray");
+        assertThat(
+                intArray,
+                Matchers.hasItems(Integer.valueOf(0), Integer.valueOf(1), Integer.valueOf(2)));
+
+        List<String> strArray = json.getJSONArray("strArray");
+        assertThat(strArray, Matchers.hasItems("one", "two", "three"));
+
+        // iterating over array elements and building objects around them
+        List<JSONObject> intObjectArray = json.getJSONArray("intObjectArray");
+        assertEquals(3, intObjectArray.size());
+        for (int i = 0; i < 3; i++) {
+            JSONObject jo = intObjectArray.get(i);
+            assertEquals(i, jo.getInt("idx"));
+            assertEquals("TheInteger" + i, jo.getString("name"));
+        }
+        List<JSONObject> strObjectArray = json.getJSONArray("strObjectArray");
+        assertEquals(3, strObjectArray.size());
+        String[] names = (String[]) sf.getAttribute("strArray");
+        for (int i = 0; i < 3; i++) {
+            JSONObject jo = strObjectArray.get(i);
+            assertEquals(names[i], jo.getString("id"));
+            assertEquals("TheString" + names[i], jo.getString("name"));
+        }
+
+        // extracting a single item out of the array
+        assertEquals(2, json.getInt("singleIntItem"));
     }
 
     @Test

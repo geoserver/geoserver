@@ -371,6 +371,10 @@ public class TemplateCQLManager {
         return xpath;
     }
 
+    public Expression getThis() {
+        return ff.function("xpath", ff.literal("."));
+    }
+
     /** Can be used to force namespace support into parsed CQL expressions */
     private final class TemplatingExpressionVisitor extends DuplicatingFilterVisitor {
 

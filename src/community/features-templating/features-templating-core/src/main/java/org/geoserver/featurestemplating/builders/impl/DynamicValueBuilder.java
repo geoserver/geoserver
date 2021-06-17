@@ -40,6 +40,8 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
         TemplateCQLManager cqlManager = new TemplateCQLManager(expression, namespaces);
         if (expression.startsWith("$${")) {
             this.cql = cqlManager.getExpressionFromString();
+        } else if (expression.equals("${.}")) {
+            this.cql = cqlManager.getThis();
         } else if (expression.startsWith("${")) {
             this.xpath = cqlManager.getAttributeExpressionFromString();
         } else {

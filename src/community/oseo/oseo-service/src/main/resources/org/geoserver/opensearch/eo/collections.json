@@ -19,7 +19,7 @@
             "orbitType": "${eo:orbitType}"
           },
           "instrument": {
-            "instrumentShortName": "${eo:instrument}",
+            "instrumentShortName": "$${item(eo:instrument, 0)}",
             "sensorType": "${eo:sensorType}",
             "wavelengths": [
               {

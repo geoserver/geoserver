@@ -12,6 +12,7 @@ import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER_FUNCTIONS;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER_SPATIAL_OPS;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER_TEMPORAL;
+import static org.geoserver.opensearch.eo.store.OpenSearchQueries.getProductProperties;
 import static org.geoserver.ows.URLMangler.URLType.RESOURCE;
 
 import io.swagger.v3.oas.models.OpenAPI;
@@ -44,7 +45,6 @@ import org.geoserver.ogcapi.PaginationLinksBuilder;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
-import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.ows.util.ResponseUtils;
@@ -65,12 +65,10 @@ import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
-import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.Literal;
-import org.opengis.filter.expression.PropertyName;
 import org.opengis.referencing.FactoryException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -258,7 +256,7 @@ public class STACService {
                 FF.and(
                         getEnabledFilter(),
                         FF.equals(FF.property("identifier"), FF.literal(itemId))));
-        q.setProperties(getItemProperties());
+        q.setProperties(getProductProperties(accessProvider.getOpenSearchAccess()));
 
         FeatureSource<FeatureType, Feature> products =
                 accessProvider.getOpenSearchAccess().getProductSource();
@@ -469,37 +467,9 @@ public class STACService {
         int limit = getLimit(requestedLimit);
         q.setMaxFeatures(limit);
         q.setFilter(filters.and());
-        q.setProperties(getItemProperties());
+        q.setProperties(getProductProperties(accessProvider.getOpenSearchAccess()));
 
         return queryItems(source, q);
-    }
-
-    /**
-     * Returns all the simple properties of items, plus the collection, so that it can be used in
-     * the templates. For the time being, skips the OGC links thumbnails and the like
-     */
-    private List<PropertyName> getItemProperties() throws IOException {
-        Collection<PropertyDescriptor> descriptors =
-                accessProvider
-                        .getOpenSearchAccess()
-                        .getProductSource()
-                        .getSchema()
-                        .getDescriptors();
-        return descriptors
-                .stream()
-                .filter(pd -> isSimple(pd) || isCollection(pd))
-                .map(pd -> FF.property(pd.getName()))
-                .collect(Collectors.toList());
-    }
-
-    private boolean isCollection(PropertyDescriptor pd) {
-        return JDBCOpenSearchAccess.COLLECTION_PROPERTY_NAME.equals(pd.getName());
-    }
-
-    private boolean isSimple(PropertyDescriptor pd) {
-        Class<?> binding = pd.getType().getBinding();
-        return !(List.class.isAssignableFrom(binding))
-                && !(FeatureType.class.isAssignableFrom(binding));
     }
 
     private QueryResult queryItems(FeatureSource<FeatureType, Feature> source, Query q)

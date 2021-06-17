@@ -495,7 +495,9 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals("TEST123", json.read("$.properties.name"));
         assertEquals("S2MS1C", json.read("$.properties['eo:productType']"));
         assertEquals("A", json.read("$.properties['eo:platformSerialIdentifier']"));
-        assertEquals("MSI", json.read("$.properties['eo:instrument']"));
+        assertEquals(Integer.valueOf(2), json.read("$.properties['eo:instrument'].length()"));
+        assertEquals("OLI", json.read("$.properties['eo:instrument'][0]"));
+        assertEquals("TIRS", json.read("$.properties['eo:instrument'][1]"));
         assertEquals("2012-04-23T18:25:43.511Z", json.read("$.properties['timeStart']"));
         // test the JSON field
         assertEquals(

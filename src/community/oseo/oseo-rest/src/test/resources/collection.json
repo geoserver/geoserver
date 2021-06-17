@@ -15,7 +15,7 @@
     "eo:productType" : "S2MS1C",
     "eo:platform" : "Sentinel-123",
     "eo:platformSerialIdentifier" : "A",
-    "eo:instrument" : "MSI",
+    "eo:instrument" : ["OLI", "TIRS"],
     "eo:sensorType" : "OPTICAL",
     "eo:compositeType" : null,
     "eo:processingLevel" : "Level-1C",

@@ -5,6 +5,7 @@
 package org.geoserver.opensearch.eo;
 
 import static org.geoserver.opensearch.eo.ComplexFeatureAccessor.value;
+import static org.geoserver.opensearch.eo.store.OpenSearchQueries.getProductProperties;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -204,6 +205,8 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
             featureSource = access.getCollectionSource();
         } else {
             featureSource = access.getProductSource();
+            // go get the collection property too
+            resultsQuery.setProperties(getProductProperties(accessProvider.getOpenSearchAccess()));
 
             // need to determine if the collection is primary or virtual
             Feature collection = getCollectionByParentIdentifier(parentId);

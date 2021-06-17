@@ -29,7 +29,7 @@ create table collection (
   "eoProductType" varchar,
   "eoPlatform" varchar,
   "eoPlatformSerialIdentifier" varchar,
-  "eoInstrument" varchar,
+  "eoInstrument" varchar[],
   "eoSensorType" varchar, -- this is configurable, so no checks on values anymore
   "eoCompositeType" varchar,
   "eoProcessingLevel" varchar,

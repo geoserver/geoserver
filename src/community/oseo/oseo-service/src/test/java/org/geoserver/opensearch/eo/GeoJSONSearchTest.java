@@ -157,6 +157,16 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         assertEquals("SENTINEL2", sp.getString("parentIdentifier"));
         assertEquals("2016-09-29T08:20:22.026Z/2016-09-29T08:23:44.107Z", sp.getString("date"));
         assertEquals("2016-09-29T16:59:02.000+00:00", sp.getString("created"));
+
+        // check properties derived from the collection
+        JSONObject ai = sp.getJSONArray("acquisitionInformation").getJSONObject(0);
+        assertNotNull(ai);
+        JSONObject platform = ai.getJSONObject("platform");
+        assertNotNull("Sentinel-2", platform.get("platformShortName"));
+        assertNotNull("A", platform.get("platformSerialIdentifier"));
+        JSONObject instrument = ai.getJSONObject("instrument");
+        assertNotNull("MSI", instrument.get("instrumentShortName"));
+        assertNotNull("OPTICAL", instrument.get("sensorType"));
     }
 
     private JSONObject getFeature(JSONArray features, String id) {

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gsml:MappedFeature gml:id="${@gml:id}" gft:isCollection="true" gft:source="gsml:MappedFeature">
+    <gml:name xmlns:gml="http://www.opengis.net/gml">$${strConcat('mf.', xpath('gml:name'))}</gml:name>
+    <gft:includeFlat gft:source="not-existing-include.xml"/>
+</gsml:MappedFeature>

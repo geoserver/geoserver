@@ -1,5 +1,7 @@
 {
-  "$VendorOptions": "flat_output:$${env('flat_output','true')}",
+  "$VendorOptions": {
+    "flat_output":"$${env('flat_output','true')}"
+  },
   "type":"FeatureCollection",
   "features":[
     {

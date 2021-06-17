@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gsml:GeologicUnit gft:source="gsml:GeologicUnit" gft:isCollection="true">
+    <gml:description xlink:href="http://static_content.org">${gml:description}</gml:description>
+    <gml:name>${gml:name}</gml:name>
+    <gsml:staticContent xlink:title="${gml:name[0]}">static content</gsml:staticContent>
+    <gsml:purpose>${gsml:purpose}</gsml:purpose>
+</gsml:GeologicUnit>

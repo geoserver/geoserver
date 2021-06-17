@@ -4,7 +4,6 @@
  */
 package org.geoserver.gwc.web.blob;
 
-import static org.geowebcache.config.FileBlobStoreInfo.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -19,6 +18,7 @@ import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geowebcache.config.BlobStoreInfo;
 import org.geowebcache.config.ConfigurationException;
 import org.geowebcache.config.FileBlobStoreInfo;
+import org.geowebcache.config.FileBlobStoreInfo.PathGeneratorType;
 import org.geowebcache.layer.TileLayer;
 import org.junit.After;
 import org.junit.Before;
@@ -144,9 +144,9 @@ public class BlobStorePageTest extends GeoServerWicketTestSupport {
 
         tester.startPage(page);
         print(page, true, true, true);
+
         executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "0");
         print(tester.getLastRenderedPage(), true, true);
-
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         formTester.setValue("name", "myblobstore");
         formTester.setValue("enabled", false);

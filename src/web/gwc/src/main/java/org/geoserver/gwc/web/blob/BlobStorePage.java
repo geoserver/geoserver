@@ -77,8 +77,9 @@ public class BlobStorePage extends GeoServerSecuredPage {
 
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
-                        blobStoreForm.setVisible(typeOfBlobStore.getModelObject() != null);
-                        if (typeOfBlobStore.getModelObject() != null) {
+                        boolean visible = typeOfBlobStore.getModelObject() != null;
+                        blobStoreForm.setVisible(visible);
+                        if (visible) {
                             blobStoreForm
                                     .getModel()
                                     .setObject(typeOfBlobStore.getModelObject().newConfigObject());

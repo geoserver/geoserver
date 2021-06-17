@@ -351,6 +351,7 @@ public abstract class GeoServerTablePanel<T> extends Panel {
      */
     protected void onSelectionUpdate(AjaxRequestTarget target) {
         // by default do nothing
+
     }
 
     /**

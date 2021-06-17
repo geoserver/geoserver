@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gsml:GeologicUnit gft:source="gsml:GeologicUnit" gft:isCollection="true">
+    <gft:includeFlat>pong.xml</gft:includeFlat>
+</gsml:GeologicUnit>

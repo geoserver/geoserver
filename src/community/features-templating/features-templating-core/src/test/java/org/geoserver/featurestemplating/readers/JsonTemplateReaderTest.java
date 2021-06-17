@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,9 @@ public class JsonTemplateReaderTest {
                 new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
         JSONTemplateReader templateReader =
                 new JSONTemplateReader(
-                        mapper.readTree(is), new TemplateReaderConfiguration(namespaceSuport));
+                        mapper.readTree(is),
+                        new TemplateReaderConfiguration(namespaceSuport),
+                        Collections.emptyList());
         return templateReader.getRootBuilder();
     }
 

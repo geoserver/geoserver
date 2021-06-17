@@ -1,0 +1,3 @@
+<gsml:MappedFeature gml:id="${@gml:id}" gft:isCollection="true" gft:source="gsml:MappedFeature">
+    <gft:includeFlat>ping.xml</gft:includeFlat>
+</gsml:MappedFeature>

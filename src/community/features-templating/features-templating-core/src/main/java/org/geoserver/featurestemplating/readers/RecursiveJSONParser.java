@@ -12,74 +12,25 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import org.geoserver.platform.resource.Resource;
 
 /** Parses a JSON structure, processing eventual includes and expanding them */
-public class RecursiveJSONParser {
+public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
 
     private static final String INCLUDE_KEY = "$include";
     private static final String INCLUDE_FLAT_KEY = "$includeFlat";
 
-    public static final int MAX_RECURSION_DEPTH =
-            Integer.parseInt(System.getProperty("GEOSERVER_FT_MAX_DEPTH", "50"));
-
-    private final Resource resource;
     private final ObjectMapper mapper;
-    private final RecursiveJSONParser parent;
 
     public RecursiveJSONParser(Resource resource) {
-        this.resource = resource;
-        validateResource(resource);
+        super(resource);
         this.mapper = new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
-        this.parent = null;
     }
 
-    private RecursiveJSONParser(RecursiveJSONParser parent, String path) {
-        this.resource = getResource(parent.resource, path);
-        validateResource(resource);
+    private RecursiveJSONParser(RecursiveJSONParser parent, Resource resource) {
+        super(resource, parent);
         this.mapper = parent.mapper;
-        this.parent = parent;
-        int depth = getDepth();
-        if (depth > MAX_RECURSION_DEPTH)
-            throw new RuntimeException(
-                    "Went beyond maximum nested inclusion depth ("
-                            + depth
-                            + "), inclusion chain is: "
-                            + getInclusionChain());
-    }
-
-    private void validateResource(Resource resource) {
-        if (!resource.getType().equals(Resource.Type.RESOURCE))
-            throw new IllegalArgumentException("Path " + resource.path() + " does not exist");
-    }
-
-    /**
-     * Returns the list of inclusions, starting from the top-most parent and walking down to the
-     * current reader
-     */
-    private List<String> getInclusionChain() {
-        List<String> resources = new ArrayList<>();
-        RecursiveJSONParser curr = this;
-        while (curr != null) {
-            resources.add(curr.resource.path());
-            curr = curr.parent;
-        }
-        Collections.reverse(resources);
-        return resources;
-    }
-
-    private int getDepth() {
-        int depth = 0;
-        RecursiveJSONParser curr = this.parent;
-        while (curr != null) {
-            curr = curr.parent;
-            depth++;
-        }
-        return depth;
     }
 
     public JsonNode parse() throws IOException {
@@ -119,7 +70,8 @@ public class RecursiveJSONParser {
                                     + INCLUDE_FLAT_KEY
                                     + " key must be the path of the file being included");
                 }
-                JsonNode processed = new RecursiveJSONParser(this, node.asText()).parse();
+                Resource resource = getResource(this.resource, node.asText());
+                JsonNode processed = new RecursiveJSONParser(this, resource).parse();
                 Iterator<String> fields = processed.fieldNames();
                 while (fields.hasNext()) {
                     String field = fields.next();
@@ -190,7 +142,8 @@ public class RecursiveJSONParser {
     private JsonNode processInlineDirective(String value, String directive) throws IOException {
         if (value.startsWith(directive + "{") && value.endsWith("}")) {
             String path = value.substring(directive.length() + 1, value.length() - 1);
-            return new RecursiveJSONParser(this, path).parse();
+            Resource resource = getResource(this.resource, path);
+            return new RecursiveJSONParser(this, resource).parse();
         }
         return null;
     }
@@ -199,24 +152,5 @@ public class RecursiveJSONParser {
         try (InputStream is = resource.in()) {
             return mapper.readTree(is);
         }
-    }
-
-    private Resource getResource(Resource resource, String path) {
-        // relative paths are
-        if (path.startsWith("./")) path = path.substring(2);
-        if (path.startsWith("/")) return getRoot(resource).get(path);
-        return resource.parent().get(path);
-    }
-
-    /** API is not 100% clear, but going up should lead us to the root of the virtual file system */
-    private Resource getRoot(Resource resource) {
-        Resource r = resource;
-        Resource parent = r.parent();
-        while (parent != null && !parent.equals(r)) {
-            r = parent;
-            parent = r.parent();
-        }
-
-        return r;
     }
 }

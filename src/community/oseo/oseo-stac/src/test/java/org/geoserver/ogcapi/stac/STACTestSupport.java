@@ -107,7 +107,7 @@ public class STACTestSupport extends OGCApiTestSupport {
         // ... instrument related
         assertEquals("LANDSAT_8", l8_02.read("properties.platform"));
         List<String> instruments = l8_02.read("properties.instruments");
-        assertThat(instruments, Matchers.containsInAnyOrder("oli", "tirs"));
+        assertThat(instruments, Matchers.containsInAnyOrder("OLI", "TIRS"));
         assertEquals("landsat8", l8_02.read("properties.constellation"));
         // creation and modification
         assertEquals("2017-02-26T10:24:58.000+00:00", l8_02.read("properties.created"));

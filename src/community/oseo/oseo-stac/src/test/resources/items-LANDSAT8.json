@@ -25,11 +25,7 @@
         "created": "${eop:creationDate}",
         "updated": "${eop:modificationDate}",
         "platform": "${eop:productPlatform}",
-        "instruments": [
-          // ls8 specific
-          "oli",
-          "tirs"
-        ],
+        "instruments": "${eo:collection/eo:instrument}",
         "constellation": "$${strToLowerCase(eop:parentIdentifier)}",
         "eo:cloud_cover": "$${opt:cloudCover / 2}",
         "gsd": 30, // ls8 specific

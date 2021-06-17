@@ -42,7 +42,7 @@ VALUES(17, 'SENTINEL2', 'The Sentinel-2 mission', 'The SENTINEL-2 mission is a l
       <a href="${ISO_METADATA_LINK}" title="ISO format">ISO</a>
     </td>
   </tr>
-</table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2015-07-01 10:20:21.000', '2016-02-26 10:20:21.000', NULL, NULL, 'SENTINEL2', 'S2MSI1C', 'Sentinel-2', 'A', 'MSI', 'OPTICAL', NULL, 'Level-1C', 'LEO', NULL, NULL, NULL, NULL, NULL, 'CC-BY-NC-ND-3.0-IGO', '{ "metadata_iso_19139": { "roles": [ "metadata", "iso-19139" ], "href": "https://storage.googleapis.com/open-cogs/stac-examples/sentinel-2-iso-19139.xml", "title": "ISO 19139 metadata", "type": "application/vnd.iso.19139+xml" }}');
+</table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2015-07-01 10:20:21.000', '2016-02-26 10:20:21.000', NULL, NULL, 'SENTINEL2', 'S2MSI1C', 'Sentinel-2', 'A', ARRAY['MSI'], 'OPTICAL', NULL, 'Level-1C', 'LEO', NULL, NULL, NULL, NULL, NULL, 'CC-BY-NC-ND-3.0-IGO', '{ "metadata_iso_19139": { "roles": [ "metadata", "iso-19139" ], "href": "https://storage.googleapis.com/open-cogs/stac-examples/sentinel-2-iso-19139.xml", "title": "ISO 19139 metadata", "type": "application/vnd.iso.19139+xml" }}');
 INSERT INTO collection
 ("id", "name", "title", "description", "primary", "htmlDescription", "footprint", "timeStart", "timeEnd", "productCqlFilter", "masked", "eoIdentifier", "eoProductType", "eoPlatform", "eoPlatformSerialIdentifier", "eoInstrument", "eoSensorType", "eoCompositeType", "eoProcessingLevel", "eoOrbitType", "eoSpectralRange", "eoWavelength", "eoSecurityConstraints", "eoDissemination", "eoAcquisitionStation", "license")
 VALUES(32, 'SENTINEL1', 'Sentinel-1 (PEPS)', 'Landsat 8 is an American Earth observation satellite launched on February 11, 2013. It is the eighth satellite in the Landsat program; the seventh to reach orbit successfully. Originally called the Landsat Data Continuity Mission (LDCM), it is a collaboration between NASA and the United States Geological Survey (USGS). The Landsat 8 Operational Land Imager (OLI) collects data from nine spectral bands. Seven of the nine bands are consistent with the Thematic Mapper (TM) and Enhanced Thematic Mapper Plus (ETM+) sensors found on earlier Landsat satellites, providing for compatibility with the historical Landsat data, while also improving measurement capabilities.', NULL, '<table>
@@ -86,7 +86,7 @@ VALUES(32, 'SENTINEL1', 'Sentinel-1 (PEPS)', 'Landsat 8 is an American Earth obs
       <a href="${ISO_METADATA_LINK}" title="ISO format">ISO</a>
     </td>
   </tr>
-</table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2015-02-26 10:20:21.000', NULL , NULL, NULL, 'SENTINEL1', NULL, 'Sentinel-1', NULL, 'SAR', 'RADAR', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'CC-BY-NC-ND-3.0-IGO');
+</table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2015-02-26 10:20:21.000', NULL , NULL, NULL, 'SENTINEL1', NULL, 'Sentinel-1', NULL, ARRAY['C-SAR'], 'RADAR', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'CC-BY-NC-ND-3.0-IGO');
 INSERT INTO collection
 ("id", "name", "title", "description", "primary", "htmlDescription", "footprint", "timeStart", "timeEnd", "productCqlFilter", "masked", "eoIdentifier", "eoProductType", "eoPlatform", "eoPlatformSerialIdentifier", "eoInstrument", "eoSensorType", "eoCompositeType", "eoProcessingLevel", "eoOrbitType", "eoSpectralRange", "eoWavelength", "eoSecurityConstraints", "eoDissemination", "eoAcquisitionStation", "license")
 VALUES(31, 'LANDSAT8', 'The Landsat-8 mission', 'Landsat 8 is an American Earth observation satellite launched on February 11, 2013. It is the eighth satellite in the Landsat program; the seventh to reach orbit successfully.Originally called the Landsat Data Continuity Mission (LDCM), it is a collaboration between NASA and the United States Geological Survey (USGS). The Landsat 8 Operational Land Imager (OLI) collects data from nine spectral bands. Seven of the nine bands are consistent with the Thematic Mapper (TM) and Enhanced Thematic Mapper Plus (ETM+) sensors found on earlier Landsat satellites, providing for compatibility with the historical Landsat data, while also improving measurement capabilities.', NULL, '<table>
@@ -130,7 +130,7 @@ VALUES(31, 'LANDSAT8', 'The Landsat-8 mission', 'Landsat 8 is an American Earth 
       <a href="${ISO_METADATA_LINK}" title="ISO format">ISO</a>
     </td>
   </tr>
-</table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '1988-02-26 10:20:21.000', '2013-03-01 10:20:21.000', NULL, NULL, 'LANDSAT8', NULL, '', NULL, 'OLI', 'OPTICAL', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'proprietary');
+</table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '1988-02-26 10:20:21.000', '2013-03-01 10:20:21.000', NULL, NULL, 'LANDSAT8', NULL, '', NULL, ARRAY['OLI', 'TIRS'], 'OPTICAL', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'proprietary');
 INSERT INTO collection
 ("id", "name", "title", "description", "primary", "htmlDescription", "footprint", "timeStart", "timeEnd", "productCqlFilter", "masked", "eoIdentifier", "eoProductType", "eoPlatform", "eoPlatformSerialIdentifier", "eoInstrument", "eoSensorType", "eoCompositeType", "eoProcessingLevel", "eoOrbitType", "eoSpectralRange", "eoWavelength", "eoSecurityConstraints", "eoDissemination", "eoAcquisitionStation", "license")
 VALUES(18, 'ATMTEST', 'Atmospheric collection test', 'The sample atmospheric sensor (SAS)', NULL, '<table>
@@ -140,10 +140,10 @@ VALUES(18, 'ATMTEST', 'Atmospheric collection test', 'The sample atmospheric sen
     </td>
     <td>The sample atmospheric sensor (SAS)</td>
   </tr>
-</table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2018-02-26 10:20:21.000', '2018-03-01 10:20:21.000', NULL, NULL, 'SAS1', NULL, '', NULL, 'OLI', 'ATMOSPHERIC', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'various');
+</table>', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2018-02-26 10:20:21.000', '2018-03-01 10:20:21.000', NULL, NULL, 'SAS1', NULL, '', NULL, ARRAY['SAI1'], 'ATMOSPHERIC', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'various');
 INSERT INTO collection
 ("id", "name", "title", "description", "primary", "htmlDescription", "footprint", "timeStart", "timeEnd", "productCqlFilter", "masked", "eoIdentifier", "eoProductType", "eoPlatform", "eoPlatformSerialIdentifier", "eoInstrument", "eoSensorType", "eoCompositeType", "eoProcessingLevel", "eoOrbitType", "eoSpectralRange", "eoWavelength", "eoSecurityConstraints", "eoDissemination", "eoAcquisitionStation", "license", "enabled")
-VALUES(34, 'DISABLED_COLLECTION', 'A disabled collections', 'Not meant to be shared', NULL, '', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2015-07-01 10:20:21.000', '2016-02-26 10:20:21.000', NULL, NULL, 'DISABLED_COLLECTION', 'S2MSI1C', 'Sentinel-2', 'A', 'MSI', 'OPTICAL', NULL, 'Level-1C', 'LEO', NULL, NULL, NULL, NULL, NULL, 'CC-BY-NC-ND-3.0-IGO', false);
+VALUES(34, 'DISABLED_COLLECTION', 'A disabled collections', 'Not meant to be shared', NULL, '', ST_GeomFromText('POLYGON((-179 89,179 89,179 -89,-179 -89,-179 89))', 4326), '2015-07-01 10:20:21.000', '2016-02-26 10:20:21.000', NULL, NULL, 'DISABLED_COLLECTION', 'S2MSI1C', 'Sentinel-2', 'A', ARRAY['MUI'], 'OPTICAL', NULL, 'Level-1C', 'LEO', NULL, NULL, NULL, NULL, NULL, 'CC-BY-NC-ND-3.0-IGO', false);
 -- setup sequence to allow new inserts
 select setval('collection_id_seq'::regclass, 35);
 -- metadata

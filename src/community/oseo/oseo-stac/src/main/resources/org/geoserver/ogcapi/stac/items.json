@@ -24,9 +24,7 @@
         "created": "${eop:creationDate}",
         "updated": "${eop:modificationDate}",
         "platform": "${eop:productPlatform}",
-        "instruments": [
-          "${eo:collection/eo:instrument}"
-        ],
+        "instruments": "${eo:collection/eo:instrument}",
         "constellation": "$${strToLowerCase(eop:parentIdentifier)}",
         "eo:cloud_cover": "${opt:cloudCover}",
         // "view:off_nadir": "${opt:instrumentElevationAngle}",

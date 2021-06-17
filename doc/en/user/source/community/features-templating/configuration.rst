@@ -470,4 +470,81 @@ Some references:
 - ``Line 4`` inserts a full JSON object in the array. The object is a sub-tree of the ``others`` property,
   which is a complex JSON document with several extra properties (could be a generic containers for
   properties not fitting the fixed database schema).
-- ``Line 6`` and ``Line 8`` extract from the ``others`` property specific string values. 
+- ``Line 6`` and ``Line 8`` extract from the ``others`` property specific string values.
+
+
+Array based properties
+----------------------
+
+Along JSON properties, it's not rare to find support for array based attributes in modern databases.
+E.g. ``varchar[]`` is a attributes containing an array of strings.
+
+The array properties can be used as-is, and they will be expanded into a JSON array.
+Let's assume the ``keywords`` database column contains a list of strings, then the following template:
+
+.. code-block:: json
+   :linenos:
+
+   {
+      "keywords": "${keywords}"
+   }
+
+
+May expand into:
+
+.. code-block:: json
+   :linenos:
+
+   {
+      "keywords": ["features", "templating"]
+   }
+
+It is also possible to use an array as the source of iteration, referencing the current
+array item using the ``${.}`` XPath. For example:
+
+.. code-block:: json
+   :linenos:
+
+   {
+      "metadata": [
+         {
+            "$source": "keywords"
+         },
+         {
+            "type": "keyword",
+            "value": "${.}"
+         }
+      ]
+   }
+
+The above may expand into:
+
+.. code-block:: json
+   :linenos:
+
+   {
+      "metadata": [
+         {
+            "type": "keyword",
+            "value": "features"
+         },
+         {
+            "type": "keyword",
+            "value": "templating"
+         }
+      ]
+   }
+
+In case a specific item of an array needs to be retrieved, the ``item`` function can be used,
+for example, the following template extracts the second item in an array (would fail if not
+present):
+
+.. code-block:: json
+   :linenos:
+
+   {
+      "second": "$${item(keywords, 1)}"
+   }
+
+
+There is currently no explicit support for array based columns in GML templates.

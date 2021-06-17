@@ -14,6 +14,7 @@ import java.util.Map;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
+import org.geotools.util.Converters;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
@@ -154,32 +155,44 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
         } else if (result instanceof JsonNode) {
             writeStaticContent(key, result, encodingHints);
         } else if (result instanceof List) {
-            List list = (List) result;
-            if (list.size() == 1) {
-                writeElementNameAndValue(key, list.get(0), encodingHints);
-            } else {
-                if (!flatOutput) {
-                    generator.writeFieldName(key);
-                    writeStartArray();
-                    for (int i = 0; i < list.size(); i++) {
-                        writeElementValue(list.get(i), encodingHints);
-                    }
-                    writeEndArray();
-                } else {
-                    for (int i = 0; i < list.size(); i++) {
-                        String itKey = null;
-                        itKey = key + "_" + (i + 1);
-                        writeElementNameAndValue(itKey, list.get(i), encodingHints);
-                    }
-                }
-            }
+            writeList(key, (List) result, encodingHints, false);
         } else if (result == null) {
             writeElementName(key, encodingHints);
             generator.writeNull();
+        } else if (result.getClass().isArray()) {
+            List list = Converters.convert(result, List.class);
+            writeList(key, list, encodingHints, true);
         } else {
             writeElementName(key, encodingHints);
             writeValue(result.toString());
         }
+    }
+
+    private void writeList(String key, List result, EncodingHints encodingHints, boolean forceArray)
+            throws IOException {
+        List list = result;
+        if (list.size() == 1 && !forceArray) {
+            writeElementNameAndValue(key, list.get(0), encodingHints);
+        } else {
+            if (!flatOutput) {
+                generator.writeFieldName(key);
+                writeList(encodingHints, list);
+            } else {
+                for (int i = 0; i < list.size(); i++) {
+                    String itKey = null;
+                    itKey = key + "_" + (i + 1);
+                    writeElementNameAndValue(itKey, list.get(i), encodingHints);
+                }
+            }
+        }
+    }
+
+    private void writeList(EncodingHints encodingHints, List list) throws IOException {
+        writeStartArray();
+        for (int i = 0; i < list.size(); i++) {
+            writeElementValue(list.get(i), encodingHints);
+        }
+        writeEndArray();
     }
 
     @Override

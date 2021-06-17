@@ -1,0 +1,28 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "intArray": "${intArray}",
+      "strArray": "${strArray}",
+      "intObjectArray":  [
+        {
+          "$source": "intArray"
+        },
+        {
+          "idx": "${.}",
+          "name": "$${strConcat('TheInteger', xpath('.'))}"
+        }
+      ],
+      "strObjectArray":  [
+        {
+          "$source": "strArray"
+        },
+        {
+          "id": "${.}",
+          "name": "$${strConcat('TheString', xpath('.'))}"
+        }
+      ],
+      "singleIntItem": "$${item(intArray, 2)}"
+    }
+  ]
+}

@@ -11,6 +11,7 @@ import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
+import org.geotools.util.Converters;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -31,10 +32,16 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
             throws IOException {
         if (!rootCollection) {
             context = evaluateSource(context);
-            if (context.getCurrentObj() != null) {
-                if (context.getCurrentObj() instanceof List)
-                    evaluateCollection(writer, context, false);
-                else evaluateInternal(writer, context, 0, 1);
+            Object o = context.getCurrentObj();
+            if (o != null) {
+                if (o instanceof List) {
+                    evaluateCollection(writer, (List) o, context.getParent(), false);
+                } else if (o.getClass().isArray()) {
+                    List list = Converters.convert(o, List.class);
+                    evaluateCollection(writer, list, context.getParent(), false);
+                } else {
+                    evaluateInternal(writer, context, 0, 1);
+                }
             }
         } else {
             if (evaluateFilter(context)) {
@@ -52,16 +59,18 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
 
     @Override
     public void evaluateCollection(
-            TemplateOutputWriter writer, TemplateBuilderContext context, boolean iterateKey)
+            TemplateOutputWriter writer,
+            List elements,
+            TemplateBuilderContext parent,
+            boolean iterateKey)
             throws IOException {
 
-        List elements = (List) context.getCurrentObj();
         int elementsSize = elements.size();
         int actualIndex = 1;
         for (int i = 0; i < elementsSize; i++) {
             Object o = elements.get(i);
             TemplateBuilderContext childContext = new TemplateBuilderContext(o);
-            childContext.setParent(context.getParent());
+            childContext.setParent(parent);
             if (evaluateFilter(childContext)) {
                 evaluateInternal(writer, childContext, elementsSize, actualIndex);
                 actualIndex++;

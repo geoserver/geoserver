@@ -37,7 +37,9 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.Type;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.resource.JQueryResourceReference;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.URLMangler;
@@ -85,8 +87,11 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
     /** page class for this page to return to when the page is finished, could be null. */
     protected Class<? extends Page> returnPageClass;
 
+    public static final String VERSION_3 = "jquery/jquery-3.5.1.js";
+
     @SuppressWarnings("serial")
     public GeoServerBasePage() {
+
         // lookup for a pluggable favicon
         PackageResourceReference faviconReference = null;
         List<HeaderContribution> cssContribs =
@@ -421,10 +426,8 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         response.render(
                 new PriorityHeaderItem(
                         JavaScriptHeaderItem.forReference(
-                                getApplication()
-                                        .getJavaScriptLibrarySettings()
-                                        .getJQueryReference())));
-
+                                new JavaScriptResourceReference(
+                                        JQueryResourceReference.class, VERSION_3))));
         List<HeaderContribution> cssContribs =
                 getGeoServerApplication().getBeansOfType(HeaderContribution.class);
         for (HeaderContribution csscontrib : cssContribs) {

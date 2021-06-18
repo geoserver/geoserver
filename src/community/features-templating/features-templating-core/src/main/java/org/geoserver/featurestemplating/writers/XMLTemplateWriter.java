@@ -29,7 +29,7 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
 
     protected Map<String, String> namespaces = new HashMap<>();
 
-    protected Map<String, String> schemaLocations = new HashMap<>();
+    protected String schemaLocations;
 
     public XMLTemplateWriter(XMLStreamWriter streamWriter) {
         this.streamWriter = streamWriter;
@@ -194,8 +194,9 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
         this.namespaces.putAll(namespaces);
     }
 
-    public void addSchemaLocations(Map<String, String> schemaLocations) {
-        this.schemaLocations.putAll(schemaLocations);
+    public void addSchemaLocations(String schemaLocation) {
+        if (schemaLocations != null) schemaLocations += " ".concat(schemaLocation);
+        else this.schemaLocations = schemaLocation;
     }
 
     private boolean isEncodeAsAttribute(EncodingHints encodingHints) {

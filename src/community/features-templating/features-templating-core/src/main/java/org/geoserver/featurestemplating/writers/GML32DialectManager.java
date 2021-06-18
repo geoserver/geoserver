@@ -30,11 +30,33 @@ class GML32DialectManager extends GMLDialectManager {
 
     @Override
     String getWfsNsUri() {
-        return "http://www.opengis.net/wfs";
+        return "http://www.opengis.net/wfs/2.0";
     }
 
     @Override
     String getGmlNsUri() {
         return "http://www.opengis.net/gml/3.2";
+    }
+
+    @Override
+    void startFeatureMember() throws XMLStreamException {
+        streamWriter.writeStartElement(WFS_PREFIX, "member", getWfsNsUri());
+    }
+
+    @Override
+    void writeGeometryAttributes(int geometryIndex) throws XMLStreamException {
+        super.writeGeometryAttributes(geometryIndex);
+        if (crs != null) {
+            streamWriter.writeAttribute(
+                    "srsDimension", String.valueOf(crs.getCoordinateSystem().getDimension()));
+        }
+        StringBuilder id = new StringBuilder("");
+        if (typeName != null) {
+            id.append(typeName).append(".");
+            id.append(currentFeatureNumber).append(".geom");
+        }
+        if (geometryIndex > 0) id.append(".").append(geometryIndex);
+        if (!"".equals(id.toString()))
+            streamWriter.writeAttribute("gml", getGmlNsUri(), "id", id.toString());
     }
 }

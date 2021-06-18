@@ -4,11 +4,14 @@
  */
 package org.geoserver.featurestemplating.wfs;
 
+import static org.geoserver.featurestemplating.builders.EncodingHints.isSingleFeatureRequest;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
@@ -36,11 +39,13 @@ public class GeoJSONTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
             throws ServiceException {
 
         try (GeoJSONWriter writer = getOutputWriter(output)) {
-            writer.startTemplateOutput(null);
+            EncodingHints encodingHints = new EncodingHints();
+            writer.startTemplateOutput(encodingHints);
             iterateFeatureCollection(writer, featureCollection);
-            writer.endArray(null, null);
+            if (!isSingleFeatureRequest() || !identifier.equals(TemplateIdentifier.GEOJSON))
+                writer.endArray(null, null);
             writeAdditionalFields(writer, featureCollection, getFeature);
-            writer.endTemplateOutput(null);
+            writer.endTemplateOutput(encodingHints);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

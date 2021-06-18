@@ -111,6 +111,7 @@ public abstract class BaseTemplateGetFeatureResponse extends WFSGetFeatureOutput
                 beforeEvaluation(writer, rootBuilder, feature);
                 TemplateBuilderContext context = new TemplateBuilderContext(feature);
                 rootBuilder.evaluate(writer, context);
+                afterEvaluation(writer, rootBuilder, feature);
             }
         } finally {
             iterator.close();
@@ -133,8 +134,8 @@ public abstract class BaseTemplateGetFeatureResponse extends WFSGetFeatureOutput
      * @param root the current RootBuilder
      * @param feature the feature being evaluated by the builders' tree
      */
-    protected void beforeEvaluation(
-            TemplateOutputWriter writer, RootBuilder root, Feature feature) {
+    protected void beforeEvaluation(TemplateOutputWriter writer, RootBuilder root, Feature feature)
+            throws IOException {
         writer.incrementNumberReturned();
         if (!hasGeometry) {
             GeometryDescriptor descriptor = feature.getType().getGeometryDescriptor();
@@ -150,6 +151,9 @@ public abstract class BaseTemplateGetFeatureResponse extends WFSGetFeatureOutput
             }
         }
     }
+
+    protected void afterEvaluation(TemplateOutputWriter writer, RootBuilder root, Feature feature)
+            throws IOException {}
 
     /**
      * Method that trigger the encoding of a FeatureCollection additional infos like numberReturned,

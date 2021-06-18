@@ -4,13 +4,18 @@
  */
 package org.geoserver.featurestemplating.wfs;
 
+import static org.geoserver.featurestemplating.builders.EncodingHints.CONTEXT;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
+import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
@@ -58,7 +63,7 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
                             GetFeatureRequest.adapt(getFeature.getParameters()[0]));
             RootBuilder root =
                     configuration.getTemplate(info, TemplateIdentifier.JSONLD.getOutputFormat());
-            boolean validate = isSematincValidation();
+            boolean validate = isSemanticValidation();
             // setting it back to false
             if (validate) {
                 validate(featureCollection, root);
@@ -92,9 +97,14 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
     private void write(
             FeatureCollectionResponse featureCollection, RootBuilder root, JSONLDWriter writer)
             throws IOException {
-        writer.startTemplateOutput(root.getEncodingHints());
+        EncodingHints encondingHints = new EncodingHints(root.getEncodingHints());
+        if (encondingHints.get(CONTEXT) == null) {
+            JsonNode context = root.getVendorOptions().get(VendorOptions.CONTEXT, JsonNode.class);
+            if (context != null) encondingHints.put(CONTEXT, context);
+        }
+        writer.startTemplateOutput(encondingHints);
         iterateFeatureCollection(writer, featureCollection, root);
-        writer.endTemplateOutput(root.getEncodingHints());
+        writer.endTemplateOutput(encondingHints);
     }
 
     @Override
@@ -133,7 +143,7 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
         return TemplateIdentifier.JSONLD.getOutputFormat();
     }
 
-    private boolean isSematincValidation() {
+    private boolean isSemanticValidation() {
         Request request = Dispatcher.REQUEST.get();
         Map rawKvp = request.getRawKvp();
         Object value = rawKvp != null ? rawKvp.get("validation") : null;

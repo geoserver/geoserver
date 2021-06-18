@@ -26,6 +26,9 @@ public class RootBuilder implements TemplateBuilder {
 
     protected List<String> supportedOptions = new ArrayList<>();
 
+    /**
+     * List of template watchers for included template. Used to know if cache needs to be reloaded
+     */
     private List<FileWatcher<Object>> watchers;
 
     public RootBuilder() {

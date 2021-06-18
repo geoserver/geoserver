@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.List;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -19,6 +20,7 @@ import net.sf.json.JSONSerializer;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.readers.JSONTemplateReader;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -115,7 +117,9 @@ public class JsonWriterTest {
                 new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
         JSONTemplateReader templateReader =
                 new JSONTemplateReader(
-                        mapper.readTree(is), new TemplateReaderConfiguration(namespaceSuport));
+                        mapper.readTree(is),
+                        new TemplateReaderConfiguration(namespaceSuport),
+                        Collections.emptyList());
         RootBuilder builder = templateReader.getRootBuilder();
 
         // write the output
@@ -164,7 +168,9 @@ public class JsonWriterTest {
     public void testStaticArray() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         GeoJSONWriter writer =
-                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+                new GeoJSONWriter(
+                        new JsonFactory().createGenerator(baos, JsonEncoding.UTF8),
+                        TemplateIdentifier.JSON);
         writer.startArray(null, null);
         writer.writeStaticContent(null, "abc", new EncodingHints());
         writer.writeStaticContent(null, 5, new EncodingHints());

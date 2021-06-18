@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
@@ -56,7 +57,9 @@ public class GeoJSONSearchResponse extends Response {
         RootBuilder builder = getTemplate(results.getRequest());
 
         try (GeoJSONWriter writer =
-                new GeoJSONWriter(new JsonFactory().createGenerator(output, JsonEncoding.UTF8))) {
+                new GeoJSONWriter(
+                        new JsonFactory().createGenerator(output, JsonEncoding.UTF8),
+                        TemplateIdentifier.GEOJSON)) {
             writer.startTemplateOutput(null);
             try (FeatureIterator features = results.getResults().features()) {
                 while (features.hasNext()) {

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.platform.ServiceException;
 import org.geotools.feature.FeatureIterator;
@@ -58,7 +59,8 @@ public class TemplatedItemsConverter extends AbstractHttpMessageConverter<Abstra
         try (STACGeoJSONWriter writer =
                 new STACGeoJSONWriter(
                         new JsonFactory()
-                                .createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8))) {
+                                .createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8),
+                        TemplateIdentifier.GEOJSON)) {
             writer.startTemplateOutput(null);
             try (FeatureIterator features = itemsResponse.getItems().features()) {
                 while (features.hasNext()) {

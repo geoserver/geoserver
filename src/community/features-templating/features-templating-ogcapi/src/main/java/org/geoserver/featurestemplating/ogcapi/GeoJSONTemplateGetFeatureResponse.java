@@ -4,6 +4,7 @@
  */
 package org.geoserver.featurestemplating.ogcapi;
 
+import static org.geoserver.featurestemplating.builders.EncodingHints.isSingleFeatureRequest;
 import static org.geoserver.ogcapi.features.FeatureService.ITEM_ID;
 import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
 
@@ -37,7 +38,8 @@ class GeoJSONTemplateGetFeatureResponse
 
     @Override
     protected GeoJSONWriter getOutputWriter(OutputStream output) throws IOException {
-        return new GeoJSONAPIWriter(new JsonFactory().createGenerator(output, JsonEncoding.UTF8));
+        return new GeoJSONAPIWriter(
+                new JsonFactory().createGenerator(output, JsonEncoding.UTF8), identifier);
     }
 
     @Override
@@ -54,8 +56,10 @@ class GeoJSONTemplateGetFeatureResponse
                     writer, featureCollection, getFeature, featureCount, bounds);
             return;
         }
-        writer.writeNumberReturned();
-        writer.writeTimeStamp();
+        if (!isSingleFeatureRequest()) {
+            writer.writeNumberReturned();
+            writer.writeTimeStamp();
+        }
         String collId = getFeature.getParameters()[0].toString();
         String name = helper.getFeatureType(collId).prefixedName();
         ((GeoJSONAPIWriter) writer)

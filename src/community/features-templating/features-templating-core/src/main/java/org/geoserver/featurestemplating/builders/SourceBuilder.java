@@ -4,6 +4,8 @@
  */
 package org.geoserver.featurestemplating.builders;
 
+import static org.geoserver.featurestemplating.builders.EncodingHints.SKIP_OBJECT_ENCODING;
+
 import java.util.LinkedList;
 import java.util.Optional;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
@@ -18,9 +20,22 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
 
     private Expression source;
 
-    public SourceBuilder(String key, NamespaceSupport namespaces) {
+    /**
+     * A SourceBuilder is managed when it not produce any output but simply call the evaluation of
+     * children builder.
+     */
+    protected boolean managed;
+
+    /**
+     * A SourceBuilder is topLevelFeature when its mapping the start of a Feature or of the root
+     * Feature in case of complex features.
+     */
+    protected boolean topLevelFeature;
+
+    public SourceBuilder(String key, NamespaceSupport namespaces, boolean topLevelFeature) {
         super(key, namespaces);
         this.children = new LinkedList<>();
+        this.topLevelFeature = topLevelFeature;
     }
 
     /**
@@ -92,5 +107,25 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
             this.source =
                     new AttributeExpressionImpl(sourceExpr.evaluate(null).toString(), namespaces);
         else this.source = sourceExpr;
+    }
+
+    public boolean isManaged() {
+        return managed;
+    }
+
+    public void setManaged(boolean managed) {
+        this.managed = managed;
+    }
+
+    protected void addSkipObjectEncodingHint(TemplateBuilderContext context) {
+        if (topLevelFeature) addEncodingHint(SKIP_OBJECT_ENCODING, true);
+    }
+
+    public boolean isTopLevelFeature() {
+        return topLevelFeature;
+    }
+
+    public void setTopLevelFeature(boolean topLevelFeature) {
+        this.topLevelFeature = topLevelFeature;
     }
 }

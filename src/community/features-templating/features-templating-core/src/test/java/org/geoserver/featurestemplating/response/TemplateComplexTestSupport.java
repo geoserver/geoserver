@@ -61,17 +61,10 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
     protected void setUpComplex(
             String fileName, String workspace, String templateFileName, FeatureTypeInfo ft)
             throws IOException {
-        File file =
-                dd.getResourceLoader()
-                        .createFile(
-                                "workspaces/"
-                                        + workspace
-                                        + "/"
-                                        + ft.getStore().getName()
-                                        + "/"
-                                        + ft.getName(),
-                                templateFileName);
-
+        String resourceLocation =
+                "workspaces/" + workspace + "/" + ft.getStore().getName() + "/" + ft.getName();
+        File file = dd.get(resourceLocation, templateFileName).file();
+        file.createNewFile();
         dd.getResourceLoader().copyFromClassPath(fileName, file, getClass());
     }
 

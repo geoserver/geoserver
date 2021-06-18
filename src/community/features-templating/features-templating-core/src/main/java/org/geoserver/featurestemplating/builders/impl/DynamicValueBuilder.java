@@ -100,7 +100,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
         }
         Object result = null;
         try {
-            Object contextObject = context.getCurrentObj();
+            Object contextObject = getContextObject(context);
             result = xpath.evaluate(contextObject);
             result = JSONFieldSupport.parseWhenJSON(xpath, contextObject, result);
         } catch (Exception e) {
@@ -188,5 +188,16 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
     @Override
     public Object accept(TemplateVisitor visitor, Object value) {
         return visitor.visit(this, value);
+    }
+
+    private Object getContextObject(TemplateBuilderContext context) {
+        Object contextObject = context.getCurrentObj();
+        if (contextObject != null && contextObject instanceof List) {
+            List<Object> multipleValue = (List<Object>) contextObject;
+            if (!multipleValue.isEmpty()) {
+                contextObject = multipleValue.get(0);
+            }
+        }
+        return contextObject;
     }
 }

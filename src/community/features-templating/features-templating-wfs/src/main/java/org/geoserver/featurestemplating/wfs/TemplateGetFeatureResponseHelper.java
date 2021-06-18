@@ -53,7 +53,8 @@ public class TemplateGetFeatureResponseHelper {
             case GEOJSON:
                 outputWriter =
                         new GeoJSONWriter(
-                                new JsonFactory().createGenerator(output, JsonEncoding.UTF8));
+                                new JsonFactory().createGenerator(output, JsonEncoding.UTF8),
+                                format);
                 break;
             case JSONLD:
                 outputWriter =

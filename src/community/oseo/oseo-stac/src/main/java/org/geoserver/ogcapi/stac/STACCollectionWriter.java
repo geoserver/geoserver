@@ -7,10 +7,15 @@ package org.geoserver.ogcapi.stac;
 import com.fasterxml.jackson.core.JsonGenerator;
 import java.io.IOException;
 import org.geoserver.featurestemplating.builders.EncodingHints;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 
 /** A writer for the collections */
 public class STACCollectionWriter extends GeoJSONWriter {
+
+    public STACCollectionWriter(JsonGenerator generator, TemplateIdentifier identifier) {
+        super(generator, identifier);
+    }
 
     public STACCollectionWriter(JsonGenerator generator) {
         super(generator);

@@ -7,12 +7,17 @@ package org.geoserver.ogcapi.stac;
 import com.fasterxml.jackson.core.JsonGenerator;
 import java.io.IOException;
 import java.util.Map;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 
 public class STACGeoJSONWriter extends GeoJSONWriter {
 
     public STACGeoJSONWriter(JsonGenerator generator) {
         super(generator);
+    }
+
+    public STACGeoJSONWriter(JsonGenerator generator, TemplateIdentifier identifier) {
+        super(generator, identifier);
     }
 
     /**

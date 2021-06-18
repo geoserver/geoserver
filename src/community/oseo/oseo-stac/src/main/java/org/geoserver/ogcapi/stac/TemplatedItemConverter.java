@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.platform.ServiceException;
@@ -56,7 +57,8 @@ public class TemplatedItemConverter extends AbstractHttpMessageConverter<ItemRes
         try (GeoJSONWriter writer =
                 new GeoJSONWriter(
                         new JsonFactory()
-                                .createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8))) {
+                                .createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8),
+                        TemplateIdentifier.GEOJSON)) {
             // no collection wrapper
 
             builder.evaluate(writer, new TemplateBuilderContext(item));

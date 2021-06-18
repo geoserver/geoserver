@@ -6,12 +6,14 @@
 package org.geoserver.featurestemplating.writers;
 
 import static org.geoserver.featurestemplating.builders.EncodingHints.CONTEXT;
+import static org.geoserver.featurestemplating.builders.EncodingHints.isSingleFeatureRequest;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.math.BigInteger;
 import org.geoserver.featurestemplating.builders.EncodingHints;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geotools.filter.function.FilterFunction_toWKT;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
@@ -19,7 +21,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 public class JSONLDWriter extends CommonJSONWriter {
 
     public JSONLDWriter(JsonGenerator generator) {
-        super(generator);
+        super(generator, TemplateIdentifier.JSONLD);
     }
 
     @Override
@@ -44,10 +46,12 @@ public class JSONLDWriter extends CommonJSONWriter {
             else if (context.isObject()) writeObjectNode(contextName, context);
             else writeValueNode(contextName, context);
         }
-        generator.writeFieldName("type");
-        generator.writeString("FeatureCollection");
-        generator.writeFieldName("features");
-        writeStartArray();
+        if (!isSingleFeatureRequest()) {
+            generator.writeFieldName("type");
+            generator.writeString("FeatureCollection");
+            generator.writeFieldName("features");
+            writeStartArray();
+        }
     }
 
     @Override
@@ -73,5 +77,15 @@ public class JSONLDWriter extends CommonJSONWriter {
     @Override
     public void writeNumberReturned() throws IOException {
         // do nothing
+    }
+
+    @Override
+    public void startObject(String name, EncodingHints encodingHints) throws IOException {
+        if (!skipObjectWriting(encodingHints)) super.startObject(name, encodingHints);
+    }
+
+    @Override
+    public void endObject(String name, EncodingHints encodingHints) throws IOException {
+        if (!skipObjectWriting(encodingHints)) super.endObject(name, encodingHints);
     }
 }

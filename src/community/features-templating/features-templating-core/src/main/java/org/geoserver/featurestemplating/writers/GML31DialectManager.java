@@ -39,4 +39,18 @@ class GML31DialectManager extends GMLDialectManager {
     String getGmlNsUri() {
         return "http://www.opengis.net/gml";
     }
+
+    @Override
+    void startFeatureMember() throws XMLStreamException {
+        streamWriter.writeStartElement(GML_PREFIX, "featureMember", getGmlNsUri());
+    }
+
+    @Override
+    void writeGeometryAttributes(int geomIndex) throws XMLStreamException {
+        if (crs != null) {
+            super.writeGeometryAttributes(geomIndex);
+            streamWriter.writeAttribute(
+                    "srsDimension", String.valueOf(crs.getCoordinateSystem().getDimension()));
+        }
+    }
 }

@@ -5,6 +5,7 @@
 package org.geoserver.featurestemplating.response;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -82,14 +83,14 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
                 new StringBuilder("ogc/features/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
-                        .append("&env=source:NotMappedFeature");
+                        .append("&env=source:notComposition");
         MockHttpServletResponse response = getAsServletResponse(sb.toString());
         // source changed validation should fail
         assertTrue(
                 response.getContentAsString()
                         .contains(
                                 "Failed to validate template for feature type MappedFeature. "
-                                        + "Failing attribute is Source: gsml:NotMappedFeature"));
+                                        + "Failing attribute is Source: gsml:notComposition"));
     }
 
     @Test
@@ -174,5 +175,25 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
         assertTrue(
                 strResult.contains(
                         "Validation failed. Unable to resolve the following fields against the @context: proportion,previousContextValue,lithology,valueArray,type,value,@codeSpace."));
+    }
+
+    @Test
+    public void testJsonLdResponseOGCAPISingleFeature() throws Exception {
+        setUpMappedFeature();
+        String path =
+                "ogc/features/collections/"
+                        + "gsml:MappedFeature"
+                        + "/items/mf4?f=application%2Fld%2Bjson";
+        JSONObject result = (JSONObject) getJsonLd(path);
+        Object context = result.get("@context");
+        checkContext(context);
+        assertNotNull(context);
+        assertFalse(result.has("features"));
+        assertEquals("mf4", result.getString("@id"));
+        assertEquals("MURRADUC BASALT", result.getString("name"));
+        assertTrue(result.has("@type"));
+        assertTrue(result.has("gsml:positionalAccuracy"));
+        assertTrue(result.has("gsml:GeologicUnit"));
+        assertTrue(result.has("geometry"));
     }
 }

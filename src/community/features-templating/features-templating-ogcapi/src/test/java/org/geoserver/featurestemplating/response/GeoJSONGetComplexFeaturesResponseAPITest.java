@@ -5,6 +5,7 @@
 package org.geoserver.featurestemplating.response;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import net.sf.json.JSONArray;
@@ -48,5 +49,23 @@ public class GeoJSONGetComplexFeaturesResponseAPITest
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
         checkMappedFeature(features.getJSONObject(0));
         checkAdditionalInfo(result);
+    }
+
+    @Test
+    public void testGeoJSONSingleFeature() throws Exception {
+        setUpMappedFeature("MappedFeatureGeoJSON.json");
+        StringBuilder sb =
+                new StringBuilder("ogc/features/collections/")
+                        .append("gsml:MappedFeature")
+                        .append("/items/mf4?f=application%2Fgeo%2Bjson");
+        JSONObject result = (JSONObject) getJson(sb.toString());
+        assertFalse(result.has("features"));
+        assertEquals("mf4", result.getString("@id"));
+        assertEquals("FeatureName: MURRADUC BASALT", result.getString("name"));
+        assertTrue(result.has("@type"));
+        assertTrue(result.has("gsml:positionalAccuracy"));
+        assertTrue(result.has("gsml:GeologicUnit"));
+        assertTrue(result.has("geometry"));
+        assertTrue(result.has("links"));
     }
 }

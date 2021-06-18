@@ -3,8 +3,10 @@ package org.geoserver.featurestemplating.response;
 import java.io.IOException;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
 import org.w3c.dom.Document;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class GML2GetComplexFeatureTest extends TemplateComplexTestSupport {
 
     @Test

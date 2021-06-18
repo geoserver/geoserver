@@ -4,6 +4,9 @@
  */
 package org.geoserver.featurestemplating.writers;
 
+import static org.geoserver.featurestemplating.builders.EncodingHints.SKIP_OBJECT_ENCODING;
+import static org.geoserver.featurestemplating.builders.EncodingHints.isSingleFeatureRequest;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import java.io.IOException;
@@ -14,6 +17,7 @@ import java.util.Map;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geotools.util.Converters;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Attribute;
@@ -25,8 +29,13 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     protected com.fasterxml.jackson.core.JsonGenerator generator;
     private boolean flatOutput;
 
-    public CommonJSONWriter(com.fasterxml.jackson.core.JsonGenerator generator) {
+    protected TemplateIdentifier identifier;
+
+    public CommonJSONWriter(
+            com.fasterxml.jackson.core.JsonGenerator generator,
+            TemplateIdentifier templateIdentifier) {
         this.generator = generator;
+        this.identifier = templateIdentifier;
     }
 
     @Override
@@ -207,7 +216,9 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
 
     @Override
     public void endTemplateOutput(EncodingHints encodingHints) throws IOException {
-        writeEndArray();
+        if (!isSingleFeatureRequest()) {
+            writeEndArray();
+        }
         writeEndObject();
     }
 
@@ -256,5 +267,15 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     @Override
     public void close() throws IOException {
         generator.close();
+    }
+
+    protected boolean skipObjectWriting(EncodingHints encodingHints) {
+        Boolean skipIfSingleFeature =
+                getEncodingHintIfPresent(encodingHints, SKIP_OBJECT_ENCODING, Boolean.class);
+        return skipIfSingleFeature != null
+                && skipIfSingleFeature.booleanValue()
+                && isSingleFeatureRequest()
+                && (identifier.equals(TemplateIdentifier.GEOJSON)
+                        || identifier.equals(TemplateIdentifier.JSONLD));
     }
 }

@@ -27,6 +27,6 @@ public class TemplateValidator extends AbstractTemplateValidator {
 
     @Override
     public String getTypeName() {
-        return type.getName();
+        return type.getNativeName();
     }
 }

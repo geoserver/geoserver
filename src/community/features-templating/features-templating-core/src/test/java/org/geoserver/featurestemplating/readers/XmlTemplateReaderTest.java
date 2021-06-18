@@ -61,7 +61,7 @@ public class XmlTemplateReaderTest {
         TemplateBuilder specification = null;
         for (TemplateBuilder b : mappedFeatureBuilder.getChildren()) {
             String key = ((AbstractTemplateBuilder) b).getKey();
-            if (key!=null && key.equals("gsml:specification")) {
+            if (key != null && key.equals("gsml:specification")) {
                 specification = b;
                 break;
             }

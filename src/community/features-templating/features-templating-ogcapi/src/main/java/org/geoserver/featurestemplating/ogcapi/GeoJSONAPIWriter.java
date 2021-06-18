@@ -4,10 +4,14 @@
  */
 package org.geoserver.featurestemplating.ogcapi;
 
+import static org.geoserver.featurestemplating.builders.EncodingHints.isSingleFeatureRequest;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import org.geoserver.featurestemplating.builders.EncodingHints;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.Link;
@@ -19,8 +23,15 @@ import org.springframework.http.MediaType;
 
 public class GeoJSONAPIWriter extends GeoJSONWriter {
 
-    public GeoJSONAPIWriter(JsonGenerator generator) {
-        super(generator);
+    public GeoJSONAPIWriter(JsonGenerator generator, TemplateIdentifier identifier) {
+        super(generator, identifier);
+    }
+
+    @Override
+    public void startTemplateOutput(EncodingHints encodingHints) throws IOException {
+        boolean isGeoJSON = identifier.equals(TemplateIdentifier.GEOJSON);
+        if (isSingleFeatureRequest() && isGeoJSON) startObject(null, encodingHints);
+        else super.startTemplateOutput(encodingHints);
     }
 
     public void writeLinks(
@@ -72,5 +83,15 @@ public class GeoJSONAPIWriter extends GeoJSONWriter {
             writeLink(href, linkType, format.toString(), linkTitle, null);
         }
         endArray(null, null);
+    }
+
+    @Override
+    public void startObject(String name, EncodingHints encodingHints) throws IOException {
+        if (!skipObjectWriting(encodingHints)) super.startObject(name, encodingHints);
+    }
+
+    @Override
+    public void endObject(String name, EncodingHints encodingHints) throws IOException {
+        if (!skipObjectWriting(encodingHints)) super.endObject(name, encodingHints);
     }
 }

@@ -27,10 +27,16 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
         nameHelper = new AttributeNameHelper(this.key, separator);
     }
 
+    public FlatIteratingBuilder(
+            String key, NamespaceSupport namespaces, String separator, boolean topLevelComplex) {
+        super(key, namespaces, topLevelComplex);
+        nameHelper = new AttributeNameHelper(this.key, separator);
+    }
+
     @Override
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        if (!rootCollection) {
+        if (!managed) {
             context = evaluateSource(context);
             Object o = context.getCurrentObj();
             if (o != null) {
@@ -45,6 +51,7 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
             }
         } else {
             if (evaluateFilter(context)) {
+                addSkipObjectEncodingHint(context);
                 for (TemplateBuilder child : children) {
                     AbstractTemplateBuilder abstractChild = (AbstractTemplateBuilder) child;
                     if (child instanceof FlatCompositeBuilder)

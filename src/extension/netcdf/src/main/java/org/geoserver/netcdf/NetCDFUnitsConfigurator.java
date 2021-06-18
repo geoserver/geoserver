@@ -122,6 +122,7 @@ public class NetCDFUnitsConfigurator implements GeoServerLifecycleHandler {
 
     @Override
     public void onReset() {
+        NetCDFUtilities.clearCaches();
         configure();
     }
 
@@ -132,6 +133,7 @@ public class NetCDFUnitsConfigurator implements GeoServerLifecycleHandler {
 
     @Override
     public void beforeReload() {
+        NetCDFUtilities.clearCaches();
         // better reload the unit config before reloading the catalog
         configure();
     }

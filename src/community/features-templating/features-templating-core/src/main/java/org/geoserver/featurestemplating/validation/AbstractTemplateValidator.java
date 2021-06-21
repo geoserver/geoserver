@@ -3,6 +3,8 @@ package org.geoserver.featurestemplating.validation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
@@ -13,13 +15,18 @@ import org.geoserver.featurestemplating.expressions.XpathFunction;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 
 /** Base class for template validation against a target feature type */
 public abstract class AbstractTemplateValidator {
+
+    private static final Logger LOGGER = Logging.getLogger(AbstractTemplateValidator.class);
+
     private String failingAttribute;
 
     private List<String> sourcesFound = new ArrayList<>();
@@ -32,9 +39,8 @@ public abstract class AbstractTemplateValidator {
                     new ValidateExpressionVisitor(new TemplateBuilderContext(getFeatureType()));
             return validateExpressions(root, validateVisitor, source);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return false;
     }
 
     /** The feature type against which the template is being validated */
@@ -72,18 +78,22 @@ public abstract class AbstractTemplateValidator {
             } else if (jb instanceof SourceBuilder) {
                 SourceBuilder sb = ((SourceBuilder) jb);
                 if (sb.getSource() != null && sb.getStrSource() != null) {
-                    String typeName =
-                            sb.getStrSource().substring(sb.getStrSource().indexOf(":") + 1);
-                    boolean skipValidation =
-                            sb.isTopLevelFeature() || getTypeName().contains(typeName);
-                    if (!skipValidation) {
+                    boolean topLevelFeature = sb.isTopLevelFeature();
+                    boolean isValid = true;
+                    if (!topLevelFeature) {
                         PropertyName pn = getSourceToValidate(sb, source);
-                        if (!validate(pn, visitor)) {
-                            failingAttribute = "Source: " + sb.getStrSource();
-                            return false;
-                        } else {
-                            siblingSource = pn.getPropertyName();
-                        }
+                        isValid = validate(pn, visitor);
+                        siblingSource = pn.getPropertyName();
+                    } else if (LOGGER.isLoggable(Level.WARNING))
+                        // topLevelSource validation if fails will
+                        // log a failing warn but will not make the entire validation to fail.
+                        // this is because we are matching at hand feature name and featureType name
+                        // and the matching cannot cover all the possible cases of mismatch between
+                        // names
+                        validateTopLevelSource(sb);
+                    if (!isValid) {
+                        failingAttribute = "Source: " + sb.getStrSource();
+                        return false;
                     }
                 }
                 if (!validateExpressions(
@@ -117,6 +127,52 @@ public abstract class AbstractTemplateValidator {
             ((Filter) toValidate).accept(visitor, null);
         }
         return visitor.isValid();
+    }
+
+    private void validateTopLevelSource(SourceBuilder builder) {
+        try {
+            boolean result;
+            String strSource = builder.getStrSource();
+            Name name = getFeatureType().getName();
+            if (strSource.indexOf(":") != -1) {
+                String[] nameAr = strSource.split(":");
+                if (builder.getNamespaces() != null) {
+                    String prefix = nameAr[0];
+                    String uri = builder.getNamespaces().getURI(prefix);
+                    result =
+                            name.getNamespaceURI().equals(uri)
+                                    && localPartMatches(name.getLocalPart(), nameAr[1]);
+                } else {
+                    result = localPartMatches(name.getLocalPart(), nameAr[1]);
+                }
+            } else result = name.getLocalPart().equals(strSource);
+            if (!result)
+                LOGGER.warning(
+                        "Failed to validate the topLevel Feature source against the FeatureType. "
+                                + "The source is "
+                                + strSource
+                                + " and the FeatureType name is "
+                                + name.toString()
+                                + ". The top level source"
+                                + " might be still valid anyway");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean localPartMatches(String typeName, String sourceName) {
+        boolean matchName = typeName.equals(sourceName);
+        if (!matchName) {
+            String withType = sourceName + "Type";
+            matchName = typeName.equalsIgnoreCase(withType);
+        }
+        if (!matchName) {
+            // last attempt we might have a SmartDataLoader complex features which add to
+            // the Feature the suffix 'Feature'
+            sourceName = sourceName.replaceAll("Feature", "");
+            matchName = typeName.equalsIgnoreCase(sourceName);
+        }
+        return matchName;
     }
 
     /**

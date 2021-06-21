@@ -33,7 +33,7 @@ public class IteratingBuilder extends SourceBuilder {
     @Override
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        if (!managed) {
+        if (ownOutput) {
             context = evaluateSource(context);
             if (context.getCurrentObj() != null) {
                 evaluateNonFeaturesField(writer, context);
@@ -98,11 +98,11 @@ public class IteratingBuilder extends SourceBuilder {
             if (evaluateFilter(childContext)) {
                 String key = getKey();
                 // repeat the key attribute according to the hint
-                if (iterateKey && !managed) writer.startArray(key, encodingHints);
+                if (iterateKey && ownOutput) writer.startArray(key, encodingHints);
                 for (TemplateBuilder child : children) {
                     child.evaluate(writer, childContext);
                 }
-                if (iterateKey && !managed) writer.endArray(key, encodingHints);
+                if (iterateKey && ownOutput) writer.endArray(key, encodingHints);
             }
         }
     }

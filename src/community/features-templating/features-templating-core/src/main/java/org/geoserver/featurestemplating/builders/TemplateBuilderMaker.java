@@ -40,7 +40,7 @@ public class TemplateBuilderMaker {
 
     private boolean flatOutput;
 
-    private boolean managed = false;
+    private boolean ownOutput = true;
 
     private boolean topLevelFeature;
 
@@ -190,12 +190,14 @@ public class TemplateBuilderMaker {
      * Set a boolean to tell the TemplateBuilderMaker if the IteratingBuilder being created should
      * be considered as the first IteratingBuilder of the builder tree.
      *
-     * @param managed true if the IteratingBuilder being created is the root IteratingBuilder of the
-     *     builder tree.
+     * @param hasOwnOutput false if the Builder being created is mapping element that are wrote by
+     *     ${@link
+     *     org.geoserver.featurestemplating.writers.TemplateOutputWriter#startTemplateOutput(EncodingHints)}
+     *     method
      * @return this TemplateBuilderMaker.
      */
-    public TemplateBuilderMaker managedBuilder(boolean managed) {
-        this.managed = managed;
+    public TemplateBuilderMaker hasOwnOutput(boolean hasOwnOutput) {
+        this.ownOutput = hasOwnOutput;
         return this;
     }
 
@@ -272,7 +274,7 @@ public class TemplateBuilderMaker {
         this.vendorOptions = new VendorOptions();
         this.filter = null;
         this.isCollection = false;
-        this.managed = false;
+        this.ownOutput = true;
         this.name = null;
         this.source = null;
         this.textContent = null;
@@ -306,8 +308,8 @@ public class TemplateBuilderMaker {
         if (filter != null) iteratingBuilder.setFilter(filter);
         if (!encondingHints.isEmpty()) iteratingBuilder.getEncodingHints().putAll(encondingHints);
         if (name != null && rootCollectionName != null && rootCollectionName.equals(name))
-            managed = true;
-        iteratingBuilder.setManaged(managed);
+            ownOutput = false;
+        iteratingBuilder.setOwnOutput(ownOutput);
         iteratingBuilder.setTopLevelFeature(topLevelFeature);
         return iteratingBuilder;
     }
@@ -322,7 +324,7 @@ public class TemplateBuilderMaker {
         if (source != null) compositeBuilder.setSource(source);
         if (filter != null) compositeBuilder.setFilter(filter);
         if (!encondingHints.isEmpty()) compositeBuilder.getEncodingHints().putAll(encondingHints);
-        compositeBuilder.setManaged(managed);
+        compositeBuilder.setOwnOutput(ownOutput);
         return compositeBuilder;
     }
 

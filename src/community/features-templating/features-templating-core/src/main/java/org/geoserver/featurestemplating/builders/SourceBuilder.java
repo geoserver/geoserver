@@ -21,10 +21,12 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
     private Expression source;
 
     /**
-     * A SourceBuilder is managed when it not produce any output but simply call the evaluation of
-     * children builder.
+     * A SourceBuilder hasNotOwnOutput when it not invoke the writer to encode any output but simply
+     * call the evaluation of children builder. This is the case when the builder does not map any
+     * feature attribute but part of an output format that are handle by ${@link
+     * org.geoserver.featurestemplating.writers.TemplateOutputWriter#startTemplateOutput(EncodingHints)}
      */
-    protected boolean managed;
+    protected boolean ownOutput = true;
 
     /**
      * A SourceBuilder is topLevelFeature when its mapping the start of a Feature or of the root
@@ -109,12 +111,12 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
         else this.source = sourceExpr;
     }
 
-    public boolean isManaged() {
-        return managed;
+    public boolean hasOwnOutput() {
+        return ownOutput;
     }
 
-    public void setManaged(boolean managed) {
-        this.managed = managed;
+    public void setOwnOutput(boolean ownOutput) {
+        this.ownOutput = ownOutput;
     }
 
     protected void addSkipObjectEncodingHint(TemplateBuilderContext context) {

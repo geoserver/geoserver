@@ -25,7 +25,6 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
-import org.opengis.metadata.lineage.Source;
 
 /**
  * This visitor search for a Filter in {@link TemplateBuilder} tree using the path provided as a
@@ -271,9 +270,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         boolean result = keyMatched(current, key, pathElements);
         if (!result) {
             if (parent instanceof RootBuilder) result = true;
-            else if (parent instanceof SourceBuilder && ((SourceBuilder) parent).isManaged())
-                result = true;
-            else if (current instanceof Source && ((SourceBuilder) current).isManaged())
+            else if (parent instanceof SourceBuilder && !((SourceBuilder) parent).hasOwnOutput())
                 result = true;
         }
         return result;

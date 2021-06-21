@@ -10,6 +10,7 @@ import static org.geoserver.featurestemplating.builders.EncodingHints.NAMESPACES
 import static org.geoserver.featurestemplating.builders.EncodingHints.SCHEMA_LOCATION;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,12 +38,14 @@ import org.xml.sax.helpers.NamespaceSupport;
  * This class create TemplateBuilder out of a xml resource and is able to follow included templates
  * if they are found.
  */
-public class XMLRecursiveReader extends RecursiveTemplateResourceParser implements AutoCloseable {
+public class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
+        implements TemplateReader, AutoCloseable {
 
     private TemplateBuilderMaker maker;
     private Stack<StartElement> elementsStack;
     private NamespaceSupport namespaceSupport;
     private List<StartElement> parsedElements;
+    private InputStream inputSource;
 
     private XMLEventReader reader;
 
@@ -56,7 +59,7 @@ public class XMLRecursiveReader extends RecursiveTemplateResourceParser implemen
 
     private static final String TEMPLATE_ELEMENT = "gft:Template";
 
-    private static final String VENDOR_OPTIONS_EL = "gft:VendorOptions";
+    private static final String VENDOR_OPTIONS_EL = "gft:Options";
 
     private static final String NAME_SPACES_EL = "gft:Namespaces";
 
@@ -74,7 +77,7 @@ public class XMLRecursiveReader extends RecursiveTemplateResourceParser implemen
 
     private static final String WFS_MEMBER = "wfs:member";
 
-    public XMLRecursiveReader(Resource resource, NamespaceSupport namespaceSupport)
+    public XMLRecursiveTemplateReader(Resource resource, NamespaceSupport namespaceSupport)
             throws IOException {
         super(resource);
         this.resource = resource;
@@ -89,8 +92,8 @@ public class XMLRecursiveReader extends RecursiveTemplateResourceParser implemen
         }
     }
 
-    public XMLRecursiveReader(
-            Resource resource, XMLRecursiveReader parent, NamespaceSupport namespaceSupport)
+    public XMLRecursiveTemplateReader(
+            Resource resource, XMLRecursiveTemplateReader parent, NamespaceSupport namespaceSupport)
             throws IOException {
         super(resource, parent);
         this.elementsStack = new Stack<>();
@@ -102,6 +105,19 @@ public class XMLRecursiveReader extends RecursiveTemplateResourceParser implemen
         } catch (XMLStreamException e) {
             throw new IOException(e);
         }
+    }
+
+    @Override
+    public RootBuilder getRootBuilder() {
+        RootBuilder rootBuilder = new RootBuilder();
+        try {
+            iterateReader(rootBuilder);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            close();
+        }
+        return rootBuilder;
     }
 
     public void iterateReader(TemplateBuilder builder) throws IOException {
@@ -195,13 +211,13 @@ public class XMLRecursiveReader extends RecursiveTemplateResourceParser implemen
             String qName = startElement.getName().toString();
             boolean collection =
                     isCollection != null && Boolean.valueOf(isCollection).booleanValue();
-            boolean managed = qName.equals(GML_MEMBER) || qName.equals(WFS_MEMBER);
+            boolean hasOwnOutput = !(qName.equals(GML_MEMBER) || qName.equals(WFS_MEMBER));
             maker.collection(collection)
                     .name(qName)
                     .namespaces(namespaceSupport)
                     .filter(getAttributeValueIfPresent(startElement, FILTER_ATTR))
                     .source(getAttributeValueIfPresent(startElement, SOURCE_ATTR))
-                    .managedBuilder(managed)
+                    .hasOwnOutput(hasOwnOutput)
                     .topLevelFeature(isRootOrManaged(currentParent));
             if (collection) {
                 maker.encodingOption(ITERATE_KEY, "true");
@@ -277,7 +293,7 @@ public class XMLRecursiveReader extends RecursiveTemplateResourceParser implemen
         maker.collection(true)
                 .name(startElementEvent.getName().toString())
                 .namespaces(namespaceSupport)
-                .managedBuilder(true);
+                .hasOwnOutput(false);
         TemplateBuilder builder = maker.build();
         rootBuilder.addChild(builder);
         return builder;
@@ -348,8 +364,8 @@ public class XMLRecursiveReader extends RecursiveTemplateResourceParser implemen
     private void builderFromIncludedTemplate(
             Resource resource, String data, TemplateBuilder currentParent) throws IOException {
         Resource included = getResource(resource.parent(), data);
-        try (XMLRecursiveReader recursiveParser =
-                new XMLRecursiveReader(included, this, namespaceSupport)) {
+        try (XMLRecursiveTemplateReader recursiveParser =
+                new XMLRecursiveTemplateReader(included, this, namespaceSupport)) {
             recursiveParser.iterateReader(currentParent);
         }
     }
@@ -357,6 +373,7 @@ public class XMLRecursiveReader extends RecursiveTemplateResourceParser implemen
     @Override
     public void close() {
         try {
+            this.inputSource.close();
             this.reader.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -366,7 +383,8 @@ public class XMLRecursiveReader extends RecursiveTemplateResourceParser implemen
     private XMLEventReader getEventReader(Resource resource) throws XMLStreamException {
         XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
         xmlInputFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false);
-        return xmlInputFactory.createXMLEventReader(resource.in());
+        this.inputSource = resource.in();
+        return xmlInputFactory.createXMLEventReader(inputSource);
     }
 
     private TemplateBuilder retrieveLastAddedTemplateBuilder(TemplateBuilder currentBuilder) {
@@ -416,6 +434,6 @@ public class XMLRecursiveReader extends RecursiveTemplateResourceParser implemen
     }
 
     private boolean isRootOrManaged(TemplateBuilder parent) {
-        return parent instanceof RootBuilder || ((SourceBuilder) parent).isManaged();
+        return parent instanceof RootBuilder || !((SourceBuilder) parent).hasOwnOutput();
     }
 }

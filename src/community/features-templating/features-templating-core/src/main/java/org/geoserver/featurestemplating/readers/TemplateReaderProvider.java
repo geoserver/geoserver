@@ -35,7 +35,7 @@ public class TemplateReaderProvider {
             reader = new JSONTemplateReader(parser.parse(), configuration, parser.getWatchers());
         } else if (resourceExtension.equalsIgnoreCase(SupportedExtension.XHTML.name())
                 || resourceExtension.equalsIgnoreCase(SupportedExtension.XML.name())) {
-            reader = new XMLTemplateReader(resource, configuration.getNamespaces());
+            reader = new XMLRecursiveTemplateReader(resource, configuration.getNamespaces());
         } else {
             throw new UnsupportedOperationException(
                     "Not a supported extension " + resourceExtension);

@@ -35,7 +35,7 @@ public class JSONTemplateReader implements TemplateReader {
 
     public static final String EXPRSTART = "${";
 
-    public static final String VENDOROPTION = "$VendorOptions";
+    public static final String VENDOROPTION = "$options";
 
     private JsonNode template;
 
@@ -133,7 +133,11 @@ public class JSONTemplateReader implements TemplateReader {
                     if (valueNode.isObject()) {
                         currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
                         maker.name(entryName);
-                        maker.topLevelFeature(isRootOrManaged(currentBuilder));
+                        // if the parent of the template builder being created
+                        // is a root one, in case of simplified template support,
+                        // or hasNotOwnOutput is flagged the CompositeBuilder being produced
+                        // maps the topLevelFeature source.
+                        maker.topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder));
                         TemplateBuilder compositeBuilder = maker.build();
                         currentBuilder.addChild(compositeBuilder);
                         getBuilderFromJsonObject(valueNode, compositeBuilder, maker);
@@ -157,7 +161,11 @@ public class JSONTemplateReader implements TemplateReader {
         TemplateBuilder iteratingBuilder =
                 maker.name(nodeName)
                         .collection(true)
-                        .topLevelFeature(isRootOrManaged(currentBuilder))
+                        // if the parent of the template builder being created
+                        // is a root one, in case of simplified template support,
+                        // or hasNotOwnOutput is flagged the CompositeBuilder being produced
+                        // maps the topLevelFeature source.
+                        .topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder))
                         .build();
         currentBuilder.addChild(iteratingBuilder);
         if (!node.toString().contains(EXPRSTART) && !node.toString().contains(FILTERKEY)) {
@@ -175,7 +183,8 @@ public class JSONTemplateReader implements TemplateReader {
                     } else if (childJSON.contains(EXPRSTART) || childJSON.contains(FILTERKEY)) {
                         // regular dynamic object/filtered object
                         TemplateBuilder compositeBuilder =
-                                maker.topLevelFeature(isRootOrManaged(currentBuilder)).build();
+                                maker.topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder))
+                                        .build();
                         iteratingBuilder.addChild(compositeBuilder);
                         getBuilderFromJsonObject(childNode, compositeBuilder, maker);
                     } else {
@@ -247,7 +256,7 @@ public class JSONTemplateReader implements TemplateReader {
     }
 
     // create a composite as direct child of a Root builder
-    // needed for the case where we have a template not defined the features array but only
+    // needed for the case where we have a template not defining the features array but only
     // the feature attributes template
     private TemplateBuilder createCompositeIfNeeded(
             TemplateBuilder currentParent, TemplateBuilderMaker maker) {
@@ -260,7 +269,7 @@ public class JSONTemplateReader implements TemplateReader {
         return builder;
     }
 
-    private boolean isRootOrManaged(TemplateBuilder parent) {
-        return parent instanceof RootBuilder || ((SourceBuilder) parent).isManaged();
+    private boolean isRootOrHasNotOwnOutput(TemplateBuilder parent) {
+        return parent instanceof RootBuilder || !((SourceBuilder) parent).hasOwnOutput();
     }
 }

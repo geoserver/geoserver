@@ -69,6 +69,11 @@ public class EncodingHints extends HashMap<String, Object> {
         return cast.cast(get(key));
     }
 
+    /**
+     * Check if the current request is an OGCAPI request by feature id.
+     *
+     * @return true if is a single feature request, false otherwise.
+     */
     public static boolean isSingleFeatureRequest() {
         return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
                 .map(

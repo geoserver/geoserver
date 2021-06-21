@@ -36,7 +36,7 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
     @Override
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        if (!managed) {
+        if (ownOutput) {
             context = evaluateSource(context);
             Object o = context.getCurrentObj();
             if (o != null) {

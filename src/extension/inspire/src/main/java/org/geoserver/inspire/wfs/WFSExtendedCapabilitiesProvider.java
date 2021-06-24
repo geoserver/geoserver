@@ -6,7 +6,6 @@
 package org.geoserver.inspire.wfs;
 
 import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
-import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE;
@@ -16,6 +15,7 @@ import static org.geoserver.inspire.InspireSchema.DLS_SCHEMA;
 
 import java.io.IOException;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.inspire.ServicesUtils;
 import org.geoserver.inspire.UniqueResourceIdentifier;
 import org.geoserver.inspire.UniqueResourceIdentifiers;
 import org.geoserver.wfs.GetCapabilities;
@@ -54,7 +54,6 @@ public class WFSExtendedCapabilitiesProvider
                 serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
-        String language = (String) serviceMetadata.get(LANGUAGE.key);
         UniqueResourceIdentifiers ids =
                 serviceMetadata.get(
                         SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
@@ -80,19 +79,7 @@ public class WFSExtendedCapabilitiesProvider
             tx.end("inspire_common:MediaType");
         }
         tx.end("inspire_common:MetadataUrl");
-        tx.start("inspire_common:SupportedLanguages");
-        language = language != null ? language : "eng";
-        tx.start("inspire_common:DefaultLanguage");
-        tx.start("inspire_common:Language");
-        tx.chars(language);
-        tx.end("inspire_common:Language");
-        tx.end("inspire_common:DefaultLanguage");
-        tx.end("inspire_common:SupportedLanguages");
-        tx.start("inspire_common:ResponseLanguage");
-        tx.start("inspire_common:Language");
-        tx.chars(language);
-        tx.end("inspire_common:Language");
-        tx.end("inspire_common:ResponseLanguage");
+        ServicesUtils.encodeSupportedLanguages(serviceMetadata, tx);
         for (UniqueResourceIdentifier id : ids) {
             if (id.getMetadataURL() != null) {
                 tx.start(

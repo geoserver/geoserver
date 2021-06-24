@@ -7,6 +7,7 @@ package org.geoserver.inspire.web;
 
 import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
 import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
+import static org.geoserver.inspire.InspireMetadata.OTHER_LANGUAGES;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE;
@@ -97,7 +98,10 @@ public class InspireAdminPanel extends AdminPagePanel {
         if (!model.getObject().getMetadata().containsKey(LANGUAGE.key)) {
             model.getObject().getMetadata().put(LANGUAGE.key, "eng");
         }
+
         configs.add(new LanguageDropDownChoice("language", new MapModel(metadata, LANGUAGE.key)));
+        configs.add(
+                new LanguagesEditor("otherLanguages", new MapModel(metadata, OTHER_LANGUAGES.key)));
 
         TextField metadataUrlField =
                 new TextField("metadataURL", new MapModel(metadata, SERVICE_METADATA_URL.key));

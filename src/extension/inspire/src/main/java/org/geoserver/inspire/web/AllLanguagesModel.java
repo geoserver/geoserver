@@ -6,15 +6,13 @@
 package org.geoserver.inspire.web;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import org.apache.wicket.model.IModel;
-import org.geoserver.inspire.InspireSchema;
+import org.geoserver.inspire.InspireDirectoryManager;
 
 /**
  * Model for the list of INSPIRE supported languages.
@@ -23,8 +21,6 @@ import org.geoserver.inspire.InspireSchema;
  * org/geoserver/inspire/wms/available_languages.properties} properties file.
  */
 public class AllLanguagesModel implements IModel<List<String>> {
-    private static final String LANGUAGES_FILE =
-            "/org/geoserver/inspire/available_languages.properties";
 
     private static final long serialVersionUID = -6324842325783657135L;
 
@@ -58,13 +54,9 @@ public class AllLanguagesModel implements IModel<List<String>> {
     @SuppressWarnings({"unchecked", "rawtypes"})
     List<String> getAvailableLanguages() throws IOException {
         List<String> langs = new ArrayList<>();
-        URL resource = InspireSchema.class.getResource(LANGUAGES_FILE);
-        try (InputStream inStream = resource.openStream()) {
-            Properties list = new Properties();
-            list.load(inStream);
-            Set codes = list.keySet();
-            langs.addAll(codes);
-        }
+        Properties list = InspireDirectoryManager.get().getLanguagesMappings();
+        Set codes = list.keySet();
+        langs.addAll(codes);
         Collections.sort(langs);
         return langs;
     }

@@ -6,7 +6,6 @@
 package org.geoserver.inspire.wms;
 
 import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
-import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireSchema.VS_NAMESPACE;
@@ -18,7 +17,7 @@ import java.util.List;
 import java.util.Set;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.inspire.ViewServicesUtils;
+import org.geoserver.inspire.ServicesUtils;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
@@ -56,7 +55,7 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
 
     @Override
     public void registerNamespaces(NamespaceSupport namespaces) {
-        ViewServicesUtils.registerNameSpaces(namespaces);
+        ServicesUtils.registerNameSpaces(namespaces);
     }
 
     @Override
@@ -78,10 +77,9 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
             return;
         }
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
-        String language = (String) serviceMetadata.get(LANGUAGE.key);
 
         // IGN : INSPIRE SCENARIO 1
-        ViewServicesUtils.addScenario1Elements(tx, metadataURL, mediaType, language);
+        ServicesUtils.addScenario1Elements(tx, metadataURL, mediaType, serviceMetadata);
     }
 
     Attributes atts(String... atts) {

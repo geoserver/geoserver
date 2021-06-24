@@ -28,6 +28,7 @@ import org.geotools.styling.Style;
 import org.geotools.util.decorate.AbstractDecorator;
 import org.opengis.feature.type.Name;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.util.InternationalString;
 import org.opengis.util.ProgressListener;
 
 /**
@@ -422,5 +423,25 @@ public class DecoratingWMSLayerInfo extends AbstractDecorator<WMSLayerInfo>
     @Override
     public void setSimpleConversionEnabled(boolean activateComplexToSimpleOutput) {
         delegate.setSimpleConversionEnabled(activateComplexToSimpleOutput);
+    }
+
+    @Override
+    public InternationalString getInternationalTitle() {
+        return delegate.getInternationalTitle();
+    }
+
+    @Override
+    public void setInternationalTitle(InternationalString internationalTitle) {
+        delegate.setInternationalTitle(internationalTitle);
+    }
+
+    @Override
+    public InternationalString getInternationalAbstract() {
+        return delegate.getInternationalAbstract();
+    }
+
+    @Override
+    public void setInternationalAbstract(InternationalString internationalAbstract) {
+        delegate.setInternationalAbstract(internationalAbstract);
     }
 }

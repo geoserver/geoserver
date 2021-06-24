@@ -51,6 +51,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -161,6 +162,7 @@ import org.geotools.referencing.crs.DefaultProjectedCRS;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.referencing.wkt.Formattable;
 import org.geotools.util.Converters;
+import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
@@ -506,6 +508,33 @@ public class XStreamPersister {
         xs.registerLocalConverter(ReferencedEnvelope.class, "crs", new SRSConverter());
         xs.registerLocalConverter(GeneralEnvelope.class, "crs", new SRSConverter());
 
+        xs.registerLocalConverter(
+                impl(ResourceInfo.class),
+                "internationalTitle",
+                new GrowableInternationalStringConverter());
+        xs.registerLocalConverter(
+                impl(ResourceInfo.class),
+                "internationalAbstract",
+                new GrowableInternationalStringConverter());
+
+        xs.registerLocalConverter(
+                impl(ServiceInfo.class),
+                "internationalTitle",
+                new GrowableInternationalStringConverter());
+        xs.registerLocalConverter(
+                impl(ServiceInfo.class),
+                "internationalAbstract",
+                new GrowableInternationalStringConverter());
+
+        xs.registerLocalConverter(
+                impl(LayerGroupInfo.class),
+                "internationalTitle",
+                new GrowableInternationalStringConverter());
+        xs.registerLocalConverter(
+                impl(LayerGroupInfo.class),
+                "internationalAbstract",
+                new GrowableInternationalStringConverter());
+
         // ServiceInfo
         xs.registerConverter(new ServiceInfoConverter());
         xs.omitField(impl(ServiceInfo.class), "geoServer");
@@ -524,6 +553,7 @@ public class XStreamPersister {
         xs.registerConverter(new KeywordInfoConverter());
         xs.registerConverter(new SettingsInfoConverter());
         xs.registerConverter(new WMSLayerInfoConverter());
+        xs.registerConverter(new GrowableInternationalStringConverter());
         // this should have been a metadata map too, but was not registered as such and got a plain
         // map converter. Switched to SettingsTolerantMapConverter to make it work when plugins get
         // removed and leave configuration that cannot be parsed anymore in there
@@ -533,7 +563,6 @@ public class XStreamPersister {
                 new SettingsTolerantMapConverter(xs.getMapper(), MetadataMap.class));
         xs.registerConverter(new MeasureConverter());
         xs.registerConverter(new MultimapConverter(xs.getMapper()));
-
         // register Virtual structure handling
         registerBreifMapComplexType("virtualTable", VirtualTable.class);
         registerBreifMapComplexType("coverageView", CoverageView.class);
@@ -2572,6 +2601,42 @@ public class XStreamPersister {
                 obj.setSelectedRemoteStyles(new ArrayList<>());
             }
             return obj;
+        }
+    }
+
+    class GrowableInternationalStringConverter extends AbstractReflectionConverter {
+
+        @Override
+        public boolean canConvert(Class aClass) {
+            return aClass.isAssignableFrom(GrowableInternationalString.class);
+        }
+
+        @Override
+        protected void doMarshal(
+                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+            GrowableInternationalString internationalString = (GrowableInternationalString) source;
+            Set<Locale> locales = internationalString.getLocales();
+            for (Locale l : locales) {
+                if (l != null) {
+                    writer.startNode(l.toLanguageTag());
+                    writer.setValue(internationalString.toString(l));
+                    writer.endNode();
+                }
+            }
+        }
+
+        @Override
+        public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+            GrowableInternationalString growableInternationalString =
+                    new GrowableInternationalString();
+            while (reader.hasMoreChildren()) {
+                reader.moveDown();
+                Locale locale = Locale.forLanguageTag(reader.getNodeName());
+                String value = reader.getValue();
+                growableInternationalString.add(locale, value);
+                reader.moveUp();
+            }
+            return growableInternationalString;
         }
     }
 }

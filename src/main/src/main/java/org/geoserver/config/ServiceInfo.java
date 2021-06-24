@@ -13,6 +13,7 @@ import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.util.Version;
+import org.opengis.util.InternationalString;
 
 /**
  * Generic / abstract service configuration.
@@ -89,11 +90,23 @@ public interface ServiceInfo extends Info {
     /** @uml.property name="title" */
     void setTitle(String title);
 
+    /** @uml.property name="internationalTitle" */
+    InternationalString getInternationalTitle();
+
+    /** @uml.property name="internationalTitle" */
+    void setInternationalTitle(InternationalString title);
+
     /** @uml.property name="abstract" */
     String getAbstract();
 
     /** @uml.property name="abstract" */
     void setAbstract(String abstrct);
+
+    /** @uml.property name="internationalAbstract" */
+    InternationalString getInternationalAbstract();
+
+    /** @uml.property name="internationalAbstract" */
+    void setInternationalAbstract(InternationalString title);
 
     /** @uml.property name="maintainer" */
     String getMaintainer();

@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -957,5 +958,33 @@ public class LayerGroupControllerTest extends CatalogRESTTestSupport {
                 "http://localhost:8080/geoserver/rest/workspaces/sf/styles/s2.xml",
                 "//style[name = 'sf:s2']/atom:link/@href",
                 dom);
+    }
+
+    @Test
+    public void testPutInternationalAbstract() throws Exception {
+        String xml =
+                "<layerGroup>"
+                        + "<name>sfLayerGroup</name>"
+                        + "<styles>"
+                        + "<style>polygon</style>"
+                        + "<style>line</style>"
+                        + "</styles>"
+                        + "<attribution>"
+                        + "  <logoWidth>101</logoWidth>"
+                        + "  <logoHeight>102</logoHeight>"
+                        + "</attribution>"
+                        + "<internationalAbstract><en>english abstract</en><it>abstract italiano</it></internationalAbstract>"
+                        + "</layerGroup>";
+
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/layergroups/sfLayerGroup",
+                        xml,
+                        "text/xml");
+        assertEquals(200, response.getStatus());
+
+        LayerGroupInfo lg = catalog.getLayerGroupByName("sfLayerGroup");
+        assertEquals("abstract italiano", lg.getInternationalAbstract().toString(Locale.ITALIAN));
+        assertEquals("english abstract", lg.getInternationalAbstract().toString(Locale.ENGLISH));
     }
 }

@@ -8,6 +8,7 @@ package org.geoserver.catalog.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import org.geoserver.catalog.AttributionInfo;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
@@ -23,6 +24,8 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.GrowableInternationalString;
+import org.opengis.util.InternationalString;
 
 public class LayerGroupInfoImpl implements LayerGroupInfo {
 
@@ -45,6 +48,10 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     protected String path;
     protected LayerInfo rootLayer;
     protected StyleInfo rootLayerStyle;
+
+    protected GrowableInternationalString internationalTitle;
+
+    protected GrowableInternationalString internationalAbstract;
 
     /**
      * This property is here for compatibility purpose, in 2.3.x series it has been replaced by
@@ -158,6 +165,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     @Override
     public String getTitle() {
+        if (title == null && internationalTitle != null)
+            return internationalTitle.toString(Locale.getDefault());
         if (title == null && metadata != null) {
             title = metadata.get("title", String.class);
         }
@@ -185,6 +194,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     @Override
     public String getAbstract() {
+        if (abstractTxt == null && internationalAbstract != null)
+            return internationalAbstract.toString(Locale.getDefault());
         if (abstractTxt == null && metadata != null) {
             abstractTxt = metadata.get("title", String.class);
         }
@@ -387,5 +398,41 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     private void checkMetadataNotNull() {
         if (metadata == null) metadata = new MetadataMap();
+    }
+
+    @Override
+    public GrowableInternationalString getInternationalTitle() {
+        if (this.internationalTitle == null) {
+            return new GrowableInternationalString();
+        }
+        return this.internationalTitle;
+    }
+
+    @Override
+    public void setInternationalTitle(InternationalString internationalTitle) {
+        if (internationalTitle instanceof GrowableInternationalString)
+            this.internationalTitle = (GrowableInternationalString) internationalTitle;
+        else {
+            GrowableInternationalString internationalString = new GrowableInternationalString();
+            internationalString.add(Locale.getDefault(), internationalTitle.toString());
+            this.internationalTitle = internationalString;
+        }
+    }
+
+    @Override
+    public GrowableInternationalString getInternationalAbstract() {
+        if (this.internationalAbstract == null) return new GrowableInternationalString();
+        return this.internationalAbstract;
+    }
+
+    @Override
+    public void setInternationalAbstract(InternationalString internationalAbstract) {
+        if (internationalAbstract instanceof GrowableInternationalString)
+            this.internationalAbstract = (GrowableInternationalString) internationalAbstract;
+        else {
+            GrowableInternationalString internationalString = new GrowableInternationalString();
+            internationalString.add(Locale.getDefault(), internationalAbstract.toString());
+            this.internationalAbstract = internationalString;
+        }
     }
 }

@@ -23,6 +23,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.decorate.AbstractDecorator;
+import org.opengis.util.InternationalString;
 
 /**
  * Delegates every method to the wrapped {@link LayerGroupInfo}. Subclasses will override selected
@@ -251,5 +252,25 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo>
     @Override
     public Date getDateCreated() {
         return delegate.getDateCreated();
+    }
+
+    @Override
+    public InternationalString getInternationalTitle() {
+        return delegate.getInternationalTitle();
+    }
+
+    @Override
+    public void setInternationalTitle(InternationalString internationalTitle) {
+        delegate.setInternationalTitle(internationalTitle);
+    }
+
+    @Override
+    public InternationalString getInternationalAbstract() {
+        return delegate.getInternationalAbstract();
+    }
+
+    @Override
+    public void setInternationalAbstract(InternationalString internationalTitle) {
+        delegate.setInternationalAbstract(internationalTitle);
     }
 }

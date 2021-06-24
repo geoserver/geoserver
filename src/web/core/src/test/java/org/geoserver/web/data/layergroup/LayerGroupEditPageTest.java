@@ -30,6 +30,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.web.data.resource.InternationalStringPanel;
 import org.geoserver.web.data.resource.MetadataLinkEditor;
 import org.geoserver.web.wicket.DecimalTextField;
 import org.geoserver.web.wicket.EnvelopePanel;
@@ -520,5 +521,88 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
         // check the title was updated
         assertEquals(newTitle, getCatalog().getLayerGroupByName("cite:bridges").getTitle());
+    }
+
+    @Test
+    public void testInternationalContent() {
+        // create a new layer group page
+        LayerGroupEditPage page = new LayerGroupEditPage();
+        tester.startPage(page);
+        tester.assertRenderedPage(LayerGroupEditPage.class);
+        // check that keywords editor panel was rendered
+        tester.assertComponent(
+                "publishedinfo:tabs:panel:internationalTitle", InternationalStringPanel.class);
+        tester.assertComponent(
+                "publishedinfo:tabs:panel:internationalAbstract", InternationalStringPanel.class);
+
+        // add layer group entries
+        page.lgEntryPanel
+                .getEntries()
+                .add(
+                        new LayerGroupEntry(
+                                getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
+        // add layer group mandatory parameters
+        FormTester form = tester.newFormTester("publishedinfo");
+
+        // enable i18n for title
+        form.setValue("tabs:panel:internationalTitle:i18nCheckBox", true);
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:internationalTitle:i18nCheckBox", "click");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:internationalTitle:container:addNew", "click");
+
+        form.select(
+                "tabs:panel:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                10);
+        form.setValue(
+                "tabs:panel:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "an international title");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:internationalTitle:container:addNew", "click");
+        form.select(
+                "tabs:panel:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
+                20);
+        form.setValue(
+                "tabs:panel:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "another international title");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
+                "click");
+
+        // enable i18n for abstract
+        form.setValue("tabs:panel:internationalAbstract:i18nCheckBox", true);
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:internationalAbstract:i18nCheckBox", "click");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:internationalAbstract:container:addNew", "click");
+        form.select(
+                "tabs:panel:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                10);
+        form.setValue(
+                "tabs:panel:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "an international title");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:internationalAbstract:container:addNew", "click");
+        form.select(
+                "tabs:panel:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
+                20);
+        form.setValue(
+                "tabs:panel:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "another international title");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
+                "click");
+
+        // set mandatory fields
+        form = tester.newFormTester("publishedinfo");
+
+        form.setValue("tabs:panel:name", "international-layer-group");
+        form.setValue("tabs:panel:bounds:minX", "-180");
+        form.setValue("tabs:panel:bounds:minY", "-90");
+        form.setValue("tabs:panel:bounds:maxX", "180");
+        form.setValue("tabs:panel:bounds:maxY", "90");
+        form.setValue("tabs:panel:bounds:crsContainer:crs:srs", "EPSG:4326");
+        form.submit("save");
+        tester.assertNoErrorMessage();
     }
 }

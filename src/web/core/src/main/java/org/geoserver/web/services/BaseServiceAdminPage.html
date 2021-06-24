@@ -37,12 +37,7 @@
             <input wicket:id="onlineResource" class="field text">
           </li>
           <li>
-            <label><wicket:message key="titleMsg">Title</wicket:message></label>
-            <input wicket:id="title" class="field text">
-          </li>
-          <li>
-             <label><wicket:message key="abstract">Abstract</wicket:message></label>
-             <textarea wicket:id="abstract" class="field textarea" cols="30" rows="15"></textarea>
+            <div wicket:id="titleAndAbstract"></div>
           </li>
           <li>
              <label><wicket:message key="fees">Fees</wicket:message></label>
@@ -71,6 +66,37 @@
   </div>
 </form>
 <div wicket:id="dialog"></div>
+
+  <wicket:fragment id="stringFragment" wicket:id="stringFragment">
+    <ul>
+      <li>
+        <label for="title"><wicket:message key="titleMsg">Title</wicket:message></label>
+        <input class="text" type="text" wicket:id="title"/>
+      </li>
+      <li>
+        <label for="abstract"><wicket:message key="abstract">Abstract</wicket:message></label>
+        <textarea wicket:id="abstract" class="field textarea" rows="10" cols="30"></textarea>
+      </li>
+    </ul>
+  </wicket:fragment>
+  <wicket:fragment id="internationalStringFragment" wicket:id="internationalStringFragment">
+    <ul>
+      <li>
+        <label for="title"><wicket:message key="titleMsg">Title</wicket:message></label>
+        <input class="text" type="text" wicket:id="title"/>
+      </li>
+      <li>
+        <div id="internationalTitle" wicket:id="internationalTitle"/>
+      </li>
+      <li>
+        <label for="abstract"><wicket:message key="abstract">Abstract</wicket:message></label>
+        <textarea wicket:id="abstract" class="field textarea" rows="10" cols="30"></textarea>
+      </li>
+      <li>
+        <div id="internationalAbstract" wicket:id="internationalAbstract"/>
+      </li>
+    </ul>
+  </wicket:fragment>
 </wicket:extend>
 </body>
 </html>

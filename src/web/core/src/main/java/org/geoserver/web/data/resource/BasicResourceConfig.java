@@ -69,8 +69,33 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         add(name);
         add(new CheckBox("enabled"));
         add(new CheckBox("advertised"));
-        add(new TextField<String>("title"));
-        add(new TextArea<String>("abstract"));
+        TextField<String> title = new TextField<>("title");
+        add(title);
+        InternationalStringPanel<TextField<String>> internationalStringPanelTitle =
+                new InternationalStringPanel<TextField<String>>(
+                        "internationalTitle",
+                        new PropertyModel<>(model, "internationalTitle"),
+                        title) {
+                    @Override
+                    protected TextField<String> getTextComponent(String id, IModel model) {
+                        return new TextField<>(id, model);
+                    }
+                };
+        add(internationalStringPanelTitle);
+        TextArea<String> area = new TextArea<>("abstract");
+        add(area);
+
+        InternationalStringPanel<TextArea<String>> internationalStringPanelAbstract =
+                new InternationalStringPanel<TextArea<String>>(
+                        "internationalAbstract",
+                        new PropertyModel<>(model, "internationalAbstract"),
+                        area) {
+                    @Override
+                    protected TextArea<String> getTextComponent(String id, IModel model) {
+                        return new TextArea<>(id, model);
+                    }
+                };
+        add(internationalStringPanelAbstract);
         add(
                 new KeywordsEditor(
                         "keywords",

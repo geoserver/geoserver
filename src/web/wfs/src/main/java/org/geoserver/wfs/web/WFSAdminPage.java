@@ -254,4 +254,9 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
     protected String getServiceName() {
         return "WFS";
     }
+
+    @Override
+    protected boolean supportInternationalContent() {
+        return true;
+    }
 }

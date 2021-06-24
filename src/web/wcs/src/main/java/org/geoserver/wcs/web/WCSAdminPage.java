@@ -93,4 +93,9 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
             return object.name();
         }
     }
+
+    @Override
+    protected boolean supportInternationalContent() {
+        return true;
+    }
 }

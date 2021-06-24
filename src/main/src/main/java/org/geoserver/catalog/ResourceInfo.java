@@ -11,6 +11,7 @@ import java.util.Map;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.type.Name;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.util.InternationalString;
 
 /**
  * A geospatial resource.
@@ -125,6 +126,18 @@ public interface ResourceInfo extends CatalogInfo {
      * @uml.property name="title"
      */
     void setTitle(String title);
+
+    /** Returns the internationalTitle. */
+    InternationalString getInternationalTitle();
+
+    /** Sets the internationalTitle. */
+    void setInternationalTitle(InternationalString internationalTitle);
+
+    /** Returns the internationalAbstract. */
+    InternationalString getInternationalAbstract();
+
+    /** Sets the internationalAbstract. */
+    void setInternationalAbstract(InternationalString internationalAbstract);
 
     /**
      * The abstract for the resource.

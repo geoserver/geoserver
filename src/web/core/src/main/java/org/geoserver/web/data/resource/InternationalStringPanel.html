@@ -1,0 +1,28 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+    <input type="checkbox" wicket:id="i18nCheckBox"><wicket:message key="i18nCheckBox">Enable i18n</wicket:message>
+    <div wicket:id="container">
+    <ul>
+        <li><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew"/></a></li>
+    </ul>
+    <div wicket:id="tablePanel"/>
+    </div>
+</wicket:panel>
+<wicket:fragment wicket:id="txtFragment">
+		<span wicket:id="border"><input wicket:id="txt"
+                                        type="text" class="text"/></span>
+</wicket:fragment>
+<wicket:fragment wicket:id="txtAreaFragment">
+		<span wicket:id="border"><textarea wicket:id="txt" class="field textarea" rows="10" cols="30"/></span>
+</wicket:fragment>
+<wicket:fragment wicket:id="selectFragment">
+    <span wicket:id="border"><select wicket:id="select"/></span>
+</wicket:fragment>
+
+<wicket:fragment wicket:id="removeFragment">
+    <a href="#" wicket:id="remove"><wicket:message key="remove">Remove</wicket:message></a>
+</wicket:fragment>
+</body>
+</html>

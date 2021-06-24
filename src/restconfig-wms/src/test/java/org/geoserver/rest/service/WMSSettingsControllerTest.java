@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
+import java.util.Locale;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -21,6 +22,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.geoserver.wms.WMSInfo;
+import org.geotools.util.GrowableInternationalString;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -205,5 +207,38 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
         dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/settings.xml");
         // updated to false
         assertXpathEvaluatesTo("false", "/wms/defaultGroupStyleEnabled", dom);
+    }
+
+    @Test
+    public void testGetAsXMLInternationalRootLayer() throws Exception {
+        WMSInfo wmsInfo = getGeoServer().getService(WMSInfo.class);
+        GrowableInternationalString growableInternationalString = new GrowableInternationalString();
+        growableInternationalString.add(Locale.ENGLISH, "i18n english root layer title");
+        wmsInfo.setInternationalRootLayerTitle(growableInternationalString);
+        getGeoServer().save(wmsInfo);
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/settings.xml");
+        assertEquals("wms", dom.getDocumentElement().getLocalName());
+        assertXpathEvaluatesTo(
+                "i18n english root layer title", "/wms/internationalRootLayerTitle/en", dom);
+    }
+
+    @Test
+    public void testPutRootLayerAbstract() throws Exception {
+        String xml =
+                "<wms>"
+                        + "<id>wms</id>"
+                        + "<enabled>false</enabled>"
+                        + "<name>WMS</name><title>GeoServer Web Map Service</title>"
+                        + "<internationalRootLayerAbstract><en>en abstract</en><it>it abstract</it></internationalRootLayerAbstract>"
+                        + "<maintainer>http://geoserver.org/comm</maintainer>"
+                        + "</wms>";
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/services/wms/settings", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/settings.xml");
+        assertXpathEvaluatesTo("en abstract", "/wms/internationalRootLayerAbstract/en", dom);
+        assertXpathEvaluatesTo("it abstract", "/wms/internationalRootLayerAbstract/it", dom);
     }
 }

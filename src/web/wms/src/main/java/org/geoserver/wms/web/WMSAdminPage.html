@@ -7,10 +7,16 @@
           <li>
           	<label for="rootLayerTitle"><wicket:message key="rootLayerTitle">Title</wicket:message></label>
             <input type="text" wicket:id="rootLayerTitle" class="field text" />
-          </li> 
+          </li>
+          <li>
+            <div wicket:id="internationalRootLayerTitle" />
+          </li>
           <li>
           	<label for="rootLayerAbstract"><wicket:message key="rootLayerAbstract">Abstract</wicket:message></label>
             <textarea class="field textarea" rows="10" cols="30" wicket:id="rootLayerAbstract"></textarea>
+          </li>
+          <li>
+            <div wicket:id="internationalRootLayerAbstract"/>
           </li>
           <li class="choiceItem">
             <input type="checkbox" wicket:id="rootLayerEnabled"></input>

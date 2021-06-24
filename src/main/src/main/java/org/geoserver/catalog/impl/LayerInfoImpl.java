@@ -23,7 +23,9 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.logging.Logging;
+import org.opengis.util.InternationalString;
 
 public class LayerInfoImpl implements LayerInfo {
 
@@ -92,6 +94,10 @@ public class LayerInfoImpl implements LayerInfo {
     protected Date dateCreated;
 
     protected Date dateModified;
+
+    protected GrowableInternationalString internationalTitle;
+
+    protected InternationalString internationalAbstract;
 
     @Override
     public String getId() {
@@ -467,5 +473,25 @@ public class LayerInfoImpl implements LayerInfo {
 
     private void checkMetadataNotNull() {
         if (metadata == null) metadata = new MetadataMap();
+    }
+
+    @Override
+    public GrowableInternationalString getInternationalTitle() {
+        return (GrowableInternationalString) this.resource.getInternationalTitle();
+    }
+
+    @Override
+    public void setInternationalTitle(InternationalString internationalTitle) {
+        this.resource.setInternationalTitle(internationalTitle);
+    }
+
+    @Override
+    public InternationalString getInternationalAbstract() {
+        return this.resource.getInternationalAbstract();
+    }
+
+    @Override
+    public void setInternationalAbstract(InternationalString internationalAbstract) {
+        this.resource.setInternationalAbstract(internationalAbstract);
     }
 }

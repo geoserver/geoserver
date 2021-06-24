@@ -660,4 +660,112 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                         .getDefaultModelObjectAsString();
         assertEquals("Asserting EPSG code", "EPSG:4326", nativeSRSTextFieldValue);
     }
+
+    @Test
+    public void testInternationalContent() {
+        Catalog catalog = getGeoServerApplication().getCatalog();
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        LayerInfo layer = catalog.getLayerByName(layerId);
+
+        login();
+        tester.startPage(new ResourceConfigurationPage(layer, false));
+
+        print(tester.getLastRenderedPage(), true, true);
+
+        FormTester form = tester.newFormTester("publishedinfo");
+
+        // enable i18n for title
+        form.setValue("tabs:panel:theList:0:content:internationalTitle:i18nCheckBox", true);
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:theList:0:content:internationalTitle:i18nCheckBox",
+                "click");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:theList:0:content:internationalTitle:container:addNew",
+                "click");
+
+        form.select(
+                "tabs:panel:theList:0:content:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                10);
+        form.setValue(
+                "tabs:panel:theList:0:content:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "an international title");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:theList:0:content:internationalTitle:container:addNew",
+                "click");
+        form.select(
+                "tabs:panel:theList:0:content:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
+                20);
+        form.setValue(
+                "tabs:panel:theList:0:content:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "another international title");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:theList:0:content:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
+                "click");
+
+        // enable i18n for abstract
+        form.setValue("tabs:panel:theList:0:content:internationalAbstract:i18nCheckBox", true);
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:theList:0:content:internationalAbstract:i18nCheckBox",
+                "click");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:theList:0:content:internationalAbstract:container:addNew",
+                "click");
+        form.select(
+                "tabs:panel:theList:0:content:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                10);
+        form.setValue(
+                "tabs:panel:theList:0:content:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "an international title");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:theList:0:content:internationalAbstract:container:addNew",
+                "click");
+        form.select(
+                "tabs:panel:theList:0:content:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
+                20);
+        form.setValue(
+                "tabs:panel:theList:0:content:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "another international title");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:theList:0:content:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
+                "click");
+
+        form = tester.newFormTester("publishedinfo");
+
+        form.submit("save");
+        tester.assertNoErrorMessage();
+    }
+
+    @Test
+    public void testInternationalContentErrorMessageOnBlanckRow() {
+        Catalog catalog = getGeoServerApplication().getCatalog();
+        String layerId = getLayerId(MockData.BASIC_POLYGONS);
+        LayerInfo layer = catalog.getLayerByName(layerId);
+
+        login();
+        tester.startPage(new ResourceConfigurationPage(layer, false));
+
+        print(tester.getLastRenderedPage(), true, true);
+
+        FormTester form = tester.newFormTester("publishedinfo");
+
+        // enable i18n for title
+        form.setValue("tabs:panel:theList:0:content:internationalTitle:i18nCheckBox", true);
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:theList:0:content:internationalTitle:i18nCheckBox",
+                "click");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:theList:0:content:internationalTitle:container:addNew",
+                "click");
+
+        form.setValue(
+                "tabs:panel:theList:0:content:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "an international title");
+
+        form = tester.newFormTester("publishedinfo");
+
+        form.submit("save");
+        tester.assertErrorMessages(
+                "The Language for an international field is required",
+                "The Text Content for and international field is required");
+    }
 }

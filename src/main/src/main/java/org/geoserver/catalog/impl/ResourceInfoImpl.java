@@ -7,6 +7,7 @@ package org.geoserver.catalog.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,10 +23,12 @@ import org.geoserver.catalog.StoreInfo;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.type.Name;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.util.InternationalString;
 
 /** Default implementation of {@link ResourceInfo}. */
 @SuppressWarnings("serial")
@@ -80,6 +83,10 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     protected Boolean simpleConversionEnabled = false;
 
     protected transient Catalog catalog;
+
+    protected GrowableInternationalString internationalTitle;
+
+    protected GrowableInternationalString internationalAbstract;
 
     protected ResourceInfoImpl() {}
 
@@ -160,7 +167,9 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     @Override
     public String getTitle() {
-        return title;
+        if (title == null && internationalTitle != null)
+            return internationalTitle.toString(Locale.getDefault());
+        else return title;
     }
 
     @Override
@@ -180,7 +189,9 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     @Override
     public String getAbstract() {
-        return _abstract;
+        if (_abstract == null && internationalAbstract != null)
+            return internationalAbstract.toString(Locale.getDefault());
+        else return _abstract;
     }
 
     @Override
@@ -435,6 +446,42 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     @Override
     public void setSimpleConversionEnabled(boolean simpleConversionEnabled) {
         this.simpleConversionEnabled = simpleConversionEnabled;
+    }
+
+    @Override
+    public GrowableInternationalString getInternationalTitle() {
+        if (this.internationalTitle == null) {
+            return new GrowableInternationalString();
+        }
+        return this.internationalTitle;
+    }
+
+    @Override
+    public void setInternationalTitle(InternationalString internationalTitle) {
+        if (internationalTitle instanceof GrowableInternationalString)
+            this.internationalTitle = (GrowableInternationalString) internationalTitle;
+        else {
+            GrowableInternationalString internationalString = new GrowableInternationalString();
+            internationalString.add(Locale.getDefault(), internationalTitle.toString());
+            this.internationalTitle = internationalString;
+        }
+    }
+
+    @Override
+    public InternationalString getInternationalAbstract() {
+        if (this.internationalAbstract == null) return new GrowableInternationalString();
+        return this.internationalAbstract;
+    }
+
+    @Override
+    public void setInternationalAbstract(InternationalString internationalAbstract) {
+        if (internationalAbstract instanceof GrowableInternationalString)
+            this.internationalAbstract = (GrowableInternationalString) internationalAbstract;
+        else {
+            GrowableInternationalString internationalString = new GrowableInternationalString();
+            internationalString.add(Locale.getDefault(), internationalAbstract.toString());
+            this.internationalAbstract = internationalString;
+        }
     }
 
     @Override

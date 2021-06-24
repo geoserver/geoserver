@@ -33,6 +33,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
+import org.opengis.util.InternationalString;
 import org.opengis.util.ProgressListener;
 
 /**
@@ -151,5 +152,25 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
     public void setStore(StoreInfo store) {
         // need to make sure the store isn't secured
         super.setStore((StoreInfo) SecureCatalogImpl.unwrap(store));
+    }
+
+    @Override
+    public InternationalString getInternationalTitle() {
+        return delegate.getInternationalTitle();
+    }
+
+    @Override
+    public void setInternationalTitle(InternationalString internationalTitle) {
+        delegate.setInternationalTitle(internationalTitle);
+    }
+
+    @Override
+    public InternationalString getInternationalAbstract() {
+        return delegate.getInternationalAbstract();
+    }
+
+    @Override
+    public void setInternationalAbstract(InternationalString internationalAbstract) {
+        delegate.setInternationalAbstract(internationalAbstract);
     }
 }

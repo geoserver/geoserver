@@ -6,6 +6,7 @@
 package org.geoserver.catalog;
 
 import java.util.List;
+import org.opengis.util.InternationalString;
 
 /**
  * Interface for publishable entities contained in a Layer Group.
@@ -44,11 +45,23 @@ public interface PublishedInfo extends CatalogInfo {
     /** Sets the title. */
     void setTitle(String title);
 
+    /** Returns the internationalTitle. */
+    InternationalString getInternationalTitle();
+
+    /** Sets the internationalTitle. */
+    void setInternationalTitle(InternationalString internationalTitle);
+
     /** Returns the abstract. */
     String getAbstract();
 
     /** Sets the abstract. */
     void setAbstract(String abstractTxt);
+
+    /** Returns the internationalAbstract. */
+    InternationalString getInternationalAbstract();
+
+    /** Sets the internationalAbstract. */
+    void setInternationalAbstract(InternationalString internationalAbstract);
 
     /** A persistent map of metadata. */
     MetadataMap getMetadata();

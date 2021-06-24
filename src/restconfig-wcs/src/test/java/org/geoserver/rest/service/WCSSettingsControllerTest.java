@@ -120,4 +120,26 @@ public class WCSSettingsControllerTest extends CatalogRESTTestSupport {
                 deleteAsServletResponse(RestBaseController.ROOT_PATH + "/services/wcs/settings")
                         .getStatus());
     }
+
+    @Test
+    public void testPutAsJSONInternationalTitle() throws Exception {
+        String json =
+                "{'wcs': {'id':'wcs','enabled':'false','name':'WCS',"
+                        + " 'internationalTitle': {'en':'english WCS title','it': 'titolo italiano WCS'}}}";
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/services/wcs/settings/",
+                        json,
+                        "text/json");
+        assertEquals(200, response.getStatus());
+        JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/services/wcs/settings.json");
+        JSONObject jsonObject = (JSONObject) jsonMod;
+        assertNotNull(jsonObject);
+        JSONObject wcsinfo = (JSONObject) jsonObject.get("wcs");
+        assertEquals(
+                "english WCS title",
+                wcsinfo.getJSONObject("internationalTitle").getString("en").trim());
+        assertEquals(
+                "titolo italiano WCS", wcsinfo.getJSONObject("internationalTitle").getString("it"));
+    }
 }

@@ -21,6 +21,7 @@ import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
@@ -36,6 +37,7 @@ import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.GeoserverAjaxSubmitLink;
+import org.geoserver.web.data.resource.InternationalStringPanel;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.util.SerializableConsumer;
@@ -123,8 +125,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         form.add(onlineResource);
         form.add(new CheckBox("enabled"));
         form.add(new CheckBox("citeCompliant"));
-        form.add(new TextField("title"));
-        form.add(new TextArea("abstract"));
+        form.add(getTitleAndAbstractFragment(infoModel, "titleAndAbstract"));
         form.add(
                 new KeywordsEditor(
                         "keywords",
@@ -382,5 +383,52 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
             add(new Label("workspace", new PropertyModel(service, "workspace.name")));
         }
+    }
+
+    /**
+     * Override this method to return true if the implementation support international content
+     *
+     * @return true if support international content false otherwise.
+     */
+    protected boolean supportInternationalContent() {
+        return false;
+    }
+
+    public Fragment getTitleAndAbstractFragment(IModel<T> infoModel, String id) {
+        Fragment fragment;
+        if (supportInternationalContent()) {
+            fragment = new Fragment(id, "internationalStringFragment", BaseServiceAdminPage.this);
+            TextField<String> title = new TextField("title");
+            fragment.add(title);
+            fragment.add(
+                    new InternationalStringPanel<TextField<String>>(
+                            "internationalTitle",
+                            new PropertyModel<>(infoModel, "internationalTitle"),
+                            title) {
+                        @Override
+                        protected TextField<String> getTextComponent(
+                                String id, IModel<String> model) {
+                            return new TextField<>(id, model);
+                        }
+                    });
+            TextArea<String> area = new TextArea("abstract");
+            fragment.add(area);
+            fragment.add(
+                    new InternationalStringPanel<TextArea<String>>(
+                            "internationalAbstract",
+                            new PropertyModel<>(infoModel, "internationalAbstract"),
+                            area) {
+                        @Override
+                        protected TextArea<String> getTextComponent(
+                                String id, IModel<String> model) {
+                            return new TextArea<>(id, model);
+                        }
+                    });
+        } else {
+            fragment = new Fragment(id, "stringFragment", BaseServiceAdminPage.this);
+            fragment.add(new TextField("title"));
+            fragment.add(new TextArea("abstract"));
+        }
+        return fragment;
     }
 }

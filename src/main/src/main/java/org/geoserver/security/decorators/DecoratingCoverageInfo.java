@@ -29,6 +29,7 @@ import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.feature.type.Name;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.util.InternationalString;
 import org.opengis.util.ProgressListener;
 
 /**
@@ -334,6 +335,26 @@ public class DecoratingCoverageInfo extends AbstractDecorator<CoverageInfo>
     @Override
     public void setTitle(String title) {
         delegate.setTitle(title);
+    }
+
+    @Override
+    public InternationalString getInternationalTitle() {
+        return delegate.getInternationalTitle();
+    }
+
+    @Override
+    public void setInternationalTitle(InternationalString internationalTitle) {
+        delegate.setInternationalTitle(internationalTitle);
+    }
+
+    @Override
+    public InternationalString getInternationalAbstract() {
+        return delegate.getInternationalAbstract();
+    }
+
+    @Override
+    public void setInternationalAbstract(InternationalString internationalAbstract) {
+        delegate.setInternationalAbstract(internationalAbstract);
     }
 
     @Override

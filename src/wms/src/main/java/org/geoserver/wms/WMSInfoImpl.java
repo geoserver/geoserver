@@ -8,11 +8,14 @@ package org.geoserver.wms;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
+import org.geotools.util.GrowableInternationalString;
+import org.opengis.util.InternationalString;
 
 public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
@@ -65,6 +68,10 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     private String rootLayerTitle;
 
     private String rootLayerAbstract;
+
+    private GrowableInternationalString internationalRootLayerTitle;
+
+    private GrowableInternationalString internationalRootLayerAbstract;
 
     private Integer maxRequestedDimensionValues;
 
@@ -320,5 +327,39 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     @Override
     public void setDefaultGroupStyleEnabled(boolean defaultGroupStyleEnabled) {
         this.defaultGroupStyleEnabled = defaultGroupStyleEnabled;
+    }
+
+    @Override
+    public GrowableInternationalString getInternationalRootLayerTitle() {
+        if (internationalRootLayerTitle == null) return new GrowableInternationalString();
+        return internationalRootLayerTitle;
+    }
+
+    @Override
+    public void setInternationalRootLayerTitle(InternationalString rootLayerTitle) {
+        if (rootLayerTitle instanceof GrowableInternationalString)
+            this.internationalRootLayerTitle = (GrowableInternationalString) rootLayerTitle;
+        else {
+            GrowableInternationalString internationalString = new GrowableInternationalString();
+            internationalString.add(Locale.getDefault(), rootLayerTitle.toString());
+            this.internationalRootLayerTitle = internationalString;
+        }
+    }
+
+    @Override
+    public GrowableInternationalString getInternationalRootLayerAbstract() {
+        if (this.internationalRootLayerAbstract == null) return new GrowableInternationalString();
+        return this.internationalRootLayerAbstract;
+    }
+
+    @Override
+    public void setInternationalRootLayerAbstract(InternationalString rootLayerAbstract) {
+        if (rootLayerAbstract instanceof GrowableInternationalString)
+            this.internationalRootLayerAbstract = (GrowableInternationalString) rootLayerAbstract;
+        else {
+            GrowableInternationalString internationalString = new GrowableInternationalString();
+            internationalString.add(Locale.getDefault(), rootLayerAbstract.toString());
+            this.internationalRootLayerAbstract = internationalString;
+        }
     }
 }

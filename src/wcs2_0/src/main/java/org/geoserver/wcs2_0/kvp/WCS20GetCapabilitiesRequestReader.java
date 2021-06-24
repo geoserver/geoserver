@@ -7,11 +7,13 @@ package org.geoserver.wcs2_0.kvp;
 
 import java.util.Collection;
 import java.util.Map;
+import net.opengis.ows20.AcceptLanguagesType;
 import net.opengis.ows20.AcceptVersionsType;
 import net.opengis.ows20.Ows20Factory;
 import net.opengis.wcs20.GetCapabilitiesType;
 import net.opengis.wcs20.Wcs20Factory;
 import org.eclipse.emf.ecore.EObject;
+import org.geoserver.ows.kvp.AcceptLanguagesKvpParser;
 import org.geoserver.ows.kvp.AcceptVersionsKvpParser;
 import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
@@ -38,6 +40,15 @@ public class WCS20GetCapabilitiesRequestReader extends EMFKvpRequestReader {
             AcceptVersionsType avt = (AcceptVersionsType) avp.parse(value);
             kvp.put("acceptVersions", avt);
         }
+
+        if (rawKvp.containsKey("acceptLanguages")) {
+            AcceptLanguagesKvpParser avp = new WCS20AcceptLanguagesKvpParser();
+            String value = (String) rawKvp.get("acceptLanguages");
+            LOGGER.info("acceptLanguages: " + value);
+            AcceptLanguagesType alt = (AcceptLanguagesType) avp.parse(value);
+            kvp.put("acceptLanguages", alt);
+        }
+
         // make sure we get the right Sections-Type param -> workaround for GEOS-6807
         if (rawKvp.containsKey("sections")) {
             String value = (String) rawKvp.get("sections");

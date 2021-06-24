@@ -62,6 +62,7 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.data.InternationalContentHelper;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -78,6 +79,7 @@ import org.geoserver.wms.describelayer.XMLDescribeLayerResponse;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.styling.Description;
 import org.geotools.styling.Style;
 import org.geotools.util.NumberRange;
 import org.geotools.xml.transform.TransformerBase;
@@ -268,6 +270,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
         private Boolean includeRootLayer;
 
+        private InternationalContentHelper internationalContentHelper;
+
+        private boolean i18nRequested;
+
         /**
          * Creates a new CapabilitiesTranslator object.
          *
@@ -319,6 +325,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
             this.request = (GetCapabilitiesRequest) o;
 
+            String[] acceptLanguages = request.getAcceptLanguages();
+            this.i18nRequested = acceptLanguages != null;
+
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine(
                         new StringBuffer("producing a capabilities document for ")
@@ -329,9 +338,20 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             AttributesImpl rootAtts = new AttributesImpl(wmsVersion);
             rootAtts.addAttribute(
                     "", "updateSequence", "updateSequence", "", wmsConfig.getUpdateSequence() + "");
+
+            List<LayerInfo> orderedLayers = getOrderedLayers();
+            List<LayerGroupInfo> orderedGroups = getOrderedLayerGroups();
+            if (i18nRequested)
+                this.internationalContentHelper =
+                        new InternationalContentHelper(
+                                request.getAcceptLanguages(),
+                                serviceInfo,
+                                orderedLayers,
+                                orderedGroups);
+
             start("WMT_MS_Capabilities", rootAtts);
             handleService();
-            handleCapability();
+            handleCapability(orderedLayers, orderedGroups);
             end("WMT_MS_Capabilities");
         }
 
@@ -340,8 +360,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             start("Service");
 
             element("Name", "OGC:WMS");
-            element("Title", serviceInfo.getTitle());
-            element("Abstract", serviceInfo.getAbstract());
+
+            handleTitleAndAbstractServiceInfo();
 
             handleKeywordList(serviceInfo.getKeywords());
 
@@ -407,6 +427,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
         /** Turns the keyword list to XML */
         private void handleKeywordList(List<KeywordInfo> keywords) {
+            if (i18nRequested) keywords = internationalContentHelper.filterKeywords(keywords);
+
             start("KeywordList");
 
             if (keywords != null) {
@@ -465,19 +487,18 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 orAtts.addAttribute(XLINK_NS, "xlink:type", "xlink:type", "", "simple");
                 orAtts.addAttribute("", "xlink:href", "xlink:href", "", content);
                 element("OnlineResource", null, orAtts);
-
                 end("DataURL");
             }
         }
 
         /** Encodes the capabilities metadata section of a WMS capabilities document */
-        private void handleCapability() {
+        private void handleCapability(List<LayerInfo> layers, List<LayerGroupInfo> groups) {
             start("Capability");
             handleRequest();
             handleException();
             handleVendorSpecificCapabilities();
             handleSLD();
-            handleLayers();
+            handleLayers(layers, groups);
             end("Capability");
         }
 
@@ -681,13 +702,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          *     decoupled from the feature types configured for the server instance. (This involves
          *     nested layers, gridcoverages, etc)
          */
-        private void handleLayers() {
+        private void handleLayers(List<LayerInfo> layers, List<LayerGroupInfo> groups) {
             // get filtered and ordered layers:
-            final List<LayerInfo> layers = getOrderedLayers();
-            final List<LayerGroupInfo> layerGroups = getOrderedLayerGroups();
-            Set<LayerInfo> layersAlreadyProcessed = getLayersInGroups(new ArrayList<>(layerGroups));
+            Set<LayerInfo> layersAlreadyProcessed = getLayersInGroups(new ArrayList<>(groups));
 
-            if (includeRootLayer(layers, layerGroups, layersAlreadyProcessed)) {
+            if (includeRootLayer(layers, groups, layersAlreadyProcessed)) {
                 start("Layer");
 
                 // WMSInfo serviceInfo = wmsConfig.getServiceInfo();
@@ -714,7 +733,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
                 // encode layer groups
                 try {
-                    handleLayerGroups(new ArrayList<>(layerGroups), false);
+                    handleLayerGroups(new ArrayList<>(groups), false);
                 } catch (Exception e) {
                     throw new RuntimeException(
                             "Can't obtain Envelope of Layer-Groups: " + e.getMessage(), e);
@@ -726,13 +745,13 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
                 end("Layer");
             } else {
-                if (layerGroups.isEmpty()) {
+                if (groups.isEmpty()) {
                     // now encode the single layer
                     LayerTree featuresLayerTree = new LayerTree(layers);
                     handleLayerTree(featuresLayerTree, layersAlreadyProcessed, true);
                 } else {
                     try {
-                        handleLayerGroups(new ArrayList<>(layerGroups), true);
+                        handleLayerGroups(new ArrayList<>(groups), true);
                     } catch (Exception e) {
                         throw new RuntimeException(
                                 "Can't obtain Envelope of Layer-Groups: " + e.getMessage(), e);
@@ -1000,9 +1019,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
             start("Layer", qatts);
             element("Name", layerName);
-            // REVISIT: this is bad, layer should have title and anbstract by itself
-            element("Title", layer.getResource().getTitle());
-            element("Abstract", layer.getResource().getAbstract());
+
+            handleTitleAndAbstract(layer, layerName);
             handleKeywordList(layer.getResource().getKeywords());
 
             /**
@@ -1072,24 +1090,39 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             end("Layer");
         }
 
-        private void handleCommonStyleElements(StyleInfo styleInfo) {
+        private void handleCommonStyleElements(StyleInfo defaultStyle) {
             Style ftStyle;
             try {
-                ftStyle = styleInfo.getStyle();
+                ftStyle = defaultStyle.getStyle();
+                handleStyleTitleAndAbstract(defaultStyle.prefixedName(), ftStyle);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            element("Name", defaultStyle.prefixedName());
+        }
 
-            element("Name", styleInfo.prefixedName());
-            if (ftStyle.getDescription() != null) {
-                if (ftStyle.getDescription().getTitle() != null) {
-                    element("Title", ftStyle.getDescription().getTitle());
+        private void handleStyleTitleAndAbstract(String prefixedName, Style ftStyle) {
+            Description description = ftStyle.getDescription();
+
+            if (description != null) {
+                // PMT: WMS capabilities requires at least a title,
+                // if description's title is null, use the name
+                // for title.
+                if (!i18nRequested) {
+                    if (description.getTitle() != null) {
+                        element("Title", ftStyle.getDescription().getTitle());
+                    } else {
+                        element("Title", prefixedName);
+                    }
+                    element("Abstract", description.getAbstract());
                 } else {
-                    // Title is not required by the SLD spec, but it is required
-                    // by the WMS 1.1 DTD so we have to provide something.
-                    element("Title", styleInfo.prefixedName());
+                    String i18nTitle = internationalContentHelper.getTitle(ftStyle);
+                    if (i18nTitle == null) element("Title", prefixedName);
+                    else element("Title", i18nTitle);
+                    element("Abstract", internationalContentHelper.getAbstract(ftStyle));
                 }
-                element("Abstract", ftStyle.getDescription().getAbstract());
+            } else {
+                element("Title", prefixedName);
             }
         }
 
@@ -1188,17 +1221,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 element("Name", layerName);
             }
 
-            if (StringUtils.isEmpty(layerGroup.getTitle())) {
-                element("Title", layerName);
-            } else {
-                element("Title", layerGroup.getTitle());
-            }
-
-            if (StringUtils.isEmpty(layerGroup.getAbstract())) {
-                element("Abstract", "Layer-Group type layer: " + layerName);
-            } else {
-                element("Abstract", layerGroup.getAbstract());
-            }
+            handleTitleAndAbstract(layerGroup, layerName);
 
             // handle keywords
             handleKeywordList(layerGroup.getKeywords());
@@ -1748,6 +1771,38 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                             .concat(LAYER_GROUP_STYLE_ABSTRACT_SUFFIX));
             handleLegendURL(layerName, null, null, null);
             end("Style");
+        }
+
+        private void handleTitleAndAbstract(PublishedInfo publishedInfo, String layerName) {
+            if (!i18nRequested) {
+                if (StringUtils.isEmpty(publishedInfo.getTitle())) {
+                    element("Title", layerName);
+                } else {
+                    element("Title", publishedInfo.getTitle());
+                }
+                if (StringUtils.isEmpty(publishedInfo.getAbstract())) {
+                    element("Abstract", "Layer-Group type layer: " + layerName);
+                } else {
+                    element("Abstract", publishedInfo.getAbstract());
+                }
+            } else {
+                String title = internationalContentHelper.getTitle(publishedInfo);
+                String abstrct = internationalContentHelper.getAbstract(publishedInfo);
+                element("Title", title);
+                element("Abstract", abstrct);
+            }
+        }
+
+        private void handleTitleAndAbstractServiceInfo() {
+            if (!i18nRequested) {
+                element("Title", serviceInfo.getTitle());
+                element("Abstract", serviceInfo.getAbstract());
+            } else {
+                String title = internationalContentHelper.getTitle(serviceInfo);
+                element("Title", title);
+                String abstrct = internationalContentHelper.getAbstract(serviceInfo);
+                element("Abstract", abstrct);
+            }
         }
     }
 }

@@ -11,6 +11,8 @@ import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.config.ServiceInfo;
+import org.geotools.util.GrowableInternationalString;
+import org.opengis.util.InternationalString;
 
 /**
  * Configuration object for Web Map Service.
@@ -84,7 +86,7 @@ public interface WMSInfo extends ServiceInfo {
     void setMaxBuffer(int buffer);
 
     /**
-     * Returns the max amount of memory, in kilobytes, that each WMS request can allocate (each
+     * Returns the max amount of memory, in kilobytes, that each WMS request can allocgate (each
      * output format will make a best effort attempt to respect it, but there are no guarantees)
      *
      * @return the limit, or 0 if no limit
@@ -208,4 +210,16 @@ public interface WMSInfo extends ServiceInfo {
     default void setDefaultGroupStyleEnabled(boolean defaultGroupStyleEnabled) {
         // if not implemented nothing to do
     }
+
+    /** @return the international title of the root layer */
+    GrowableInternationalString getInternationalRootLayerTitle();
+
+    /** Sets the international title of the root layer */
+    void setInternationalRootLayerTitle(InternationalString rootLayerTitle);
+
+    /** @return the international abstract of the root layer */
+    GrowableInternationalString getInternationalRootLayerAbstract();
+
+    /** Sets the international title of the root layer */
+    void setInternationalRootLayerAbstract(InternationalString rootLayerAbstract);
 }

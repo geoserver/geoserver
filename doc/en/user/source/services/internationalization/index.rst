@@ -22,7 +22,7 @@ GeoServer provides an i18n editor for the title and abstract of:
 
 The editor is disabled by default and can be enabled from the i18n checkbox:
 
-.. figure:: img/i18nEditor.png
+.. figure:: img/i18nUIEditor.png
 
 GetCapabilities
 ===============
@@ -43,4 +43,4 @@ The response content language can be defined through the ``AcceptLanguages`` req
 
 
 
-.. figure:: img/ErrorMessage.png
+.. figure:: img/ErrorMessages.png

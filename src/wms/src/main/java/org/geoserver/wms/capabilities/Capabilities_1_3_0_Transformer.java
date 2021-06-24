@@ -57,6 +57,7 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.data.InternationalContentHelper;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -73,6 +74,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.styling.Description;
 import org.geotools.styling.Style;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
@@ -80,7 +82,6 @@ import org.geotools.xml.transform.TransformerBase;
 import org.geotools.xml.transform.Translator;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
@@ -147,7 +148,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         Assert.notNull(wms, "The WMS reference cannot be null");
         Assert.notNull(schemaBaseUrl, "baseURL");
         Assert.notNull(getMapFormats, "getMapFormats");
-
         this.wmsConfig = wms;
         this.getMapFormats = getMapFormats;
         this.extCapsProviders = extCapsProviders;
@@ -220,6 +220,10 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         /** if true, forces always including a root Layer element * */
         private Boolean includeRootLayer;
 
+        private InternationalContentHelper internationalContentHelper;
+
+        private boolean i18nRequested;
+
         /**
          * Creates a new CapabilitiesTranslator object.
          *
@@ -238,7 +242,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             this.extCapsProviders = extCapsProviders;
             this.schemaBaseURL = schemaBaseURL;
             this.serviceInfo = wmsConfig.getServiceInfo();
-
             this.dimensionHelper =
                     new DimensionHelper(Mode.WMS13, wmsConfig) {
 
@@ -284,9 +287,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             if (!(o instanceof GetCapabilitiesRequest)) {
                 throw new IllegalArgumentException();
             }
-
             this.request = (GetCapabilitiesRequest) o;
-
+            String[] acceptLanguages = request.getAcceptLanguages();
+            this.i18nRequested = acceptLanguages != null;
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine(
                         new StringBuffer("producing a capabilities document for ")
@@ -294,8 +297,18 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                                 .toString());
             }
 
+            Catalog catalog = wmsConfig.getCatalog();
+            List<LayerInfo> layers = getLayers(catalog);
+            List<LayerGroupInfo> layerGroups = getLayerGroups(catalog);
+            if (i18nRequested) {
+                this.internationalContentHelper =
+                        new InternationalContentHelper(
+                                request.getAcceptLanguages(), serviceInfo, layers, layerGroups);
+            }
+
             String schemaLocation = buildSchemaLocation();
             String updateSequence = String.valueOf(wmsConfig.getUpdateSequence());
+
             AttributesImpl rootAtts =
                     attributes(
                             "version",
@@ -313,8 +326,52 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             start("WMS_Capabilities", rootAtts);
             handleService();
-            handleCapability();
+            handleCapability(layers, layerGroups);
             end("WMS_Capabilities");
+        }
+
+        private List<LayerGroupInfo> getLayerGroups(Catalog catalog) {
+            try (CloseableIterator<LayerGroupInfo> iter =
+                    catalog.list(
+                            LayerGroupInfo.class,
+                            buildLayerGroupCatalogFilter(),
+                            null,
+                            null,
+                            asc("name"))) {
+                return Lists.newArrayList(iter);
+            }
+        }
+
+        private List<LayerInfo> getLayers(Catalog catalog) {
+            try (CloseableIterator<LayerInfo> iter =
+                    catalog.list(
+                            LayerInfo.class, buildLayersCatalogFilter(), null, null, asc("name"))) {
+                return Lists.newArrayList(iter);
+            }
+        }
+
+        private Filter buildLayersCatalogFilter() {
+            // ask for enabled and advertised to start with
+            Filter filter;
+            {
+                Filter enabled = equal("enabled", Boolean.TRUE);
+                Filter advertised = equal("advertised", Boolean.TRUE);
+                filter = and(enabled, advertised);
+            }
+
+            // filter the layers if a namespace filter has been set
+            filter = addNameSpaceFilterIfNeed(filter, "resource.namespace.prefix");
+
+            return filter;
+        }
+
+        private Filter buildLayerGroupCatalogFilter() {
+            // create layer groups filter
+            Filter lgFilter = Predicates.acceptAll();
+
+            // filter layer groups by namespace if needed
+            lgFilter = addNameSpaceFilterIfNeed(lgFilter, "workspace.name");
+            return lgFilter;
         }
 
         private String buildSchemaLocation() {
@@ -359,8 +416,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             start("Service");
 
             element("Name", "WMS");
-            element("Title", serviceInfo.getTitle());
-            element("Abstract", serviceInfo.getAbstract());
+            handleTitleAndAbstractServiceInfo();
 
             handleKeywordList(serviceInfo.getKeywords());
 
@@ -426,6 +482,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
         /** Turns the keyword list to XML */
         private void handleKeywordList(List<KeywordInfo> keywords) {
+
+            if (i18nRequested) keywords = internationalContentHelper.filterKeywords(keywords);
+
             start("KeywordList");
 
             if (keywords != null) {
@@ -486,12 +545,12 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         /** Encodes the capabilities metadata section of a WMS capabilities document */
-        private void handleCapability() {
+        private void handleCapability(List<LayerInfo> layers, List<LayerGroupInfo> groups) {
             start("Capability");
             handleRequest();
             handleException();
             handleExtendedCapabilities();
-            handleLayers();
+            handleLayers(layers, groups);
             end("Capability");
         }
 
@@ -678,37 +737,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          *     decoupled from the feature types configured for the server instance. (This involves
          *     nested layers, gridcoverages, etc)
          */
-        private void handleLayers() {
-            List<LayerGroupInfo> layerGroups;
-            List<LayerInfo> layers;
-            SortBy lgOrder = asc("name");
-            SortBy order = asc("name");
-            final Catalog catalog = wmsConfig.getCatalog();
+        private void handleLayers(List<LayerInfo> layers, List<LayerGroupInfo> layerGroups) {
 
-            // ask for enabled and advertised to start with
-            Filter filter;
-            {
-                Filter enabled = equal("enabled", Boolean.TRUE);
-                Filter advertised = equal("advertised", Boolean.TRUE);
-                filter = and(enabled, advertised);
-            }
-
-            // filter the layers if a namespace filter has been set
-            filter = addNameSpaceFilterIfNeed(filter, "resource.namespace.prefix");
-
-            // create layer groups filter
-            Filter lgFilter = Predicates.acceptAll();
-
-            // filter layer groups by namespace if needed
-            lgFilter = addNameSpaceFilterIfNeed(lgFilter, "workspace.name");
-
-            try (CloseableIterator<LayerGroupInfo> lgIter =
-                            catalog.list(LayerGroupInfo.class, lgFilter, null, null, lgOrder);
-                    CloseableIterator<LayerInfo> iter =
-                            catalog.list(LayerInfo.class, filter, null, null, order)) {
-                layerGroups = Lists.newArrayList(lgIter);
-                layers = Lists.newArrayList(iter);
-            }
             Set<LayerInfo> layersAlreadyProcessed = getLayersInGroups(new ArrayList<>(layerGroups));
 
             if (includeRootLayer(layers, layerGroups, layersAlreadyProcessed)) {
@@ -1064,8 +1094,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             start("Layer", qatts);
             element("Name", layerName);
             // REVISIT: this is bad, layer should have title and anbstract by itself
-            element("Title", layer.getResource().getTitle());
-            element("Abstract", layer.getResource().getAbstract());
+            handleTitleAndAbstract(layer, layerName);
             handleKeywordList(layer.getResource().getKeywords());
 
             final String crs = layer.getResource().getSRS();
@@ -1226,22 +1255,35 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             Style ftStyle;
             try {
                 ftStyle = defaultStyle.getStyle();
+                handleStyleTitleAndAbstract(defaultStyle.prefixedName(), ftStyle);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             element("Name", defaultStyle.prefixedName());
-            if (ftStyle.getDescription() != null) {
+        }
+
+        private void handleStyleTitleAndAbstract(String prefixedName, Style ftStyle) {
+            Description description = ftStyle.getDescription();
+
+            if (description != null) {
                 // PMT: WMS capabilities requires at least a title,
                 // if description's title is null, use the name
                 // for title.
-                if (ftStyle.getDescription().getTitle() != null) {
-                    element("Title", ftStyle.getDescription().getTitle());
+                if (!i18nRequested) {
+                    if (description.getTitle() != null) {
+                        element("Title", ftStyle.getDescription().getTitle());
+                    } else {
+                        element("Title", prefixedName);
+                    }
+                    element("Abstract", description.getAbstract());
                 } else {
-                    element("Title", defaultStyle.prefixedName());
+                    String i18nTitle = internationalContentHelper.getTitle(ftStyle);
+                    if (i18nTitle == null) element("Title", prefixedName);
+                    else element("Title", i18nTitle);
+                    element("Abstract", internationalContentHelper.getAbstract(ftStyle));
                 }
-                element("Abstract", ftStyle.getDescription().getAbstract());
             } else {
-                element("Title", defaultStyle.prefixedName());
+                element("Title", prefixedName);
             }
         }
 
@@ -1361,17 +1403,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 element("Name", layerName);
             }
 
-            if (StringUtils.isEmpty(layerGroup.getTitle())) {
-                element("Title", layerName);
-            } else {
-                element("Title", layerGroup.getTitle());
-            }
-
-            if (StringUtils.isEmpty(layerGroup.getAbstract())) {
-                element("Abstract", "Layer-Group type layer: " + layerName);
-            } else {
-                element("Abstract", layerGroup.getAbstract());
-            }
+            handleTitleAndAbstract(layerGroup, layerName);
 
             // handle keywords
             handleKeywordList(layerGroup.getKeywords());
@@ -1784,6 +1816,38 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 atts.clear();
                 atts.addAttribute("", "authority", "authority", "", authority);
                 element("Identifier", id, atts);
+            }
+        }
+
+        private void handleTitleAndAbstract(PublishedInfo publishedInfo, String layerName) {
+            if (!i18nRequested) {
+                if (StringUtils.isEmpty(publishedInfo.getTitle())) {
+                    element("Title", layerName);
+                } else {
+                    element("Title", publishedInfo.getTitle());
+                }
+                if (StringUtils.isEmpty(publishedInfo.getAbstract())) {
+                    element("Abstract", "Layer-Group type layer: " + layerName);
+                } else {
+                    element("Abstract", publishedInfo.getAbstract());
+                }
+            } else {
+                String title = internationalContentHelper.getTitle(publishedInfo);
+                String abstrct = internationalContentHelper.getAbstract(publishedInfo);
+                element("Title", title);
+                element("Abstract", abstrct);
+            }
+        }
+
+        private void handleTitleAndAbstractServiceInfo() {
+            if (!i18nRequested) {
+                element("Title", serviceInfo.getTitle());
+                element("Abstract", serviceInfo.getAbstract());
+            } else {
+                String title = internationalContentHelper.getTitle(serviceInfo);
+                element("Title", title);
+                String abstrct = internationalContentHelper.getAbstract(serviceInfo);
+                element("Abstract", abstrct);
             }
         }
     }

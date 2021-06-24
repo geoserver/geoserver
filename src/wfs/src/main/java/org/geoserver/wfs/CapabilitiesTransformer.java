@@ -35,6 +35,9 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ResourceErrorHandling;
+import org.geoserver.data.InternationalContentHelper;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler.URLType;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geoserver.platform.GeoServerExtensions;
@@ -127,6 +130,10 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
     /** catalog */
     protected Catalog catalog;
+
+    protected InternationalContentHelper internationalContentHelper;
+
+    protected boolean i18nRequested = false;
 
     /** Creates a new CapabilitiesTransformer object. */
     public CapabilitiesTransformer(WFSInfo wfs, WFSInfo.Version version, Catalog catalog) {
@@ -292,6 +299,48 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         return sections;
     }
 
+    protected void handleAcceptLanguagesParameter(
+            WFS1_1.CapabilitiesTranslator1_1 delegate,
+            WFSInfo serviceInfo,
+            List<FeatureTypeInfo> featureTypeInfos) {
+        Request request = Dispatcher.REQUEST.get();
+        Map<String, Object> rawKvp = request.getRawKvp();
+        String[] acceptLanguages = null;
+        if (rawKvp != null
+                && rawKvp.get(InternationalContentHelper.ACCEPTLANGUAGES_PARAM) != null) {
+            acceptLanguages =
+                    String.valueOf(rawKvp.get(InternationalContentHelper.ACCEPTLANGUAGES_PARAM))
+                            .split(" ");
+        }
+        i18nRequested = acceptLanguages != null && acceptLanguages.length > 0;
+        if (i18nRequested) {
+            this.internationalContentHelper =
+                    new InternationalContentHelper(
+                            acceptLanguages, serviceInfo, new ArrayList<>(featureTypeInfos));
+        }
+        delegate.i18nRequested = this.i18nRequested;
+        delegate.internationalContentHelper = this.internationalContentHelper;
+    }
+
+    protected List<FeatureTypeInfo> getFeatureTypeInfoList(String namespace) {
+        List<FeatureTypeInfo> featureTypes = new ArrayList<>(catalog.getFeatureTypes());
+
+        // filter out disabled feature types
+        for (Iterator<FeatureTypeInfo> it = featureTypes.iterator(); it.hasNext(); ) {
+            FeatureTypeInfo ft = it.next();
+            if (!ft.enabled()) it.remove();
+        }
+
+        // filter the layers if a namespace filter has been set
+        if (namespace != null) {
+            for (Iterator it = featureTypes.iterator(); it.hasNext(); ) {
+                FeatureTypeInfo ft = (FeatureTypeInfo) it.next();
+                if (!namespace.equals(ft.getNamespace().getPrefix())) it.remove();
+            }
+        }
+        return featureTypes;
+    }
+
     /** Transformer for wfs 1.0 capabilities document. */
     public static class WFS1_0 extends CapabilitiesTransformer {
         protected final boolean skipMisconfigured;
@@ -318,7 +367,6 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             @Override
             public void encode(Object object) throws IllegalArgumentException {
                 request = GetCapabilitiesRequest.adapt(object);
-
                 // Not used.  WFS 1.1 and 1.0 don't actually support updatesequence
                 // verifyUpdateSequence(request);
 
@@ -420,27 +468,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              *         &lt;xsd:element name="Keywords" type="xsd:string"/&gt;
              *                 </pre>
              */
-            protected void handleKeywords(String[] kwlist) {
-                if (kwlist == null) {
-                    handleKeywords((List) null);
-                } else {
-                    handleKeywords(Arrays.asList(kwlist));
-                }
-            }
-
-            /**
-             * Encodes the wfs:Keywords element.
-             *
-             * <p>
-             *
-             * <pre>
-             *         &lt;!-- Short words to help catalog searching.
-             *                  Currently, no controlled vocabulary has
-             *                 been defined. --&gt;
-             *         &lt;xsd:element name="Keywords" type="xsd:string"/&gt;
-             *                 </pre>
-             */
-            protected void handleKeywords(List kwlist) {
+            protected void handleKeywords(List<KeywordInfo> kwlist) {
                 StringBuffer kwds = new StringBuffer();
 
                 for (int i = 0; (kwlist != null) && (i < kwlist.size()); i++) {
@@ -813,9 +841,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              */
             protected void handleFeatureType(FeatureTypeInfo info) {
                 Envelope bbox = info.getLatLonBoundingBox();
-
                 start("FeatureType");
-                element("Name", info.prefixedName());
                 element("Title", info.getTitle());
                 element("Abstract", info.getAbstract());
                 handleKeywords(info.getKeywords());
@@ -972,6 +998,10 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             protected Collection<WFSExtendedCapabilitiesProvider> extCapsProviders;
             protected final WFSInfo wfs;
             protected final String schemaBaseURL;
+
+            boolean i18nRequested = false;
+
+            InternationalContentHelper internationalContentHelper;
 
             public CapabilitiesTranslator1_1(
                     ContentHandler handler,
@@ -1154,8 +1184,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             protected void serviceIdentification(String version) {
                 start("ows:ServiceIdentification");
 
-                element("ows:Title", wfs.getTitle());
-                element("ows:Abstract", wfs.getAbstract());
+                handleServiceTitleAndAbstract();
 
                 keywords(wfs.getKeywords());
 
@@ -1180,6 +1209,16 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 element("ows:AccessConstraints", wfs.getAccessConstraints());
 
                 end("ows:ServiceIdentification");
+            }
+
+            private void handleServiceTitleAndAbstract() {
+                if (!i18nRequested) {
+                    element("ows:Title", wfs.getTitle());
+                    element("ows:Abstract", wfs.getAbstract());
+                } else {
+                    element("ows:Title", internationalContentHelper.getTitle(wfs));
+                    element("ows:Abstract", internationalContentHelper.getAbstract(wfs));
+                }
             }
 
             /**
@@ -1537,21 +1576,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             }
 
             protected void featureTypes(boolean crs, String namespace) {
-                List<FeatureTypeInfo> featureTypes = new ArrayList<>(catalog.getFeatureTypes());
 
-                // filter out disabled feature types
-                for (Iterator<FeatureTypeInfo> it = featureTypes.iterator(); it.hasNext(); ) {
-                    FeatureTypeInfo ft = it.next();
-                    if (!ft.enabled()) it.remove();
-                }
-
-                // filter the layers if a namespace filter has been set
-                if (namespace != null) {
-                    for (Iterator it = featureTypes.iterator(); it.hasNext(); ) {
-                        FeatureTypeInfo ft = (FeatureTypeInfo) it.next();
-                        if (!namespace.equals(ft.getNamespace().getPrefix())) it.remove();
-                    }
-                }
+                List<FeatureTypeInfo> featureTypes = getFeatureTypeInfoList(namespace);
 
                 Collections.sort(featureTypes, new FeatureTypeInfoTitleComparator());
                 for (FeatureTypeInfo featureType : featureTypes) {
@@ -1675,8 +1701,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 start("FeatureType", attributes(new String[] {"xmlns:" + prefix, uri}));
 
                 element("Name", featureType.prefixedName());
-                element("Title", featureType.getTitle());
-                element("Abstract", featureType.getAbstract());
+
+                handleTitleAndAbstract(featureType);
                 keywords(featureType.getKeywords());
 
                 String srs = featureType.getSRS();
@@ -1722,6 +1748,18 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 }
 
                 end("FeatureType");
+            }
+
+            private void handleTitleAndAbstract(FeatureTypeInfo featureTypeInfo) {
+                if (!i18nRequested) {
+                    element("Title", featureTypeInfo.getTitle());
+                    element("Abstract", featureTypeInfo.getAbstract());
+                } else {
+                    String title = internationalContentHelper.getTitle(featureTypeInfo);
+                    String abstrct = internationalContentHelper.getAbstract(featureTypeInfo);
+                    element("Title", title);
+                    element("Abstract", abstrct);
+                }
             }
 
             private String applySRSNameStyle(GMLInfo gml, String srs) {
@@ -1949,6 +1987,8 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
 
             protected void keywords(List<KeywordInfo> keywords) {
                 if (keywords != null) {
+                    if (i18nRequested)
+                        keywords = internationalContentHelper.filterKeywords(keywords);
                     keywords(keywords.toArray(new KeywordInfo[keywords.size()]));
                 }
             }
@@ -2191,8 +2231,9 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             @Override
             public void encode(Object o) throws IllegalArgumentException {
                 request = GetCapabilitiesRequest.adapt(o);
+                handleAcceptLanguagesParameter(
+                        delegate, wfs, getFeatureTypeInfoList(request.getNamespace()));
                 delegate.request = request;
-
                 StringBuilder schemaLocation = new StringBuilder();
                 schemaLocation.append(WFS20_URI);
                 schemaLocation.append(" ");

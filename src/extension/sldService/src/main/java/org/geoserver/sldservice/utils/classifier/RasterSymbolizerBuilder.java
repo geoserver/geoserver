@@ -281,6 +281,55 @@ public class RasterSymbolizerBuilder {
         return getColorMapFromBreaks(breaks, open, continuous, percentages);
     }
 
+    /**
+     * Builds a {@link ColorMap} based on equal intervals between the min and max value found in the
+     * raster
+     *
+     * @param image The source image
+     * @param intervals Number of resulting intervals
+     * @param continuous If the resulting ColorMap should be of type interval (discrete) or of type
+     */
+    public ColorMap standardDeviationClassification(
+            RenderedImage image, int intervals, boolean open, boolean continuous) {
+        ImageWorker iw = getImageWorker(image);
+        Statistics[][] stats = getStatistics(iw);
+        double mean = (double) stats[0][0].getResult();
+        double stddev = (double) stats[0][1].getResult();
+        double[] extrema = (double[]) stats[0][2].getResult();
+        double min = extrema[0];
+        double max = extrema[1];
+        Number[] breaks;
+        double[] percentages = null;
+        if (min == max) {
+            breaks = new Number[] {min, max};
+
+        } else {
+            breaks = new Number[continuous ? intervals : intervals + 1];
+            for (int i = 1; i < breaks.length; i++) {
+                if (i == breaks.length - 1) {
+                    // last break: one standard deviation is added to the last
+                    // computed value and then checked with the max value
+                    double breakCandidate = breaks[breaks.length - 2].doubleValue() + stddev;
+                    breaks[breaks.length - 1] =
+                            max > breakCandidate
+                                    ? max
+                                    : Math.nextAfter(max, Float.POSITIVE_INFINITY);
+                } else
+                    breaks[i] = Double.valueOf(mean - ((((double) intervals) / 2.0) - i) * stddev);
+            }
+            // first break: a standardDeviation is subtracted from the second value
+            // and checked if less than the min value
+            double breakCandidate = breaks[1].doubleValue() - stddev;
+            breaks[0] = min < breakCandidate ? min : breakCandidate;
+            if (outputPercentages) {
+                percentages = getCustomClassifierPercentages(image, breaks);
+                percentages =
+                        new PercentagesRoundHandler(percentagesScale).roundPercentages(percentages);
+            }
+        }
+        return getColorMapFromBreaks(breaks, open, continuous, percentages);
+    }
+
     private ColorMap getColorMapFromBreaks(
             Number[] breaks, boolean open, boolean continuous, double[] percentages) {
         // turn the histogram into a ColorMap (just values, no colors, those will be added later)
@@ -401,18 +450,7 @@ public class RasterSymbolizerBuilder {
             ParameterBlock pb = new ParameterBlock();
             pb.setSource(iw.getRenderedImage(), 0);
             if (JAIExt.isJAIExtOperation("Stats")) {
-                StatsType[] stats = {StatsType.MEAN, StatsType.DEV_STD, StatsType.EXTREMA};
-
-                // Image parameters
-                pb.set(iw.getXPeriod(), 0); // xPeriod
-                pb.set(iw.getYPeriod(), 1); // yPeriod
-                pb.set(iw.getROI(), 2); // ROI
-                pb.set(iw.getNoData(), 3); // NoData
-                pb.set(stats, 6); // statistic operation
-                final RenderedOp statsImage = JAI.create("Stats", pb, iw.getRenderingHints());
-                // Retrieving the statistics
-                Statistics[][] results =
-                        (Statistics[][]) statsImage.getProperty(Statistics.STATS_PROPERTY);
+                Statistics[][] results = getStatistics(iw);
                 double mean = (double) results[0][0].getResult();
                 double stddev = (double) results[0][1].getResult();
                 double[] extrema = (double[]) results[0][2].getResult();
@@ -429,6 +467,28 @@ public class RasterSymbolizerBuilder {
                 throw new IllegalArgumentException(
                         "Stats image operation is not backed by JAIExt, please enable JAIExt");
             }
+        }
+    }
+
+    private Statistics[][] getStatistics(ImageWorker iw) {
+        ParameterBlock pb = new ParameterBlock();
+        pb.setSource(iw.getRenderedImage(), 0);
+        if (JAIExt.isJAIExtOperation("Stats")) {
+            StatsType[] stats = {StatsType.MEAN, StatsType.DEV_STD, StatsType.EXTREMA};
+
+            // Image parameters
+            pb.set(iw.getXPeriod(), 0); // xPeriod
+            pb.set(iw.getYPeriod(), 1); // yPeriod
+            pb.set(iw.getROI(), 2); // ROI
+            pb.set(iw.getNoData(), 3); // NoData
+            pb.set(stats, 6); // statistic operation
+            final RenderedOp statsImage = JAI.create("Stats", pb, iw.getRenderingHints());
+            // Retrieving the statistics
+            return (Statistics[][]) statsImage.getProperty(Statistics.STATS_PROPERTY);
+        } else {
+            // the op should be unique to jai-ext but best be careful
+            throw new IllegalArgumentException(
+                    "Stats image operation is not backed by JAIExt, please enable JAIExt");
         }
     }
 
@@ -607,7 +667,7 @@ public class RasterSymbolizerBuilder {
 
     private void addClosedIntervalEntriesSingleValueRaster(
             ColorMap colorMap, Number[] breaks, DecimalFormat format) {
-        // build a transparenty entry as first
+        // build a transparent entry as first
         double first = breaks[0].doubleValue();
         addTransparentEntry(colorMap, first);
 

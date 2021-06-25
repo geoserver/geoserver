@@ -422,6 +422,10 @@ public class ClassifierController extends BaseSLDServiceController {
                     colorMap = builder.quantileClassification(image, intervals, open, continuous);
                 } else if ("jenks".equals(method)) {
                     colorMap = builder.jenksClassification(image, intervals, open, continuous);
+                } else if ("standardDeviation".equals(method)) {
+                    colorMap =
+                            builder.standardDeviationClassification(
+                                    image, intervals, open, continuous);
                 } else {
                     throw new RestException(
                             "Unknown classification method " + method, HttpStatus.BAD_REQUEST);

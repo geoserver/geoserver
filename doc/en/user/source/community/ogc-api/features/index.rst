@@ -172,16 +172,32 @@ To override an OGC API Features template:
    * :download:`ogc/features/collections.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/collections.ftl>`
    * :download:`ogc/features/queryables.ftl  </../../../../src/community/ogcapi/ogcapi-core/src/main/resources/org/geoserver/ogcapi/queryables.ftl>`
    * :download:`ogc/features/functions.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/functions.ftl>`
+   
+   The above built-in examples are for GeoServer |release|, please check for any changes when upgrading GeoServer.
+
+The templates for listing feature content are shared between OGC API services. To override a template used to list features:
+
+#. Use the directory in the location you wish to override:
+
+   * :file:`GEOSERVER_DATA_DIR/templates`
+   * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}`
+   * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}/{datastore}` 
+   * :file:`GEOSERVER_DATA_DIR/workspace/{workspace}/{datastore}/{featuretype}` 
+   * :download:`ogc/features/landingPage.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/landingPage.ftl>`
+
+#. Create a file in this location, using the GeoServer |release| examples below:
+
    * :download:`ogc/features/getfeature-complex-content.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/getfeature-complex-content.ftl>`
    * :download:`ogc/features/getfeature-content.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/getfeature-content.ftl>`
    * :download:`ogc/features/getfeature-empty.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/getfeature-empty.ftl>`
    * :download:`ogc/features/getfeature-footer.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/getfeature-footer.ftl>`
    * :download:`ogc/features/getfeature-header.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/getfeature-header.ftl>`
-   * :download:`ogc/features/landingPage.ftl  </../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/landingPage.ftl>`
 
    The above built-in examples are for GeoServer |release|, please check for any changes when upgrading GeoServer.
-   
-#. As an example :file:`ogc/features/collections.ftl` is used to list published collection:
+
+As an example customize how collections are listed:
+
+#. The file :file:`ogc/features/collections.ftl` lists published collection:
 
    .. literalinclude:: /../../../../src/community/ogcapi/ogcapi-features/src/main/resources/org/geoserver/ogcapi/features/collections.ftl
 
@@ -201,11 +217,15 @@ To override an OGC API Features template:
            </#list>
       <#include "common-footer.ftl">
 
+#. Many templates are constructed using ``#include``, for example :file:`collection.ftl` above uses ``<#include "common-header.ftl">`` located next to :file:`collections.ftl`.
+
+   Presently each family of templates manages its own :file:`common-header.ftl` (as shown in the difference between :file:`ogc/features` service templates, and getfeature templates above).
+
 #. A restart is required, as templates are cached.
    
    .. figure:: img/template_override.png
       
-      template collections.ftl override applied
+      Template collections.ftl override applied
       
 #. Language codes are appended for internationalization. For French create the file :file:`GEOSERVER_DATA_DIR/workspace/{workspace}/ogc/collections_fr.ftl` and translate contents:
 

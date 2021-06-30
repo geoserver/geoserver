@@ -26,3 +26,29 @@ Each ``Localized`` section specifies the language (using a two letter abbreviati
 Currently, GeoServer supports localized text in SLD in WMS GetLegendGraphic requests (legends that contain labels are rendered using the
 requested language, if a ``LANGUAGE`` parameter is added to the request, e.g. ``LANGUAGE=it``).
 
+Labels in different languages
+-----------------------------
+
+GeoServer provides a ``language`` function that can be used to define ``TextSymbolizer`` with label in multiple languages. The function needs to be integrated with the ``Recode`` Transformation Function e.g:
+
+.. code-block:: xml
+
+          <TextSymbolizer>
+                 <Label>
+                   <ogc:Function name="Recode">
+                     <ogc:Function name="language"/>
+                     <ogc:Literal>en</ogc:Literal>
+                     <ogc:Literal>name_en</ogc:Literal>
+                     <ogc:Literal>it</ogc:Literal>
+                     <ogc:Literal>name_it</ogc:Literal>
+                     <ogc:Literal>fr</ogc:Literal>
+                     <ogc:Literal>name_fr</ogc:Literal>
+                   </ogc:Function>
+                 </Label>
+                 <Fill>
+                   <CssParameter name="fill">#000000</CssParameter>
+                 </Fill>
+         </TextSymbolizer>
+
+
+With such style, when peforming a GetMap adding the language parameter in the request, e.g. ``LANGUAGE=it``, if the language has been defined in the  Recode Function, the TextSymbolizer label text will be localized accordingly.

@@ -2608,15 +2608,15 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      */
     public List<GeoServerSecurityProvider> lookupSecurityProviders() {
         List<GeoServerSecurityProvider> list = new ArrayList<>();
-
-        for (GeoServerSecurityProvider provider :
-                GeoServerExtensions.extensions(GeoServerSecurityProvider.class, appContext)) {
-            if (!provider.isAvailable()) {
-                continue;
+        if (appContext != null) {
+            for (GeoServerSecurityProvider provider :
+                    GeoServerExtensions.extensions(GeoServerSecurityProvider.class, appContext)) {
+                if (!provider.isAvailable()) {
+                    continue;
+                }
+                list.add(provider);
             }
-            list.add(provider);
         }
-
         return list;
     }
 

@@ -15,6 +15,7 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -89,6 +90,7 @@ public class XStreamPersisterIntegrationTest extends GeoServerSystemTestSupport 
     }
 
     private WMSStoreInfo buildWmsStore() {
+        GeoServerExtensionsHelper.setIsSpringContext(false);
         Catalog catalog = new CatalogImpl();
         CatalogFactory cFactory = catalog.getFactory();
 

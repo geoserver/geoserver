@@ -6,9 +6,9 @@ package org.geoserver.metadata.data.model.impl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.bouncycastle.util.Arrays;
 import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
 import org.geotools.util.Converters;
 

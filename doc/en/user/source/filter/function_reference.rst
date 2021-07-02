@@ -542,6 +542,23 @@ Parsing and formatting functions
      - ``number``:String
      - Parses a string into a long integer
      
+Temporal functions
+--------------------------------
+
+.. list-table::
+   :widths: 20 25 55
+   
+   * - **Name**
+     - **Arguments**
+     - **Description**
+   * - dateDifference
+     - ``a``:Date, ``b``:Date, ``timeUnits``:String
+     - Computes the difference between two date (as a-b) and return a result in a specific time units. ``timeUnits`` is optional, representing the desired time units result. 
+       Default as milliseconds. Possible values are ``s`` (seconds), ``m`` (minutes), ``h`` (hours), ``d`` (days).
+   * - now
+     - None
+     - Retuns the current time as a Date
+
 Transformation functions
 --------------------------------
 

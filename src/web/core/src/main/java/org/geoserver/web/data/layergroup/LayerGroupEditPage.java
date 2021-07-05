@@ -14,7 +14,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -30,6 +29,7 @@ import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.data.resource.MetadataLinkEditor;
+import org.geoserver.web.data.resource.TitleAndAbstractPanel;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.publish.PublishedConfigurationPage;
@@ -155,8 +155,9 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                     new CheckBox("queryable", new Model<>(!getPublishedInfo().isQueryDisabled()));
             add(queryableCheckBox);
 
-            add(new TextField<String>("title"));
-            add(new TextArea<String>("abstract"));
+            add(
+                    new TitleAndAbstractPanel(
+                            "titleAndAbstract", myModel, "layerGroupTitle", "abstract", this));
 
             DropDownChoice<WorkspaceInfo> wsChoice =
                     new DropDownChoice<>(

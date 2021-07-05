@@ -22,7 +22,10 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.util.GeoServerDefaultLocale;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.GrowableInternationalString;
+import org.opengis.util.InternationalString;
 
 public class LayerGroupInfoImpl implements LayerGroupInfo {
 
@@ -45,6 +48,10 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     protected String path;
     protected LayerInfo rootLayer;
     protected StyleInfo rootLayerStyle;
+
+    protected GrowableInternationalString internationalTitle;
+
+    protected GrowableInternationalString internationalAbstract;
 
     /**
      * This property is here for compatibility purpose, in 2.3.x series it has been replaced by
@@ -158,6 +165,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     @Override
     public String getTitle() {
+        if (title == null && internationalTitle != null)
+            return internationalTitle.toString(GeoServerDefaultLocale.get());
         if (title == null && metadata != null) {
             title = metadata.get("title", String.class);
         }
@@ -185,6 +194,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     @Override
     public String getAbstract() {
+        if (abstractTxt == null && internationalAbstract != null)
+            return internationalAbstract.toString(GeoServerDefaultLocale.get());
         if (abstractTxt == null && metadata != null) {
             abstractTxt = metadata.get("title", String.class);
         }
@@ -387,5 +398,30 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     private void checkMetadataNotNull() {
         if (metadata == null) metadata = new MetadataMap();
+    }
+
+    @Override
+    public GrowableInternationalString getInternationalTitle() {
+        if (this.internationalTitle == null || this.internationalTitle.toString().equals("")) {
+            return new GrowableInternationalString(getTitle());
+        }
+        return this.internationalTitle;
+    }
+
+    @Override
+    public void setInternationalTitle(InternationalString internationalTitle) {
+        this.internationalTitle = new GrowableInternationalString(internationalTitle);
+    }
+
+    @Override
+    public GrowableInternationalString getInternationalAbstract() {
+        if (this.internationalAbstract == null || this.internationalAbstract.toString().equals(""))
+            return new GrowableInternationalString(getAbstract());
+        return this.internationalAbstract;
+    }
+
+    @Override
+    public void setInternationalAbstract(InternationalString internationalAbstract) {
+        this.internationalAbstract = new GrowableInternationalString(internationalAbstract);
     }
 }

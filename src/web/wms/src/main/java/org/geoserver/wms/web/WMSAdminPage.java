@@ -32,6 +32,8 @@ import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.web.data.resource.LocalesDropdown;
+import org.geoserver.web.data.resource.TitleAndAbstractPanel;
 import org.geoserver.web.data.store.panel.FileModel;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
@@ -101,13 +103,22 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     @Override
     @SuppressWarnings("unchecked")
     protected void build(IModel info, Form form) {
+
         // popups support
         form.add(modal = new ModalWindow("modal"));
 
         // new text field for the title of the root node
-        form.add(new TextField<String>("rootLayerTitle"));
-        form.add(new TextArea<String>("rootLayerAbstract"));
-
+        form.add(
+                new TitleAndAbstractPanel(
+                        "rootLayerTitleAndAbstract",
+                        info,
+                        "rootLayerTitle",
+                        "internationalRootLayerTitle",
+                        "rootLayerAbstract",
+                        "internationalRootLayerAbstract",
+                        "rootLayerTitle",
+                        "rootLayerAbstract",
+                        this));
         PropertyModel<Map<String, ?>> metadataModel = new PropertyModel(info, "metadata");
         MapModel rootLayerEnabled =
                 defaultedModel(
@@ -352,6 +363,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         remoteStylesMaxRequestTime.add(RangeValidator.minimum(1));
         form.add(remoteStylesMaxRequestTime);
         form.add(new CheckBox("defaultGroupStyleEnabled"));
+        form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(info, "defaultLocale")));
     }
 
     @Override
@@ -466,5 +478,10 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         public String getIdValue(Object object, int index) {
             return (String) object;
         }
+    }
+
+    @Override
+    protected boolean supportInternationalContent() {
+        return true;
     }
 }

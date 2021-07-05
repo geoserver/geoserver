@@ -19,3 +19,4 @@ These services are the primary way that GeoServer supplies geospatial informatio
    wcs/index
    wps/index
    csw/index
+   internationalization/index

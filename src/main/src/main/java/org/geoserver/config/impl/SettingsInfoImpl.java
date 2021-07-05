@@ -6,6 +6,7 @@
 package org.geoserver.config.impl;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -45,6 +46,8 @@ public class SettingsInfoImpl implements SettingsInfo {
     private boolean showCreatedTimeColumnsInAdminList = false;
 
     private boolean showModifiedTimeColumnsInAdminList = false;
+
+    protected Locale defaultLocale;
 
     @Override
     public String getId() {
@@ -269,5 +272,15 @@ public class SettingsInfoImpl implements SettingsInfo {
     @Override
     public void setShowModifiedTimeColumnsInAdminList(boolean showModifiedTimeColumnsInAdminList) {
         this.showModifiedTimeColumnsInAdminList = showModifiedTimeColumnsInAdminList;
+    }
+
+    @Override
+    public Locale getDefaultLocale() {
+        return defaultLocale;
+    }
+
+    @Override
+    public void setDefaultLocale(Locale defaultLocale) {
+        this.defaultLocale = defaultLocale;
     }
 }

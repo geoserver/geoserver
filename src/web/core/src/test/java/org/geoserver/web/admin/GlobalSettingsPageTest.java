@@ -5,6 +5,7 @@
  */
 package org.geoserver.web.admin;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -68,5 +69,15 @@ public class GlobalSettingsPageTest extends GeoServerWicketTestSupport {
 
         tester.assertRenderedPage(GlobalSettingsPage.class);
         assertTrue(gs.getSettings().isVerbose());
+    }
+
+    @Test
+    public void testDefaultLocale() {
+        login();
+        tester.startPage(GlobalSettingsPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.select("defaultLocale", 10);
+        ft.submit("submit");
+        assertNotNull(gs.getSettings().getDefaultLocale());
     }
 }

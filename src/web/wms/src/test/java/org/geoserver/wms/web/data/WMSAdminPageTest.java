@@ -7,6 +7,7 @@ package org.geoserver.wms.web.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -97,8 +98,8 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     public void testRootLayerTitle() throws Exception {
         tester.startPage(WMSAdminPage.class);
         FormTester ft = tester.newFormTester("form");
-        ft.setValue("rootLayerTitle", "test");
-        ft.setValue("rootLayerAbstract", "abstract test");
+        ft.setValue("rootLayerTitleAndAbstract:title", "test");
+        ft.setValue("rootLayerTitleAndAbstract:abstract", "abstract test");
         ft.submit("submit");
         tester.assertNoErrorMessage();
         assertEquals(wms.getRootLayerTitle(), "test");
@@ -163,5 +164,82 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
         ft.setValue("defaultGroupStyleEnabled", false);
         ft.submit("submit");
         assertFalse(wms.isDefaultGroupStyleEnabled());
+    }
+
+    @Test
+    public void testInternationalContent() {
+        tester.startPage(WMSAdminPage.class);
+        FormTester form = tester.newFormTester("form");
+        // enable i18n for title
+        form.setValue(
+                "serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
+                true);
+        tester.executeAjaxEvent(
+                "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
+                "change");
+        tester.executeAjaxEvent(
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
+                "click");
+
+        form.select(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                10);
+        form.setValue(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "an international title");
+        tester.executeAjaxEvent(
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
+                "click");
+        form.select(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
+                20);
+        form.setValue(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "another international title");
+        tester.executeAjaxEvent(
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
+                "click");
+
+        // enable i18n for abstract
+        form.setValue(
+                "serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
+                true);
+        tester.executeAjaxEvent(
+                "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
+                "change");
+        tester.executeAjaxEvent(
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
+                "click");
+        form.select(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                10);
+        form.setValue(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "an international title");
+        tester.executeAjaxEvent(
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
+                "click");
+        form.select(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
+                20);
+        form.setValue(
+                "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "another international title");
+        tester.executeAjaxEvent(
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
+                "click");
+        form = tester.newFormTester("form");
+        form.submit("submit");
+        tester.assertNoErrorMessage();
+    }
+
+    @Test
+    public void testDefaultLocale() {
+        tester.startPage(WMSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.select("defaultLocale", 11);
+        ft = tester.newFormTester("form");
+        ft.submit("submit");
+        assertNotNull(getGeoServer().getService(WMSInfo.class).getDefaultLocale());
     }
 }

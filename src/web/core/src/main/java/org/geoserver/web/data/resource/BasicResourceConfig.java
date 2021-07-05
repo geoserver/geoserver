@@ -19,7 +19,6 @@ import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.IFormValidator;
 import org.apache.wicket.model.IModel;
@@ -69,8 +68,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         add(name);
         add(new CheckBox("enabled"));
         add(new CheckBox("advertised"));
-        add(new TextField<String>("title"));
-        add(new TextArea<String>("abstract"));
+        add(new TitleAndAbstractPanel("titleAndAbstract", model, "titleMsg", "abstract", this));
         add(
                 new KeywordsEditor(
                         "keywords",

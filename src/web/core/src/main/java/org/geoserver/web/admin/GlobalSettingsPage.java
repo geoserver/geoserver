@@ -36,6 +36,7 @@ import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoserverAjaxSubmitLink;
+import org.geoserver.web.data.resource.LocalesDropdown;
 import org.geoserver.web.data.settings.SettingsPluginPanelInfo;
 import org.geoserver.web.wicket.LocalizedChoiceRenderer;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -166,6 +167,9 @@ public class GlobalSettingsPage extends ServerAdminPage {
                         "showModifiedTimeCols",
                         new PropertyModel<>(settingsModel, "showModifiedTimeColumnsInAdminList")));
 
+        form.add(
+                new LocalesDropdown(
+                        "defaultLocale", new PropertyModel<>(settingsModel, "defaultLocale")));
         Button submit =
                 new Button("submit") {
                     @Override

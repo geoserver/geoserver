@@ -36,6 +36,7 @@ import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resource.Type;
+import org.geoserver.web.data.resource.LocalesDropdown;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.web.wicket.LiveCollectionModel;
@@ -172,6 +173,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
 
         // allowGlobalQueries checkbox
         form.add(new CheckBox("allowGlobalQueries"));
+        form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(info, "defaultLocale")));
     }
 
     static class GMLPanel extends Panel {
@@ -253,5 +255,10 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
     @Override
     protected String getServiceName() {
         return "WFS";
+    }
+
+    @Override
+    protected boolean supportInternationalContent() {
+        return true;
     }
 }

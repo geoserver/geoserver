@@ -133,7 +133,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         Catalog catalog = getCatalog();
         CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
         ci.setTitle("My Title");
-        ci.setDescription("My Abstract");
+        ci.setAbstract("My Abstract");
         ci.getKeywords().add(0, new Keyword("my_keyword"));
         MetadataLinkInfo mdl1 = catalog.getFactory().createMetadataLink();
         mdl1.setContent("http://www.geoserver.org/tasmania/dem.xml");

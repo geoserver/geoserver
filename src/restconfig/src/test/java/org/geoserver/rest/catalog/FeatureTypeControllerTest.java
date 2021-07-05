@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -40,6 +41,7 @@ import org.geoserver.rest.RestBaseController;
 import org.geotools.data.DataAccess;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.util.GrowableInternationalString;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -814,5 +816,39 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
         ri.setDisabledServices(new ArrayList<>());
         getCatalog().save(ri);
         getCatalog().save(linfo);
+    }
+
+    @Test
+    public void testGetAsXMLWithInternationalContent() throws Exception {
+        FeatureTypeInfo fti = getCatalog().getFeatureTypeByName("sf:PrimitiveGeoFeature");
+        GrowableInternationalString internationalTitle = new GrowableInternationalString();
+        internationalTitle.add(Locale.ENGLISH, "english title");
+        internationalTitle.add(Locale.ITALIAN, "titolo italiano");
+        fti.setInternationalTitle(internationalTitle);
+        getCatalog().save(fti);
+        Document dom = getAsDOM(BASEPATH + "/workspaces/sf/featuretypes/PrimitiveGeoFeature.xml");
+        assertEquals("featureType", dom.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("titolo italiano", "/featureType/internationalTitle/it", dom);
+        assertXpathEvaluatesTo("english title", "/featureType/internationalTitle/en", dom);
+    }
+
+    @Test
+    public void testPutInternationalTitle() throws Exception {
+        String xml =
+                "<featureType>"
+                        + "<internationalTitle><en>i18n title</en></internationalTitle>"
+                        + "</featureType>";
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature",
+                        xml,
+                        "text/xml");
+        assertEquals(200, response.getStatus());
+
+        Document dom =
+                getAsDOM(
+                        BASEPATH
+                                + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.xml");
+        assertXpathEvaluatesTo("i18n title", "/featureType/internationalTitle/en", dom);
     }
 }

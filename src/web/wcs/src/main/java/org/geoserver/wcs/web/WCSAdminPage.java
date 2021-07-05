@@ -19,6 +19,7 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.wcs.WCSInfo;
+import org.geoserver.web.data.resource.LocalesDropdown;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.SRSListTextArea;
@@ -74,6 +75,7 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
 
         // lat-lon VS lon-lat
         form.add(new CheckBox("latLon"));
+        form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(info, "defaultLocale")));
     }
 
     @Override
@@ -92,5 +94,10 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
         public String getIdValue(OverviewPolicy object, int index) {
             return object.name();
         }
+    }
+
+    @Override
+    protected boolean supportInternationalContent() {
+        return true;
     }
 }

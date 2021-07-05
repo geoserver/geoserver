@@ -111,6 +111,9 @@ public class KvpUtils {
     /** Delimeter for multiple filters in a CQL filter list (<code>";"</code>) */
     public static final Tokenizer CQL_DELIMITER = new Tokenizer(";");
 
+    /** Delimeter for inner value lists in the KVPs */
+    public static final Tokenizer SPACE_DELIMETER = new Tokenizer(" ");
+
     /**
      * Attempts to parse out the proper typeNames from the FeatureId filters. It simply uses the
      * value before the '.' character.

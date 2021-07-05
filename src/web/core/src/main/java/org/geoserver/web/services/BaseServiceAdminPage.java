@@ -21,6 +21,7 @@ import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
@@ -36,6 +37,7 @@ import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.GeoserverAjaxSubmitLink;
+import org.geoserver.web.data.resource.TitleAndAbstractPanel;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.util.SerializableConsumer;
@@ -123,8 +125,7 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
         form.add(onlineResource);
         form.add(new CheckBox("enabled"));
         form.add(new CheckBox("citeCompliant"));
-        form.add(new TextField("title"));
-        form.add(new TextArea("abstract"));
+        form.add(getInternationalContentFragment(infoModel, "serviceTitleAndAbstract"));
         form.add(
                 new KeywordsEditor(
                         "keywords",
@@ -382,5 +383,29 @@ public abstract class BaseServiceAdminPage<T extends ServiceInfo> extends GeoSer
 
             add(new Label("workspace", new PropertyModel(service, "workspace.name")));
         }
+    }
+
+    /**
+     * Override this method to return true if the implementation support international content
+     *
+     * @return true if support international content false otherwise.
+     */
+    protected boolean supportInternationalContent() {
+        return false;
+    }
+
+    private Fragment getInternationalContentFragment(IModel<T> infoModel, String id) {
+        Fragment fragment;
+        if (supportInternationalContent()) {
+            fragment = new Fragment(id, "internationalStringFragment", this);
+            fragment.add(
+                    new TitleAndAbstractPanel(
+                            "titleAndAbstract", infoModel, "titleMsg", "abstract", this));
+        } else {
+            fragment = new Fragment(id, "stringFragment", this);
+            fragment.add(new TextField<String>("title"));
+            fragment.add(new TextArea<String>("abstract"));
+        }
+        return fragment;
     }
 }

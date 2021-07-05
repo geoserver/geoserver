@@ -44,7 +44,7 @@ public class WCSAdminPageTest extends GeoServerWicketCoverageTestSupport {
                 true);
         tester.executeAjaxEvent(
                 "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                "click");
+                "change");
         tester.executeAjaxEvent(
                 "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
                 "click");
@@ -74,7 +74,7 @@ public class WCSAdminPageTest extends GeoServerWicketCoverageTestSupport {
                 true);
         tester.executeAjaxEvent(
                 "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                "click");
+                "change");
         tester.executeAjaxEvent(
                 "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
                 "click");

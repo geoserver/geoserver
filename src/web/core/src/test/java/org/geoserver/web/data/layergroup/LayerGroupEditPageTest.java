@@ -550,7 +550,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.setValue("tabs:panel:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
                 "publishedinfo:tabs:panel:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                "click");
+                "change");
         tester.executeAjaxEvent(
                 "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew",
                 "click");
@@ -578,7 +578,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.setValue("tabs:panel:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
                 "publishedinfo:tabs:panel:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                "click");
+                "change");
         tester.executeAjaxEvent(
                 "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:addNew",
                 "click");

@@ -98,8 +98,8 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
     public void testRootLayerTitle() throws Exception {
         tester.startPage(WMSAdminPage.class);
         FormTester ft = tester.newFormTester("form");
-        ft.setValue("rootLayerTitle", "test");
-        ft.setValue("rootLayerAbstract", "abstract test");
+        ft.setValue("rootLayerTitleAndAbstract:title", "test");
+        ft.setValue("rootLayerTitleAndAbstract:abstract", "abstract test");
         ft.submit("submit");
         tester.assertNoErrorMessage();
         assertEquals(wms.getRootLayerTitle(), "test");
@@ -176,7 +176,7 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
                 true);
         tester.executeAjaxEvent(
                 "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                "click");
+                "change");
         tester.executeAjaxEvent(
                 "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
                 "click");
@@ -206,7 +206,7 @@ public class WMSAdminPageTest extends GeoServerWicketTestSupport {
                 true);
         tester.executeAjaxEvent(
                 "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                "click");
+                "change");
         tester.executeAjaxEvent(
                 "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
                 "click");

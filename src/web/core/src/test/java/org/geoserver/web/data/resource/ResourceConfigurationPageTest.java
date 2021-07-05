@@ -678,7 +678,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                 true);
         tester.executeAjaxEvent(
                 "publishedinfo:tabs:panel:theList:0:content:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                "click");
+                "change");
 
         form.select(
                 "tabs:panel:theList:0:content:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
@@ -708,7 +708,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                 true);
         tester.executeAjaxEvent(
                 "publishedinfo:tabs:panel:theList:0:content:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                "click");
+                "change");
 
         form.select(
                 "tabs:panel:theList:0:content:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
@@ -754,7 +754,7 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                 true);
         tester.executeAjaxEvent(
                 "publishedinfo:tabs:panel:theList:0:content:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                "click");
+                "change");
 
         form = tester.newFormTester("publishedinfo");
         form.submit("save");

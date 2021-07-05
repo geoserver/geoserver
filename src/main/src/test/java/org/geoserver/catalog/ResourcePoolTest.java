@@ -84,6 +84,7 @@ import org.geotools.feature.collection.DecoratingFeatureCollection;
 import org.geotools.feature.collection.SortedSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.gce.geotiff.GeoTiffFormat;
+import org.geotools.http.HTTPProxy;
 import org.geotools.image.util.ImageUtilities;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
@@ -99,6 +100,7 @@ import org.geotools.util.URLs;
 import org.geotools.util.Version;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -655,6 +657,9 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             WebMapServer wms = null;
             try {
                 wms = rp.getWebMapServer(info);
+                // If we have a running proxy server and wms server
+                Assert.assertNotNull(wms);
+                Assert.assertTrue(wms.getHTTPClient() instanceof HTTPProxy);
             } catch (UnknownHostException e) {
                 // Proxy our.proxy.de should be unknown.
             }

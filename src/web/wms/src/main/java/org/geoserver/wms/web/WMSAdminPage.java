@@ -32,7 +32,8 @@ import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.validator.RangeValidator;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.web.data.resource.InternationalStringPanel;
+import org.geoserver.web.data.resource.LocalesDropdown;
+import org.geoserver.web.data.resource.TitleAndAbstractPanel;
 import org.geoserver.web.data.store.panel.FileModel;
 import org.geoserver.web.services.BaseServiceAdminPage;
 import org.geoserver.web.util.MapModel;
@@ -48,7 +49,6 @@ import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
 import org.geoserver.wms.web.publish.LayerAuthoritiesAndIdentifiersPanel;
-import org.geotools.util.GrowableInternationalString;
 
 /** Edits the WMS service details */
 @SuppressWarnings("serial")
@@ -108,32 +108,17 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(modal = new ModalWindow("modal"));
 
         // new text field for the title of the root node
-        TextField<String> title = new TextField<>("rootLayerTitle");
-        form.add(title);
         form.add(
-                new InternationalStringPanel<TextField<String>>(
+                new TitleAndAbstractPanel(
+                        "rootLayerTitleAndAbstract",
+                        info,
+                        "rootLayerTitle",
                         "internationalRootLayerTitle",
-                        new PropertyModel<GrowableInternationalString>(
-                                info, "internationalRootLayerTitle"),
-                        title) {
-                    @Override
-                    protected TextField<String> getTextComponent(String id, IModel<String> model) {
-                        return new TextField<>(id, model);
-                    }
-                });
-        TextArea<String> abstractArea = new TextArea<>("rootLayerAbstract");
-        form.add(abstractArea);
-        form.add(
-                new InternationalStringPanel<TextArea<String>>(
+                        "rootLayerAbstract",
                         "internationalRootLayerAbstract",
-                        new PropertyModel<>(info, "internationalRootLayerAbstract"),
-                        abstractArea) {
-                    @Override
-                    protected TextArea<String> getTextComponent(String id, IModel<String> model) {
-                        return new TextArea<>(id, model);
-                    }
-                });
-
+                        "rootLayerTitle",
+                        "rootLayerAbstract",
+                        this));
         PropertyModel<Map<String, ?>> metadataModel = new PropertyModel(info, "metadata");
         MapModel rootLayerEnabled =
                 defaultedModel(
@@ -378,6 +363,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         remoteStylesMaxRequestTime.add(RangeValidator.minimum(1));
         form.add(remoteStylesMaxRequestTime);
         form.add(new CheckBox("defaultGroupStyleEnabled"));
+        form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(info, "defaultLocale")));
     }
 
     @Override

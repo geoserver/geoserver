@@ -14,9 +14,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
@@ -30,8 +28,8 @@ import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.web.data.resource.InternationalStringPanel;
 import org.geoserver.web.data.resource.MetadataLinkEditor;
+import org.geoserver.web.data.resource.TitleAndAbstractPanel;
 import org.geoserver.web.data.workspace.WorkspaceChoiceRenderer;
 import org.geoserver.web.data.workspace.WorkspacesModel;
 import org.geoserver.web.publish.PublishedConfigurationPage;
@@ -156,34 +154,10 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
             queryableCheckBox =
                     new CheckBox("queryable", new Model<>(!getPublishedInfo().isQueryDisabled()));
             add(queryableCheckBox);
-            TextField<String> title = new TextField<>("title");
-            add(title);
 
             add(
-                    new InternationalStringPanel<TextField<String>>(
-                            "internationalTitle",
-                            new PropertyModel<>(getPublishedInfo(), "internationalTitle"),
-                            title) {
-                        @Override
-                        protected TextField<String> getTextComponent(
-                                String id, IModel<String> model) {
-                            return new TextField<>(id, model);
-                        }
-                    });
-            TextArea<String> area = new TextArea<String>("abstract");
-            add(area);
-
-            add(
-                    new InternationalStringPanel<TextArea<String>>(
-                            "internationalAbstract",
-                            new PropertyModel(getPublishedInfo(), "internationalAbstract"),
-                            area) {
-                        @Override
-                        protected TextArea<String> getTextComponent(
-                                String id, IModel<String> model) {
-                            return new TextArea<>(id, model);
-                        }
-                    });
+                    new TitleAndAbstractPanel(
+                            "titleAndAbstract", myModel, "layerGroupTitle", "abstract", this));
 
             DropDownChoice<WorkspaceInfo> wsChoice =
                     new DropDownChoice<>(

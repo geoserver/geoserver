@@ -26,6 +26,9 @@ public abstract class AcceptLanguagesKvpParser extends KvpParser {
     public Object parse(String value) throws Exception {
         EObject acceptLanguages = createObject();
         List<String> values = KvpUtils.readFlat(value, KvpUtils.SPACE_DELIMETER);
+        if (!values.isEmpty() && values.size() == 1) {
+            values = KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER);
+        }
         for (String v : values) {
             @SuppressWarnings("unchecked")
             Collection<String> of = (Collection<String>) EMFUtils.get(acceptLanguages, "language");

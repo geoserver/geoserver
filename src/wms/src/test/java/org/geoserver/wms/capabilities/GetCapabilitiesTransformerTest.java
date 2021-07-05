@@ -616,36 +616,4 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         layerGroupInfo.getLayers().add(layerInfo);
         this.catalog.add(layerGroupInfo);
     }
-
-    @Test
-    public void testInternationalContent() throws Exception {
-        // test that when defaultGroupStyleEnabled
-        // is set to false the default layerGroup style appears in
-        // getCapabilities resp if mode is opaque.
-        String layerGroupName = "aLayerGroup";
-        createLayerGroup(layerGroupName, LayerGroupInfo.Mode.OPAQUE_CONTAINER);
-        WMS wms =
-                new WMS(geosConfig) {
-                    @Override
-                    public boolean isDefaultGroupStyleEnabled() {
-                        return false;
-                    }
-                };
-        Capabilities_1_3_0_Transformer tr =
-                new Capabilities_1_3_0_Transformer(
-                        wms,
-                        baseUrl,
-                        wmsConfig.getAllowedMapFormats(),
-                        wmsConfig.getAvailableExtendedCapabilitiesProviders());
-        Document dom = WMSTestSupport.transform(req, tr);
-
-        // the style should appear
-        NodeList nodeList = dom.getElementsByTagName("Style");
-        assertEquals(1, nodeList.getLength());
-        Element styleEl = (Element) nodeList.item(0);
-        String title = styleEl.getElementsByTagName("Title").item(0).getTextContent();
-        assertEquals("aLayerGroup style", title);
-        String name = styleEl.getElementsByTagName("Name").item(0).getTextContent();
-        assertEquals("default-style-aLayerGroup", name);
-    }
 }

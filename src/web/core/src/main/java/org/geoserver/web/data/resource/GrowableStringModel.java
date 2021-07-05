@@ -1,3 +1,7 @@
+/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.web.data.resource;
 
 import java.io.Serializable;
@@ -34,10 +38,8 @@ public class GrowableStringModel extends ChainingModel<GrowableInternationalStri
         Map<Locale, String> map = growableMapModel.getObject();
         List<InternationalStringEntry> result = new ArrayList<>(map.size());
         for (Locale locale : map.keySet()) {
-            if (locale != null) {
-                String text = map.get(locale);
-                result.add(new InternationalStringEntry(locale, text));
-            }
+            String text = map.get(locale);
+            result.add(new InternationalStringEntry(locale, text));
         }
         return result;
     }

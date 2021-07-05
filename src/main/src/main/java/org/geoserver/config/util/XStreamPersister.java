@@ -2607,7 +2607,8 @@ public class XStreamPersister {
     class GrowableInternationalStringConverter extends AbstractReflectionConverter {
 
         @Override
-        public boolean canConvert(Class aClass) {
+        @SuppressWarnings("unchecked")
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class aClass) {
             return aClass.isAssignableFrom(GrowableInternationalString.class);
         }
 
@@ -2618,7 +2619,9 @@ public class XStreamPersister {
             Set<Locale> locales = internationalString.getLocales();
             for (Locale l : locales) {
                 if (l != null) {
-                    writer.startNode(l.toLanguageTag());
+                    String elementName = l.toLanguageTag();
+                    if (elementName.contains(" ")) elementName = elementName.replaceAll(" ", "__");
+                    writer.startNode(elementName);
                     writer.setValue(internationalString.toString(l));
                     writer.endNode();
                 }
@@ -2631,7 +2634,9 @@ public class XStreamPersister {
                     new GrowableInternationalString();
             while (reader.hasMoreChildren()) {
                 reader.moveDown();
-                Locale locale = Locale.forLanguageTag(reader.getNodeName());
+                String nodeName = reader.getNodeName();
+                if (nodeName.contains("__")) nodeName = nodeName.replaceAll("__", " ");
+                Locale locale = Locale.forLanguageTag(nodeName);
                 String value = reader.getValue();
                 growableInternationalString.add(locale, value);
                 reader.moveUp();

@@ -9,6 +9,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -157,54 +158,75 @@ public class WFSAdminPageTest extends GeoServerWicketTestSupport {
         tester.startPage(new WFSAdminPage());
         FormTester form = tester.newFormTester("form");
         // enable i18n for title
-        form.setValue("titleAndAbstract:internationalTitle:i18nCheckBox", true);
-        tester.executeAjaxEvent("form:titleAndAbstract:internationalTitle:i18nCheckBox", "click");
+        form.setValue(
+                "serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
+                true);
         tester.executeAjaxEvent(
-                "form:titleAndAbstract:internationalTitle:container:addNew", "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
+                "click");
+        tester.executeAjaxEvent(
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
+                "click");
 
         form.select(
-                "titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
         form.setValue(
-                "titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
                 "an international title");
         tester.executeAjaxEvent(
-                "form:titleAndAbstract:internationalTitle:container:addNew", "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
+                "click");
         form.select(
-                "titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
                 20);
         form.setValue(
-                "titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
                 "another international title");
         tester.executeAjaxEvent(
-                "form:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
                 "click");
 
         // enable i18n for abstract
-        form.setValue("titleAndAbstract:internationalAbstract:i18nCheckBox", true);
+        form.setValue(
+                "serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
+                true);
         tester.executeAjaxEvent(
-                "form:titleAndAbstract:internationalAbstract:i18nCheckBox", "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
+                "click");
         tester.executeAjaxEvent(
-                "form:titleAndAbstract:internationalAbstract:container:addNew", "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
+                "click");
         form.select(
-                "titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
         form.setValue(
-                "titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
                 "an international title");
         tester.executeAjaxEvent(
-                "form:titleAndAbstract:internationalAbstract:container:addNew", "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
+                "click");
         form.select(
-                "titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
+                "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
                 20);
         form.setValue(
-                "titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
                 "another international title");
         tester.executeAjaxEvent(
-                "form:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
                 "click");
         form = tester.newFormTester("form");
         form.submit("submit");
-        tester.hasNoErrorMessage();
+        tester.assertNoErrorMessage();
+    }
+
+    @Test
+    public void testDefaultLocale() {
+        login();
+        tester.startPage(WFSAdminPage.class);
+        FormTester ft = tester.newFormTester("form");
+        ft.select("defaultLocale", 11);
+        ft.submit("submit");
+        assertNotNull(getGeoServer().getService(WFSInfo.class).getDefaultLocale());
     }
 }

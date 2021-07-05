@@ -101,4 +101,79 @@ public class GetCapabilitiesTest extends WCSTestSupport {
                 "/wcs:Capabilities/wcs:Contents/wcs:CoverageSummary[wcs:CoverageId = 'wcs__DEM']/ows:Title",
                 doc);
     }
+
+    @Test
+    public void testDefaultLocale() throws Exception {
+        GeoServer gs = getGeoServer();
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName("BlueMarble");
+        GrowableInternationalString title = new GrowableInternationalString();
+        title.add(Locale.ENGLISH, "a i18n title for ci bluemarble");
+        title.add(Locale.ITALIAN, "titolo italiano");
+        GrowableInternationalString _abstract = new GrowableInternationalString();
+        _abstract.add(Locale.ENGLISH, "a i18n abstract for ci bluemarble");
+        _abstract.add(Locale.ITALIAN, "abstract italiano");
+        ci.setInternationalTitle(title);
+        ci.setInternationalAbstract(_abstract);
+        ci.setTitle(null);
+        ci.setAbstract(null);
+        catalog.save(ci);
+        WCSInfo wcs = gs.getService(WCSInfo.class);
+        title = new GrowableInternationalString();
+        title.add(Locale.ENGLISH, "a i18n title for WCS service");
+        title.add(Locale.ITALIAN, "titolo italiano servizio WCS");
+        _abstract = new GrowableInternationalString();
+        _abstract.add(Locale.ENGLISH, "a i18n abstract for WCS service");
+        _abstract.add(Locale.ITALIAN, "abstract italiano servizio WCS");
+        wcs.setInternationalTitle(title);
+        wcs.setInternationalAbstract(_abstract);
+        wcs.setTitle(null);
+        wcs.setAbstract(null);
+        wcs.setDefaultLocale(Locale.ENGLISH);
+        gs.save(wcs);
+        Document doc = getAsDOM("ows?service=WCS&request=getCapabilities&version=2.0.1");
+        String service = "//ows:ServiceIdentification";
+        assertXpathEvaluatesTo("a i18n title for WCS service", service + "/ows:Title", doc);
+        assertXpathEvaluatesTo("a i18n abstract for WCS service", service + "/ows:Abstract", doc);
+        String fifteenLayer =
+                "/wcs:Capabilities/wcs:Contents/wcs:CoverageSummary[wcs:CoverageId = 'wcs__BlueMarble']";
+        assertXpathEvaluatesTo("a i18n title for ci bluemarble", fifteenLayer + "/ows:Title", doc);
+        assertXpathEvaluatesTo(
+                "a i18n abstract for ci bluemarble", fifteenLayer + "/ows:Abstract", doc);
+    }
+
+    @Test
+    public void testWithoutDefaultLocale() throws Exception {
+        GeoServer gs = getGeoServer();
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName("BlueMarble");
+        GrowableInternationalString title = new GrowableInternationalString();
+        title.add(Locale.getDefault(), "a i18n title for ci bluemarble");
+        GrowableInternationalString _abstract = new GrowableInternationalString();
+        _abstract.add(Locale.getDefault(), "a i18n abstract for ci bluemarble");
+        ci.setInternationalTitle(title);
+        ci.setInternationalAbstract(_abstract);
+        ci.setTitle(null);
+        ci.setAbstract(null);
+        catalog.save(ci);
+        WCSInfo wcs = gs.getService(WCSInfo.class);
+        title = new GrowableInternationalString();
+        title.add(Locale.getDefault(), "a i18n title for WCS service");
+        _abstract = new GrowableInternationalString();
+        _abstract.add(Locale.getDefault(), "a i18n abstract for WCS service");
+        wcs.setInternationalTitle(title);
+        wcs.setInternationalAbstract(_abstract);
+        wcs.setTitle(null);
+        wcs.setAbstract(null);
+        gs.save(wcs);
+        Document doc = getAsDOM("ows?service=WCS&request=getCapabilities&version=2.0.1");
+        String service = "//ows:ServiceIdentification";
+        assertXpathEvaluatesTo("a i18n title for WCS service", service + "/ows:Title", doc);
+        assertXpathEvaluatesTo("a i18n abstract for WCS service", service + "/ows:Abstract", doc);
+        String fifteenLayer =
+                "/wcs:Capabilities/wcs:Contents/wcs:CoverageSummary[wcs:CoverageId = 'wcs__BlueMarble']";
+        assertXpathEvaluatesTo("a i18n title for ci bluemarble", fifteenLayer + "/ows:Title", doc);
+        assertXpathEvaluatesTo(
+                "a i18n abstract for ci bluemarble", fifteenLayer + "/ows:Abstract", doc);
+    }
 }

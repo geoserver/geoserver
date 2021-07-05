@@ -726,4 +726,55 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
                 responseMsg.contains(
                         "Content has been requested in one of the following languages: fre. But supported languages are: en,it"));
     }
+
+    @Test
+    public void testInternationalContentMultipleLanguages() throws Exception {
+        // test request with AcceptLanguages with multiple value
+        GeoServer gs = getGeoServer();
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(MockData.FIFTEEN));
+        GrowableInternationalString title = new GrowableInternationalString();
+        title.add(Locale.ENGLISH, "a i18n title for fti fifteen");
+        title.add(Locale.ITALIAN, "titolo italiano");
+        GrowableInternationalString _abstract = new GrowableInternationalString();
+
+        // not setting italian set french instead
+        _abstract.add(Locale.ENGLISH, "a i18n abstract for fti fifteen");
+        _abstract.add(Locale.FRENCH, "resumé");
+        fti.setInternationalTitle(title);
+        fti.setInternationalAbstract(_abstract);
+        KeywordInfo keywordInfo = new Keyword("english keyword");
+        keywordInfo.setLanguage(Locale.ENGLISH.getLanguage());
+
+        KeywordInfo keywordInfo2 = new Keyword("parola chiave");
+        keywordInfo2.setLanguage(Locale.ITALIAN.getLanguage());
+        fti.getKeywords().add(keywordInfo);
+        fti.getKeywords().add(keywordInfo2);
+        catalog.save(fti);
+        WFSInfo wfs = gs.getService(WFSInfo.class);
+        title = new GrowableInternationalString();
+        title.add(Locale.ENGLISH, "a i18n title for WFS service");
+        title.add(Locale.ITALIAN, "titolo italiano servizio WFS");
+        _abstract = new GrowableInternationalString();
+        _abstract.add(Locale.ENGLISH, "a i18n abstract for WFS service");
+        _abstract.add(Locale.ITALIAN, "abstract italiano servizio WFS");
+        wfs.setInternationalTitle(title);
+        wfs.setInternationalAbstract(_abstract);
+        gs.save(wfs);
+
+        // request for it or fr
+        Document doc =
+                getAsDOM(
+                        "wfs?service=WFS&request=getCapabilities&version=2.0.0&acceptLanguages=it,fr");
+        String service = "//ows:ServiceIdentification";
+        assertXpathEvaluatesTo("titolo italiano servizio WFS", service + "/ows:Title", doc);
+        assertXpathEvaluatesTo("abstract italiano servizio WFS", service + "/ows:Abstract", doc);
+        String fifteenLayer =
+                "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType[wfs:Name='cdf:Fifteen']";
+        assertXpathEvaluatesTo("titolo italiano", fifteenLayer + "/wfs:Title", doc);
+
+        // it was not specified french should have been selected
+        assertXpathEvaluatesTo("resumé", fifteenLayer + "/wfs:Abstract", doc);
+        assertXpathEvaluatesTo("parola chiave", fifteenLayer + "/ows:Keywords/ows:Keyword", doc);
+    }
 }

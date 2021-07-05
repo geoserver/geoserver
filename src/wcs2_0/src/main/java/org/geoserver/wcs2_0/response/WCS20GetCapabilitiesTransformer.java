@@ -666,7 +666,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         private void handleTitleAndAbstract(CoverageInfo cv) {
             if (!i18nRequested) {
                 elementIfNotEmpty("ows:Title", cv.getTitle());
-                elementIfNotEmpty("ows:Abstract", cv.getDescription());
+                elementIfNotEmpty("ows:Abstract", cv.getAbstract());
             } else {
                 elementIfNotEmpty("ows:Title", internationalContentHelper.getTitle(cv));
                 elementIfNotEmpty("ows:Abstract", internationalContentHelper.getAbstract(cv));
@@ -725,17 +725,19 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         }
 
         private void handleLanguages() {
-            start("ows:Languages");
-            List<String> languages =
-                    internationalContentHelper
-                            .getSupportedLocales()
-                            .stream()
-                            .map(l -> l.toLanguageTag())
-                            .collect(Collectors.toList());
-            for (String lang : languages) {
-                element("ows:Language", lang);
+            if (i18nRequested) {
+                start("ows:Languages");
+                List<String> languages =
+                        internationalContentHelper
+                                .getSupportedLocales()
+                                .stream()
+                                .map(l -> l.toLanguageTag())
+                                .collect(Collectors.toList());
+                for (String lang : languages) {
+                    element("ows:Language", lang);
+                }
+                end("ows:Languages");
             }
-            end("ows:Languages");
         }
 
         /** Writes the element if and only if the content is not null and not empty */

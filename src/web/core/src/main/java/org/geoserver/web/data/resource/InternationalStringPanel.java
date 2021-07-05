@@ -6,20 +6,18 @@ package org.geoserver.web.data.resource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.AbstractTextComponent;
-import org.apache.wicket.markup.html.form.ChoiceRenderer;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
+import org.apache.wicket.markup.html.form.IFormSubmitter;
+import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
@@ -27,6 +25,10 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.ValidationError;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -50,59 +52,63 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
 
     InternationalEntriesProvider provider;
 
+    static final String CHECKBOX_SUFFIX = "_i18nCheckbox";
+
+    GeoServerAjaxFormLink geoServerAjaxFormLink;
+
     public InternationalStringPanel(
-            String id, IModel<GrowableInternationalString> model, C nonInternationalComponent) {
+            String id,
+            IModel<GrowableInternationalString> model,
+            C nonInternationalComponent,
+            WebMarkupContainer checkBoxContainer) {
         super(id, model);
         this.nonInternationalComponent = nonInternationalComponent;
         this.nonInternationalComponent.setOutputMarkupId(true);
         this.nonInternationalComponent.setOutputMarkupPlaceholderTag(true);
-        initUI(new GrowableStringModel(model));
+        initUI(new GrowableStringModel(model), checkBoxContainer);
         setOutputMarkupId(true);
         setOutputMarkupId(true);
     }
 
-    private void initUI(GrowableStringModel model) {
+    private void initUI(GrowableStringModel model, WebMarkupContainer checkBoxContainer) {
         this.growableModel = model;
         WebMarkupContainer container = new WebMarkupContainer("container");
         container.setOutputMarkupPlaceholderTag(true);
         container.setOutputMarkupId(true);
-        boolean i18nVisible = !growableModel.getEntries().isEmpty();
+        boolean i18nVisible = i18nVisible();
         nonInternationalComponent.setVisible(!i18nVisible);
         AjaxCheckBox checkbox =
-                new AjaxCheckBox("i18nCheckBox", new Model<>(i18nVisible)) {
+                new AjaxCheckBox(
+                        checkBoxContainer.getId() + CHECKBOX_SUFFIX, new Model<>(i18nVisible)) {
                     @Override
                     protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
                         if (getConvertedInput().booleanValue()) {
                             container.setVisible(true);
-                            tablePanel.modelChanged();
                             nonInternationalComponent.setVisible(false);
-                            nonInternationalComponent.setModelObject(null);
-                            nonInternationalComponent.modelChanged();
                         } else {
                             nonInternationalComponent.setVisible(true);
-                            growableModel.setObject(new GrowableInternationalString());
-                            provider.setInternationalEntries(new ArrayList<>());
-                            this.modelChanged();
                             container.setVisible(false);
-                            ajaxRequestTarget.add(this, tablePanel);
                         }
-                        ajaxRequestTarget.add(container, nonInternationalComponent, tablePanel);
+                        ajaxRequestTarget.add(
+                                this, container, nonInternationalComponent, tablePanel);
                     }
                 };
-        add(checkbox);
+        checkBoxContainer.add(checkbox);
         container.setVisible(i18nVisible);
         container.add(
-                new GeoServerAjaxFormLink("addNew") {
+                geoServerAjaxFormLink =
+                        new GeoServerAjaxFormLink("addNew") {
 
-                    private static final long serialVersionUID = -4136656891019857299L;
+                            private static final long serialVersionUID = -4136656891019857299L;
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form<?> form) {
-                        provider.getItems().add(new GrowableStringModel.InternationalStringEntry());
-                        tablePanel.modelChanged();
-                        target.add(tablePanel);
-                    }
-                });
+                            @Override
+                            protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                                provider.getItems()
+                                        .add(new GrowableStringModel.InternationalStringEntry());
+                                tablePanel.modelChanged();
+                                target.add(tablePanel);
+                            }
+                        });
         provider = new InternationalEntriesProvider();
         GeoServerTablePanel<GrowableStringModel.InternationalStringEntry> tablePanel =
                 new GeoServerTablePanel<GrowableStringModel.InternationalStringEntry>(
@@ -121,15 +127,14 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
                             FormComponentFeedbackBorder localeBorder =
                                     new FormComponentFeedbackBorder("border");
                             localeFragment.add(localeBorder);
-                            DropDownLocale locales =
-                                    new DropDownLocale(
-                                            "select",
-                                            new PropertyModel<>(itemModel, "locale"),
-                                            getLocalesList());
+                            LocalesDropdown locales =
+                                    new LocalesDropdown(
+                                            "select", new PropertyModel<>(itemModel, "locale"));
                             locales.setLabel(
                                     new ParamResourceModel(
                                             "th.locale", InternationalStringPanel.this));
                             localeBorder.add(locales);
+                            locales.add(new LocaleValidator());
                             locales.setNullValid(true);
                             locales.setRequired(true);
                             return localeFragment;
@@ -176,6 +181,16 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
                         }
                         return null;
                     }
+
+                    @Override
+                    public void processInputs() {
+                        this.visitChildren(
+                                FormComponent.class,
+                                (component, visit) -> {
+                                    ((FormComponent<?>) component).convertInput();
+                                    ((FormComponent<?>) component).processInput();
+                                });
+                    }
                 };
         tablePanel.setSelectable(false);
         tablePanel.setFilterable(false);
@@ -214,39 +229,6 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         }
     }
 
-    private List<Locale> getLocalesList() {
-        return Stream.of(Locale.getAvailableLocales())
-                .filter(l -> l != null)
-                .sorted(
-                        new Comparator<Locale>() {
-                            @Override
-                            public int compare(Locale o1, Locale o2) {
-                                return o1.toLanguageTag().compareTo(o2.toLanguageTag());
-                            }
-                        })
-                .collect(Collectors.toList());
-    }
-
-    class DropDownLocale extends DropDownChoice<Locale> {
-
-        public DropDownLocale(String id, IModel<Locale> model, List<? extends Locale> choices) {
-            super(id, model, choices);
-            ChoiceRenderer<Locale> locales =
-                    new ChoiceRenderer<Locale>() {
-                        @Override
-                        public Object getDisplayValue(Locale object) {
-                            return object.toLanguageTag();
-                        }
-
-                        @Override
-                        public String getIdValue(Locale object, int index) {
-                            return object.toLanguageTag();
-                        }
-                    };
-            this.setChoiceRenderer(locales);
-        }
-    }
-
     @Override
     public void convertInput() {
         setConvertedInput(updateGrowableString());
@@ -254,7 +236,8 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
 
     private GrowableInternationalString updateGrowableString() {
         GrowableInternationalString growableString = new GrowableInternationalString();
-        for (GrowableStringModel.InternationalStringEntry entry : provider.getItems()) {
+        List<GrowableStringModel.InternationalStringEntry> items = provider.getItems();
+        for (GrowableStringModel.InternationalStringEntry entry : items) {
             growableString.add(entry.getLocale(), entry.getText());
         }
         growableModel.setObject(growableString);
@@ -263,6 +246,58 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
 
     @Override
     public void updateModel() {
+        if (isSaveSubmit()) {
+            if (nonInternationalComponent.isVisible()) {
+                growableModel.setObject(new GrowableInternationalString());
+                provider.setInternationalEntries(new ArrayList<>());
+                nonInternationalComponent.modelChanged();
+            } else {
+                nonInternationalComponent.clearInput();
+                nonInternationalComponent.setConvertedInput(null);
+                nonInternationalComponent.setModelObject(null);
+                nonInternationalComponent.modelChanged();
+            }
+        }
         updateGrowableString();
+    }
+
+    private boolean isSaveSubmit() {
+        boolean result = false;
+        IFormSubmitter submitBtn = getForm().findSubmittingButton();
+        if (submitBtn != null && submitBtn instanceof SubmitLink) {
+            SubmitLink submitLink = (SubmitLink) submitBtn;
+            String id = submitLink.getId();
+            result = id.equals("submit") || id.equals("save");
+        }
+        return result;
+    }
+
+    private boolean i18nVisible() {
+        List<GrowableStringModel.InternationalStringEntry> entries = growableModel.getEntries();
+        return !entries.isEmpty() && !(entries.size() == 1 && entries.get(0).getLocale() == null);
+    }
+
+    private class LocaleValidator implements IValidator<Locale> {
+        @Override
+        public void validate(IValidatable<Locale> iValidatable) {
+            Locale locale = iValidatable.getValue();
+            List<GrowableStringModel.InternationalStringEntry> items = provider.getItems();
+            if (locale != null) {
+                long count =
+                        items.stream()
+                                .filter(i -> i.getLocale() != null && i.getLocale().equals(locale))
+                                .count();
+                if (count >= 1 && iValidatable.getModel().getObject() == null) {
+                    String message =
+                            new StringResourceModel(
+                                            "InternationalStringPanel.duplicatedLocale",
+                                            InternationalStringPanel.this)
+                                    .getString();
+                    ValidationError error = new ValidationError();
+                    error.setMessage(message);
+                    iValidatable.error(error);
+                }
+            }
+        }
     }
 }

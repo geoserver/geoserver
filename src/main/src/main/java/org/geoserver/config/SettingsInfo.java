@@ -5,6 +5,7 @@
  */
 package org.geoserver.config;
 
+import java.util.Locale;
 import java.util.Map;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.MetadataMap;
@@ -141,4 +142,18 @@ public interface SettingsInfo extends Info {
     public boolean isShowModifiedTimeColumnsInAdminList();
 
     public void setShowModifiedTimeColumnsInAdminList(boolean showModifiedTimeColumnsInAdminList);
+
+    /**
+     * Get the default Locale
+     *
+     * @return the default locale
+     */
+    Locale getDefaultLocale();
+
+    /**
+     * Set the default Locale
+     *
+     * @param locale the locale to set as default
+     */
+    void setDefaultLocale(Locale locale);
 }

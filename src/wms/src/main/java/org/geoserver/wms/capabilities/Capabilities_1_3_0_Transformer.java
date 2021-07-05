@@ -743,17 +743,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             if (includeRootLayer(layers, layerGroups, layersAlreadyProcessed)) {
                 start("Layer");
-
-                if (StringUtils.isBlank(serviceInfo.getRootLayerTitle())) {
-                    element("Title", serviceInfo.getTitle());
-                } else {
-                    element("Title", serviceInfo.getRootLayerTitle());
-                }
-                if (StringUtils.isBlank(serviceInfo.getRootLayerAbstract())) {
-                    element("Abstract", serviceInfo.getAbstract());
-                } else {
-                    element("Abstract", serviceInfo.getRootLayerAbstract());
-                }
+                handleRootLayerTitleAndAbstract();
                 Set<String> srs = getServiceSRSList();
                 handleRootCrsList(srs);
 
@@ -1252,6 +1242,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
         }
 
         private void handleCommonStyleElements(StyleInfo defaultStyle) {
+            element("Name", defaultStyle.prefixedName());
             Style ftStyle;
             try {
                 ftStyle = defaultStyle.getStyle();
@@ -1259,7 +1250,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            element("Name", defaultStyle.prefixedName());
         }
 
         private void handleStyleTitleAndAbstract(String prefixedName, Style ftStyle) {
@@ -1849,6 +1839,34 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 String abstrct = internationalContentHelper.getAbstract(serviceInfo);
                 element("Abstract", abstrct);
             }
+        }
+
+        private void handleRootLayerTitleAndAbstract() {
+            String titleValue;
+            String abstractValue;
+            if (!i18nRequested) {
+                titleValue = serviceInfo.getRootLayerTitle();
+                abstractValue = serviceInfo.getRootLayerAbstract();
+                if (StringUtils.isBlank(titleValue)) titleValue = serviceInfo.getTitle();
+                if (StringUtils.isBlank(abstractValue)) abstractValue = serviceInfo.getAbstract();
+            } else {
+                titleValue =
+                        internationalContentHelper.getString(
+                                serviceInfo.getInternationalRootLayerTitle(), true);
+                abstractValue =
+                        internationalContentHelper.getString(
+                                serviceInfo.getInternationalRootLayerAbstract(), true);
+                if (StringUtils.isBlank(titleValue))
+                    titleValue =
+                            internationalContentHelper.getString(
+                                    serviceInfo.getInternationalTitle(), false);
+                if (StringUtils.isBlank(abstractValue))
+                    abstractValue =
+                            internationalContentHelper.getString(
+                                    serviceInfo.getInternationalAbstract(), false);
+            }
+            element("Title", titleValue);
+            element("Abstract", abstractValue);
         }
     }
 }

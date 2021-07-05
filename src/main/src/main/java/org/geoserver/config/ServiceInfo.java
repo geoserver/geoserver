@@ -6,6 +6,7 @@
 package org.geoserver.config;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.KeywordInfo;
@@ -195,4 +196,8 @@ public interface ServiceInfo extends Info {
     MetadataMap getMetadata();
 
     Map<Object, Object> getClientProperties();
+
+    Locale getDefaultLocale();
+
+    void setDefaultLocale(Locale locale);
 }

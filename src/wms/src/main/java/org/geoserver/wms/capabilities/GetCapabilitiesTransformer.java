@@ -710,16 +710,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 start("Layer");
 
                 // WMSInfo serviceInfo = wmsConfig.getServiceInfo();
-                if (StringUtils.isBlank(serviceInfo.getRootLayerTitle())) {
-                    element("Title", serviceInfo.getTitle());
-                } else {
-                    element("Title", serviceInfo.getRootLayerTitle());
-                }
-                if (StringUtils.isBlank(serviceInfo.getRootLayerAbstract())) {
-                    element("Abstract", serviceInfo.getAbstract());
-                } else {
-                    element("Abstract", serviceInfo.getRootLayerAbstract());
-                }
+                handleRootLayerTitleAndAbstract();
                 Set<String> srs = getServiceSRSList();
                 handleRootCrsList(srs);
 
@@ -1803,6 +1794,34 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 String abstrct = internationalContentHelper.getAbstract(serviceInfo);
                 element("Abstract", abstrct);
             }
+        }
+
+        private void handleRootLayerTitleAndAbstract() {
+            String titleValue;
+            String abstractValue;
+            if (!i18nRequested) {
+                titleValue = serviceInfo.getRootLayerTitle();
+                abstractValue = serviceInfo.getRootLayerAbstract();
+                if (StringUtils.isBlank(titleValue)) titleValue = serviceInfo.getTitle();
+                if (StringUtils.isBlank(abstractValue)) abstractValue = serviceInfo.getAbstract();
+            } else {
+                titleValue =
+                        internationalContentHelper.getString(
+                                serviceInfo.getInternationalRootLayerTitle(), true);
+                abstractValue =
+                        internationalContentHelper.getString(
+                                serviceInfo.getInternationalRootLayerAbstract(), true);
+                if (StringUtils.isBlank(titleValue))
+                    titleValue =
+                            internationalContentHelper.getString(
+                                    serviceInfo.getInternationalTitle(), false);
+                if (StringUtils.isBlank(abstractValue))
+                    abstractValue =
+                            internationalContentHelper.getString(
+                                    serviceInfo.getInternationalAbstract(), false);
+            }
+            element("Title", titleValue);
+            element("Abstract", abstractValue);
         }
     }
 }

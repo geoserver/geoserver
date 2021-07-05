@@ -513,7 +513,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         // Update the title
         FormTester ft = tester.newFormTester("publishedinfo");
         String newTitle = "A test title";
-        ft.setValue("tabs:panel:title", newTitle);
+        ft.setValue("tabs:panel:titleAndAbstract:title", newTitle);
         ft.submit("apply");
         // no errors, and page is still the same
         tester.assertNoErrorMessage();
@@ -531,9 +531,11 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         tester.assertRenderedPage(LayerGroupEditPage.class);
         // check that keywords editor panel was rendered
         tester.assertComponent(
-                "publishedinfo:tabs:panel:internationalTitle", InternationalStringPanel.class);
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle",
+                InternationalStringPanel.class);
         tester.assertComponent(
-                "publishedinfo:tabs:panel:internationalAbstract", InternationalStringPanel.class);
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract",
+                InternationalStringPanel.class);
 
         // add layer group entries
         page.lgEntryPanel
@@ -545,52 +547,58 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         FormTester form = tester.newFormTester("publishedinfo");
 
         // enable i18n for title
-        form.setValue("tabs:panel:internationalTitle:i18nCheckBox", true);
+        form.setValue("tabs:panel:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:internationalTitle:i18nCheckBox", "click");
+                "publishedinfo:tabs:panel:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
+                "click");
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:internationalTitle:container:addNew", "click");
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew",
+                "click");
 
         form.select(
-                "tabs:panel:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
         form.setValue(
-                "tabs:panel:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
                 "an international title");
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:internationalTitle:container:addNew", "click");
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew",
+                "click");
         form.select(
-                "tabs:panel:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
+                "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
                 20);
         form.setValue(
-                "tabs:panel:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
                 "another international title");
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
                 "click");
 
         // enable i18n for abstract
-        form.setValue("tabs:panel:internationalAbstract:i18nCheckBox", true);
+        form.setValue("tabs:panel:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:internationalAbstract:i18nCheckBox", "click");
+                "publishedinfo:tabs:panel:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
+                "click");
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:internationalAbstract:container:addNew", "click");
+                "publishedinfo:tabs:panel:titleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
+                "click");
         form.select(
-                "tabs:panel:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                "tabs:pane:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
         form.setValue(
-                "tabs:panel:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
                 "an international title");
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:internationalAbstract:container:addNew", "click");
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:addNew",
+                "click");
         form.select(
-                "tabs:panel:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
+                "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
                 20);
         form.setValue(
-                "tabs:panel:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
                 "another international title");
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:2:component:remove",
                 "click");
 
         // set mandatory fields

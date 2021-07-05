@@ -713,4 +713,8 @@
 	
 	<!-- Resource voter -->
 	<bean id="wfsResourceVoter" class="org.geoserver.wfs.WFSResourceVoter"/>
+
+	<bean id="wfsDefaultLocaleCallback" class="org.geoserver.wfs.WFSDefaultLocaleCallback">
+		<constructor-arg ref="geoServer"/>
+	</bean>
 </beans>

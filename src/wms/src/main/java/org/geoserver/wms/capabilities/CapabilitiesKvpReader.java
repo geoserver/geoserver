@@ -63,11 +63,15 @@ public class CapabilitiesKvpReader extends KvpRequestReader {
         if (rawKvp.containsKey("ROOTLAYER")) {
             request.setRootLayerEnabled(Boolean.valueOf((String) rawKvp.get("ROOTLAYER")));
         }
-        if (rawKvp.containsKey(InternationalContentHelper.ACCEPTLANGUAGES_PARAM))
-            request.setAcceptLanguages(
-                    String.valueOf(rawKvp.get(InternationalContentHelper.ACCEPTLANGUAGES_PARAM))
-                            .split(" "));
-
+        if (rawKvp.containsKey(InternationalContentHelper.ACCEPTLANGUAGES_PARAM)) {
+            String paramValue =
+                    String.valueOf(rawKvp.get(InternationalContentHelper.ACCEPTLANGUAGES_PARAM));
+            String[] langAr = paramValue.split(" ");
+            if (langAr.length == 1) {
+                langAr = paramValue.split(",");
+            }
+            request.setAcceptLanguages(langAr);
+        }
         return request;
     }
 }

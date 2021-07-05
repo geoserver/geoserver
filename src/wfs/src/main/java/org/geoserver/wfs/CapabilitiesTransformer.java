@@ -308,9 +308,11 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
         String[] acceptLanguages = null;
         if (rawKvp != null
                 && rawKvp.get(InternationalContentHelper.ACCEPTLANGUAGES_PARAM) != null) {
-            acceptLanguages =
-                    String.valueOf(rawKvp.get(InternationalContentHelper.ACCEPTLANGUAGES_PARAM))
-                            .split(" ");
+            String langParam =
+                    String.valueOf(rawKvp.get(InternationalContentHelper.ACCEPTLANGUAGES_PARAM));
+            String[] langAr = langParam.split(" ");
+            if (langAr.length == 1) langAr = langParam.split(",");
+            acceptLanguages = langAr;
         }
         i18nRequested = acceptLanguages != null && acceptLanguages.length > 0;
         if (i18nRequested) {
@@ -842,6 +844,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             protected void handleFeatureType(FeatureTypeInfo info) {
                 Envelope bbox = info.getLatLonBoundingBox();
                 start("FeatureType");
+                element("Name", info.prefixedName());
                 element("Title", info.getTitle());
                 element("Abstract", info.getAbstract());
                 handleKeywords(info.getKeywords());

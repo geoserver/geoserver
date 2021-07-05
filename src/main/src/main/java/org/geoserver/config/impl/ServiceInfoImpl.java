@@ -16,6 +16,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.util.GeoServerDefaultLocale;
 import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.Version;
 import org.opengis.util.InternationalString;
@@ -67,6 +68,8 @@ public class ServiceInfoImpl implements ServiceInfo {
     protected MetadataMap metadata = new MetadataMap();
 
     protected Map<Object, Object> clientProperties = new HashMap<>();
+
+    protected Locale defaultLocale;
 
     @Override
     public String getId() {
@@ -120,7 +123,7 @@ public class ServiceInfoImpl implements ServiceInfo {
     @Override
     public String getTitle() {
         if (title == null && internationalTitle != null)
-            return internationalTitle.toString(Locale.getDefault());
+            return internationalTitle.toString(GeoServerDefaultLocale.get());
         else return title;
     }
 
@@ -131,21 +134,15 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     @Override
     public GrowableInternationalString getInternationalTitle() {
-        if (this.internationalTitle == null) {
-            return new GrowableInternationalString();
+        if (this.internationalTitle == null || this.internationalTitle.toString().equals("")) {
+            return new GrowableInternationalString(title);
         }
         return this.internationalTitle;
     }
 
     @Override
     public void setInternationalTitle(InternationalString internationalTitle) {
-        if (internationalTitle instanceof GrowableInternationalString)
-            this.internationalTitle = (GrowableInternationalString) internationalTitle;
-        else {
-            GrowableInternationalString internationalString = new GrowableInternationalString();
-            internationalString.add(Locale.getDefault(), internationalTitle.toString());
-            this.internationalTitle = internationalString;
-        }
+        this.internationalTitle = new GrowableInternationalString(internationalTitle);
     }
 
     @Override
@@ -161,7 +158,7 @@ public class ServiceInfoImpl implements ServiceInfo {
     @Override
     public String getAbstract() {
         if (abstrct == null && internationalAbstract != null)
-            return internationalAbstract.toString(Locale.getDefault());
+            return internationalAbstract.toString(GeoServerDefaultLocale.get());
         else return abstrct;
     }
 
@@ -172,19 +169,14 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     @Override
     public InternationalString getInternationalAbstract() {
-        if (this.internationalAbstract == null) return new GrowableInternationalString();
+        if (this.internationalAbstract == null || this.internationalAbstract.toString().equals(""))
+            return new GrowableInternationalString(this.abstrct);
         return this.internationalAbstract;
     }
 
     @Override
     public void setInternationalAbstract(InternationalString internationalAbstract) {
-        if (internationalAbstract instanceof GrowableInternationalString)
-            this.internationalAbstract = (GrowableInternationalString) internationalAbstract;
-        else {
-            GrowableInternationalString internationalString = new GrowableInternationalString();
-            internationalString.add(Locale.getDefault(), internationalAbstract.toString());
-            this.internationalAbstract = internationalString;
-        }
+        this.internationalAbstract = new GrowableInternationalString(internationalAbstract);
     }
 
     @Override
@@ -324,6 +316,16 @@ public class ServiceInfoImpl implements ServiceInfo {
     @Override
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
+    }
+
+    @Override
+    public Locale getDefaultLocale() {
+        return defaultLocale;
+    }
+
+    @Override
+    public void setDefaultLocale(Locale defaultLocale) {
+        this.defaultLocale = defaultLocale;
     }
 
     @Override

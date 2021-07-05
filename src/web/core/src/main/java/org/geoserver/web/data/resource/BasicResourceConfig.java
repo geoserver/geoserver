@@ -19,7 +19,6 @@ import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.IFormValidator;
 import org.apache.wicket.model.IModel;
@@ -69,33 +68,7 @@ public class BasicResourceConfig extends ResourceConfigurationPanel {
         add(name);
         add(new CheckBox("enabled"));
         add(new CheckBox("advertised"));
-        TextField<String> title = new TextField<>("title");
-        add(title);
-        InternationalStringPanel<TextField<String>> internationalStringPanelTitle =
-                new InternationalStringPanel<TextField<String>>(
-                        "internationalTitle",
-                        new PropertyModel<>(model, "internationalTitle"),
-                        title) {
-                    @Override
-                    protected TextField<String> getTextComponent(String id, IModel model) {
-                        return new TextField<>(id, model);
-                    }
-                };
-        add(internationalStringPanelTitle);
-        TextArea<String> area = new TextArea<>("abstract");
-        add(area);
-
-        InternationalStringPanel<TextArea<String>> internationalStringPanelAbstract =
-                new InternationalStringPanel<TextArea<String>>(
-                        "internationalAbstract",
-                        new PropertyModel<>(model, "internationalAbstract"),
-                        area) {
-                    @Override
-                    protected TextArea<String> getTextComponent(String id, IModel model) {
-                        return new TextArea<>(id, model);
-                    }
-                };
-        add(internationalStringPanelAbstract);
+        add(new TitleAndAbstractPanel("titleAndAbstract", model, "titleMsg", "abstract", this));
         add(
                 new KeywordsEditor(
                         "keywords",

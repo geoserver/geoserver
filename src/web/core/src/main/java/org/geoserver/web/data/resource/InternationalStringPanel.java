@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.AbstractTextComponent;
@@ -82,17 +83,35 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
                         checkBoxContainer.getId() + CHECKBOX_SUFFIX, new Model<>(i18nVisible)) {
                     @Override
                     protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
-                        if (getConvertedInput().booleanValue()) {
+                        // this does get form submits, processing here is not useful.
+                        // see the AjaxFormSubmitBehavior below
+                    }
+                };
+        AjaxFormSubmitBehavior checkboxSubmitter =
+                new AjaxFormSubmitBehavior("change") {
+
+                    @Override
+                    protected void onSubmit(AjaxRequestTarget target) {
+                        switchVisibility(target);
+                    }
+
+                    private void switchVisibility(AjaxRequestTarget target) {
+                        if (checkbox.getConvertedInput().booleanValue()) {
                             container.setVisible(true);
                             nonInternationalComponent.setVisible(false);
                         } else {
                             nonInternationalComponent.setVisible(true);
                             container.setVisible(false);
                         }
-                        ajaxRequestTarget.add(
-                                this, container, nonInternationalComponent, tablePanel);
+                        target.add(checkbox, container, nonInternationalComponent, tablePanel);
+                    }
+
+                    @Override
+                    protected void onError(AjaxRequestTarget target) {
+                        switchVisibility(target);
                     }
                 };
+        checkbox.add(checkboxSubmitter);
         checkBoxContainer.add(checkbox);
         container.setVisible(i18nVisible);
         container.add(

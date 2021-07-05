@@ -19,15 +19,29 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.ows.Dispatcher;
 import org.xml.sax.helpers.NamespaceSupport;
 
+/** Utility class that provides methods to encode Inspire elements in GetCapabilities Response */
 public final class ServicesUtils {
 
     private ServicesUtils() {}
 
+    /**
+     * Register vs and inspire common namspaces to the passed NamespaceSupport.
+     *
+     * @param namespaces the NamespaceSupport to which register the namespaces.
+     */
     public static void registerNameSpaces(NamespaceSupport namespaces) {
         namespaces.declarePrefix("inspire_vs", VS_NAMESPACE);
         namespaces.declarePrefix("inspire_common", COMMON_NAMESPACE);
     }
 
+    /**
+     * Encode ExtendedCapabilities elements for View services (WMS and WMTS).
+     *
+     * @param translator the translator to use to encode elements.
+     * @param metadataUrl the metadataUrl.
+     * @param mediaType the mediaType.
+     * @param metadataMap the service metadata map.
+     */
     public static void addScenario1Elements(
             Translator translator, String metadataUrl, String mediaType, MetadataMap metadataMap) {
 
@@ -46,6 +60,12 @@ public final class ServicesUtils {
         translator.end("inspire_vs:ExtendedCapabilities");
     }
 
+    /**
+     * Encode the SupportedLanguage content of Extended Capabilities.
+     *
+     * @param metadataMap the service metadata map.
+     * @param translator the Translator to use for element encoding.
+     */
     public static void encodeSupportedLanguages(
             MetadataMap metadataMap, ExtendedCapabilitiesProvider.Translator translator) {
         String defaultLanguage = null;

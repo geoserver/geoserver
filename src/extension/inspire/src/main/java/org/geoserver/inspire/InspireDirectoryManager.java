@@ -14,6 +14,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 
+/** This class provides methods to retrieve the content of the inspire directory. */
 public class InspireDirectoryManager {
 
     private GeoServerDataDirectory dataDirectory;
@@ -33,6 +34,13 @@ public class InspireDirectoryManager {
         }
     }
 
+    /**
+     * Get available languages from the available_languages.properties file in the inspire directory
+     * if present otherwise from the file in the classpath.
+     *
+     * @return
+     * @throws IOException
+     */
     public Properties getLanguagesMappings() throws IOException {
         File file = null;
         try {
@@ -51,6 +59,11 @@ public class InspireDirectoryManager {
         }
     }
 
+    /**
+     * Get the singleton bean of this class.
+     *
+     * @return the singletion bean of this class.
+     */
     public static InspireDirectoryManager get() {
         return GeoServerExtensions.bean(InspireDirectoryManager.class);
     }

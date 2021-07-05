@@ -153,7 +153,7 @@ The spatial data identifiers section is mandatory, but cannot be filled by defau
 Internationalization support
 ----------------------------
 
-GeoServer offers the ability to configure GetCapabilities response in multiple languages. Content in different laguages can be requested by using the request parameter `Language`, e.g. `Language=eng`. The services that supports the parameter are the following: WFS 2.0, WMS 1.1 and 1.3, WCS 2.0.
+GeoServer offers the ability to configure GetCapabilities response in multiple languages. Content in different laguages can be requested by using the request parameter `Language`, e.g. `Language=eng`. At the time of writing, the following services support the parameter: WFS 2.0, WMS 1.1 and 1.3, WCS 2.0.
 
 At the time of writing the `INSPIRE Schemas <https://inspire.ec.europa.eu/schemas/common/1.0/common.xsd>`_ only allow 23 choices for :guilabel:`DefaultLanguage`. The GeoServer INSPIRE extension allows some other languages to be chosen. If you choose one of these your capabilities document won't be Schema valid but, as discussed in :geos:`issue 7388 <7388>`, the INSPIRE Schemas seem to be at fault.
 
@@ -187,5 +187,5 @@ The language list available from the UI is define in a classpath file named ``av
    spa=es
    swe=sv 
 
-The entries of the above list represent the available INSPIRE language code matched with the corresponding ``ISO 639-1`` code. The mapping to the ``ISO 639-1`` code is needed in order to take advantage of GeoServer internationalization support. 
-The property file can be overridden by placing a properties file named  ``available_languages.properties`` in the ``inspire`` directory inside the GeoServer data directory.
+The entries of the above list represent the available INSPIRE language code matched with the corresponding ``ISO 639-1`` code. The GeoServer internationalization support is based on OWS 2.0, and thus using ISO codes internally. The INSPIRE module maps on the fly the INSPIRE names to ISO codes based on the above property file.
+The property file can be overridden by placing a properties file named ``available_languages.properties`` in the ``inspire`` directory inside the GeoServer data directory.

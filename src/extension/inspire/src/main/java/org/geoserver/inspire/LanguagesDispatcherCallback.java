@@ -32,16 +32,18 @@ public class LanguagesDispatcherCallback extends AbstractDispatcherCallback {
             try {
                 Properties mappings = InspireDirectoryManager.get().getLanguagesMappings();
                 String isoLang = mappings.getProperty(value);
+                String supportedLanguages =
+                        mappings.keySet()
+                                .stream()
+                                .map(s -> s.toString())
+                                .collect(Collectors.joining(","));
                 if (isoLang == null) {
                     LOGGER.info(
                             "A Language parameter was provided in the request but it cannot be resolved to a ISO lang code."
                                     + " Parameter value is "
                                     + value
                                     + " while supported languages are "
-                                    + mappings.keySet()
-                                            .stream()
-                                            .map(s -> s.toString())
-                                            .collect(Collectors.joining(",")));
+                                    + supportedLanguages);
                 }
                 rawKvp.put(ACCEPT_LANGUAGES_PARAM, isoLang);
                 rawKvp.put(LANGUAGE_PARAM, isoLang);

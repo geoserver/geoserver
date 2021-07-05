@@ -37,6 +37,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -88,6 +89,7 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.VirtualTable;
 import org.geotools.jdbc.VirtualTableParameter;
 import org.geotools.ows.ServiceException;
+import org.geotools.ows.wms.WebMapServer;
 import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.Mark;
 import org.geotools.styling.PolygonSymbolizer;
@@ -633,6 +635,35 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             assertFalse(
                     "Expect external entity cause",
                     cause != null && cause instanceof FileNotFoundException);
+        }
+    }
+
+    @Test
+    public void testWebMapServerWithProxy() throws Exception {
+        System.setProperty("http.proxySet", "true");
+        System.setProperty("http.proxyHost", "our.proxy.de");
+        System.setProperty("http.proxyPort", "8080");
+        System.setProperty("https.proxyHost", "our.proxy.de");
+        System.setProperty("https.proxyPort", "8080");
+
+        try {
+            final ResourcePool rp = getCatalog().getResourcePool();
+            WMSStoreInfo info = getCatalog().getFactory().createWebMapServer();
+            info.setCapabilitiesURL("http://dummy.net/wms");
+            info.setUseConnectionPooling(false);
+
+            WebMapServer wms = null;
+            try {
+                wms = rp.getWebMapServer(info);
+            } catch (UnknownHostException e) {
+                // Proxy our.proxy.de should be unknown.
+            }
+        } finally {
+            System.clearProperty("http.proxySet");
+            System.clearProperty("http.proxyHost");
+            System.clearProperty("http.proxyPort");
+            System.clearProperty("https.proxyHost");
+            System.clearProperty("https.proxyPort");
         }
     }
 

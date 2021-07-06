@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -238,6 +239,8 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         testData.addStyle(
                 "lakesRenderingSelection", "LakesRenderingSelection.sld", getClass(), catalog);
+
+        testData.addStyle("multiLanguageStyle", "MultiLanguageStyle.sld", getClass(), catalog);
 
         Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, "raster");
@@ -2366,5 +2369,45 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         BufferedImage image = getAsImage(url, "image/png");
         URL urlPng = getClass().getResource("renderingSelectionLakes.png");
         ImageAssert.assertEquals(new File(urlPng.toURI()), image, 1300);
+    }
+
+    @Test
+    public void testMultiLanguageStyle() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerInfo places = catalog.getLayerByName(getLayerId(MockData.NAMED_PLACES));
+        StyleInfo multiLangStyle = catalog.getStyleByName("multiLanguageStyle");
+        places.getStyles().add(multiLangStyle);
+        catalog.save(places);
+        String url =
+                "wms?LAYERS="
+                        + places.getName()
+                        + "&STYLES=multiLanguageStyle&FORMAT=image%2Fpng"
+                        + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256"
+                        + "&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010"
+                        + "&Language=en";
+        BufferedImage image = getAsImage(url, "image/png");
+        URL urlPng = getClass().getResource("multilang_result.png");
+        ImageAssert.assertEquals(new File(urlPng.toURI()), image, 500);
+    }
+
+    @Test
+    public void testMultiLanguageStyleDefaultLanguage() throws Exception {
+        WMSInfo info = getGeoServer().getService(WMSInfo.class);
+        info.setDefaultLocale(Locale.FRENCH);
+        getGeoServer().save(info);
+        Catalog catalog = getCatalog();
+        LayerInfo places = catalog.getLayerByName(getLayerId(MockData.NAMED_PLACES));
+        StyleInfo multiLangStyle = catalog.getStyleByName("multiLanguageStyle");
+        places.getStyles().add(multiLangStyle);
+        catalog.save(places);
+        String url =
+                "wms?LAYERS="
+                        + places.getName()
+                        + "&STYLES=multiLanguageStyle&FORMAT=image%2Fpng"
+                        + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256"
+                        + "&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+        BufferedImage image = getAsImage(url, "image/png");
+        URL urlPng = getClass().getResource("multilang_def_result.png");
+        ImageAssert.assertEquals(new File(urlPng.toURI()), image, 500);
     }
 }

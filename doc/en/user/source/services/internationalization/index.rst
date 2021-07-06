@@ -45,6 +45,7 @@ The response content language can be selected using the ``AcceptLanguages`` requ
 
 .. figure:: img/ErrorMessages.png
 
+
 Default Language
 ================
 

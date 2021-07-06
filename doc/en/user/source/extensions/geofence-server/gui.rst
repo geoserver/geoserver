@@ -42,14 +42,14 @@ These make it possible to add additional filters to the layer for the rule in qu
 
 A CQL Read Filter can be setup to allow users to only access a subset of the available data.
 
-For example, if you have a daily time series layer (a Layer with time attribute/dimension), 
-you can set a rule allowing users to only access data in a certain time range.
+For example, having a daily time series layer (a Layer with time attribute/dimension), 
+it's possible to restrict access to a given time range.
 
-A CQL filter to limit access to the whole 2020 year (static time range) will be like this::
+A CQL filter to limit access to the whole 2020 year (static time range) would look as follows::
 
    time between 2020-01-01 and 2020-12-31
 
-A CQL filter to only access data older than a week (dynamic time range) will be like this::
+A CQL filter limiting access to data older than a week (dynamic time range) would look like this instead::
 
    dateDifference(now(), time, 'd') > 7
 

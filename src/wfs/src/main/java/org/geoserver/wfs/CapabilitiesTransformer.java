@@ -39,6 +39,7 @@ import org.geoserver.data.InternationalContentHelper;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler.URLType;
+import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -304,16 +305,9 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
             WFSInfo serviceInfo,
             List<FeatureTypeInfo> featureTypeInfos) {
         Request request = Dispatcher.REQUEST.get();
-        Map<String, Object> rawKvp = request.getRawKvp();
-        String[] acceptLanguages = null;
-        if (rawKvp != null
-                && rawKvp.get(InternationalContentHelper.ACCEPTLANGUAGES_PARAM) != null) {
-            String langParam =
-                    String.valueOf(rawKvp.get(InternationalContentHelper.ACCEPTLANGUAGES_PARAM));
-            String[] langAr = langParam.split(" ");
-            if (langAr.length == 1) langAr = langParam.split(",");
-            acceptLanguages = langAr;
-        }
+        String[] acceptLanguages =
+                RequestUtils.getLanguageValue(
+                        request, InternationalContentHelper.ACCEPTLANGUAGES_PARAM);
         i18nRequested = acceptLanguages != null && acceptLanguages.length > 0;
         if (i18nRequested) {
             this.internationalContentHelper =

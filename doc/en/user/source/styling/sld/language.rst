@@ -29,7 +29,8 @@ requested language, if a ``LANGUAGE`` parameter is added to the request, e.g. ``
 Labels in different languages
 -----------------------------
 
-GeoServer provides a ``language`` function that can be used to define ``TextSymbolizer`` with label in multiple languages. The function needs to be integrated with the ``Recode`` Transformation Function e.g:
+GeoServer provides a ``language`` function that can be used to get the ``LANGUAGE`` requested in ``GetMap`` or ``GetFeatureInfo`` request. The function can be used to generate maps whose symbology is language dependent.
+Here is an example providing labels in multiple languages, integrating the ``language`` function with ``Recode`` e.g:
 
 .. code-block:: xml
 
@@ -51,4 +52,4 @@ GeoServer provides a ``language`` function that can be used to define ``TextSymb
          </TextSymbolizer>
 
 
-With such style, when peforming a GetMap adding the language parameter in the request, e.g. ``LANGUAGE=it``, if the language has been defined in the  Recode Function, the TextSymbolizer label text will be localized accordingly.
+If the Function has been defined in a style and the ``LANGUAGE`` parameter has not been specified in the request or has value ``LANGUAGE=*`` the default language will be used. See :ref:`internationalization` for details on ``Default Language``.

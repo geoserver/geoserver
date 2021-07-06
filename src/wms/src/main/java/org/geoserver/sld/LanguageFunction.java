@@ -9,6 +9,7 @@ import static org.geotools.filter.capability.FunctionNameImpl.parameter;
 import java.util.Locale;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.util.GeoServerDefaultLocale;
 import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
@@ -32,22 +33,9 @@ public class LanguageFunction extends FunctionExpressionImpl {
     @Override
     public Object evaluate(Object object) {
         Request request = Dispatcher.REQUEST.get();
-        String result = null;
-        if (request != null
-                && request.getRawKvp() != null
-                && request.getRawKvp().containsKey(LANGUAGE)) {
-            String acceptLanguages = request.getRawKvp().get(LANGUAGE).toString();
-            String[] langAr = acceptLanguages.split(" ");
-            if (langAr.length == 1) {
-                langAr = acceptLanguages.split(",");
-            }
-            result = langAr[0];
-        }
-        if (result != null && result.equals("*"))
-            throw new UnsupportedOperationException(
-                    NAME.getName()
-                            + " function doesn't support * value for AcceptLanguages parameter");
-        if (result == null) {
+        String[] langAr = RequestUtils.getLanguageValue(request, LANGUAGE);
+        String result = langAr != null ? langAr[0] : null;
+        if (result == null || result.equals("*")) {
             Locale locale = GeoServerDefaultLocale.get();
             if (locale != null) result = locale.getLanguage();
         }

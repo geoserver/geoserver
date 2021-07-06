@@ -12,8 +12,10 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 import javax.servlet.http.HttpServletRequest;
+import org.geoserver.ows.Request;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
 
@@ -226,5 +228,41 @@ public class RequestUtils {
         reader.mark(xmlLookahead);
 
         return (BufferedReader) reader;
+    }
+
+    /**
+     * Retrieve a language parameter value from request query params.
+     *
+     * @param request the request object.
+     * @param languageParamName the language parameter.
+     * @return the value of the language parameter. Might be LANGUAGE or ACCEPTLANGUAGES.
+     */
+    public static String[] getLanguageValue(Request request, String languageParamName) {
+        String[] result = null;
+        if (request != null) result = getLanguageValue(request.getRawKvp(), languageParamName);
+        return result;
+    }
+
+    /**
+     * Retrieve a language parameter value from request query params.
+     *
+     * @param rawKvp the rawKvp holding the request parameters.
+     * @param languageParamName the name of the language parameter. Might be LANGUAGE or
+     *     ACCEPTLANGUAGES.
+     * @return
+     */
+    public static String[] getLanguageValue(Map<String, Object> rawKvp, String languageParamName) {
+        String[] result = null;
+        if (rawKvp != null && rawKvp.containsKey(languageParamName)) {
+            String acceptLanguages = rawKvp.get(languageParamName).toString();
+            if (acceptLanguages != null) {
+                String[] langAr = acceptLanguages.split(" ");
+                if (langAr.length == 1) {
+                    langAr = acceptLanguages.split(",");
+                }
+                result = langAr;
+            }
+        }
+        return result;
     }
 }

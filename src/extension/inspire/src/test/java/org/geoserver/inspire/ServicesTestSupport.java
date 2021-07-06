@@ -23,7 +23,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public abstract class ViewServicesTestSupport extends GeoServerSystemTestSupport {
+public abstract class ServicesTestSupport extends GeoServerSystemTestSupport {
 
     protected abstract String getGetCapabilitiesRequestPath();
 

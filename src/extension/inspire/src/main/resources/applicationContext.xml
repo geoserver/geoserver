@@ -60,4 +60,10 @@
 		<property name="available" value="true" />
 		<property name="enabled" value="true" />
 	</bean>
+
+  <bean id="languageCallback" class="org.geoserver.inspire.LanguagesDispatcherCallback">
+  </bean>
+  <bean id="inspireDirManager" class="org.geoserver.inspire.InspireDirectoryManager">
+    <constructor-arg ref="dataDirectory"/>
+  </bean>
 </beans>

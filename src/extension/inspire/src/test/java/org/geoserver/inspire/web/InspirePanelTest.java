@@ -7,12 +7,14 @@ package org.geoserver.inspire.web;
 
 import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
 import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
+import static org.geoserver.inspire.InspireMetadata.OTHER_LANGUAGES;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireMetadata.SPATIAL_DATASET_IDENTIFIER_TYPE;
 import static org.geoserver.inspire.InspireTestSupport.clearInspireMetadata;
 import static org.geoserver.web.GeoServerWicketTestSupport.tester;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -28,6 +30,7 @@ import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.ValidationErrorFeedback;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -643,5 +646,112 @@ public class InspirePanelTest extends GeoServerWicketTestSupport implements Seri
         public void detach() {
             service = null;
         }
+    }
+
+    @Test
+    public void testLanguageEditor() {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WFSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(
+                SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two");
+        getGeoServer().save(serviceInfo);
+        startPage(serviceInfo);
+
+        tester.assertComponent("form", Form.class);
+        FormTester form = tester.newFormTester("form");
+        // check ExtendedCapabilities on
+        tester.assertComponent("form:panel:createExtendedCapabilities", CheckBox.class);
+        tester.assertModelValue("form:panel:createExtendedCapabilities", true);
+
+        // check language
+        tester.assertComponent(
+                "form:panel:container:configs:language", LanguageDropDownChoice.class);
+        tester.assertModelValue("form:panel:container:configs:language", "fre");
+
+        // set spatial identifier
+
+        form.setValue(
+                "panel:container:configs:border:border_body:metadataURL",
+                "http://www.geoserver.org/test");
+        form.select("panel:container:configs:metadataURLType", 0);
+        form.setValue(
+                "panel:container:configs:datasetIdentifiersContainer:spatialDatasetIdentifiers:container:identifiers:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "http://www.geoserver.org/meta");
+        form.setValue(
+                "panel:container:configs:datasetIdentifiersContainer:spatialDatasetIdentifiers:container:identifiers:listContainer:items:1:itemProperties:0:component:border:border_body:txt",
+                "code");
+
+        // language editor
+
+        tester.assertComponent(
+                "form:panel:container:configs:otherLanguages:languages", ListMultipleChoice.class);
+
+        tester.assertComponent(
+                "form:panel:container:configs:otherLanguages:selectLanguage",
+                LanguageDropDownChoice.class);
+        form = tester.newFormTester("form");
+
+        form.select("panel:container:configs:otherLanguages:selectLanguage", 1);
+        tester.executeAjaxEvent("form:panel:container:configs:otherLanguages:addLanguage", "click");
+        form = tester.newFormTester("form");
+        form.submit();
+        tester.assertNoErrorMessage();
+    }
+
+    @Test
+    public void testLanguageEditorRemove() {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(OTHER_LANGUAGES.key, "ita,eng");
+        metadata.put(
+                SPATIAL_DATASET_IDENTIFIER_TYPE.key,
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two");
+        getGeoServer().save(serviceInfo);
+        startPage(serviceInfo);
+
+        tester.assertComponent("form", Form.class);
+        FormTester form = tester.newFormTester("form");
+        // check ExtendedCapabilities on
+        tester.assertComponent("form:panel:createExtendedCapabilities", CheckBox.class);
+        tester.assertModelValue("form:panel:createExtendedCapabilities", true);
+
+        // check language
+        tester.assertComponent(
+                "form:panel:container:configs:language", LanguageDropDownChoice.class);
+        tester.assertModelValue("form:panel:container:configs:language", "fre");
+
+        tester.assertComponent(
+                "form:panel:container:configs:otherLanguages:languages", ListMultipleChoice.class);
+
+        tester.assertComponent(
+                "form:panel:container:configs:otherLanguages:selectLanguage",
+                LanguageDropDownChoice.class);
+        @SuppressWarnings("unchecked")
+        ListMultipleChoice<String> choices =
+                (ListMultipleChoice<String>)
+                        tester.getComponentFromLastRenderedPage(
+                                "form:panel:container:configs:otherLanguages:languages");
+        assertTrue(choices.getChoices().contains("ita") && choices.getChoices().contains("eng"));
+
+        form.selectMultiple("panel:container:configs:otherLanguages:languages", new int[] {0, 1});
+        tester.executeAjaxEvent(
+                "form:panel:container:configs:otherLanguages:removeLanguages", "click");
+        @SuppressWarnings("unchecked")
+        ListMultipleChoice<String> choices2 =
+                (ListMultipleChoice<String>)
+                        tester.getComponentFromLastRenderedPage(
+                                "form:panel:container:configs:otherLanguages:languages");
+        assertFalse(choices2.getChoices().contains("ita") || choices2.getChoices().contains("eng"));
     }
 }

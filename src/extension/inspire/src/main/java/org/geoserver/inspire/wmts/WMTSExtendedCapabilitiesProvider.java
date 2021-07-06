@@ -5,7 +5,6 @@
 package org.geoserver.inspire.wmts;
 
 import static org.geoserver.inspire.InspireMetadata.CREATE_EXTENDED_CAPABILITIES;
-import static org.geoserver.inspire.InspireMetadata.LANGUAGE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_TYPE;
 import static org.geoserver.inspire.InspireMetadata.SERVICE_METADATA_URL;
 import static org.geoserver.inspire.InspireSchema.COMMON_NAMESPACE;
@@ -15,7 +14,7 @@ import org.geoserver.ExtendedCapabilitiesProvider;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.GeoServer;
 import org.geoserver.gwc.wmts.WMTSInfo;
-import org.geoserver.inspire.ViewServicesUtils;
+import org.geoserver.inspire.ServicesUtils;
 import org.geowebcache.config.meta.ServiceInformation;
 import org.geowebcache.io.XMLBuilder;
 import org.geowebcache.service.wmts.WMTSExtensionImpl;
@@ -102,8 +101,7 @@ public class WMTSExtendedCapabilitiesProvider extends WMTSExtensionImpl {
             return;
         }
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
-        String language = (String) serviceMetadata.get(LANGUAGE.key);
-        ViewServicesUtils.addScenario1Elements(translator, metadataURL, mediaType, language);
+        ServicesUtils.addScenario1Elements(translator, metadataURL, mediaType, serviceMetadata);
     }
 
     @Override

@@ -1,0 +1,14 @@
+{
+  "$merge":"eoBase.json",
+  "features":[
+    {
+      "properties":{
+        "constellation":"Maja",
+        "instruments":[
+          "myMajaInstrument1",
+          "myMajaInstrument2"
+        ]
+      }
+    }
+  ]
+}

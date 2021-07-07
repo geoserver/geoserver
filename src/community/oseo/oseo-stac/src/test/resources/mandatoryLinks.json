@@ -1,0 +1,17 @@
+[
+  {
+    "href": "$${serviceLink('ogcapi/stac/collections/%s', eop:parentIdentifier)}",
+    "rel": "collection",
+    "type": "application/json"
+  },
+  {
+    "href": "$${serviceLink('ogcapi/stac')}",
+    "rel": "root",
+    "type": "application/json"
+  },
+  {
+    "href": "$${serviceLink('ogcapi/stac/collections/%s/items/%s', eop:parentIdentifier, eop:identifier)}",
+    "rel": "self",
+    "type": "application/geo+json"
+  }
+]

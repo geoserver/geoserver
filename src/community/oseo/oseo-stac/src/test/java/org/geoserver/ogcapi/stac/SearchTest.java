@@ -29,6 +29,7 @@ public class SearchTest extends STACTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
+        copyTemplate("/mandatoryLinks.json");
         copyTemplate("/items-LANDSAT8.json");
     }
 

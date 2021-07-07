@@ -12,8 +12,8 @@ import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.resource.Resource;
 
 /**
- * Base class for parsers able to evaluate include directives. Is agnostic regarding the file type.
- * It simply host methods and logic meant to be shared among implementations
+ * Base class for parsers able to evaluate include and merge directives. Is agnostic regarding the
+ * file type. It simply host methods and logic meant to be shared among implementations
  */
 public class RecursiveTemplateResourceParser {
 
@@ -22,8 +22,8 @@ public class RecursiveTemplateResourceParser {
     protected Resource resource;
 
     /**
-     * List of file watchers one for each included resource. This allows the including template to
-     * know when children have been modified
+     * List of file watchers one for each expanded resource. This allows the affected template to
+     * know when resources it depends onto have been modified
      */
     private List<FileWatcher<Object>> watchers;
 
@@ -53,10 +53,10 @@ public class RecursiveTemplateResourceParser {
     }
 
     /**
-     * Returns the list of inclusions, starting from the top-most parent and walking down to the
-     * current reader
+     * Returns the list of inclusions/merges, starting from the top-most parent and walking down to
+     * the current reader
      */
-    protected List<String> getInclusionChain() {
+    protected List<String> getExpansionChain() {
         List<String> resources = new ArrayList<>();
         RecursiveTemplateResourceParser curr = this;
         while (curr != null) {
@@ -100,10 +100,10 @@ public class RecursiveTemplateResourceParser {
         int depth = getDepth();
         if (depth > MAX_RECURSION_DEPTH)
             throw new RuntimeException(
-                    "Went beyond maximum nested inclusion depth ("
+                    "Went beyond maximum expansion depth ("
                             + depth
-                            + "), inclusion chain is: "
-                            + getInclusionChain());
+                            + "), chain is: "
+                            + getExpansionChain());
     }
 
     private void addFileWatcher(Resource resource) {

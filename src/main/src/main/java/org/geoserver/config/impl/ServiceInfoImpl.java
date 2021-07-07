@@ -142,7 +142,10 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     @Override
     public void setInternationalTitle(InternationalString internationalTitle) {
-        this.internationalTitle = new GrowableInternationalString(internationalTitle);
+        this.internationalTitle =
+                internationalTitle == null
+                        ? null
+                        : new GrowableInternationalString(internationalTitle);
     }
 
     @Override
@@ -176,7 +179,10 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     @Override
     public void setInternationalAbstract(InternationalString internationalAbstract) {
-        this.internationalAbstract = new GrowableInternationalString(internationalAbstract);
+        this.internationalAbstract =
+                internationalAbstract == null
+                        ? null
+                        : new GrowableInternationalString(internationalAbstract);
     }
 
     @Override

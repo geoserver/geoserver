@@ -13,7 +13,7 @@ import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.junit.Before;
 import org.junit.Test;
 
-public class RecursiveJSONParserTest {
+public class JSONIncludesTest {
 
     FileSystemResourceStore store;
 
@@ -155,7 +155,7 @@ public class RecursiveJSONParserTest {
         assertThat(
                 ex.getMessage(),
                 containsString(
-                        "Went beyond maximum nested inclusion depth (51), inclusion chain is: [recurse.json"));
+                        "Went beyond maximum expansion depth (51), chain is: [recurse.json"));
     }
 
     @Test
@@ -170,8 +170,7 @@ public class RecursiveJSONParserTest {
         RuntimeException ex = checkThrowingTemplate("ping.json");
         assertThat(
                 ex.getMessage(),
-                containsString(
-                        "Went beyond maximum nested inclusion depth (51), inclusion chain is: [ping.json"));
+                containsString("Went beyond maximum expansion depth (51), chain is: [ping.json"));
         assertThat(ex.getMessage(), containsString("pong.json"));
     }
 

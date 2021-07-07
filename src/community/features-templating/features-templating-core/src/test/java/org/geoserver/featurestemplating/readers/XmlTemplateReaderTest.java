@@ -83,8 +83,7 @@ public class XmlTemplateReaderTest {
         RuntimeException ex = checkThrowingTemplate("ping.xml");
         assertThat(
                 ex.getMessage(),
-                containsString(
-                        "Went beyond maximum nested inclusion depth (51), inclusion chain is: [ping.xml"));
+                containsString("Went beyond maximum expansion depth (51), chain is: [ping.xml"));
     }
 
     private RuntimeException checkThrowingTemplate(String s) {

@@ -1,0 +1,4 @@
+{
+  "name": "recursive merge test, ping",
+  "$merge": "pong.json"
+}

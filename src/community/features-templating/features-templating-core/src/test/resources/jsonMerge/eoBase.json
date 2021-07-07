@@ -1,0 +1,69 @@
+
+{
+  "type":"FeatureCollection",
+  "features":[
+    {
+      "type":"Feature",
+      "stac_version":"$${env('stac_version', '1.0.0-rc2')}",
+      "stac_extensions":[
+        "https://stac-extensions.github.io/view/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/proj/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/processing/v1.0.0/schema.json"
+      ],
+      "id":"${eop:identifier}",
+      "geometry":"${footprint}",
+      "bbox":[
+        "$${minx(footprint)}",
+        "$${miny(footprint)}",
+        "$${maxx(footprint)}",
+        "$${maxy(footprint)}"
+      ],
+      "keywords":[
+        "EOC",
+        "Common"
+      ],
+      "properties":{
+        "start_datetime":"$filter{timeStart is not null and timeEnd is not null and timeStart <> timeEnd},${timeStart}",
+        "end_datetime":"$filter{timeStart is not null and timeEnd is not null and timeStart <> timeEnd},${timeEnd}",
+        "datetime":"$filter{timeStart is not null and (timeEnd is null or timeStart = timeEnd)},${timeStart}",
+        "created":"${eop:creationDate}",
+        "updated":"${eop:modificationDate}",
+        "gsd":"${eop:resolution}",
+        "proj:epsg":"${crs}",
+        "eo:cloud_cover":"${opt:cloudCover}",
+        "sentinel:utm_zone":"${eop:track}",
+        "view:off_nadir":"${eop:instrumentElevationAngle}",
+        "view:incidence_angle":"${eop:incidenceAngle}",
+        "view:azimuth":"${eop:instrumentAzimuthAngle}",
+        "view:sun_azimuth":"${eop:illuminationAzimuthAngle}",
+        "view:sun_elevation":"${eop:illuminationElevationAngle}",
+        "processing:lineage":"${eop:processingLineage}",
+        "processing:facility":"${eop:processingCenter}",
+        "processing:software":{
+          "${eop:processorName}":"${eop:processorVersion}"
+        }
+      },
+      "collection":"${eop:parentIdentifier}",
+      "assets":{
+
+      },
+      "links":[
+        {
+          "href":"$${serviceLink('ogcapi/stac/collections/%s', eop:parentIdentifier)}",
+          "rel":"collection",
+          "type":"application/json"
+        },
+        {
+          "href":"$${serviceLink('ogcapi/stac')}",
+          "rel":"root",
+          "type":"application/json"
+        },
+        {
+          "href":"$${serviceLink('ogcapi/stac/collections/%s/items/%s', eop:parentIdentifier, eop:identifier)}",
+          "rel":"self",
+          "type":"application/geo+json"
+        }
+      ]
+    }
+  ]
+}

@@ -349,7 +349,67 @@ Examples of valid template references are:
 * ``/templates/test/aBlock.json``
 
 However it's currently not possible to climb up the directory hierarchy using relative references, 
-so a reference like ``../myParentBlock.json`` will be rejected. 
+so a reference like ``../myParentBlock.json`` will be rejected.
+
+Extending other templates via merge
+-----------------------------------
+
+Templates inclusion, described above, allows to import a block into another template, as is.
+The ``$merge`` directive instead allows to get an object and use it as a base, that will be
+overridden by the properties of the object it is merged into.
+
+For example, let's assume this is a base JSON template:
+
+.. code-block:: json
+
+      {
+        "a": 10,
+        "b": "${attribute1}",
+        "c": "${attribute2}",
+        "array": [1, 2, 3]
+      }
+
+and this is a template extending it:
+
+.. code-block:: json
+
+      {
+        "$merge": "base.json",
+        "a": {
+          "a1": 1,
+          "a2": 2
+        },
+        "b": null,
+        "d": "${customAttribute}"
+      }
+
+The template actually being processed would look as follows:
+
+.. code-block:: json
+
+      {
+        "a": {
+          "a1": 1,
+          "a2": 2
+        },
+        "c": "${attribute2}",
+        "array": [1, 2, 3]
+        "d": "${customAttribute}"
+      }
+
+The general rules for object merging are:
+
+* Overridden simple properties are replaced.
+* Properties set to null are removed.
+* Nested objects available in both trees are drilled down, being recursively merged. 
+* Arrays are replaced as-is, with no merging. The eventual top level ``features`` array is the only
+  exception to this rule.
+* While order of the keys is not important in JSON, the merge is processed so that the base 
+  property names are included first in the merged result, and the new ones included in the override 
+  are added after them.
+
+The ``$merge`` directive can be used in any object, making it the root for the merge operation.
+This could be used as an alternative to inclusion when local customizations are needed.
 
 Inspire GeoJSON Output
 ----------------------

@@ -1,0 +1,4 @@
+{
+  "name": "test for dangling merge error message",
+  "$merge": "notThere.json"
+}

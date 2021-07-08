@@ -7,15 +7,12 @@ package org.geoserver.inspire;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.Request;
-import org.geotools.util.logging.Logging;
+import org.geoserver.platform.ServiceException;
 
 public class LanguagesDispatcherCallback extends AbstractDispatcherCallback {
-
-    private static final Logger LOGGER = Logging.getLogger(LanguagesDispatcherCallback.class);
 
     // the inspire Language query parameter name
     static final String LANGUAGE_PARAM = "LANGUAGE";
@@ -38,8 +35,9 @@ public class LanguagesDispatcherCallback extends AbstractDispatcherCallback {
                                 .map(s -> s.toString())
                                 .collect(Collectors.joining(","));
                 if (isoLang == null) {
-                    LOGGER.info(
-                            "A Language parameter was provided in the request but it cannot be resolved to a ISO lang code."
+                    value = value == null || value.equals("") ? "empty" : value;
+                    throw new ServiceException(
+                            "A Language parameter was provided in the request but it cannot be resolved to an ISO lang code."
                                     + " Parameter value is "
                                     + value
                                     + " while supported languages are "

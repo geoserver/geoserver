@@ -343,8 +343,10 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     @Override
     public void setInternationalRootLayerTitle(InternationalString rootLayerTitle) {
-        this.internationalRootLayerTitle =
-                rootLayerTitle == null ? null : new GrowableInternationalString(rootLayerTitle);
+        GrowableInternationalString growable;
+        if (rootLayerTitle == null) growable = new GrowableInternationalString(getRootLayerTitle());
+        else growable = new GrowableInternationalString(rootLayerTitle);
+        this.internationalRootLayerTitle = growable;
     }
 
     @Override
@@ -357,9 +359,11 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     @Override
     public void setInternationalRootLayerAbstract(InternationalString rootLayerAbstract) {
-        this.internationalRootLayerAbstract =
-                rootLayerAbstract == null
-                        ? null
-                        : new GrowableInternationalString(rootLayerAbstract);
+        GrowableInternationalString growable;
+        if (rootLayerAbstract == null)
+            growable = new GrowableInternationalString(getRootLayerAbstract());
+        else growable = new GrowableInternationalString(rootLayerAbstract);
+
+        this.internationalRootLayerAbstract = growable;
     }
 }

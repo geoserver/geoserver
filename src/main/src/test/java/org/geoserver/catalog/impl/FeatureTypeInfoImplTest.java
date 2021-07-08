@@ -46,4 +46,17 @@ public class FeatureTypeInfoImplTest {
 
         assertEquals(ft1, ft2);
     }
+
+    @Test
+    public void testI18nSetters() {
+        CatalogFactory factory = catalog.getFactory();
+
+        FeatureTypeInfoImpl ft1 = (FeatureTypeInfoImpl) factory.createFeatureType();
+
+        ft1.setAbstract("test");
+        ft1.setInternationalAbstract(null);
+        assertEquals("test", ft1.getInternationalAbstract().toString());
+        ft1.setInternationalTitle(null);
+        assertEquals("", ft1.getInternationalTitle().toString());
+    }
 }

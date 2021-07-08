@@ -611,6 +611,29 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertEquals(1, json.getInt("count"));
     }
 
+    @Test
+    public void testGetByIdWithNullLayerTypeAndAllowedArea() {
+        JaxbRule rule = new JaxbRule();
+        rule.setPriority(7L);
+        rule.setWorkspace("workspace");
+        rule.setLayer("layer");
+        rule.setAccess("ALLOW");
+        rule.setLayerDetails(new JaxbRule.LayerDetails());
+        long id = prepareGeoFenceTestRules(rule);
+        JaxbRule r = controller.get(id);
+        assertNotNull(r);
+        assertNotNull(r.getLayerDetails());
+        assertNull(r.getLayerDetails().getLayerType());
+        JaxbRuleList list =
+                controller.get(
+                        null, null, false, null, null, null, null, null, null, null, null, null,
+                        null, null, null, null, null, null);
+        r = list.getRules().get(0);
+        assertNotNull(r);
+        assertNotNull(r.getLayerDetails());
+        assertNull(r.getLayerDetails().getLayerType());
+    }
+
     /**
      * Helper method that checks if the rule already exists and create a new one by returning its
      * ID.

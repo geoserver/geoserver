@@ -40,9 +40,11 @@ public class JaxbRule {
         }
 
         public void setAllowedArea(MultiPolygon allowedArea) {
-            int srid = allowedArea.getSRID();
-            String wktSRID = "SRID=" + (srid == 0 ? "4326" : String.valueOf(srid));
-            this.allowedArea = wktSRID + ";" + allowedArea.toText();
+            if (allowedArea != null) {
+                int srid = allowedArea.getSRID();
+                String wktSRID = "SRID=" + (srid == 0 ? "4326" : String.valueOf(srid));
+                this.allowedArea = wktSRID + ";" + allowedArea.toText();
+            }
         }
 
         @XmlElement
@@ -364,27 +366,29 @@ public class JaxbRule {
             }
         }
         if (rule.getLayerDetails() != null) {
+            org.geoserver.geofence.core.model.LayerDetails otherDetails = rule.getLayerDetails();
             layerDetails = new LayerDetails();
-            layerDetails.setAllowedArea(rule.getLayerDetails().getArea());
-            layerDetails.getAllowedStyles().addAll(rule.getLayerDetails().getAllowedStyles());
-            SpatialFilterType spatialFilterType = rule.getLayerDetails().getSpatialFilterType();
+            layerDetails.setAllowedArea(otherDetails.getArea());
+            layerDetails.getAllowedStyles().addAll(otherDetails.getAllowedStyles());
+            SpatialFilterType spatialFilterType = otherDetails.getSpatialFilterType();
             if (spatialFilterType != null) {
                 layerDetails.setSpatialFilterType(spatialFilterType.toString());
             } else {
                 layerDetails.setSpatialFilterType(null);
             }
 
-            if (rule.getLayerDetails().getCatalogMode() != null) {
-                layerDetails.setCatalogMode(rule.getLayerDetails().getCatalogMode().toString());
+            if (otherDetails.getCatalogMode() != null) {
+                layerDetails.setCatalogMode(otherDetails.getCatalogMode().toString());
             } else {
                 layerDetails.setCatalogMode(null);
             }
-            layerDetails.setCqlFilterRead(rule.getLayerDetails().getCqlFilterRead());
-            layerDetails.setCqlFilterWrite(rule.getLayerDetails().getCqlFilterWrite());
-            layerDetails.setDefaultStyle(rule.getLayerDetails().getDefaultStyle());
-            layerDetails.setLayerType(rule.getLayerDetails().getType().toString());
+            layerDetails.setCqlFilterRead(otherDetails.getCqlFilterRead());
+            layerDetails.setCqlFilterWrite(otherDetails.getCqlFilterWrite());
+            layerDetails.setDefaultStyle(otherDetails.getDefaultStyle());
+            if (otherDetails.getType() != null)
+                layerDetails.setLayerType(otherDetails.getType().toString());
             for (org.geoserver.geofence.core.model.LayerAttribute att :
-                    rule.getLayerDetails().getAttributes()) {
+                    otherDetails.getAttributes()) {
                 layerDetails.getAttributes().add(new LayerAttribute(att));
             }
         }

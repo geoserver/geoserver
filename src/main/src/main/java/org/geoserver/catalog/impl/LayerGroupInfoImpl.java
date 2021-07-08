@@ -410,10 +410,11 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     @Override
     public void setInternationalTitle(InternationalString internationalTitle) {
-        this.internationalTitle =
-                internationalTitle == null
-                        ? null
-                        : new GrowableInternationalString(internationalTitle);
+        GrowableInternationalString growable;
+        if (internationalTitle == null) growable = new GrowableInternationalString(getTitle());
+        else growable = new GrowableInternationalString(internationalTitle);
+
+        this.internationalTitle = growable;
     }
 
     @Override
@@ -425,9 +426,11 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     @Override
     public void setInternationalAbstract(InternationalString internationalAbstract) {
-        this.internationalAbstract =
-                internationalAbstract == null
-                        ? null
-                        : new GrowableInternationalString(internationalAbstract);
+        GrowableInternationalString growable;
+        if (internationalAbstract == null)
+            growable = new GrowableInternationalString(getAbstract());
+        else growable = new GrowableInternationalString(internationalAbstract);
+
+        this.internationalAbstract = growable;
     }
 }

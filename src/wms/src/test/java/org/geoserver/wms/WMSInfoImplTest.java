@@ -23,4 +23,20 @@ public class WMSInfoImplTest {
         assertTrue(o instanceof WMSInfoImpl);
         assertEquals("test", ((WMSInfoImpl) o).getAbstract());
     }
+
+    @Test
+    public void testI18nSetters() {
+        WMSInfoImpl info = new WMSInfoImpl();
+        info.setAbstract("test");
+        info.setInternationalAbstract(null);
+        assertEquals("test", info.getInternationalAbstract().toString());
+        info.setInternationalTitle(null);
+        assertEquals("", info.getInternationalTitle().toString());
+
+        info.setRootLayerTitle("rootLayerTitle");
+        info.setInternationalRootLayerTitle(null);
+        assertEquals("rootLayerTitle", info.getInternationalRootLayerTitle().toString());
+        info.setInternationalRootLayerAbstract(null);
+        assertEquals("", info.getInternationalRootLayerAbstract().toString());
+    }
 }

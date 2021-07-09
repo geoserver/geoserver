@@ -7,7 +7,6 @@ package org.geoserver.security.saml;
 import java.util.List;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.security.ConstantFilterChain;
-import org.geoserver.security.GeoServerAuthenticationProvider;
 import org.geoserver.security.GeoServerSecurityFilterChain;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.RequestFilterChain;
@@ -16,6 +15,7 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.AbstractFilterProvider;
 import org.geoserver.security.filter.GeoServerSecurityFilter;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.SAMLLogoutFilter;
 import org.springframework.security.saml.SAMLLogoutProcessingFilter;
@@ -42,7 +42,7 @@ public class SAMLSecurityProvider extends AbstractFilterProvider
     /** Adds {@link #SAMLAuthenticationProvider} as {@link #AuthenticationProvider} */
     @Override
     public void handlePostChanged(GeoServerSecurityManager securityManager) {
-        List<GeoServerAuthenticationProvider> aps = securityManager.getAuthenticationProviders();
+        List<AuthenticationProvider> aps = securityManager.getProviders();
         if (aps != null && !aps.contains(this.samlAuthenticationProvider)) {
             securityManager.getProviders().add(this.samlAuthenticationProvider);
         }

@@ -68,7 +68,7 @@ public class SAMLUserDetailsServiceImpl implements SAMLUserDetailsService {
     public Object loadUserBySAML(SAMLCredential credential) throws UsernameNotFoundException {
 
         String principal = credential.getNameID().getValue();
-        Set<GeoServerRole> roles = new HashSet<GeoServerRole>();
+        Set<GeoServerRole> roles = new HashSet<>();
         if (GeoServerUser.ROOT_USERNAME.equals(principal)) {
             roles = Collections.singleton(GeoServerRole.ADMIN_ROLE);
         } else {
@@ -96,7 +96,6 @@ public class SAMLUserDetailsServiceImpl implements SAMLUserDetailsService {
                             ((XSString) xmlValue).getValue() != null
                                     ? ((XSString) xmlValue).getValue()
                                     : "";
-                    ;
                 }
                 if (xmlValue instanceof XSInteger) {
                     attrValue =
@@ -110,7 +109,6 @@ public class SAMLUserDetailsServiceImpl implements SAMLUserDetailsService {
                             ((XSDateTime) xmlValue).getValue() != null
                                     ? formatter.print(((XSDateTime) xmlValue).getValue())
                                     : "";
-                    ;
                 }
             }
             user.getProperties().setProperty(attrName, attrValue);
@@ -156,7 +154,7 @@ public class SAMLUserDetailsServiceImpl implements SAMLUserDetailsService {
      */
     protected Collection<GeoServerRole> getRolesFromUserGroupService(String principal)
             throws IOException {
-        Collection<GeoServerRole> roles = new ArrayList<GeoServerRole>();
+        Collection<GeoServerRole> roles = new ArrayList<>();
 
         GeoServerUserGroupService service =
                 securityManager.loadUserGroupService(userGroupServiceName);
@@ -182,7 +180,7 @@ public class SAMLUserDetailsServiceImpl implements SAMLUserDetailsService {
      */
     protected Collection<GeoServerRole> getRolesFromHttpAttribute(String principal)
             throws IOException {
-        Collection<GeoServerRole> roles = new ArrayList<GeoServerRole>();
+        Collection<GeoServerRole> roles = new ArrayList<>();
 
         if (request != null) {
             String rolesString = request.getHeader(rolesHeaderAttribute);

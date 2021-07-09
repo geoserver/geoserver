@@ -16,9 +16,8 @@ import javax.net.ssl.TrustManagerFactory;
 public final class SSLUtilities {
 
     public static void registerKeyStore(String keyStoreName) {
-        try {
-            ClassLoader classLoader = SSLUtilities.class.getClassLoader();
-            InputStream keyStoreInputStream = classLoader.getResourceAsStream(keyStoreName);
+        ClassLoader classLoader = SSLUtilities.class.getClassLoader();
+        try (InputStream keyStoreInputStream = classLoader.getResourceAsStream(keyStoreName)) {
             if (keyStoreInputStream == null) {
                 throw new FileNotFoundException(
                         "Could not find file named '" + keyStoreName + "' in the CLASSPATH");

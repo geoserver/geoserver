@@ -18,11 +18,6 @@ public class LoggingHTTPMetadataProvider extends HTTPMetadataProvider {
 
     static final Logger LOGGER = Logging.getLogger(LoggingHTTPMetadataProvider.class);
 
-    public LoggingHTTPMetadataProvider(String metadataURL, int requestTimeout)
-            throws MetadataProviderException {
-        super(metadataURL, requestTimeout);
-    }
-
     public LoggingHTTPMetadataProvider(
             Timer backgroundTaskTimer, HttpClient client, String metadataURL)
             throws MetadataProviderException {

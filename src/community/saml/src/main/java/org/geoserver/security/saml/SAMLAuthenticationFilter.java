@@ -106,6 +106,7 @@ public class SAMLAuthenticationFilter extends GeoServerPreAuthenticatedComposite
                 generator.setWantAssertionSigned(authConfig.getWantAssertionSigned() || signing);
                 ExtendedMetadata em = new ExtendedMetadata();
                 em.setRequireLogoutRequestSigned(signing);
+                if (signing) em.setSigningKey(authConfig.getKeyStoreId());
                 generator.setExtendedMetadata(em);
                 MetadataGeneratorFilter metadataGeneratorFilter =
                         new MetadataGeneratorFilter(generator);

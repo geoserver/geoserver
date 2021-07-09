@@ -35,8 +35,12 @@ public class SAMLAuthFilterPanel
         add(new TextArea<String>("metadata"));
         add(new CheckBox("signing"));
         add(new TextField<String>("keyStorePath"));
-        add(new PasswordTextField("keyStorePassword"));
+        PasswordTextField ksPassword = new PasswordTextField("keyStorePassword");
+        ksPassword.setResetPassword(false);
+        add(ksPassword);
         add(new TextField<String>("keyStoreId"));
-        add(new PasswordTextField("keyStoreIdPassword"));
+        PasswordTextField keyStoreId = new PasswordTextField("keyStoreIdPassword");
+        keyStoreId.setResetPassword(false);
+        add(keyStoreId);
     }
 }

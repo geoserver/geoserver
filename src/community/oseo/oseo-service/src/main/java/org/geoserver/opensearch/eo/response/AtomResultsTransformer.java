@@ -6,12 +6,12 @@ package org.geoserver.opensearch.eo.response;
 
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_NAMESPACE;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,19 +78,33 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
     static final String BASE_URL_KEY = "${BASE_URL}";
 
     static final GMLConfiguration GML_CONFIGURATION = new GMLConfiguration();
+    private final TemplatesProcessor templatesProcessor;
 
     private OSEOInfo info;
 
     private GeoServerInfo gs;
 
-    public AtomResultsTransformer(GeoServerInfo gs, OSEOInfo info) {
+    public AtomResultsTransformer(
+            GeoServerInfo gs, OSEOInfo info, TemplatesProcessor templatesProcessor) {
         this.info = info;
         this.gs = gs;
+        this.templatesProcessor = templatesProcessor;
     }
 
     @Override
     public Translator createTranslator(ContentHandler handler) {
         return new ResultsTranslator(handler);
+    }
+
+    /**
+     * Alternative to {@link BiConsumer} throwing IOException
+     *
+     * @param <T>
+     * @param <U>
+     */
+    private interface IOBiConsumer<T, U> {
+
+        void accept(T t, U u) throws IOException;
     }
 
     class ResultsTranslator extends LambdaTranslatorSupport {
@@ -203,7 +217,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
         private void encodeEntries(FeatureCollection results, SearchRequest request) {
             FeatureType schema = results.getSchema();
             final String schemaName = schema.getName().getLocalPart();
-            BiConsumer<Feature, SearchRequest> entryEncoder;
+            IOBiConsumer<Feature, SearchRequest> entryEncoder;
             if (JDBCOpenSearchAccess.COLLECTION.equals(schemaName)) {
                 entryEncoder = this::encodeCollectionEntry;
             } else if (JDBCOpenSearchAccess.PRODUCT.equals(schemaName)) {
@@ -215,26 +229,35 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
             try (FeatureIterator<Feature> fi = results.features()) {
                 while (fi.hasNext()) {
                     Feature feature = fi.next();
-                    element("entry", () -> entryEncoder.accept(feature, request));
+                    element("entry", () -> applyEncoder(request, entryEncoder, feature));
                 }
             }
         }
 
-        private void encodeCollectionEntry(Feature feature, SearchRequest request) {
+        private void applyEncoder(
+                SearchRequest request,
+                IOBiConsumer<Feature, SearchRequest> entryEncoder,
+                Feature feature) {
+            try {
+                entryEncoder.accept(feature, request);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private void encodeCollectionEntry(Feature feature, SearchRequest request)
+                throws IOException {
             final String identifier = (String) value(feature, EO_NAMESPACE, "identifier");
 
-            // build links and description replacement variables
+            // build generic links
             String identifierLink = buildCollectionIdentifierLink(identifier, request);
-            String osddLink = buildOsddLink(identifier, request);
             String metadataLink =
                     buildMetadataLink(null, identifier, MetadataRequest.ISO_METADATA, request);
-            Map<String, String> descriptionVariables = new HashMap<>();
-            descriptionVariables.put(ISO_METADATA_KEY, metadataLink);
-            descriptionVariables.put(ATOM_URL_KEY, identifierLink);
+            String osddLink = buildOsddLink(identifier, request);
 
             // generic contents
             encodeGenericEntryContents(
-                    feature, identifier, identifierLink, descriptionVariables, request);
+                    identifier, feature, identifier, identifierLink, "collection", request);
 
             // build links to the metadata
             element(
@@ -336,7 +359,7 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
                     attributes("method", method, "code", code, "href", hrefExpanded, "type", type));
         }
 
-        private void encodeProductEntry(Feature feature, SearchRequest request) {
+        private void encodeProductEntry(Feature feature, SearchRequest request) throws IOException {
             final String identifier =
                     (String) value(feature, ProductClass.GENERIC.getNamespace(), "identifier");
 
@@ -349,13 +372,11 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
                             MetadataRequest.OM_METADATA,
                             request);
             String quicklookLink = buildQuicklookLink(identifier, request);
-            Map<String, String> descriptionVariables = new HashMap<>();
-            descriptionVariables.put(QUICKLOOK_URL_KEY, quicklookLink);
-            descriptionVariables.put(THUMB_URL_KEY, quicklookLink);
-            descriptionVariables.put(ATOM_URL_KEY, productIdentifierLink);
-            descriptionVariables.put(OM_METADATA_KEY, metadataLink);
+            final String collection =
+                    (String)
+                            value(feature, ProductClass.GENERIC.getNamespace(), "parentIdentifier");
             encodeGenericEntryContents(
-                    feature, identifier, productIdentifierLink, descriptionVariables, request);
+                    collection, feature, identifier, productIdentifierLink, "product", request);
 
             // build links to the metadata
             element(
@@ -421,11 +442,13 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
         }
 
         private void encodeGenericEntryContents(
+                String collection,
                 Feature feature,
                 String name,
                 final String identifierLink,
-                Map<String, String> descriptionVariables,
-                SearchRequest request) {
+                String templateName,
+                SearchRequest request)
+                throws IOException {
             element("id", identifierLink);
             element("title", name);
             element("dc:identifier", name);
@@ -469,12 +492,10 @@ public class AtomResultsTransformer extends LambdaTransformerBase {
                                 + " "
                                 + envelope.getMaxY());
             }
-            String htmlDescription = (String) value(feature, "htmlDescription");
+            String htmlDescription =
+                    templatesProcessor.processTemplate(collection, templateName, feature);
             if (htmlDescription != null) {
-                String expanded =
-                        QuickTemplate.replaceVariables(htmlDescription, descriptionVariables);
-                String expandedWithLinks = expanded + "\n" + encodeOGCLinksAsHTML(feature, request);
-                element("summary", () -> cdata(expandedWithLinks), attributes("type", "html"));
+                element("summary", () -> cdata(htmlDescription), attributes("type", "html"));
             }
             // self link
             element(

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import javax.xml.transform.TransformerException;
 import org.geoserver.config.GeoServer;
+import org.geoserver.opensearch.eo.FreemarkerTemplateSupport;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.SearchResults;
 import org.geoserver.ows.Response;
@@ -17,11 +18,13 @@ import org.geoserver.platform.ServiceException;
 public class AtomSearchResponse extends Response {
 
     public static final String MIME = "application/atom+xml";
+    private final FreemarkerTemplateSupport freemarkerTemplates;
     private GeoServer gs;
 
-    public AtomSearchResponse(GeoServer gs) {
+    public AtomSearchResponse(GeoServer gs, FreemarkerTemplateSupport freemarkerTemplates) {
         super(SearchResults.class, MIME);
         this.gs = gs;
+        this.freemarkerTemplates = freemarkerTemplates;
     }
 
     @Override
@@ -36,7 +39,10 @@ public class AtomSearchResponse extends Response {
 
         try {
             AtomResultsTransformer transformer =
-                    new AtomResultsTransformer(gs.getGlobal(), gs.getService(OSEOInfo.class));
+                    new AtomResultsTransformer(
+                            gs.getGlobal(),
+                            gs.getService(OSEOInfo.class),
+                            new TemplatesProcessor(freemarkerTemplates));
             transformer.setIndentation(2);
             transformer.transform(results, output);
         } catch (TransformerException e) {

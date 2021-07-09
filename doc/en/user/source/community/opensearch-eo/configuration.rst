@@ -84,6 +84,28 @@ It is possible to add new product classes as well as changing the build-in ones,
 be taken to keep product classes and database aligned. After any change to the database structure
 remember to "reset" the GeoServer configuration to make it re-scan the table structures.
 
+.. _oseo_html_templates:
+
+HTML templates
+--------------
+
+The Freemarker templates for collections and products can be found in ``$GEOSERVER_DATA_DIRECTORY/templates/os-eo``:
+
+* `product.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/product.json>`_ receives one OpenSearch product and encodes the Atom HTML description for it.
+* `collection.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/collection.json>`_ receives on OpenSearch collection and encodes the Atom HTML description for it.
+
+The default templates, linked above, report the time range for the product/collection, and link
+to other pertinent OpenSearch resources (metadata, self link, quicklooks).
+
+Collection specific templates can be set up in the data directory, appending the collection
+identifier to the file name, e.g. ``collection-SENTINEL2.ftl`` or ``product-SENTINEL2.ftl``.
+
+The templates can use a ``oseoLink`` function to build links pointing back to the OpenSearch service.
+The function receives the following parameters:
+
+* The first argument is a ``path`` segment under the ``oseo`` service path.
+* The other arguments, optional, are couple of keys and values, used to encode the link's query string.
+
 GeoJSON output templates
 ------------------------
 

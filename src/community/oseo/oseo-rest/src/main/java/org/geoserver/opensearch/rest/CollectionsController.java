@@ -83,7 +83,6 @@ public class CollectionsController extends AbstractOpenSearchController {
     /** List of parts making up a zipfile for a collection */
     enum CollectionPart implements ZipPart {
         Collection("collection.json"),
-        Description("description.html"),
         Metadata("metadata.xml"),
         Thumbnail("thumbnail\\.[png|jpeg|jpg]"),
         OwsLinks("owsLinks.json");
@@ -208,7 +207,6 @@ public class CollectionsController extends AbstractOpenSearchController {
                 simpleToComplex(jsonFeature, getCollectionSchema(), COLLECTION_HREFS);
 
         // grab the other parts
-        byte[] description = parts.get(CollectionPart.Description);
         byte[] metadata = parts.get(CollectionPart.Metadata);
         byte[] rawLinks = parts.get(CollectionPart.OwsLinks);
         SimpleFeatureCollection linksCollection;
@@ -226,14 +224,6 @@ public class CollectionsController extends AbstractOpenSearchController {
 
                     final String nsURI = fs.getSchema().getName().getNamespaceURI();
                     Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(eoId), true);
-
-                    if (description != null) {
-                        String descriptionString = new String(description);
-                        fs.modifyFeatures(
-                                new NameImpl(nsURI, OpenSearchAccess.DESCRIPTION),
-                                descriptionString,
-                                filter);
-                    }
 
                     if (metadata != null) {
                         String descriptionString = new String(metadata);
@@ -749,73 +739,6 @@ public class CollectionsController extends AbstractOpenSearchController {
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
         runTransactionOnCollectionStore(
                 fs -> fs.modifyFeatures(OpenSearchAccess.METADATA_PROPERTY_NAME, null, filter));
-    }
-
-    @GetMapping(
-        path = "{collection}/description",
-        produces = {MediaType.TEXT_HTML_VALUE}
-    )
-    public void getCollectionDescription(
-            @PathVariable(name = "collection", required = true) String collection,
-            HttpServletResponse response)
-            throws IOException {
-        // query one collection and grab its OGC links
-        Feature feature =
-                queryCollection(
-                        collection,
-                        q -> {
-                            q.setPropertyNames(new String[] {OpenSearchAccess.DESCRIPTION});
-                        });
-
-        // grab the description
-        Property descriptionProperty = feature.getProperty(OpenSearchAccess.DESCRIPTION);
-        if (descriptionProperty != null && descriptionProperty.getValue() instanceof String) {
-            String value = (String) descriptionProperty.getValue();
-            response.setContentType("text/html");
-            StreamUtils.copy(value, UTF_8, response.getOutputStream());
-        } else {
-            throw new ResourceNotFoundException(
-                    "Description for collection '" + collection + "' could not be found");
-        }
-    }
-
-    @PutMapping(path = "{collection}/description", consumes = MediaType.TEXT_HTML_VALUE)
-    public void putCollectionDescription(
-            @PathVariable(name = "collection", required = true) String collection,
-            HttpServletRequest request)
-            throws IOException {
-        // check the collection is there
-        queryCollection(collection, q -> {});
-
-        String description = IOUtils.toString(request.getReader());
-
-        updateDescription(collection, description);
-    }
-
-    @DeleteMapping(path = "{collection}/description")
-    public void deleteCollectionDescritiopn(
-            @PathVariable(name = "collection", required = true) String collection)
-            throws IOException {
-        // check the collection is there
-        queryCollection(collection, q -> {});
-
-        // set it to null
-        updateDescription(collection, null);
-    }
-
-    private void updateDescription(String collection, String description) throws IOException {
-        // prepare the update
-        Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
-        runTransactionOnCollectionStore(
-                fs -> {
-                    // set the description to null
-                    final FeatureSource<FeatureType, Feature> collectionSource =
-                            getOpenSearchAccess().getCollectionSource();
-                    final FeatureType schema = collectionSource.getSchema();
-                    final String nsURI = schema.getName().getNamespaceURI();
-                    fs.modifyFeatures(
-                            new NameImpl(nsURI, OpenSearchAccess.DESCRIPTION), description, filter);
-                });
     }
 
     private void runTransactionOnCollectionStore(IOConsumer<FeatureStore> featureStoreConsumer)

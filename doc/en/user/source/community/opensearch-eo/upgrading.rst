@@ -11,14 +11,14 @@ database, and switched to freemarker templates instead. This relieves the databa
 significant burden, especially on the products table.
 
 The default templates are automatically used, and the old ``htmlDescription`` columns ignored
-(they should thus be removed). 
+(they should therefore be removed). 
 
 In order for the default `collection.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/collection.json>`_
 to work two new fields, ``title`` and ``description``, should be added to the database
 structure, if not already present.
 
 As a result of these changes, the REST resources previously used to manage the description templates
-have been removed, and eventual HTML description templates included in product or collection
+have been removed, and residual HTML description templates included in product or collection
 zips will be ignored.
 
 The replacement Freemarker templates are :ref:`located in the data directory<oseo_html_templates>`

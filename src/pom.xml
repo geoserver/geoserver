@@ -152,7 +152,7 @@
     <errorProneFlags></errorProneFlags>
     <errorProne.version>2.3.4</errorProne.version>
     <javac.version>9+181-r4173-1</javac.version>
-    <pmd.version>6.34.0</pmd.version>
+    <pmd.version>6.35.0</pmd.version>
     <checkstyle.skip>false</checkstyle.skip>
     <qa>false</qa>
     <lint>deprecation,unchecked</lint>

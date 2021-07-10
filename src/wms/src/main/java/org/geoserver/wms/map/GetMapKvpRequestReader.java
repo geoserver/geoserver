@@ -248,7 +248,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         return false;
     }
 
-    @SuppressWarnings({"rawtypes", "PMD.ForLoopCanBeForeach"})
+    @SuppressWarnings({"rawtypes"})
     @Override
     public GetMapRequest read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
             throws Exception {
@@ -276,24 +276,7 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
 
         // srs
-        String epsgCode = getMap.getSRS();
-        epsgCode = WMS.toInternalSRS(epsgCode, WMS.version(getMap.getVersion()));
-        getMap.setSRS(epsgCode);
-
-        if (epsgCode != null) {
-            try {
-                // set the crs as well
-                CoordinateReferenceSystem mapcrs = CRS.decode(epsgCode);
-                getMap.setCrs(mapcrs);
-            } catch (Exception e) {
-                // couldnt make it - we send off a service exception with the
-                // correct info
-                throw new ServiceException(
-                        "Error occurred decoding the espg code " + epsgCode,
-                        e,
-                        WMSErrorCode.INVALID_CRS.get(getMap.getVersion()));
-            }
-        }
+        parseCRS(getMap);
 
         // remote OWS
         String remoteOwsType = getMap.getRemoteOwsType();
@@ -410,247 +393,17 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         // styles
         // process SLD_BODY, SLD, then STYLES parameter
         if (getMap.getSldBody() != null) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Getting layers and styles from SLD_BODY");
-            }
-
-            if (getMap.getValidateSchema().booleanValue()) {
-                try (StringReader reader = new StringReader(getMap.getSldBody())) {
-                    List<Exception> errors = validateStyle(reader, getMap);
-
-                    if (!errors.isEmpty()) {
-                        throw new ServiceException(
-                                SLDValidator.getErrorMessage(
-                                        new StringReader(getMap.getSldBody()), errors));
-                    }
-                }
-            }
-
-            try (StringReader input = new StringReader(getMap.getSldBody())) {
-                StyledLayerDescriptor sld = parseStyle(getMap, input);
-                processSld(getMap, requestedLayerInfos, sld, styleNameList);
-            }
-
-            // set filter in, we'll check consistency later
-            getMap.setFilter(filters);
-            getMap.setSortBy(sortBy);
+            processSLDBody(getMap, requestedLayerInfos, styleNameList, filters, sortBy);
         } else if (getMap.getSld() != null) {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Getting layers and styles from reomte SLD");
-            }
-
-            URL styleUrl = getMap.getStyleUrl();
-
-            try (InputStream input = getStream(styleUrl)) {
-                if (input != null) {
-                    try (InputStreamReader reader = new InputStreamReader(input)) {
-                        if (getMap.getValidateSchema().booleanValue()) {
-                            List<Exception> errors = validateStyle(input, getMap);
-                            if ((errors != null) && (!errors.isEmpty())) {
-                                throw new ServiceException(
-                                        SLDValidator.getErrorMessage(input, errors));
-                            }
-                        }
-
-                        StyledLayerDescriptor sld = parseStyle(getMap, reader);
-                        processSld(getMap, requestedLayerInfos, sld, styleNameList);
-                    } catch (Exception ex) {
-                        final Level l = Level.WARNING;
-                        // KMS: Kludge here to allow through certain exceptions without being
-                        // hidden.
-                        if (ex.getCause() instanceof SAXException) {
-                            if (ex.getCause()
-                                    .getMessage()
-                                    .contains("Entity resolution disallowed")) {
-                                throw ex;
-                            }
-                        }
-                        LOGGER.log(l, "Exception while getting SLD.", ex);
-                        // KMS: Replace with a generic exception so it can't be used to port scan
-                        // the local network.
-                        if (LOGGER.isLoggable(l)) {
-                            throw new ServiceException(
-                                    "Error while getting SLD.  See the log for details.");
-                        } else {
-                            throw new ServiceException("Error while getting SLD.");
-                        }
-                    }
-                }
-            }
-            // set filter in, we'll check consistency later
-            getMap.setFilter(filters);
-            getMap.setSortBy(sortBy);
+            processSLDLink(getMap, requestedLayerInfos, styleNameList, filters, sortBy);
         } else {
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Getting layers and styles from LAYERS and STYLES");
-            }
-
-            // ok, parse the styles parameter in isolation
-            if (!styleNameList.isEmpty()) {
-                List<Style> parseStyles = parseStyles(styleNameList, requestedLayerInfos);
-                getMap.setStyles(parseStyles);
-            }
-
-            // first, expand base layers and default styles
-            if (isParseStyle() && !requestedLayerInfos.isEmpty()) {
-                List<Style> oldStyles =
-                        getMap.getStyles() != null
-                                ? new ArrayList<>(getMap.getStyles())
-                                : new ArrayList<>();
-                List<Style> newStyles = new ArrayList<>();
-                List<Filter> newFilters = filters == null ? null : new ArrayList<>();
-                List<List<SortBy>> newSortBy = sortBy == null ? null : new ArrayList<>();
-
-                for (int i = 0; i < requestedLayerInfos.size(); i++) {
-                    Object o = requestedLayerInfos.get(i);
-                    Style style = oldStyles.isEmpty() ? null : oldStyles.get(i);
-
-                    if (o instanceof LayerGroupInfo) {
-                        LayerGroupInfo groupInfo = (LayerGroupInfo) o;
-                        List<LayerInfo> layers = groupInfo.layers();
-                        List<StyleInfo> styles = groupInfo.styles();
-                        for (int j = 0; j < styles.size(); j++) {
-                            StyleInfo si = styles.get(j);
-                            if (si != null) {
-                                newStyles.add(si.getStyle());
-                            } else {
-                                LayerInfo layer = layers.get(j);
-                                newStyles.add(getDefaultStyle(layer));
-                            }
-                        }
-                        // expand the filter on the layer group to all its sublayers
-                        if (filters != null) {
-                            for (int j = 0; j < layers.size(); j++) {
-                                newFilters.add(getFilter(filters, i));
-                            }
-                        }
-                        if (sortBy != null) {
-                            for (int j = 0; j < layers.size(); j++) {
-                                newSortBy.add(getSortBy(sortBy, i));
-                            }
-                        }
-
-                    } else if (o instanceof LayerInfo) {
-                        style = oldStyles.isEmpty() ? null : oldStyles.get(i);
-                        if (style != null) {
-                            newStyles.add(style);
-                        } else {
-                            LayerInfo layer = (LayerInfo) o;
-                            newStyles.add(getDefaultStyle(layer));
-                        }
-                        // add filter if needed
-                        if (filters != null) {
-                            newFilters.add(getFilter(filters, i));
-                        }
-                        if (sortBy != null) {
-                            newSortBy.add(getSortBy(sortBy, i));
-                        }
-                    } else if (o instanceof MapLayerInfo) {
-                        style = oldStyles.isEmpty() ? null : oldStyles.get(i);
-                        if (style != null) {
-                            newStyles.add(style);
-                        } else {
-                            throw new ServiceException(
-                                    "no style requested for layer " + ((MapLayerInfo) o).getName(),
-                                    "NoDefaultStyle");
-                        }
-                        // add filter if needed
-                        if (filters != null) {
-                            newFilters.add(getFilter(filters, i));
-                        }
-                        if (sortBy != null) {
-                            newSortBy.add(getSortBy(sortBy, i));
-                        }
-                    }
-                }
-                getMap.setStyles(newStyles);
-                if (newFilters != null
-                        && !newFilters.isEmpty()
-                        && getMap.getCQLFilter() != null
-                        && !getMap.getCQLFilter().isEmpty()) {
-                    getMap.setCQLFilter(newFilters);
-                }
-                getMap.setFilter(newFilters);
-                getMap.setSortBy(newSortBy);
-            }
-
-            // then proceed with standard processing
-            List<MapLayerInfo> layers = getMap.getLayers();
-            if (isParseStyle() && (layers != null) && (!layers.isEmpty())) {
-                final List styles = getMap.getStyles();
-
-                if (layers.size() != styles.size()) {
-                    String msg =
-                            layers.size()
-                                    + " layers requested, but found "
-                                    + styles.size()
-                                    + " styles specified. ";
-                    throw new ServiceException(msg, getClass().getName());
-                }
-
-                for (int i = 0; i < styles.size(); i++) {
-                    Style currStyle = getMap.getStyles().get(i);
-                    if (currStyle == null)
-                        throw new ServiceException(
-                                "Could not find a style for layer "
-                                        + getMap.getLayers().get(i).getName()
-                                        + ", either none was specified or no default style is available for it",
-                                "NoDefaultStyle");
-                    checkStyle(currStyle, layers.get(i));
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine(
-                                new StringBuffer("establishing ")
-                                        .append(currStyle.getName())
-                                        .append(" style for ")
-                                        .append(layers.get(i).getName())
-                                        .toString());
-                    }
-                }
-            }
-
-            // check filter size matches with the layer list size
-            List mapFilters = getMap.getFilter();
-            List<MapLayerInfo> mapLayers = getMap.getLayers();
-            if (mapFilters != null && mapFilters.size() != mapLayers.size()) {
-                String msg =
-                        mapLayers.size()
-                                + " layers requested, but found "
-                                + mapFilters.size()
-                                + " filters specified. ";
-                throw new ServiceException(msg, getClass().getName());
-            }
-            // do the same with sortBy
-            List<List<SortBy>> mapSortBy = getMap.getSortBy();
-            if (mapSortBy != null && mapSortBy.size() != mapLayers.size()) {
-                String msg =
-                        mapLayers.size()
-                                + " layers requested, but found "
-                                + mapSortBy.size()
-                                + " sortBy specified. ";
-                throw new ServiceException(msg, getClass().getName());
-            }
+            processLayersStyles(getMap, requestedLayerInfos, styleNameList, filters, sortBy);
         }
 
         // check the view params
         List<Map<String, String>> viewParams = getMap.getViewParams();
         if (viewParams != null && !viewParams.isEmpty()) {
-            int layerCount = getMap.getLayers().size();
-
-            // if we have just one replicate over all layers
-            if (viewParams.size() == 1 && layerCount > 1) {
-                List<Map<String, String>> replacement = new ArrayList<>();
-                for (int i = 0; i < layerCount; i++) {
-                    replacement.add(viewParams.get(0));
-                }
-                getMap.setViewParams(replacement);
-            } else if (viewParams.size() != layerCount) {
-                String msg =
-                        layerCount
-                                + " layers requested, but found "
-                                + viewParams.size()
-                                + " view params specified. ";
-                throw new ServiceException(msg, getClass().getName());
-            }
+            applyViewParams(getMap, viewParams);
         }
 
         // check if layers have time/elevation support
@@ -710,6 +463,289 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         }
 
         return getMap;
+    }
+
+    private void applyViewParams(GetMapRequest getMap, List<Map<String, String>> viewParams) {
+        int layerCount = getMap.getLayers().size();
+
+        // if we have just one replicate over all layers
+        if (viewParams.size() == 1 && layerCount > 1) {
+            List<Map<String, String>> replacement = new ArrayList<>();
+            for (int i = 0; i < layerCount; i++) {
+                replacement.add(viewParams.get(0));
+            }
+            getMap.setViewParams(replacement);
+        } else if (viewParams.size() != layerCount) {
+            String msg =
+                    layerCount
+                            + " layers requested, but found "
+                            + viewParams.size()
+                            + " view params specified. ";
+            throw new ServiceException(msg, getClass().getName());
+        }
+    }
+
+    @SuppressWarnings("PMD.ForLoopCanBeForeach")
+    private void processLayersStyles(
+            GetMapRequest getMap,
+            List<Object> requestedLayerInfos,
+            List<String> styleNameList,
+            List<Filter> filters,
+            List<List<SortBy>> sortBy)
+            throws Exception {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Getting layers and styles from LAYERS and STYLES");
+        }
+
+        // ok, parse the styles parameter in isolation
+        if (!styleNameList.isEmpty()) {
+            List<Style> parseStyles = parseStyles(styleNameList, requestedLayerInfos);
+            getMap.setStyles(parseStyles);
+        }
+
+        // first, expand base layers and default styles
+        if (isParseStyle() && !requestedLayerInfos.isEmpty()) {
+            List<Style> oldStyles =
+                    getMap.getStyles() != null
+                            ? new ArrayList<>(getMap.getStyles())
+                            : new ArrayList<>();
+            List<Style> newStyles = new ArrayList<>();
+            List<Filter> newFilters = filters == null ? null : new ArrayList<>();
+            List<List<SortBy>> newSortBy = sortBy == null ? null : new ArrayList<>();
+
+            for (int i = 0; i < requestedLayerInfos.size(); i++) {
+                Object o = requestedLayerInfos.get(i);
+                Style style = oldStyles.isEmpty() ? null : oldStyles.get(i);
+
+                if (o instanceof LayerGroupInfo) {
+                    LayerGroupInfo groupInfo = (LayerGroupInfo) o;
+                    List<LayerInfo> layers = groupInfo.layers();
+                    List<StyleInfo> styles = groupInfo.styles();
+                    for (int j = 0; j < styles.size(); j++) {
+                        StyleInfo si = styles.get(j);
+                        if (si != null) {
+                            newStyles.add(si.getStyle());
+                        } else {
+                            LayerInfo layer = layers.get(j);
+                            newStyles.add(getDefaultStyle(layer));
+                        }
+                    }
+                    // expand the filter on the layer group to all its sublayers
+                    if (filters != null) {
+                        for (int j = 0; j < layers.size(); j++) {
+                            newFilters.add(getFilter(filters, i));
+                        }
+                    }
+                    if (sortBy != null) {
+                        for (int j = 0; j < layers.size(); j++) {
+                            newSortBy.add(getSortBy(sortBy, i));
+                        }
+                    }
+
+                } else if (o instanceof LayerInfo) {
+                    style = oldStyles.isEmpty() ? null : oldStyles.get(i);
+                    if (style != null) {
+                        newStyles.add(style);
+                    } else {
+                        LayerInfo layer = (LayerInfo) o;
+                        newStyles.add(getDefaultStyle(layer));
+                    }
+                    // add filter if needed
+                    if (filters != null) {
+                        newFilters.add(getFilter(filters, i));
+                    }
+                    if (sortBy != null) {
+                        newSortBy.add(getSortBy(sortBy, i));
+                    }
+                } else if (o instanceof MapLayerInfo) {
+                    style = oldStyles.isEmpty() ? null : oldStyles.get(i);
+                    if (style != null) {
+                        newStyles.add(style);
+                    } else {
+                        throw new ServiceException(
+                                "no style requested for layer " + ((MapLayerInfo) o).getName(),
+                                "NoDefaultStyle");
+                    }
+                    // add filter if needed
+                    if (filters != null) {
+                        newFilters.add(getFilter(filters, i));
+                    }
+                    if (sortBy != null) {
+                        newSortBy.add(getSortBy(sortBy, i));
+                    }
+                }
+            }
+            getMap.setStyles(newStyles);
+            if (newFilters != null
+                    && !newFilters.isEmpty()
+                    && getMap.getCQLFilter() != null
+                    && !getMap.getCQLFilter().isEmpty()) {
+                getMap.setCQLFilter(newFilters);
+            }
+            getMap.setFilter(newFilters);
+            getMap.setSortBy(newSortBy);
+        }
+
+        // then proceed with standard processing
+        List<MapLayerInfo> layers = getMap.getLayers();
+        if (isParseStyle() && (layers != null) && (!layers.isEmpty())) {
+            final List styles = getMap.getStyles();
+
+            if (layers.size() != styles.size()) {
+                String msg =
+                        layers.size()
+                                + " layers requested, but found "
+                                + styles.size()
+                                + " styles specified. ";
+                throw new ServiceException(msg, getClass().getName());
+            }
+
+            for (int i = 0; i < styles.size(); i++) {
+                Style currStyle = getMap.getStyles().get(i);
+                if (currStyle == null)
+                    throw new ServiceException(
+                            "Could not find a style for layer "
+                                    + getMap.getLayers().get(i).getName()
+                                    + ", either none was specified or no default style is available for it",
+                            "NoDefaultStyle");
+                checkStyle(currStyle, layers.get(i));
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine(
+                            new StringBuffer("establishing ")
+                                    .append(currStyle.getName())
+                                    .append(" style for ")
+                                    .append(layers.get(i).getName())
+                                    .toString());
+                }
+            }
+        }
+
+        // check filter size matches with the layer list size
+        List mapFilters = getMap.getFilter();
+        List<MapLayerInfo> mapLayers = getMap.getLayers();
+        if (mapFilters != null && mapFilters.size() != mapLayers.size()) {
+            String msg =
+                    mapLayers.size()
+                            + " layers requested, but found "
+                            + mapFilters.size()
+                            + " filters specified. ";
+            throw new ServiceException(msg, getClass().getName());
+        }
+        // do the same with sortBy
+        List<List<SortBy>> mapSortBy = getMap.getSortBy();
+        if (mapSortBy != null && mapSortBy.size() != mapLayers.size()) {
+            String msg =
+                    mapLayers.size()
+                            + " layers requested, but found "
+                            + mapSortBy.size()
+                            + " sortBy specified. ";
+            throw new ServiceException(msg, getClass().getName());
+        }
+    }
+
+    private void processSLDLink(
+            GetMapRequest getMap,
+            List<Object> requestedLayerInfos,
+            List<String> styleNameList,
+            List<Filter> filters,
+            List<List<SortBy>> sortBy)
+            throws IOException {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Getting layers and styles from reomte SLD");
+        }
+
+        URL styleUrl = getMap.getStyleUrl();
+
+        try (InputStream input = getStream(styleUrl)) {
+            if (input != null) {
+                try (InputStreamReader reader = new InputStreamReader(input)) {
+                    if (getMap.getValidateSchema().booleanValue()) {
+                        List<Exception> errors = validateStyle(input, getMap);
+                        if ((errors != null) && (!errors.isEmpty())) {
+                            throw new ServiceException(SLDValidator.getErrorMessage(input, errors));
+                        }
+                    }
+
+                    StyledLayerDescriptor sld = parseStyle(getMap, reader);
+                    processSld(getMap, requestedLayerInfos, sld, styleNameList);
+                } catch (Exception ex) {
+                    final Level l = Level.WARNING;
+                    // KMS: Kludge here to allow through certain exceptions without being
+                    // hidden.
+                    if (ex.getCause() instanceof SAXException) {
+                        if (ex.getCause().getMessage().contains("Entity resolution disallowed")) {
+                            throw ex;
+                        }
+                    }
+                    LOGGER.log(l, "Exception while getting SLD.", ex);
+                    // KMS: Replace with a generic exception so it can't be used to port scan
+                    // the local network.
+                    if (LOGGER.isLoggable(l)) {
+                        throw new ServiceException(
+                                "Error while getting SLD.  See the log for details.");
+                    } else {
+                        throw new ServiceException("Error while getting SLD.");
+                    }
+                }
+            }
+        }
+        // set filter in, we'll check consistency later
+        getMap.setFilter(filters);
+        getMap.setSortBy(sortBy);
+    }
+
+    private void processSLDBody(
+            GetMapRequest getMap,
+            List<Object> requestedLayerInfos,
+            List<String> styleNameList,
+            List<Filter> filters,
+            List<List<SortBy>> sortBy)
+            throws IOException {
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("Getting layers and styles from SLD_BODY");
+        }
+
+        if (getMap.getValidateSchema().booleanValue()) {
+            try (StringReader reader = new StringReader(getMap.getSldBody())) {
+                List<Exception> errors = validateStyle(reader, getMap);
+
+                if (!errors.isEmpty()) {
+                    throw new ServiceException(
+                            SLDValidator.getErrorMessage(
+                                    new StringReader(getMap.getSldBody()), errors));
+                }
+            }
+        }
+
+        try (StringReader input = new StringReader(getMap.getSldBody())) {
+            StyledLayerDescriptor sld = parseStyle(getMap, input);
+            processSld(getMap, requestedLayerInfos, sld, styleNameList);
+        }
+
+        // set filter in, we'll check consistency later
+        getMap.setFilter(filters);
+        getMap.setSortBy(sortBy);
+    }
+
+    private void parseCRS(GetMapRequest getMap) {
+        String epsgCode = getMap.getSRS();
+        epsgCode = WMS.toInternalSRS(epsgCode, WMS.version(getMap.getVersion()));
+        getMap.setSRS(epsgCode);
+
+        if (epsgCode != null) {
+            try {
+                // set the crs as well
+                CoordinateReferenceSystem mapcrs = CRS.decode(epsgCode);
+                getMap.setCrs(mapcrs);
+            } catch (Exception e) {
+                // couldnt make it - we send off a service exception with the
+                // correct info
+                throw new ServiceException(
+                        "Error occurred decoding the espg code " + epsgCode,
+                        e,
+                        WMSErrorCode.INVALID_CRS.get(getMap.getVersion()));
+            }
+        }
     }
 
     private InputStream getStream(URL styleUrl) throws IOException {

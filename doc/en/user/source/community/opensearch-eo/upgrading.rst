@@ -14,7 +14,7 @@ The default templates are automatically used, and the old ``htmlDescription`` co
 (they should therefore be removed). 
 
 In order for the default `collection.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/collection.json>`_
-to work two new fields, ``title`` and ``description``, should be added to the database
+to work, two new fields, ``title`` and ``description``, should be added to the database
 structure, if not already present.
 
 As a result of these changes, the REST resources previously used to manage the description templates

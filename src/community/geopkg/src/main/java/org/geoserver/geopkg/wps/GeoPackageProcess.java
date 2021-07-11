@@ -4,6 +4,8 @@
  */
 package org.geoserver.geopkg.wps;
 
+import static org.geoserver.geopkg.GeoPkg.MIME_TYPE;
+
 import com.google.common.base.Strings;
 import java.io.File;
 import java.io.IOException;
@@ -199,7 +201,7 @@ public class GeoPackageProcess implements GeoServerProcess {
         if (path != null && !remove) {
             return path;
         } else {
-            return new URL(resources.getOutputResourceUrl(outputName, "application/x-gpkg"));
+            return new URL(resources.getOutputResourceUrl(outputName, MIME_TYPE));
         }
     }
 

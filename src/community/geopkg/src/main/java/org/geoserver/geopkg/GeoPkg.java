@@ -26,7 +26,11 @@ public class GeoPkg {
     public static final String EXTENSION = "gpkg";
 
     /** format mime type */
-    public static final String MIME_TYPE = "application/x-gpkg";
+    public static final String LEGACY_MIME_TYPE = "application/x-gpkg";
+
+    public static final String MIME_TYPE = "application/geopackage+sqlite3";
+    public static final Collection<String> MIME_TYPES =
+            Lists.newArrayList(MIME_TYPE, LEGACY_MIME_TYPE);
 
     /** names/aliases for the format */
     public static final Collection<String> NAMES =

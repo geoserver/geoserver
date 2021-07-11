@@ -37,8 +37,9 @@ public class GeoPackageMimeTypeTest extends GeoServerWicketTestSupport {
         Iterator<? extends Component> iterator = view.iterator();
         // Check that GeoPackage has been found
         boolean gpkgFound = false;
-        // Get the string for the application/x-gpkg mimetype
-        ParamResourceModel rm = new ParamResourceModel("format.wms.application/x-gpkg", null, "");
+        // Get the string for the application/geopackage+sqlite3 mimetype
+        ParamResourceModel rm =
+                new ParamResourceModel("format.wms.application/geopackage+sqlite3", null, "");
         String mbtiles = rm.getString();
         while (iterator.hasNext()) {
             Component comp = iterator.next();

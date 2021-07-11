@@ -39,7 +39,7 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
     public static final String PROPERTY_INDEXED = "geopackage.wfs.indexed";
 
     public GeoPackageGetFeatureOutputFormat(GeoServer gs) {
-        super(gs, Sets.union(Sets.newHashSet(MIME_TYPE), Sets.newHashSet(NAMES)));
+        super(gs, Sets.union(Sets.newHashSet(MIME_TYPES), Sets.newHashSet(NAMES)));
     }
 
     @Override

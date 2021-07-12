@@ -36,11 +36,11 @@ import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.measure.UnitFormat;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.CRS.AxisOrder;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.util.DateRange;
-import org.geotools.util.GeoToolsUnitFormat;
 import org.geotools.util.NumberRange;
 import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
@@ -672,7 +672,7 @@ class GMLTransformer extends TransformerBase {
             if (crs instanceof GeographicCRS) {
                 return "Deg";
             }
-            return GeoToolsUnitFormat.getInstance().format(uom);
+            return UnitFormat.getInstance().format(uom);
         }
 
         /**

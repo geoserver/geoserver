@@ -341,59 +341,6 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
     }
 
     @Test
-    public void testGetCollectionDescription() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse("/rest/oseo/collections/SENTINEL2/description");
-        assertEquals(200, response.getStatus());
-        assertEquals("text/html", response.getContentType());
-        assertThat(
-                response.getContentAsString(),
-                both(containsString("<table>")).and(containsString("Sentinel-2")));
-    }
-
-    @Test
-    public void testPutCollectionDescription() throws Exception {
-        MockHttpServletResponse response;
-        createTest123Collection();
-
-        // create the description
-        response =
-                putAsServletResponse(
-                        "rest/oseo/collections/TEST123/description",
-                        getTestData("/test123-description.html"),
-                        MediaType.TEXT_HTML_VALUE);
-        assertEquals(200, response.getStatus());
-
-        // grab and check
-        assertTest123Description();
-    }
-
-    private void assertTest123Description() throws Exception, UnsupportedEncodingException {
-        MockHttpServletResponse response;
-        response = getAsServletResponse("rest/oseo/collections/TEST123/description");
-        assertEquals(200, response.getStatus());
-        assertEquals("text/html", response.getContentType());
-        assertThat(
-                response.getContentAsString(),
-                both(containsString("<table")).and(containsString("TEST123")));
-    }
-
-    @Test
-    public void testDeleteCollectionDescription() throws Exception {
-        // creates the collection and adds the metadata
-        testPutCollectionDescription();
-
-        // now remove
-        MockHttpServletResponse response =
-                deleteAsServletResponse("rest/oseo/collections/TEST123/description");
-        assertEquals(200, response.getStatus());
-
-        // check it's not there anymore
-        response = getAsServletResponse("rest/oseo/collections/TEST123/description");
-        assertEquals(404, response.getStatus());
-    }
-
-    @Test
     public void testGetCollectionThumbnail() throws Exception {
         // missing from the DB right now
         MockHttpServletResponse response =
@@ -409,7 +356,6 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
                         new HashSet<>(
                                 Arrays.asList(
                                         CollectionPart.Collection,
-                                        CollectionPart.Description,
                                         CollectionPart.Metadata,
                                         CollectionPart.OwsLinks)));
 
@@ -434,10 +380,6 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
                     case Collection:
                         resource = "/collection.json";
                         name = "collection.json";
-                        break;
-                    case Description:
-                        resource = "/test123-description.html";
-                        name = "description.html";
                         break;
                     case Metadata:
                         resource = "/test123-metadata.xml";
@@ -476,9 +418,6 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
             return;
         }
 
-        if (parts.contains(CollectionPart.Description)) {
-            assertTest123Description();
-        }
         if (parts.contains(CollectionPart.Metadata)) {
             assertTest123Metadata();
         }

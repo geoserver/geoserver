@@ -5,17 +5,20 @@
 package org.geoserver.opensearch.eo;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.configuration.Template;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.featurestemplating.validation.AbstractTemplateValidator;
+import org.geoserver.opensearch.eo.response.AtomSearchResponse;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.FeatureSource;
@@ -27,6 +30,8 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.filter.FilterFactory2;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Provides access to the product templates used for the OpenSearch GeoJSON outputs */
@@ -39,12 +44,39 @@ public class OpenSearchTemplates extends AbstractTemplates {
     private Template defaultProductsTemplate;
     private ConcurrentHashMap<String, Template> productsTemplates = new ConcurrentHashMap<>();
 
+    ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+
     public OpenSearchTemplates(GeoServerDataDirectory dd, OpenSearchAccessProvider accessProvider)
             throws IOException {
         super(dd, accessProvider);
     }
 
+    /** Copies over all HTML templates, to allow customization */
+    private void copyHTMLTemplates() throws IOException {
+        Resource stac = dd.get("templates/os-eo");
+        stac.dir();
+        String path =
+                "classpath:/"
+                        + AtomSearchResponse.class.getPackage().getName().replace(".", "/")
+                        + "/*.ftl";
+        for (org.springframework.core.io.Resource r : resourceResolver.getResources(path)) {
+            Resource target = stac.get(r.getFilename());
+            if (target.getType() == Resource.Type.UNDEFINED) {
+                try (InputStream is = r.getInputStream();
+                        OutputStream os = target.out()) {
+                    IOUtils.copy(is, os);
+                }
+            }
+        }
+    }
+
     public void reloadTemplates() {
+        try {
+            copyHTMLTemplates();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to copy OpenSearch HTML templates", e);
+        }
+
         try {
             OpenSearchAccess access = accessProvider.getOpenSearchAccess();
             try {
@@ -82,35 +114,6 @@ public class OpenSearchTemplates extends AbstractTemplates {
         copyDefault(items, "products.json");
         this.defaultProductsTemplate =
                 new Template(items, new TemplateReaderConfiguration(namespaces));
-    }
-
-    /**
-     * Returns the list of collection names having a custom template for them. First uses the
-     *
-     * @return
-     */
-    public Set<String> getCustomProductTemplates() throws IOException {
-        Resource resource = dd.get("templates/os-eo/");
-        if (resource.getType() != Resource.Type.DIRECTORY) return Collections.emptySet();
-
-        Set<String> candidates =
-                resource.list()
-                        .stream()
-                        .filter(r -> r.getType() == Resource.Type.RESOURCE)
-                        .map(r -> r.name())
-                        .filter(n -> n.startsWith("products-") && n.endsWith(".json"))
-                        .map(n -> n.substring(6, n.length() - 5))
-                        .collect(Collectors.toSet());
-
-        // TODO: make this visit optimizable
-        FeatureSource<FeatureType, Feature> collections =
-                accessProvider.getOpenSearchAccess().getCollectionSource();
-        UniqueVisitor visitor =
-                new UniqueVisitor(FF.property("eo:identifier", getNamespaces(collections)));
-        collections.getFeatures().accepts(visitor, null);
-        candidates.retainAll(getCollectionNames(visitor));
-
-        return candidates;
     }
 
     private Set<String> getCollectionNames(UniqueVisitor visitor) {

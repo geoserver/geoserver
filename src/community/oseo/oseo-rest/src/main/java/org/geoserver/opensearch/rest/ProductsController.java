@@ -82,7 +82,6 @@ public class ProductsController extends AbstractOpenSearchController {
     /** List of parts making up a zipfile for a collection */
     enum ProductPart implements ZipPart {
         Product("product.json"),
-        Description("description.html"),
         Metadata("metadata.xml"),
         Thumbnail("thumbnail\\.(png|jpeg|jpg)"),
         OwsLinks("owsLinks.json"),
@@ -206,7 +205,6 @@ public class ProductsController extends AbstractOpenSearchController {
         Feature productFeature = simpleToComplex(jsonFeature, getProductSchema(), PRODUCT_HREFS);
 
         // grab the other parts
-        byte[] description = parts.get(ProductPart.Description);
         byte[] metadata = parts.get(ProductPart.Metadata);
         byte[] thumbnail = parts.get(ProductPart.Thumbnail);
         byte[] rawLinks = parts.get(ProductPart.OwsLinks);
@@ -232,14 +230,6 @@ public class ProductsController extends AbstractOpenSearchController {
 
                     final String nsURI = fs.getSchema().getName().getNamespaceURI();
                     Filter filter = getProductFilter(collection, productId);
-
-                    if (description != null) {
-                        String descriptionString = new String(description);
-                        fs.modifyFeatures(
-                                new NameImpl(nsURI, OpenSearchAccess.DESCRIPTION),
-                                descriptionString,
-                                filter);
-                    }
 
                     if (metadata != null) {
                         String descriptionString = new String(metadata);
@@ -800,7 +790,6 @@ public class ProductsController extends AbstractOpenSearchController {
         }
 
         // grab the other parts
-        byte[] description = parts.get(ProductPart.Description);
         byte[] metadata = parts.get(ProductPart.Metadata);
         byte[] thumbnail = parts.get(ProductPart.Thumbnail);
         byte[] rawLinks = parts.get(ProductPart.OwsLinks);
@@ -828,14 +817,6 @@ public class ProductsController extends AbstractOpenSearchController {
 
                     final String nsURI = fs.getSchema().getName().getNamespaceURI();
                     Filter filter = getProductFilter(collection, product);
-
-                    if (description != null) {
-                        String descriptionString = new String(description);
-                        fs.modifyFeatures(
-                                new NameImpl(nsURI, OpenSearchAccess.DESCRIPTION),
-                                descriptionString,
-                                filter);
-                    }
 
                     if (metadata != null) {
                         String descriptionString = new String(metadata);

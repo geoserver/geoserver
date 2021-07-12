@@ -13,3 +13,4 @@ OpenSearch for EO
    automation
    STAC
    templates
+   upgrading

@@ -19,7 +19,6 @@ create table collection (
   "title" varchar,
   "description" varchar,
   "primary" boolean,
-  "htmlDescription" text,
   "footprint" geometry(Polygon, 4326),
   "timeStart" timestamp,
   "timeEnd" timestamp,
@@ -88,7 +87,6 @@ create table collection_metadata (
 -- the products and attributes describing them
 create table product (
   "id" serial primary key,
-  "htmlDescription" text,
   "footprint" geometry(Polygon, 4326),
   "timeStart" timestamp,
   "timeEnd" timestamp,

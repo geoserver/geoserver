@@ -921,7 +921,6 @@ public class SearchTest extends OSEOTestSupport {
         Document dom =
                 getAsDOM(
                         "oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01");
-        // print(dom);
 
         assertThat(
                 dom,
@@ -1029,5 +1028,70 @@ public class SearchTest extends OSEOTestSupport {
                 "Invalid expression for start time, use a ISO time or date instead: abcde",
                 exception.getString("exceptionText"));
         assertEquals("timeStart", exception.getString("locator"));
+    }
+
+    @Test
+    public void testGenericHTMLTemplate() throws Exception {
+        // just one feature
+        String uid = "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01";
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&uid=" + uid);
+        print(dom);
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo(uid)));
+
+        // checking HTML bits
+        String oseo = "http://localhost:8080/geoserver/oseo/";
+        // self link, atom
+        summaryHasLink(
+                dom,
+                oseo
+                        + "search?parentId=SENTINEL2&uid="
+                        + uid
+                        + "&httpAccept=application%2Fatom%2Bxml");
+        // self link, json
+        summaryHasLink(
+                dom,
+                oseo + "search?parentId=SENTINEL2&uid=" + uid + "&httpAccept=application%2Fjson");
+        // quicklook link
+        summaryHasLink(dom, oseo + "quicklook?parentId=SENTINEL2&uid=" + uid);
+        // metadata link
+        summaryHasLink(
+                dom,
+                oseo
+                        + "metadata?parentId=SENTINEL2&uid="
+                        + uid
+                        + "&httpAccept=application%2Fgml%2Bxml");
+        // date range
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString("17-gen-2016 10.10.30/17-gen-2016 10.10.30")));
+    }
+
+    @Test
+    public void testLandsatHTMLTemplate() throws Exception {
+        // just one feature
+        String uid = "LS8_TEST.02";
+        Document dom = getAsDOM("oseo/search?parentId=LANDSAT8&uid=" + uid);
+        print(dom);
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo(uid)));
+
+        // checking HTML bits, should have a customized title
+        String oseo = "http://localhost:8080/geoserver/oseo/";
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString("<h1>This is a LANDSAT product!</h1>")));
+    }
+
+    private void summaryHasLink(Document dom, String link) {
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString("<a href=\"" + link + "\"")));
     }
 }

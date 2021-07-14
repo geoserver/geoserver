@@ -125,12 +125,11 @@ data directory on startup, to allow for customization:
 The default templates work against the `default PostGIS database structure <https://raw.githubusercontent.com/geoserver/geoserver/main/src/community/oseo/oseo-core/src/test/resources/postgis.sql>`_ and
 can be customized to include new properties to follow eventual database modifications.
 
-Specifically for products, collection specific templates can also be provided, which would contain
-directives and mappings unique to that collection.
-A collection specific template can be placed in the same templates directory as above, 
-using the naming convention ``products-<COLLECTION_ID>.json``, where
-``<COLLECTION_ID>`` is the collection identifier. 
+Collection specific templates can also be provided, which would contain directives and mappings unique to that collection.
+A collection specific template can be placed in the same templates directory as above, called
+either ``collections-<COLLECTION_ID>.json`` or ``products-<COLLECTION_ID>.json`` 
+where ``<COLLECTION_ID>`` is the collection identifier. 
 For example, if the collection is named ``SENTINEL2`` a products template specific for it will
-be named ``products-SENTINEL2.json``.
+be named ``products-SENTINEL2.json``, while the collection template will be named ``collections-SENTINEL2.json``.
 
 More information about writing templates can be found in the :ref:`templates guide <oseotemplates>`.

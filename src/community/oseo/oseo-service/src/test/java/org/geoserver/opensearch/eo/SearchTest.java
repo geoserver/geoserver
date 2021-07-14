@@ -1134,7 +1134,7 @@ public class SearchTest extends OSEOTestSupport {
                         "/at:feed/at:entry[1]/at:summary",
                         containsString("This is the LS8 collection")));
     }
-    
+
     @Test
     public void testLandsatProductHTMLTemplate() throws Exception {
         // just one feature

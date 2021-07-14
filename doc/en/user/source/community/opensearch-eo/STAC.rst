@@ -54,12 +54,14 @@ are back-mapped into database properties by interpreting the template. It is adv
 property mapping as simple as possible to allow usage of native SQL queries and indexes while
 accessing the database through the STAC API.
 
-Specifically for items, collection specific templates can also be provided, which would contain
+For both items and collections, collection specific templates can also be provided, which would contain
 directives and mappings unique to that collection.
 A collection specific template can be placed in the same templates directory as above, 
-using the naming convention ``items-<COLLECTION_ID>.json``, where
-``<COLLECTION_ID>`` is the collection identifier. 
-For example, if the collection is named ``SENTINEL2`` a items template specific for it will
-be named ``items-SENTINEL2.json``.
+using the naming convention ``items-<COLLECTION_ID>.json`` or ``collections-<COLLECTION_ID>.json``, 
+where ``<COLLECTION_ID>`` is the collection identifier. 
+For example, if the collection is named ``SENTINEL2``:
+
+* The collections specific template for it is named ``collections-SENTINEL2.json``
+* The items template specific for it is named ``items-SENTINEL2.json``
 
 More information about writing templates can be found in the :ref:`templates guide <oseotemplates>`.

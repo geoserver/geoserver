@@ -30,6 +30,7 @@ import org.geotools.data.Parameter;
 import org.geotools.data.Query;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.function.EnvFunction;
+import org.opengis.feature.Feature;
 
 public class GeoJSONSearchResponse extends Response {
 
@@ -54,7 +55,6 @@ public class GeoJSONSearchResponse extends Response {
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
         SearchResults results = (SearchResults) value;
-        RootBuilder builder = getTemplate(results.getRequest());
 
         try (GeoJSONWriter writer =
                 new GeoJSONWriter(
@@ -63,7 +63,9 @@ public class GeoJSONSearchResponse extends Response {
             writer.startTemplateOutput(null);
             try (FeatureIterator features = results.getResults().features()) {
                 while (features.hasNext()) {
-                    builder.evaluate(writer, new TemplateBuilderContext(features.next()));
+                    Feature f = features.next();
+                    RootBuilder builder = getTemplate(results.getRequest(), f);
+                    builder.evaluate(writer, new TemplateBuilderContext(f));
                 }
             }
             writer.writeEndArray();
@@ -76,8 +78,11 @@ public class GeoJSONSearchResponse extends Response {
         }
     }
 
-    private RootBuilder getTemplate(SearchRequest request) throws IOException {
-        if (request.getParentIdentifier() == null) return templates.getCollectionsTemplate();
+    private RootBuilder getTemplate(SearchRequest request, Feature feature) throws IOException {
+        if (request.getParentIdentifier() == null) {
+            String id = (String) feature.getProperty("identifier").getValue();
+            return templates.getCollectionsTemplate(id);
+        }
         return templates.getProductsTemplate(request.getParentIdentifier());
     }
 

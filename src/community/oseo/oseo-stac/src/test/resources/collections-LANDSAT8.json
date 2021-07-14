@@ -32,6 +32,13 @@
       },
       "providers": [
         {
+          "name": "USGS",
+          "url": "https://landsat.usgs.gov/",
+          "roles": [
+            "producer"
+          ]
+        },
+        {
           "name": "GeoServer",
           "url": "https://www.geoserver.org/",
           "roles": [

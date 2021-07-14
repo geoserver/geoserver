@@ -20,7 +20,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
 /**
- * Converter for the {@link CollectionsDocument} that will encode STAC collections using a feature
+ * Converter for the {@link CollectionResponse} that will encode STAC collections using a feature
  * template
  */
 @Component
@@ -49,14 +49,15 @@ public class TemplatedCollectionConverter extends AbstractHttpMessageConverter<C
     protected void writeInternal(
             CollectionResponse collectionsResponse, HttpOutputMessage httpOutputMessage)
             throws IOException, HttpMessageNotWritableException {
-        RootBuilder builder = templates.getCollectionTemplate();
+        Feature collection = collectionsResponse.getCollection();
+        String collectionId = (String) collection.getProperty("identifier").getValue();
+        RootBuilder builder = templates.getCollectionTemplate(collectionId);
 
         try (STACCollectionWriter writer =
                 new STACCollectionWriter(
                         new JsonFactory()
                                 .createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8))) {
             // no collection wrapper
-            Feature collection = collectionsResponse.getCollection();
             builder.evaluate(writer, new TemplateBuilderContext(collection));
         } catch (Exception e) {
             throw new ServiceException(e);

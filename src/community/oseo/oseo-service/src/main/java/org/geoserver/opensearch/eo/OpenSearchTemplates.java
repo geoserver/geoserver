@@ -40,9 +40,10 @@ public class OpenSearchTemplates extends AbstractTemplates {
     static final Logger LOGGER = Logging.getLogger(OpenSearchTemplates.class);
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    private Template collectionsTemplate;
+    private Template defaultCollectionsTemplate;
     private Template defaultProductsTemplate;
     private ConcurrentHashMap<String, Template> productsTemplates = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Template> collectionsTemplates = new ConcurrentHashMap<>();
 
     ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
 
@@ -172,15 +173,34 @@ public class OpenSearchTemplates extends AbstractTemplates {
         // setup the collections template
         Resource items = dd.get("templates/os-eo/collections.json");
         copyDefault(items, "collections.json");
-        this.collectionsTemplate = new Template(items, new TemplateReaderConfiguration(namespaces));
+        this.defaultCollectionsTemplate =
+                new Template(items, new TemplateReaderConfiguration(namespaces));
     }
 
-    /** Returns the products template */
-    public RootBuilder getCollectionsTemplate() throws IOException {
+    /** Returns the collections template */
+    public RootBuilder getCollectionsTemplate(String collectionId) throws IOException {
         // load templates lazily, on startup the OpenSearchAccess might not yet be configured
-        if (collectionsTemplate == null) reloadTemplates();
+        if (defaultCollectionsTemplate == null) reloadTemplates();
 
-        RootBuilder builder = collectionsTemplate.getRootBuilder();
+        Template template = defaultCollectionsTemplate;
+        // See if a collection specific template has been setup, if so use it as an override
+        if (collectionId != null) {
+            Resource resource = dd.get("templates/os-eo/collections-" + collectionId + ".json");
+            if (resource.getType().equals(Resource.Type.RESOURCE)) {
+                template = collectionsTemplates.get(collectionId);
+                if (template == null) {
+                    OpenSearchAccess access = accessProvider.getOpenSearchAccess();
+                    template =
+                            new Template(
+                                    resource,
+                                    new TemplateReaderConfiguration(
+                                            getNamespaces(access.getProductSource())));
+                    collectionsTemplates.put(collectionId, template);
+                }
+            }
+        }
+
+        RootBuilder builder = template.getRootBuilder();
         if (builder != null)
             validate(
                     builder,

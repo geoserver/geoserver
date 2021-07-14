@@ -11,6 +11,7 @@ import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.geoserver.platform.ServiceException;
 import org.geotools.feature.FeatureIterator;
+import org.opengis.feature.Feature;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -20,7 +21,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
 /**
- * Converter for the {@link CollectionsDocument} that will encode STAC collections using a feature
+ * Converter for the {@link CollectionResponse} that will encode STAC collections using a feature
  * template
  */
 @Component
@@ -50,7 +51,6 @@ public class TemplatedCollectionsConverter
     protected void writeInternal(
             CollectionsResponse collectionsResponse, HttpOutputMessage httpOutputMessage)
             throws IOException, HttpMessageNotWritableException {
-        RootBuilder builder = templates.getCollectionTemplate();
 
         try (STACCollectionWriter writer =
                 new STACCollectionWriter(
@@ -59,7 +59,10 @@ public class TemplatedCollectionsConverter
             writer.startTemplateOutput(null);
             try (FeatureIterator features = collectionsResponse.getCollections().features()) {
                 while (features.hasNext()) {
-                    builder.evaluate(writer, new TemplateBuilderContext(features.next()));
+                    Feature collection = features.next();
+                    String collectionId = (String) collection.getProperty("identifier").getValue();
+                    RootBuilder builder = templates.getCollectionTemplate(collectionId);
+                    builder.evaluate(writer, new TemplateBuilderContext(collection));
                 }
             }
             writer.writeEndArray();

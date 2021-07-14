@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
@@ -23,6 +24,16 @@ import org.jsoup.select.Elements;
 import org.junit.Test;
 
 public class CollectionsTest extends STACTestSupport {
+
+    @Override
+    protected void onSetUp(SystemTestData testData) throws Exception {
+        super.onSetUp(testData);
+
+        // collection specific templates
+        copyTemplate("/collections-LANDSAT8.json");
+        copyTemplate("/collections-SENTINEL1.json");
+        copyTemplate("/collections-SENTINEL2.json");
+    }
 
     @Test
     public void testTemplatesCopy() throws Exception {
@@ -81,6 +92,9 @@ public class CollectionsTest extends STACTestSupport {
         DocumentContext l8 = readSingleContext(json, "collections[?(@.id == 'LANDSAT8')]");
         assertEquals(2, (int) l8.read("providers.length()", Integer.class));
         assertEquals(1, l8.read("providers[?(@.name == 'USGS')].length()", List.class).size());
+        assertEquals(1, l8.read("providers[?(@.name == 'GeoServer')].length()", List.class).size());
+        assertEquals(2, (int) l8.read("providers.length()", Integer.class));
+        assertEquals(1, l8.read("providers[?(@.name == 'USGS')]", List.class).size());
         assertEquals(1, l8.read("providers[?(@.name == 'GeoServer')].length()", List.class).size());
     }
 

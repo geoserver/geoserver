@@ -29,8 +29,8 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        // not used here, just checking having a custom template around is not causing side effects
         copyTemplate("products-LANDSAT8.json");
+        copyTemplate("collections-LANDSAT8.json");
     }
 
     @Test
@@ -76,6 +76,14 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         // check features
         JSONArray features = json.getJSONArray("features");
         assertEquals(5, features.size());
+        // ... sentinel2
+        checkSentinel2Collection(features);
+
+        // ... landsat8 with custom template
+        checkLandsat8Collection(features);
+    }
+
+    private void checkSentinel2Collection(JSONArray features) {
         String featureId = "SENTINEL2";
         JSONObject sample = getFeature(features, featureId);
         assertNotNull(sample);
@@ -86,7 +94,6 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
                 sample.getString("id"));
         assertEquals("Feature", sample.getString("type"));
         JSONObject sp = sample.getJSONObject("properties");
-
         assertEquals("The Sentinel-2 mission", sp.getString("title"));
         assertEquals(featureId, sp.getString("identifier"));
         assertEquals("2015-07-01T08:20:21Z/2016-02-26T09:20:21Z", sp.getString("date"));
@@ -103,6 +110,29 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         assertEquals("S2MSI1C", product.get("productType"));
         assertEquals("Level-1C", product.get("processingLevel"));
         // TODO: check links
+    }
+
+    private void checkLandsat8Collection(JSONArray features) {
+        String featureId = "LANDSAT8";
+        JSONObject sample = getFeature(features, featureId);
+        assertNotNull(sample);
+        assertEquals(
+                "http://localhost:8080/geoserver/oseo/search?uid="
+                        + featureId
+                        + "&httpAccept=application%2Fgeo%2Bjson",
+                sample.getString("id"));
+        assertEquals("Feature", sample.getString("type"));
+        JSONObject sp = sample.getJSONObject("properties");
+        assertEquals(featureId, sp.getString("identifier"));
+        // customized properties
+        assertEquals("Landsat8 the great", sp.getString("title"));
+        assertEquals("This is just a description", sp.getString("abstract"));
+        assertEquals("1980/2020", sp.getString("date"));
+
+        JSONObject acquisition = sp.getJSONObject("acquisitionInformation");
+        JSONObject instrument = acquisition.getJSONObject("instrument");
+        assertEquals("OLI", instrument.get("instrumentShortName"));
+        assertEquals("OPTICAL", instrument.get("sensorType"));
     }
 
     @Test

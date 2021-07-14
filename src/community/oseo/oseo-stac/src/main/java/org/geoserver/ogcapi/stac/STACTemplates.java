@@ -45,9 +45,10 @@ public class STACTemplates extends AbstractTemplates {
     static final Logger LOGGER = Logging.getLogger(STACTemplates.class);
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    private Template collectionTemplate;
+    private Template defaultCollectionTemplate;
     private Template defaultItemTemplate;
     private ConcurrentHashMap<String, Template> itemTemplates = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Template> collectionTemplates = new ConcurrentHashMap<>();
 
     ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
 
@@ -120,24 +121,34 @@ public class STACTemplates extends AbstractTemplates {
         // setup the collections template
         Resource collections = dd.get("templates/ogc/stac/collections.json");
         copyDefault(collections, "collections.json");
-        TemplateReaderConfiguration configuration =
-                new TemplateReaderConfiguration(namespaces) {
-                    @Override
-                    // the collections are not a GeoJSON collection, uses a different structure
-                    public TemplateBuilderMaker getBuilderMaker() {
-                        return getBuilderMaker("collections");
-                    }
-                };
-        this.collectionTemplate = new Template(collections, configuration);
+        TemplateReaderConfiguration configuration = new CollectionReaderConfiguration(namespaces);
+        this.defaultCollectionTemplate = new Template(collections, configuration);
     }
 
     /** Returns the collections template */
-    public RootBuilder getCollectionTemplate() throws IOException {
+    public RootBuilder getCollectionTemplate(String collectionId) throws IOException {
         // load templates lazily, on startup the OpenSearchAccess might not yet be configured
-        if (collectionTemplate == null) reloadTemplates();
+        if (defaultCollectionTemplate == null) reloadTemplates();
 
-        collectionTemplate.checkTemplate();
-        RootBuilder builder = collectionTemplate.getRootBuilder();
+        Template template = defaultCollectionTemplate;
+        // See if a collection specific template has been setup, if so use it as an override
+        if (collectionId != null) {
+            Resource resource = dd.get("templates/ogc/stac/collections-" + collectionId + ".json");
+            if (resource.getType().equals(Resource.Type.RESOURCE)) {
+                template = collectionTemplates.get(collectionId);
+                if (template == null) {
+                    OpenSearchAccess access = accessProvider.getOpenSearchAccess();
+                    CollectionReaderConfiguration configuration =
+                            new CollectionReaderConfiguration(
+                                    getNamespaces(access.getProductSource()));
+                    template = new Template(resource, configuration);
+                    collectionTemplates.put(collectionId, template);
+                }
+            }
+        }
+
+        template.checkTemplate();
+        RootBuilder builder = template.getRootBuilder();
         if (builder != null)
             validate(
                     builder,
@@ -156,7 +167,7 @@ public class STACTemplates extends AbstractTemplates {
     }
 
     /**
-     * Returns the list of collection names having a custom template for them. First uses the
+     * Returns the list of collection names having a custom template for them.
      *
      * @return
      */
@@ -236,5 +247,17 @@ public class STACTemplates extends AbstractTemplates {
                     accessProvider.getOpenSearchAccess().getProductSource());
 
         return builder;
+    }
+
+    private static class CollectionReaderConfiguration extends TemplateReaderConfiguration {
+        public CollectionReaderConfiguration(NamespaceSupport namespaces) {
+            super(namespaces);
+        }
+
+        @Override
+        // the collections are not a GeoJSON collection, uses a different structure
+        public TemplateBuilderMaker getBuilderMaker() {
+            return getBuilderMaker("collections");
+        }
     }
 }

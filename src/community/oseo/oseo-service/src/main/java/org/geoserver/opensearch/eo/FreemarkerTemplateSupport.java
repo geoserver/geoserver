@@ -53,7 +53,7 @@ public class FreemarkerTemplateSupport {
                     public Object findTemplateSource(String path) throws IOException {
                         Object source = null;
 
-                        source = super.findTemplateSource("oseo/" + path);
+                        source = super.findTemplateSource("os-eo/" + path);
 
                         if (source == null) {
                             source = super.findTemplateSource(path);

@@ -3,13 +3,13 @@
     <td>
       <b>Title</b>
     </td>
-    <td><#if a.title.value??>${a.title.value}<#else>${a.name.value}</#if></td>
+    <td><#if a.title?? && a.title.value??>${a.title.value}<#else>${a.name.value}</#if></td>
   </tr>
   <tr valign="top">
     <td>
       <b>Description</b>
     </td>
-    <td>${a.description.value}
+    <td><#if a.description?? && a.description.value??>${a.description.value}<#else>No description available</#if></td>
   </tr>
   <tr valign="top">
     <td>
@@ -29,7 +29,7 @@
     </td>
     <td>
       <a href="${oseoLink('search', 'uid', a.identifier, 'httpAccept', 'application/atom+xml')}" title="ATOM format">ATOM</a>
-      <a href="${oseoLink('search', 'uid', a.identifier, 'httpAccept', 'application/json')}" title="JSON format">JSON</a>
+      <a href="${oseoLink('search', 'uid', a.identifier, 'httpAccept', 'application/geo+json')}" title="GeoJSON format">JSON</a>
     </td>
   </tr>
   <tr valign="top">

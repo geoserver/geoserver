@@ -14,13 +14,19 @@ import static org.junit.Assert.assertNotNull;
 
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.IOUtils;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.opensearch.eo.response.AtomSearchResponse;
 import org.geoserver.opensearch.eo.response.DescriptionResponse;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.data.DataStore;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.filter.text.cql2.CQL;
@@ -42,6 +48,8 @@ public class SearchTest extends OSEOTestSupport {
 
         // not used here, just checking having a custom template around is not causing side effects
         copyTemplate("products-LANDSAT8.json");
+        // this one is actually used instead
+        copyTemplate("product-LANDSAT8.ftl");
     }
 
     @Test
@@ -1035,7 +1043,6 @@ public class SearchTest extends OSEOTestSupport {
         // just one feature
         String uid = "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01";
         Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&uid=" + uid);
-        print(dom);
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo(uid)));
 
@@ -1051,9 +1058,27 @@ public class SearchTest extends OSEOTestSupport {
         // self link, json
         summaryHasLink(
                 dom,
-                oseo + "search?parentId=SENTINEL2&uid=" + uid + "&httpAccept=application%2Fjson");
-        // quicklook link
-        summaryHasLink(dom, oseo + "quicklook?parentId=SENTINEL2&uid=" + uid);
+                oseo
+                        + "search?parentId=SENTINEL2&uid="
+                        + uid
+                        + "&httpAccept=application%2Fgeo%2Bjson");
+        // quicklook link and image
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString(
+                                "<a href=\""
+                                        + (oseo + "quicklook?parentId=SENTINEL2&uid=" + uid)
+                                        + "\"")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString(
+                                "src=\""
+                                        + (oseo + "quicklook?parentId=SENTINEL2&uid=" + uid)
+                                        + "\"")));
         // metadata link
         summaryHasLink(
                 dom,
@@ -1067,6 +1092,29 @@ public class SearchTest extends OSEOTestSupport {
                 hasXPath(
                         "/at:feed/at:entry[1]/at:summary",
                         containsString("17-gen-2016 10.10.30/17-gen-2016 10.10.30")));
+    }
+
+    @Test
+    public void testUpdateTemplate() throws Exception {
+        // grab the product template in the data dir and alter it
+        GeoServerDataDirectory dd = getDataDirectory();
+        Resource pt = dd.get("templates/os-eo/product.ftl");
+        String body;
+        try (InputStream is = pt.in()) {
+            body = IOUtils.toString(is, StandardCharsets.UTF_8);
+        }
+        String updatedTimes = "<b>Product times</b>";
+        body = body.replace("<b>Date</b>", updatedTimes);
+        try (OutputStream os = pt.out()) {
+            IOUtils.write(body, os, StandardCharsets.UTF_8);
+        }
+
+        // get the description
+        String uid = "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01";
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&uid=" + uid);
+
+        // checking the modified template has been picked up
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:summary", containsString(updatedTimes)));
     }
 
     @Test

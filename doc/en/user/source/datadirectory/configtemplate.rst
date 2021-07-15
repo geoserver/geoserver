@@ -11,7 +11,7 @@ For example, you'd want to move the latest changes you've made from a GeoServer 
 
 If you simply create a backup of the catalog from instance **A** and restore it on instance **B**, the stores configured on the database will not be accessible and the corresponding layers will not work properly.
 
-Another example would be the max number of connections available in the connection pool to the database. You might want to have a different poll configuration in the two environments (maybe GeoServer on machine **A** is a test instance an GeoServer on machine **B** is used in production).
+Another example would be the max number of connections available in the connection pool to the database. You might want to have a different pool configuration in the two environments (maybe GeoServer on machine **A** is a test instance an GeoServer on machine **B** is used in production).
 
 To overcome such limitation (to have the environment set up in the exact same way on the source machine and on the destination machine) the ENV parametrization allows you to customize the catalog configuration via the use of a templating system.
 
@@ -50,3 +50,9 @@ Now restart GeoServer and navigate to the store config
    :align: center
    
 As you can see the URL in "Connection Parameters" settings now refers the variable **store_url** whose value is defined in the ``geoserver-environment.properties`` file.
+
+Another common use case is parameterizing connection details for a vector datastore. Hostname, credentials and connection pool parameters for the databases tend to change between environments.
+Once you set the variables in the ``geoserver-environment.properties`` file, you can configure the Datastore from the GeoServer UI as follows:
+
+.. figure:: img/configtemplate002.png
+   :align: center

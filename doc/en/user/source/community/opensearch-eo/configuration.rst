@@ -91,8 +91,8 @@ HTML templates
 
 The Freemarker templates for collections and products can be found in ``$GEOSERVER_DATA_DIRECTORY/templates/os-eo``:
 
-* `product.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/product.json>`_ receives an OpenSearch product and encodes the Atom HTML description for it.
-* `collection.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/collection.json>`_ receives an OpenSearch collection and encodes the Atom HTML description for it.
+* `product.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/product.ftl>`_ receives an OpenSearch product and encodes the Atom HTML description for it.
+* `collection.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/collection.ftl>`_ receives an OpenSearch collection and encodes the Atom HTML description for it.
 
 The default templates, linked above, report the time range for the product/collection, and link
 to other pertinent OpenSearch resources (metadata, self link, quicklooks).

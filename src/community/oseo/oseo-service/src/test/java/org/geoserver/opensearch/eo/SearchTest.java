@@ -50,6 +50,7 @@ public class SearchTest extends OSEOTestSupport {
         copyTemplate("products-LANDSAT8.json");
         // this one is actually used instead
         copyTemplate("product-LANDSAT8.ftl");
+        copyTemplate("collection-LANDSAT8.ftl");
     }
 
     @Test
@@ -1118,7 +1119,24 @@ public class SearchTest extends OSEOTestSupport {
     }
 
     @Test
-    public void testLandsatHTMLTemplate() throws Exception {
+    public void testLandsatCollectionHTMLTemplate() throws Exception {
+        // just one feature
+        String uid = "LANDSAT8";
+        Document dom = getAsDOM("oseo/search?uid=" + uid);
+        print(dom);
+        assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo(uid)));
+
+        // checking HTML bits, should have a customized title
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString("This is the LS8 collection")));
+    }
+    
+    @Test
+    public void testLandsatProductHTMLTemplate() throws Exception {
         // just one feature
         String uid = "LS8_TEST.02";
         Document dom = getAsDOM("oseo/search?parentId=LANDSAT8&uid=" + uid);

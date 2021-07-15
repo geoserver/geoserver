@@ -2,7 +2,7 @@
 <tr>
     <td valign="top" width="10%">
         <a href="${oseoLink('quicklook', 'parentId', a.parentIdentifier, 'uid', a.identifier)}" target="_blank" title="View browse image">
-            <img align="left" border="0" height="66" hspace="8" src="" width="66" />
+            <img src="${oseoLink('quicklook', 'parentId', a.parentIdentifier, 'uid', a.identifier)}" align="left" border="0" height="66" hspace="8" width="66"/>
         </a>
     </td>
     <td valign="top" width="90%">
@@ -19,7 +19,7 @@
                 </td>
                 <td>
                     <a href="${oseoLink('search', 'parentId', a.parentIdentifier, 'uid', a.identifier, 'httpAccept', 'application/atom+xml')}" title="Atom format">ATOM</a>,
-                    <a href="${oseoLink('search', 'parentId', a.parentIdentifier, 'uid', a.identifier, 'httpAccept', 'application/json')}" title="JSON format">JSON</a>
+                    <a href="${oseoLink('search', 'parentId', a.parentIdentifier, 'uid', a.identifier, 'httpAccept', 'application/geo+json')}" title="GeoJSON format">JSON</a>
                 </td>
             </tr>
             <tr valign="top">

@@ -1,0 +1,18 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "$source": "cite:NamedPlaces"
+    },
+    {
+      "id": "${cite:FID}",
+      "@type": [
+        "Feature",
+        "cite:NamedPlaces",
+        "http://vocabulary.odm2.org/samplingfeaturetype/namedplaces"
+      ],
+      "${cite:NAME}": "$${strConcat('Name: ', xpath('cite:NAME'))}",
+      "geometry": "${cite:the_geom}"
+    }
+  ]
+}

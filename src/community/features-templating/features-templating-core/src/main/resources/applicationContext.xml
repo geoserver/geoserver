@@ -18,4 +18,8 @@
         <constructor-arg ref="dataDirectory"/>
     </bean>
 
+    <bean id="templateCacheReloader" class="org.geoserver.featurestemplating.configuration.TemplateReloader">
+        <constructor-arg ref="templateConfiguration"/>
+    </bean>
+    
 </beans>

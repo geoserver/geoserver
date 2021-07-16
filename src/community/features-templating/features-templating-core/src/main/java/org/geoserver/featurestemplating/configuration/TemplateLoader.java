@@ -235,4 +235,8 @@ public class TemplateLoader {
             return template;
         }
     }
+
+    public void reset() {
+        templateCache.invalidateAll();
+    }
 }

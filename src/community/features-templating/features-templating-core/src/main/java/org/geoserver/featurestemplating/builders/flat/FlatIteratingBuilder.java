@@ -55,10 +55,10 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
                 for (TemplateBuilder child : children) {
                     AbstractTemplateBuilder abstractChild = (AbstractTemplateBuilder) child;
                     if (child instanceof FlatCompositeBuilder)
-                        writer.startObject(abstractChild.getKey(), encodingHints);
+                        writer.startObject(abstractChild.getKey(context), encodingHints);
                     child.evaluate(writer, context);
                     if (child instanceof FlatCompositeBuilder)
-                        writer.endObject(abstractChild.getKey(), encodingHints);
+                        writer.endObject(abstractChild.getKey(context), encodingHints);
                 }
             }
         }

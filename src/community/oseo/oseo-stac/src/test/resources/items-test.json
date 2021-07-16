@@ -2,11 +2,10 @@
   "type": "FeatureCollection",
   "features": [
     {
-      "stac_version": "$${env('stac_version', '1.0.0-beta.2')}",
+      "stac_version": "$${env('stac_version', '1.0.0')}",
       "stac_extensions": [
-        // skip SAR sensors
-        "$filter{eop:parentIdentifier LIKE 'SENTINEL%' or eop:parentIdentifier LIKE 'LANDSAT%'},eo", 
-        "view"
+        "$filter{eop:parentIdentifier LIKE 'SENTINEL%' or eop:parentIdentifier LIKE 'LANDSAT%'},https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/view/v1.0.0/schema.json"
       ],
       "id": "${eop:identifier}",
       "type": "Feature",

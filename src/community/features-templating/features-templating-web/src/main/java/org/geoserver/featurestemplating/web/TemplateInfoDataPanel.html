@@ -1,0 +1,52 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+    <title>
+        <wicket:message key="title">TemplateInfo Data panel</wicket:message>
+    </title>
+</head>
+<body>
+<wicket:panel>
+    <div class="selfclear clearBoth" style="padding-top: 2em;">
+        <fieldset class="leftwise" style="width: 45%; margin-right: 5%; margin-bottom: 0px">
+            <legend>
+                <span><wicket:message key="templateInfoData">Template Info</wicket:message></span>
+            </legend>
+            <ul>
+                <li>
+                    <label for="templateName"><wicket:message key="templateName"></wicket:message></label>
+                    <input id="templateName" wicket:id="templateName" type="text" class="text" />
+                </li>
+                <li>
+                    <label for="extension"><wicket:message key="extension"></wicket:message></label>
+                    <select wicket:id="extension" id="extension" />
+                </li>
+                <li>
+                    <label for="workspace"><wicket:message key="workspace"></wicket:message></label>
+                    <select wicket:id="workspace" id="workspace" />
+                </li>
+
+                <li>
+                    <label for="featureTypeInfo"><wicket:message key="featureTypeInfo"></wicket:message></label>
+                    <select wicket:id="featureTypeInfo" id="featureTypeInfo" />
+                </li>
+
+                <div style="padding-top: 2em">
+                    <fieldset style="margin-bottom: 0em">
+                        <legend>
+                            <span><wicket:message key="templateContentSpan">Template Content</wicket:message></span>
+                        </legend>
+                        <ul>
+                            <li>
+                                <label for="filename"><wicket:message key="templateFile">Template file</wicket:message></label>
+                                <input type="file" id="filename" wicket:id="filename"/>
+                                <a href="#" wicket:id="upload"><wicket:message key="upload">Upload</wicket:message></a>
+                            </li>
+                        </ul>
+                    </fieldset>
+                </div>
+            </ul>
+        </fieldset>
+    </div>
+</wicket:panel>
+</body>
+</html>

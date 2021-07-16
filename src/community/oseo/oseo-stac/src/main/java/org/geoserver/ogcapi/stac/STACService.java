@@ -92,7 +92,7 @@ public class STACService {
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    public static final String STAC_VERSION = "1.0.0-rc2";
+    public static final String STAC_VERSION = "1.0.0";
 
     public static final String FEATURE_CORE =
             "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core";

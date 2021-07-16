@@ -2,12 +2,12 @@
   "type": "FeatureCollection",
   "features": [
     {
-      "stac_version": "$${env('stac_version', '1.0.0-rc2')}",
+      "stac_version": "$${env('stac_version', '1.0.0')}",
       "stac_extensions": [
-        "eo",
-        "view",
-        "sat",
-        "landsat"
+        "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/view/v1.0.0/schema.json",
+        "https://stac-extensions.github.io/sat/v1.0.0/schema.json",
+        "https://www.geoserver.org/landsat/v1.0.0/schema.json"
       ],
       "id": "${eop:identifier}",
       "type": "Feature",

@@ -541,9 +541,11 @@ Parsing and formatting functions
    * - parseLong
      - ``number``:String
      - Parses a string into a long integer
-     
+
+.. _temporal-functions:
+
 Temporal functions
---------------------------------
+------------------
 
 .. list-table::
    :widths: 20 25 55

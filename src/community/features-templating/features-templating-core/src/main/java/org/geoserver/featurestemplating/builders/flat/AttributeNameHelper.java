@@ -4,6 +4,7 @@
  */
 package org.geoserver.featurestemplating.builders.flat;
 
+import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
 import org.opengis.filter.expression.Expression;
 
 /** An helper class to help creating attribute names when producing a flat geoJson output */
@@ -21,9 +22,9 @@ class AttributeNameHelper {
         this.separator = separator;
     }
 
-    String getFinalAttributeName() {
+    String getFinalAttributeName(TemplateBuilderContext context) {
         String parentKey = this.parentKey;
-        String key = this.key != null ? this.key.evaluate(null).toString() : null;
+        String key = this.key != null ? this.key.evaluate(context).toString() : null;
         if (parentKey != null && !parentKey.equals(PROPERTIES_KEY) && key != null)
             key = parentKey + separator + key;
         else if (key == null) key = parentKey;

@@ -195,4 +195,8 @@ public class TemplateConfiguration {
             throw new RuntimeException(e);
         }
     }
+
+    public void reset() {
+        templateCache.invalidateAll();
+    }
 }

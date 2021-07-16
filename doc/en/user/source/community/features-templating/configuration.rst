@@ -483,8 +483,8 @@ Given the above configuration file, the plugin will act in the following way:
 
 An example output, give this configuration file, can be seen in the output section.
 
-Environment parametrization
----------------------------
+Environment parametrization and dynamic keys
+--------------------------------------------
 
 A template configuration can also be manipulated on the fly, replacing existing attributes, attributes' names and sources using the :code:`env` parameter. 
 To achieve this the attribute name, the attribute, or the source should be replaced by the env function in the following way :code:`$${env('nameOfTheEnvParameter','defaultValue')}`. 
@@ -493,6 +493,19 @@ If in the request it is specified an env query parameter :code:`env='nameOfTheEn
 The functionality allows also to manipulate dynamically filters and expression. For example it is possible to change Filter arguments: :code:`"$filter":"xpath('gsml:name') = env('nameOfTheEnvParameter','defaultValue')`.
 
 Xpaths can be manipulated as well to be totally or partially replaced: :code:`$${xpath(env('xpath','gsml:ControlledConcept/gsml:name')}` or :code:`$${xpath(strConcat('env('gsml:ControlledConcept',xpath','/gsml:name')))}`.
+
+Keys in JSON output can also be fully dependent on feature attributes, for example:
+
+.. code-block:: json
+
+  {
+     "${attributeA}" : "${attributeB}",
+     "$${strSubstring(attributeC, 0, 3)}": "$${att1 * att2}"
+  }
+
+Using a key depending on feature attributes has however drawbacks: it won't be possible to use it
+for filtering in WFS and for queriables generation in OGC APIs, as it does not have a stable value. 
+
 
 JSON based properties
 ---------------------

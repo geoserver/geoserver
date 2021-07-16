@@ -1,3 +1,4 @@
+
 .. _template-configuration:
 
 Template Configuration

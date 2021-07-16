@@ -66,7 +66,7 @@ public class JsonTemplateReaderTest {
     public void testNestedArray() throws IOException, CQLException {
         RootBuilder root = getBuilderTree("nestedArray.json");
         IteratingBuilder it = (IteratingBuilder) root.getChildren().get(0);
-        assertEquals("bbox", it.getKey());
+        assertEquals("bbox", it.getKey(null));
         // the nested builder does not have a key
         IteratingBuilder nested = (IteratingBuilder) it.getChildren().get(0);
         assertNull(nested.getKey());
@@ -88,7 +88,7 @@ public class JsonTemplateReaderTest {
         CompositeBuilder cb2 = (CompositeBuilder) it.getChildren().get(1);
         assertNull(cb2.getFilter());
         DynamicValueBuilder db2 = (DynamicValueBuilder) cb2.getChildren().get(0);
-        assertEquals("name", db2.getKey());
+        assertEquals("name", db2.getKey(null));
         assertEquals(ECQL.toExpression("strSubstring(name, 1, 5)"), db2.getCql());
         // check the namespace support has been set in the CQL expression too
         Function fn = (Function) db2.getCql();

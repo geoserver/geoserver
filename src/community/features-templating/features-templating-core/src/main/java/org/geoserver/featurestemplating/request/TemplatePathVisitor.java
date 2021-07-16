@@ -16,13 +16,11 @@ import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
-import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 
@@ -34,7 +32,6 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
 
     protected int currentEl;
     protected String currentSource;
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
     boolean isSimple;
     private List<Filter> filters = new ArrayList<>();
 
@@ -179,7 +176,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         int length = pathElements.size();
         if (children != null) {
             for (TemplateBuilder tb : children) {
-                String key = ((AbstractTemplateBuilder) tb).getKey();
+                String key = ((AbstractTemplateBuilder) tb).getKey(null);
                 if (matchBuilder(tb, key, pathElements, parent)) {
                     boolean isLastEl = currentEl == length;
                     if (isLastEl || tb instanceof StaticBuilder) {
@@ -214,18 +211,6 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         if (keyMatchedOtherBuilder) currentEl++;
 
         return allowNullKey || keyMatchedOtherBuilder;
-    }
-
-    // checks whether the parent builder key and the lastMatchedKey are equals
-    // to avoid to continue iterating over a builder branch unnecessarily
-    private boolean parentKeyEqualsLastMatchedKey(TemplateBuilder parent, String lastMatchedKey) {
-        String parentKey = null;
-        if (parent instanceof AbstractTemplateBuilder)
-            parentKey = ((AbstractTemplateBuilder) parent).getKey();
-
-        if (lastMatchedKey != null && parentKey != null && !parentKey.equals(lastMatchedKey))
-            return false;
-        return true;
     }
 
     // takes source and filter from the SourceBuilder

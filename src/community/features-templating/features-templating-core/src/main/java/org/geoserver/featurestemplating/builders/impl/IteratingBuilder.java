@@ -54,7 +54,7 @@ public class IteratingBuilder extends SourceBuilder {
             TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
         if (canWrite(context)) {
             boolean iterateKey = isIterateKey();
-            String key = getKey();
+            String key = getKey(context);
             Object o = context.getCurrentObj();
             boolean isList = o instanceof List;
             boolean isArray = o != null && o.getClass().isArray();
@@ -95,7 +95,7 @@ public class IteratingBuilder extends SourceBuilder {
             TemplateBuilderContext childContext = new TemplateBuilderContext(o);
             childContext.setParent(parent);
             if (evaluateFilter(childContext)) {
-                String key = getKey();
+                String key = getKey(parent);
                 // repeat the key attribute according to the hint
                 if (iterateKey && hasOwnOutput()) writer.startArray(key, encodingHints);
                 for (TemplateBuilder child : children) {
@@ -117,7 +117,7 @@ public class IteratingBuilder extends SourceBuilder {
             TemplateOutputWriter writer, TemplateBuilderContext context, boolean iterateKey)
             throws IOException {
         if (evaluateFilter(context)) {
-            String key = getKey();
+            String key = getKey(context);
             if (iterateKey && hasOwnOutput()) writer.startArray(key, encodingHints);
             for (TemplateBuilder child : children) {
                 child.evaluate(writer, context);

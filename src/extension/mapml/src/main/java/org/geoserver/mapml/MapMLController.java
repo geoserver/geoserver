@@ -314,6 +314,7 @@ public class MapMLController {
         method = {RequestMethod.GET, RequestMethod.POST},
         produces = {MAPML_MIME_TYPE, "!text/html;charset=UTF-8"}
     )
+    @SuppressWarnings("PMD.CognitiveComplexity") // AA: don't have enough knowledge to split
     public Mapml mapML(
             HttpServletRequest request,
             HttpServletResponse response,

@@ -1223,6 +1223,18 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     @Nullable
+    public List<ServiceInfo> getServices(final WorkspaceInfo ws) {
+
+        List<ServiceInfo> result = new ArrayList<>();
+        for (ServiceInfo info : serviceCache.asMap().values()) {
+            if (ws.equals(info.getWorkspace())) {
+                result.add(info);
+            }
+        }
+        return result;
+    }
+
+    @Nullable
     @Transactional(
         transactionManager = "jdbcConfigTransactionManager",
         propagation = Propagation.REQUIRED,

@@ -39,6 +39,7 @@ import org.geoserver.catalog.impl.ClassMappings;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.ProxyUtils;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
 import org.geoserver.ows.util.OwsUtils;
 import org.geotools.util.Utilities;
@@ -542,6 +543,9 @@ public class JDBCCatalogFacade implements CatalogFacade {
     @Override
     public void remove(WorkspaceInfo workspace) {
         db.remove(workspace);
+        for (ServiceInfo info : db.getServices(workspace)) {
+            db.remove(info);
+        }
     }
 
     /** @see org.geoserver.catalog.CatalogFacade#save(org.geoserver.catalog.WorkspaceInfo) */

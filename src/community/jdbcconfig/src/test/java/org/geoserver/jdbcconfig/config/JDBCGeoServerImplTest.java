@@ -205,6 +205,18 @@ public class JDBCGeoServerImplTest extends GeoServerImplTest {
     }
 
     @Override
+    public void testServiceWithWorkspace() throws Exception {
+        super.testServiceWithWorkspace();
+
+        // check removing workspace
+        geoServer
+                .getCatalog()
+                .remove(geoServer.getCatalog().getWorkspaceByName("TEST-WORKSPACE-1"));
+
+        assertNull(geoServer.getServiceByName("SERVICE-1-WS-1", ServiceInfo.class));
+    }
+
+    @Override
     public void testModifyLogging() {
         // TODO: make this work
     }

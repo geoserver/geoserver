@@ -116,7 +116,7 @@ GeoTools ruleset. See https://pmd.github.io/latest/pmd_userdocs_understanding_ru
   <rule ref="category/java/bestpractices.xml/UseCollectionIsEmpty" />
   <rule ref="category/java/design.xml/CognitiveComplexity">
     <properties>
-      <property name="reportLevel" value="170"/>
+      <property name="reportLevel" value="150"/>
     </properties>
   </rule>  	  
 </ruleset>

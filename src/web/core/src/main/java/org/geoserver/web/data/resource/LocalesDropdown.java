@@ -21,7 +21,9 @@ public class LocalesDropdown extends Select2DropDownChoice<Locale> {
                 new ChoiceRenderer<Locale>() {
                     @Override
                     public Object getDisplayValue(Locale object) {
-                        return object.toLanguageTag();
+                        String languageTag = object.toLanguageTag();
+                        String displayName = object.getDisplayName(object);
+                        return languageTag + " - " + displayName;
                     }
 
                     @Override

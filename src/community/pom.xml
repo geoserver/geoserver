@@ -322,12 +322,6 @@
       </modules>
     </profile>
     <profile>
-      <id>mbstyle</id>
-      <modules>
-        <module>mbstyle</module>
-      </modules>
-    </profile>
-    <profile>
       <id>dyndimension</id>
       <activation>
         <property>

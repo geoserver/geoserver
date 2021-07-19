@@ -84,9 +84,9 @@
         <AttributeMapping>
           <targetAttribute>st_${GML_PREFIX}:info</targetAttribute>
           <jdbcMultipleValue>
-            <sourceColumn>ID</sourceColumn>
+            <sourceColumn>info_id</sourceColumn>
             <targetTable>INFO_${GML_PREFIX_UPPER}</targetTable>
-            <targetColumn>OWNER</targetColumn>
+            <targetColumn>info_${GML_PREFIX}_PKEY</targetColumn>
             <targetValue></targetValue>
           </jdbcMultipleValue>
           <ClientProperty>

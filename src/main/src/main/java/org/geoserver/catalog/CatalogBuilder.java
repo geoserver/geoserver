@@ -41,12 +41,12 @@ import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.util.ImageUtilities;
+import org.geotools.measure.UnitFormat;
 import org.geotools.ows.wms.CRSEnvelope;
 import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wmts.model.WMTSLayer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.util.GeoToolsUnitFormat;
 import org.geotools.util.NumberRange;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
@@ -1248,7 +1248,7 @@ public class CatalogBuilder {
                 label.append("(".intern());
                 formatUOM(label, uom);
                 label.append(")".intern());
-                dim.setUnit(GeoToolsUnitFormat.getInstance().format(uom));
+                dim.setUnit(UnitFormat.getInstance().format(uom));
             } else if (uName.startsWith("RED")
                     || uName.startsWith("GREEN")
                     || uName.startsWith("BLUE")) {
@@ -1538,7 +1538,7 @@ public class CatalogBuilder {
     }
 
     void formatUOM(StringBuilder label, Unit uom) {
-        String formatted = GeoToolsUnitFormat.getInstance().format(uom);
+        String formatted = UnitFormat.getInstance().format(uom);
         label.append(formatted);
     }
 

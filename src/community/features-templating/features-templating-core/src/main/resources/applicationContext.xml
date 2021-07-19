@@ -4,7 +4,17 @@
 
 <beans>
 
-    <bean id="templateConfiguration" class="org.geoserver.featurestemplating.configuration.TemplateConfiguration">
+    <bean id="templateConfiguration" class="org.geoserver.featurestemplating.configuration.TemplateLoader">
+        <constructor-arg ref="dataDirectory"/>
+    </bean>
+
+    <bean id="templateLayerConfXMLPersister"
+          class="org.geoserver.featurestemplating.configuration.TemplateLayerConfigXStreamPersisterInitializer" />
+
+    <bean id="templateDao" class="org.geoserver.featurestemplating.configuration.TemplateInfoDaoImpl"/>
+
+    <bean id="templateFileManager" class="org.geoserver.featurestemplating.configuration.TemplateFileManager">
+        <constructor-arg ref="catalog"/>
         <constructor-arg ref="dataDirectory"/>
     </bean>
 

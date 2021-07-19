@@ -12,14 +12,22 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.base.Charsets;
 import java.io.File;
 import java.io.IOException;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.featurestemplating.configuration.SupportedFormat;
+import org.geoserver.featurestemplating.configuration.TemplateFileManager;
+import org.geoserver.featurestemplating.configuration.TemplateInfo;
+import org.geoserver.featurestemplating.configuration.TemplateInfoDao;
+import org.geoserver.featurestemplating.configuration.TemplateLayerConfig;
+import org.geoserver.featurestemplating.configuration.TemplateRule;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.AbstractAppSchemaTestSupport;
@@ -173,5 +181,34 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         if (context instanceof JSONObject) {
             assertFalse(((JSONObject) context).isEmpty());
         }
+    }
+
+    protected void setUpTemplate(
+            String cqlRuleCondition,
+            SupportedFormat outputFormat,
+            String templateFileName,
+            String templateName,
+            String templateExtension,
+            String workspace,
+            FeatureTypeInfo ft)
+            throws IOException {
+        String rawTemplate =
+                IOUtils.toString(getClass().getResourceAsStream(templateFileName), Charsets.UTF_8);
+        TemplateInfo info = new TemplateInfo();
+        info.setExtension(templateExtension);
+        info.setTemplateName(templateName);
+        info.setWorkspace(workspace);
+        info.setFeatureType(ft.getNativeName());
+        TemplateInfoDao.get().saveOrUpdate(info);
+        TemplateFileManager.get().saveTemplateFile(info, rawTemplate);
+        TemplateRule rule = new TemplateRule();
+        rule.setTemplateName(info.getFullName());
+        rule.setCqlFilter(cqlRuleCondition);
+        rule.setOutputFormat(outputFormat);
+        rule.setTemplateIdentifier(info.getIdentifier());
+        TemplateLayerConfig config = new TemplateLayerConfig();
+        config.addTemplateRule(rule);
+        ft.getMetadata().put(TemplateLayerConfig.METADATA_KEY, config);
+        getCatalog().save(ft);
     }
 }

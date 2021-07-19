@@ -3,3 +3,7 @@ org.geoserver.featurestemplating.expressions.XpathFunction
 org.geoserver.featurestemplating.expressions.ServiceLinkFunction
 org.geoserver.featurestemplating.expressions.PropertyPathFunction
 org.geoserver.featurestemplating.expressions.ItemFunction
+org.geoserver.featurestemplating.expressions.RequestParameterFunction
+org.geoserver.featurestemplating.expressions.HeaderFunction
+org.geoserver.featurestemplating.expressions.MimeTypeFunction
+org.geoserver.featurestemplating.expressions.RequestMatchRegex

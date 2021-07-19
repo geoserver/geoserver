@@ -17,8 +17,8 @@ import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geoserver.featurestemplating.configuration.TemplateLoader;
 import org.geoserver.featurestemplating.validation.JSONLDContextValidation;
 import org.geoserver.featurestemplating.writers.JSONLDWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
@@ -38,9 +38,9 @@ import org.opengis.feature.Feature;
  */
 public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
 
-    private TemplateConfiguration configuration;
+    private TemplateLoader configuration;
 
-    public JSONLDGetFeatureResponse(GeoServer gs, TemplateConfiguration configuration) {
+    public JSONLDGetFeatureResponse(GeoServer gs, TemplateLoader configuration) {
         super(gs, configuration, TemplateIdentifier.JSONLD);
         this.configuration = configuration;
     }

@@ -81,19 +81,20 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest
         setUpTemplate(
                 condition,
                 SupportedFormat.GEOJSON,
-                "FlatGeologicUnitWithSeparator.json",
+                "FlatGeoJSONMappedFeature.json",
                 requestParam,
                 ".json",
                 "gsml",
-                geologicUnit);
+                mappedFeature);
         String path =
                 "ogc/features/collections/"
-                        + "gsml:GeologicUnit"
+                        + "gsml:MappedFeature"
                         + "/items?f=application%2Fgeo%2Bjson";
         path += "&" + requestParam + "=true";
+        path += "&separator=.";
         JSONObject result = (JSONObject) getJson(path);
         JSONArray features = (JSONArray) result.get("features");
-        assertEquals(3, features.size());
+        assertEquals(5, features.size());
         for (int i = 0; i < features.size(); i++) {
             JSONObject feature = (JSONObject) features.get(i);
             JSONObject properties = feature.getJSONObject("properties");

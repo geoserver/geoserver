@@ -28,11 +28,9 @@ import org.geoserver.featurestemplating.configuration.TemplateInfo;
 import org.geoserver.featurestemplating.configuration.TemplateInfoDao;
 import org.geoserver.featurestemplating.configuration.TemplateLayerConfig;
 import org.geoserver.featurestemplating.configuration.TemplateRule;
-import org.geoserver.platform.resource.Resource;
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.AbstractAppSchemaTestSupport;
 import org.geoserver.test.FeatureChainingMockData;
-import org.junit.After;
 import org.junit.Before;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -117,43 +115,6 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         // set to MockHttpServlet request, so skipping
         if (contentType != null) assertEquals(contentType, "application/json");
         return json(response);
-    }
-
-    @After
-    public void cleanup() {
-        String templateFileName = getTemplateFileName();
-        Resource res =
-                dd.getResourceLoader()
-                        .get(
-                                "workspaces/gsml/"
-                                        + mappedFeature.getStore().getName()
-                                        + "/"
-                                        + mappedFeature.getName()
-                                        + "/"
-                                        + templateFileName);
-        if (res != null) res.delete();
-
-        Resource res2 =
-                dd.getResourceLoader()
-                        .get(
-                                "workspaces/gsml/"
-                                        + geologicUnit.getStore().getName()
-                                        + "/"
-                                        + geologicUnit.getName()
-                                        + "/"
-                                        + templateFileName);
-        if (res2 != null) res2.delete();
-
-        Resource res3 =
-                dd.getResourceLoader()
-                        .get(
-                                "workspaces/ex/"
-                                        + parentFeature.getStore().getName()
-                                        + "/"
-                                        + parentFeature.getName()
-                                        + "/"
-                                        + getTemplateFileName());
-        if (res3 != null) res3.delete();
     }
 
     protected abstract String getTemplateFileName();

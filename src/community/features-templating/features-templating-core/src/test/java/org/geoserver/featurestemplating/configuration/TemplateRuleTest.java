@@ -5,11 +5,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.ows.util.KvpMap;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -24,10 +24,11 @@ public class TemplateRuleTest {
         req.setContextPath("/geoserver");
         req.setPathInfo("/wfs");
         req.addHeader("testHeader", "testHeaderValue");
+        req.addParameter("testParameter", "testParameterValue");
         Request request = new Request();
         request.setOutputFormat("application/json");
         request.setHttpRequest(req);
-        request.setRawKvp(new HashMap<>());
+        request.setRawKvp(new KvpMap<>());
         request.getRawKvp().put("TESTPARAMETER", "testParameterValue");
         Dispatcher.REQUEST.set(request);
     }

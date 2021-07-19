@@ -4,29 +4,14 @@
  */
 package org.geoserver.featurestemplating.web;
 
+import java.util.List;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
+import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
 import org.geoserver.featurestemplating.configuration.TemplateRule;
 import org.geoserver.featurestemplating.expressions.MimeTypeFunction;
 
 public class TemplateModelsValidator {
-
-    public void validate(TemplateInfo info, String rawTemplate)
-            throws TemplateConfigurationException {
-        String templateName = info.getTemplateName();
-        TemplateConfigurationException e = null;
-        if (templateName == null || templateName.equals("")) {
-            e = new TemplateConfigurationException();
-            e.setId(TemplateConfigurationException.MISSING_TEMPLATE_NAME);
-        } else if (info.getExtension() == null) {
-            e = new TemplateConfigurationException();
-            e.setId(TemplateConfigurationException.MISSING_FILE_EXTENSION);
-        } else if (rawTemplate == null || rawTemplate.equals("")) {
-            e = new TemplateConfigurationException();
-            e.setId(TemplateConfigurationException.MISSING_TEMPLATE_CONTENT);
-        }
-        if (e != null) throw e;
-    }
 
     public void validate(TemplatePreviewPanel.PreviewInfoModel info)
             throws TemplateConfigurationException {
@@ -50,14 +35,23 @@ public class TemplateModelsValidator {
         SupportedFormat outputFormat = rule.getOutputFormat();
         String cqlFilter = rule.getCqlFilter();
         TemplateConfigurationException e = null;
+        boolean nameNullOrVoid = templateName == null || templateName.trim().equals("");
         if (outputFormat == null) {
             if (cqlFilter == null || !cqlFilter.contains(MimeTypeFunction.NAME.getName())) {
                 e = new TemplateConfigurationException();
                 e.setId(TemplateConfigurationException.MISSING_RULE_OUTPUT_FORMAT);
             }
-        } else if (templateName == null || templateName.trim().equals("")) {
+        } else if (nameNullOrVoid) {
             e = new TemplateConfigurationException();
             e.setId(TemplateConfigurationException.MISSING_RULE_TEMPLATE_NAME);
+        } else {
+            TemplateInfo info = TemplateInfoDAO.get().findById(rule.getTemplateIdentifier());
+            String extension = info.getExtension();
+            List<SupportedFormat> formats = SupportedFormat.getByExtension(extension);
+            if (!formats.contains(rule.getOutputFormat())) {
+                e = new TemplateConfigurationException();
+                e.setId(TemplateConfigurationException.INCOMPATIBLE_OUTPUT_FORMAT);
+            }
         }
         if (e != null) throw e;
     }

@@ -13,7 +13,7 @@ public class TemplateInfoDaoTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testSaveFindUpdateDelete() {
-        TemplateInfoDao dao = TemplateInfoDao.get();
+        TemplateInfoDAO dao = TemplateInfoDAO.get();
         TemplateInfo info = new TemplateInfo();
         info.setTemplateName("template_name_json");
         info.setExtension("json");
@@ -33,7 +33,7 @@ public class TemplateInfoDaoTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testFindFeatureTypeRelatedTemplateInfo() {
-        TemplateInfoDao dao = TemplateInfoDao.get();
+        TemplateInfoDAO dao = TemplateInfoDAO.get();
         TemplateInfo info = new TemplateInfo();
         info.setTemplateName("template_name_json");
         info.setExtension("json");

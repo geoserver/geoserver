@@ -25,7 +25,7 @@ import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.geoserver.featurestemplating.configuration.TemplateFileManager;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
-import org.geoserver.featurestemplating.configuration.TemplateInfoDao;
+import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
 import org.geoserver.featurestemplating.configuration.TemplateLayerConfig;
 import org.geoserver.featurestemplating.configuration.TemplateRule;
 import org.geoserver.test.AbstractAppSchemaMockData;
@@ -160,7 +160,7 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         info.setTemplateName(templateName);
         info.setWorkspace(workspace);
         info.setFeatureType(ft.getNativeName());
-        TemplateInfoDao.get().saveOrUpdate(info);
+        TemplateInfoDAO.get().saveOrUpdate(info);
         TemplateFileManager.get().saveTemplateFile(info, rawTemplate);
         TemplateRule rule = new TemplateRule();
         rule.setTemplateName(info.getFullName());

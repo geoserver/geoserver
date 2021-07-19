@@ -34,7 +34,7 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
 
 /** A template info DAO that use a property file for persistence. */
-public class TemplateInfoDaoImpl implements TemplateInfoDao {
+public class TemplateInfoDAOImpl implements TemplateInfoDAO {
 
     private SortedSet<TemplateInfo> templateDataSet;
 
@@ -46,7 +46,7 @@ public class TemplateInfoDaoImpl implements TemplateInfoDao {
 
     private static final String PROPERTY_FILE_NAME = "features-templates-data.properties";
 
-    public TemplateInfoDaoImpl(GeoServerDataDirectory dd) {
+    public TemplateInfoDAOImpl(GeoServerDataDirectory dd) {
         this.dd = dd;
         Resource templateDir = dd.get(TEMPLATE_DIR);
         File dir = templateDir.dir();
@@ -73,9 +73,11 @@ public class TemplateInfoDaoImpl implements TemplateInfoDao {
                 templateDataSet
                         .stream()
                         .anyMatch(ti -> ti.getIdentifier().equals(templateData.getIdentifier()));
-        if (isUpdate) fireTemplateUpdateEvent(templateData);
-        if (isUpdate)
+        if (isUpdate) {
+            fireTemplateUpdateEvent(templateData);
             templateDataSet.removeIf(ti -> ti.getIdentifier().equals(templateData.getIdentifier()));
+        }
+
         templateDataSet.add(templateData);
         storeProperties();
         return templateData;
@@ -132,15 +134,13 @@ public class TemplateInfoDaoImpl implements TemplateInfoDao {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public void fireTemplateUpdateEvent(TemplateInfo templateInfo) {
+    private void fireTemplateUpdateEvent(TemplateInfo templateInfo) {
         for (TemplateDAOListener listener : listeners) {
             listener.handleUpdateEvent(new TemplateInfoEvent(templateInfo));
         }
     }
 
-    @Override
-    public void fireTemplateInfoRemoveEvent(TemplateInfo templateInfo) {
+    private void fireTemplateInfoRemoveEvent(TemplateInfo templateInfo) {
         for (TemplateDAOListener listener : listeners) {
             listener.handleDeleteEvent(new TemplateInfoEvent(templateInfo));
         }
@@ -226,14 +226,38 @@ public class TemplateInfoDaoImpl implements TemplateInfoDao {
         @Override
         public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
             CatalogInfo source = event.getSource();
-            if (source instanceof FeatureTypeInfo) {}
+            if (source instanceof FeatureTypeInfo) {
+                removeFtTemplates((FeatureTypeInfo) source);
+
+            } else if (source instanceof WorkspaceInfo) {
+                removeWSTemplates((WorkspaceInfo) source);
+            }
+        }
+
+        private void removeFtTemplates(FeatureTypeInfo ft) {
+            TemplateInfoDAO dao = TemplateInfoDAO.get();
+            List<TemplateInfo> templateInfos = dao.findByFeatureTypeInfo(ft);
+            dao.delete(
+                    templateInfos
+                            .stream()
+                            .filter(ti -> ti.getFeatureType() != null)
+                            .collect(Collectors.toList()));
+        }
+
+        private void removeWSTemplates(WorkspaceInfo ws) {
+            TemplateInfoDAO dao = TemplateInfoDAO.get();
+            List<TemplateInfo> templateInfos =
+                    dao.findAll()
+                            .stream()
+                            .filter(ti -> ti.getWorkspace().equals(ws.getName()))
+                            .collect(Collectors.toList());
+            dao.delete(templateInfos);
         }
 
         @Override
         public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
             final CatalogInfo source = event.getSource();
             if (source instanceof FeatureTypeInfo) {
-                // was the layer group renamed, moved, or its contents changed?
                 int nameIdx = event.getPropertyNames().indexOf("name");
                 if (nameIdx != -1) {
                     String newName = (String) event.getNewValues().get(nameIdx);
@@ -250,30 +274,30 @@ public class TemplateInfoDaoImpl implements TemplateInfoDao {
         }
 
         private void updateTemplateInfoLayerName(FeatureTypeInfo fti, String newName) {
-            TemplateInfoDao dao = TemplateInfoDao.get();
+            TemplateInfoDAO dao = TemplateInfoDAO.get();
             List<TemplateInfo> templateInfo = dao.findByFeatureTypeInfo(fti);
             for (TemplateInfo ti : templateInfo) {
                 ti.setFeatureType(newName);
             }
-            ((TemplateInfoDaoImpl) dao).storeProperties();
+            ((TemplateInfoDAOImpl) dao).storeProperties();
         }
 
         private void updateTemplateInfoWorkspace(WorkspaceInfo wi, FeatureTypeInfo fti) {
-            TemplateInfoDao dao = TemplateInfoDao.get();
+            TemplateInfoDAO dao = TemplateInfoDAO.get();
             List<TemplateInfo> templateInfo = dao.findByFeatureTypeInfo(fti);
             for (TemplateInfo ti : templateInfo) {
                 ti.setWorkspace(wi.getName());
             }
-            ((TemplateInfoDaoImpl) dao).storeProperties();
+            ((TemplateInfoDAOImpl) dao).storeProperties();
         }
 
         private void updateWorkspaceNames(String oldName, String newName) {
-            TemplateInfoDao dao = TemplateInfoDao.get();
+            TemplateInfoDAO dao = TemplateInfoDAO.get();
             List<TemplateInfo> infos = dao.findAll();
             for (TemplateInfo ti : infos) {
                 if (ti.getWorkspace().equals(oldName)) ti.setWorkspace(newName);
             }
-            ((TemplateInfoDaoImpl) dao).storeProperties();
+            ((TemplateInfoDAOImpl) dao).storeProperties();
         }
 
         @Override

@@ -11,7 +11,7 @@
     <bean id="templateLayerConfXMLPersister"
           class="org.geoserver.featurestemplating.configuration.TemplateLayerConfigXStreamPersisterInitializer" />
 
-    <bean id="templateDao" class="org.geoserver.featurestemplating.configuration.TemplateInfoDaoImpl"/>
+    <bean id="templateDao" class="org.geoserver.featurestemplating.configuration.TemplateInfoDAOImpl"/>
 
     <bean id="templateFileManager" class="org.geoserver.featurestemplating.configuration.TemplateFileManager">
         <constructor-arg ref="catalog"/>

@@ -71,6 +71,7 @@ public abstract class TemplateInfoDataPanel extends Panel {
     private void initUI() {
         templateName = new TextField<>("templateName", new PropertyModel<>(model, "templateName"));
         templateName.setOutputMarkupId(true);
+        templateName.setRequired(true);
         add(templateName);
         templateExtension =
                 new DropDownChoice<>(
@@ -92,6 +93,7 @@ public abstract class TemplateInfoDataPanel extends Panel {
                                     templateExtension.getModelObject());
                     }
                 });
+        templateExtension.setRequired(true);
         add(templateExtension);
         wsDropDown =
                 new DropDownChoice<>(
@@ -280,5 +282,9 @@ public abstract class TemplateInfoDataPanel extends Panel {
         String template = editor.getModelObject();
         if (template != null && !template.equals("") && template.contains("@context")) return true;
         return false;
+    }
+
+    public AjaxSubmitLink getUploadLink() {
+        return uploadLink;
     }
 }

@@ -47,45 +47,7 @@ public class TemplateLoader {
                         .maximumSize(100)
                         .initialCapacity(1)
                         .expireAfterAccess(120, TimeUnit.MINUTES)
-                        .build(
-                                new CacheLoader<CacheKey, Template>() {
-                                    @Override
-                                    public Template load(CacheKey key) {
-                                        NamespaceSupport namespaces = null;
-                                        try {
-                                            FeatureType type = key.getResource().getFeatureType();
-                                            namespaces = declareNamespaces(type);
-                                        } catch (IOException e) {
-                                            throw new RuntimeException(
-                                                    "Error retrieving FeatureType "
-                                                            + key.getResource().getName()
-                                                            + "Exception is: "
-                                                            + e.getMessage());
-                                        }
-                                        TemplateInfo templateInfo =
-                                                TemplateInfoDao.get().findById(key.getPath());
-                                        Resource resource;
-                                        if (templateInfo != null)
-                                            resource =
-                                                    getTemplateFileManager()
-                                                            .getTemplateResource(templateInfo);
-                                        else
-                                            resource =
-                                                    getDataDirectory()
-                                                            .get(key.getResource(), key.getPath());
-                                        Template template =
-                                                new Template(
-                                                        resource,
-                                                        new TemplateReaderConfiguration(
-                                                                namespaces));
-                                        RootBuilder builder = template.getRootBuilder();
-                                        if (builder != null) {
-                                            replaceSimplifiedPropertiesIfNeeded(
-                                                    key.getResource(), builder);
-                                        }
-                                        return template;
-                                    }
-                                });
+                        .build(new TemplateCacheLoader());
     }
 
     /**
@@ -94,11 +56,9 @@ public class TemplateLoader {
      */
     public RootBuilder getTemplate(FeatureTypeInfo typeInfo, String outputFormat)
             throws ExecutionException {
-        String templateIdentifier = getTemplateIdentifierByLayerRuleEvaluation(typeInfo);
+        String templateIdentifier = evaluatesTemplateRule(typeInfo);
         if (templateIdentifier == null)
-            templateIdentifier =
-                    TemplateIdentifier.getTemplateIdentifierFromOutputFormat(outputFormat)
-                            .getFilename();
+            templateIdentifier = TemplateIdentifier.fromOutputFormat(outputFormat).getFilename();
         CacheKey key = new CacheKey(typeInfo, templateIdentifier);
         Template template = templateCache.get(key);
         boolean updateCache = false;
@@ -211,7 +171,8 @@ public class TemplateLoader {
         }
     }
 
-    private String getTemplateIdentifierByLayerRuleEvaluation(FeatureTypeInfo featureTypeInfo) {
+    // evaluates the template rule associated to the featureTypeInfo and return the TemplateInfo id.
+    private String evaluatesTemplateRule(FeatureTypeInfo featureTypeInfo) {
         List<TemplateRule> matching = new ArrayList<>();
         TemplateLayerConfig config =
                 featureTypeInfo
@@ -245,5 +206,33 @@ public class TemplateLoader {
 
     private TemplateFileManager getTemplateFileManager() {
         return TemplateFileManager.get();
+    }
+
+    private class TemplateCacheLoader extends CacheLoader<CacheKey, Template> {
+        @Override
+        public Template load(CacheKey key) {
+            NamespaceSupport namespaces = null;
+            try {
+                FeatureType type = key.getResource().getFeatureType();
+                namespaces = declareNamespaces(type);
+            } catch (IOException e) {
+                throw new RuntimeException(
+                        "Error retrieving FeatureType "
+                                + key.getResource().getName()
+                                + "Exception is: "
+                                + e.getMessage());
+            }
+            TemplateInfo templateInfo = TemplateInfoDAO.get().findById(key.getPath());
+            Resource resource;
+            if (templateInfo != null)
+                resource = getTemplateFileManager().getTemplateResource(templateInfo);
+            else resource = getDataDirectory().get(key.getResource(), key.getPath());
+            Template template = new Template(resource, new TemplateReaderConfiguration(namespaces));
+            RootBuilder builder = template.getRootBuilder();
+            if (builder != null) {
+                replaceSimplifiedPropertiesIfNeeded(key.getResource(), builder);
+            }
+            return template;
+        }
     }
 }

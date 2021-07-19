@@ -15,7 +15,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.featurestemplating.configuration.FeatureTypeTemplateDAOListener;
-import org.geoserver.featurestemplating.configuration.TemplateInfoDao;
+import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
 import org.geoserver.featurestemplating.configuration.TemplateRule;
 import org.geoserver.web.publish.PublishedEditTabPanel;
 
@@ -33,7 +33,7 @@ public class TemplateRulesTabPanel extends PublishedEditTabPanel<LayerInfo> {
         if (!(ri instanceof FeatureTypeInfo)) {
             configurationPanel.setEnabled(false);
         }
-        TemplateInfoDao infoDao = TemplateInfoDao.get();
+        TemplateInfoDAO infoDao = TemplateInfoDAO.get();
         FeatureTypeTemplateDAOListener listener =
                 new FeatureTypeTemplateDAOListener((FeatureTypeInfo) ri);
         infoDao.addTemplateListener(listener);

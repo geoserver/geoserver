@@ -29,4 +29,9 @@ public enum SupportedFormat {
             return Arrays.asList(GML);
         } else return Arrays.asList(JSONLD, GEOJSON);
     }
+
+    public static String toExtension(SupportedFormat format) {
+        if (format.equals(SupportedFormat.GML)) return "xml";
+        else return "json";
+    }
 }

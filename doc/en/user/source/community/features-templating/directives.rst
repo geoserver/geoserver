@@ -3,12 +3,9 @@
 Template Directives
 ===================
 
-This part of the documentation is an introduction explaining the different template directives that can be used to customize a GetFeature output. 
+This part of the documentation is an introduction explaining the different template directives. 
 Examples will be provided for both Simple Features and Complex Features.
-There are two kind of main template types:
-
-* JSON based templates (GeoJSON and JSON-LD).
-* XML based templates (at the time of writing only GML).
+The syntax of the directives varies slightly between XML based templates and JSON based templates.
 
 The examples will be provided mainly for GeoJSON and GML. Anyway the syntax defined for GeoJSON output, unless otherwise specified, will works as well for JSON-LD templates.
 
@@ -18,67 +15,77 @@ Template directive summary
 
 The following constitues a summary of all the template directives and it is meant to be used for quick reference. Each directive is explained in details in the sections below.
 
-.. list-table::
-   :widths: 10 10 30 60
+JSON based templates
+^^^^^^^^^^^^^^^^^^^^
+The following are the directives available in JSON based templates.
 
-   * - **Directive**
-     - **Template type**
-     - **Usage**
+.. list-table::
+   :widths: 30 10 60
+
+   * - **Usage**
+     - **Syntax**
      - **Description**
-   * - ${property} and $${cql}
-     - JSON based templates
-     - property interpolation and cql evaluation
-     - specify them as an attribute value (:code:`"json_attribute":"${property}"` or :code:`"json_attribute":"$${cql}"`)
-   * - ${property} and $${cql}
-     - XML based templates
-     - property interpolation and cql evaluation
-     - specify them either as an element value (:code:`<element>$${cql}</element>`) or as an xml attribute value (:code:`<element attribute:"${property}"/>`)
-   * - $source
-     - JSON based templates
-     - setting the evaluation context for property interpolation and cql evaluation in child attributes.
+   * - property interpolation
+     - ${property}
+     - specify it as an attribute value (:code:`"json_attribute":"${property}"`)
+   * - cql evaluation
+     - $${cql}
+     - specify it as an element value (:code:`"json_attribute":"$${cql}"`)
+   * - setting the evaluation context for for child attributes.
+     - ${source}.
      - specify it as the first nested object in arrays (:code:`{"$source":"property"}`) or as an attribute in objects (:code:`"$source":"property"`)
-   * - gft:source
-     - XML based templates
-     - setting the evaluation context for property interpolation and cql evaluation in child elements.
-     - specify it as an xml attribute (:code:`<element gft:source:"property">`)
-   * - $filter
-     - JSON based templates
-     - filter the array, object, attribute to which is applied based on the defined condition
+   * - filter the array, object, attribute
+     - $filter
      - specify it inside the first nested object in arrays (:code:`{"$filter":"condition"}`) or as an attribute in objects (:code:`"$filter":"condition"`) or in an attribute next to the attribute value separated by a :code:`,` (:code:`"attribute":"$filter{condition}, ${property}"`)
-   * - gft:filter
-     - XML based templates
-     - filter the element to which is applied based on the defined condition
-     - specify it as an XML attribute on the element to be filtered (:code:`<element gft:filter:"condition">`)
-   * - gft:Template
-     - XML based templates
-     - Marks the beginning of an XML template.
-     - It has to be the root element of an XML template (:code:`<gft:Template> Template content</gft:Template>`)
-   * - $options
-     - JSON based templates
-     - defines options to customize the output outside of a feature scope
-     - specify it at the top of the JSON template as a JSON object (:code:`"$options":{"flat_output":true, "separator":"."}`). GeoJSON options: :code:`flat_output`,:code:`separator`. JSON-LD option: :code:`@context`
-   * - gft:Options
-     - XML based templates
-     - defines options to customize the output outside of a feature scope
-     - specify it as an element at the beggining of the xml document after the :code:`<gft:Template>` one (:code:`<gft:Options></gft:Options>`). GML options: :code:`<gtf:Namespaces>`,:code:`<gtf:SchemaLocation>`
-   * - $include, $includeFlat
-     - JSON based templates
-     - allows to include a template into another
+   * - defines options to customize the output outside of a feature scope
+     - $options
+     - specify it at the top of the JSON template as a JSON object (GeoJSON options: :code:`"$options":{"flat_output":true, "separator":"."}`; JSON-LD options: :code:`"$options":{"@context": "the context json"}`).
+   * - allows to include a template into another
+     - $include, $includeFlat
      - specify the :code:`$include` option as an attribute value (:code:`"attribute":"$include{subProperty.json}"`) and the :code:`$includeFlat` as an attribute name with the included template path as a value (:code:`"$includeFlat":"included.json"`)
-   * - $include, gft:includeFlat
-     - XML based templates
-     - allows to include a template into another
-     - specify the :code:`$include` option as an element value (:code:`<element>$include{included.xml}</element>`) and the :code:`gft:includeFlat` as an element having the included tempalte as text content (:code:`<gft:includeFlat>included.xml</gft:includeFlat>`)
-   * - $merge
-     - JSON based templates
-     - allows a template to extend another template
+   * - allows a template to extend another template
+     - $merge
      - specify the :code:`$merge` directive as an attribute name containing the path to the extended template (:code: `"$merged":"base_template.json"`)
+
+
+XML based templates
+^^^^^^^^^^^^^^^^^^^^
+
+The following are the directives available in XML based templates.
+
+.. list-table::
+   :widths: 30 10 60
+
+   * - **Usage**
+     - **Syntax**
+     - **Description**
+   * - property interpolation 
+     - ${property}
+     -  specify it either as an element value (:code:`<element>${property}</element>`) or as an xml attribute value (:code:`<element attribute:"${property}"/>`)
+   * - cql evaluation
+     - $${cql}
+     - specify them either as an element value (:code:`<element>$${cql}</element>`) or as an xml attribute value (:code:`<element attribute:"$${cql}"/>`)
+   * - setting the evaluation context for property interpolation and cql evaluation in child elements.
+     - gft:source
+     - specify it as an xml attribute (:code:`<element gft:source:"property">`)
+   * - filter the element to which is applied based on the defined condition
+     - gft:filter
+     - specify it as an XML attribute on the element to be filtered (:code:`<element gft:filter:"condition">`)
+   * - marks the beginning of an XML template.
+     - gft:Template
+     - It has to be the root element of an XML template (:code:`<gft:Template> Template content</gft:Template>`)
+   * - defines options to customize the output outside of a feature scope
+     - gft:Options
+     - specify it as an element at the beggining of the xml document after the :code:`<gft:Template>` one (:code:`<gft:Options></gft:Options>`). GML options: :code:`<gtf:Namespaces>`,:code:`<gtf:SchemaLocation>`
+   * - allows to include a template into another
+     - $include, gft:includeFlat
+     - specify the :code:`$include` option as an element value (:code:`<element>$include{included.xml}</element>`) and the :code:`gft:includeFlat` as an element having the included tempalte as text content (:code:`<gft:includeFlat>included.xml</gft:includeFlat>`)
 
 A step by step introduction to features-templating syntax
 ---------------------------------------------------------
 This introduction is meant to illustrates the different directives that can be used in a template. 
-For clarity we will go before through a ``Simple Feature`` example and then through a ``Complex Feature`` one. However all the directives that will be showed are available for both Simple and Complex Features. 
-We will mostly use ``GeoJSON`` and ``GML`` examples. For ``JSON-LD`` output format the rule to define a template are the same of the ``GeoJSON`` template with two exceptions:
+For clarity the documentation will go before through a ``Simple Feature`` example and then through a ``Complex Feature`` one. However all the directives that will be showed are available for both Simple and Complex Features. 
+``GeoJSON`` and ``GML`` examples will be used mostly. For ``JSON-LD`` output format the rules to define a template are the same of the ``GeoJSON`` template with two exceptions:
 
 * A ``@context`` needs to be specified (see the ``options`` section below).
 * The standard mandates that attributes' values are all strings.
@@ -87,6 +94,9 @@ We will mostly use ``GeoJSON`` and ``GML`` examples. For ``JSON-LD`` output form
 
 ${property} and $${cql} directive (Simple Feature example)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+GeoJSON
+"""""""
 
 Assume that we want to change the default geojson output of the :code:`topp:states` layer. A single feature in the default output is like the following:
 
@@ -172,7 +182,10 @@ A template like this will allows us to produce the above output:
 
 
 
-As it is possible to see the new output has the attribute names defined in the template. Moreover the :code:`population` related attributes have been placed inside a nested json object. Finally we added a wkt_geom attribute with the WKT geometry representation.
+As it is possible to see the new output has the attribute names defined in the template. Moreover the :code:`population` related attributes have been placed inside a nested json object. Finally a wkt_geom attribute with the WKT geometry representation has been added.
+
+GML
+"""
 
 The same template mechanism can be applied to a GML output format. This is an example GML template, again for the :code:`topp:states` layer
 
@@ -208,21 +221,28 @@ And this is how a feature will appear:
       <topp:wkt_geom>MULTIPOLYGON (([....])))</topp:wkt_geom>
     </topp:states>
 
-As it is possible to see we are encoding the geometry only as a wkt, moreover the STATE_ATTR value is now present as an xml attribute of the element :code:`topp:states`. Finally elements that were not defined in the template did not showed up.
+As it is possible to see the geometry is being encoded only as a wkt, moreover the STATE_ATTR value is now present as an xml attribute of the element :code:`topp:states`. Finally elements that were not defined in the template did not showed up.
 
-Looking at these examples it is possible to see that we have used few directives to customize the output:
+Looking at these examples it is possible to see that few more directives to customize the output:
 
 * Property interpolation can be invoked using the directive :code:`${property_name}`.
 * In case complex operation are needed a CQL expression can be used throught a :code:`$${cql}` syntax (all CQL functions are supported).
 * Simple text values are reproduced in the final output as they are.
 * Finally the gml template needs the actual template content to be wrapped into a :code:`gft:Template` element. The :code:`gft` doesn't needs to be bound to a namespaces. It is used just as marker of features-templating related element and will not be present in the final output.
-* We also another element the :code:`gft:Options` with two more elements inside. It will be explained in below dedicated section.
+* There is also another element, the :code:`gft:Options`, with two more elements inside. It will be explained in below dedicated section.
 
 Source and filter (Complex Feature example)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Lets assume now that we have a configured AppSchema layer and we want to customize the complex features output.
-We will use as an example the Meteo Stations use case. For a description of the use case check the documentation at :ref:`community_smart_data_loader`.
+GeoJSON
+"""""""
+
+Let's assume now that an AppSchema layer has been configured and customization of the complex features output is needed.
+The Meteo Stations use case will be used as an example. For a description of the use case check the documentation at :ref:`community_smart_data_loader`.
+This is the domain model of the use case:
+
+.. figure:: images/meteos-stations-er-diagram.png
+
 
 The default GeoJSON output format produces features like the following:
 
@@ -305,12 +325,12 @@ The default GeoJSON output format produces features like the following:
  }
 
 
-From the above JSON we can see a data structure where:
+The above JSON has a data structure where:
 
-* We have a Station object with a nested array of Observations.
+* Station object has a nested array of Observations.
 * Each Observation has a an array of parameter that describe the type of Observation.
 
-Now we want to produce a different output where instead of having a generic array of observation nested in to the root object, we have one array for each type of parameter e.g. Temperatures, Pressures and Winds_speed observations. In other words instead of having the Observation type defined inside a nested Parameter object we want to have that information directly in the attribute name.
+Now let's assume that a different output needs to be produced where instead of having a generic array of observation nested into the root object, arrays are provided separately for each type of parameter e.g. Temperatures, Pressures and Winds_speed observations. In other words instead of having the Observation type defined inside a nested Parameter object that information should be provided directly in the attribute name.
 The pursued output looks like the following:
 
 .. code-block:: json
@@ -419,14 +439,14 @@ A template like this will allow to produce such an output:
      }
 
 
-In addition to the :code:`${property}` and :code:`$${cql}` directives we saw before there are two more:
+In addition to the :code:`${property}` and :code:`$${cql}` directives seen before, there are two more:
 
-* We see the usage of the :code:`xpath('xpath')` function to reference property. When dealing with Complex Features it must be used when referencing properties inside a :code:`$filter` or a :code:`$${cql}` directives.
+* In the example above the :code:`xpath('xpath')` function is used to reference property. When dealing with Complex Features it must be used when referencing properties inside a :code:`$filter` or a :code:`$${cql}` directives.
 * :code:`$source` which is meant to provide the context against which evaluated nested element properties and xpaths. In this case the :code:`"$source":"st:meteoObservations/st:MeteoObservationsFeature"` provides the context for the nested attributes angainst which the directives will be evaluated. When defining a :code:`$source` for a JSON array it should be provided in a JSONObject separated from the JSON Object mapping the nested feature attributes as in the example above. When defining the :code:`$source` for a JSONObject it can be simply added as an object attribute (see below examples).
 * When using :code:`${property}` directive or an :code:`xpath('xpath')` function it is possible to reference a property bounded to an upper :code:`$source` using a ``../`` notation eg. ``${../previousContextValue}``.
 * :code:`$filter` provides the possibility to filter the value that will be included in the element to which is applied, in this case a json array. For instance the filter :code:`$filter":"xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'wind speed'` in the :code:`Winds_speed` array allows to filter the element that will be included in this array according to the :code:`param_name value`.
 
-.. warning:: the :code:`xpath('some xpath)` cql function is meant to be used in the scope of this plugin. For general usage please refers to the :geotools:`property function <library/main/function_list.html#property-propertyname-returns-propertyvalue>`.
+One note aboute the Source. It is strictly needed only when referencing a nested features. This means that in the GeoJSON template example the :code:`"$source":"st:MeteoStationsFeature"` coudl have been omitted. This not apply for nested elements definition where the :code:`"$source":"st:meteoObservations/st:MeteoObservationsFeature"` is mandatory.
 
 Follows a list of JSON template bits showing  :code:`filters` definition in context different from a JSON array, as well as :code:`$source` definition for a JSONObject.
 
@@ -478,7 +498,11 @@ Follows a list of JSON template bits showing  :code:`filters` definition in cont
 As it is possible to see from the previous example in the array and object cases the filter sintax expected a :code:`"$filter"` key followed by an attribute with the filter to evaluate. In the attribute case, instead, the filter is being specified inside the value as :code:`"$filter{...}"`, followed by  the cql expression, or by the static content, with a comma separating the two.
 
 
-:code:`filter` and :code:`source` are available as well in GML template. As an example, assume that we want to obtain the correspective GML output of the GeoJSON output above e.g.:
+
+GML
+"""
+
+:code:`filter` and :code:`source` are available as well in GML template. Assuming that the desired output is the correspective GML output of the GeoJSON output above e.g.:
 
 .. code-block:: xml
 
@@ -570,14 +594,51 @@ The following GML template will produce the above output:
 
 In the GML case :code:`filter` and :code:`source` directives are defined in a slightly different manner from the JSON usecase.
 
-* The filter needs to be defined as an attribute :code:`gft:filter` in the element that we want to filter.
+* The filter needs to be defined as an attribute :code:`gft:filter` in the element that is meant to be filtered.
 * The source needs to be defined as an attribute :code:`gft:source` in the element that will set the source for its child elements.
 * The attribute :code:`gft:isCollection="true"` define a directive meant to be used in GML templates to mark collection elements: this directive is needed since xml doesn't have the array concept and the template mechanism needs to be informed if an element should be repeated because it represent a collection element. 
+
+As for the GeoJSON case the source is not needed for the top level feature. In this case we indeed omitted it for the st:MeteoStations element. Instead, as stated above, it is mandatory for nested elements like :code:`Temperature`, :code:`Pressure` and :code:`Winds_speed`. All of them show indeed a :code:`gft:source="st:meteoObservations/st:MeteoObservationsFeature"`.
+
+
+More on XPath Function
+"""""""""""""""""""""""
+
+The :code:`xpath('xpath')` function is meant to provide the possibility to reference a Feature's properties no matter how nested, in a template, providing also the possibility to reference the previous context value through :code:`../`.
+
+Check the following template from the GeoJSON Stations use case.
+
+.. code-block:: json
+
+ {
+ "$source":"st:MeteoStationsFeature",
+ "properties":{
+    "Code":"$${strConcat('STATION-', xpath('st:code'))}",
+    "Location":"$${toWKT(xpath('st:position'))}",
+    "Temperatures":[
+     {
+        "$source":"st:meteoObservations/st:MeteoObservationsFeature",
+        "$filter":"xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'temperature'"
+     },
+     {
+       "Value": "${st:value}",
+       "StillCode":"$${strConcat('STATION-', xpath('../st:code'))}"
+      }
+  ]
+ }
+
+In the :code:`Temperatures` array a :code:`StillCode` attribute has been defined that through :code:`../` references not the :code:`"$source":"st:meteoObservations/st:MeteoObservationsFeature"`, but the previous one :code:`"$source":"st:MeteoStationsFeature"`.
+
+The same can be achieved with the property interpolation directive if a cql function evaluation is not needed: :code:`"StillCode":"$${strConcat('STATION-', xpath('../st:code'))}"`.
+
+
+.. warning:: the :code:`xpath('some xpath)` cql function is meant to be used in the scope of this plugin. For general usage please refers to the :geotools:`property function <library/main/function_list.html#property-propertyname-returns-propertyvalue>`.
+
 
 Template Options
 ^^^^^^^^^^^^^^^^
 
-The directives that we have seen so far allow to control the output in the scope of a Feature element. 
+The directives seen so far allow to control the output in the scope of a Feature element. 
 The :code:`options` directive, instead, allows to customize the output for piece of the output outside the Feature scope or to define general modifications to the overall output. The available options vary according to the output format.
 
 GeoJSON
@@ -1074,7 +1135,7 @@ Simplfied Property Access
 --------------------------
 
 The features-templating plug-in provides the possibility to directly reference domain name when dealing with Complex Features and using property interpolation in a template.
-As an example lets use again the meteo stations use case. This is the ER diagram of the Database table involved.
+As an example let's use again the meteo stations use case. This is the ER diagram of the Database table involved.
 
 .. figure:: images/meteos-stations-er-diagram.png
 
@@ -1122,14 +1183,14 @@ The following is a GeoJSON template that directly reference table names and colu
 
 As it is possible to see this template has some differences comparing to the one seen above:
 
-* Property interpolation  (``${property}``) and cql evaluation (``$${cql}``) directives are referencing the column name of the attribute that we want to include in the final output. The names match the ones of the columns and no namepsaces prefix is being used.
-* Inside the $${cql} directive instead of using an ``xpath`` function we are using the ``propertyPath`` function. It must be used when we want reference domain names inside a ``$${cql}`` directive. Paths in this case are no more separated by a ``/`` but by a ``.`` dot.
+* Property interpolation  (``${property}``) and cql evaluation (``$${cql}``) directives are referencing the column name of the attribute that is meant to be included in the final output. The names match the ones of the columns and no namepsaces prefix is being used.
+* Inside the $${cql} directive instead of using an ``xpath`` function  the ``propertyPath`` function is being use. It must be used when the property references domain names inside a ``$${cql}`` directive. Paths in this case are no more separated by a ``/`` but by a ``.`` dot.
 * The ``$source`` directive references the table names.
-* When a ``column/property`` in a ``table/source`` is referenced from the context of the upper ``table/source``, as in all the filters in the template, the table name needs to be prefixed with a ``->`` symbol, and column name can come next separated by a ``.`` dot.
+* When a ``column/property`` in a ``table/source`` is referenced from the context of the upper ``table/source``, as in all the filters in the template, the table name needs to be prefixed with a ``->`` symbol, and column name can come next separated by a ``.`` dot. Putting it in another way: the ``->``  signals that the next path part is a table joined to the last source defined.
 
 .. warning:: the :code:`propertyPath('propertyPath')` cql function is meant to be used only in the scope of this plugin. It is not currently possible to reference domain property outside the context of a template file.
 
-This functionality is particularly useful when defining templates on top of Smart Data Loader based Complex Features. See the tutorial section.
+This functionality is particularly useful when defining templates on top of Smart Data Loader based Complex Features.
 
 Template Validation
 -------------------

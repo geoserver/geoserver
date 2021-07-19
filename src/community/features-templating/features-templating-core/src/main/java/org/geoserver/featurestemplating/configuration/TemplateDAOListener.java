@@ -4,7 +4,7 @@
  */
 package org.geoserver.featurestemplating.configuration;
 
-/** Base interface for listeners that can handle event issues by {@link TemplateInfoDao} */
+/** Base interface for listeners that can handle event issues by {@link TemplateInfoDAO} */
 public interface TemplateDAOListener {
 
     /**

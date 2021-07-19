@@ -134,9 +134,9 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
         String format = request.getKvp() != null ? (String) request.getKvp().get("f") : null;
         TemplateIdentifier identifier = null;
         if (format != null) {
-            identifier = TemplateIdentifier.getTemplateIdentifierFromOutputFormat(format);
+            identifier = TemplateIdentifier.fromOutputFormat(format);
         } else if (accept != null) {
-            identifier = TemplateIdentifier.getTemplateIdentifierFromOutputFormat(accept);
+            identifier = TemplateIdentifier.fromOutputFormat(accept);
         }
         return identifier;
     }

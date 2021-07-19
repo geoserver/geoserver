@@ -29,7 +29,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
-import org.geoserver.featurestemplating.configuration.TemplateInfoDao;
+import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
 import org.geoserver.featurestemplating.configuration.TemplateRule;
 import org.geoserver.util.XCQL;
 import org.geoserver.web.wicket.ParamResourceModel;
@@ -94,25 +94,7 @@ public class TemplateRuleConfigurationPanel extends Panel {
 
         cqlFilterArea = new TextArea<>("cqlFilter", model.bind("cqlFilter"));
         cqlFilterArea.setOutputMarkupId(true);
-        cqlFilterArea.add(
-                new IValidator<String>() {
-                    @Override
-                    public void validate(IValidatable<String> iValidatable) {
-                        try {
-                            XCQL.toFilter(iValidatable.getValue());
-                        } catch (CQLException e) {
-                            ValidationError error = new ValidationError();
-                            String message =
-                                    new ParamResourceModel(
-                                                    "invalidCQL",
-                                                    TemplateRuleConfigurationPanel.this)
-                                            .getObject();
-                            message += " " + e.getMessage();
-                            error.setMessage(message);
-                            iValidatable.error(error);
-                        }
-                    }
-                });
+        cqlFilterArea.add(getCqlValidator());
         theForm.add(cqlFilterArea);
         AjaxSubmitLink submitLink =
                 new AjaxSubmitLink("save") {
@@ -122,6 +104,7 @@ public class TemplateRuleConfigurationPanel extends Panel {
                         cleanFeedbackPanel();
                         target.add(ruleFeedbackPanel);
                         TemplateRule rule = theForm.getModelObject();
+                        TemplateInfo info = templateInfoDropDownChoice.getModelObject();
                         if (!validateAndReport(rule)) return;
                         updateModelRules(rule);
                         target.add(tablePanel);
@@ -163,7 +146,7 @@ public class TemplateRuleConfigurationPanel extends Panel {
 
     protected List<TemplateInfo> getTemplateInfoList() {
         ResourceInfo resourceInfo = layer.getResource();
-        return TemplateInfoDao.get().findByFeatureTypeInfo((FeatureTypeInfo) resourceInfo);
+        return TemplateInfoDAO.get().findByFeatureTypeInfo((FeatureTypeInfo) resourceInfo);
     }
 
     void setTemplateRuleTablePanel(TemplateRulesTablePanel panel) {
@@ -233,5 +216,25 @@ public class TemplateRuleConfigurationPanel extends Panel {
         return MessageFormat.format(
                 getString("TemplateRuleConfigurationPanel." + label1),
                 getString("TemplateRuleConfigurationPanel." + label2));
+    }
+
+    private IValidator<String> getCqlValidator() {
+        return new IValidator<String>() {
+            @Override
+            public void validate(IValidatable<String> iValidatable) {
+                try {
+                    XCQL.toFilter(iValidatable.getValue());
+                } catch (CQLException e) {
+                    ValidationError error = new ValidationError();
+                    String message =
+                            new ParamResourceModel(
+                                            "invalidCQL", TemplateRuleConfigurationPanel.this)
+                                    .getObject();
+                    message += " " + e.getMessage();
+                    error.setMessage(message);
+                    iValidatable.error(error);
+                }
+            }
+        };
     }
 }

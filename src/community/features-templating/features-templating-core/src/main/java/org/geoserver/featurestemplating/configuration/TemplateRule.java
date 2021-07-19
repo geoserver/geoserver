@@ -61,7 +61,7 @@ public class TemplateRule implements Serializable {
 
         if (result && cqlFilter != null) {
             try {
-                result = XCQL.toFilter(cqlFilter).evaluate(request);
+                result = XCQL.toFilter(cqlFilter).evaluate(null);
             } catch (CQLException e) {
                 throw new RuntimeException(e);
             }
@@ -107,8 +107,7 @@ public class TemplateRule implements Serializable {
     }
 
     private boolean matchOutputFormat(String outputFormat) {
-        TemplateIdentifier identifier =
-                TemplateIdentifier.getTemplateIdentifierFromOutputFormat(outputFormat);
+        TemplateIdentifier identifier = TemplateIdentifier.fromOutputFormat(outputFormat);
         if (identifier == null) return false;
         String nameIdentifier = identifier.name();
         if (this.outputFormat.equals(SupportedFormat.GML.name()))

@@ -11,12 +11,11 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.util.ResponseUtils;
-import org.geotools.filter.FunctionExpressionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
 import org.opengis.filter.capability.FunctionName;
 
 /** Check if the current {@link Request} matches the regex passed as an argument of the Function. */
-public class RequestMatchRegex extends FunctionExpressionImpl {
+public class RequestMatchRegex extends RequestFunction {
 
     public static FunctionName NAME =
             new FunctionNameImpl(
@@ -29,12 +28,7 @@ public class RequestMatchRegex extends FunctionExpressionImpl {
     }
 
     @Override
-    public Object evaluate(Object object) {
-        if (!(object instanceof Request)) {
-            throw new UnsupportedOperationException(
-                    NAME.getName() + " function works with request object only");
-        }
-        Request request = (Request) object;
+    protected Object evaluateInternal(Request request, Object object) {
         String regex = getParameters().get(0).evaluate(null, String.class);
         Pattern pattern = Pattern.compile(regex);
         String url = getFullURL(request.getHttpRequest());

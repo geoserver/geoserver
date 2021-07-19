@@ -10,7 +10,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.featurestemplating.configuration.TemplateFileManager;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
-import org.geoserver.featurestemplating.configuration.TemplateInfoDao;
+import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.wicket.CodeMirrorEditor;
 import org.junit.Test;
@@ -126,7 +126,7 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
             tester.assertNoErrorMessage();
             tester.assertRenderedPage(TemplateInfoPage.class);
         } finally {
-            TemplateInfoDao.get().deleteAll();
+            TemplateInfoDAO.get().deleteAll();
         }
     }
 
@@ -172,7 +172,7 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
             tester.assertNoErrorMessage();
             tester.assertRenderedPage(TemplateInfoPage.class);
         } finally {
-            TemplateInfoDao.get().deleteAll();
+            TemplateInfoDAO.get().deleteAll();
         }
     }
 
@@ -183,7 +183,7 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
         info.setFeatureType("NamedPlaces");
         info.setTemplateName("testJsonLDTemplate");
         info.setExtension("json");
-        info = TemplateInfoDao.get().saveOrUpdate(info);
+        info = TemplateInfoDAO.get().saveOrUpdate(info);
         TemplateFileManager.get().saveTemplateFile(info, JSON_TEMPLATE);
         try {
             login();
@@ -208,7 +208,7 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
             tester.assertNoErrorMessage();
             tester.assertRenderedPage(TemplateInfoPage.class);
         } finally {
-            TemplateInfoDao.get().deleteAll();
+            TemplateInfoDAO.get().deleteAll();
         }
     }
 
@@ -218,7 +218,7 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
         info.setWorkspace("cite");
         info.setTemplateName("testGMLTemplate");
         info.setExtension("xml");
-        info = TemplateInfoDao.get().saveOrUpdate(info);
+        info = TemplateInfoDAO.get().saveOrUpdate(info);
         TemplateFileManager.get().saveTemplateFile(info, GML_TEMPLATE);
         try {
             login();
@@ -260,7 +260,7 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
             tester.assertNoErrorMessage();
             tester.assertRenderedPage(TemplateInfoPage.class);
         } finally {
-            TemplateInfoDao.get().deleteAll();
+            TemplateInfoDAO.get().deleteAll();
         }
     }
 }

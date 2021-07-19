@@ -9,10 +9,10 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.GeoServerExtensions;
 
 /** Base interface for TemplateInfo Data Access. */
-public interface TemplateInfoDao {
+public interface TemplateInfoDAO {
 
-    static TemplateInfoDaoImpl get() {
-        return GeoServerExtensions.bean(TemplateInfoDaoImpl.class);
+    static TemplateInfoDAOImpl get() {
+        return GeoServerExtensions.bean(TemplateInfoDAOImpl.class);
     }
 
     public static final String TEMPLATE_DIR = "features-templating";
@@ -33,7 +33,7 @@ public interface TemplateInfoDao {
 
     /**
      * @param id the identifier of the template info to retrieve.
-     * @return the TemplateiInfo object.
+     * @return the TemplateInfo object.
      */
     public TemplateInfo findById(String id);
 
@@ -57,20 +57,6 @@ public interface TemplateInfoDao {
 
     /** Deletes all the template info. */
     public void deleteAll();
-
-    /**
-     * Fire a template info update event.
-     *
-     * @param templateInfo the template info being updated.
-     */
-    public void fireTemplateUpdateEvent(TemplateInfo templateInfo);
-
-    /**
-     * Fire a template info remove event.
-     *
-     * @param templateInfo the template info to remove.
-     */
-    public void fireTemplateInfoRemoveEvent(TemplateInfo templateInfo);
 
     /**
      * Add a listener.

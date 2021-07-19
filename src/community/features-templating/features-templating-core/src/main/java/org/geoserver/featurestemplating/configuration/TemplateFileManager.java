@@ -37,7 +37,7 @@ public class TemplateFileManager {
      *     resource.
      * @return the resource that corresponds to the template info.
      */
-    public Resource getTemplateResource(AbstractFeatureTemplateInfo templateInfo) {
+    public Resource getTemplateResource(TemplateInfo templateInfo) {
         String featureType = templateInfo.getFeatureType();
         String workspace = templateInfo.getWorkspace();
         String templateName = templateInfo.getTemplateName();
@@ -50,7 +50,7 @@ public class TemplateFileManager {
             WorkspaceInfo ws = catalog.getWorkspaceByName(workspace);
             resource = dd.get(ws, templateName + "." + extension);
         } else {
-            resource = dd.get(TemplateInfoDaoImpl.TEMPLATE_DIR, templateName + "." + extension);
+            resource = dd.get(TemplateInfoDAOImpl.TEMPLATE_DIR, templateName + "." + extension);
         }
         return resource;
     }
@@ -62,7 +62,7 @@ public class TemplateFileManager {
      *     file.
      * @return true if the delete process was successful false otherwise.
      */
-    public boolean delete(AbstractFeatureTemplateInfo templateInfo) {
+    public boolean delete(TemplateInfo templateInfo) {
         return getTemplateResource(templateInfo).delete();
     }
 
@@ -72,7 +72,7 @@ public class TemplateFileManager {
      * @param templateInfo the template info to which the desired template file is associated.
      * @return the directoryu where the template file associated to the templateInfo is placed.
      */
-    public File getTemplateLocation(AbstractFeatureTemplateInfo templateInfo) {
+    public File getTemplateLocation(TemplateInfo templateInfo) {
         String featureType = templateInfo.getFeatureType();
         String workspace = templateInfo.getWorkspace();
         Resource resource = null;
@@ -83,7 +83,7 @@ public class TemplateFileManager {
             WorkspaceInfo ws = catalog.getWorkspaceByName(workspace);
             resource = dd.get(ws);
         } else {
-            resource = dd.get(TemplateInfoDaoImpl.TEMPLATE_DIR);
+            resource = dd.get(TemplateInfoDAOImpl.TEMPLATE_DIR);
         }
         File destDir = resource.dir();
         if (!destDir.exists() || !destDir.isDirectory()) {
@@ -98,7 +98,7 @@ public class TemplateFileManager {
      * @param templateInfo the template info object.
      * @param rawTemplate the template content to save to a file.
      */
-    public void saveTemplateFile(AbstractFeatureTemplateInfo templateInfo, String rawTemplate) {
+    public void saveTemplateFile(TemplateInfo templateInfo, String rawTemplate) {
         File destDir = getTemplateLocation(templateInfo);
         try {
             File file =

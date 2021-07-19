@@ -16,7 +16,7 @@ import org.apache.wicket.model.Model;
 import org.geoserver.featurestemplating.configuration.FileTemplateDAOListener;
 import org.geoserver.featurestemplating.configuration.TemplateFileManager;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
-import org.geoserver.featurestemplating.configuration.TemplateInfoDao;
+import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -43,47 +43,8 @@ public class TemplateInfoPage extends GeoServerSecuredPage {
                     }
                 });
 
-        add(
-                remove =
-                        new AjaxLink<Object>("removeSelected") {
-                            private static final long serialVersionUID = 2421854498051377608L;
+        add(remove = newRemoveLink());
 
-                            @Override
-                            public void onClick(AjaxRequestTarget target) {
-                                TemplateInfoDao dao = TemplateInfoDao.get();
-                                TemplateFileManager fileManager = TemplateFileManager.get();
-                                dao.findAll().forEach(ti -> fileManager.delete(ti));
-                                dao.delete(tablePanel.getSelection());
-                                tablePanel.modelChanged();
-                                target.add(tablePanel);
-                                target.add(TemplateInfoPage.this);
-                            }
-
-                            @Override
-                            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
-                                super.updateAjaxAttributes(attributes);
-                                attributes
-                                        .getAjaxCallListeners()
-                                        .add(
-                                                new AjaxCallListener() {
-
-                                                    @Override
-                                                    public CharSequence getPrecondition(
-                                                            Component component) {
-                                                        CharSequence message =
-                                                                new ParamResourceModel(
-                                                                                "confirmRemove",
-                                                                                TemplateInfoPage
-                                                                                        .this)
-                                                                        .getString();
-                                                        message =
-                                                                JavaScriptUtils.escapeQuotes(
-                                                                        message);
-                                                        return "return confirm('" + message + "');";
-                                                    }
-                                                });
-                            }
-                        });
         tablePanel =
                 new GeoServerTablePanel<TemplateInfo>(
                         "tablePanel", new TemplateInfoProvider(), true) {
@@ -126,6 +87,42 @@ public class TemplateInfoPage extends GeoServerSecuredPage {
         add(tablePanel);
         remove.setOutputMarkupId(true);
         remove.setEnabled(false);
-        TemplateInfoDao.get().addTemplateListener(new FileTemplateDAOListener());
+        TemplateInfoDAO.get().addTemplateListener(new FileTemplateDAOListener());
+    }
+
+    private AjaxLink<Object> newRemoveLink() {
+        return new AjaxLink<Object>("removeSelected") {
+            private static final long serialVersionUID = 2421854498051377608L;
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                TemplateInfoDAO dao = TemplateInfoDAO.get();
+                TemplateFileManager fileManager = TemplateFileManager.get();
+                dao.findAll().forEach(ti -> fileManager.delete(ti));
+                dao.delete(tablePanel.getSelection());
+                tablePanel.modelChanged();
+                target.add(tablePanel);
+                target.add(TemplateInfoPage.this);
+            }
+
+            @Override
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                AjaxCallListener ajaxCall =
+                        new AjaxCallListener() {
+
+                            @Override
+                            public CharSequence getPrecondition(Component component) {
+                                CharSequence message =
+                                        new ParamResourceModel(
+                                                        "confirmRemove", TemplateInfoPage.this)
+                                                .getString();
+                                message = JavaScriptUtils.escapeQuotes(message);
+                                return "return confirm('" + message + "');";
+                            }
+                        };
+                attributes.getAjaxCallListeners().add(ajaxCall);
+            }
+        };
     }
 }

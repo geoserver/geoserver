@@ -13,19 +13,17 @@ import org.geoserver.featurestemplating.configuration.TemplateRule;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.LiveCollectionModel;
 
-public class TemplateRuleProvider extends GeoServerDataProvider<TemplateRule> {
-    public static final Property<TemplateRule> PRIORITY =
-            new BeanProperty<>("priority", "priority");
-    public static final Property<TemplateRule> NAME = new BeanProperty<>("name", "templateName");
-    public static final Property<TemplateRule> OUTPUT_FORMAT =
+class TemplateRuleProvider extends GeoServerDataProvider<TemplateRule> {
+    static final Property<TemplateRule> PRIORITY = new BeanProperty<>("priority", "priority");
+    static final Property<TemplateRule> NAME = new BeanProperty<>("name", "templateName");
+    static final Property<TemplateRule> OUTPUT_FORMAT =
             new BeanProperty<>("outputFormat", "outputFormat.format");
 
-    public static final Property<TemplateRule> CQL_FILTER =
-            new BeanProperty<>("cqlFilter", "cqlFilter");
+    static final Property<TemplateRule> CQL_FILTER = new BeanProperty<>("cqlFilter", "cqlFilter");
 
     private LiveCollectionModel<TemplateRule, Set<TemplateRule>> model;
 
-    public TemplateRuleProvider(LiveCollectionModel<TemplateRule, Set<TemplateRule>> model) {
+    TemplateRuleProvider(LiveCollectionModel<TemplateRule, Set<TemplateRule>> model) {
         this.model = model;
     }
 

@@ -180,7 +180,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
                     getRootBuildersFromFeatureTypeInfo(typeInfos, outputFormat);
             if (rootBuilders.size() > 0) {
                 TemplateIdentifier templateIdentifier =
-                        TemplateIdentifier.getTemplateIdentifierFromOutputFormat(outputFormat);
+                        TemplateIdentifier.fromOutputFormat(outputFormat);
                 switch (templateIdentifier) {
                     case JSON:
                     case GEOJSON:
@@ -205,8 +205,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
     // null and json-ld output is requested
     private RootBuilder ensureTemplatesExist(FeatureTypeInfo typeInfo, String outputFormat)
             throws ExecutionException {
-        TemplateIdentifier identifier =
-                TemplateIdentifier.getTemplateIdentifierFromOutputFormat(outputFormat);
+        TemplateIdentifier identifier = TemplateIdentifier.fromOutputFormat(outputFormat);
         RootBuilder rootBuilder = null;
         if (identifier != null) {
             rootBuilder = configuration.getTemplate(typeInfo, identifier.getOutputFormat());

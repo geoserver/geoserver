@@ -1,0 +1,37 @@
+version: '3.0'
+
+services:
+  geoserver:
+    image: ogccite/geoserver:${GEOSERVER_TAG:-latest}
+    build:
+      context: .
+      dockerfile: ./geoserver/Dockerfile
+      args:
+        GEOSERVER_WEBAPP_SRC: "https://build.geoserver.org/geoserver/main/geoserver-main-latest-war.zip"
+    ports:
+      - 8080
+    env_file:
+      - ./.env
+      - ./geoserver/geoserver.env
+    environment:
+      JAVA_OPTS: >-
+        -Xms${HEAP_SIZE_MIN:-1024m}
+        -Xmx${HEAP_SIZE_MAX:-1024m}
+    volumes:
+    - gs_logs:/var/geoserver/logs:rw
+    - gs_gwc_cache_dir:/var/geoserver/gwc_cache_dir:rw
+
+  teamengine:
+    image: geoserver-docker.osgeo.org/geoserver-cite:${TEAMENGINE_TAG:-teamengine_latest}
+    ports:
+      - 8080
+    depends_on:
+      - geoserver
+    volumes:
+      - ./logs:/home/teamengine/te_base/users/teamengine
+      - ./run-test.sh:/run-test.sh
+
+volumes:
+  gs_datadir:
+  gs_logs:
+  gs_gwc_cache_dir:

@@ -1,0 +1,15 @@
+version: '3.0'
+
+services:
+  teamengine:
+    ports:
+      - 8888:8080
+    volumes:
+      - ./wcs10/wcs-1.0.0.xml:/home/teamengine/te_base/forms/wcs-1.0.0.xml
+      - ./wcs11/wcs-1.1.1.xml:/home/teamengine/te_base/forms/wcs-1.1.1.xml
+      - ./wfs10/wfs-1.0.0.xml:/home/teamengine/te_base/forms/wfs-1.0.0.xml
+      - ./wfs11/wfs-1.1.0.xml:/home/teamengine/te_base/forms/wfs-1.1.0.xml
+      - ./wms11/wms-1.1.1.xml:/home/teamengine/te_base/forms/wms-1.1.1.xml
+      - ./wms13/wms-1.3.0.xml:/home/teamengine/te_base/forms/wms-1.3.0.xml
+      - ./interactive/user.xml:/home/teamengine/te_base/users/teamengine/user.xml
+    command: /run-test.sh interactive

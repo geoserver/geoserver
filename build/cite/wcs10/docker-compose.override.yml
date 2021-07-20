@@ -1,0 +1,13 @@
+version: '3.0'
+
+services:
+  geoserver:
+    image: ogccite/geoserver:wcs10
+    build:
+      args:
+        GEOSERVER_DATA_DIR_SRC: "./wcs10/citewcs-1.0"
+
+  teamengine:
+    volumes:
+      - ./wcs10/wcs-1.0.0.xml:/home/teamengine/te_base/forms/wcs-1.0.0.xml
+    command: /run-test.sh wcs10

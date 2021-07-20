@@ -1,0 +1,13 @@
+version: '3.0'
+
+services:
+  geoserver:
+    image: ogccite/geoserver:wms13
+    build:
+      args:
+        GEOSERVER_DATA_DIR_SRC: "./wms13/citewms-1.3"
+
+  teamengine:
+    volumes:
+      - ./wms13/wms-1.3.0.xml:/home/teamengine/te_base/forms/wms-1.3.0.xml
+    command: /run-test.sh wms13

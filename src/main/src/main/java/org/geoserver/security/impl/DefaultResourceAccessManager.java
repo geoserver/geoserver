@@ -550,7 +550,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
             String wsNameProperty;
             if (LayerGroupInfo.class.isAssignableFrom(clazz)) {
                 // resource.store.workspace.name is not applicable for layergroups
-                wsNameProperty = "workspace.name";           
+                wsNameProperty = "workspace.name";
             } else if (PublishedInfo.class.isAssignableFrom(clazz)) {
                 wsNameProperty = "resource.store.workspace.name";
             } else {

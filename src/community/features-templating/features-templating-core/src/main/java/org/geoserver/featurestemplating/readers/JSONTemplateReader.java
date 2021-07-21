@@ -131,7 +131,6 @@ public class JSONTemplateReader implements TemplateReader {
                     currentBuilder.addChild(maker.build());
                 } else {
                     if (valueNode.isObject()) {
-                        currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
                         maker.name(entryName);
                         // if the parent of the template builder being created
                         // is a root one, in case of simplified template support,
@@ -144,9 +143,11 @@ public class JSONTemplateReader implements TemplateReader {
                     } else if (valueNode.isArray()) {
                         getBuilderFromJsonArray(entryName, valueNode, currentBuilder, maker);
                     } else {
-                        if (!jumpField)
+                        if (!jumpField) {
+                            currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
                             getBuilderFromJsonAttribute(
                                     entryName, valueNode, currentBuilder, maker);
+                        }
                     }
                 }
             }

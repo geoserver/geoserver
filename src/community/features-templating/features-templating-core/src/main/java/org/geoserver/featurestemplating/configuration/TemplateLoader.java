@@ -8,9 +8,12 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.emf.common.util.URI;
@@ -20,6 +23,8 @@ import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.visitors.SimplifiedPropertyReplacer;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.featurestemplating.validation.TemplateValidator;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.geotools.data.complex.DataAccessRegistry;
@@ -30,61 +35,31 @@ import org.opengis.feature.type.FeatureType;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /** Manage the cache and the retrieving for all templates files */
-public class TemplateConfiguration {
+public class TemplateLoader {
 
     private final LoadingCache<CacheKey, Template> templateCache;
     private GeoServerDataDirectory dataDirectory;
 
-    public TemplateConfiguration(GeoServerDataDirectory dd) {
+    public TemplateLoader(GeoServerDataDirectory dd) {
         this.dataDirectory = dd;
         templateCache =
                 CacheBuilder.newBuilder()
                         .maximumSize(100)
                         .initialCapacity(1)
                         .expireAfterAccess(120, TimeUnit.MINUTES)
-                        .build(
-                                new CacheLoader<CacheKey, Template>() {
-                                    @Override
-                                    public Template load(CacheKey key) {
-                                        NamespaceSupport namespaces = null;
-                                        try {
-                                            FeatureType type = key.getResource().getFeatureType();
-                                            namespaces = declareNamespaces(type);
-                                        } catch (IOException e) {
-                                            throw new RuntimeException(
-                                                    "Error retrieving FeatureType "
-                                                            + key.getResource().getName()
-                                                            + "Exception is: "
-                                                            + e.getMessage());
-                                        }
-                                        Resource resource =
-                                                getDataDirectory()
-                                                        .get(key.getResource(), key.getPath());
-                                        Template template =
-                                                new Template(
-                                                        resource,
-                                                        new TemplateReaderConfiguration(
-                                                                namespaces));
-                                        RootBuilder builder = template.getRootBuilder();
-                                        if (builder != null) {
-                                            replaceSimplifiedPropertiesIfNeeded(
-                                                    key.getResource(), builder);
-                                        }
-                                        return template;
-                                    }
-                                });
+                        .build(new TemplateCacheLoader());
     }
 
     /**
-     * Get the template related to the featureType. If template has benn modified updates the cache
-     * with the new JsonLdTemplate
+     * Get the template related to the featureType. If template has been modified updates the cache
+     * with the new Template
      */
     public RootBuilder getTemplate(FeatureTypeInfo typeInfo, String outputFormat)
             throws ExecutionException {
-        String fileName =
-                TemplateIdentifier.getTemplateIdentifierFromOutputFormat(outputFormat)
-                        .getFilename();
-        CacheKey key = new CacheKey(typeInfo, fileName);
+        String templateIdentifier = evaluatesTemplateRule(typeInfo);
+        if (templateIdentifier == null)
+            templateIdentifier = TemplateIdentifier.fromOutputFormat(outputFormat).getFilename();
+        CacheKey key = new CacheKey(typeInfo, templateIdentifier);
         Template template = templateCache.get(key);
         boolean updateCache = false;
         if (template.checkTemplate()) updateCache = true;
@@ -184,7 +159,7 @@ public class TemplateConfiguration {
 
                 DataAccessRegistry registry = AppSchemaDataAccessRegistry.getInstance();
                 FeatureTypeMapping featureTypeMapping =
-                        registry.mappingByElement(featureTypeInfo.getQualifiedName());
+                        registry.mappingByElement(featureTypeInfo.getQualifiedNativeName());
                 if (featureTypeMapping != null) {
                     SimplifiedPropertyReplacer visitor =
                             new SimplifiedPropertyReplacer(featureTypeMapping);
@@ -193,6 +168,71 @@ public class TemplateConfiguration {
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    // evaluates the template rule associated to the featureTypeInfo and return the TemplateInfo id.
+    private String evaluatesTemplateRule(FeatureTypeInfo featureTypeInfo) {
+        List<TemplateRule> matching = new ArrayList<>();
+        TemplateLayerConfig config =
+                featureTypeInfo
+                        .getMetadata()
+                        .get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
+        if (config == null || config.getTemplateRules().isEmpty()) return null;
+        else {
+            Set<TemplateRule> rules = config.getTemplateRules();
+            Request request = Dispatcher.REQUEST.get();
+            for (TemplateRule r : rules) {
+                if (r.applyRule(request)) matching.add(r);
+            }
+        }
+        int size = matching.size();
+        if (size > 0) {
+            if (size > 1) {
+                TemplateRule.TemplateRuleComparator comparator =
+                        new TemplateRule.TemplateRuleComparator();
+                matching.sort(comparator);
+            }
+            return matching.get(0).getTemplateIdentifier();
+        }
+
+        return null;
+    }
+
+    public void cleanCache(FeatureTypeInfo fti, String templateIdentifier) {
+        CacheKey key = new CacheKey(fti, templateIdentifier);
+        if (templateCache.getIfPresent(key) != null) this.templateCache.invalidate(key);
+    }
+
+    private TemplateFileManager getTemplateFileManager() {
+        return TemplateFileManager.get();
+    }
+
+    private class TemplateCacheLoader extends CacheLoader<CacheKey, Template> {
+        @Override
+        public Template load(CacheKey key) {
+            NamespaceSupport namespaces = null;
+            try {
+                FeatureType type = key.getResource().getFeatureType();
+                namespaces = declareNamespaces(type);
+            } catch (IOException e) {
+                throw new RuntimeException(
+                        "Error retrieving FeatureType "
+                                + key.getResource().getName()
+                                + "Exception is: "
+                                + e.getMessage());
+            }
+            TemplateInfo templateInfo = TemplateInfoDAO.get().findById(key.getPath());
+            Resource resource;
+            if (templateInfo != null)
+                resource = getTemplateFileManager().getTemplateResource(templateInfo);
+            else resource = getDataDirectory().get(key.getResource(), key.getPath());
+            Template template = new Template(resource, new TemplateReaderConfiguration(namespaces));
+            RootBuilder builder = template.getRootBuilder();
+            if (builder != null) {
+                replaceSimplifiedPropertiesIfNeeded(key.getResource(), builder);
+            }
+            return template;
         }
     }
 }

@@ -149,7 +149,6 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
                 new StringBuilder("ogc/features/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
-                        .append("&filter-lang=cql-text")
                         .append("&filter= features.gsml:positionalAccuracy.valueArray1 > 120");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         JSONArray features = result.getJSONArray("features");

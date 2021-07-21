@@ -34,8 +34,7 @@ public class GMLTemplateWriter extends XMLTemplateWriter {
 
     public GMLTemplateWriter(XMLStreamWriter streamWriter, String outputFormat) {
         super(streamWriter);
-        TemplateIdentifier identifier =
-                TemplateIdentifier.getTemplateIdentifierFromOutputFormat(outputFormat);
+        TemplateIdentifier identifier = TemplateIdentifier.fromOutputFormat(outputFormat);
         switch (identifier) {
             case GML32:
                 this.versionManager = new GML32DialectManager(streamWriter);

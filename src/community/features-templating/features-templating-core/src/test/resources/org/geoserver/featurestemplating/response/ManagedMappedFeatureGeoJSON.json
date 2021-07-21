@@ -1,32 +1,34 @@
 {
-  "@id": "${@id}",
+  "$${env('id','@id')}": "${@id}",
   "@type": [
     "Feature",
     "gsml:MappedFeature",
     "http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature"
   ],
-  "name": "$${strConcat('FeatureName: ', xpath('gml:name'))}",
+  "name": "${gml:name}",
   "gsml:positionalAccuracy": {
-    "type": "gsml:CGI_NumericValue",
-    "value": "${gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue}"
+    "type": "$${env('positionalAccuracyType','CGI_NumericValue')}",
+    "value": "${gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue}",
+    "valueArray": ["${gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue}","someStaticVal","$${strConcat('duplicated value: ', xpath('gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue'))}"]
   },
   "gsml:GeologicUnit": {
     "$source": "gsml:specification/gsml:GeologicUnit",
     "@id": "${@id}",
-    "description": "${gml:description}",
+    "description": "$${xpath(env('description','gml:description'))}",
     "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
     "gsml:composition": [
       {
-        "$source": "gsml:composition"
+        "$source": "$${strConcat('gsml:',env('source', 'composition'))}"
       },
       {
+        "previousContextValue": "$${xpath(strConcat('../',env('previous','gml:description')))}",
         "gsml:compositionPart": [
           {
             "$source": "gsml:CompositionPart"
           },
           {
             "gsml:role": {
-              "value": "$${strConcat('FeatureName: ', xpath('gsml:role'))}",
+              "value": "${../gsml:CompositionPart/gsml:role}",
               "@codeSpace": "urn:cgi:classifierScheme:Example:CompositionPartRole"
             },
             "proportion": {
@@ -60,5 +62,8 @@
       }
     ]
   },
-  "geometry": "${gsml:shape}"
+  "geometry": {
+    "@type": "Polygon",
+    "wkt": "$${toWKT(xpath('gsml:shape'))}"
+  }
 }

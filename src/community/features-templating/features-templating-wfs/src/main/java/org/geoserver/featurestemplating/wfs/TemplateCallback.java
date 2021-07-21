@@ -13,8 +13,8 @@ import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geoserver.featurestemplating.configuration.TemplateLoader;
 import org.geoserver.featurestemplating.request.TemplatePathVisitor;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.DispatcherCallback;
@@ -43,11 +43,11 @@ public class TemplateCallback extends AbstractDispatcherCallback {
 
     private GeoServer gs;
 
-    private TemplateConfiguration configuration;
+    private TemplateLoader configuration;
 
     static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
-    public TemplateCallback(GeoServer gs, TemplateConfiguration configuration) {
+    public TemplateCallback(GeoServer gs, TemplateLoader configuration) {
         this.gs = gs;
         this.catalog = gs.getCatalog();
         this.configuration = configuration;
@@ -180,7 +180,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
                     getRootBuildersFromFeatureTypeInfo(typeInfos, outputFormat);
             if (rootBuilders.size() > 0) {
                 TemplateIdentifier templateIdentifier =
-                        TemplateIdentifier.getTemplateIdentifierFromOutputFormat(outputFormat);
+                        TemplateIdentifier.fromOutputFormat(outputFormat);
                 switch (templateIdentifier) {
                     case JSON:
                     case GEOJSON:
@@ -205,8 +205,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
     // null and json-ld output is requested
     private RootBuilder ensureTemplatesExist(FeatureTypeInfo typeInfo, String outputFormat)
             throws ExecutionException {
-        TemplateIdentifier identifier =
-                TemplateIdentifier.getTemplateIdentifierFromOutputFormat(outputFormat);
+        TemplateIdentifier identifier = TemplateIdentifier.fromOutputFormat(outputFormat);
         RootBuilder rootBuilder = null;
         if (identifier != null) {
             rootBuilder = configuration.getTemplate(typeInfo, identifier.getOutputFormat());

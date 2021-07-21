@@ -1,6 +1,7 @@
 {
   "$options": {
-    "flat_output":"$${env('flat_output','true')}"
+    "flat_output":"$${env('flat_output','true')}",
+    "separator":"$${env('separator','_')}"
   },
   "type":"FeatureCollection",
   "features":[

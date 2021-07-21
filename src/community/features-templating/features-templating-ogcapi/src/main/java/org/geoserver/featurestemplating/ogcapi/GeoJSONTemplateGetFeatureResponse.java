@@ -15,8 +15,8 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.Optional;
 import org.geoserver.config.GeoServer;
-import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geoserver.featurestemplating.configuration.TemplateLoader;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geoserver.platform.Operation;
@@ -32,7 +32,7 @@ class GeoJSONTemplateGetFeatureResponse
         extends org.geoserver.featurestemplating.wfs.GeoJSONTemplateGetFeatureResponse {
 
     public GeoJSONTemplateGetFeatureResponse(
-            GeoServer gs, TemplateConfiguration configuration, TemplateIdentifier identifier) {
+            GeoServer gs, TemplateLoader configuration, TemplateIdentifier identifier) {
         super(gs, configuration, identifier);
     }
 

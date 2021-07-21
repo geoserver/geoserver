@@ -50,7 +50,11 @@ public class ManagedComplexFeaturesResponseTest extends JSONLDGetComplexFeatures
 
     @Test
     public void testJsonLdResponse() throws Exception {
-        setUpMappedFeature();
+        setUpComplex(
+                "ManagedMappedFeatureJSONLD.json",
+                "gsml",
+                TemplateIdentifier.JSONLD.getFilename(),
+                mappedFeature);
         StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=gsml:MappedFeature&outputFormat=");
         sb.append("application%2Fld%2Bjson");
@@ -58,6 +62,25 @@ public class ManagedComplexFeaturesResponseTest extends JSONLDGetComplexFeatures
         Object context = result.get("@context");
         checkContext(context);
         assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        assertEquals(5, features.size());
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = (JSONObject) features.get(i);
+            checkMappedFeatureJSON(feature);
+        }
+    }
+
+    @Test
+    public void testGeoJSONResponse() throws Exception {
+        setUpComplex(
+                "ManagedMappedFeatureGeoJSON.json",
+                "gsml",
+                TemplateIdentifier.JSON.getFilename(),
+                mappedFeature);
+        StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
+        sb.append("&TYPENAME=gsml:MappedFeature&outputFormat=");
+        sb.append("application/json");
+        JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(5, features.size());
         for (int i = 0; i < features.size(); i++) {

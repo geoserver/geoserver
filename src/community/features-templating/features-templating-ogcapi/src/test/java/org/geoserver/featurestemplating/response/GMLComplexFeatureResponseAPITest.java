@@ -57,7 +57,7 @@ public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport
         setUpComplex("MappedFeatureGML32.xml", mappedFeature);
         Document doc =
                 getAsDOM(
-                        "ogc/features/collections/gsml:MappedFeature/items?filter-lang=cql-text&f=application%2Fgml%2Bxml%3Bversion%3D3.2"
+                        "ogc/features/collections/gsml:MappedFeature/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2"
                                 + "&filter=wfs:FeatureCollection.wfs:member.gsml:MappedFeature.gsml:specification.gsml:GeologicUnit"
                                 + ".gsml:composition.gsml:CompositionPart.gsml:role='interbedded component'");
         assertXpathCount(3, "//gsml:MappedFeature", doc);

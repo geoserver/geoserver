@@ -18,8 +18,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geoserver.featurestemplating.configuration.TemplateLoader;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.request.TemplatePathVisitor;
 import org.geoserver.featurestemplating.wfs.BaseTemplateGetFeatureResponse;
@@ -59,7 +59,7 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
 
     private Catalog catalog;
 
-    private TemplateConfiguration configuration;
+    private TemplateLoader configuration;
 
     private GeoServer gs;
 
@@ -67,7 +67,7 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    public TemplateCallBackOGC(GeoServer gs, TemplateConfiguration configuration) {
+    public TemplateCallBackOGC(GeoServer gs, TemplateLoader configuration) {
         this.catalog = gs.getCatalog();
         this.configuration = configuration;
         this.gs = gs;
@@ -88,9 +88,10 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
                             getFeatureType((String) operation.getParameters()[0]);
                     RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
                     String filterLang = (String) request.getKvp().get("FILTER-LANG");
-                    if (filterLang != null && filterLang.equalsIgnoreCase("CQL-TEXT")) {
+                    if (filterLang == null || filterLang.equalsIgnoreCase("CQL-TEXT")) {
                         String filter = (String) request.getKvp().get("FILTER");
-                        replaceTemplatePathWithFilter(filter, root, typeInfo, operation);
+                        if (filter != null)
+                            replaceTemplatePathWithFilter(filter, root, typeInfo, operation);
                     }
                     String envParam =
                             request.getRawKvp().get("ENV") != null
@@ -133,9 +134,9 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
         String format = request.getKvp() != null ? (String) request.getKvp().get("f") : null;
         TemplateIdentifier identifier = null;
         if (format != null) {
-            identifier = TemplateIdentifier.getTemplateIdentifierFromOutputFormat(format);
+            identifier = TemplateIdentifier.fromOutputFormat(format);
         } else if (accept != null) {
-            identifier = TemplateIdentifier.getTemplateIdentifierFromOutputFormat(accept);
+            identifier = TemplateIdentifier.fromOutputFormat(accept);
         }
         return identifier;
     }

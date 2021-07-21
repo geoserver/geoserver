@@ -13,8 +13,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
-import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geoserver.featurestemplating.configuration.TemplateLoader;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
@@ -35,14 +35,14 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  */
 public abstract class BaseTemplateGetFeatureResponse extends WFSGetFeatureOutputFormat {
 
-    protected TemplateConfiguration configuration;
+    protected TemplateLoader configuration;
     protected TemplateGetFeatureResponseHelper helper;
     protected TemplateIdentifier identifier;
 
     protected boolean hasGeometry;
 
     public BaseTemplateGetFeatureResponse(
-            GeoServer gs, TemplateConfiguration configuration, TemplateIdentifier identifier) {
+            GeoServer gs, TemplateLoader configuration, TemplateIdentifier identifier) {
         super(gs, identifier.getOutputFormat());
         this.configuration = configuration;
         this.helper = new TemplateGetFeatureResponseHelper(gs.getCatalog(), identifier);

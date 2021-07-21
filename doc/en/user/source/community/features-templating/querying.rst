@@ -3,7 +3,143 @@ Backward Mapping
 
 When performing queries, using CQL filters, against layers that support a templated output, it will be possible to reference the template attributes in the CQL expressions. The plugin will take care of interpreting the CQL filter and translate it, when possible, to a data source native filter. For example, if that data source is a relational database, the CQL filter will be translated to one or multiple SQL queries that will be used to retrieve only the needed data.    
 
-Consider the following JSON-LD output example:
+Consider the following GML output example:
+
+.. code-block:: xml
+
+ <?xml version="1.0" encoding="UTF-8"?>
+ <wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml" xmlns:st="http://www.stations.org/1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" numberOfFeature="0" timeStamp="2021-07-16T08:38:50.735Z">
+   <gml:featureMember>
+      <st:MeteoStations gml:id="MeteoStationsFeature.7">
+         <st:code>Station_BOL</st:code>
+         <st:name>Bologna</st:name>
+         <st:geometry>
+            <gml:Point srsName="EPSG:4326" srsDimension="2">
+               <gml:pos>11.34 44.5</gml:pos>
+            </gml:Point>
+         </st:geometry>
+         <st:temperature>
+            <st:Temperature>
+               <st:time>2016-12-19T11:28:31.000Z</st:time>
+               <st:value>35.0</st:value>
+            </st:Temperature>
+         </st:temperature>
+         <st:temperature>
+            <st:Temperature>
+               <st:time>2016-12-19T11:28:55.000Z</st:time>
+               <st:value>25.0</st:value>
+            </st:Temperature>
+         </st:temperature>
+         <st:pressure>
+            <st:Pressure>
+               <st:time>2016-12-19T11:30:26.000Z</st:time>
+               <st:value>1019.0</st:value>
+            </st:Pressure>
+         </st:pressure>
+         <st:pressure>
+            <st:Pressure>
+               <st:time>2016-12-19T11:30:51.000Z</st:time>
+               <st:value>1015.0</st:value>
+            </st:Pressure>
+         </st:pressure>
+         <st:wind_speed>
+            <st:Wind_speed>
+               <st:time>2016-12-19T11:29:24.000Z</st:time>
+               <st:value>80.0</st:value>
+            </st:Wind_speed>
+         </st:wind_speed>
+      </st:MeteoStations>
+   </gml:featureMember>
+   <gml:featureMember>
+      <st:MeteoStations gml:id="MeteoStationsFeature.13">
+         <st:code>Station_ALS</st:code>
+         <st:name>Alessandria</st:name>
+         <st:geometry>
+            <gml:Point srsName="EPSG:4326" srsDimension="2">
+               <gml:pos>8.63 44.92</gml:pos>
+            </gml:Point>
+         </st:geometry>
+         <st:temperature>
+            <st:Temperature>
+               <st:time>2016-12-19T11:26:40.000Z</st:time>
+               <st:value>20.0</st:value>
+            </st:Temperature>
+         </st:temperature>
+         <st:wind_speed>
+            <st:Wind_speed>
+               <st:time>2016-12-19T11:27:13.000Z</st:time>
+               <st:value>155.0</st:value>
+            </st:Wind_speed>
+         </st:wind_speed>
+      </st:MeteoStations>
+   </gml:featureMember>
+   <gml:featureMember>
+      <st:MeteoStations gml:id="MeteoStationsFeature.21">
+         <st:code>Station_ROV</st:code>
+         <st:name>Rovereto</st:name>
+         <st:geometry>
+            <gml:Point srsName="EPSG:4326" srsDimension="2">
+               <gml:pos>11.05 45.89</gml:pos>
+            </gml:Point>
+         </st:geometry>
+      </st:MeteoStations>
+   </gml:featureMember>
+ </wfs:FeatureCollection>
+
+The following are valid CQL_FILTERS
+
+* :code:`st:name = 'Station_BOL'`.
+* :code:`st:temperature.st:Temperature.st:value < 25`.
+
+Given this underlying GML template:
+
+.. code-block:: xml
+
+  <gft:Template>
+  <gft:Options>
+    <gft:Namespaces xmlns:st="http://www.stations.org/1.0"/>
+  </gft:Options>
+ <st:MeteoStations gml:id="${@id}">
+ <st:code>$${strConcat('Station_',st:code)}</st:code>
+ <st:name>${st:common_name}</st:name>
+ <st:geometry>${st:position}</st:geometry>
+ <st:temperature gft:isCollection="true" gft:source="st:meteoObservations/st:MeteoObservationsFeature" gft:filter="xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'temperature'">
+	<st:Temperature>
+		<st:time>${st:time}</st:time>
+		<st:value>${st:value}</st:value>
+	</st:Temperature>
+ </st:temperature>
+ <st:pressure gft:isCollection="true" gft:source="st:meteoObservations/st:MeteoObservationsFeature"  gft:filter="xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'pressure'">
+	<st:Pressure>
+		<st:time>${st:time}</st:time>
+		<st:value>${st:value}</st:value>
+	</st:Pressure>
+ </st:pressure>
+ <st:wind_speed gft:isCollection="true" gft:source="st:meteoObservations/st:MeteoObservationsFeature"  gft:filter="xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'wind speed'">
+	<st:Wind_speed>
+		<st:time>${st:time}</st:time>
+		<st:value>${st:value}</st:value>
+	</st:Wind_speed>
+ </st:wind_speed>
+ </st:MeteoStations>
+ </gft:Template>
+
+The above cql_filter will be internally translated to:
+
+* :code:`strConcat('Station_',st:code) = 'Station_BOL'`.
+* :code:`st:meteoObservations/st:MeteoObservationsFeature/st:MeteoParametersFeature/st:value < 25 AND st:meteoObservations/st:MeteoObservationsFeature/st:MeteoParametersFeature/st:param_name = 'temperature'`.
+
+As it is possible to see from the second example, if a template filter is defined for the value we want to filter by, the filter will be automatically included in the query.
+
+
+
+Backwards mapping capability is availabel for all the output formats. Consider the following JSON-LD output example:
+
+The following are example of valid CQL filters:
+
+* gsml:GeologicUnit.description = 'some string value'
+* name in ("MERCIA MUDSTONE", "UKNOWN")
+* gsml:positionalAccuracy.valueArray1 = "100"
 
 .. code-block:: json
 
@@ -122,11 +258,8 @@ Consider the following JSON-LD output example:
 
 The following are example of valid CQL filters:
 
-* features.gsml:GeologicUnit.description = 'some string value'
-* features."@id" = "3245"
-* features.name in ("MERCIA MUDSTONE", "UKNOWN")
-* features.gsml:positionalAccuracy.valueArray1 = "100"
+* gsml:GeologicUnit.description = 'some string value'
+* name in ("MERCIA MUDSTONE", "UKNOWN")
+* gsml:positionalAccuracy.valueArray1 = "100"
 
 As the last example shows, to refer to elements in arrays listing simple attributes, the index of the attribute is needed, starting from 1, in the form ``{attributeName}{index}``, as in ``features.gsml:positionalAccuracy.valueArray1.``
-
-Is worth mentioning that, as demonstrated in the examples above, ``""`` can be used to escape the attributes path components.

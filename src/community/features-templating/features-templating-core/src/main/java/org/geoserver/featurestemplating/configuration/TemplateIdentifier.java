@@ -36,7 +36,7 @@ public enum TemplateIdentifier {
      * @param outputFormat the outputFormat for which to find a TemplateIdentifier.
      * @return the TemplateIdentifier matching the outputFormat.
      */
-    public static TemplateIdentifier getTemplateIdentifierFromOutputFormat(String outputFormat) {
+    public static TemplateIdentifier fromOutputFormat(String outputFormat) {
         TemplateIdentifier identifier = null;
         String trimOutputFormat = outputFormat.trim().replaceAll(" ", "");
         if (trimOutputFormat.equalsIgnoreCase(TemplateIdentifier.JSON.getOutputFormat()))

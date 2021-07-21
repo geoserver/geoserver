@@ -51,37 +51,7 @@ public class JSONLDContextValidation {
             if (tmpFile != null) {
                 try (InputStream is = new FileInputStream(tmpFile)) {
                     Object json = JsonUtils.fromInputStream(is);
-                    Map<String, Object> jsonMap = (Map<String, Object>) json;
-                    JsonLdOptions options = new JsonLdOptions();
-                    Object context = jsonMap.get("@context");
-                    options.setExpandContext(context);
-                    options.setAllowContainerSetOnType(true);
-                    // run the expansion algorithm
-                    List<Object> expanded = JsonLdProcessor.expand(json, options);
-                    if (expanded.size() == 0) {
-                        // list is void it means that there is no reference for the
-                        // feature fields name inside the context.
-                        throw new RuntimeException(
-                                "Validation failed. Unable to resolve the field features "
-                                        + " against the @context");
-                    }
-                    // run the compaction
-                    Object compacted = JsonLdProcessor.compact(expanded, context, options);
-                    // compares the original json-ld to the result of the compaction
-                    checkJsonLdByKeys(json, compacted);
-                    if (failedFields.size() > 0) {
-                        Iterator<String> it = failedFields.iterator();
-                        StringBuilder sb = new StringBuilder();
-                        while (it.hasNext()) {
-                            sb.append(it.next());
-                            if (it.hasNext()) sb.append(",");
-                        }
-                        sb.append(". ");
-                        throw new ServiceException(
-                                "Validation failed. Unable to resolve the following fields"
-                                        + " against the @context: "
-                                        + sb.toString());
-                    }
+                    validate(json);
                 }
             }
         } catch (JsonLdError jsonLdError) {
@@ -93,6 +63,40 @@ public class JSONLDContextValidation {
             throw new ServiceException(e);
         } finally {
             tmpFile.delete();
+        }
+    }
+
+    public void validate(Object json) {
+        Map<String, Object> jsonMap = (Map<String, Object>) json;
+        JsonLdOptions options = new JsonLdOptions();
+        Object context = jsonMap.get("@context");
+        options.setExpandContext(context);
+        options.setAllowContainerSetOnType(true);
+        // run the expansion algorithm
+        List<Object> expanded = JsonLdProcessor.expand(json, options);
+        if (expanded.size() == 0) {
+            // list is void it means that there is no reference for the
+            // feature fields name inside the context.
+            throw new RuntimeException(
+                    "Validation failed. Unable to resolve the field features "
+                            + " against the @context");
+        }
+        // run the compaction
+        Object compacted = JsonLdProcessor.compact(expanded, context, options);
+        // compares the original json-ld to the result of the compaction
+        checkJsonLdByKeys(json, compacted);
+        if (failedFields.size() > 0) {
+            Iterator<String> it = failedFields.iterator();
+            StringBuilder sb = new StringBuilder();
+            while (it.hasNext()) {
+                sb.append(it.next());
+                if (it.hasNext()) sb.append(",");
+            }
+            sb.append(". ");
+            throw new ServiceException(
+                    "Validation failed. Unable to resolve the following fields"
+                            + " against the @context: "
+                            + sb.toString());
         }
     }
 

@@ -284,6 +284,19 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         }
     }
 
+    public void setModeAndSubMode(String mode, String subMode) {
+        this.mode = mode;
+        AjaxRequestTarget requestTarget = RequestCycle.get().find(AjaxRequestTarget.class);
+        if (requestTarget != null) {
+            String javascript = "document.gsEditors." + editor.getMarkupId() + ".setOption('mode',";
+            String modeObj = "{name: \"" + mode + "\", " + subMode + ": true}";
+            javascript += modeObj + ");";
+            requestTarget.appendJavaScript(javascript);
+            editor.modelChanged();
+            requestTarget.add(editor);
+        }
+    }
+
     public void reset() {
         super.validate();
         editor.validate();
@@ -331,6 +344,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
                     CodeMirrorEditor.class.getResourceAsStream("CodeMirrorEditor.js")) {
                 String js = convertStreamToString(is);
                 js = js.replaceAll("\\$componentId", editor.getMarkupId());
+                js = js.replaceAll("\\$codeMirrorEditorId", getMarkupId());
                 js = js.replaceAll("\\$mode", mode);
                 js = js.replaceAll("\\$container", container.getMarkupId());
                 return js;

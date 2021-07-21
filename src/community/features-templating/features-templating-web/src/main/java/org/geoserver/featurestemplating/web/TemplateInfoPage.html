@@ -1,0 +1,14 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head>
+    <title><wicket:message key="title">Template Info</wicket:message></title>
+</head>
+<body>
+<wicket:extend>
+    <div style="padding-bottom: 2em">
+        <div><a class="add-link" href="#" wicket:id="addNew"><wicket:message key="addNew" /></a></div>
+        <div><a class="remove-link" href="#" wicket:id="removeSelected"><wicket:message key="removeSelected" /></a></div>
+    </div>
+    <div wicket:id="tablePanel"></div>
+</wicket:extend>
+</body>
+</html>

@@ -278,7 +278,8 @@ public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
             if (attributeNames.length > 0 && attributeNames[0].equals(pathPart)) {
                 result = "@" + strName(xpath);
                 mapping.getSourceExpression().accept(extractor, null);
-                result = mapping.getTargetXPath().toString() + "/" + result;
+                if (!(mapping.getSourceExpression() instanceof JdbcMultipleValue))
+                    result = mapping.getTargetXPath().toString() + "/" + result;
                 break;
             }
         }

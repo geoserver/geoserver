@@ -21,7 +21,7 @@ In order to build the pyramid we'll use the `gdal_retile.py <http://www.gdal.org
 The following commands will build a pyramid on disk::
 
    mkdir bmpyramid
-   gdal_retile.py -v -r bilinear -levels 4 -ps 2048 2048 -co "TILED=YES" -co "COMPRESS=JPEG" -targetDir bmpyramid bmreduced.tiff
+   gdal_retile.py -v -r bilinear -levels 4 -ps 2048 2048 -co "TILED=YES" -targetDir bmpyramid bmreduced.tiff
    
 The `gdal_retile.py  <http://www.gdal.org/gdal_retile.html>`_ user guide provides a detailed explanation for all the possible parameters, here is a description of the ones used in the command line above:
    
@@ -30,7 +30,6 @@ The `gdal_retile.py  <http://www.gdal.org/gdal_retile.html>`_ user guide provide
   * `-levels 4`: the number of levels in the pyramid
   * `-ps 2048 2048`: each tile in the pyramid will be a 2048x2048 GeoTIFF
   * `-co "TILED=YES"`: each GeoTIFF tile in the pyramid will be inner tiled
-  * `-co "COMPRESS=JPEG"`: each GeoTIFF tile in the pyramid will be JPEG compressed (trades small size for higher performance, try out it without this parameter too)
   * `-targetDir bmpyramid`: build the pyramid in the bmpyramid directory. The target directory must exist and be empty
   * `bmreduced.tiff`: the source file
   

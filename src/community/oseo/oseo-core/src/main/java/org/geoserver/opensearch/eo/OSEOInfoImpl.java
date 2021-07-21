@@ -20,6 +20,8 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
 
     List<ProductClass> productClasses = new ArrayList<>(ProductClass.DEFAULT_PRODUCT_CLASSES);
 
+    String attribution;
+
     @Override
     public int getRecordsPerPage() {
         return recordsPerPage == 0 ? DEFAULT_RECORDS_PER_PAGE : recordsPerPage;
@@ -57,5 +59,13 @@ public class OSEOInfoImpl extends ServiceInfoImpl implements OSEOInfo {
     @Override
     public void setOpenSearchAccessStoreId(String openSearchAccessStoreId) {
         this.openSearchAccessStoreId = openSearchAccessStoreId;
+    }
+
+    public String getAttribution() {
+        return attribution;
+    }
+
+    public void setAttribution(String attribution) {
+        this.attribution = attribution;
     }
 }

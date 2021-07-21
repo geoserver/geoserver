@@ -145,6 +145,11 @@ public class DescriptionTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/os:OpenSearchDescription/os:Language", equalTo("en-us")));
         assertThat(dom, hasXPath("/os:OpenSearchDescription/os:OutputEncoding", equalTo("UTF-8")));
         assertThat(dom, hasXPath("/os:OpenSearchDescription/os:InputEncoding", equalTo("UTF-8")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "/os:OpenSearchDescription/os:Attribution",
+                        equalTo("Copyright 2020-2030, GeoServer")));
 
         // check the self link
         assertThat(

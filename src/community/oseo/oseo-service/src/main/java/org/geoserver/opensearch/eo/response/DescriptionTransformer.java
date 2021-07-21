@@ -127,6 +127,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
             element("Language", "en-us");
             element("OutputEncoding", "UTF-8");
             element("InputEncoding", "UTF-8");
+            if (oseo.getAttribution() != null) element("Attribution", oseo.getAttribution());
         }
 
         private String buildSelfUrl(OSEODescription description) {

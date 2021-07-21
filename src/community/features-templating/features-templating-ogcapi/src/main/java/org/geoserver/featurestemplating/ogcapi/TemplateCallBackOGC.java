@@ -24,6 +24,7 @@ import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.request.TemplatePathVisitor;
 import org.geoserver.featurestemplating.wfs.BaseTemplateGetFeatureResponse;
 import org.geoserver.featurestemplating.wfs.GMLTemplateResponse;
+import org.geoserver.featurestemplating.wfs.HTMLTemplateResponse;
 import org.geoserver.featurestemplating.wfs.TemplateCallback;
 import org.geoserver.ogcapi.APIService;
 import org.geoserver.ogcapi.features.FeatureService;
@@ -80,12 +81,15 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
     @Override
     public Operation operationDispatched(Request request, Operation operation) {
         TemplateIdentifier identifier = getTemplateIdentifier(request);
-        if (identifier != null) {
+        boolean isOpWithParams = operation != null && operation.getParameters().length > 0;
+        if (identifier != null && isOpWithParams) {
             String outputFormat = identifier.getOutputFormat();
+            Object param = operation.getParameters()[0];
+            String ftName = param != null ? param.toString() : null;
             if ("FEATURES".equalsIgnoreCase(request.getService()) && outputFormat != null) {
                 try {
-                    FeatureTypeInfo typeInfo =
-                            getFeatureType((String) operation.getParameters()[0]);
+                    FeatureTypeInfo typeInfo = catalog.getFeatureTypeByName(ftName);
+                    if (typeInfo == null) return operation;
                     RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
                     String filterLang = (String) request.getKvp().get("FILTER-LANG");
                     if (filterLang == null || filterLang.equalsIgnoreCase("CQL-TEXT")) {
@@ -248,6 +252,21 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
             case GML32:
                 templatingResp =
                         new GMLTemplateResponse(gs, configuration, identifier) {
+                            @Override
+                            protected void write(
+                                    FeatureCollectionResponse featureCollection,
+                                    OutputStream output,
+                                    Operation getFeature)
+                                    throws ServiceException {
+                                FeaturesResponse fr = (FeaturesResponse) result;
+                                super.write(fr.getResponse(), output, operation);
+                            }
+                        };
+                break;
+
+            case HTML:
+                templatingResp =
+                        new HTMLTemplateResponse(gs, configuration) {
                             @Override
                             protected void write(
                                     FeatureCollectionResponse featureCollection,

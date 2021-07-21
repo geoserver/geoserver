@@ -105,7 +105,9 @@ public class TemplatePreviewPanel extends Panel {
                 new OnChangeAjaxBehavior() {
                     @Override
                     protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
-                        if (SupportedFormat.GML.equals(outputFormatsDropDown.getModelObject())) {
+                        SupportedFormat outputFormat = outputFormatsDropDown.getModelObject();
+                        if (SupportedFormat.GML.equals(outputFormat)
+                                || SupportedFormat.HTML.equals(outputFormat)) {
                             previewEditor.setMode("xml");
                         } else {
                             previewEditor.setModeAndSubMode("javascript", "json");
@@ -284,7 +286,8 @@ public class TemplatePreviewPanel extends Panel {
             realOutputFormat = TemplateIdentifier.JSONLD.getOutputFormat();
         } else if (outputFormatName.equals(SupportedFormat.GML)) {
             realOutputFormat = "application/gml+xml; version=3.2";
-        }
+        } else if (outputFormatName.equals(SupportedFormat.HTML))
+            realOutputFormat = TemplateIdentifier.HTML.getOutputFormat();
         return realOutputFormat;
     }
 
@@ -489,8 +492,9 @@ public class TemplatePreviewPanel extends Panel {
     private String prettyPrintData(SupportedFormat outputFormat, String data) {
         String prettyPrint;
         String exceptionPrefix = "<ows:";
-        if (outputFormat.equals(SupportedFormat.GML) || data.contains(exceptionPrefix))
-            prettyPrint = prettyPrintXML(data);
+        if (outputFormat.equals(SupportedFormat.GML)
+                || data.contains(exceptionPrefix)
+                || outputFormat.equals(SupportedFormat.HTML)) prettyPrint = prettyPrintXML(data);
         else prettyPrint = prettyPrintJson(data);
         return prettyPrint;
     }

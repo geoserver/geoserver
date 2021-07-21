@@ -91,6 +91,7 @@ public abstract class AbstractTemplateValidator {
                         // and the matching cannot cover all the possible cases of mismatch between
                         // names
                         validateTopLevelSource(sb);
+                    sourcesFound.add(sb.getStrSource());
                     if (!isValid) {
                         failingAttribute = "Source: " + sb.getStrSource();
                         return false;
@@ -187,7 +188,6 @@ public abstract class AbstractTemplateValidator {
         } else {
             strSource += "/" + sourcePart;
         }
-        sourcesFound.add(sourcePart);
         return new AttributeExpressionImpl(strSource, source.getNamespaceContext());
     }
 
@@ -223,6 +223,12 @@ public abstract class AbstractTemplateValidator {
         String newSource = source;
         if (newSource != null) {
             int lastSource = sourcesFound.size() - 1;
+            // If the context position is equal
+            // to the list of sources is due the fact that the top level source was
+            // omitted in template since it is not mandatory.
+            // In case the contextPos is equal due an error of the user the validation
+            // will fail anyway
+            if (contextPos == sourcesFound.size()) contextPos--;
             while (i < contextPos) {
                 String toReplace = sourcesFound.get(lastSource - i);
                 strXpath = strXpath.replaceFirst("\\.\\./", "");

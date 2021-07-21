@@ -19,6 +19,7 @@ import org.geoserver.featurestemplating.writers.GMLTemplateWriter;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.featurestemplating.writers.JSONLDWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
+import org.geoserver.featurestemplating.writers.XHTMLTemplateWriter;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.TypeInfoCollectionWrapper;
 import org.geoserver.wfs.request.GetFeatureRequest;
@@ -64,11 +65,14 @@ public class TemplateGetFeatureResponseHelper {
             case GML2:
             case GML31:
             case GML32:
+            case HTML:
                 XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
                 try {
                     XMLStreamWriter xMLStreamWriter =
                             xMLOutputFactory.createXMLStreamWriter(output);
-                    outputWriter = new GMLTemplateWriter(xMLStreamWriter, version);
+                    if (format.equals(TemplateIdentifier.HTML))
+                        outputWriter = new XHTMLTemplateWriter(xMLStreamWriter);
+                    else outputWriter = new GMLTemplateWriter(xMLStreamWriter, version);
                     break;
 
                 } catch (XMLStreamException e) {

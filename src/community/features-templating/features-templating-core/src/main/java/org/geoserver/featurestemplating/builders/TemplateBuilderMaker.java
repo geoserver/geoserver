@@ -71,7 +71,7 @@ public class TemplateBuilderMaker {
      * @return this TemplateBuilderMaker
      */
     public TemplateBuilderMaker textContent(String textContent) {
-        this.textContent = textContent;
+        this.textContent = textContent.trim();
         return this;
     }
 

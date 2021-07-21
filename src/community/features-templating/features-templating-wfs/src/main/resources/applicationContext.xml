@@ -13,5 +13,10 @@
         <constructor-arg ref="geoServer"/>
         <constructor-arg ref="templateConfiguration"/>
     </bean>
+
+    <bean id="HTMLGetFeatureResponse" class="org.geoserver.featurestemplating.wfs.HTMLTemplateResponse">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="templateConfiguration"/>
+    </bean>
     
 </beans>

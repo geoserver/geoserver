@@ -10,7 +10,8 @@ import java.util.List;
 public enum SupportedFormat {
     JSONLD("JSON-LD"),
     GML("GML"),
-    GEOJSON("GeoJSON");
+    GEOJSON("GeoJSON"),
+    HTML("HTML");
 
     private String format;
 
@@ -23,11 +24,10 @@ public enum SupportedFormat {
     }
 
     public static List<SupportedFormat> getByExtension(String extensions) {
-        if (extensions == null) {
-            return Arrays.asList(SupportedFormat.values());
-        } else if (extensions.equals("xml")) {
-            return Arrays.asList(GML);
-        } else return Arrays.asList(JSONLD, GEOJSON);
+        if (extensions == null) return Arrays.asList(SupportedFormat.values());
+        else if (extensions.equals("xml")) return Arrays.asList(GML);
+        else if (extensions.equals("xhtml")) return Arrays.asList(HTML);
+        else return Arrays.asList(JSONLD, GEOJSON);
     }
 
     public static String toExtension(SupportedFormat format) {

@@ -47,11 +47,11 @@ public class CompositeBuilder extends SourceBuilder {
      */
     protected void evaluateChildren(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        if (ownOutput) writer.startObject(getKey(), encodingHints);
+        if (ownOutput) writer.startObject(getKey(context), encodingHints);
         for (TemplateBuilder jb : children) {
             jb.evaluate(writer, context);
         }
-        if (ownOutput) writer.endObject(getKey(), encodingHints);
+        if (ownOutput) writer.endObject(getKey(context), encodingHints);
     }
 
     /**
@@ -95,10 +95,5 @@ public class CompositeBuilder extends SourceBuilder {
     @Override
     public Object accept(TemplateVisitor visitor, Object value) {
         return visitor.visit(this, value);
-    }
-
-    @Override
-    protected void writeKey(TemplateOutputWriter writer) throws IOException {
-        if (key != null && !key.equals("")) writer.writeElementName(key, getEncodingHints());
     }
 }

@@ -36,7 +36,7 @@ public class FlatCompositeBuilder extends CompositeBuilder implements FlatBuilde
             throws IOException {
         Object o = context.getCurrentObj();
         addSkipObjectEncodingHint(context);
-        String key = getKey();
+        String key = getKey(context);
         boolean isFeatureTypeBuilder = isFeatureTypeBuilder(o);
         if (isFeatureTypeBuilder
                 || (key != null && key.equals(AttributeNameHelper.PROPERTIES_KEY))) {

@@ -53,15 +53,15 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
     @Override
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        Object o = null;
         if (evaluateFilter(context)) {
+            Object o = null;
             if (xpath != null) {
                 o = evaluateXPath(context);
             } else if (cql != null) {
-                o = evaluateExpressions(context);
+                o = evaluateExpressions(cql, context);
             }
             addChildrenEvaluationToEncodingHints(writer, context);
-            writeValue(writer, o);
+            writeValue(writer, o, context);
         }
     }
 
@@ -70,11 +70,14 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
      *
      * @param writer the template writer
      * @param value the value to write
+     * @param context
      * @throws IOException
      */
-    protected void writeValue(TemplateOutputWriter writer, Object value) throws IOException {
+    protected void writeValue(
+            TemplateOutputWriter writer, Object value, TemplateBuilderContext context)
+            throws IOException {
         if (canWriteValue(value)) {
-            writer.writeElementNameAndValue(getKey(), value, getEncodingHints());
+            writer.writeElementNameAndValue(getKey(context), value, getEncodingHints());
         }
     }
 
@@ -92,6 +95,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
      * @param context the context against which evaluate the xpath
      * @return the evaluation result
      */
+    // TODO: thi and evaluateExpression are almost identical. Can they be merged?
     protected Object evaluateXPath(TemplateBuilderContext context) {
         int i = 0;
         while (i < contextPos) {
@@ -115,10 +119,11 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
     /**
      * Evaluate the Expression against the provided context
      *
+     * @param expression
      * @param context the context against which evaluate the xpath
      * @return the evaluation result
      */
-    protected Object evaluateExpressions(TemplateBuilderContext context) {
+    protected Object evaluateExpressions(Expression expression, TemplateBuilderContext context) {
         Object result = null;
         try {
             int i = 0;
@@ -127,7 +132,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
                 i++;
             }
             Object contextObject = context.getCurrentObj();
-            result = cql.evaluate(contextObject);
+            result = expression.evaluate(contextObject);
             result = JSONFieldSupport.parseWhenJSON(cql, contextObject, result);
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Unable to evaluate expression. Exception: {0}", e.getMessage());
@@ -172,7 +177,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
             o = evaluateXPath(context);
 
         } else if (cql != null) {
-            o = evaluateExpressions(context);
+            o = evaluateExpressions(cql, context);
         }
         if (o == null) return false;
         return true;

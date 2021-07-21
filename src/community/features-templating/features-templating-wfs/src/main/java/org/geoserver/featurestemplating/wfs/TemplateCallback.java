@@ -191,6 +191,9 @@ public class TemplateCallback extends AbstractDispatcherCallback {
                     case GML2:
                         response = new GMLTemplateResponse(gs, configuration, templateIdentifier);
                         break;
+                    case HTML:
+                        response = new HTMLTemplateResponse(gs, configuration);
+                        break;
                 }
             }
         } catch (Exception e) {

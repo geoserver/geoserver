@@ -76,7 +76,7 @@ The following are the directives available in XML based templates.
      - It has to be the root element of an XML template (:code:`<gft:Template> Template content</gft:Template>`)
    * - defines options to customize the output outside of a feature scope
      - gft:Options
-     - specify it as an element at the beggining of the xml document after the :code:`<gft:Template>` one (:code:`<gft:Options></gft:Options>`). GML options: :code:`<gtf:Namespaces>`,:code:`<gtf:SchemaLocation>`
+     - specify it as an element at the beggining of the xml document after the :code:`<gft:Template>` one (:code:`<gft:Options></gft:Options>`). GML options: :code:`<gtf:Namespaces>`,:code:`<gtf:SchemaLocation>`. HTML options: :code:`<script>`,:code:`<style>`, :code: `<link>`.
    * - allows including a template into another
      - $include, gft:includeFlat
      - specify the :code:`$include` option as an element value (:code:`<element>$include{included.xml}</element>`) and the :code:`gft:includeFlat` as an element having the included template as text content (:code:`<gft:includeFlat>included.xml</gft:includeFlat>`)
@@ -864,6 +864,141 @@ GML output has two :code:`options`: Namespaces and SchemaLocation, that define t
   </st:MeteoStations>
   </gft:Template>
 
+
+HTML
+""""
+
+HTML templates can define three :code:`options`: :code:`<script>` to allow defining javascript, :code:`<style>` to allow defining css content and :code:`<link>` to allow linking to external resources. The content of :code:`<script>` and :code:`<style>` needs to be provided as :code:`<![CDATA[`.
+
+The following is an example of a HTML template that will output the Stations features as a tree view. Also in this example we are using the same filter on :code:`st:meteoObservations` as in the other template examples.:: 
+
+ 
+ <gft:Template>
+   <gft:Options>
+      <style>
+      <![CDATA[ul, #myUL {
+      list-style-type: none;
+      }
+      #myUL {
+      margin: 0;
+      padding: 0;
+      }
+      .caret {
+      cursor: pointer;
+      -webkit-user-select: none; /* Safari 3.1+ */
+      -moz-user-select: none; /* Firefox 2+ */
+      -ms-user-select: none; /* IE 10+ */
+      user-select: none;
+      }
+      .caret::before {
+      content: "\25B6";
+      color: black;
+      display: inline-block;
+      margin-right: 6px;
+      }
+      .caret-down::before {
+      -ms-transform: rotate(90deg); /* IE 9 */
+      -webkit-transform: rotate(90deg); /* Safari */'
+      transform: rotate(90deg);  
+      }
+      .nested {
+      display: none;
+      }
+      .active {
+      display: block;
+      }]]></style>
+      <script><![CDATA[window.onload = function() {
+      var toggler = document.getElementsByClassName("caret");
+      for (let item of toggler){
+      item.addEventListener("click", function() {
+      this.parentElement.querySelector(".nested").classList.toggle("active");
+      this.classList.toggle("caret-down");
+      });
+      }
+      }]]></script>
+      </gft:Options>
+      <ul id="myUL">
+       <li>
+         <span class="caret">MeteoStations</span>
+         <ul class="nested">
+            <li>
+               <span class="caret">Code</span>
+               <ul class="nested">
+                  <li>$${strConcat('Station_',st:code)}</li>
+               </ul>
+            </li>
+            <li>
+               <span class="caret">Name</span>
+               <ul class="nested">
+                  <li>${st:common_name}</li>
+               </ul>
+            </li>
+            <li>
+               <span class="caret">Geometry</span>
+               <ul class="nested">
+                  <li>${st:position}</li>
+               </ul>
+            </li>
+            <li gft:isCollection="true" gft:source="st:meteoObservations/st:MeteoObservationsFeature" gft:filter="xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'temperature'">
+               <span class="caret">Temperature</span>
+               <ul class="nested">
+                  <li>
+                     <span class="caret">Time</span>
+                     <ul class="nested">
+                        <li>${st:time}</li>
+                     </ul>
+                  </li>
+                  <li>
+                     <span class="caret">Value</span>
+                     <ul class="nested">
+                        <li>${st:time}</li>
+                     </ul>
+                  </li>
+               </ul>
+            </li>
+            <li gft:isCollection="true" gft:source="st:meteoObservations/st:MeteoObservationsFeature" gft:filter="xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'pressure'">
+               <span class="caret">Pressure</span>
+               <ul class="nested">
+                  <li>
+                     <span class="caret">Time</span>
+                     <ul class="nested">
+                        <li>${st:time}</li>
+                     </ul>
+                  </li>
+                  <li>
+                     <span class="caret">Value</span>
+                     <ul class="nested">
+                        <li>${st:time}</li>
+                     </ul>
+                  </li>
+               </ul>
+            </li>
+            <li gft:isCollection="true" gft:source="st:meteoObservations/st:MeteoObservationsFeature" gft:filter="xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'wind speed'">
+               <span class="caret">Wind Speed</span>
+               <ul class="nested">
+                  <li>
+                     <span class="caret">Time</span>
+                     <ul class="nested">
+                        <li>${st:time}</li>
+                     </ul>
+                  </li>
+                  <li>
+                     <span class="caret">Value</span>
+                     <ul class="nested">
+                        <li>${st:time}</li>
+                     </ul>
+                  </li>
+               </ul>
+            </li>
+         </ul>
+      </li>
+   </ul>
+ </gft:Template>
+
+
+The output of the template will be the following:
+
+.. figure:: images/html-template-result.png
 
 
 

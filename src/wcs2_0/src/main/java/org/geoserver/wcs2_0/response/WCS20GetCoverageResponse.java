@@ -8,6 +8,7 @@ package org.geoserver.wcs2_0.response;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import net.opengis.wcs20.ExtensionItemType;
 import net.opengis.wcs20.ExtensionType;
@@ -34,7 +35,7 @@ public class WCS20GetCoverageResponse extends Response {
     CoverageResponseDelegateFinder responseFactory;
 
     public WCS20GetCoverageResponse(CoverageResponseDelegateFinder responseFactory) {
-        super(GridCoverage.class);
+        super(GridCoverage.class, new LinkedHashSet<>(responseFactory.getOutputFormats()));
         this.responseFactory = responseFactory;
     }
 

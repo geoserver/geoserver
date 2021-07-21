@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms;
 
+import static org.geoserver.util.HTTPWarningAppender.addWarning;
+
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
@@ -50,6 +52,7 @@ import org.geoserver.data.DimensionFilterBuilder;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.util.DimensionWarning;
 import org.geoserver.util.NearestMatchFinder;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
@@ -1087,7 +1090,11 @@ public class WMS implements ApplicationContextAware {
             List<Object> fixedTimes = new ArrayList<>(times);
             for (int i = 0; i < fixedTimes.size(); i++) {
                 if (fixedTimes.get(i) == null) {
-                    fixedTimes.set(i, getDefaultTime(coverage));
+                    Object defaultTime = getDefaultTime(coverage);
+                    fixedTimes.set(i, defaultTime);
+                    addWarning(
+                            DimensionWarning.defaultValue(
+                                    mapLayerInfo.getResource(), ResourceInfo.TIME, defaultTime));
                 }
 
                 // nearest time support
@@ -1111,7 +1118,13 @@ public class WMS implements ApplicationContextAware {
             List<Object> fixedElevations = new ArrayList<>(elevations);
             for (int i = 0; i < fixedElevations.size(); i++) {
                 if (fixedElevations.get(i) == null) {
-                    fixedElevations.set(i, getDefaultElevation(coverage));
+                    Object defaultElevation = getDefaultElevation(coverage);
+                    fixedElevations.set(i, defaultElevation);
+                    addWarning(
+                            DimensionWarning.defaultValue(
+                                    mapLayerInfo.getResource(),
+                                    ResourceInfo.ELEVATION,
+                                    defaultElevation));
                 }
             }
             readParameters =
@@ -1202,19 +1215,23 @@ public class WMS implements ApplicationContextAware {
 
         // see if we have any custom domain for which we have to set the default value
         if (!customDomains.isEmpty()) {
-            for (String name : customDomains) {
+            for (String dimensionName : customDomains) {
                 final DimensionInfo customInfo =
                         metadata.get(
-                                ResourceInfo.CUSTOM_DIMENSION_PREFIX + name, DimensionInfo.class);
+                                ResourceInfo.CUSTOM_DIMENSION_PREFIX + dimensionName,
+                                DimensionInfo.class);
                 if (customInfo != null && customInfo.isEnabled()) {
                     Object val =
                             dimensions.convertDimensionValue(
-                                    name,
-                                    getDefaultCustomDimensionValue(name, coverage, String.class));
-
+                                    dimensionName,
+                                    getDefaultCustomDimensionValue(
+                                            dimensionName, coverage, String.class));
+                    addWarning(
+                            DimensionWarning.defaultValue(
+                                    mapLayerInfo.getResource(), dimensionName, val));
                     readParameters =
                             CoverageUtils.mergeParameter(
-                                    parameterDescriptors, readParameters, val, name);
+                                    parameterDescriptors, readParameters, val, dimensionName);
                 }
             }
         }
@@ -1281,12 +1298,7 @@ public class WMS implements ApplicationContextAware {
             throws IOException {
         NearestMatchFinder finder = NearestMatchFinder.get(coverage, dimension, ResourceInfo.TIME);
         if (finder != null) {
-            return finder.getMatches(
-                    coverage.prefixedName(),
-                    dimension,
-                    queryRanges,
-                    ResourceInfo.TIME,
-                    maxRenderingTime);
+            return finder.getMatches(coverage, ResourceInfo.TIME, queryRanges, maxRenderingTime);
         } else {
             return Collections.emptyList();
         }
@@ -1599,6 +1611,8 @@ public class WMS implements ApplicationContextAware {
                 if (datetime == null) {
                     // this is "default"
                     datetime = getDefaultTime(typeInfo);
+                    addWarning(
+                            DimensionWarning.defaultValue(typeInfo, ResourceInfo.TIME, datetime));
                 }
                 defaultedTimes.add(datetime);
             }
@@ -1622,6 +1636,9 @@ public class WMS implements ApplicationContextAware {
                 if (elevation == null) {
                     // this is "default"
                     elevation = getDefaultElevation(typeInfo);
+                    addWarning(
+                            DimensionWarning.defaultValue(
+                                    typeInfo, ResourceInfo.ELEVATION, elevation));
                 }
                 defaultedElevations.add(elevation);
             }

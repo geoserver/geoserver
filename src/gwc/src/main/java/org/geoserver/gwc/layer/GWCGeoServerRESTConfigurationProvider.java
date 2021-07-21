@@ -11,10 +11,13 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.gwc.GWC;
+import org.geoserver.util.DimensionWarning;
 import org.geowebcache.config.ContextualConfigurationProvider;
 import org.geowebcache.config.Info;
 import org.geowebcache.config.XMLConfigurationProvider;
@@ -44,10 +47,13 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
     @Override
     public XStream getConfiguredXStream(XStream xs) {
         xs.alias("GeoServerLayer", GeoServerTileLayer.class);
+        xs.alias("warning", DimensionWarning.WarningType.class);
+        xs.allowTypes(new Class[] {DimensionWarning.WarningType.class});
         xs.processAnnotations(GeoServerTileLayerInfoImpl.class);
         xs.processAnnotations(StyleParameterFilter.class);
         xs.registerConverter(new RESTConverterHelper());
         xs.addDefaultImplementation(GeoServerTileLayerInfoImpl.class, GeoServerTileLayerInfo.class);
+        xs.addDefaultImplementation(LinkedHashSet.class, Set.class);
 
         // Omit the values cached from the backing layer.  They are only needed for the
         // persisted config file.

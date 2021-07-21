@@ -14,14 +14,22 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import org.apache.commons.io.FileUtils;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Paths;
+import org.geoserver.util.DimensionWarning.WarningType;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.w3c.dom.Document;
 
 public class GWCConfigPersisterTest {
 
@@ -66,6 +74,8 @@ public class GWCConfigPersisterTest {
         GWCConfig config = GWCConfig.getOldDefaults();
         config.setCacheNonDefaultStyles(true);
         config.setDirectWMSIntegrationEnabled(true);
+        config.setCacheWarningSkips(
+                new LinkedHashSet<>(Arrays.asList(WarningType.Default, WarningType.FailedNearest)));
 
         persister.save(config);
         assertSame(config, persister.getConfig());
@@ -74,7 +84,7 @@ public class GWCConfigPersisterTest {
 
         assertEquals(config, persister.getConfig());
 
-        // provoque a IOException
+        // provoke a IOException
         when(resourceLoader.get(eq(GWCConfigPersister.GWC_CONFIG_FILE)))
                 .thenReturn(Files.asResource(tempFolder.newFile("shall_not_exist")));
         persister = new GWCConfigPersister(new XStreamPersisterFactory(), resourceLoader);
@@ -82,5 +92,15 @@ public class GWCConfigPersisterTest {
         GWCConfig expected = new GWCConfig();
         GWCConfig actual = persister.getConfig();
         assertEquals(expected, actual);
+
+        // check the saved XML has the expected structure
+        String xml = FileUtils.readFileToString(configFile, StandardCharsets.UTF_8);
+
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        Document doc = XMLUnit.buildControlDocument(xml);
+        // no custom attribute for the class, we set a default
+        assertEquals("", xpath.evaluate("//cacheWarningSkips/class", doc));
+        assertEquals("Default", xpath.evaluate("//cacheWarningSkips/warning[1]", doc));
+        assertEquals("FailedNearest", xpath.evaluate("//cacheWarningSkips/warning[2]", doc));
     }
 }

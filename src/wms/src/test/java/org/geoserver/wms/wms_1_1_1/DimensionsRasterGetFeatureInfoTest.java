@@ -532,7 +532,9 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
                 null);
         setupNearestMatch(WATTEMP, ResourceInfo.TIME, true);
 
-        String layers = getLayerId(TIMERANGES) + "," + getLayerId(WATTEMP);
+        String timeRangesId = getLayerId(TIMERANGES);
+        String waterTempId = getLayerId(WATTEMP);
+        String layers = timeRangesId + "," + waterTempId;
         String baseUrl =
                 "wms?LAYERS="
                         + layers
@@ -544,16 +546,20 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
 
         // run time before both (don't care about results, just check the headers)
         String url = baseUrl + "&TIME=2000-01-01";
-        getFeatureAt(url, 68, 72, getLayerId(TIMERANGES));
-        assertWarningCount(2);
-        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-10-31T00:00:00.000Z");
-        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-10-31T00:00:00.000Z");
+        getFeatureAt(url, 68, 72, timeRangesId);
+        assertWarningCount(4);
+        assertNearestTimeWarning(timeRangesId, "2008-10-31T00:00:00.000Z");
+        assertDefaultDimensionWarning(timeRangesId, ResourceInfo.ELEVATION, UNITS, "20.0");
+        assertNearestTimeWarning(waterTempId, "2008-10-31T00:00:00.000Z");
+        assertDefaultDimensionWarning(waterTempId, ResourceInfo.ELEVATION, UNITS, "0.0");
 
         // after both
         url = baseUrl + "&TIME=2100-01-01";
-        getFeatureAt(url, 68, 72, getLayerId(TIMERANGES));
-        assertWarningCount(2);
-        assertNearestTimeWarning(getLayerId(TIMERANGES), "2008-11-07T00:00:00.000Z");
-        assertNearestTimeWarning(getLayerId(WATTEMP), "2008-11-01T00:00:00.000Z");
+        getFeatureAt(url, 68, 72, timeRangesId);
+        assertWarningCount(4);
+        assertNearestTimeWarning(timeRangesId, "2008-11-07T00:00:00.000Z");
+        assertDefaultDimensionWarning(timeRangesId, ResourceInfo.ELEVATION, UNITS, "20.0");
+        assertNearestTimeWarning(waterTempId, "2008-11-01T00:00:00.000Z");
+        assertDefaultDimensionWarning(waterTempId, ResourceInfo.ELEVATION, UNITS, "0.0");
     }
 }

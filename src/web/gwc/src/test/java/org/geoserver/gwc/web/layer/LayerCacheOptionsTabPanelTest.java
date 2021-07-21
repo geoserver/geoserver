@@ -34,6 +34,7 @@ import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayerInfoImpl;
 import org.geoserver.gwc.layer.TileLayerInfoUtil;
+import org.geoserver.util.DimensionWarning.WarningType;
 import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -344,5 +345,34 @@ public class LayerCacheOptionsTabPanelTest extends GeoServerWicketTestSupport {
                             formatsInUI.add(object.getDefaultModelObjectAsString());
                         });
         assertThat(formatsInUI, Matchers.hasItem("foo/bar"));
+    }
+
+    @Test
+    public void testSaveWarningSkips() {
+        // Create a form page for the LayerCacheOptionsTabPanel component
+        FormTestPage page =
+                new FormTestPage(
+                        id -> new LayerCacheOptionsTabPanel(id, layerModel, tileLayerModel));
+
+        // Start the page
+        tester.startPage(page);
+        tester.assertComponent("form:panel:tileLayerEditor", GeoServerTileLayerEditor.class);
+
+        FormTester ft = tester.newFormTester("form");
+        String checksPath =
+                "panel:tileLayerEditor:container:configs:warningSkips:warningSkipsGroup";
+        ft.select(checksPath, 0);
+        ft.select(checksPath, 2);
+        ft.submit();
+
+        tester.assertNoErrorMessage();
+
+        // check skips have been configured
+        GeoServerTileLayer tileLayer =
+                (GeoServerTileLayer) GWC.get().getTileLayerByName(getLayerId(MockData.BUILDINGS));
+        assertNotNull(tileLayer);
+        assertThat(
+                tileLayer.getInfo().getCacheWarningSkips(),
+                Matchers.containsInAnyOrder(WarningType.Default, WarningType.FailedNearest));
     }
 }

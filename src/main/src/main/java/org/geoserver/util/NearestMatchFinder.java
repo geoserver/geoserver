@@ -4,10 +4,9 @@
  */
 package org.geoserver.util;
 
+import static org.geoserver.util.HTTPWarningAppender.addWarning;
 import static org.geoserver.util.NearestMatchFinder.FilterDirection.HIGHEST_AMONG_LOWERS;
 import static org.geoserver.util.NearestMatchFinder.FilterDirection.LOWEST_AMONG_HIGHER;
-import static org.geoserver.util.NearestMatchWarningAppender.WarningType.Nearest;
-import static org.geoserver.util.NearestMatchWarningAppender.WarningType.NotFound;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -289,19 +288,17 @@ public abstract class NearestMatchFinder {
     /**
      * Get the nearest matches on the given dimension, provided a List of values.
      *
-     * @param layerName the name of the Layer
-     * @param dimension the dimensionInfo instance where the search will occur.
-     * @param values the reference values for the nearest match search
+     * @param resource the resource being nearest matched
      * @param dimensionName the name of the dimension
+     * @param values the reference values for the nearest match search
      * @param maxOutputTime a max time (in seconds) to produce the output. A ServiceException will
      *     be thrown if the matches search is exceeding the specified time. Set to -1 for no
      *     timeout.
      */
     public List<Object> getMatches(
-            String layerName,
-            DimensionInfo dimension,
-            List<Object> values,
+            ResourceInfo resource,
             String dimensionName,
+            List<Object> values,
             final int maxOutputTime)
             throws IOException {
         // if there is a max time set to produce an output, use it on this match,
@@ -313,14 +310,12 @@ public abstract class NearestMatchFinder {
             if (nearest == null) {
                 // no way to specify there is no match yet, so we'll use the original value, which
                 // will not match
-                NearestMatchWarningAppender.addWarning(
-                        layerName, dimensionName, null, dimension.getUnits(), NotFound);
+                addWarning(DimensionWarning.notFound(resource, dimensionName));
                 result.add(value);
             } else if (value.equals(nearest)) {
                 result.add(value);
             } else {
-                NearestMatchWarningAppender.addWarning(
-                        layerName, dimensionName, nearest, dimension.getUnits(), Nearest);
+                addWarning(DimensionWarning.nearest(resource, dimensionName, nearest));
                 result.add(nearest);
             }
 

@@ -201,7 +201,29 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         List<Object> values = response.getHeaderValues(HttpHeaders.WARNING);
         assertNotNull(values);
         assertEquals(
-                "Expected to find a different number of warnings", expectedValue, values.size());
+                "Expected to find a different number of warnings, actual warnings are: " + values,
+                expectedValue,
+                values.size());
+    }
+
+    /**
+     * Asserts that the specified nearest value has been used and check the corresponding HTTP
+     * warning
+     */
+    protected void assertDefaultDimensionWarning(
+            String layerId, String dimensionName, String unit, String expectedValue) {
+        String expected =
+                "99 Default value used: "
+                        + dimensionName
+                        + "="
+                        + expectedValue
+                        + " "
+                        + unit
+                        + " ("
+                        + layerId
+                        + ")";
+
+        assertWarningExists(expected);
     }
 
     /**
@@ -218,13 +240,7 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
                         + layerId
                         + ")";
 
-        MockHttpServletResponse response = getLastResponse();
-        List<Object> values = response.getHeaderValues(HttpHeaders.WARNING);
-        Object found = values.stream().filter(v -> expected.equals(v)).findFirst().orElse(null);
-
-        assertNotNull(
-                "Could not find\n" + expected + "\n among the following warnings:\n" + values,
-                found);
+        assertWarningExists(expected);
     }
 
     /**
@@ -234,6 +250,10 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
     protected void assertNoNearestWarning(String layerId, String dimension) {
         String expected = "99 No nearest value found on " + layerId + ": " + dimension;
 
+        assertWarningExists(expected);
+    }
+
+    private void assertWarningExists(String expected) {
         MockHttpServletResponse response = getLastResponse();
         List<Object> values = response.getHeaderValues(HttpHeaders.WARNING);
         Object found = values.stream().filter(v -> expected.equals(v)).findFirst().orElse(null);

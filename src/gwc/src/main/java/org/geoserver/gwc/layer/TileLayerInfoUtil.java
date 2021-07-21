@@ -117,6 +117,8 @@ public class TileLayerInfoUtil {
         info.setMetaTilingY(defaults.getMetaTilingY());
         info.setInMemoryCached(true);
 
+        info.setCacheWarningSkips(defaults.getCacheWarningSkips());
+
         return info;
     }
 

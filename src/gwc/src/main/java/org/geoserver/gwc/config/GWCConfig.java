@@ -12,9 +12,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.geoserver.util.DimensionWarning;
 import org.geowebcache.locks.LockProvider;
 import org.geowebcache.storage.blobstore.memory.CacheConfiguration;
 import org.geowebcache.storage.blobstore.memory.CacheProvider;
@@ -88,6 +90,9 @@ public class GWCConfig implements Cloneable, Serializable {
 
     private String lockProviderName;
 
+    // Set of cache warnings that would cause caching being skipped
+    Set<DimensionWarning.WarningType> cacheWarningSkips;
+
     /** Creates a new GWC config with default values */
     public GWCConfig() {
         setOldDefaults();
@@ -97,6 +102,8 @@ public class GWCConfig implements Cloneable, Serializable {
         setDefaultCoverageCacheFormats(Collections.singleton(jpeg));
         setDefaultOtherCacheFormats(new HashSet<>(Arrays.asList(png, jpeg)));
         setDefaultVectorCacheFormats(Collections.singleton(png));
+        setCacheWarningSkips(Collections.emptySet());
+
         Map<String, CacheConfiguration> map = new HashMap<>();
         map.put(GuavaCacheProvider.class.toString(), new CacheConfiguration());
         setCacheConfigurations(map);
@@ -124,6 +131,9 @@ public class GWCConfig implements Cloneable, Serializable {
         if (cacheConfigurations == null) {
             cacheConfigurations = new HashMap<>();
             cacheConfigurations.put(GuavaCacheProvider.class.toString(), new CacheConfiguration());
+        }
+        if (cacheWarningSkips == null) {
+            cacheWarningSkips = new LinkedHashSet<>();
         }
 
         return this;
@@ -308,6 +318,7 @@ public class GWCConfig implements Cloneable, Serializable {
         map.put(GuavaCacheProvider.class.toString(), new CacheConfiguration());
         setCacheConfigurations(map);
         setCacheProviderClass(GuavaCacheProvider.class.toString());
+        setCacheWarningSkips(new LinkedHashSet<>());
     }
 
     public int getMetaTilingX() {
@@ -349,6 +360,7 @@ public class GWCConfig implements Cloneable, Serializable {
         clone.setDefaultOtherCacheFormats(getDefaultOtherCacheFormats());
         clone.setCacheConfigurations(getCacheConfigurations());
         clone.setRequireTiledParameter(this.isRequireTiledParameter());
+        clone.setCacheWarningSkips(getCacheWarningSkips());
 
         return clone;
     }
@@ -394,7 +406,8 @@ public class GWCConfig implements Cloneable, Serializable {
                         defaultCoverageCacheFormats, gwcConfig.defaultCoverageCacheFormats)
                 && Objects.equals(defaultVectorCacheFormats, gwcConfig.defaultVectorCacheFormats)
                 && Objects.equals(defaultOtherCacheFormats, gwcConfig.defaultOtherCacheFormats)
-                && Objects.equals(lockProviderName, gwcConfig.lockProviderName);
+                && Objects.equals(lockProviderName, gwcConfig.lockProviderName)
+                && Objects.equals(cacheWarningSkips, gwcConfig.cacheWarningSkips);
     }
 
     @Override
@@ -420,7 +433,8 @@ public class GWCConfig implements Cloneable, Serializable {
                 defaultCoverageCacheFormats,
                 defaultVectorCacheFormats,
                 defaultOtherCacheFormats,
-                lockProviderName);
+                lockProviderName,
+                cacheWarningSkips);
     }
 
     public String getLockProviderName() {
@@ -521,5 +535,13 @@ public class GWCConfig implements Cloneable, Serializable {
 
     public void setWMTSEnabled(Boolean WMTSEnabled) {
         this.WMTSEnabled = WMTSEnabled;
+    }
+
+    public Set<DimensionWarning.WarningType> getCacheWarningSkips() {
+        return cacheWarningSkips;
+    }
+
+    public void setCacheWarningSkips(Set<DimensionWarning.WarningType> cacheWarningSkips) {
+        this.cacheWarningSkips = new LinkedHashSet<>(cacheWarningSkips);
     }
 }

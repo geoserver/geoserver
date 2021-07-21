@@ -31,6 +31,8 @@ import org.apache.wicket.validation.ValidationError;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.web.layer.WarningSkipsPanel;
+import org.geoserver.util.DimensionWarning.WarningType;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.LocalizedChoiceRenderer;
 import org.geowebcache.locks.LockProvider;
@@ -192,6 +194,11 @@ public class CachingOptionsPanel extends Panel {
         DefaultGridsetsEditor cachedGridsets =
                 new DefaultGridsetsEditor("cachedGridsets", cachedGridsetsModel);
         configs.add(cachedGridsets);
+
+        // cache skips
+        IModel<Set<WarningType>> warningSkipsModel =
+                new PropertyModel<>(gwcConfigModel, "cacheWarningSkips");
+        configs.add(new WarningSkipsPanel("warningSkips", warningSkipsModel));
 
         cachedGridsets.add(
                 new IValidator<Set<String>>() {

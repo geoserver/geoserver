@@ -64,6 +64,9 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         this.model = info;
         OSEOInfo oseo = (OSEOInfo) info.getObject();
 
+        TextField<String> attribution = new TextField<>("attribution");
+        form.add(attribution);
+
         this.backend = null;
         if (oseo.getOpenSearchAccessStoreId() != null) {
             this.backend = getCatalog().getDataStore(oseo.getOpenSearchAccessStoreId());

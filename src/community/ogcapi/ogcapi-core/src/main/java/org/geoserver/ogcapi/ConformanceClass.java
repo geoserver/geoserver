@@ -7,9 +7,14 @@ package org.geoserver.ogcapi;
 /** Conformance statements for the conformance page. */
 public class ConformanceClass {
     public static final String CORE = "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core";
+    public static final String HTML = "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/html";
+    public static final String JSON = "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/json";
+    public static final String OAS3 = "http://www.opengis.net/spec/ogcapi-common/1.0/req/oas30";
 
     public static final String COLLECTIONS =
             "http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/collections";
+    public static final String GEODATA =
+            "http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/geodata";
 
     /**
      * CQL filtering conformance classes, shared here to allow STAC usaging them, without depending

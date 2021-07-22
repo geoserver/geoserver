@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi.coverages;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -13,6 +14,8 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIService;
+import org.geoserver.ogcapi.ConformanceClass;
+import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
@@ -35,6 +38,10 @@ public class CoveragesService {
     static final Pattern INTEGER = Pattern.compile("\\d+");
     public static final String CRS_PREFIX = "http://www.opengis.net/def/crs/EPSG/0/";
     public static final String DEFAULT_CRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
+    public static final String CONF_CLASS_COVERAGE =
+            "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/geodata-coverage";
+    public static final String CONF_CLASS_GEOTIFF =
+            "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/geotiff";
 
     private final GeoServer geoServer;
 
@@ -71,6 +78,23 @@ public class CoveragesService {
     @HTMLResponseBody(templateName = "landingPage.ftl", fileName = "landingPage.html")
     public CoveragesLandingPage getLandingPage() {
         return new CoveragesLandingPage(getService(), getCatalog(), "ogc/coverages");
+    }
+
+    @GetMapping(path = "conformance", name = "getConformanceDeclaration")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
+    public ConformanceDocument conformance() {
+        List<String> classes =
+                Arrays.asList(
+                        ConformanceClass.CORE,
+                        ConformanceClass.COLLECTIONS,
+                        ConformanceClass.HTML,
+                        ConformanceClass.JSON,
+                        ConformanceClass.OAS3,
+                        ConformanceClass.GEODATA,
+                        CONF_CLASS_COVERAGE,
+                        CONF_CLASS_GEOTIFF);
+        return new ConformanceDocument("OGC API Coverages", classes);
     }
 
     @GetMapping(path = "collections", name = "getCollections")

@@ -3,9 +3,9 @@
 Smart Data Loader Extension
 =============================
 
-This plugin brings the possibility autonomate the configuration for ``Application-Schema`` based complex features, by allowing the creation of a new data source that will automatically generate complex type xsd definition and App-Schema mappings file.
+This plugin allows automation of the configuration for ``Application-Schema`` based complex features, by providing a data source that will automatically generate the required XSD definition and App-Schema mappings files.
 
-.. warning:: For the moment only PostGIS datasources are supported.
+.. warning:: The current version only supports PostGIS datasources.
 
 .. toctree::
    :maxdepth: 1

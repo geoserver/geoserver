@@ -29,8 +29,8 @@ public class LandingPageTest extends CoveragesTestSupport {
         assertThat(
                 service.getOperations(),
                 Matchers.containsInAnyOrder(
-                        "getLandingPage", "getCollections"
-                        /** , "getApi", "describeCollection", , "getConformanceDeclaration", */
+                        "getLandingPage", "getCollections", "describeCollection"
+                        /** , "getApi", , "getConformanceDeclaration", */
                         ));
     }
 

@@ -25,7 +25,6 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.SettingsInfo;
-import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wcs.WCSInfo;
@@ -37,21 +36,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CollectionsTest extends CoveragesTestSupport {
-
-    public static final String TAZDEM_TITLE = "Down under digital elevation model";
-    public static final String TAZDEM_DESCRIPTION = "So that you know where up and down are";
-
-    @Override
-    protected void onSetUp(SystemTestData testData) throws Exception {
-        super.onSetUp(testData);
-
-        // customize metadata and set custom CRS too
-        CoverageInfo tazDem = getCatalog().getCoverageByName("rs:DEM");
-        tazDem.setTitle(TAZDEM_TITLE);
-        tazDem.setAbstract(TAZDEM_DESCRIPTION);
-        tazDem.getResponseSRS().addAll(Arrays.asList("3857", "3003"));
-        getCatalog().save(tazDem);
-    }
 
     @Test
     public void testCollectionsJson() throws Exception {

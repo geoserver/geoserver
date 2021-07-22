@@ -24,6 +24,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.cs.CoordinateSystemAxis;
 import org.springframework.http.HttpOutputMessage;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 /**
@@ -110,7 +111,7 @@ public class FeatureResponseMessageConverter
     }
 
     @Override
-    protected Operation getOperation(FeaturesResponse result, Request dr) {
+    protected Operation getOperation(FeaturesResponse result, Request dr, MediaType mediaType) {
         Operation op = dr.getOperation();
         return new Operation(
                 "GetFeature", op.getService(), op.getMethod(), new Object[] {result.getRequest()});

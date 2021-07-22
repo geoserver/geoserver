@@ -9,12 +9,14 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.Link;
-import org.geoserver.platform.ServiceException;
+import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 
 /**
@@ -23,6 +25,8 @@ import org.opengis.filter.Filter;
  */
 @JsonPropertyOrder({"links", "collections"})
 public class CollectionsDocument extends AbstractDocument {
+
+    static final Logger LOGGER = Logging.getLogger(CollectionsDocument.class);
 
     private final GeoServer geoServer;
     private final List<String> crs;
@@ -56,27 +60,33 @@ public class CollectionsDocument extends AbstractDocument {
                     return true;
                 }
 
-                boolean hasNext = coverages.hasNext();
-                if (!hasNext) {
-                    coverages.close();
-                    return false;
-                } else {
-                    try {
+                try {
+                    while (coverages.hasNext()) {
                         CoverageInfo coverage = coverages.next();
-                        List<String> crs =
-                                CoveragesService.getCoverageCRS(
-                                        coverage, Collections.singletonList("#/crs"));
-                        CollectionDocument collection =
-                                new CollectionDocument(geoServer, coverage, crs);
+                        try {
+                            List<String> crs =
+                                    CoveragesService.getCoverageCRS(
+                                            coverage, Collections.singletonList("#/crs"));
+                            CollectionDocument collection =
+                                    new CollectionDocument(geoServer, coverage, crs);
 
-                        next = collection;
-                        return true;
-                    } catch (Exception e) {
-                        coverages.close();
-                        throw new ServiceException(
-                                "Failed to iterate over the coverages in the catalog", e);
+                            next = collection;
+                            return true;
+                        } catch (Exception e) {
+                            // e.g., maybe the plugin to read the format is missing
+                            LOGGER.log(
+                                    Level.WARNING,
+                                    "Failed to build collection for "
+                                            + coverage.prefixedName()
+                                            + ", skipping",
+                                    e);
+                        }
                     }
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, "Failed while iterating over collections", e);
                 }
+                coverages.close();
+                return false;
             }
 
             @Override

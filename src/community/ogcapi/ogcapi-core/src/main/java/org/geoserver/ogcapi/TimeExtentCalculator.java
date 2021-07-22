@@ -6,9 +6,12 @@ package org.geoserver.ogcapi;
 
 import java.io.IOException;
 import java.util.Date;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.util.ReaderDimensionsAccessor;
+import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.visitor.CalcResult;
@@ -34,7 +37,7 @@ public class TimeExtentCalculator {
         if (ri instanceof FeatureTypeInfo) {
             return getTimeExtent((FeatureTypeInfo) ri, time);
         } else {
-            throw new IllegalArgumentException("ResourceInfo type not supported (yet): " + ri);
+            return getTimeExtent((CoverageInfo) ri, time);
         }
     }
 
@@ -59,5 +62,14 @@ public class TimeExtentCalculator {
         }
 
         return null;
+    }
+
+    private static DateRange getTimeExtent(CoverageInfo ci, DimensionInfo time) throws IOException {
+        ReaderDimensionsAccessor accessor =
+                new ReaderDimensionsAccessor(
+                        (GridCoverage2DReader) ci.getGridCoverageReader(null, null));
+        Date minTime = accessor.getMinTime();
+        Date maxTime = accessor.getMaxTime();
+        return new DateRange(minTime, maxTime);
     }
 }

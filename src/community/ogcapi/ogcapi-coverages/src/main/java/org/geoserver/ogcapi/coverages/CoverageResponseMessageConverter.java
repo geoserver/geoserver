@@ -6,13 +6,18 @@ package org.geoserver.ogcapi.coverages;
 
 import java.io.IOException;
 import java.util.function.Predicate;
+import net.opengis.wcs20.GetCoverageType;
+import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.MessageConverterResponseAdapter;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs2_0.response.WCS20GetCoverageResponse;
 import org.opengis.coverage.grid.GridCoverage;
 import org.springframework.http.HttpOutputMessage;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 /**
@@ -36,8 +41,20 @@ public class CoverageResponseMessageConverter
             Operation operation,
             Response response)
             throws IOException {
-        setHeaders(value.getResponse(), operation, response, httpOutputMessage);
-        response.write(value.getResponse(), httpOutputMessage.getBody(), operation);
+        try {
+            setHeaders(value.getResponse(), operation, response, httpOutputMessage);
+            response.write(value.getResponse(), httpOutputMessage.getBody(), operation);
+        } catch (RuntimeException e) {
+            // workaround, we really need to find out if the output format can handle the
+            // coverage based on reader metadata instead
+            if (e.getMessage().contains("Unable to render RenderedOp for this operation")) {
+                throw new APIException(
+                        ServiceException.NO_APPLICABLE_CODE,
+                        "Cannot encode this coverage in the requested format",
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        e);
+            }
+        }
     }
 
     @Override
@@ -47,10 +64,13 @@ public class CoverageResponseMessageConverter
     }
 
     @Override
-    protected Operation getOperation(CoveragesResponse result, Request dr) {
+    protected Operation getOperation(CoveragesResponse result, Request dr, MediaType mediaType) {
         Operation op = dr.getOperation();
+        // need to update the request with the requested media type
+        GetCoverageType request = (GetCoverageType) result.getRequest();
+        request.setFormat(mediaType.toString());
         return new Operation(
-                "GetCoverage", op.getService(), op.getMethod(), new Object[] {result.getRequest()});
+                "GetCoverage", op.getService(), op.getMethod(), new Object[] {request});
     }
 
     @Override

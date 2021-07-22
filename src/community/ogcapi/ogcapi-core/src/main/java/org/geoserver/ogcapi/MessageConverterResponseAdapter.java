@@ -81,7 +81,7 @@ public class MessageConverterResponseAdapter<T>
         }
 
         Request dr = Dispatcher.REQUEST.get();
-        Operation operation = getOperation(value, dr);
+        Operation operation = getOperation(value, dr, mediaType);
         writeResponse(value, httpOutputMessage, operation, response.get());
     }
 
@@ -92,7 +92,7 @@ public class MessageConverterResponseAdapter<T>
         response.write(value, httpOutputMessage.getBody(), operation);
     }
 
-    protected Operation getOperation(T result, Request dr) {
+    protected Operation getOperation(T result, Request dr, MediaType mediaType) {
         return dr.getOperation();
     }
 
@@ -101,7 +101,7 @@ public class MessageConverterResponseAdapter<T>
         T result = (T) APIRequestInfo.get().getResult();
         Request dr = Dispatcher.REQUEST.get();
         Operation originalOperation = dr.getOperation();
-        Operation op = result != null ? getOperation(result, dr) : originalOperation;
+        Operation op = result != null ? getOperation(result, dr, mediaType) : originalOperation;
         return responses
                 .stream()
                 .filter(

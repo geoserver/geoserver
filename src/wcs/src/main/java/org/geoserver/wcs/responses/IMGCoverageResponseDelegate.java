@@ -35,7 +35,8 @@ public class IMGCoverageResponseDelegate extends BaseCoverageResponseDelegate
     public IMGCoverageResponseDelegate(GeoServer geoserver) {
         super(
                 geoserver,
-                Arrays.asList("png", "jpeg", "JPEG", "PNG"), // output formats
+                Arrays.asList(
+                        "png", "jpeg", "JPEG", "PNG", "image/png", "image/jpeg"), // output formats
                 new HashMap<String, String>() { // file extensions
                     {
                         put("png", "png");
@@ -52,6 +53,8 @@ public class IMGCoverageResponseDelegate extends BaseCoverageResponseDelegate
                         put("jpeg", "image/jpeg");
                         put("PNG", "image/png");
                         put("JPEG", "image/jpeg");
+                        put("image/png", "image/png");
+                        put("image/jpeg", "image/jpeg");
                     }
                 });
     }

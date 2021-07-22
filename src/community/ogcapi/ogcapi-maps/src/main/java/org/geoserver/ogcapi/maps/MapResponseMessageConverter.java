@@ -46,7 +46,7 @@ public class MapResponseMessageConverter extends MessageConverterResponseAdapter
     }
 
     @Override
-    protected Operation getOperation(WebMap result, Request dr) {
+    protected Operation getOperation(WebMap result, Request dr, MediaType mediaType) {
         Operation original = dr.getOperation();
         return new Operation(
                 original.getId(),

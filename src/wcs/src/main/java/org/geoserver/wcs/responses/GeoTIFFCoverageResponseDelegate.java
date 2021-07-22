@@ -58,7 +58,8 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                         "TIFF",
                         "GEOTIFF",
                         "GeoTIFF",
-                        "image/geotiff"), // output formats
+                        "image/geotiff",
+                        "image/tiff;application=geotiff"), // output formats
                 new HashMap<String, String>() { // file extensions
                     {
                         put("tiff", "tif");
@@ -69,6 +70,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                         put("GeoTIFF", "tif");
                         put("image/geotiff", "tif");
                         put("image/tiff", "tif");
+                        put("image/tiff;application=geotiff", "tif");
                     }
                 },
                 new HashMap<String, String>() { // mime types
@@ -80,6 +82,7 @@ public class GeoTIFFCoverageResponseDelegate extends BaseCoverageResponseDelegat
                         put("GEOTIFF", "image/tiff");
                         put("GeoTIFF", "image/tiff");
                         put("image/geotiff", "image/tiff");
+                        put("image/tiff;application=geotiff", "image/tiff;application=geotiff");
                     }
                 });
     }

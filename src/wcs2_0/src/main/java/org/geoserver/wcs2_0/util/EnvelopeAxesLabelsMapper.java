@@ -68,7 +68,7 @@ public class EnvelopeAxesLabelsMapper {
         return retValue;
     }
 
-    private String getAxisLabel(CoordinateSystemAxis axis) {
+    public String getAxisLabel(CoordinateSystemAxis axis) {
         // some default axis have weird abbreviations (greek letters), handle them separately
         String label = axis.getAbbreviation();
         // in EPSG 9.6 axis label can be also be Long and Lon

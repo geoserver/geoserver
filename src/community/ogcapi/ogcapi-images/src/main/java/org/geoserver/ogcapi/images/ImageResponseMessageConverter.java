@@ -50,7 +50,7 @@ public class ImageResponseMessageConverter extends MessageConverterResponseAdapt
     }
 
     @Override
-    protected Operation getOperation(ImagesResponse result, Request dr) {
+    protected Operation getOperation(ImagesResponse result, Request dr, MediaType mediaType) {
         return new Operation(
                 dr.getOperation().getId(),
                 dr.getOperation().getService(),

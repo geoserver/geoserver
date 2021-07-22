@@ -96,7 +96,6 @@ import org.geotools.gml2.GML;
 import org.geotools.http.HTTPClient;
 import org.geotools.http.HTTPClientFinder;
 import org.geotools.http.HTTPConnectionPooling;
-import org.geotools.http.SimpleHttpClient;
 import org.geotools.measure.Measure;
 import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wms.WMSCapabilities;
@@ -1941,9 +1940,7 @@ public class ResourcePool {
                 mtClient.setMaxConnections(maxConnections);
             }
         } else {
-            client =
-                    HTTPClientFinder.createClient(
-                            new Hints(Hints.HTTP_CLIENT, SimpleHttpClient.class));
+            client = HTTPClientFinder.createClient();
         }
         String username = info.getUsername();
         String password = info.getPassword();

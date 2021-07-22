@@ -4,12 +4,17 @@
  */
 package org.geoserver.ogcapi.coverages;
 
+import java.util.Arrays;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.ogcapi.OGCApiTestSupport;
 
 public class CoveragesTestSupport extends OGCApiTestSupport {
+
+    protected static final String TAZDEM_TITLE = "Down under digital elevation model";
+    protected static final String TAZDEM_DESCRIPTION = "So that you know where up and down are";
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -27,5 +32,12 @@ public class CoveragesTestSupport extends OGCApiTestSupport {
         WorkspaceInfo wcs = catalog.getWorkspaceByName("wcs");
         wcs.setName("rs");
         catalog.save(wcs);
+
+        // customize metadata and set custom CRS too
+        CoverageInfo tazDem = getCatalog().getCoverageByName("rs:DEM");
+        tazDem.setTitle(TAZDEM_TITLE);
+        tazDem.setAbstract(TAZDEM_DESCRIPTION);
+        tazDem.getResponseSRS().addAll(Arrays.asList("3857", "3003"));
+        getCatalog().save(tazDem);
     }
 }

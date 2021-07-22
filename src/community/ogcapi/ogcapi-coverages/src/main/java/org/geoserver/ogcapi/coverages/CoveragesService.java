@@ -4,6 +4,7 @@
  */
 package org.geoserver.ogcapi.coverages;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -13,9 +14,11 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIService;
 import org.geoserver.ogcapi.HTMLResponseBody;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.referencing.CRS;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -75,6 +78,29 @@ public class CoveragesService {
     @HTMLResponseBody(templateName = "collections.ftl", fileName = "collections.html")
     public CollectionsDocument getCollections() {
         return new CollectionsDocument(geoServer, getServiceCRSList());
+    }
+
+    @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
+    @ResponseBody
+    @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
+    public CollectionDocument getCollection(
+            @PathVariable(name = "collectionId") String collectionId) throws IOException {
+        CoverageInfo ci = getCoverage(collectionId);
+        CollectionDocument collection =
+                new CollectionDocument(geoServer, ci, getCoverageCRS(ci, getServiceCRSList()));
+
+        return collection;
+    }
+
+    private CoverageInfo getCoverage(String collectionId) {
+        CoverageInfo coverage = getCatalog().getCoverageByName(collectionId);
+        if (coverage == null) {
+            throw new ServiceException(
+                    "Unknown collection " + collectionId,
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    "collectionId");
+        }
+        return coverage;
     }
 
     protected List<String> getServiceCRSList() {

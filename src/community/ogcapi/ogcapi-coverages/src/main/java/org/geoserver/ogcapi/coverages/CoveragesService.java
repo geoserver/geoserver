@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.coverages;
 
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import org.geoserver.ogcapi.ConformanceClass;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
+import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
@@ -48,6 +50,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -134,6 +137,21 @@ public class CoveragesService {
                         CONF_CLASS_COVERAGE,
                         CONF_CLASS_GEOTIFF);
         return new ConformanceDocument("OGC API Coverages", classes);
+    }
+
+    @GetMapping(
+        path = "api",
+        name = "getApi",
+        produces = {
+            OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
+            "application/x-yaml",
+            MediaType.TEXT_XML_VALUE
+        }
+    )
+    @ResponseBody
+    @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
+    public OpenAPI api() throws IOException {
+        return new CoveragesAPIBuilder().build(getService());
     }
 
     @GetMapping(path = "collections", name = "getCollections")

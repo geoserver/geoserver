@@ -33,10 +33,8 @@ public class LandingPageTest extends CoveragesTestSupport {
                         "getCollections",
                         "describeCollection",
                         "getConformanceDeclaration",
-                        "getCoverage"
-
-                        /** "getApi" */
-                        ));
+                        "getCoverage",
+                        "getApi"));
     }
 
     @Test

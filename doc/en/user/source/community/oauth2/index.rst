@@ -12,7 +12,7 @@ OAuth2 Protocol and GeoServer OAuth2 core module
 
 This module allows GeoServer to authenticate against the `OAuth2 Protocol <https://tools.ietf.org/html/rfc6749>`_.
 
-In order to let the module work, it is mandatory to setup and configure both the ``oauth2`` and ``oauth2-xxxx-extension`` (where xxxx is the provider e.g. google, github, openid, geonode).
+In order to let the module work, it is mandatory to setup and configure both the ``oauth2`` and ``oauth2-xxxx-extension`` (where xxxx is the provider e.g. google, github, openid, geonode).  Both files are included in one ZIP file, obtained from the  `GeoServer build server <https://build.geoserver.org/geoserver/2.19.x/community-latest/>`_ (change version as necessary) - search for `sec-oauth2`.
 
 The first one contains the necessary dependencies of the OAuth2 core module. This module contains the implementation of the 
 GeoServer security filter, the base classes for the OAuth2 Token services and the GeoServer GUI panel.

@@ -23,15 +23,10 @@ public enum SupportedFormat {
         return this.format;
     }
 
-    public static List<SupportedFormat> getByExtension(String extensions) {
-        if (extensions == null) return Arrays.asList(SupportedFormat.values());
-        else if (extensions.equals("xml")) return Arrays.asList(GML);
-        else if (extensions.equals("xhtml")) return Arrays.asList(HTML);
+    public static List<SupportedFormat> getByExtension(String extension) {
+        if (extension == null) return Arrays.asList(SupportedFormat.values());
+        else if (extension.equals("xml")) return Arrays.asList(GML);
+        else if (extension.equals("xhtml")) return Arrays.asList(HTML);
         else return Arrays.asList(JSONLD, GEOJSON);
-    }
-
-    public static String toExtension(SupportedFormat format) {
-        if (format.equals(SupportedFormat.GML)) return "xml";
-        else return "json";
     }
 }

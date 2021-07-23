@@ -1,3 +1,7 @@
+/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.featurestemplating.writers;
 
 import static org.geoserver.featurestemplating.builders.VendorOptions.LINK;
@@ -17,6 +21,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.WKTWriter2;
 import org.locationtech.jts.geom.Geometry;
 
+/** A template writer able to produce XHTML output. */
 public class XHTMLTemplateWriter extends XMLTemplateWriter {
 
     public XHTMLTemplateWriter(XMLStreamWriter streamWriter) {

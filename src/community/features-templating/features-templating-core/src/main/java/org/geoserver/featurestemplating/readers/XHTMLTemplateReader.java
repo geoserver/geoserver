@@ -1,3 +1,7 @@
+/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.featurestemplating.readers;
 
 import static org.geoserver.featurestemplating.builders.VendorOptions.LINK;
@@ -6,12 +10,9 @@ import static org.geoserver.featurestemplating.builders.VendorOptions.STYLE;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
-import javax.xml.namespace.QName;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
@@ -19,6 +20,7 @@ import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.platform.resource.Resource;
 import org.xml.sax.helpers.NamespaceSupport;
 
+/** A TemplateReader able to produce a TemplateBuilder tree from an xhtml file. */
 public class XHTMLTemplateReader extends XMLRecursiveTemplateReader {
 
     protected Stack<String> optionsNamesStack;
@@ -50,7 +52,6 @@ public class XHTMLTemplateReader extends XMLRecursiveTemplateReader {
             optionsNamesStack.add(elementName);
         } else if (elementName.equalsIgnoreCase(LINK)) {
             Iterator<Attribute> attributeIterator = element.getAttributes();
-            Map<QName, String> attrs = new HashMap<>();
             List<Attribute> attributes = new ArrayList<>();
             while (attributeIterator.hasNext()) {
                 Attribute attr = attributeIterator.next();

@@ -4,21 +4,16 @@
  */
 package org.geoserver.featurestemplating.wfs;
 
-import static org.geoserver.featurestemplating.builders.VendorOptions.HEADER;
 import static org.geoserver.featurestemplating.builders.VendorOptions.LINK;
 import static org.geoserver.featurestemplating.builders.VendorOptions.SCRIPT;
 import static org.geoserver.featurestemplating.builders.VendorOptions.STYLE;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.EncodingHints;
@@ -61,12 +56,6 @@ public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {
         }
     }
 
-    private XMLEventReader getReader(String content) throws XMLStreamException {
-        XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-        xmlInputFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false);
-        return xmlInputFactory.createXMLEventReader(new ByteArrayInputStream(content.getBytes()));
-    }
-
     @Override
     protected void writeAdditionalFieldsInternal(
             TemplateOutputWriter writer,
@@ -86,23 +75,19 @@ public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {
         List<FeatureCollection> collectionList = response.getFeature();
         List<String> scripts = new ArrayList<>();
         List<String> styles = new ArrayList<>();
-        List<String> headers = new ArrayList<>();
         EncodingHints encodingHints = new EncodingHints();
         for (FeatureCollection collection : collectionList) {
             FeatureTypeInfo fti = helper.getFeatureTypeInfo(collection);
             RootBuilder root = configuration.getTemplate(fti, outputFormat);
             String script = root.getVendorOptions().get(SCRIPT, String.class, "");
             String style = root.getVendorOptions().get(VendorOptions.STYLE, String.class, "");
-            String header = root.getVendorOptions().get(VendorOptions.HEADER, String.class, "");
             if (!script.isEmpty()) scripts.add(script);
             if (!style.isEmpty()) styles.add(style);
-            if (!header.isEmpty()) headers.add(header);
             VendorOptions options = root.getVendorOptions();
             addLinks(options, encodingHints);
         }
         if (!scripts.isEmpty()) encodingHints.put(SCRIPT, scripts);
         if (!styles.isEmpty()) encodingHints.put(STYLE, styles);
-        if (!headers.isEmpty()) encodingHints.put(HEADER, styles);
         return encodingHints;
     }
 

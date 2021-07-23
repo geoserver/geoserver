@@ -115,6 +115,8 @@ public class TemplateRule implements Serializable {
         else if (this.outputFormat.equals(SupportedFormat.GEOJSON.name()))
             return nameIdentifier.equals(TemplateIdentifier.GEOJSON.name())
                     || nameIdentifier.equals(TemplateIdentifier.JSON.name());
+        else if (this.outputFormat.equals(SupportedFormat.HTML.name()))
+            return nameIdentifier.equals(TemplateIdentifier.HTML.name());
         else return nameIdentifier.equals(this.outputFormat);
     }
 

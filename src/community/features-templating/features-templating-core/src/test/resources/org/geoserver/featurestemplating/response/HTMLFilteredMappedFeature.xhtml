@@ -1,0 +1,119 @@
+<gft:Template>
+    <gft:Options>
+        <style>
+            <![CDATA[
+ul, #myUL {
+  list-style-type: none;
+}
+
+#myUL {
+  margin: 0;
+  padding: 0;
+}
+
+.caret {
+  cursor: pointer;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none;
+}
+
+.caret::before {
+  content: "\25B6";
+  color: black;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.caret-down::before {
+  -ms-transform: rotate(90deg); /* IE 9 */
+  -webkit-transform: rotate(90deg); /* Safari */'
+  transform: rotate(90deg);
+}
+
+.nested {
+  display: none;
+}
+
+.active {
+  display: block;
+}
+]]>
+        </style>
+        <script>
+            <![CDATA[
+  window.onload = function() {
+  var toggler = document.getElementsByClassName("caret");
+  for (let item of toggler){
+    item.addEventListener("click", function() {
+    this.parentElement.querySelector(".nested").classList.toggle("active");
+    this.classList.toggle("caret-down");
+  });
+  }
+  }
+]]>
+        </script>
+        <link rel="stylesheet" href="some/css/href" type="text/css" media="all" />
+    </gft:Options>
+    <ul id="myUL">
+        <li><span class="caret">MappedFeature</span>
+            <ul class="nested">
+                <li>${@gml:id}</li>
+                <li><span class="caret">Name</span>
+                    <ul class="nested">
+                        <li>
+                            ${gml:name}
+                        </li>
+                    </ul>
+                </li>
+                <li gft:isCollection="true" gft:filter="xpath('../gml:name') = 'MURRADUC BASALT'" gft:source="gsml:specification/gsml:GeologicUnit">
+                    <span class="caret">Specifications</span>
+                    <ul class="nested">
+                        <li>
+                            <span class="caret">Geologic Unit</span>
+                            <ul class="nested">
+                                <li>
+                                    <span class="caret">Purpose</span>
+                                    <ul class="nested">
+                                        <li>${gsml:purpose}</li>
+                                    </ul>
+                                </li>
+                                <li><span class="caret">Name</span>
+                                    <ul class="nested">
+                                        <li>${gml:name}</li>
+                                    </ul>
+                                </li>
+                                <li gft:isCollection="true" gft:source="gsml:composition/gsml:CompositionPart">
+                                    <span class="caret">Composition Parts</span>
+                                    <ul class="nested">
+                                        <li>
+                                            <span class="caret">Part</span>
+                                            <ul class="nested">
+                                                <li><span class="caret">Role</span>
+                                                    <ul class="nested">
+                                                        <li>${gsml:role}</li>
+                                                    </ul>
+                                                </li>
+                                                <li><span class="caret">Code Space</span>
+                                                    <ul class="nested">
+                                                        <li>Code space Value</li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li><span class="caret">Shape</span>
+                    <ul class="nested">
+                        <li>${gsml:shape}</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</gft:Template>

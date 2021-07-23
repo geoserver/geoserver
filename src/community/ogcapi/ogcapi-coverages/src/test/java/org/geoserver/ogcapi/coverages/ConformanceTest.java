@@ -9,10 +9,12 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
-import java.util.List;
-import java.util.stream.Collectors;
+
 import org.geoserver.ogcapi.ConformanceClass;
 import org.junit.Test;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ConformanceTest extends CoveragesTestSupport {
 
@@ -36,7 +38,8 @@ public class ConformanceTest extends CoveragesTestSupport {
             ConformanceClass.OAS3,
             ConformanceClass.GEODATA,
             CoveragesService.CONF_CLASS_COVERAGE,
-            CoveragesService.CONF_CLASS_GEOTIFF
+            CoveragesService.CONF_CLASS_GEOTIFF,
+            CoveragesService.CONF_CLASS_SUBSET
         };
     }
 
@@ -51,8 +54,7 @@ public class ConformanceTest extends CoveragesTestSupport {
         org.jsoup.nodes.Document document = getAsJSoup("ogc/coverages/conformance?f=text/html");
         assertEquals("GeoServer OGC API Coverages Conformance", document.select("#title").text());
         List<String> classes =
-                document.select("#content li")
-                        .stream()
+                document.select("#content li").stream()
                         .map(e -> e.text())
                         .collect(Collectors.toList());
         assertThat(classes, containsInAnyOrder(getExpectedConformanceClasses()));

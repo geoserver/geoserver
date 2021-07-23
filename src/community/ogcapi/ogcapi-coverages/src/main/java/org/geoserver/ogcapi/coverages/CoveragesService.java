@@ -6,19 +6,11 @@ package org.geoserver.ogcapi.coverages;
 
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 
-import io.swagger.v3.oas.models.OpenAPI;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import net.opengis.wcs20.DimensionSliceType;
 import net.opengis.wcs20.DimensionTrimType;
 import net.opengis.wcs20.GetCoverageType;
 import net.opengis.wcs20.Wcs20Factory;
+
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
@@ -57,13 +49,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import io.swagger.v3.oas.models.OpenAPI;
+
 /** Implementation of OGC Coverages API service */
 @APIService(
-    service = "Coverages",
-    version = "1.0",
-    landingPage = "ogc/coverages",
-    serviceClass = WCSInfo.class
-)
+        service = "Coverages",
+        version = "1.0",
+        landingPage = "ogc/coverages",
+        serviceClass = WCSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/coverages")
 public class CoveragesService {
 
@@ -74,6 +76,8 @@ public class CoveragesService {
             "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/geodata-coverage";
     public static final String CONF_CLASS_GEOTIFF =
             "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/geotiff";
+    public static final String CONF_CLASS_SUBSET =
+            "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/req/coverage-subset";
 
     public static final String GEOTIFF_MIME = "image/tiff;application=geotiff";
 
@@ -81,6 +85,7 @@ public class CoveragesService {
     private final WebCoverageService20 wcs20;
     private final APIFilterParser filterParser;
     private TimeParser timeParser = new TimeParser();
+    private SubsetsParser subsetParser = new SubsetsParser();
 
     public CoveragesService(
             GeoServer geoServer,
@@ -94,8 +99,7 @@ public class CoveragesService {
     public static List<String> getCoverageCRS(CoverageInfo coverage, List<String> defaultCRS) {
         if (coverage.getResponseSRS() != null) {
             List<String> result =
-                    coverage.getResponseSRS()
-                            .stream()
+                    coverage.getResponseSRS().stream()
                             // the GUI allows to enter codes as "EPSG:XYZW"
                             .map(c -> c.startsWith("EPSG:") ? c.substring(5) : c)
                             .map(c -> CRS_PREFIX + c)
@@ -135,19 +139,19 @@ public class CoveragesService {
                         ConformanceClass.OAS3,
                         ConformanceClass.GEODATA,
                         CONF_CLASS_COVERAGE,
-                        CONF_CLASS_GEOTIFF);
+                        CONF_CLASS_GEOTIFF,
+                        CONF_CLASS_SUBSET);
         return new ConformanceDocument("OGC API Coverages", classes);
     }
 
     @GetMapping(
-        path = "api",
-        name = "getApi",
-        produces = {
-            OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-            "application/x-yaml",
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            path = "api",
+            name = "getApi",
+            produces = {
+                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
+                "application/x-yaml",
+                MediaType.TEXT_XML_VALUE
+            })
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
@@ -184,7 +188,7 @@ public class CoveragesService {
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "filter-lang", required = false) String filterLanguage,
             @RequestParam(name = "crs", required = false) String crs,
-            String itemId)
+            @RequestParam(name = "subset", required = false) String subset)
             throws Exception {
         // side effect, checks existence
         CoverageInfo coverage = getCoverage(collectionId);
@@ -197,15 +201,20 @@ public class CoveragesService {
         request.setVersion(WCS20Const.V201);
         request.setFilter(filterParser.parse(filter, filterLanguage));
         if (bbox != null) setBBOXDimensionSubset(bbox, bboxCRS, request);
-        if (datetime != null) setupTimeSubset(datetime, coverage, wf, request);
+        if (datetime != null) setupTimeSubset(datetime, coverage, request);
+        if (subset != null) setupSubsets(subset, coverage, request);
 
         GridCoverage gridCoverage = wcs20.getCoverage(request);
         return new CoveragesResponse(request, gridCoverage);
     }
 
-    private void setupTimeSubset(
-            String datetime, CoverageInfo coverage, Wcs20Factory wf, GetCoverageType request)
+    private void setupSubsets(String subsetsSpec, CoverageInfo coverage, GetCoverageType request) {
+        subsetParser.parse(subsetsSpec).forEach(ss -> request.getDimensionSubset().add(ss));
+    }
+
+    private void setupTimeSubset(String datetime, CoverageInfo coverage, GetCoverageType request)
             throws ParseException {
+        Wcs20Factory wf = Wcs20Factory.eINSTANCE;
         DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null || !time.isEnabled()) {
             throw new APIException(
@@ -286,8 +295,7 @@ public class CoveragesService {
         if (result == null || result.isEmpty()) {
             // consult the EPSG databasee
             result =
-                    CRS.getSupportedCodes("EPSG")
-                            .stream()
+                    CRS.getSupportedCodes("EPSG").stream()
                             .filter(c -> INTEGER.matcher(c).matches())
                             .map(c -> CRS_PREFIX + c)
                             .collect(Collectors.toList());

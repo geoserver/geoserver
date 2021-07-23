@@ -35,7 +35,7 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.spatial.Intersects;
 import org.springframework.security.core.Authentication;
 
-public class AccessManagerTest extends GeofenceBaseTest {
+public class GeofenceAccessManagerTest extends GeofenceBaseTest {
 
     @Test
     public void testAdmin() {

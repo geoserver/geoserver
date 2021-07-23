@@ -15,24 +15,13 @@
 
       <div class="card my-4">
         <div class="card-header">
-          <h2>Feature schema</h2>
+          <h2>More information</h2>
         </div>
         <div class="card-body">
-          <#if model.schema??>
-          <ul>
-          <#list model.schema.attributes as attribute>
-            <#assign idx=attribute.type?last_index_of(".") + 1>
-            <li><b>${attribute.name}</b>: ${attribute.type?substring(idx)}</li>
-          </#list>
-          </ul>
-          <#else>
-          Attribute information is not available.
-          </#if>
+          <a href="${collection.getLinkUrl('domainset', 'application/json')!}">Domain set as JSON</a>
         </div>
       </div>
     </div>
-    <div class="col-xs col-md-6 col-lg-4 text-center p-5">
-      <#--  MAP PLACEHOLDER  -->
-    </div>
+    
   </div>
 <#include "common-footer.ftl">

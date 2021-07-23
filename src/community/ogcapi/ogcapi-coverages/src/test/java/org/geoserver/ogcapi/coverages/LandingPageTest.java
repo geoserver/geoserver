@@ -34,7 +34,8 @@ public class LandingPageTest extends CoveragesTestSupport {
                         "describeCollection",
                         "getConformanceDeclaration",
                         "getCoverage",
-                        "getApi"));
+                        "getApi",
+                        "getCoverageDomainSet"));
     }
 
     @Test

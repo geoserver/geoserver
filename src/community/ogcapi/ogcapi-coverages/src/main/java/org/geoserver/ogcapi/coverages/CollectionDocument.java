@@ -7,7 +7,6 @@ package org.geoserver.ogcapi.coverages;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +20,7 @@ import org.geoserver.ogcapi.AbstractCollectionDocument;
 import org.geoserver.ogcapi.CollectionExtents;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.TimeExtentCalculator;
+import org.geoserver.ogcapi.coverages.cis.DomainSet;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -34,6 +34,8 @@ public class CollectionDocument extends AbstractCollectionDocument<CoverageInfo>
     static final Logger LOGGER = Logging.getLogger(CollectionDocument.class);
 
     public static final String REL_COVERAGE = "http://www.opengis.net/def/rel/ogc/1.0/coverage";
+    public static final String REL_DOMAINSET =
+            "http://www.opengis.net/def/rel/ogc/1.0/coverage-domainset";
 
     CoverageInfo coverage;
     String mapPreviewURL;
@@ -53,11 +55,13 @@ public class CollectionDocument extends AbstractCollectionDocument<CoverageInfo>
         this.coverage = coverage;
         this.crs = crs;
 
-        // links
-        Collection<MediaType> formats =
-                APIRequestInfo.get().getProducibleMediaTypes(CoveragesResponse.class, false);
+        // self link
+        addSelfLinks("ogc/coverages/collections/" + id);
+
+        // links for coverage extraction
         String baseUrl = APIRequestInfo.get().getBaseURL();
-        for (MediaType format : formats) {
+        for (MediaType format :
+                APIRequestInfo.get().getProducibleMediaTypes(CoveragesResponse.class, false)) {
             String apiUrl =
                     ResponseUtils.buildURL(
                             baseUrl,
@@ -72,7 +76,24 @@ public class CollectionDocument extends AbstractCollectionDocument<CoverageInfo>
                             collectionId + " coverage as " + format,
                             "coverage"));
         }
-        addSelfLinks("ogc/coverages/collections/" + id);
+
+        // domainSet
+        for (MediaType format :
+                APIRequestInfo.get().getProducibleMediaTypes(DomainSet.class, false)) {
+            String apiUrl =
+                    ResponseUtils.buildURL(
+                            baseUrl,
+                            "ogc/coverages/collections/" + collectionId + "/coverage/domainset",
+                            Collections.singletonMap("f", format.toString()),
+                            URLMangler.URLType.SERVICE);
+            addLink(
+                    new Link(
+                            apiUrl,
+                            REL_DOMAINSET,
+                            format.toString(),
+                            collectionId + " coverage domainset as " + format,
+                            "domainset"));
+        }
 
         // map preview
         if (isWMSAvailable(geoServer)) {

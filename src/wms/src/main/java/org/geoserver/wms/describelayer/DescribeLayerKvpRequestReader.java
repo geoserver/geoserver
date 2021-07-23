@@ -54,7 +54,7 @@ public class DescribeLayerKvpRequestReader extends KvpRequestReader {
             throw new ServiceException(
                     "Wrong value for version parameter: "
                             + version
-                            + ". This server accetps version "
+                            + ". This server accepts version "
                             + wms.getVersion(),
                     "InvalidVersion",
                     getClass().getSimpleName());
@@ -65,7 +65,7 @@ public class DescribeLayerKvpRequestReader extends KvpRequestReader {
         request.setLayers(layers);
         if (layers == null || layers.isEmpty()) {
             throw new ServiceException(
-                    "No LAYERS has been requested", "NoLayerRequested", getClass().getName());
+                    "No LAYERS have been requested", "NoLayerRequested", getClass().getName());
         }
         return request;
     }

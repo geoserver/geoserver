@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.OWS20Exception;
@@ -30,7 +29,7 @@ public class DefaultAPIExceptionHandler implements APIExceptionHandler, Extensio
 
     private static final Logger LOGGER = Logging.getLogger(DefaultAPIExceptionHandler.class);
 
-    GeoServer geoServer;
+    protected GeoServer geoServer;
 
     public DefaultAPIExceptionHandler(GeoServer geoServer) {
         this.geoServer = geoServer;
@@ -54,6 +53,11 @@ public class DefaultAPIExceptionHandler implements APIExceptionHandler, Extensio
                 response.setStatus(ex.getHttpCode());
                 statusSet = true;
             }
+        } else if (t instanceof OWS20Exception) {
+            OWS20Exception t2 = (OWS20Exception) t;
+            response.setStatus(t2.getHttpCode());
+            code = t2.getCode();
+            statusSet = true;
         } else if (t instanceof ServiceException) {
             code = ((ServiceException) t).getCode();
             OWS20Exception.OWSExceptionCode o20Code =
@@ -81,8 +85,12 @@ public class DefaultAPIExceptionHandler implements APIExceptionHandler, Extensio
         }
         if (!statusSet) response.setStatus(500);
         if (code == null) code = OWS20Exception.NO_APPLICABLE_CODE;
-        if (description == null) description = getDescription(geoServer.getGlobal(), t);
+        if (description == null) description = getDescription(t);
 
+        writeResponse(response, code, description);
+    }
+
+    protected void writeResponse(HttpServletResponse response, String code, String description) {
         Map<String, String> error = new LinkedHashMap<>();
         error.put("code", code);
         error.put("description", description);
@@ -98,7 +106,7 @@ public class DefaultAPIExceptionHandler implements APIExceptionHandler, Extensio
         }
     }
 
-    private String getDescription(GeoServerInfo geoServer, Throwable t) {
+    protected String getDescription(Throwable t) {
         StringBuffer sb = new StringBuffer();
         OwsUtils.dumpExceptionMessages(t, sb, false);
 

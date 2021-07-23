@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.coverages;
 
 import static org.junit.Assert.assertEquals;
 
+import com.jayway.jsonpath.DocumentContext;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -13,12 +14,11 @@ import org.apache.commons.io.FileUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.GeneralEnvelope;
-import org.geotools.referencing.CRS;
 import org.junit.Test;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.parameter.ParameterValue;
+import org.opengis.referencing.FactoryException;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CoverageTest extends CoveragesTestSupport {
@@ -29,24 +29,7 @@ public class CoverageTest extends CoveragesTestSupport {
     public void testGetFullCoverage() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse("ogc/coverages/collections/rs:DEM/coverage");
-        assertEquals(200, response.getStatus());
-        assertEquals(CoveragesService.GEOTIFF_MIME, response.getContentType());
-
-        GridCoverage2D targetCoverage = getCoverage(response);
-
-        // check the raster space
-        final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
-        assertEquals(120, gridRange.getSpan(0));
-        assertEquals(240, gridRange.getSpan(1));
-
-        // check the model space
-        final GeneralEnvelope expectedEnvelope =
-                new GeneralEnvelope(new double[] {145, -43}, new double[] {146, -41});
-        expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
-        assertEquals(145, targetCoverage.getEnvelope().getMinimum(0), EPS);
-        assertEquals(146, targetCoverage.getEnvelope().getMaximum(0), EPS);
-        assertEquals(-43, targetCoverage.getEnvelope().getMinimum(1), EPS);
-        assertEquals(-41, targetCoverage.getEnvelope().getMaximum(1), EPS);
+        assertBBOXDEM(response, 120, 240, 145, 146, -43, -41);
     }
 
     @Test
@@ -54,6 +37,46 @@ public class CoverageTest extends CoveragesTestSupport {
         MockHttpServletResponse response =
                 getAsServletResponse(
                         "ogc/coverages/collections/rs:DEM/coverage?bbox=145.5,-42,146,-41.5");
+        assertBBOXDEM(response, 60, 60, 145.5, 146, -42, -41.5);
+    }
+
+    @Test
+    public void testSpatialSubsetRange() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ogc/coverages/collections/rs:DEM/coverage?subset=Long(145.5:146),Lat(-42:-41.5)");
+        assertBBOXDEM(response, 60, 60, 145.5, 146, -42, -41.5);
+    }
+
+    @Test
+    public void testSpatialSubsetSlice() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ogc/coverages/collections/rs:DEM/coverage?subset=Long(145.5),Lat(-41.5)");
+        // a one pixel raster
+        assertBBOXDEM(response, 1, 1, 145.5, 145.508333, -41.508333, -41.5);
+    }
+
+    @Test
+    public void testSpatialSubsetWrongAxis() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "ogc/coverages/collections/rs:DEM/coverage?subset=CutIt(145.5)");
+        assertEquals(400, response.getStatus());
+        assertEquals("application/json", response.getContentType());
+        DocumentContext error = getAsJSONPath(response);
+        assertEquals("Invalid axis label provided: CutIt", error.read("description"));
+    }
+
+    private void assertBBOXDEM(
+            MockHttpServletResponse response,
+            int width,
+            int height,
+            double xMin,
+            double xMax,
+            double yMin,
+            double yMax)
+            throws IOException, FactoryException {
         assertEquals(200, response.getStatus());
         assertEquals(CoveragesService.GEOTIFF_MIME, response.getContentType());
 
@@ -61,17 +84,14 @@ public class CoverageTest extends CoveragesTestSupport {
 
         // check the raster space
         final GridEnvelope gridRange = targetCoverage.getGridGeometry().getGridRange();
-        assertEquals(60, gridRange.getSpan(0));
-        assertEquals(60, gridRange.getSpan(1));
+        assertEquals(width, gridRange.getSpan(0));
+        assertEquals(height, gridRange.getSpan(1));
 
         // check the model space
-        final GeneralEnvelope expectedEnvelope =
-                new GeneralEnvelope(new double[] {145, -43}, new double[] {146, -41});
-        expectedEnvelope.setCoordinateReferenceSystem(CRS.decode("EPSG:4326", true));
-        assertEquals(145.5, targetCoverage.getEnvelope().getMinimum(0), EPS);
-        assertEquals(146, targetCoverage.getEnvelope().getMaximum(0), EPS);
-        assertEquals(-42, targetCoverage.getEnvelope().getMinimum(1), EPS);
-        assertEquals(-41.5, targetCoverage.getEnvelope().getMaximum(1), EPS);
+        assertEquals(xMin, targetCoverage.getEnvelope().getMinimum(0), EPS);
+        assertEquals(xMax, targetCoverage.getEnvelope().getMaximum(0), EPS);
+        assertEquals(yMin, targetCoverage.getEnvelope().getMinimum(1), EPS);
+        assertEquals(yMax, targetCoverage.getEnvelope().getMaximum(1), EPS);
     }
 
     private GridCoverage2D getCoverage(MockHttpServletResponse response) throws IOException {

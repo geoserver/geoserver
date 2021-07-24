@@ -339,17 +339,7 @@ public class GetFeature {
                 Query query = queries.get(i);
                 try {
                     // alias sanity check
-                    if (!query.getAliases().isEmpty()) {
-                        if (query.getAliases().size() != query.getTypeNames().size()) {
-                            throw new WFSException(
-                                    request,
-                                    String.format(
-                                            "Query specifies %d type names and %d "
-                                                    + "aliases, must be equal",
-                                            query.getTypeNames().size(),
-                                            query.getAliases().size()));
-                        }
-                    }
+                    validateQueryAliases(request, query);
 
                     List<FeatureTypeInfo> metas = new ArrayList<>();
                     for (QName typeName : query.getTypeNames()) {
@@ -422,17 +412,7 @@ public class GetFeature {
                                 // validate the filter for each join, as well as the join filter
                                 for (int j = 1; j < metas.size(); j++) {
                                     Join join = joins.get(j - 1);
-                                    if (!isValidJoinFilter(join.getJoinFilter())) {
-                                        throw new WFSException(
-                                                request,
-                                                "Unable to perform join with specified join filter: "
-                                                        + filter);
-                                    }
-
-                                    if (join.getFilter() != null) {
-                                        validateFilter(
-                                                join.getFilter(), query, metas.get(j), request);
-                                    }
+                                    validateJoin(request, query, filter, join, metas.get(j));
                                 }
 
                                 filter = extractor.getPrimaryFilter();
@@ -652,36 +632,14 @@ public class GetFeature {
                 }
             }
 
-            // total count represents the total count of the features matched for this query in
-            // cases
-            // where the client has limited the result set size, so we compute it lazily
-            if (isNumberMatchedSkipped) {
-                totalCount = BigInteger.valueOf(-1);
-            } else if (count < maxFeatures && calculateSize && totalOffset == 0) {
-                // optimization: if count < max features then total count == count
-                // can't use this optimization for v2
-                totalCount = BigInteger.valueOf(count);
-            } else if (isPreComputed(totalCountExecutors)) {
-                long total = getTotalCount(totalCountExecutors);
-                totalCount = BigInteger.valueOf(total);
-            } else {
-                // ok, in this case we're forced to run the queries to discover the actual total
-                // count
-                // We do so lazily, not all output formats need it, leveraging the fact that
-                // BigInteger
-                // is not final to wrap it in a lazy loading proxy
-                Enhancer enhancer = new Enhancer();
-                enhancer.setSuperclass(BigInteger.class);
-                enhancer.setCallback(
-                        (LazyLoader)
-                                () -> {
-                                    long totalCount1 = getTotalCount(totalCountExecutors);
-                                    return BigInteger.valueOf(totalCount1);
-                                });
-                totalCount =
-                        (BigInteger)
-                                enhancer.create(new Class[] {String.class}, new Object[] {"0"});
-            }
+            totalCount =
+                    updateTotalCount(
+                            maxFeatures,
+                            isNumberMatchedSkipped,
+                            count,
+                            totalOffset,
+                            calculateSize,
+                            totalCountExecutors);
         } catch (IOException | SchemaException e) {
             throw new WFSException(
                     request, "Error occurred getting features", e, request.getHandle());
@@ -696,6 +654,69 @@ public class GetFeature {
                 results,
                 lockId,
                 getFeatureById);
+    }
+
+    private void validateJoin(
+            GetFeatureRequest request, Query query, Filter filter, Join join, FeatureTypeInfo meta)
+            throws IOException {
+        if (!isValidJoinFilter(join.getJoinFilter())) {
+            throw new WFSException(
+                    request, "Unable to perform join with specified join filter: " + filter);
+        }
+
+        if (join.getFilter() != null) {
+            validateFilter(join.getFilter(), query, meta, request);
+        }
+    }
+
+    private void validateQueryAliases(GetFeatureRequest request, Query query) {
+        if (!query.getAliases().isEmpty()) {
+            if (query.getAliases().size() != query.getTypeNames().size()) {
+                throw new WFSException(
+                        request,
+                        String.format(
+                                "Query specifies %d type names and %d " + "aliases, must be equal",
+                                query.getTypeNames().size(), query.getAliases().size()));
+            }
+        }
+    }
+
+    private BigInteger updateTotalCount(
+            int maxFeatures,
+            boolean isNumberMatchedSkipped,
+            int count,
+            int totalOffset,
+            boolean calculateSize,
+            List<CountExecutor> totalCountExecutors)
+            throws IOException {
+        BigInteger totalCount;
+        // total count represents the total count of the features matched for this query in
+        // cases/ where the client has limited the result set size, so we compute it lazily
+        if (isNumberMatchedSkipped) {
+            totalCount = BigInteger.valueOf(-1);
+        } else if (count < maxFeatures && calculateSize && totalOffset == 0) {
+            // optimization: if count < max features then total count == count
+            // can't use this optimization for v2
+            totalCount = BigInteger.valueOf(count);
+        } else if (isPreComputed(totalCountExecutors)) {
+            long total = getTotalCount(totalCountExecutors);
+            totalCount = BigInteger.valueOf(total);
+        } else {
+            // ok, in this case we're forced to run the queries to discover the actual total
+            // count. We do so lazily, not all output formats need it, leveraging the fact that
+            // BigInteger is not final to wrap it in a lazy loading proxy
+            Enhancer enhancer = new Enhancer();
+            enhancer.setSuperclass(BigInteger.class);
+            enhancer.setCallback(
+                    (LazyLoader)
+                            () -> {
+                                long totalCount1 = getTotalCount(totalCountExecutors);
+                                return BigInteger.valueOf(totalCount1);
+                            });
+            totalCount =
+                    (BigInteger) enhancer.create(new Class[] {String.class}, new Object[] {"0"});
+        }
+        return totalCount;
     }
 
     private void collectPropertyNames(

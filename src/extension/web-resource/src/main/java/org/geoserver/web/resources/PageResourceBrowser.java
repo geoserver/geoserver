@@ -83,564 +83,48 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
     /** The clip board. */
     protected final ClipBoard clipBoard;
 
+    private final TreeView<Resource> treeView;
+    private final GeoServerDialog dialog;
+
     public PageResourceBrowser() {
         // create the root node
         final ResourceNode rootNode = new ResourceNode(store().get(Paths.BASE), expandedStates);
         rootNode.getExpanded().setObject(true);
 
         // create tree view and clip board
-        final TreeView<Resource> treeView = new TreeView<>("treeview", rootNode);
+        treeView = new TreeView<>("treeview", rootNode);
         clipBoard = new ClipBoard(treeView);
 
         // used for all pop-up dialogs.
-        final GeoServerDialog dialog = new GeoServerDialog("dialog");
+        dialog = new GeoServerDialog("dialog");
         dialog.setResizable(false);
 
         // upload button
-        final AjaxLink<Void> btnUpload =
-                new AjaxLink<Void>("upload") {
-                    private static final long serialVersionUID = -6538820444407766106L;
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        dialog.setInitialHeight(225);
-
-                        dialog.showOkCancel(
-                                target,
-                                new DialogDelegate() {
-                                    private static final long serialVersionUID =
-                                            1557172478015946688L;
-                                    private PanelUpload uploadPanel;
-
-                                    @Override
-                                    protected Component getContents(String id) {
-                                        uploadPanel =
-                                                new PanelUpload(
-                                                        id,
-                                                        "/"
-                                                                + treeView.getSelectedNode()
-                                                                        .getObject()
-                                                                        .path());
-                                        return uploadPanel;
-                                    }
-
-                                    @Override
-                                    protected boolean onSubmit(
-                                            AjaxRequestTarget target, Component contents) {
-                                        uploadPanel.getFeedbackMessages().clear();
-                                        if (uploadPanel.getFileUpload() == null) {
-                                            uploadPanel.error(
-                                                    new ParamResourceModel(
-                                                                    "fileRequired", getPage())
-                                                            .getString());
-                                        } else {
-                                            String dir = uploadPanel.getDirectory();
-                                            Resource dest =
-                                                    store().get(
-                                                                    Paths.path(
-                                                                            dir,
-                                                                            uploadPanel
-                                                                                    .getFileUpload()
-                                                                                    .getClientFileName()));
-                                            if (Resources.exists(dest)) {
-                                                uploadPanel.error(
-                                                        new ParamResourceModel(
-                                                                        "resourceExists", getPage())
-                                                                .getString()
-                                                                .replace("%", "/" + dest.path()));
-                                            } else {
-                                                try (OutputStream os = dest.out()) {
-                                                    IOUtils.copy(
-                                                            uploadPanel
-                                                                    .getFileUpload()
-                                                                    .getInputStream(),
-                                                            os);
-                                                    treeView.setSelectedNode(
-                                                            new ResourceNode(dest, expandedStates),
-                                                            target);
-                                                    return true;
-                                                } catch (IOException | IllegalStateException e) {
-                                                    uploadPanel.error(e.getMessage());
-                                                }
-                                            }
-                                        }
-                                        target.add(uploadPanel.getFeedbackPanel());
-                                        return false;
-                                    }
-                                });
-                    }
-                };
+        final AjaxLink<Void> btnUpload = new UploadButton();
 
         // new resource button
-        final AjaxLink<Void> btnNew =
-                new AjaxLink<Void>("new") {
-                    private static final long serialVersionUID = 8112272759002275843L;
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        dialog.setInitialHeight(525);
-
-                        dialog.showOkCancel(
-                                target,
-                                new DialogDelegate() {
-                                    private static final long serialVersionUID =
-                                            -8898887236980594842L;
-
-                                    private PanelEdit editPanel;
-
-                                    @Override
-                                    protected Component getContents(String id) {
-                                        // pick a non-existing resource name (can be changed by
-                                        // user)
-                                        String dest =
-                                                "/"
-                                                        + Paths.path(
-                                                                treeView.getSelectedNode()
-                                                                        .getObject()
-                                                                        .path(),
-                                                                "new.txt");
-                                        for (int i = 1; Resources.exists(store().get(dest)); i++) {
-                                            dest =
-                                                    "/"
-                                                            + Paths.path(
-                                                                    treeView.getSelectedNode()
-                                                                            .getObject()
-                                                                            .path(),
-                                                                    "new." + i + ".txt");
-                                        }
-                                        editPanel = new PanelEdit(id, dest, true, "");
-                                        return editPanel;
-                                    }
-
-                                    @Override
-                                    protected boolean onSubmit(
-                                            AjaxRequestTarget target, Component contents) {
-                                        editPanel.getFeedbackMessages().clear();
-                                        Resource dest = store().get(editPanel.getResource());
-                                        if (Resources.exists(dest)) {
-                                            editPanel.error(
-                                                    new ParamResourceModel(
-                                                                    "resourceExists", getPage())
-                                                            .getString()
-                                                            .replace("%", "/" + dest.path()));
-                                        } else {
-                                            try (OutputStream os = dest.out()) {
-                                                String newContents = editPanel.getContents();
-                                                if (newContents != null) {
-                                                    os.write(newContents.getBytes());
-                                                    if (!newContents.endsWith("\n")) {
-                                                        os.write(System.lineSeparator().getBytes());
-                                                    }
-                                                }
-                                                // select newly created node
-                                                treeView.setSelectedNode(
-                                                        new ResourceNode(dest, expandedStates),
-                                                        target);
-                                                return true;
-                                            } catch (IOException | IllegalStateException e) {
-                                                error(e.getMessage());
-                                            }
-                                        }
-                                        target.add(editPanel.getFeedbackPanel());
-                                        return false;
-                                    }
-                                });
-                    }
-                };
+        final AjaxLink<Void> btnNew = new NewButton();
 
         // download button
-        final Link<Void> btnDownload =
-                new Link<Void>("download") {
-                    private static final long serialVersionUID = 2746429086122117005L;
-
-                    @Override
-                    public void onClick() {
-                        Resource res = treeView.getSelectedNode().getObject();
-                        getRequestCycle()
-                                .scheduleRequestHandlerAfterCurrent(
-                                        new ResourceStreamRequestHandler(
-                                                        new WicketResourceAdaptor(res))
-                                                .setFileName(res.name())
-                                                .setContentDisposition(
-                                                        ContentDisposition.ATTACHMENT));
-                    }
-                };
+        final Link<Void> btnDownload = new DownloadButton();
 
         // edit button
-        final AjaxLink<Void> btnEdit =
-                new AjaxLink<Void>("edit") {
-                    private static final long serialVersionUID = 6690936054046040647L;
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        dialog.setInitialHeight(500);
-                        final Resource resource = treeView.getSelectedNode().getObject();
-                        final String contents;
-                        try (InputStream is = resource.in()) {
-                            contents = IOUtils.toString(is, StandardCharsets.UTF_8);
-
-                            dialog.showOkCancel(
-                                    target,
-                                    new DialogDelegate() {
-                                        private static final long serialVersionUID =
-                                                -8898887236980594842L;
-
-                                        private PanelEdit editPanel;
-
-                                        @Override
-                                        protected Component getContents(String id) {
-                                            editPanel =
-                                                    new PanelEdit(
-                                                            id,
-                                                            "/" + resource.path(),
-                                                            false,
-                                                            contents);
-                                            return editPanel;
-                                        }
-
-                                        @Override
-                                        protected boolean onSubmit(
-                                                AjaxRequestTarget target, Component contents) {
-                                            editPanel.getFeedbackMessages().clear();
-                                            try (OutputStream os = resource.out()) {
-                                                String newContents = editPanel.getContents();
-                                                if (newContents != null) {
-                                                    os.write(newContents.getBytes());
-                                                    if (!newContents.endsWith("\n")) {
-                                                        os.write(System.lineSeparator().getBytes());
-                                                    }
-                                                }
-                                                return true;
-                                            } catch (IOException | IllegalStateException e) {
-                                                error(e.getMessage());
-                                            }
-                                            target.add(editPanel.getFeedbackPanel());
-                                            return false;
-                                        }
-                                    });
-                        } catch (IOException | IllegalStateException e) {
-                            error(e.getMessage());
-                            target.add(bottomFeedbackPanel);
-                            target.add(topFeedbackPanel);
-                        }
-                    }
-                };
+        final AjaxLink<Void> btnEdit = new EditButton();
 
         // paste button
-        final AjaxLink<Void> btnPaste =
-                new AjaxLink<Void>("paste") {
-                    private static final long serialVersionUID = 2647829118342823975L;
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        dialog.setInitialHeight(240);
-
-                        final List<Resource> sources = new ArrayList<>();
-                        for (TreeNode<Resource> node : clipBoard.getItems()) {
-                            sources.add(node.getObject());
-                        }
-                        final List<TreeNode<Resource>> newSelected = new ArrayList<>();
-
-                        dialog.showOkCancel(
-                                target,
-                                new DialogDelegate() {
-                                    private static final long serialVersionUID =
-                                            -8898887236980594842L;
-
-                                    private PanelPaste pastePanel;
-
-                                    @Override
-                                    protected Component getContents(String id) {
-                                        pastePanel =
-                                                new PanelPaste(
-                                                        id,
-                                                        listResources(sources),
-                                                        "/"
-                                                                + treeView.getSelectedNode()
-                                                                        .getObject()
-                                                                        .path(),
-                                                        clipBoard.isCopy());
-                                        return pastePanel;
-                                    }
-
-                                    @Override
-                                    protected boolean onSubmit(
-                                            AjaxRequestTarget target, Component contents) {
-                                        pastePanel.getFeedbackMessages().clear();
-
-                                        String dir = pastePanel.getDirectory();
-
-                                        Iterator<Resource> it = sources.iterator();
-                                        while (it.hasNext()) {
-                                            Resource src = it.next();
-                                            Resource dest =
-                                                    store().get(Paths.path(dir, src.name()));
-                                            if (clipBoard.isCopy()
-                                                    && Resources.serializable(dest).equals(src)) {
-                                                // if we are copying a resource to its own
-                                                // directory, we will give it a new name.
-                                                for (int i = 1; Resources.exists(dest); i++) {
-                                                    dest =
-                                                            store().get(
-                                                                            Paths.path(
-                                                                                    dir,
-                                                                                    FilenameUtils
-                                                                                                    .getExtension(
-                                                                                                            src
-                                                                                                                    .name())
-                                                                                                    .isEmpty()
-                                                                                            ? src
-                                                                                                            .name()
-                                                                                                    + "."
-                                                                                                    + i
-                                                                                            : FilenameUtils
-                                                                                                            .getBaseName(
-                                                                                                                    src
-                                                                                                                            .name())
-                                                                                                    + "."
-                                                                                                    + i
-                                                                                                    + "."
-                                                                                                    + FilenameUtils
-                                                                                                            .getExtension(
-                                                                                                                    src
-                                                                                                                            .name())));
-                                                }
-                                            }
-                                            if (Resources.exists(dest)) {
-                                                pastePanel.error(
-                                                        new ParamResourceModel(
-                                                                        "resourceExists", getPage())
-                                                                .getString()
-                                                                .replace("%", "/" + dest.path()));
-                                            } else {
-                                                try {
-                                                    if (clipBoard.isCopy()) {
-                                                        try (InputStream is = src.in()) {
-                                                            try (OutputStream os = dest.out()) {
-                                                                IOUtils.copy(is, os);
-                                                            }
-                                                        }
-                                                    } else {
-                                                        if (!store().move(
-                                                                        src.path(), dest.path())) {
-                                                            throw new IOException(
-                                                                    new ParamResourceModel(
-                                                                                    "moveFailed",
-                                                                                    getPage())
-                                                                            .getString()
-                                                                            .replace(
-                                                                                    "%",
-                                                                                    "/"
-                                                                                            + dest
-                                                                                                    .path()));
-                                                        }
-                                                    }
-                                                    it.remove();
-                                                    newSelected.add(
-                                                            new ResourceNode(dest, expandedStates));
-                                                } catch (IOException | IllegalStateException e) {
-                                                    pastePanel.error(e.getMessage());
-                                                }
-                                            }
-                                        }
-
-                                        // we select all the newly created nodes.
-                                        treeView.setSelectedNodes(newSelected, target);
-
-                                        // clear clipboard from moved resources (copied resources
-                                        // will remain,
-                                        // in case user wants to copy them multiple times)
-                                        clipBoard.clearRemoved();
-
-                                        // we leave modal only if operation was complete
-                                        if (!sources.isEmpty()) {
-                                            pastePanel
-                                                    .getSourceField()
-                                                    .setModelObject(listResources(sources));
-                                            target.add(pastePanel.getFeedbackPanel());
-                                            target.add(pastePanel.getSourceField());
-                                            return false;
-                                        }
-
-                                        return true;
-                                    }
-                                });
-                    }
-                };
+        final AjaxLink<Void> btnPaste = new PasteButton();
 
         // copy button
-        final AjaxLink<Void> btnCopy =
-                new AjaxLink<Void>("copy") {
-                    private static final long serialVersionUID = 3883958793500232081L;
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        clipBoard.setItems(treeView.getSelectedNodes(), true, target);
-                        target.add(treeView.getSelectedViews());
-                    }
-                };
+        final AjaxLink<Void> btnCopy = new CopyButton();
 
         // cut button
-        final AjaxLink<Void> btnCut =
-                new AjaxLink<Void>("cut") {
-                    private static final long serialVersionUID = 2647829118342823975L;
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        clipBoard.setItems(treeView.getSelectedNodes(), false, target);
-                        enable(
-                                btnPaste,
-                                treeView.getSelectedNode() != null
-                                        && !treeView.getSelectedNode().isLeaf());
-                        target.add(treeView.getSelectedViews());
-                        target.add(btnPaste);
-                    }
-                };
+        final AjaxLink<Void> btnCut = new CutButton(btnPaste);
 
         // rename button
-        final AjaxLink<Void> btnRename =
-                new AjaxLink<Void>("rename") {
-                    private static final long serialVersionUID = 2647829118342823975L;
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        dialog.setInitialHeight(150);
-
-                        dialog.showOkCancel(
-                                target,
-                                new DialogDelegate() {
-                                    private static final long serialVersionUID =
-                                            -8898887236980594842L;
-
-                                    private PanelRename renamePanel;
-
-                                    @Override
-                                    protected Component getContents(String id) {
-                                        renamePanel =
-                                                new PanelRename(
-                                                        id,
-                                                        treeView.getSelectedNode()
-                                                                .getObject()
-                                                                .name());
-                                        return renamePanel;
-                                    }
-
-                                    @Override
-                                    protected boolean onSubmit(
-                                            AjaxRequestTarget target, Component contents) {
-                                        renamePanel.getFeedbackMessages().clear();
-
-                                        Resource src = treeView.getSelectedNode().getObject();
-                                        Resource dest =
-                                                treeView.getSelectedNode()
-                                                        .getObject()
-                                                        .parent()
-                                                        .get(renamePanel.getName());
-                                        if (Resources.exists(dest)) {
-                                            renamePanel.error(
-                                                    new ParamResourceModel(
-                                                                    "resourceExists", getPage())
-                                                            .getString()
-                                                            .replace("%", "/" + dest.path()));
-                                        } else {
-                                            Boolean expandedModel =
-                                                    expandedStates
-                                                            .getResourceExpandedState(src)
-                                                            .getObject();
-                                            if (!src.renameTo(dest)) {
-                                                renamePanel.error(
-                                                        new ParamResourceModel(
-                                                                        "renameFailed", getPage())
-                                                                .getString());
-                                            } else {
-                                                if (clipBoard
-                                                        .getItems()
-                                                        .contains(
-                                                                new ResourceNode(
-                                                                        src, expandedStates))) {
-                                                    clipBoard.clearRemoved();
-                                                    clipBoard.addItem(
-                                                            new ResourceNode(dest, expandedStates),
-                                                            target);
-                                                }
-
-                                                // we have a new expanded state. if the original
-                                                // node was expanded, we expand this one as well.
-                                                // (child nodes might still loose their expanded
-                                                // state though)
-                                                expandedStates
-                                                        .getResourceExpandedState(dest)
-                                                        .setObject(expandedModel);
-                                                // select the new node
-                                                treeView.setSelectedNode(
-                                                        new ResourceNode(dest, expandedStates),
-                                                        target);
-                                                return true;
-                                            }
-                                        }
-                                        target.add(renamePanel.getFeedbackPanel());
-                                        return false;
-                                    }
-                                });
-                    }
-                };
+        final AjaxLink<Void> btnRename = new RenameButton();
 
         // delete button
-        final AjaxLink<Void> btnDelete =
-                new AjaxLink<Void>("delete") {
-                    private static final long serialVersionUID = -7370119488741589880L;
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        dialog.setInitialHeight(100);
-
-                        final List<Resource> toBeDeleted = new ArrayList<>();
-                        for (TreeNode<Resource> selectedNode : treeView.getSelectedNodes()) {
-                            toBeDeleted.add(selectedNode.getObject());
-                        }
-
-                        dialog.showOkCancel(
-                                target,
-                                new DialogDelegate() {
-                                    private static final long serialVersionUID =
-                                            1557172478015946688L;
-
-                                    @Override
-                                    protected Component getContents(String id) {
-                                        return new Label(
-                                                id,
-                                                new ParamResourceModel("confirmDelete", getPage())
-                                                                .getString()
-                                                        + " "
-                                                        + listResources(toBeDeleted));
-                                    }
-
-                                    @Override
-                                    protected boolean onSubmit(
-                                            AjaxRequestTarget target, Component contents) {
-                                        for (Resource res : toBeDeleted) {
-                                            if (!res.delete()) {
-                                                error(
-                                                        new ParamResourceModel(
-                                                                        "deleteFailed", getPage())
-                                                                .getString()
-                                                                .replace("%", res.path()));
-                                                target.add(bottomFeedbackPanel);
-                                                target.add(topFeedbackPanel);
-                                            }
-                                        }
-                                        // if deleted node was on clipboard, remove it form the
-                                        // clipboard
-                                        clipBoard.clearRemoved();
-
-                                        // remove selection
-                                        treeView.setSelectedNodes(Collections.emptySet(), target);
-
-                                        return true;
-                                    }
-                                });
-                    }
-                };
+        final AjaxLink<Void> btnDelete = new DeleteButton();
 
         // update menu buttons enabled states according to current selection
         treeView.addSelectionListener(
@@ -786,5 +270,502 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
             return false;
         }
         return true; // no extension, assume textual
+    }
+
+    private class UploadButton extends AjaxLink<Void> {
+        private static final long serialVersionUID = -6538820444407766106L;
+
+        public UploadButton() {
+            super("upload");
+        }
+
+        @Override
+        public void onClick(AjaxRequestTarget target) {
+            dialog.setInitialHeight(225);
+
+            dialog.showOkCancel(
+                    target,
+                    new DialogDelegate() {
+                        private static final long serialVersionUID = 1557172478015946688L;
+                        private PanelUpload uploadPanel;
+
+                        @Override
+                        protected Component getContents(String id) {
+                            uploadPanel =
+                                    new PanelUpload(
+                                            id,
+                                            "/" + treeView.getSelectedNode().getObject().path());
+                            return uploadPanel;
+                        }
+
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            uploadPanel.getFeedbackMessages().clear();
+                            if (uploadPanel.getFileUpload() == null) {
+                                uploadPanel.error(
+                                        new ParamResourceModel("fileRequired", getPage())
+                                                .getString());
+                            } else {
+                                String dir = uploadPanel.getDirectory();
+                                Resource dest =
+                                        store().get(
+                                                        Paths.path(
+                                                                dir,
+                                                                uploadPanel
+                                                                        .getFileUpload()
+                                                                        .getClientFileName()));
+                                if (Resources.exists(dest)) {
+                                    uploadPanel.error(
+                                            new ParamResourceModel("resourceExists", getPage())
+                                                    .getString()
+                                                    .replace("%", "/" + dest.path()));
+                                } else {
+                                    try (OutputStream os = dest.out()) {
+                                        IOUtils.copy(
+                                                uploadPanel.getFileUpload().getInputStream(), os);
+                                        treeView.setSelectedNode(
+                                                new ResourceNode(dest, expandedStates), target);
+                                        return true;
+                                    } catch (IOException | IllegalStateException e) {
+                                        uploadPanel.error(e.getMessage());
+                                    }
+                                }
+                            }
+                            target.add(uploadPanel.getFeedbackPanel());
+                            return false;
+                        }
+                    });
+        }
+    }
+
+    private class NewButton extends AjaxLink<Void> {
+        private static final long serialVersionUID = 8112272759002275843L;
+
+        public NewButton() {
+            super("new");
+        }
+
+        @Override
+        public void onClick(AjaxRequestTarget target) {
+            dialog.setInitialHeight(525);
+
+            dialog.showOkCancel(
+                    target,
+                    new DialogDelegate() {
+                        private static final long serialVersionUID = -8898887236980594842L;
+
+                        private PanelEdit editPanel;
+
+                        @Override
+                        protected Component getContents(String id) {
+                            // pick a non-existing resource name (can be changed by
+                            // user)
+                            String dest = getPath();
+                            for (int i = 1; Resources.exists(store().get(dest)); i++) {
+                                dest = getIthPath(i);
+                            }
+                            editPanel = new PanelEdit(id, dest, true, "");
+                            return editPanel;
+                        }
+
+                        private String getIthPath(int i) {
+                            return "/"
+                                    + Paths.path(
+                                            treeView.getSelectedNode().getObject().path(),
+                                            "new." + i + ".txt");
+                        }
+
+                        private String getPath() {
+                            return "/"
+                                    + Paths.path(
+                                            treeView.getSelectedNode().getObject().path(),
+                                            "new.txt");
+                        }
+
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            editPanel.getFeedbackMessages().clear();
+                            Resource dest = store().get(editPanel.getResource());
+                            if (Resources.exists(dest)) {
+                                editPanel.error(
+                                        new ParamResourceModel("resourceExists", getPage())
+                                                .getString()
+                                                .replace("%", "/" + dest.path()));
+                            } else {
+                                try (OutputStream os = dest.out()) {
+                                    String newContents = editPanel.getContents();
+                                    if (newContents != null) {
+                                        os.write(newContents.getBytes());
+                                        if (!newContents.endsWith("\n")) {
+                                            os.write(System.lineSeparator().getBytes());
+                                        }
+                                    }
+                                    // select newly created node
+                                    treeView.setSelectedNode(
+                                            new ResourceNode(dest, expandedStates), target);
+                                    return true;
+                                } catch (IOException | IllegalStateException e) {
+                                    error(e.getMessage());
+                                }
+                            }
+                            target.add(editPanel.getFeedbackPanel());
+                            return false;
+                        }
+                    });
+        }
+    }
+
+    private class DownloadButton extends Link<Void> {
+        private static final long serialVersionUID = 2746429086122117005L;
+
+        public DownloadButton() {
+            super("download");
+        }
+
+        @Override
+        public void onClick() {
+            Resource res = treeView.getSelectedNode().getObject();
+            getRequestCycle()
+                    .scheduleRequestHandlerAfterCurrent(
+                            new ResourceStreamRequestHandler(new WicketResourceAdaptor(res))
+                                    .setFileName(res.name())
+                                    .setContentDisposition(ContentDisposition.ATTACHMENT));
+        }
+    }
+
+    private class EditButton extends AjaxLink<Void> {
+        private static final long serialVersionUID = 6690936054046040647L;
+
+        public EditButton() {
+            super("edit");
+        }
+
+        @Override
+        public void onClick(AjaxRequestTarget target) {
+            dialog.setInitialHeight(500);
+            final Resource resource = treeView.getSelectedNode().getObject();
+            final String contents;
+            try (InputStream is = resource.in()) {
+                contents = IOUtils.toString(is, StandardCharsets.UTF_8);
+
+                dialog.showOkCancel(
+                        target,
+                        new DialogDelegate() {
+                            private static final long serialVersionUID = -8898887236980594842L;
+
+                            private PanelEdit editPanel;
+
+                            @Override
+                            protected Component getContents(String id) {
+                                editPanel =
+                                        new PanelEdit(id, "/" + resource.path(), false, contents);
+                                return editPanel;
+                            }
+
+                            @Override
+                            protected boolean onSubmit(
+                                    AjaxRequestTarget target, Component contents) {
+                                editPanel.getFeedbackMessages().clear();
+                                try (OutputStream os = resource.out()) {
+                                    String newContents = editPanel.getContents();
+                                    if (newContents != null) {
+                                        os.write(newContents.getBytes());
+                                        if (!newContents.endsWith("\n")) {
+                                            os.write(System.lineSeparator().getBytes());
+                                        }
+                                    }
+                                    return true;
+                                } catch (IOException | IllegalStateException e) {
+                                    error(e.getMessage());
+                                }
+                                target.add(editPanel.getFeedbackPanel());
+                                return false;
+                            }
+                        });
+            } catch (IOException | IllegalStateException e) {
+                error(e.getMessage());
+                target.add(bottomFeedbackPanel);
+                target.add(topFeedbackPanel);
+            }
+        }
+    }
+
+    private class PasteButton extends AjaxLink<Void> {
+        private static final long serialVersionUID = 2647829118342823975L;
+
+        public PasteButton() {
+            super("paste");
+        }
+
+        @Override
+        public void onClick(AjaxRequestTarget target) {
+            dialog.setInitialHeight(240);
+
+            final List<Resource> sources = new ArrayList<>();
+            for (TreeNode<Resource> node : clipBoard.getItems()) {
+                sources.add(node.getObject());
+            }
+            final List<TreeNode<Resource>> newSelected = new ArrayList<>();
+
+            dialog.showOkCancel(
+                    target,
+                    new DialogDelegate() {
+                        private static final long serialVersionUID = -8898887236980594842L;
+
+                        private PanelPaste pastePanel;
+
+                        @Override
+                        protected Component getContents(String id) {
+                            pastePanel =
+                                    new PanelPaste(
+                                            id,
+                                            listResources(sources),
+                                            "/" + treeView.getSelectedNode().getObject().path(),
+                                            clipBoard.isCopy());
+                            return pastePanel;
+                        }
+
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            pastePanel.getFeedbackMessages().clear();
+
+                            String dir = pastePanel.getDirectory();
+
+                            Iterator<Resource> it = sources.iterator();
+                            while (it.hasNext()) {
+                                Resource src = it.next();
+                                Resource dest = store().get(Paths.path(dir, src.name()));
+                                if (clipBoard.isCopy()
+                                        && Resources.serializable(dest).equals(src)) {
+                                    // if we are copying a resource to its own
+                                    // directory, we will give it a new name.
+                                    for (int i = 1; Resources.exists(dest); i++) {
+                                        dest = store().get(getPath(dir, src, i));
+                                    }
+                                }
+                                if (Resources.exists(dest)) {
+                                    pastePanel.error(
+                                            new ParamResourceModel("resourceExists", getPage())
+                                                    .getString()
+                                                    .replace("%", "/" + dest.path()));
+                                } else {
+                                    try {
+                                        if (clipBoard.isCopy()) {
+                                            Resources.copy(src, dest);
+                                        } else {
+                                            if (!store().move(src.path(), dest.path())) {
+                                                throw new IOException(
+                                                        new ParamResourceModel(
+                                                                        "moveFailed", getPage())
+                                                                .getString()
+                                                                .replace("%", "/" + dest.path()));
+                                            }
+                                        }
+                                        it.remove();
+                                        newSelected.add(new ResourceNode(dest, expandedStates));
+                                    } catch (IOException | IllegalStateException e) {
+                                        pastePanel.error(e.getMessage());
+                                    }
+                                }
+                            }
+
+                            // we select all the newly created nodes.
+                            treeView.setSelectedNodes(newSelected, target);
+
+                            // clear clipboard from moved resources (copied resources
+                            // will remain,
+                            // in case user wants to copy them multiple times)
+                            clipBoard.clearRemoved();
+
+                            // we leave modal only if operation was complete
+                            if (!sources.isEmpty()) {
+                                pastePanel.getSourceField().setModelObject(listResources(sources));
+                                target.add(pastePanel.getFeedbackPanel());
+                                target.add(pastePanel.getSourceField());
+                                return false;
+                            }
+
+                            return true;
+                        }
+
+                        private String getPath(String dir, Resource src, int i) {
+                            return Paths.path(
+                                    dir,
+                                    FilenameUtils.getExtension(src.name()).isEmpty()
+                                            ? src.name() + "." + i
+                                            : FilenameUtils.getBaseName(src.name())
+                                                    + "."
+                                                    + i
+                                                    + "."
+                                                    + FilenameUtils.getExtension(src.name()));
+                        }
+                    });
+        }
+    }
+
+    private class CopyButton extends AjaxLink<Void> {
+        private static final long serialVersionUID = 3883958793500232081L;
+
+        public CopyButton() {
+            super("copy");
+        }
+
+        @Override
+        public void onClick(AjaxRequestTarget target) {
+            clipBoard.setItems(treeView.getSelectedNodes(), true, target);
+            target.add(treeView.getSelectedViews());
+        }
+    }
+
+    private class CutButton extends AjaxLink<Void> {
+        private static final long serialVersionUID = 2647829118342823975L;
+        private final AjaxLink<Void> btnPaste;
+
+        public CutButton(AjaxLink<Void> btnPaste) {
+            super("cut");
+            this.btnPaste = btnPaste;
+        }
+
+        @Override
+        public void onClick(AjaxRequestTarget target) {
+            clipBoard.setItems(treeView.getSelectedNodes(), false, target);
+            enable(
+                    btnPaste,
+                    treeView.getSelectedNode() != null && !treeView.getSelectedNode().isLeaf());
+            target.add(treeView.getSelectedViews());
+            target.add(btnPaste);
+        }
+    }
+
+    private class RenameButton extends AjaxLink<Void> {
+        private static final long serialVersionUID = 2647829118342823975L;
+
+        public RenameButton() {
+            super("rename");
+        }
+
+        @Override
+        public void onClick(AjaxRequestTarget target) {
+            dialog.setInitialHeight(150);
+
+            dialog.showOkCancel(
+                    target,
+                    new DialogDelegate() {
+                        private static final long serialVersionUID = -8898887236980594842L;
+
+                        private PanelRename renamePanel;
+
+                        @Override
+                        protected Component getContents(String id) {
+                            renamePanel =
+                                    new PanelRename(
+                                            id, treeView.getSelectedNode().getObject().name());
+                            return renamePanel;
+                        }
+
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            renamePanel.getFeedbackMessages().clear();
+
+                            Resource src = treeView.getSelectedNode().getObject();
+                            Resource dest =
+                                    treeView.getSelectedNode()
+                                            .getObject()
+                                            .parent()
+                                            .get(renamePanel.getName());
+                            if (Resources.exists(dest)) {
+                                renamePanel.error(
+                                        new ParamResourceModel("resourceExists", getPage())
+                                                .getString()
+                                                .replace("%", "/" + dest.path()));
+                            } else {
+                                Boolean expandedModel =
+                                        expandedStates.getResourceExpandedState(src).getObject();
+                                if (!src.renameTo(dest)) {
+                                    renamePanel.error(
+                                            new ParamResourceModel("renameFailed", getPage())
+                                                    .getString());
+                                } else {
+                                    if (clipBoard
+                                            .getItems()
+                                            .contains(new ResourceNode(src, expandedStates))) {
+                                        clipBoard.clearRemoved();
+                                        clipBoard.addItem(
+                                                new ResourceNode(dest, expandedStates), target);
+                                    }
+
+                                    // we have a new expanded state. if the original
+                                    // node was expanded, we expand this one as well.
+                                    // (child nodes might still loose their expanded
+                                    // state though)
+                                    expandedStates
+                                            .getResourceExpandedState(dest)
+                                            .setObject(expandedModel);
+                                    // select the new node
+                                    treeView.setSelectedNode(
+                                            new ResourceNode(dest, expandedStates), target);
+                                    return true;
+                                }
+                            }
+                            target.add(renamePanel.getFeedbackPanel());
+                            return false;
+                        }
+                    });
+        }
+    }
+
+    private class DeleteButton extends AjaxLink<Void> {
+        private static final long serialVersionUID = -7370119488741589880L;
+
+        public DeleteButton() {
+            super("delete");
+        }
+
+        @Override
+        public void onClick(AjaxRequestTarget target) {
+            dialog.setInitialHeight(100);
+
+            final List<Resource> toBeDeleted = new ArrayList<>();
+            for (TreeNode<Resource> selectedNode : treeView.getSelectedNodes()) {
+                toBeDeleted.add(selectedNode.getObject());
+            }
+
+            dialog.showOkCancel(
+                    target,
+                    new DialogDelegate() {
+                        private static final long serialVersionUID = 1557172478015946688L;
+
+                        @Override
+                        protected Component getContents(String id) {
+                            return new Label(
+                                    id,
+                                    new ParamResourceModel("confirmDelete", getPage()).getString()
+                                            + " "
+                                            + listResources(toBeDeleted));
+                        }
+
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            for (Resource res : toBeDeleted) {
+                                if (!res.delete()) {
+                                    error(
+                                            new ParamResourceModel("deleteFailed", getPage())
+                                                    .getString()
+                                                    .replace("%", res.path()));
+                                    target.add(bottomFeedbackPanel);
+                                    target.add(topFeedbackPanel);
+                                }
+                            }
+                            // if deleted node was on clipboard, remove it form the
+                            // clipboard
+                            clipBoard.clearRemoved();
+
+                            // remove selection
+                            treeView.setSelectedNodes(Collections.emptySet(), target);
+
+                            return true;
+                        }
+                    });
+        }
     }
 }

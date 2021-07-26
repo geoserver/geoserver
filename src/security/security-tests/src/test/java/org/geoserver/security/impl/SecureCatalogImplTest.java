@@ -31,6 +31,7 @@ import static org.junit.Assert.fail;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -1823,5 +1824,13 @@ public class SecureCatalogImplTest extends AbstractAuthorizationTest {
         // the ws specific group is made available by the workspace rule
         assertNotNull(sc.getLayerGroupByName("nurc", "wsContainerD"));
         assertNotNull(sc.getLayerByName(arcGridLayer.prefixedName()));
+
+        // check access is working also when iterating over all groups
+        try (CloseableIterator<LayerGroupInfo> groupIterator =
+                sc.list(LayerGroupInfo.class, Filter.INCLUDE)) {
+            ImmutableList<LayerGroupInfo> groups = ImmutableList.copyOf(groupIterator);
+            assertEquals(1, groups.size());
+            assertEquals("wsContainerD", groups.get(0).getName());
+        }
     }
 }

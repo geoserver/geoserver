@@ -126,6 +126,35 @@ public class GetCapabilitiesTest extends WCSTestSupport {
     }
 
     @Test
+    public void testInternationalContent() throws Exception {
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
+        getGeoServer().save(global);
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
+        ci.setTitle("My Title");
+        ci.setAbstract("My Abstract");
+        ci.getKeywords().add(0, new Keyword("my_keyword"));
+        MetadataLinkInfo mdl1 = catalog.getFactory().createMetadataLink();
+        mdl1.setContent("http://www.geoserver.org/tasmania/dem.xml");
+        mdl1.setAbout("http://www.geoserver.org");
+        ci.getMetadataLinks().add(mdl1);
+        MetadataLinkInfo mdl2 = catalog.getFactory().createMetadataLink();
+        mdl2.setContent("/metadata?key=value");
+        mdl2.setAbout("http://www.geoserver.org");
+        ci.getMetadataLinks().add(mdl2);
+        catalog.save(ci);
+        Document dom =
+                getAsDOM("wcs?service=WCS&version=2.0.1&request=GetCapabilities&Language=ita");
+
+        checkValidationErrors(dom, getWcs20Schema());
+        String base = "//wcs:Capabilities/wcs:Contents/wcs:CoverageSummary[wcs:CoverageId = '";
+        base += getLayerId(TASMANIA_DEM).replace(":", "__") + "']/";
+        assertXpathEvaluatesTo("My Title", base + "ows:Title", dom);
+        assertXpathEvaluatesTo("My Abstract", base + "ows:Abstract", dom);
+    }
+
+    @Test
     public void testMetadata() throws Exception {
         GeoServerInfo global = getGeoServer().getGlobal();
         global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
@@ -152,9 +181,9 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         base += getLayerId(TASMANIA_DEM).replace(":", "__") + "']/";
         assertXpathEvaluatesTo("My Title", base + "ows:Title", dom);
         assertXpathEvaluatesTo("My Abstract", base + "ows:Abstract", dom);
-        assertXpathEvaluatesTo("4", "count(" + base + "ows:Keywords/ows:Keyword)", dom);
+        assertXpathEvaluatesTo("5", "count(" + base + "ows:Keywords/ows:Keyword)", dom);
         assertXpathEvaluatesTo("my_keyword", base + "ows:Keywords/ows:Keyword[1]", dom);
-        assertXpathEvaluatesTo("2", "count(" + base + "ows:Metadata)", dom);
+        assertXpathEvaluatesTo("4", "count(" + base + "ows:Metadata)", dom);
         assertXpathEvaluatesTo("http://www.geoserver.org", base + "ows:Metadata[1]/@about", dom);
         assertXpathEvaluatesTo("simple", base + "ows:Metadata[1]/@xlink:type", dom);
         assertXpathEvaluatesTo(

@@ -113,6 +113,24 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
                 "a i18n abstract for group nature", natureGroup + "/Abstract", result);
 
         assertXpathEvaluatesTo("english keyword", natureGroup + "/KeywordList/Keyword", result);
+
+        request = "wms?version=1.1.1&request=GetCapabilities&service=WMS&" + "Language=eng";
+        result = getAsDOM(request);
+
+        service = "/WMT_MS_Capabilities/Service";
+        assertXpathEvaluatesTo("a i18n title for WMS service", service + "/Title", result);
+        assertXpathEvaluatesTo("a i18n abstract for WMS service", service + "/Abstract", result);
+
+        fifteenLayer = "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'cdf:Fifteen']";
+        assertXpathEvaluatesTo("Fifteen", fifteenLayer + "/Title", result);
+        assertXpathEvaluatesTo("abstract about Fifteen", fifteenLayer + "/Abstract", result);
+
+        natureGroup = "/WMT_MS_Capabilities/Capability/Layer/Layer/Layer[Name = 'nature']";
+        assertXpathEvaluatesTo("a i18n title for group nature", natureGroup + "/Title", result);
+        assertXpathEvaluatesTo(
+                "a i18n abstract for group nature", natureGroup + "/Abstract", result);
+
+        assertXpathEvaluatesTo("parola chiave", natureGroup + "/KeywordList/Keyword", result);
     }
 
     @Test

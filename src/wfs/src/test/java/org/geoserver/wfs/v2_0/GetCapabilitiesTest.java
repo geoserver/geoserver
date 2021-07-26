@@ -685,6 +685,16 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         assertXpathEvaluatesTo("titolo italiano", fifteenLayer + "/wfs:Title", doc);
         assertXpathEvaluatesTo("abstract italiano", fifteenLayer + "/wfs:Abstract", doc);
         assertXpathEvaluatesTo("parola chiave", fifteenLayer + "/ows:Keywords/ows:Keyword", doc);
+
+        doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0&Language=eng");
+        service = "//ows:ServiceIdentification";
+        assertXpathEvaluatesTo("a i18n title for WFS service", service + "/ows:Title", doc);
+        assertXpathEvaluatesTo("a i18n abstract for WFS service", service + "/ows:Abstract", doc);
+        fifteenLayer =
+                "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType[wfs:Name='cdf:Fifteen']";
+        assertXpathEvaluatesTo("Fifteen", fifteenLayer + "/wfs:Title", doc);
+        assertXpathEvaluatesTo("abstract about Fifteen", fifteenLayer + "/wfs:Abstract", doc);
+        assertXpathEvaluatesTo("Fifteen", fifteenLayer + "/ows:Keywords/ows:Keyword", doc);
     }
 
     @Test
@@ -718,6 +728,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         wfs.setInternationalTitle(title);
         wfs.setInternationalAbstract(_abstract);
         gs.save(wfs);
+
         MockHttpServletResponse response =
                 getAsServletResponse(
                         "wfs?service=WFS&request=getCapabilities&version=2.0.0&acceptLanguages=fre");

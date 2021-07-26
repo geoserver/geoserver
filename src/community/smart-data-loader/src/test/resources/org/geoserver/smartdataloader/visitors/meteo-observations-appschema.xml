@@ -226,6 +226,12 @@
             <OCQL>company</OCQL>
           </sourceExpression>
         </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>mt:active</targetAttribute>
+          <sourceExpression>
+            <OCQL>active</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
       </attributeMappings>
     </FeatureTypeMapping>
   </typeMappings>

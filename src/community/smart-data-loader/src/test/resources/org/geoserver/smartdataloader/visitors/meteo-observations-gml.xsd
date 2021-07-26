@@ -78,6 +78,7 @@
                     <xs:element maxOccurs="1" minOccurs="0" name="name" type="xs:string" />
                     <xs:element maxOccurs="1" minOccurs="0" name="surname" type="xs:string" />
                     <xs:element maxOccurs="1" minOccurs="0" name="company" type="xs:string" />
+                    <xs:element maxOccurs="1" minOccurs="0" name="active" type="xs:boolean" />
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>

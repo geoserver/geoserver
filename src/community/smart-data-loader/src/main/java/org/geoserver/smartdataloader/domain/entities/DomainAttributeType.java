@@ -11,5 +11,6 @@ public enum DomainAttributeType {
     INTEGER,
     TEXT,
     DATE,
-    GEOMETRY
+    GEOMETRY,
+    BOOLEAN
 }

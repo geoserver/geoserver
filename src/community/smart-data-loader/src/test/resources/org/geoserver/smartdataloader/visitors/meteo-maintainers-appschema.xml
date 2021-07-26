@@ -53,6 +53,12 @@
           </sourceExpression>
         </AttributeMapping>
         <AttributeMapping>
+          <targetAttribute>mt:active</targetAttribute>
+          <sourceExpression>
+            <OCQL>active</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
           <targetAttribute>meteoStationsMaintainers</targetAttribute>
           <sourceExpression>
             <linkField>FEATURE_LINK[1]</linkField>

@@ -30,7 +30,7 @@ ALTER TABLE smartappschematest.meteo_parameters OWNER TO postgres;
 CREATE TABLE smartappschematest.meteo_stations (id integer NOT NULL,code character varying(3),common_name character varying(50),"position" public.geometry(Point,4326));
 ALTER TABLE smartappschematest.meteo_stations OWNER TO postgres;
 ALTER TABLE ONLY smartappschematest.meteo_observations ALTER COLUMN id SET DEFAULT nextval('meteo_observations_id_seq'::regclass);
-CREATE TABLE smartappschematest.meteo_maintainers (id integer NOT NULL, name character varying(50), surname character varying(50), company character varying(50));
+CREATE TABLE smartappschematest.meteo_maintainers (id integer NOT NULL, name character varying(50), surname character varying(50), company character varying(50), active boolean);
 ALTER TABLE smartappschematest.meteo_maintainers OWNER TO postgres;
 CREATE TABLE smartappschematest.meteo_stations_maintainers (id integer NOT NULL, station_id integer, manteiner_id integer);
 ALTER TABLE smartappschematest.meteo_stations_maintainers OWNER TO postgres;
@@ -53,9 +53,9 @@ INSERT INTO smartappschematest.meteo_stations (id, code, common_name, "position"
 INSERT INTO smartappschematest.meteo_stations (id, code, common_name, "position") VALUES (7,'BOL','Bologna','0101000020E6100000AE47E17A14AE26400000000000404640');
 INSERT INTO smartappschematest.meteo_stations (id, code, common_name, "position") VALUES (21,'ROV','Rovereto','0101000020E61000009A9999999919264052B81E85EBF14640');
 
-INSERT INTO smartappschematest.meteo_maintainers (id, name, surname, company) VALUES (1,'Franco','Migliorini','SRS srl');
-INSERT INTO smartappschematest.meteo_maintainers (id, name, surname, company) VALUES (2,'Alberto','Rossi','SRS srl');
-INSERT INTO smartappschematest.meteo_maintainers (id, name, surname, company) VALUES (3,'Mario','Bianchi','CYS srl');
+INSERT INTO smartappschematest.meteo_maintainers (id, name, surname, company, active) VALUES (1,'Franco','Migliorini','SRS srl', false);
+INSERT INTO smartappschematest.meteo_maintainers (id, name, surname, company, active) VALUES (2,'Alberto','Rossi','SRS srl', true);
+INSERT INTO smartappschematest.meteo_maintainers (id, name, surname, company, active) VALUES (3,'Mario','Bianchi','CYS srl', true);
 
 INSERT INTO smartappschematest.meteo_stations_maintainers (id, station_id, manteiner_id) VALUES (1,13,1);
 INSERT INTO smartappschematest.meteo_stations_maintainers (id, station_id, manteiner_id) VALUES (2,13,2);

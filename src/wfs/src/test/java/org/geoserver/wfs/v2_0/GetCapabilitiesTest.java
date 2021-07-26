@@ -685,16 +685,6 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         assertXpathEvaluatesTo("titolo italiano", fifteenLayer + "/wfs:Title", doc);
         assertXpathEvaluatesTo("abstract italiano", fifteenLayer + "/wfs:Abstract", doc);
         assertXpathEvaluatesTo("parola chiave", fifteenLayer + "/ows:Keywords/ows:Keyword", doc);
-
-        doc = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0&Language=eng");
-        service = "//ows:ServiceIdentification";
-        assertXpathEvaluatesTo("a i18n title for WFS service", service + "/ows:Title", doc);
-        assertXpathEvaluatesTo("a i18n abstract for WFS service", service + "/ows:Abstract", doc);
-        fifteenLayer =
-                "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType[wfs:Name='cdf:Fifteen']";
-        assertXpathEvaluatesTo("Fifteen", fifteenLayer + "/wfs:Title", doc);
-        assertXpathEvaluatesTo("abstract about Fifteen", fifteenLayer + "/wfs:Abstract", doc);
-        assertXpathEvaluatesTo("Fifteen", fifteenLayer + "/ows:Keywords/ows:Keyword", doc);
     }
 
     @Test
@@ -787,5 +777,23 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         // it was not specified french should have been selected
         assertXpathEvaluatesTo("resumé", fifteenLayer + "/wfs:Abstract", doc);
         assertXpathEvaluatesTo("parola chiave", fifteenLayer + "/ows:Keywords/ows:Keyword", doc);
+    }
+
+    @Test
+    public void testAcceptLanguagesParameter() throws Exception {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(MockData.FIFTEEN));
+        GrowableInternationalString title = new GrowableInternationalString();
+        title.add(Locale.ENGLISH, "a i18n title for fti fifteen");
+        title.add(Locale.ITALIAN, "titolo italiano");
+        fti.setInternationalTitle(title);
+        catalog.save(fti);
+
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wfs?service=WFS&request=getCapabilities&version=2.0.0&acceptLanguages=it");
+        String responseMsg = response.getContentAsString();
+
+        assertTrue(responseMsg.contains("Language=it"));
     }
 }

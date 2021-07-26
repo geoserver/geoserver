@@ -6,6 +6,7 @@
 package org.geoserver.wms.capabilities;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 import org.geoserver.catalog.Catalog;
@@ -13,6 +14,7 @@ import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wms.WMSInfo;
@@ -113,24 +115,6 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
                 "a i18n abstract for group nature", natureGroup + "/Abstract", result);
 
         assertXpathEvaluatesTo("english keyword", natureGroup + "/KeywordList/Keyword", result);
-
-        request = "wms?version=1.1.1&request=GetCapabilities&service=WMS&" + "Language=eng";
-        result = getAsDOM(request);
-
-        service = "/WMT_MS_Capabilities/Service";
-        assertXpathEvaluatesTo("a i18n title for WMS service", service + "/Title", result);
-        assertXpathEvaluatesTo("a i18n abstract for WMS service", service + "/Abstract", result);
-
-        fifteenLayer = "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'cdf:Fifteen']";
-        assertXpathEvaluatesTo("Fifteen", fifteenLayer + "/Title", result);
-        assertXpathEvaluatesTo("abstract about Fifteen", fifteenLayer + "/Abstract", result);
-
-        natureGroup = "/WMT_MS_Capabilities/Capability/Layer/Layer/Layer[Name = 'nature']";
-        assertXpathEvaluatesTo("a i18n title for group nature", natureGroup + "/Title", result);
-        assertXpathEvaluatesTo(
-                "a i18n abstract for group nature", natureGroup + "/Abstract", result);
-
-        assertXpathEvaluatesTo("parola chiave", natureGroup + "/KeywordList/Keyword", result);
     }
 
     @Test
@@ -196,5 +180,23 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
         assertXpathEvaluatesTo("abstract italiano", natureGroup + "/Abstract", result);
 
         assertXpathEvaluatesTo("parola chiave", natureGroup + "/KeywordList/Keyword", result);
+    }
+
+    @Test
+    public void testAcceptLanguagesParameter() throws Exception {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(MockData.FIFTEEN));
+        GrowableInternationalString title = new GrowableInternationalString();
+        title.add(Locale.ENGLISH, "a i18n title for fti fifteen");
+        title.add(Locale.ITALIAN, "titolo italiano");
+        fti.setInternationalTitle(title);
+        catalog.save(fti);
+
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?version=1.1.1&request=GetCapabilities&service=WMS&AcceptLanguages=it");
+        String responseMsg = response.getContentAsString();
+
+        assertTrue(responseMsg.contains("Language=it"));
     }
 }

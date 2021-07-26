@@ -16,7 +16,7 @@ For core and extension modules:
 - [ ] New unit tests have been added covering the changes.
 - [ ] [Documentation](https://github.com/geoserver/geoserver/tree/main/doc/en/user/source) has been updated (if change is visible to end users).
 - [ ] The [REST API docs](https://github.com/geoserver/geoserver/tree/main/doc/en/api/1.0.0) have been updated (when changing configuration objects or the REST controllers).
-- [ ] There is an issue in the [GeoServer Jira](https://osgeo-org.atlassian.net/GEOS/issues/) (except for changes that do not affect administrators or end users in any way). 
+- [ ] There is an issue in the [GeoServer Jira](https://osgeo-org.atlassian.net/browse/GEOS/summary) (except for changes that do not affect administrators or end users in any way).
 - [ ] Commit message(s) must be in the form ``[GEOS-XYZWV] Title of the Jira ticket``.
 - [ ] Bug fixes and small new features are presented as a single commit.
 - [ ] Each commit has a single objective (if there are multiple commits, each has a separate JIRA ticket describing its goal).

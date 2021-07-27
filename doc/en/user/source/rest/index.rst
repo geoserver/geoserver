@@ -9,6 +9,7 @@ REST is an acronym for "`REpresentational State Transfer <http://en.wikipedia.or
 
 Operations on resources are implemented with the standard primitives of HTTP:  GET to read; and PUT, POST, and DELETE to write changes. Each resource is represented as a URL, such as ``http://GEOSERVER_HOME/rest/workspaces/topp``.
 
+.. warning:: While the OGC requests are thread-safe and can (actually must) be called in parallel, the REST write methods (PUT, POST, DELETE) are `not thread-safe <https://files.speakerdeck.com/presentations/2b500ab2712d44129a17f4b7e28c17df/slide_20.jpg>`.  Care must be taken to call these sequentially and synchronously, otherwise you risk corrupting your configuration files.
 
 API
 ---

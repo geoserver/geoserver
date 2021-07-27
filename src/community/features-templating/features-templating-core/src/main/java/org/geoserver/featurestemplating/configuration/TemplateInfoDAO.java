@@ -64,4 +64,6 @@ public interface TemplateInfoDAO {
      * @param listener the listener to add.
      */
     public void addTemplateListener(TemplateDAOListener listener);
+
+    public TemplateInfo findByFullName(String fullName);
 }

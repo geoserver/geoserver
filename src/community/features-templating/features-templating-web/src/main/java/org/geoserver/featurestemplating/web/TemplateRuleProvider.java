@@ -21,6 +21,9 @@ class TemplateRuleProvider extends GeoServerDataProvider<TemplateRule> {
 
     static final Property<TemplateRule> CQL_FILTER = new BeanProperty<>("cqlFilter", "cqlFilter");
 
+    static final Property<TemplateRule> PROFILE_FILTER =
+            new BeanProperty<>("profileFilter", "profileFilter");
+
     private LiveCollectionModel<TemplateRule, Set<TemplateRule>> model;
 
     TemplateRuleProvider(LiveCollectionModel<TemplateRule, Set<TemplateRule>> model) {
@@ -29,7 +32,7 @@ class TemplateRuleProvider extends GeoServerDataProvider<TemplateRule> {
 
     @Override
     protected List<Property<TemplateRule>> getProperties() {
-        return Arrays.asList(PRIORITY, NAME, OUTPUT_FORMAT, CQL_FILTER);
+        return Arrays.asList(PRIORITY, NAME, OUTPUT_FORMAT, PROFILE_FILTER, CQL_FILTER);
     }
 
     @Override

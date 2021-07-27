@@ -8,6 +8,7 @@ import static org.geoserver.featurestemplating.web.TemplateRuleProvider.CQL_FILT
 import static org.geoserver.featurestemplating.web.TemplateRuleProvider.NAME;
 import static org.geoserver.featurestemplating.web.TemplateRuleProvider.OUTPUT_FORMAT;
 import static org.geoserver.featurestemplating.web.TemplateRuleProvider.PRIORITY;
+import static org.geoserver.featurestemplating.web.TemplateRuleProvider.PROFILE_FILTER;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -106,6 +107,8 @@ public class TemplateRulesTablePanel extends Panel {
                 return new Label(id, OUTPUT_FORMAT.getModel(itemModel));
             else if (property.equals(CQL_FILTER))
                 return new Label(id, CQL_FILTER.getModel(itemModel));
+            else if (property.equals(PROFILE_FILTER))
+                return new Label(id, PROFILE_FILTER.getModel(itemModel));
             return null;
         }
     }

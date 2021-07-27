@@ -13,6 +13,15 @@ import org.geoserver.featurestemplating.expressions.MimeTypeFunction;
 
 public class TemplateModelsValidator {
 
+    public void validate(TemplateInfo info) throws TemplateConfigurationException {
+        TemplateInfo ti = TemplateInfoDAO.get().findByFullName(info.getFullName());
+        if (ti != null && !ti.getIdentifier().equals(info.getIdentifier())) {
+            TemplateConfigurationException e = new TemplateConfigurationException();
+            e.setId(TemplateConfigurationException.DUPLICATE_TEMPLATE_NAME);
+            throw e;
+        }
+    }
+
     public void validate(TemplatePreviewPanel.PreviewInfoModel info)
             throws TemplateConfigurationException {
         SupportedFormat outputFormat = info.getOutputFormat();

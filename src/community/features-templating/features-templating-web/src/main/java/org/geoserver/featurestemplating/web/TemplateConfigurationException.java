@@ -15,4 +15,6 @@ public class TemplateConfigurationException extends GeoServerException {
     public static final String MISSING_RULE_OUTPUT_FORMAT = "MISSING_RULE_OUTPUT_FORMAT";
     public static final String MISSING_RULE_TEMPLATE_NAME = "MISSING_RULE_TEMPLATE_NAME";
     public static final String INCOMPATIBLE_OUTPUT_FORMAT = "INCOMPATIBLE_OUTPUT_FORMAT";
+
+    public static final String DUPLICATE_TEMPLATE_NAME = "DUPLICATE_TEMPLATE_NAME";
 }

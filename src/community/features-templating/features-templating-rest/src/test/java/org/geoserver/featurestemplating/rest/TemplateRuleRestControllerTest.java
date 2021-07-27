@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -24,94 +25,87 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPostGetPutGetDelete() throws Exception {
-        try {
+        TemplateInfo info = new TemplateInfo();
+        info.setTemplateName("test-rules");
+        info.setExtension("xhtml");
+        TemplateInfoDAO.get().saveOrUpdate(info);
 
-            TemplateInfo info = new TemplateInfo();
-            info.setTemplateName("test-rules");
-            info.setExtension("xhtml");
-            TemplateInfoDAO.get().saveOrUpdate(info);
+        String json =
+                "{\n"
+                        + "    \"Rule\": {\n"
+                        + "        \"priority\": 1,\n"
+                        + "        \"templateName\": \"test-rules\",\n"
+                        + "        \"outputFormat\": \"HTML\",\n"
+                        + "        \"cqlFilter\": \"requestParam('myRequestParam')='true'\",\n"
+                        + "    }\n"
+                        + "}";
+        MockHttpServletResponse response =
+                postAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/featuretypes/cdf:Fifteen/templaterules",
+                        json,
+                        MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(201, response.getStatus());
+        FeatureTypeInfo fifteen = catalog.getFeatureTypeByName("cdf", "Fifteen");
+        TemplateLayerConfig templateLayerConfig =
+                fifteen.getMetadata()
+                        .get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
+        TemplateRule rule = new ArrayList<>(templateLayerConfig.getTemplateRules()).get(0);
+        String id = rule.getRuleId();
+        JSONObject result =
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH
+                                        + "/featuretypes/cdf:Fifteen/templaterules/"
+                                        + id
+                                        + ".json");
+        JSONObject ruleJSON = result.getJSONObject("Rule");
+        assertEquals(1, ruleJSON.getInt("priority"));
+        assertEquals("test-rules", ruleJSON.getString("templateName"));
+        assertEquals("HTML", ruleJSON.getString("outputFormat"));
+        assertEquals("requestParam('myRequestParam')='true'", ruleJSON.getString("cqlFilter"));
 
-            String json =
-                    "{\n"
-                            + "    \"Rule\": {\n"
-                            + "        \"priority\": 1,\n"
-                            + "        \"templateName\": \"test-rules\",\n"
-                            + "        \"outputFormat\": \"HTML\",\n"
-                            + "        \"cqlFilter\": \"requestParam('myRequestParam')='true'\",\n"
-                            + "    }\n"
-                            + "}";
-            MockHttpServletResponse response =
-                    postAsServletResponse(
-                            RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/templaterules",
-                            json,
-                            MediaType.APPLICATION_JSON_VALUE);
-            assertEquals(201, response.getStatus());
-            FeatureTypeInfo fifteen = catalog.getFeatureTypeByName("cdf", "Fifteen");
-            TemplateLayerConfig templateLayerConfig =
-                    fifteen.getMetadata()
-                            .get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
-            TemplateRule rule = templateLayerConfig.getTemplateRules().iterator().next();
-            String id = rule.getRuleId();
-            JSONObject result =
-                    (JSONObject)
-                            getAsJSON(
-                                    RestBaseController.ROOT_PATH
-                                            + "/featuretypes/cdf:Fifteen/templaterules/"
-                                            + id
-                                            + ".json");
-            JSONObject ruleJSON = result.getJSONObject("Rule");
-            assertEquals(1, ruleJSON.getInt("priority"));
-            assertEquals("test-rules", ruleJSON.getString("templateName"));
-            assertEquals("HTML", ruleJSON.getString("outputFormat"));
-            assertEquals("requestParam('myRequestParam')='true'", ruleJSON.getString("cqlFilter"));
+        String xmlRule =
+                " <Rule>\n"
+                        + "        <priority>2</priority>\n"
+                        + "        <templateName>test-rules</templateName>\n"
+                        + "        <outputFormat>HTML</outputFormat>\n"
+                        + "        <cqlFilter>requestParam('otherRequestParam')='true'</cqlFilter>\n"
+                        + "    </Rule>";
 
-            String xmlRule =
-                    " <Rule>\n"
-                            + "        <priority>2</priority>\n"
-                            + "        <templateName>test-rules</templateName>\n"
-                            + "        <outputFormat>HTML</outputFormat>\n"
-                            + "        <cqlFilter>requestParam('otherRequestParam')='true'</cqlFilter>\n"
-                            + "    </Rule>";
+        response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/featuretypes/cdf:Fifteen/templaterules/"
+                                + rule.getRuleId(),
+                        xmlRule,
+                        MediaType.APPLICATION_XML_VALUE);
+        assertEquals(201, response.getStatus());
 
-            response =
-                    putAsServletResponse(
-                            RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/templaterules/"
-                                    + rule.getRuleId(),
-                            xmlRule,
-                            MediaType.APPLICATION_XML_VALUE);
-            assertEquals(201, response.getStatus());
+        result =
+                (JSONObject)
+                        getAsJSON(
+                                RestBaseController.ROOT_PATH
+                                        + "/featuretypes/cdf:Fifteen/templaterules/"
+                                        + id
+                                        + ".json");
+        ruleJSON = result.getJSONObject("Rule");
+        assertEquals(2, ruleJSON.getInt("priority"));
+        assertEquals("test-rules", ruleJSON.getString("templateName"));
+        assertEquals("HTML", ruleJSON.getString("outputFormat"));
+        assertEquals("requestParam('otherRequestParam')='true'", ruleJSON.getString("cqlFilter"));
 
-            result =
-                    (JSONObject)
-                            getAsJSON(
-                                    RestBaseController.ROOT_PATH
-                                            + "/featuretypes/cdf:Fifteen/templaterules/"
-                                            + id
-                                            + ".json");
-            ruleJSON = result.getJSONObject("Rule");
-            assertEquals(2, ruleJSON.getInt("priority"));
-            assertEquals("test-rules", ruleJSON.getString("templateName"));
-            assertEquals("HTML", ruleJSON.getString("outputFormat"));
-            assertEquals(
-                    "requestParam('otherRequestParam')='true'", ruleJSON.getString("cqlFilter"));
+        response =
+                deleteAsServletResponse(
+                        RestBaseController.ROOT_PATH
+                                + "/featuretypes/cdf:Fifteen/templaterules/"
+                                + rule.getRuleId());
+        assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatus());
 
-            response =
-                    deleteAsServletResponse(
-                            RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/templaterules/"
-                                    + rule.getRuleId());
-            assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatus());
-
-            fifteen = catalog.getFeatureTypeByName("cdf", "Fifteen");
-            templateLayerConfig =
-                    fifteen.getMetadata()
-                            .get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
-            assertTrue(templateLayerConfig.getTemplateRules().isEmpty());
-        } finally {
-            cleanup(getCatalog().getFeatureTypeByName("cdf", "Fifteen"));
-        }
+        fifteen = catalog.getFeatureTypeByName("cdf", "Fifteen");
+        templateLayerConfig =
+                fifteen.getMetadata()
+                        .get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
+        assertTrue(templateLayerConfig.getTemplateRules().isEmpty());
     }
 
     @Test
@@ -135,13 +129,13 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
             MockHttpServletResponse response =
                     postAsServletResponse(
                             RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/templaterules",
+                                    + "/featuretypes/cite:Forests/templaterules",
                             json,
                             MediaType.APPLICATION_JSON_VALUE);
             assertEquals(201, response.getStatus());
-            FeatureTypeInfo fifteen = catalog.getFeatureTypeByName("cdf", "Fifteen");
+            FeatureTypeInfo forests = catalog.getFeatureTypeByName("cite", "Forests");
             TemplateLayerConfig templateLayerConfig =
-                    fifteen.getMetadata()
+                    forests.getMetadata()
                             .get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
             TemplateRule rule = templateLayerConfig.getTemplateRules().iterator().next();
             String id = rule.getRuleId();
@@ -149,7 +143,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
                     (JSONObject)
                             getAsJSON(
                                     RestBaseController.ROOT_PATH
-                                            + "/featuretypes/cdf:Fifteen/templaterules/"
+                                            + "/featuretypes/cite:Forests/templaterules/"
                                             + id
                                             + ".json");
             JSONObject ruleJSON = result.getJSONObject("Rule");
@@ -167,7 +161,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
             response =
                     patchAsServletResponse(
                             RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/templaterules/"
+                                    + "/featuretypes/cite:Forests/templaterules/"
                                     + rule.getRuleId(),
                             xmlRule,
                             MediaType.APPLICATION_XML_VALUE);
@@ -177,7 +171,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
                     (JSONObject)
                             getAsJSON(
                                     RestBaseController.ROOT_PATH
-                                            + "/featuretypes/cdf:Fifteen/templaterules/"
+                                            + "/featuretypes/cite:Forests/templaterules/"
                                             + id
                                             + ".json");
             ruleJSON = result.getJSONObject("Rule");
@@ -187,7 +181,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
             assertEquals(
                     "requestParam('otherRequestParam')='true'", ruleJSON.getString("cqlFilter"));
         } finally {
-            cleanup(getCatalog().getFeatureTypeByName("cdf", "Fifteen"));
+            cleanup(getCatalog().getFeatureTypeByName("cite", "Forests"));
         }
     }
 
@@ -209,7 +203,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
             info3.setExtension("json");
             TemplateInfoDAO.get().saveOrUpdate(info3);
 
-            FeatureTypeInfo fifteen = catalog.getFeatureTypeByName("cdf", "Fifteen");
+            FeatureTypeInfo places = catalog.getFeatureTypeByName("cite", "NamedPlaces");
             TemplateLayerConfig templateLayerConfig = new TemplateLayerConfig();
             TemplateRule rule = new TemplateRule();
             rule.setTemplateName("test-rule");
@@ -229,14 +223,14 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
             rule.setTemplateIdentifier(info3.getIdentifier());
             templateLayerConfig.addTemplateRule(rule);
 
-            fifteen.getMetadata().put(TemplateLayerConfig.METADATA_KEY, templateLayerConfig);
-            getCatalog().save(fifteen);
+            places.getMetadata().put(TemplateLayerConfig.METADATA_KEY, templateLayerConfig);
+            getCatalog().save(places);
 
             JSONObject result =
                     (JSONObject)
                             getAsJSON(
                                     RestBaseController.ROOT_PATH
-                                            + "/featuretypes/cdf:Fifteen/templaterules.json");
+                                            + "/featuretypes/cite:NamedPlaces/templaterules.json");
             JSONArray array = result.getJSONObject("RulesList").getJSONArray("Rules");
             assertEquals(3, array.size());
             for (int i = 0; i < array.size(); i++) {
@@ -244,7 +238,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
                 assertRule(ruleJSON);
             }
         } finally {
-            cleanup(catalog.getFeatureTypeByName("cdf", "Fifteen"));
+            cleanup(catalog.getFeatureTypeByName("cite", "NamedPlaces"));
         }
     }
 

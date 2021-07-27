@@ -7,6 +7,7 @@ package org.geoserver.ows;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 /** Mangles service URL's based on the AcceptLanguages and Languages parameters */
 public class LanguageURLMangler implements URLMangler {
@@ -19,11 +20,11 @@ public class LanguageURLMangler implements URLMangler {
     @Override
     public void mangleURL(
             StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
-        if (Dispatcher.REQUEST.get() == null) return;
+        if (Dispatcher.REQUEST.get() == null || !type.equals(URLType.SERVICE)) return;
 
         String language = "";
-        Enumeration<String> parameterNames =
-                Dispatcher.REQUEST.get().getHttpRequest().getParameterNames();
+        HttpServletRequest httpRequest = Dispatcher.REQUEST.get().getHttpRequest();
+        Enumeration<String> parameterNames = httpRequest.getParameterNames();
         Collections.list(parameterNames)
                 .forEach(
                         parameter -> {
@@ -34,9 +35,8 @@ public class LanguageURLMangler implements URLMangler {
                             }
                         });
 
-        String acceptLanguages =
-                Dispatcher.REQUEST.get().getHttpRequest().getParameter(acceptLanguagesParameter);
-        language = Dispatcher.REQUEST.get().getHttpRequest().getParameter(languageParameter);
+        String acceptLanguages = httpRequest.getParameter(acceptLanguagesParameter);
+        language = httpRequest.getParameter(languageParameter);
 
         if (acceptLanguages != null) {
             String comaSplit = acceptLanguages.split(",")[0];

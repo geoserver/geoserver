@@ -789,11 +789,13 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         fti.setInternationalTitle(title);
         catalog.save(fti);
 
-        MockHttpServletResponse response =
-                getAsServletResponse(
+        Document dom =
+                getAsDOM(
                         "wfs?service=WFS&request=getCapabilities&version=2.0.0&acceptLanguages=it");
-        String responseMsg = response.getContentAsString();
 
-        assertTrue(responseMsg.contains("Language=it"));
+        assertXpathEvaluatesTo(
+                "src/test/resources/geoserver/wfs?Language=it",
+                "//ows:DCP/ows:HTTP/ows:Get/@xlink:href",
+                dom);
     }
 }

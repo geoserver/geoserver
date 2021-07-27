@@ -8,8 +8,8 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.geoserver.data.test.MockData.TASMANIA_DEM;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import java.util.Locale;
 
+import java.util.Locale;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.Keyword;
@@ -21,7 +21,6 @@ import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geotools.util.GrowableInternationalString;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -185,14 +184,15 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         abstractInfo.add(Locale.ENGLISH, "abstract");
         abstractInfo.add(Locale.ITALIAN, "italiano abstract");
         ci.setInternationalAbstract(abstractInfo);
-
         catalog.save(ci);
 
-        MockHttpServletResponse response =
-                getAsServletResponse(
+        Document dom =
+                getAsDOM(
                         "wcs?service=WCS&version=2.0.1&request=GetCapabilities&AcceptLanguages=it");
-        String responseMsg = response.getContentAsString();
 
-        assertTrue(responseMsg.contains("wcs?Language=it"));
+        assertXpathEvaluatesTo(
+                "http://localhost:8080/geoserver/wcs?Language=it&",
+                "//ows:DCP/ows:HTTP/ows:Get/@xlink:href",
+                dom);
     }
 }

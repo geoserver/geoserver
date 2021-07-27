@@ -248,9 +248,8 @@
     <constructor-arg value="ows"/>
   </bean>
 
-    <!-- URL mangler for handling Languange and AcceptLanguages parameters -->
-    <bean id="languageURLMangler" class="org.geoserver.ows.LanguageURLMangler">
-    </bean>
+  <!-- URL mangler for handling Languange and AcceptLanguages parameters -->
+  <bean id="languageURLMangler" class="org.geoserver.ows.LanguageURLMangler"/>
 
   <!-- xstream persister factory -->
   <bean id="xstreamPersisterFactory" class="org.geoserver.config.util.XStreamPersisterFactory"/>

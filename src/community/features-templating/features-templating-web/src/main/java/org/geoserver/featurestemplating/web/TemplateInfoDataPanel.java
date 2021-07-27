@@ -155,7 +155,7 @@ public abstract class TemplateInfoDataPanel extends Panel {
     }
 
     private List<String> getExtensions() {
-        return Arrays.asList("xml", "json");
+        return Arrays.asList("xml", "xhtml", "json");
     }
 
     private List<String> getFeatureTypesInfo(String workspaceName) {

@@ -30,7 +30,7 @@ public class XmlTemplateReaderTest {
     @Test
     public void testFlatInclusion() throws IOException {
         XMLRecursiveTemplateReader reader =
-                new XMLRecursiveTemplateReader(
+                new GMLTemplateReader(
                         store.get("MappedFeatureIncludeFlat.xml"), new NamespaceSupport());
         RootBuilder rootBuilder = reader.getRootBuilder();
         TemplateBuilder mappedFeatureBuilder =
@@ -54,7 +54,7 @@ public class XmlTemplateReaderTest {
     @Test
     public void testInlineInclusion() throws IOException {
         XMLRecursiveTemplateReader reader =
-                new XMLRecursiveTemplateReader(
+                new GMLTemplateReader(
                         store.get("MappedFeatureInclude.xml"), new NamespaceSupport());
         RootBuilder rootBuilder = reader.getRootBuilder();
         TemplateBuilder mappedFeatureBuilder = rootBuilder.getChildren().get(0);
@@ -89,8 +89,6 @@ public class XmlTemplateReaderTest {
     private RuntimeException checkThrowingTemplate(String s) {
         return assertThrows(
                 RuntimeException.class,
-                () ->
-                        new XMLRecursiveTemplateReader(store.get(s), new NamespaceSupport())
-                                .getRootBuilder());
+                () -> new GMLTemplateReader(store.get(s), new NamespaceSupport()).getRootBuilder());
     }
 }

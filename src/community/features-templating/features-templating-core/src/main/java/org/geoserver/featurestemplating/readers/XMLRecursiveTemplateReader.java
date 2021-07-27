@@ -6,16 +6,10 @@ package org.geoserver.featurestemplating.readers;
 
 import static org.geoserver.featurestemplating.builders.EncodingHints.ENCODE_AS_ATTRIBUTE;
 import static org.geoserver.featurestemplating.builders.EncodingHints.ITERATE_KEY;
-import static org.geoserver.featurestemplating.builders.EncodingHints.NAMESPACES;
-import static org.geoserver.featurestemplating.builders.EncodingHints.SCHEMA_LOCATION;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
@@ -29,7 +23,6 @@ import javax.xml.stream.events.XMLEvent;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilderMaker;
-import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.platform.resource.Resource;
 import org.xml.sax.helpers.NamespaceSupport;
@@ -38,16 +31,15 @@ import org.xml.sax.helpers.NamespaceSupport;
  * This class create TemplateBuilder out of a xml resource and is able to follow included templates
  * if they are found.
  */
-public class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
+public abstract class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
         implements TemplateReader, AutoCloseable {
 
-    private TemplateBuilderMaker maker;
-    private Stack<StartElement> elementsStack;
-    private NamespaceSupport namespaceSupport;
-    private List<StartElement> parsedElements;
+    protected TemplateBuilderMaker maker;
+    protected Stack<StartElement> elementsStack;
+    protected NamespaceSupport namespaceSupport;
     private InputStream inputSource;
 
-    private XMLEventReader reader;
+    protected XMLEventReader reader;
 
     private static final String COLLECTION_ATTR = "gft:isCollection";
 
@@ -55,27 +47,13 @@ public class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
 
     private static final String SOURCE_ATTR = "gft:source";
 
-    private static final String FEATURE_COLL_ELEMENT = "wfs:FeatureCollection";
-
     private static final String TEMPLATE_ELEMENT = "gft:Template";
 
-    private static final String VENDOR_OPTIONS_EL = "gft:Options";
-
-    private static final String NAME_SPACES_EL = "gft:Namespaces";
-
-    private static final String SCHEMA_LOCATION_EL = "gft:SchemaLocation";
-
-    private static final String NAMESPACE_PREFIX = "xmlns";
-
-    private static final String SCHEMA_LOCATION_ATTR = "xsi:schemaLocation";
+    protected static final String VENDOR_OPTIONS_EL = "gft:Options";
 
     private static final String INCLUDE_FLAT = "gft:includeFlat";
 
     private static final String INCLUDE = "$include";
-
-    private static final String GML_MEMBER = "gml:featureMember";
-
-    private static final String WFS_MEMBER = "wfs:member";
 
     public XMLRecursiveTemplateReader(Resource resource, NamespaceSupport namespaceSupport)
             throws IOException {
@@ -84,7 +62,6 @@ public class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
         this.elementsStack = new Stack<>();
         this.maker = new TemplateBuilderMaker();
         this.namespaceSupport = namespaceSupport;
-        this.parsedElements = new ArrayList<>();
         try {
             this.reader = getEventReader(resource);
         } catch (XMLStreamException e) {
@@ -99,7 +76,6 @@ public class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
         this.elementsStack = new Stack<>();
         this.maker = new TemplateBuilderMaker();
         this.namespaceSupport = namespaceSupport;
-        this.parsedElements = new ArrayList<>();
         try {
             this.reader = getEventReader(resource);
         } catch (XMLStreamException e) {
@@ -127,21 +103,20 @@ public class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
                 if (event.isStartElement()) handleStartElement(event.asStartElement(), builder);
                 else if (event.isCharacters()) {
                     Characters characters = event.asCharacters();
-                    if (!characters.isIgnorableWhiteSpace()
-                            && !characters.isWhiteSpace()
-                            && !characters.isEntityReference())
+                    if (canParseTextContent(characters)) {
                         templateBuilderFromCharacterElement(event.asCharacters(), builder);
+                    }
                 } else if (event.isEndElement()) {
                     EndElement endElement = event.asEndElement();
-                    boolean alreadyParsed = alreadyParsed(endElement);
-                    if (!alreadyParsed && !elementsStack.isEmpty()) {
+                    boolean stopIteration = elementsStack.isEmpty();
+                    // If the element stack is not empty means that we found
+                    // a self closing element, that did not start a new iteration.
+                    // Builders are then created here and this iteration will not stop
+                    while (!elementsStack.isEmpty()) {
                         templateBuilderFromElement(elementsStack.pop(), builder);
-                    } else {
-                        while (!elementsStack.isEmpty()) {
-                            templateBuilderFromElement(elementsStack.pop(), builder);
-                        }
-                        if (!endElement.getName().toString().equals(INCLUDE_FLAT)) break;
                     }
+                    if (!endElement.getName().toString().equals(INCLUDE_FLAT) && stopIteration)
+                        break;
                 }
             }
         } catch (XMLStreamException e) {
@@ -155,7 +130,6 @@ public class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
         StartElement element = elementsStack.pop();
         if (element.getName().toString().equals(INCLUDE_FLAT)) {
             builderFromIncludedTemplate(resource, data, currentParent);
-            parsedElements.add(element);
         } else if (data.startsWith(INCLUDE + "{") && data.endsWith("}")) {
             String path = data.substring(INCLUDE.length() + 1, data.length() - 1);
             TemplateBuilder parentForIncluded = templateBuilderFromElement(element, currentParent);
@@ -165,20 +139,15 @@ public class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
             if (getAttributeValueIfPresent(element, COLLECTION_ATTR) != null)
                 leafBuilder = createLeaf(data, null);
             else leafBuilder = createLeaf(data, element);
-            parsedElements.add(element);
             currentParent.addChild(leafBuilder);
             addAttributeAsChildrenBuilder(element.getAttributes(), leafBuilder);
             iterateReader(currentParent);
         }
     }
 
-    private void handleStartElement(StartElement startElement, TemplateBuilder currentParent)
+    protected void handleStartElement(StartElement startElement, TemplateBuilder currentParent)
             throws IOException {
-        if (startElement.getName().toString().equals(FEATURE_COLL_ELEMENT)) {
-            currentParent =
-                    builderFromFeatureCollectionElement(startElement, (RootBuilder) currentParent);
-            iterateReader(currentParent);
-        } else if (startElement.getName().toString().equals(INCLUDE_FLAT)) {
+        if (startElement.getName().toString().equals(INCLUDE_FLAT)) {
             currentParent = getBuilderFromLastElInStack(currentParent);
             elementsStack.add(startElement);
             String data = getAttributeValueIfPresent(startElement, SOURCE_ATTR);
@@ -199,21 +168,20 @@ public class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
         StartElement previous = !elementsStack.isEmpty() ? elementsStack.pop() : null;
         if (previous != null) {
             currentParent = templateBuilderFromElement(previous, currentParent);
-            parsedElements.add(previous);
         }
         return currentParent;
     }
 
     private TemplateBuilder templateBuilderFromElement(
             StartElement startElement, TemplateBuilder currentParent) {
-        if (startElement != null && !parsedElements.contains(startElement)) {
+        if (startElement != null) {
             String isCollection = getAttributeValueIfPresent(startElement, COLLECTION_ATTR);
-            String qName = startElement.getName().toString();
+            String stringName = startElement.getName().toString();
             boolean collection =
                     isCollection != null && Boolean.valueOf(isCollection).booleanValue();
-            boolean hasOwnOutput = !(qName.equals(GML_MEMBER) || qName.equals(WFS_MEMBER));
+            boolean hasOwnOutput = hasOwnOutput(stringName);
             maker.collection(collection)
-                    .name(qName)
+                    .name(stringName)
                     .namespaces(namespaceSupport)
                     .filter(getAttributeValueIfPresent(startElement, FILTER_ATTR))
                     .source(getAttributeValueIfPresent(startElement, SOURCE_ATTR))
@@ -274,31 +242,6 @@ public class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
         return attribute.getValue();
     }
 
-    private TemplateBuilder builderFromFeatureCollectionElement(
-            StartElement startElementEvent, RootBuilder rootBuilder) {
-        Iterator<Attribute> attributeIterator = startElementEvent.getAttributes();
-        Map<String, String> namespaces = new HashMap<>();
-        String schemaLocation = null;
-        while (attributeIterator.hasNext()) {
-            Attribute attribute = attributeIterator.next();
-            QName name = attribute.getName();
-            if (isNamespace(name)) {
-                namespaces.put(localPart(name), attribute.getValue());
-            } else if (isSchemaLocation(name)) {
-                schemaLocation = attribute.getValue();
-            }
-        }
-        rootBuilder.addEncodingHint(NAMESPACES, namespaces);
-        if (schemaLocation != null) rootBuilder.addEncodingHint(SCHEMA_LOCATION, schemaLocation);
-        maker.collection(true)
-                .name(startElementEvent.getName().toString())
-                .namespaces(namespaceSupport)
-                .hasOwnOutput(false);
-        TemplateBuilder builder = maker.build();
-        rootBuilder.addChild(builder);
-        return builder;
-    }
-
     String localPart(QName name) {
         String[] nameAr = name.getLocalPart().split(":");
         String strName;
@@ -325,33 +268,6 @@ public class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
         return strName;
     }
 
-    private boolean alreadyParsed(EndElement endElement) {
-        long count =
-                parsedElements
-                        .stream()
-                        .filter(se -> se.getName().equals(endElement.getName()))
-                        .count();
-        boolean alreadyParsed = count == 1;
-        // additional check to avoid breaking an iteration in case of nodes with same name
-        // where the nested one is a self closing or void node.
-        if (count > 1) {
-            alreadyParsed =
-                    elementsStack.empty()
-                            || !elementsStack.peek().getName().equals(endElement.getName());
-        }
-        return alreadyParsed;
-    }
-
-    private boolean isSchemaLocation(QName name) {
-        return name.getLocalPart().equals(SCHEMA_LOCATION_ATTR)
-                || name.getLocalPart().equals(SCHEMA_LOCATION_ATTR.split(":")[1]);
-    }
-
-    private boolean isNamespace(QName name) {
-        return name.getLocalPart().startsWith(NAMESPACE_PREFIX)
-                || name.getPrefix() != null && name.getPrefix().startsWith(NAMESPACE_PREFIX);
-    }
-
     private boolean canEncodeAttribute(QName name) {
         boolean hasPrefix = name.getPrefix() != null && !name.getPrefix().equals("");
         String strName = name.getLocalPart();
@@ -365,10 +281,14 @@ public class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
             Resource resource, String data, TemplateBuilder currentParent) throws IOException {
         Resource included = getResource(resource.parent(), data);
         try (XMLRecursiveTemplateReader recursiveParser =
-                new XMLRecursiveTemplateReader(included, this, namespaceSupport)) {
+                getNewInstanceForRecursiveReading(included, this, namespaceSupport)) {
             recursiveParser.iterateReader(currentParent);
         }
     }
+
+    protected abstract XMLRecursiveTemplateReader getNewInstanceForRecursiveReading(
+            Resource included, XMLRecursiveTemplateReader parent, NamespaceSupport namespaceSupport)
+            throws IOException;
 
     @Override
     public void close() {
@@ -383,24 +303,27 @@ public class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
     private XMLEventReader getEventReader(Resource resource) throws XMLStreamException {
         XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
         xmlInputFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false);
+        xmlInputFactory.setProperty(XMLInputFactory.IS_VALIDATING, false);
         this.inputSource = resource.in();
         return xmlInputFactory.createXMLEventReader(inputSource);
     }
 
-    private TemplateBuilder retrieveLastAddedTemplateBuilder(TemplateBuilder currentBuilder) {
-        while (!currentBuilder.getChildren().isEmpty()) {
-            int size = currentBuilder.getChildren().size();
-            currentBuilder = currentBuilder.getChildren().get(size - 1);
-        }
-        return currentBuilder;
-    }
-
     private void iterateVendorOptionsElement(TemplateBuilder builder) throws IOException {
+        if (!(builder instanceof RootBuilder)) {
+            throw new UnsupportedOperationException(
+                    "Options can be defined only at the beginning of the template");
+        }
+        RootBuilder rootBuilder = (RootBuilder) builder;
         try {
             while (reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();
-                if (event.isStartElement()) addVendorOption(event.asStartElement(), builder);
-                else if (event.isEndElement()) {
+                if (event.isStartElement()) addVendorOption(event.asStartElement(), rootBuilder);
+                else if (event.isCharacters()) {
+                    Characters characters = event.asCharacters();
+                    if (canParseTextContent(characters)) {
+                        addVendorOption(characters, rootBuilder);
+                    }
+                } else if (event.isEndElement()) {
                     if (event.asEndElement().getName().toString().equals(VENDOR_OPTIONS_EL)) break;
                 }
             }
@@ -409,31 +332,19 @@ public class XMLRecursiveTemplateReader extends RecursiveTemplateResourceParser
         }
     }
 
-    private void addVendorOption(StartElement element, TemplateBuilder builder) {
-        if (element.getName().toString().equals(NAME_SPACES_EL)) {
-            Iterator<Attribute> attributeIterator = element.getAttributes();
-            Map<String, String> namespaces = new HashMap<>();
-            while (attributeIterator.hasNext()) {
-                Attribute attr = attributeIterator.next();
-                QName name = attr.getName();
-                if (isNamespace(name)) namespaces.put(localPart(name), attr.getValue());
-            }
-            if (!namespaces.isEmpty())
-                ((RootBuilder) builder).addVendorOption(VendorOptions.NAMESPACES, namespaces);
-        } else if (element.getName().toString().equals(SCHEMA_LOCATION_EL)) {
-            Iterator<Attribute> attributeIterator = element.getAttributes();
-            if (attributeIterator.hasNext()) {
-                Attribute attribute = attributeIterator.next();
-                QName name = attribute.getName();
-                if (isSchemaLocation(name)) {
-                    ((RootBuilder) builder)
-                            .addVendorOption(VendorOptions.SCHEMA_LOCATION, attribute.getValue());
-                }
-            }
-        }
-    }
+    protected abstract void addVendorOption(StartElement element, RootBuilder builder);
+
+    protected abstract void addVendorOption(Characters character, RootBuilder builder);
+
+    protected abstract boolean hasOwnOutput(String elementName);
 
     private boolean isRootOrManaged(TemplateBuilder parent) {
         return parent instanceof RootBuilder || !((SourceBuilder) parent).hasOwnOutput();
+    }
+
+    private boolean canParseTextContent(Characters characters) {
+        return !characters.isIgnorableWhiteSpace()
+                && !characters.isWhiteSpace()
+                && !characters.isEntityReference();
     }
 }

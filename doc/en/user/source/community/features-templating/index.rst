@@ -20,6 +20,7 @@ The following output formats are supported:
 * ``GeoJSON``
 * ``GML``
 * ``JSON-LD`` `JSON-LD <https://json-ld.org>`_ is a Linked Data format, based on JSON format, and revolves around the concept of "context" to provide additional mappings from JSON to an RDF model.
+* ``HTML``
 
 The first part of the plug-in documentation will go through the template syntax. The second one will show how to configure the template to apply it to a vector layer. The third part shows the backwards mapping functionality.
 

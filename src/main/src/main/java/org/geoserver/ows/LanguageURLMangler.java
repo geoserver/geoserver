@@ -4,10 +4,10 @@
  */
 package org.geoserver.ows;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 /** Mangles service URL's based on the AcceptLanguages and Languages parameters */
 public class LanguageURLMangler implements URLMangler {

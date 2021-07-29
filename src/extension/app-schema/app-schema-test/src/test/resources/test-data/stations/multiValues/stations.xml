@@ -84,9 +84,9 @@
         <AttributeMapping>
           <targetAttribute>st_${GML_PREFIX}:info</targetAttribute>
           <jdbcMultipleValue>
-            <sourceColumn>info_id</sourceColumn>
+            <sourceColumn>ID</sourceColumn>
             <targetTable>INFO_${GML_PREFIX_UPPER}</targetTable>
-            <targetColumn>info_${GML_PREFIX}_PKEY</targetColumn>
+            <targetColumn>OWNER</targetColumn>
             <targetValue></targetValue>
           </jdbcMultipleValue>
           <ClientProperty>
@@ -96,6 +96,23 @@
           <ClientProperty>
             <name>xlink:title</name>
             <value>CODE</value>
+          </ClientProperty>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st_${GML_PREFIX}:use</targetAttribute>
+          <jdbcMultipleValue>
+            <sourceColumn>use_id</sourceColumn>
+            <targetTable>USE_${GML_PREFIX_UPPER}</targetTable>
+            <targetColumn>USE_${GML_PREFIX}_PKEY</targetColumn>
+            <targetValue></targetValue>
+          </jdbcMultipleValue>
+          <ClientProperty>
+            <name>xlink:href</name>
+            <value>LINK</value>
+          </ClientProperty>
+          <ClientProperty>
+            <name>xlink:title</name>
+            <value>TITLE</value>
           </ClientProperty>
         </AttributeMapping>
       </attributeMappings>

@@ -32,7 +32,6 @@ import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.security.impl.RoleCalculator;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2RestOperations;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
@@ -99,76 +98,70 @@ public abstract class GeoServerOAuthAuthenticationFilter
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // Search for an access_token on the request (simulating SSO)
         String accessToken = getAccessTokenFromRequest(request);
+        if (authentication == null || accessToken != null) {
 
-        OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
+            OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
 
-        if (accessToken != null && token != null && !token.getValue().equals(accessToken)) {
-            restTemplate.getOAuth2ClientContext().setAccessToken(null);
-            token = restTemplate.getOAuth2ClientContext().getAccessToken();
-        }
-
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-
-        /*
-         * This cookie works only locally, when accessing the GeoServer GUI and on the same domain. For remote access you need to logout from the
-         * GeoServer GUI.
-         */
-        final String customSessionCookie = getCustomSessionCookieValue(httpRequest);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        final Collection<? extends GrantedAuthority> authorities =
-                (authentication != null ? authentication.getAuthorities() : null);
-
-        if (accessToken == null && customSessionCookie == null && authentication == null) {
-            final AccessTokenRequest accessTokenRequest =
-                    restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
-            if (accessTokenRequest != null && accessTokenRequest.getStateKey() != null) {
-                restTemplate
-                        .getOAuth2ClientContext()
-                        .removePreservedState(accessTokenRequest.getStateKey());
+            if (accessToken != null && token != null && !token.getValue().equals(accessToken)) {
+                restTemplate.getOAuth2ClientContext().setAccessToken(null);
+                token = restTemplate.getOAuth2ClientContext().getAccessToken();
             }
 
-            try {
-                accessTokenRequest.remove("access_token");
-            } finally {
-                SecurityContextHolder.clearContext();
-                httpRequest.getSession(false).invalidate();
+            HttpServletRequest httpRequest = (HttpServletRequest) request;
+
+            /*
+             * This cookie works only locally, when accessing the GeoServer GUI and on the same domain. For remote access you need to logout from the
+             * GeoServer GUI.
+             */
+            final String customSessionCookie = getCustomSessionCookieValue(httpRequest);
+
+            if (accessToken == null && customSessionCookie == null && authentication == null) {
+                final AccessTokenRequest accessTokenRequest =
+                        restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
+                if (accessTokenRequest != null && accessTokenRequest.getStateKey() != null) {
+                    restTemplate
+                            .getOAuth2ClientContext()
+                            .removePreservedState(accessTokenRequest.getStateKey());
+                }
+
                 try {
-                    httpRequest.logout();
-                    authentication = null;
-                } catch (ServletException e) {
-                    LOGGER.fine(e.getLocalizedMessage());
-                }
-                LOGGER.fine("Cleaned out Session Access Token Request!");
-            }
-        }
-
-        if ((authentication == null && accessToken != null)
-                || (accessToken != null && token == null)
-                || authentication == null
-                || (authentication != null
-                        && authorities.size() == 1
-                        && authorities.contains(GeoServerRole.ANONYMOUS_ROLE))) {
-
-            doAuthenticate((HttpServletRequest) request, (HttpServletResponse) response);
-
-            Authentication postAuthentication =
-                    SecurityContextHolder.getContext().getAuthentication();
-            if (postAuthentication != null) {
-                if (cacheAuthentication(postAuthentication, (HttpServletRequest) request)) {
-                    getSecurityManager()
-                            .getAuthenticationCache()
-                            .put(
-                                    getName(),
-                                    getCacheKey((HttpServletRequest) request),
-                                    postAuthentication);
+                    accessTokenRequest.remove("access_token");
+                } finally {
+                    SecurityContextHolder.clearContext();
+                    httpRequest.getSession(false).invalidate();
+                    try {
+                        httpRequest.logout();
+                        authentication = null;
+                    } catch (ServletException e) {
+                        LOGGER.fine(e.getLocalizedMessage());
+                    }
+                    LOGGER.fine("Cleaned out Session Access Token Request!");
                 }
             }
-        }
 
+            if ((authentication != null && accessToken != null)
+                    || (accessToken != null && token == null)
+                    || authentication == null) {
+
+                doAuthenticate((HttpServletRequest) request, (HttpServletResponse) response);
+
+                Authentication postAuthentication =
+                        SecurityContextHolder.getContext().getAuthentication();
+                if (postAuthentication != null) {
+                    if (cacheAuthentication(postAuthentication, (HttpServletRequest) request)) {
+                        getSecurityManager()
+                                .getAuthenticationCache()
+                                .put(
+                                        getName(),
+                                        getCacheKey((HttpServletRequest) request),
+                                        postAuthentication);
+                    }
+                }
+            }
+        }
         chain.doFilter(request, response);
     }
 
@@ -280,6 +273,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
     protected void doAuthenticate(HttpServletRequest request, HttpServletResponse response) {
 
         String principal = null;
+        PreAuthenticatedAuthenticationToken result = null;
         try {
             principal = getPreAuthenticatedPrincipal(request, response);
         } catch (IOException e1) {
@@ -294,13 +288,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 Level.FINE,
                 "preAuthenticatedPrincipal = " + principal + ", trying to authenticate");
 
-        PreAuthenticatedAuthenticationToken result = null;
-
-        if (principal == null || principal.trim().length() == 0) {
-            result =
-                    new PreAuthenticatedAuthenticationToken(
-                            principal, null, Collections.singleton(GeoServerRole.ANONYMOUS_ROLE));
-        } else {
+        if (principal != null && principal.trim().length() > 0) {
             if (GeoServerUser.ROOT_USERNAME.equals(principal)) {
                 result =
                         new PreAuthenticatedAuthenticationToken(
@@ -335,9 +323,8 @@ public abstract class GeoServerOAuthAuthenticationFilter
 
                 result = new PreAuthenticatedAuthenticationToken(principal, null, roles);
             }
+            result.setDetails(getAuthenticationDetailsSource().buildDetails(request));
         }
-
-        result.setDetails(getAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(result);
     }
 

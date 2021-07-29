@@ -9,15 +9,29 @@ import static org.junit.Assert.assertEquals;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Arrays;
 import org.geotools.data.DataUtilities;
+import org.geotools.data.complex.feature.type.ComplexFeatureTypeFactoryImpl;
+import org.geotools.feature.AttributeBuilder;
+import org.geotools.feature.AttributeTypeBuilder;
+import org.geotools.feature.ComplexFeatureBuilder;
 import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.LenientFeatureFactoryImpl;
+import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.opengis.feature.Attribute;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.AttributeType;
+import org.opengis.feature.type.FeatureType;
 
 public class FeatureWrapperTest {
     DefaultFeatureCollection features;
@@ -119,5 +133,54 @@ public class FeatureWrapperTest {
 
         assertEquals(
                 "three\none\n3", out.toString().replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
+    }
+
+    @Test
+    public void testFeatureAttributeMapMaxOccurs() throws IOException, TemplateException {
+        Feature f = buildComplexFeature();
+        Template template = cfg.getTemplate("ComplexFeatureMaxOccurs.ftl");
+
+        StringWriter out = new StringWriter();
+        template.process(f, out);
+
+        assertEquals(
+                "\n"
+                        + "Name: string_value\n"
+                        + "Value: string1\n"
+                        + "Name: string_value\n"
+                        + "Value: string2\n",
+                out.toString().replace(',', '.').replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
+    }
+
+    private Feature buildComplexFeature() {
+        AttributeTypeBuilder typeBuilder = new AttributeTypeBuilder();
+        String nsURI = "http://namespace/test";
+        typeBuilder
+                .binding(String.class)
+                .name("string_value")
+                .namespaceURI(nsURI)
+                .maxOccurs(2)
+                .minOccurs(1);
+        AttributeType attrType = typeBuilder.buildType();
+        AttributeDescriptor attrDescriptor =
+                typeBuilder.buildDescriptor(attrType.getName(), attrType);
+        AttributeBuilder builder = new AttributeBuilder(new LenientFeatureFactoryImpl());
+        builder.setDescriptor(attrDescriptor);
+        ComplexFeatureTypeFactoryImpl ftBuilder = new ComplexFeatureTypeFactoryImpl();
+        FeatureType complexType =
+                ftBuilder.createFeatureType(
+                        new NameImpl(nsURI, "ComplexUnboundedType"),
+                        Arrays.asList(attrDescriptor),
+                        null,
+                        false,
+                        null,
+                        null,
+                        null);
+        ComplexFeatureBuilder complexFeatureBuilder = new ComplexFeatureBuilder(complexType);
+        Attribute attribute1 = builder.buildSimple(null, "string1");
+        Attribute attribute2 = builder.buildSimple(null, "string2");
+        complexFeatureBuilder.append(attrDescriptor.getName(), attribute1);
+        complexFeatureBuilder.append(attrDescriptor.getName(), attribute2);
+        return complexFeatureBuilder.buildFeature("test.1");
     }
 }

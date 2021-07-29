@@ -1,67 +1,67 @@
 <#-- 
 Macro's used for content
 -->
-
 <#macro property node>
-    <#if !node.isGeometry>
-       <#if node.isComplex>      
-       <td> <@feature node=node.rawValue type=node.type /> </td>  
-      <#else>
-      <td>${node.value?string}</td>
-      </#if>
-    </#if>
+<#if node.isComplex>
+<@feature node=node.rawValue type=node.type />
+<#else>
+<#assign stringVal = node.value?string>
+<#if !stringVal?contains("FEATURE_LINK") && stringVal != "">
+<li>
+   <#if node.prefix == "">
+   <span class="caret">${node.name}</span>
+   <#else>
+   <span class="caret">${node.prefix}:${node.name}</span>
+   </#if>
+   <ul class="nested">
+      <li>${node.value?string}</li>
+   </ul>
+</li>
+</#if>
+</#if>
 </#macro>
-
-<#macro header typenode>
- <caption class="featureInfo">${typenode.name}</caption>
-  <tr>
-  <th>fid</th>
-<#list typenode.attributes as attribute>
-  <#if !attribute.isGeometry>
-    <#if attribute.prefix == "">      
-    	<th >${attribute.name}</th>
-    <#else>
-    	<th >${attribute.prefix}:${attribute.name}</th>
-    </#if>
-  </#if>
-</#list>
-  </tr>
-</#macro>
-
 <#macro feature node type>
- <table class="featureInfo">
-  <@header typenode=type />
-  <tr>
-  <td>${node.fid}</td>    
-  <#list node.attributes as attribute>
+<li>
+   <span class="caret">${type.name}</span>
+   <ul class="nested">
+      <li>${node.fid}</li>
+      <#list node.attributes as attribute>
       <@property node=attribute />
-  </#list>
-  </tr>
-</table>
+      </#list>
+   </ul>
+</li>
 </#macro>
-  
-<#-- 
+<#--
 Body section of the GetFeatureInfo template, it's provided with one feature collection, and
 will be called multiple times if there are various feature collections
 -->
-<table class="featureInfo">
-  <@header typenode=type />
-
-<#assign odd = false>
-<#list features as feature>
-  <#if odd>
-    <tr class="odd">
-  <#else>
-    <tr>
-  </#if>
-  <#assign odd = !odd>
-
-  <td>${feature.fid}</td>    
-  <#list feature.attributes as attribute>
-    <@property node=attribute />
-  </#list>
-  </tr>
+<#if collection??>
+<#-- Expended only in OGC Features -->
+<h1><a href="${serviceLink("/collections/${collection}")}">${data.type.name}</a></h1>
+<#else>
+<h1>${data.type.name}</h1>
+</#if>
+<#list data.features as feature>
+<ul id="rootUL">
+   <li>
+      <span class="caret">${feature.fid}</span>
+      <ul class="nested">
+         <#list feature.attributes as attribute>
+         <@property node=attribute/>
+         </#list>
+      </ul>
+   </li>
+</ul>
 </#list>
-</table>
-<br/>
-
+<script>
+ window.onload=function(){
+ var toggler = document.getElementsByClassName("caret");
+ var i;
+ for (let item of toggler) {
+      item.addEventListener("click", function() {
+      this.parentElement.querySelector(".nested").classList.toggle("active");
+      this.classList.toggle("caret-down");
+    });
+   }
+ }
+</script>

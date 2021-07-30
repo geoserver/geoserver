@@ -23,10 +23,7 @@ public class GeoServerDefaultLocale {
      * @return the default GeoServer locale if set. Otherwise returns {@link Locale#getDefault()}.
      */
     public static Locale get() {
-        Locale result = Locale.getDefault();
-        Locale defaultLocale = DEFAULT_LOCALE.get();
-        if (defaultLocale != null) result = defaultLocale;
-        return result;
+        return DEFAULT_LOCALE.get();
     }
 
     /** remove the default locale from the underlying ThreadLocal. */

@@ -178,6 +178,7 @@ import org.opengis.referencing.operation.MathTransform;
  */
 public class XStreamPersister {
 
+    private static final String DEFAULT_LOCALE = "default";
     private boolean unwrapNulls = true;
 
     /** Callback interface or xstream persister. */
@@ -2622,9 +2623,11 @@ public class XStreamPersister {
                     String elementName = l.toLanguageTag();
                     if (elementName.contains(" ")) elementName = elementName.replaceAll(" ", "__");
                     writer.startNode(elementName);
-                    writer.setValue(internationalString.toString(l));
-                    writer.endNode();
+                } else {
+                    writer.startNode(DEFAULT_LOCALE);
                 }
+                writer.setValue(internationalString.toString(l));
+                writer.endNode();
             }
         }
 
@@ -2635,8 +2638,15 @@ public class XStreamPersister {
             while (reader.hasMoreChildren()) {
                 reader.moveDown();
                 String nodeName = reader.getNodeName();
-                if (nodeName.contains("__")) nodeName = nodeName.replaceAll("__", " ");
-                Locale locale = Locale.forLanguageTag(nodeName);
+                Locale locale = null;
+                if (nodeName.contains("__")) {
+                    nodeName = nodeName.replaceAll("__", " ");
+                }
+
+                if (!nodeName.equals(DEFAULT_LOCALE)) {
+                    locale = Locale.forLanguageTag(nodeName);
+                }
+
                 String value = reader.getValue();
                 growableInternationalString.add(locale, value);
                 reader.moveUp();

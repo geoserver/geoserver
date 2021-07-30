@@ -5,6 +5,7 @@
 package org.geoserver.catalog.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Collections;
 import org.geoserver.catalog.AttributeTypeInfo;
@@ -55,8 +56,8 @@ public class FeatureTypeInfoImplTest {
 
         ft1.setAbstract("test");
         ft1.setInternationalAbstract(null);
-        assertEquals("test", ft1.getInternationalAbstract().toString());
+        assertNull(ft1.getInternationalAbstract());
         ft1.setInternationalTitle(null);
-        assertEquals("", ft1.getInternationalTitle().toString());
+        assertNull(ft1.getInternationalTitle());
     }
 }

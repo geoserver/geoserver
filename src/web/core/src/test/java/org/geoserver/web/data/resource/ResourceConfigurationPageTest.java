@@ -734,30 +734,4 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         form.submit("save");
         tester.assertNoErrorMessage();
     }
-
-    @Test
-    public void testErrorMessageOnLangugaeField() {
-        Catalog catalog = getGeoServerApplication().getCatalog();
-        String layerId = getLayerId(MockData.FIFTEEN);
-        LayerInfo layer = catalog.getLayerByName(layerId);
-
-        login();
-        tester.startPage(new ResourceConfigurationPage(layer, false));
-
-        print(tester.getLastRenderedPage(), true, true);
-
-        FormTester form = tester.newFormTester("publishedinfo");
-
-        // enable i18n for title
-        form.setValue(
-                "tabs:panel:theList:0:content:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                true);
-        tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:theList:0:content:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                "change");
-
-        form = tester.newFormTester("publishedinfo");
-        form.submit("save");
-        tester.assertErrorMessages("The Language for an international field is required");
-    }
 }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
@@ -27,8 +28,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.validation.INullAcceptingValidator;
 import org.apache.wicket.validation.IValidatable;
-import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -63,12 +64,26 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
             C nonInternationalComponent,
             WebMarkupContainer checkBoxContainer) {
         super(id, model);
+        setModelObject(model, nonInternationalComponent);
         this.nonInternationalComponent = nonInternationalComponent;
         this.nonInternationalComponent.setOutputMarkupId(true);
         this.nonInternationalComponent.setOutputMarkupPlaceholderTag(true);
         initUI(new GrowableStringModel(model), checkBoxContainer);
         setOutputMarkupId(true);
         setOutputMarkupId(true);
+    }
+
+    private void setModelObject(
+            IModel<GrowableInternationalString> model, C nonInternationalComponent) {
+        if (model.getObject() == null) {
+            if (nonInternationalComponent.getModelObject() != null) {
+                model.setObject(
+                        new GrowableInternationalString(
+                                nonInternationalComponent.getModelObject()));
+            } else {
+                model.setObject(new GrowableInternationalString());
+            }
+        }
     }
 
     private void initUI(GrowableStringModel model, WebMarkupContainer checkBoxContainer) {
@@ -155,7 +170,6 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
                             localeBorder.add(locales);
                             locales.add(new LocaleValidator());
                             locales.setNullValid(true);
-                            locales.setRequired(true);
                             return localeFragment;
                         } else if (property.getName().equals("text")) {
                             AbstractTextComponent<String> field =
@@ -257,10 +271,23 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         GrowableInternationalString growableString = new GrowableInternationalString();
         List<GrowableStringModel.InternationalStringEntry> items = provider.getItems();
         for (GrowableStringModel.InternationalStringEntry entry : items) {
-            growableString.add(entry.getLocale(), entry.getText());
+            if (canAddElement(items, entry)) growableString.add(entry.getLocale(), entry.getText());
         }
         growableModel.setObject(growableString);
         return growableString;
+    }
+
+    private boolean canAddElement(
+            List<GrowableStringModel.InternationalStringEntry> items,
+            GrowableStringModel.InternationalStringEntry entry) {
+        // input has not been converted yet skip addition
+        if (entry.getText() == null) return false;
+        long count = items.stream().filter(l -> l.getLocale() == null).count();
+        int lastElem = items.size() - 1;
+        // the lang is null because input has not been converted yet. Return null.
+        if (entry.getLocale() == null && (items.indexOf(entry) == lastElem) && count > 1)
+            return false;
+        return true;
     }
 
     @Override
@@ -276,6 +303,11 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
                 nonInternationalComponent.setModelObject(null);
                 nonInternationalComponent.modelChanged();
             }
+        }
+        String errorMsg = validateNullLocale();
+        if (errorMsg != null) {
+            getForm().error(errorMsg);
+            return;
         }
         updateGrowableString();
     }
@@ -296,27 +328,51 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         return !entries.isEmpty() && !(entries.size() == 1 && entries.get(0).getLocale() == null);
     }
 
-    private class LocaleValidator implements IValidator<Locale> {
+    private class LocaleValidator implements INullAcceptingValidator<Locale> {
         @Override
         public void validate(IValidatable<Locale> iValidatable) {
             Locale locale = iValidatable.getValue();
             List<GrowableStringModel.InternationalStringEntry> items = provider.getItems();
-            if (locale != null) {
-                long count =
-                        items.stream()
-                                .filter(i -> i.getLocale() != null && i.getLocale().equals(locale))
-                                .count();
-                if (count >= 1 && iValidatable.getModel().getObject() == null) {
-                    String message =
-                            new StringResourceModel(
-                                            "InternationalStringPanel.duplicatedLocale",
-                                            InternationalStringPanel.this)
-                                    .getString();
-                    ValidationError error = new ValidationError();
-                    error.setMessage(message);
-                    iValidatable.error(error);
-                }
+            // null locale validation occurs before saving. Here we cannot tell if the model object
+            // is null because
+            // null is the input or because wicket did not convert input
+            long count =
+                    items.stream()
+                            .filter(i -> i.getLocale() != null && i.getLocale().equals(locale))
+                            .count();
+            boolean exisits =
+                    count >= 1
+                            && (iValidatable.getModel().getObject() == null
+                                    || !iValidatable.getModel().getObject().equals(locale));
+            if (locale != null && (exisits || count > 2)) {
+
+                ValidationError error = new ValidationError();
+                error.setMessage(getErrorMessage(locale));
+                iValidatable.error(error);
             }
         }
+    }
+
+    private String getErrorMessage(Locale locale) {
+        String lang =
+                locale != null && locale.getLanguage() != null ? locale.toLanguageTag() : "empty";
+        String message =
+                new StringResourceModel("InternationalStringPanel.duplicatedLocale", this)
+                                .getString()
+                        + " "
+                        + lang;
+        return message;
+    }
+
+    private String validateNullLocale() {
+        List<GrowableStringModel.InternationalStringEntry> entries =
+                provider.getItems()
+                        .stream()
+                        .filter(i -> i.getText() != null)
+                        .collect(Collectors.toList());
+        if (entries.stream().filter(i -> i != null && i.getLocale() == null).count() > 1) {
+            return getErrorMessage(null);
+        }
+        return null;
     }
 }

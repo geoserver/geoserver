@@ -53,4 +53,10 @@ GeoServer allows defining a default language to be used when international conte
 
 .. figure:: img/DefaultLanguage.png
 
-GeoServer will first check for a service specific default locale. If not found, it will use the one in the global settings. If  the global default language has not been specified, GeoServer will use the server default locale.
+GeoServer allows to define null language. From UI it is possible to set an i18n content with null language.
+
+* If no language is defined after checking the i18n box, the text will be attached to a null Locale, which is the default language.
+
+* If no language code is specified, text value with default language will be returned.
+
+GeoServer will first check for a service specific default locale. If not found, it will use the one in the global settings. If also not found, null language's text will be used.

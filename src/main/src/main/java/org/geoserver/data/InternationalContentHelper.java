@@ -67,6 +67,10 @@ public class InternationalContentHelper {
         verify();
     }
 
+    public InternationalContentHelper(String[] acceptLanguages) {
+        setRequestedLocales(acceptLanguages);
+    }
+
     public InternationalContentHelper(
             AcceptLanguagesType acceptLanguagesType,
             ServiceInfo serviceInfo,

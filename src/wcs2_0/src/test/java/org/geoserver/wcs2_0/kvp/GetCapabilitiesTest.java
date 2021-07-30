@@ -195,4 +195,21 @@ public class GetCapabilitiesTest extends WCSTestSupport {
                 "//ows:DCP/ows:HTTP/ows:Get/@xlink:href",
                 dom);
     }
+
+    @Test
+    public void testNullLocale() throws Exception {
+        Catalog catalog = getCatalog();
+        CoverageInfo ci = catalog.getCoverageByName(getLayerId(TASMANIA_DEM));
+        GrowableInternationalString title = new GrowableInternationalString();
+        title.add(Locale.ENGLISH, "a i18n title for fti fifteen");
+        title.add(null, "null locale");
+        ci.setInternationalTitle(title);
+
+        catalog.save(ci);
+
+        Document dom = getAsDOM("wcs?service=WCS&version=2.0.1&request=GetCapabilities");
+
+        assertXpathEvaluatesTo(
+                "src/test/resources/geoserver/wcs?", "//ows:DCP/ows:HTTP/ows:Get/@xlink:href", dom);
+    }
 }

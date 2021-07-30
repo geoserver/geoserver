@@ -13,7 +13,6 @@ import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
-import org.geoserver.util.GeoServerDefaultLocale;
 import org.geotools.util.GrowableInternationalString;
 import org.opengis.util.InternationalString;
 
@@ -231,26 +230,26 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     @Override
     public String getRootLayerTitle() {
-        if (rootLayerTitle == null && internationalRootLayerTitle != null)
-            return internationalRootLayerTitle.toString(GeoServerDefaultLocale.get());
         return rootLayerTitle;
     }
 
     @Override
     public void setRootLayerTitle(String rootLayerTitle) {
-        this.rootLayerTitle = rootLayerTitle;
+        if (rootLayerTitle != null) {
+            this.rootLayerTitle = rootLayerTitle;
+        }
     }
 
     @Override
     public String getRootLayerAbstract() {
-        if (rootLayerAbstract == null && internationalRootLayerAbstract != null)
-            return internationalRootLayerAbstract.toString(GeoServerDefaultLocale.get());
         return rootLayerAbstract;
     }
 
     @Override
     public void setRootLayerAbstract(String rootLayerAbstract) {
-        this.rootLayerAbstract = rootLayerAbstract;
+        if (rootLayerAbstract != null) {
+            this.rootLayerAbstract = rootLayerAbstract;
+        }
     }
 
     /** Sets the status of dynamic styling (SLD and SLD_BODY params) allowance */
@@ -335,35 +334,47 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     @Override
     public GrowableInternationalString getInternationalRootLayerTitle() {
-        if (internationalRootLayerTitle == null
-                || this.internationalRootLayerTitle.toString().equals(""))
-            return new GrowableInternationalString(rootLayerTitle);
         return internationalRootLayerTitle;
     }
 
     @Override
     public void setInternationalRootLayerTitle(InternationalString rootLayerTitle) {
-        GrowableInternationalString growable;
-        if (rootLayerTitle == null) growable = new GrowableInternationalString(getRootLayerTitle());
-        else growable = new GrowableInternationalString(rootLayerTitle);
-        this.internationalRootLayerTitle = growable;
+        if (rootLayerTitle != null) {
+            this.internationalRootLayerTitle = new GrowableInternationalString(rootLayerTitle);
+        }
+    }
+
+    @Override
+    public GrowableInternationalString getInternationalTitle() {
+        return this.internationalTitle;
+    }
+
+    @Override
+    public void setInternationalTitle(InternationalString internationalTitle) {
+        if (internationalTitle != null)
+            this.internationalTitle = new GrowableInternationalString(internationalTitle);
     }
 
     @Override
     public GrowableInternationalString getInternationalRootLayerAbstract() {
-        if (this.internationalRootLayerAbstract == null
-                || this.internationalRootLayerAbstract.toString().equals(""))
-            return new GrowableInternationalString(rootLayerAbstract);
         return this.internationalRootLayerAbstract;
     }
 
     @Override
     public void setInternationalRootLayerAbstract(InternationalString rootLayerAbstract) {
-        GrowableInternationalString growable;
-        if (rootLayerAbstract == null)
-            growable = new GrowableInternationalString(getRootLayerAbstract());
-        else growable = new GrowableInternationalString(rootLayerAbstract);
+        if (rootLayerAbstract != null)
+            this.internationalRootLayerAbstract =
+                    new GrowableInternationalString(rootLayerAbstract);
+    }
 
-        this.internationalRootLayerAbstract = growable;
+    @Override
+    public GrowableInternationalString getInternationalAbstract() {
+        return this.internationalAbstract;
+    }
+
+    @Override
+    public void setInternationalAbstract(InternationalString internationalAbstract) {
+        if (internationalAbstract != null)
+            this.internationalAbstract = new GrowableInternationalString(internationalAbstract);
     }
 }

@@ -2391,6 +2391,24 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     }
 
     @Test
+    public void testEmptyLanguageStyle() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerInfo places = catalog.getLayerByName(getLayerId(MockData.NAMED_PLACES));
+        StyleInfo multiLangStyle = catalog.getStyleByName("multiLanguageStyle");
+        places.getStyles().add(multiLangStyle);
+        catalog.save(places);
+        String url =
+                "wms?LAYERS="
+                        + places.getName()
+                        + "&STYLES=multiLanguageStyle&FORMAT=image%2Fpng"
+                        + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256"
+                        + "&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+        BufferedImage image = getAsImage(url, "image/png");
+        URL urlPng = getClass().getResource("nolang_result.png");
+        ImageAssert.assertEquals(new File(urlPng.toURI()), image, 500);
+    }
+
+    @Test
     public void testMultiLanguageStyleDefaultLanguage() throws Exception {
         WMSInfo info = getGeoServer().getService(WMSInfo.class);
         info.setDefaultLocale(Locale.FRENCH);

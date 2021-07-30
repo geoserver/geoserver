@@ -402,35 +402,23 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     @Override
     public GrowableInternationalString getInternationalTitle() {
-        if (this.internationalTitle == null || this.internationalTitle.toString().equals("")) {
-            return new GrowableInternationalString(getTitle());
-        }
         return this.internationalTitle;
     }
 
     @Override
     public void setInternationalTitle(InternationalString internationalTitle) {
-        GrowableInternationalString growable;
-        if (internationalTitle == null) growable = new GrowableInternationalString(getTitle());
-        else growable = new GrowableInternationalString(internationalTitle);
-
-        this.internationalTitle = growable;
+        if (internationalTitle != null)
+            this.internationalTitle = new GrowableInternationalString(internationalTitle);
     }
 
     @Override
     public GrowableInternationalString getInternationalAbstract() {
-        if (this.internationalAbstract == null || this.internationalAbstract.toString().equals(""))
-            return new GrowableInternationalString(getAbstract());
         return this.internationalAbstract;
     }
 
     @Override
     public void setInternationalAbstract(InternationalString internationalAbstract) {
-        GrowableInternationalString growable;
-        if (internationalAbstract == null)
-            growable = new GrowableInternationalString(getAbstract());
-        else growable = new GrowableInternationalString(internationalAbstract);
-
-        this.internationalAbstract = growable;
+        if (internationalAbstract != null)
+            this.internationalAbstract = new GrowableInternationalString(internationalAbstract);
     }
 }

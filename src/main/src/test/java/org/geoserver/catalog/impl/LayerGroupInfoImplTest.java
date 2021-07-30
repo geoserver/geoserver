@@ -1,6 +1,6 @@
 package org.geoserver.catalog.impl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -22,8 +22,8 @@ public class LayerGroupInfoImplTest {
 
         info.setAbstract("test");
         info.setInternationalAbstract(null);
-        assertEquals("test", info.getInternationalAbstract().toString());
+        assertNull(info.getInternationalAbstract());
         info.setInternationalTitle(null);
-        assertEquals("", info.getInternationalTitle().toString());
+        assertNull(info.getInternationalTitle());
     }
 }

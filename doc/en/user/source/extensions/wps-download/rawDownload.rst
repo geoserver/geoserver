@@ -394,9 +394,14 @@ This time, when issued (and process has finished on the server), the GET request
   </wps:ExecuteResponse>
 
 
-Raster Output Format and Response mime-type
-+++++++++++++++++++++++++++++++++++++++++++
-By default, the Downloaded raster gets zipped, along with the SLD style associated to the layer. 
+Output Format and Response mime-types
++++++++++++++++++++++++++++++++++++++
+
+By default, downloading vector data results in a Shapefile, compressed in a zip file along with
+its SLD file. It's also possible to download a GeoPackage file using ``application/geopackage+sqlite3``
+as the value for the ``mimeType`` parameter.
+
+Similarly, for raster data, by default the downloaded raster gets zipped, along with the SLD style associated to the layer. 
 In some cases, this can be unnecessary, especially if the output TIFF already has some type of internal compression or if we simply want to get back the TIFF output file without the ancillary SLD. Let's consider downloading a RGB TIFF: the default raster.sld style won't add anything useful to the output. In that case it's possible to specify ``image/tiff`` in the Response's output ``mimeType``: the output TIFF will be provided as is, without extra steps of compression and file management.
 
 
@@ -410,6 +415,9 @@ In some cases, this can be unnecessary, especially if the output TIFF already ha
       </wps:Output>
     </wps:ResponseDocument>
   </wps:ResponseForm>
+
+It is also possible to download the raster data as a GeoPackage, using ``application/geopackage+sqlite3``
+as the value for the ``mimeType`` parameter.
 
 
 Writing buffering options

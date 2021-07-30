@@ -15,13 +15,16 @@ import static org.junit.Assert.fail;
 
 import it.geosolutions.imageio.plugins.tiff.BaselineTIFFTagSet;
 import it.geosolutions.imageio.plugins.tiff.PrivateTIFFTagSet;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -45,6 +48,7 @@ import javax.imageio.stream.FileImageInputStream;
 import javax.xml.namespace.QName;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
@@ -70,8 +74,11 @@ import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffIIOMetadataDecoder;
 import org.geotools.coverage.util.CoverageUtilities;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.DataSourceException;
+import org.geotools.data.DataUtilities;
+import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureReader;
 import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.feature.NameImpl;
@@ -81,7 +88,14 @@ import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.WKTReader2;
+import org.geotools.geopkg.FeatureEntry;
+import org.geotools.geopkg.GeoPackage;
+import org.geotools.geopkg.Tile;
+import org.geotools.geopkg.TileEntry;
+import org.geotools.geopkg.TileMatrix;
+import org.geotools.geopkg.TileReader;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.process.ProcessException;
 import org.geotools.referencing.CRS;
@@ -122,6 +136,7 @@ import org.w3c.dom.Node;
 public class DownloadProcessTest extends WPSTestSupport {
 
     private static final FilterFactory2 FF = FeatureUtilities.DEFAULT_FILTER_FACTORY;
+    private static final double EPS = 1e-6;
 
     private static QName MIXED_RES = new QName(WCS_URI, "mixedres", WCS_PREFIX);
     private static QName HETEROGENEOUS_CRS = new QName(WCS_URI, "hcrs", WCS_PREFIX);
@@ -346,26 +361,14 @@ public class DownloadProcessTest extends WPSTestSupport {
                 (SimpleFeatureCollection) ti.getFeatureSource(null, null).getFeatures();
         // Download
         RawData shpeZip =
-                downloadProcess.execute(
-                        getLayerId(MockData.POLYGONS), // layerName
-                        null, // mail
+                executeVectorDownload(
+                        downloadProcess,
+                        MockData.POLYGONS,
                         "application/zip",
-                        "application/zip", // outputFormat
-                        null, // targetCRS
-                        CRS.decode("EPSG:32615"), // roiCRS
-                        roi, // roi
-                        false, // cropToGeometry
-                        null, // interpolation
-                        null, // targetSizeX
-                        null, // targetSizeY
-                        null, // bandSelectIndices
-                        null, // Writing params
-                        false,
-                        false,
-                        0d,
-                        null,
-                        new NullProgressListener() // progressListener
-                        );
+                        "application/zip",
+                        "EPSG:32615",
+                        roi,
+                        false);
 
         try (AutoCloseableResource resource =
                         new AutoCloseableResource(getResourceManager(), shpeZip);
@@ -375,6 +378,38 @@ public class DownloadProcessTest extends WPSTestSupport {
             Assert.assertNotNull(rawTarget);
             Assert.assertEquals(rawSource.size(), rawTarget.size());
             store.dispose();
+        }
+    }
+
+    @Test
+    public void testGetFeaturesAsGeoPackage() throws Exception {
+        // Creates the new process for the download
+        DownloadProcess downloadProcess = createDefaultTestingDownloadProcess();
+
+        FeatureTypeInfo ti = getCatalog().getFeatureTypeByName(getLayerId(MockData.POLYGONS));
+        SimpleFeatureCollection rawSource =
+                (SimpleFeatureCollection) ti.getFeatureSource(null, null).getFeatures();
+        // Download
+        RawData gpkgZip =
+                executeVectorDownload(
+                        downloadProcess,
+                        MockData.POLYGONS,
+                        GeopkgVectorPPIO.MIME_TYPE,
+                        "application/zip",
+                        "EPSG:32615",
+                        roi,
+                        false);
+
+        try (AutoCloseableResource resource =
+                        new AutoCloseableResource(getResourceManager(), gpkgZip);
+                InputStream is = new FileInputStream(resource.getFile());
+                GeoPackage geoPackage = decodeGeoPackage(is)) {
+            FeatureEntry entry = geoPackage.feature("Polygons");
+            assertNotNull(entry);
+            try (SimpleFeatureReader reader =
+                    geoPackage.reader(entry, Filter.INCLUDE, Transaction.AUTO_COMMIT)) {
+                assertEquals(rawSource.size(), DataUtilities.collection(reader).size());
+            }
         }
     }
 
@@ -519,55 +554,62 @@ public class DownloadProcessTest extends WPSTestSupport {
 
         // Download as GML 2
         RawData gml2Zip =
-                downloadProcess.execute(
-                        getLayerId(MockData.POLYGONS), // layerName
-                        null, // filter
-                        "application/wfs-collection-1.0", // outputFormat
+                executeVectorDownload(
+                        downloadProcess,
+                        MockData.POLYGONS,
+                        "application/wfs-collection-1.0",
                         "application/zip",
-                        null, // targetCRS
-                        CRS.decode("EPSG:32615"), // roiCRS
-                        roi, // roi
-                        false, // cropToGeometry
-                        null, // interpolation
-                        null, // targetSizeX
-                        null, // targetSizeY
-                        null, // bandSelectIndices
-                        null, // Writing params
-                        false,
-                        false,
-                        0d,
-                        null,
-                        new NullProgressListener() // progressListener
-                        );
+                        "EPSG:32615",
+                        roi,
+                        false);
 
         // Final checks on the result
         checkResult(rawSource, gml2Zip, "XML", new WFSPPIO.WFS10());
 
         // Download as GML 3
         RawData gml3Zip =
-                downloadProcess.execute(
-                        getLayerId(MockData.POLYGONS), // layerName
-                        null, // filter
-                        "application/wfs-collection-1.1", // outputFormat
+                executeVectorDownload(
+                        downloadProcess,
+                        MockData.POLYGONS,
+                        "application/wfs-collection-1.1",
                         "application/zip",
-                        null, // targetCRS
-                        CRS.decode("EPSG:32615"), // roiCRS
-                        roi, // roi
-                        false, // cropToGeometry
-                        null, // interpolation
-                        null, // targetSizeX
-                        null, // targetSizeY
-                        null, // bandSelectIndices
-                        null, // Writing params
-                        false,
-                        false,
-                        0d,
-                        null,
-                        new NullProgressListener() // progressListener
-                        );
+                        "EPSG:32615",
+                        roi,
+                        false);
 
         // Final checks on the result
         checkResult(rawSource, gml3Zip, "XML", new WFSPPIO.WFS11());
+    }
+
+    private RawData executeVectorDownload(
+            DownloadProcess downloadProcess,
+            QName polygons,
+            String mimeType,
+            String outputFormat,
+            String roiCRS,
+            Polygon roi,
+            boolean cropToGeometry)
+            throws FactoryException {
+        return downloadProcess.execute(
+                getLayerId(polygons), // layerName
+                null, // filter
+                mimeType,
+                outputFormat,
+                null, // targetCRS
+                CRS.decode(roiCRS), // roiCRS
+                roi, // roi
+                cropToGeometry, // cropToGeometry
+                null, // interpolation
+                null, // targetSizeX
+                null, // targetSizeY
+                null, // bandSelectIndices
+                null, // Writing params
+                false,
+                false,
+                0d,
+                null,
+                new NullProgressListener() // progressListener
+                );
     }
 
     /**
@@ -585,26 +627,14 @@ public class DownloadProcessTest extends WPSTestSupport {
                 (SimpleFeatureCollection) ti.getFeatureSource(null, null).getFeatures();
         // Download the file as Json
         RawData jsonZip =
-                downloadProcess.execute(
-                        getLayerId(MockData.POLYGONS), // layerName
-                        null, // filter
-                        "application/json", // outputFormat
+                executeVectorDownload(
+                        downloadProcess,
+                        MockData.POLYGONS,
+                        "application/json",
                         "application/zip",
-                        null, // targetCRS
-                        CRS.decode("EPSG:32615"), // roiCRS
-                        roi, // roi
-                        false, // cropToGeometry
-                        null, // interpolation
-                        null, // targetSizeX
-                        null, // targetSizeY
-                        null, // bandSelectIndices
-                        null, // Writing params
-                        false,
-                        false,
-                        0d,
-                        null,
-                        new NullProgressListener() // progressListener
-                        );
+                        "EPSG:32615",
+                        roi,
+                        false);
 
         checkResult(rawSource, jsonZip, "JSON", new FeatureJSON());
     }
@@ -826,6 +856,80 @@ public class DownloadProcessTest extends WPSTestSupport {
                     7187128.139081598,
                     gcResampled.getEnvelope().getUpperCorner().getOrdinate(1),
                     DELTA);
+        }
+    }
+
+    @Test
+    public void testDownloadRasterGeoPackage() throws Exception {
+        final WPSResourceManager resourceManager = getResourceManager();
+
+        // Creates the new process for the download
+        DownloadProcess downloadProcess = createDefaultTestingDownloadProcess(resourceManager);
+
+        // Download the coverage as GeoPackage (Not reprojected)
+        RawData raster =
+                downloadProcess.execute(
+                        getLayerId(MockData.USA_WORLDIMG), // layerName
+                        null, // filter
+                        GeopkgPPIO.MIME_TYPE, // mimeType
+                        GeopkgPPIO.MIME_TYPE, // resultFormat
+                        null, // targetCRS
+                        WGS84, // roiCRS
+                        null, // roi
+                        true, // cropToGeometry
+                        null, // interpolation
+                        null, // targetSizeX
+                        null, // targetSizeY
+                        null, // bandSelectIndices
+                        null, // Writing params
+                        false,
+                        false,
+                        0d,
+                        null,
+                        new NullProgressListener() // progressListener
+                        );
+
+        try (AutoCloseableResource resource = new AutoCloseableResource(resourceManager, raster);
+                GeoPackage gpkg = new GeoPackage(resource.getFile())) {
+
+            TileEntry entry = gpkg.tile(MockData.USA_WORLDIMG.getLocalPart());
+            assertNotNull(entry);
+            ReferencedEnvelope bounds = entry.getBounds();
+            CoverageInfo ci = getCatalog().getCoverageByName(getLayerId(MockData.USA_WORLDIMG));
+
+            // raster is not rescaled, should be the same
+            org.opengis.geometry.Envelope envelope = ci.getGridCoverage(null, null).getEnvelope();
+            assertEquals(envelope.getMinimum(0), bounds.getMinimum(0), 0d);
+            assertEquals(envelope.getMaximum(0), bounds.getMaximum(0), 0d);
+            assertEquals(envelope.getMinimum(1), bounds.getMinimum(1), 0d);
+            assertEquals(envelope.getMaximum(1), bounds.getMaximum(1), 0d);
+
+            // the tile bounds are larger than the bounds (tile is bigger)
+            assertTrue(entry.getTileMatrixSetBounds().contains(new Envelope2D(bounds)));
+
+            List<TileMatrix> matrices = entry.getTileMatricies();
+            assertEquals(1, matrices.size());
+            TileMatrix matrix = matrices.get(0);
+            assertEquals(0, (int) matrix.getZoomLevel());
+            assertEquals(256, (int) matrix.getTileWidth());
+            assertEquals(256, (int) matrix.getTileHeight());
+            assertEquals(1, (int) matrix.getMatrixWidth());
+            assertEquals(1, (int) matrix.getMatrixHeight());
+            assertEquals(0.070037, matrix.getXPixelSize(), EPS);
+            assertEquals(0.055868, matrix.getYPixelSize(), EPS);
+
+            try (TileReader reader = gpkg.reader(entry, 0, 0, 0, 0, 0, 0)) {
+                Tile tile = reader.next();
+                assertEquals(0, (int) tile.getRow());
+                assertEquals(0, (int) tile.getColumn());
+                assertEquals(0, (int) tile.getZoom());
+                byte[] data = tile.getData();
+                BufferedImage image = ImageIO.read(new ByteArrayInputStream(data));
+
+                // image should have been expanded to tile size
+                assertEquals(256, image.getWidth());
+                assertEquals(256, image.getHeight());
+            }
         }
     }
 
@@ -1110,6 +1214,90 @@ public class DownloadProcessTest extends WPSTestSupport {
                     -124.05382943906582, gc.getEnvelope().getUpperCorner().getOrdinate(0), DELTA);
             Assert.assertEquals(
                     54.00577111704634, gc.getEnvelope().getUpperCorner().getOrdinate(1), DELTA);
+        }
+    }
+
+    @Test
+    public void testMaskedGeoPackageRasterDownload() throws Exception {
+        final WPSResourceManager resourceManager = getResourceManager();
+
+        // Creates the new process for the download
+        DownloadProcess downloadProcess = createDefaultTestingDownloadProcess(resourceManager);
+
+        // L shaped polygon covering top left, top right and bottom right quadrants (hand drew
+        // in QGIS)
+        Polygon roi =
+                (Polygon)
+                        new WKTReader2()
+                                .read(
+                                        "Polygon ((-131.15837491405085302 54.46008784574385686, -123.67994074117365244 54.40520025548421046, -123.61133125334909266 48.21662445370877492, -125.71078158078067588 48.2303463512736883, -125.99894142964383548 52.6762411623052671, -131.15837491405085302 52.82718203551930003, -131.15837491405085302 54.46008784574385686))");
+        roi.setSRID(4326);
+
+        // Download the coverage as tiff
+        RawData raster =
+                downloadProcess.execute(
+                        getLayerId(MockData.USA_WORLDIMG), // layerName
+                        null, // filter
+                        GeopkgRasterPPIO.MIME_TYPE, // outputFormat
+                        GeopkgRasterPPIO.MIME_TYPE,
+                        null, // targetCRS
+                        WGS84, // roiCRS
+                        roi, // roi
+                        true, // cropToGeometry
+                        null, // interpolation
+                        512, // targetSizeX (get at least 4 tiles)
+                        512, // targetSizeY
+                        new int[] {1}, // bandSelectIndices
+                        null, // Writing params
+                        false,
+                        false,
+                        0d,
+                        null,
+                        new NullProgressListener() // progressListener
+                        );
+
+        try (AutoCloseableResource resource = new AutoCloseableResource(resourceManager, raster);
+                GeoPackage gpkg = new GeoPackage(resource.getFile())) {
+
+            TileEntry entry = gpkg.tile(MockData.USA_WORLDIMG.getLocalPart());
+            assertNotNull(entry);
+            ReferencedEnvelope bounds = entry.getBounds();
+
+            // the tile bounds are larger than the bounds (tile is bigger)
+            assertTrue(entry.getTileMatrixSetBounds().contains(new Envelope2D(bounds)));
+
+            List<TileMatrix> matrices = entry.getTileMatricies();
+            assertEquals(1, matrices.size());
+            TileMatrix matrix = matrices.get(0);
+            assertEquals(0, (int) matrix.getZoomLevel());
+            assertEquals(256, (int) matrix.getTileWidth());
+            assertEquals(256, (int) matrix.getTileHeight());
+            assertEquals(2, (int) matrix.getMatrixWidth());
+            assertEquals(2, (int) matrix.getMatrixHeight());
+            assertEquals(0.014713, matrix.getXPixelSize(), EPS);
+            assertEquals(0.012198, matrix.getYPixelSize(), EPS);
+
+            // collect all tiles and do minimal checks on them
+            Set<Point> tiles = new HashSet<>();
+            try (TileReader reader = gpkg.reader(entry, -1000, 1000, -1000, 1000, -1000, 1000)) {
+                while (reader.hasNext()) {
+                    Tile tile = reader.next();
+                    tiles.add(new Point(tile.getColumn(), tile.getRow()));
+                    assertEquals(0, (int) tile.getZoom());
+                    byte[] data = tile.getData();
+                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(data));
+                    assertEquals(256, image.getWidth());
+                    assertEquals(256, image.getHeight());
+                    // gray + alpha, the alpha channel has been added to handle ROI
+                    assertEquals(2, image.getSampleModel().getNumBands());
+                }
+            }
+
+            // the lower left corner tile is not covered by the ROI, should have been skipped
+            assertEquals(3, tiles.size());
+            assertThat(
+                    tiles,
+                    CoreMatchers.hasItems(new Point(0, 0), new Point(1, 0), new Point(1, 1)));
         }
     }
 
@@ -1960,26 +2148,14 @@ public class DownloadProcessTest extends WPSTestSupport {
 
         // Download the data with ROI
         RawData raster =
-                downloadProcess.execute(
-                        getLayerId(MockData.USA_WORLDIMG), // layerName
-                        null, // filter
-                        "image/tiff", // outputFormat
+                executeVectorDownload(
+                        downloadProcess,
+                        MockData.USA_WORLDIMG,
                         "image/tiff",
-                        null, // targetCRS
-                        CRS.decode("EPSG:4326"), // roiCRS
-                        roi, // roi
-                        true, // cropToGeometry
-                        null, // interpolation
-                        null, // targetSizeX
-                        null, // targetSizeY
-                        null, // bandSelectIndices
-                        null, // Writing params
-                        false,
-                        false,
-                        0d,
-                        null,
-                        new NullProgressListener() // progressListener
-                        );
+                        "image/tiff",
+                        "EPSG:4326",
+                        roi,
+                        true);
 
         // Final checks on the result
         Assert.assertNotNull(raster);
@@ -2413,26 +2589,14 @@ public class DownloadProcessTest extends WPSTestSupport {
                 new DownloadProcess(getGeoServer(), limits, resourceManager);
         try {
             // Download the features. It should throw an exception
-            downloadProcess.execute(
-                    getLayerId(MockData.POLYGONS), // layerName
-                    null, // filter
-                    "application/zip", // outputFormat
-                    "application/zip", // outputFormat
-                    null, // targetCRS
-                    CRS.decode("EPSG:32615"), // roiCRS
-                    roi, // roi
-                    false, // cropToGeometry
-                    null, // interpolation
-                    null, // targetSizeX
-                    null, // targetSizeY
-                    null, // bandSelectIndices
-                    null, // Writing params
-                    false,
-                    false,
-                    0d,
-                    null,
-                    new NullProgressListener() // progressListener
-                    );
+            executeVectorDownload(
+                    downloadProcess,
+                    MockData.POLYGONS,
+                    "application/zip",
+                    "application/zip",
+                    "EPSG:32615",
+                    roi,
+                    false);
 
             Assert.fail();
         } catch (ProcessException e) {
@@ -3052,6 +3216,68 @@ public class DownloadProcessTest extends WPSTestSupport {
             }
         } else {
             return new ShapefileDataStore(URLs.fileToUrl(shapeFile));
+        }
+    }
+
+    /**
+     * Private method for decoding a GeoPackage
+     *
+     * @param input the input zip
+     * @return A GeoPackage object if one was found, an exception otherwise
+     */
+    private GeoPackage decodeGeoPackage(InputStream input) throws Exception {
+        // create the temp directory and register it as a temporary resource
+        File tempDir =
+                IOUtils.createRandomDirectory(
+                        IOUtils.createTempDirectory("gpkgziptemp").getAbsolutePath(),
+                        "download-process",
+                        "download-services");
+
+        // unzip to the temporary directory
+        File geopackage = null;
+        File zipFile = null;
+
+        // extract shp-zip file
+        try (ZipInputStream zis = new ZipInputStream(input)) {
+            ZipEntry entry = null;
+
+            // Cycle on all the entries and copies the input shape in the target directory
+            while ((entry = zis.getNextEntry()) != null) {
+                File file = new File(tempDir, entry.getName());
+                if (entry.isDirectory()) {
+                    file.mkdir();
+                } else {
+
+                    if (file.getName().toLowerCase().endsWith(".gpkg")) {
+                        geopackage = file;
+                    } else if (file.getName().toLowerCase().endsWith(".zip")) {
+                        zipFile = file;
+                    }
+
+                    int count;
+                    byte[] data = new byte[4096];
+                    // write the files to the disk
+                    try (FileOutputStream fos = new FileOutputStream(file)) {
+                        while ((count = zis.read(data)) != -1) {
+                            fos.write(data, 0, count);
+                        }
+                        fos.flush();
+                    }
+                }
+                zis.closeEntry();
+            }
+        }
+
+        // Read the shapefile
+        if (geopackage == null) {
+            if (zipFile != null) return decodeGeoPackage(new FileInputStream(zipFile));
+            else {
+                FileUtils.deleteDirectory(tempDir);
+                throw new IOException(
+                        "Could not find any file with .gpkg extension in the zip file");
+            }
+        } else {
+            return new GeoPackage(geopackage);
         }
     }
 

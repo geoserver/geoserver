@@ -33,6 +33,7 @@ import javax.media.jai.operator.MosaicDescriptor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.wps.VerticalCRSConfigurationPanel;
@@ -338,7 +339,7 @@ class RasterDownload {
                         }
 
                         disposableSources.add(gridCoverage);
-                        return writeRaster(mimeType, gridCoverage, writeParams);
+                        return writeRaster(coverageInfo, mimeType, gridCoverage, writeParams);
 
                     } else {
                         // Check if an actual crop is needed
@@ -356,7 +357,7 @@ class RasterDownload {
                             gridCoverage =
                                     extendToRegion(
                                             gridCoverage, requestedGridGeometry, backgroundValues);
-                            return writeRaster(mimeType, gridCoverage, writeParams);
+                            return writeRaster(coverageInfo, mimeType, gridCoverage, writeParams);
                         }
                     }
                 }
@@ -407,7 +408,7 @@ class RasterDownload {
             //
             // Writing
             //
-            return writeRaster(mimeType, gridCoverage, writeParams);
+            return writeRaster(coverageInfo, mimeType, gridCoverage, writeParams);
 
         } finally {
             for (GridCoverage2D disposableCoverage : disposableSources) {
@@ -878,10 +879,17 @@ class RasterDownload {
      */
     @SuppressWarnings("unchecked")
     private Resource writeRaster(
-            String mimeType, GridCoverage2D gridCoverage, Parameters writeParams) throws Exception {
+            CoverageInfo ci, String mimeType, GridCoverage2D gridCoverage, Parameters writeParams)
+            throws Exception {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.log(Level.FINE, "Writing raster");
         }
+
+        // add metadata access
+        MetaGridCoverage2D meta = new MetaGridCoverage2D(gridCoverage);
+        meta.getUserData().put(ResourceInfo.class, ci);
+        gridCoverage = meta;
+
         // limits
         long limit = DownloadServiceConfiguration.NO_LIMIT;
         if (limits.getHardOutputLimit() > 0) {

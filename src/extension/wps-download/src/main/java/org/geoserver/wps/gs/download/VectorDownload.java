@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.ProcessParameterIO;
@@ -205,6 +206,9 @@ class VectorDownload {
         } else {
             clippedFeatures = reprojectedFeatures;
         }
+
+        // add metadata that the PPIO can use to provide extra information
+        clippedFeatures.getSchema().getUserData().put(ResourceInfo.class, resourceInfo);
 
         //
         // STEP 4 - Write down respecting limits in bytes

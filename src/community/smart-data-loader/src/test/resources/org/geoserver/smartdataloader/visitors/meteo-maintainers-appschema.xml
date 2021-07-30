@@ -59,6 +59,12 @@
           </sourceExpression>
         </AttributeMapping>
         <AttributeMapping>
+          <targetAttribute>mt:place</targetAttribute>
+          <sourceExpression>
+            <OCQL>place</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
           <targetAttribute>meteoStationsMaintainers</targetAttribute>
           <sourceExpression>
             <linkField>FEATURE_LINK[1]</linkField>
@@ -185,6 +191,12 @@
           <targetAttribute>mt:value</targetAttribute>
           <sourceExpression>
             <OCQL>value</OCQL>
+          </sourceExpression>
+        </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>mt:decimal_value</targetAttribute>
+          <sourceExpression>
+            <OCQL>decimal_value</OCQL>
           </sourceExpression>
         </AttributeMapping>
         <AttributeMapping>

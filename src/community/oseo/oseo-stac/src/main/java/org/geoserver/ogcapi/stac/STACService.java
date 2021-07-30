@@ -12,6 +12,7 @@ import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER_FUNCTIONS;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER_SPATIAL_OPS;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER_TEMPORAL;
+import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_IDENTIFIER;
 import static org.geoserver.opensearch.eo.store.OpenSearchQueries.getProductProperties;
 import static org.geoserver.ows.URLMangler.URLType.RESOURCE;
 
@@ -19,8 +20,10 @@ import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -214,7 +217,7 @@ public class STACService {
         q.setFilter(
                 FF.and(
                         getEnabledFilter(),
-                        FF.equals(FF.property("name"), FF.literal(collectionId))));
+                        FF.equals(FF.property(EO_IDENTIFIER), FF.literal(collectionId))));
         FeatureCollection<FeatureType, Feature> collections =
                 accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
         Feature collection = DataUtilities.first(collections);
@@ -283,6 +286,14 @@ public class STACService {
             @RequestParam(name = "filter", required = false) String filter,
             @RequestParam(name = "filter-lang", required = false) String filterLanguage)
             throws Exception {
+        // check the collection is enabled
+        Feature collection = getCollection(collectionId);
+        if (Boolean.FALSE.equals(collection.getProperty("enabled").getValue())) {
+            throw new APIException(
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    "Collection " + collectionId + " is not avialable",
+                    HttpStatus.NOT_FOUND);
+        }
         // query the items based on the request parameters
         QueryResult qr =
                 queryItems(
@@ -293,7 +304,8 @@ public class STACService {
                         null,
                         datetime,
                         filter,
-                        filterLanguage);
+                        filterLanguage,
+                        false);
 
         // build the links
         ItemsResponse response =
@@ -337,7 +349,8 @@ public class STACService {
                         intersects,
                         datetime,
                         filter,
-                        filterLanguage);
+                        filterLanguage,
+                        true);
 
         // build the links
         SearchResponse response =
@@ -366,8 +379,10 @@ public class STACService {
 
         // request parsing
         FilterMerger filters = new FilterMerger();
-        if (sq.getCollections() != null && !sq.getCollections().isEmpty())
-            filters.add(getCollectionsFilter(sq.getCollections()));
+
+        List<String> collectionIds = sq.getCollections();
+        addCollectionsFilter(filters, collectionIds, true);
+
         double[] bbox = sq.getBbox();
         if (bbox != null) {
             filters.add(APIBBoxParser.toFilter(bbox, DefaultGeographicCRS.WGS84));
@@ -414,6 +429,23 @@ public class STACService {
         return response;
     }
 
+    private void addCollectionsFilter(
+            FilterMerger filters, List<String> collectionIds, boolean excludeDisabledCollection)
+            throws IOException {
+        List<String> disabledIds =
+                excludeDisabledCollection
+                        ? getDisabledCollections(collectionIds)
+                        : Collections.emptyList();
+
+        if (collectionIds != null && !collectionIds.isEmpty()) {
+            collectionIds.removeAll(disabledIds);
+            filters.add(getCollectionsFilter(collectionIds));
+        } else if (!disabledIds.isEmpty()) {
+            // exclude disabled collections
+            filters.add(FF.not(getCollectionsFilter(disabledIds)));
+        }
+    }
+
     public PropertyIsEqualTo getEnabledFilter() {
         return FF.equals(FF.property(OpenSearchAccess.ENABLED), FF.literal(true));
     }
@@ -436,15 +468,16 @@ public class STACService {
             String intersects,
             String datetime,
             String filter,
-            String filterLanguage)
+            String filterLanguage,
+            boolean excludeDisabledCollection)
             throws IOException, FactoryException, ParseException {
         FeatureSource<FeatureType, Feature> source =
                 accessProvider.getOpenSearchAccess().getProductSource();
 
         // request parsing
         FilterMerger filters = new FilterMerger();
-        if (collectionIds != null && !collectionIds.isEmpty())
-            filters.add(getCollectionsFilter(collectionIds));
+
+        addCollectionsFilter(filters, collectionIds, excludeDisabledCollection);
         if (bbox != null) {
             filters.add(APIBBoxParser.toFilter(bbox, DefaultGeographicCRS.WGS84));
         }
@@ -470,6 +503,30 @@ public class STACService {
         q.setProperties(getProductProperties(accessProvider.getOpenSearchAccess()));
 
         return queryItems(source, q);
+    }
+
+    private List<String> getDisabledCollections(List<String> collectionIds) throws IOException {
+        Query q = new Query();
+        Filter filter = FF.equals(FF.property(OpenSearchAccess.ENABLED), FF.literal(false));
+        if (collectionIds != null && !collectionIds.isEmpty()) {
+            List<Filter> filters = new ArrayList<>();
+            filters.add(filter);
+
+            filters.addAll(
+                    collectionIds
+                            .stream()
+                            .map(cid -> FF.equals(FF.property(EO_IDENTIFIER), FF.literal(cid)))
+                            .collect(Collectors.toList()));
+            filter = FF.and(filters);
+        }
+        q.setFilter(filter);
+        q.setProperties(Arrays.asList(FF.property(EO_IDENTIFIER)));
+        FeatureCollection<FeatureType, Feature> collections =
+                accessProvider.getOpenSearchAccess().getCollectionSource().getFeatures(q);
+        return DataUtilities.list(collections)
+                .stream()
+                .map(f -> (String) f.getProperty(EO_IDENTIFIER).getValue())
+                .collect(Collectors.toList());
     }
 
     private QueryResult queryItems(FeatureSource<FeatureType, Feature> source, Query q)

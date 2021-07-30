@@ -31,6 +31,7 @@
           <xs:element maxOccurs="unbounded" minOccurs="0" name="tag" type="st:TagType"/>
           <xs:element name="measurements" type="ms:MeasurementPropertyType" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element name="info" type="gml:ReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="use" type="gml:ReferenceType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>

@@ -58,16 +58,18 @@ public class PNGJWriter {
      */
     private FilterType getFilterType(WMSMapContent mapContent) {
         RasterSymbolizerVisitor visitor = new RasterSymbolizerVisitor();
-        for (Layer layer : mapContent.layers()) {
-            // check if the style has a raster symbolizer, don't trust the layer type as
-            // we don't know in advance if there is a rendering transformation
-            // WMS cascading is a ugly case, we might be cascading a map that is vector, but
-            // we don't get to know
-            Style style = layer.getStyle();
-            if (style != null) {
-                style.accept(visitor);
-                if (visitor.highChangeRasterSymbolizer) {
-                    return FilterType.FILTER_SUB;
+        if (mapContent != null) {
+            for (Layer layer : mapContent.layers()) {
+                // check if the style has a raster symbolizer, don't trust the layer type as
+                // we don't know in advance if there is a rendering transformation
+                // WMS cascading is a ugly case, we might be cascading a map that is vector, but
+                // we don't get to know
+                Style style = layer.getStyle();
+                if (style != null) {
+                    style.accept(visitor);
+                    if (visitor.highChangeRasterSymbolizer) {
+                        return FilterType.FILTER_SUB;
+                    }
                 }
             }
         }

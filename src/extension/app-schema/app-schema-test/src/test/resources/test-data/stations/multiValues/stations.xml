@@ -103,7 +103,7 @@
           <jdbcMultipleValue>
             <sourceColumn>use_id</sourceColumn>
             <targetTable>USE_${GML_PREFIX_UPPER}</targetTable>
-            <targetColumn>USE_${GML_PREFIX}_PKEY</targetColumn>
+            <targetColumn>use_${GML_PREFIX}_PKEY</targetColumn>
             <targetValue></targetValue>
           </jdbcMultipleValue>
           <ClientProperty>

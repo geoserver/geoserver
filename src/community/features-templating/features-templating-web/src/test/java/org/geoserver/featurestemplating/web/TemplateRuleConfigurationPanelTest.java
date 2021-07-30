@@ -172,7 +172,7 @@ public class TemplateRuleConfigurationPanelTest extends GeoServerWicketTestSuppo
 
     @Test
     public void testLayerRuleProfileCQL() {
-        LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.BUILDINGS));
+        LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.LAKES));
         Model<LayerInfo> layerModel = new Model<>(layerInfo);
         tester.startPage(
                 new FormTestPage(

@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -39,6 +40,7 @@ import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.IOUtils;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
+import org.geotools.feature.NameImpl;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -83,7 +85,7 @@ public class TemplateRestController extends AbstractCatalogController {
     @PostMapping(
         value = {
             "/featurestemplates",
-            "/featuretypes/{featureType}/featurestemplates",
+            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates",
             "/workspaces/{ws}/featurestemplates"
         },
         consumes = {
@@ -91,7 +93,7 @@ public class TemplateRestController extends AbstractCatalogController {
             MediaType.APPLICATION_XML_VALUE,
             MediaType.APPLICATION_JSON_VALUE,
             MediaType.APPLICATION_XHTML_XML_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
+            MediaTypeExtensions.TEXT_JSON_VALUE,
         }
     )
     public ResponseEntity<String> templatePost(
@@ -108,7 +110,7 @@ public class TemplateRestController extends AbstractCatalogController {
         }
         String ftName = null;
         if (featureType != null) {
-            FeatureTypeInfo ft = checkFeatureType(featureType);
+            FeatureTypeInfo ft = checkFeatureType(ws, featureType);
             ftName = ft.getName();
             ws = ft.getStore().getWorkspace().getName();
         }
@@ -161,7 +163,7 @@ public class TemplateRestController extends AbstractCatalogController {
     @PostMapping(
         value = {
             "/featurestemplates",
-            "/featuretypes/{featureType}/featurestemplates",
+            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates",
             "/workspaces/{ws}/featurestemplates"
         },
         consumes = {MediaTypeExtensions.APPLICATION_ZIP_VALUE}
@@ -179,7 +181,7 @@ public class TemplateRestController extends AbstractCatalogController {
         }
         String ftName = null;
         if (featureType != null) {
-            FeatureTypeInfo ft = checkFeatureType(featureType);
+            FeatureTypeInfo ft = checkFeatureType(ws, featureType);
             ftName = ft.getName();
             ws = ft.getStore().getWorkspace().getName();
         }
@@ -188,26 +190,31 @@ public class TemplateRestController extends AbstractCatalogController {
         if (ws != null) info.setWorkspace(ws);
         if (ftName != null) info.setFeatureType(ftName);
         File directory = unzip(is);
-        File templateFile = getTemplateFileFromDirectory(directory);
-        if (templateName == null)
-            templateName = FilenameUtils.removeExtension(templateFile.getName());
-        String extension = FilenameUtils.getExtension(templateFile.getName());
-        TemplateInfoDAO dao = TemplateInfoDAO.get();
-        if (dao.findByFullName(templateName) != null) {
-            throw new RestException(
-                    "Template " + templateName + " already exists.", HttpStatus.FORBIDDEN);
-        }
-        info.setTemplateName(templateName);
-        info.setExtension(extension);
-        try (InputStream inputStream = new FileInputStream(templateFile)) {
-            saveOrUpdateTemplate(info, inputStream);
-        } catch (IOException e) {
-            throw new RestException(
-                    "Error while processing the template", HttpStatus.INTERNAL_SERVER_ERROR, e);
+        try {
+            File templateFile = getTemplateFileFromDirectory(directory);
+            if (templateName == null)
+                templateName = FilenameUtils.removeExtension(templateFile.getName());
+            String extension = FilenameUtils.getExtension(templateFile.getName());
+            TemplateInfoDAO dao = TemplateInfoDAO.get();
+            if (dao.findByFullName(templateName) != null) {
+                throw new RestException(
+                        "Template " + templateName + " already exists.", HttpStatus.FORBIDDEN);
+            }
+            info.setTemplateName(templateName);
+            info.setExtension(extension);
+            try (InputStream inputStream = new FileInputStream(templateFile)) {
+                saveOrUpdateTemplate(info, inputStream);
+            } catch (IOException e) {
+                throw new RestException(
+                        "Error while processing the template", HttpStatus.INTERNAL_SERVER_ERROR, e);
+            }
         } finally {
-            directory.delete();
+            try {
+                FileUtils.deleteDirectory(directory);
+            } catch (IOException e) {
+                throw new RestException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
-        dao.saveOrUpdate(info);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(getUri(templateName, ws, ftName, builder));
         headers.setContentType(MediaType.TEXT_PLAIN);
@@ -217,7 +224,7 @@ public class TemplateRestController extends AbstractCatalogController {
     @PutMapping(
         value = {
             "/featurestemplates/{templateName}",
-            "/featuretypes/{featureType}/featurestemplates/{templateName}",
+            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}",
             "/workspaces/{ws}/featurestemplates/{templateName}"
         },
         consumes = {
@@ -242,7 +249,7 @@ public class TemplateRestController extends AbstractCatalogController {
         }
         FeatureTypeInfo ft;
         if (featureType != null) {
-            ft = checkFeatureType(featureType);
+            ft = checkFeatureType(ws, featureType);
             ws = ft.getStore().getWorkspace().getName();
             featureType = ft.getName();
         }
@@ -262,7 +269,7 @@ public class TemplateRestController extends AbstractCatalogController {
     @PutMapping(
         value = {
             "/featurestemplates/{templateName}",
-            "/featuretypes/{featureType}/featurestemplates/{templateName}",
+            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}",
             "/workspaces/{ws}/featurestemplates/{templateName}"
         },
         consumes = {MediaTypeExtensions.APPLICATION_ZIP_VALUE}
@@ -279,27 +286,33 @@ public class TemplateRestController extends AbstractCatalogController {
         }
         FeatureTypeInfo ft;
         if (featureType != null) {
-            ft = checkFeatureType(featureType);
+            ft = checkFeatureType(ws, featureType);
             ws = ft.getStore().getWorkspace().getName();
             featureType = ft.getName();
         }
         String fullName = buildFullName(ws, featureType, templateName);
         TemplateInfo info = checkTemplateInfo(fullName);
         File directory = unzip(is);
-        File templateFile = getTemplateFileFromDirectory(directory);
-        String extension = FilenameUtils.getExtension(templateFile.getName());
-        if (!info.getExtension().equals(extension)) info.setExtension(extension);
-        try (InputStream inputStream = new FileInputStream(templateFile)) {
-            saveOrUpdateTemplate(info, inputStream);
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            return new ResponseEntity<>(templateName, headers, HttpStatus.CREATED);
-        } catch (IOException e) {
-            throw new RestException(
-                    "Error while processing the template", HttpStatus.INTERNAL_SERVER_ERROR, e);
+        try {
+            File templateFile = getTemplateFileFromDirectory(directory);
+            String extension = FilenameUtils.getExtension(templateFile.getName());
+            if (!info.getExtension().equals(extension)) info.setExtension(extension);
+            try (InputStream inputStream = new FileInputStream(templateFile)) {
+                saveOrUpdateTemplate(info, inputStream);
+            } catch (IOException e) {
+                throw new RestException(
+                        "Error while processing the template", HttpStatus.INTERNAL_SERVER_ERROR, e);
+            }
         } finally {
-            directory.delete();
+            try {
+                FileUtils.deleteDirectory(directory);
+            } catch (IOException e) {
+                throw new RestException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        return new ResponseEntity<>(templateName, headers, HttpStatus.CREATED);
     }
 
     private TemplateInfo checkTemplateInfo(String fullName) {
@@ -317,8 +330,9 @@ public class TemplateRestController extends AbstractCatalogController {
         builder = builder.cloneBuilder();
         if (featureType != null) {
             uriComponents =
-                    builder.path("/featuretypes/{featureType}/featurestemplates/{templateName}")
-                            .buildAndExpand(featureType, name);
+                    builder.path(
+                                    "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}")
+                            .buildAndExpand(workspace, featureType, name);
         } else if (workspace != null) {
             uriComponents =
                     builder.path("/workspaces/{ws}/featurestemplates/{templateName}")
@@ -344,7 +358,7 @@ public class TemplateRestController extends AbstractCatalogController {
     @DeleteMapping(
         value = {
             "/featurestemplates/{templateName}",
-            "/featuretypes/{featureType}/featurestemplates/{templateName}",
+            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}",
             "/workspaces/{ws}/featurestemplates/{templateName}"
         },
         produces = MediaType.TEXT_PLAIN_VALUE
@@ -361,7 +375,7 @@ public class TemplateRestController extends AbstractCatalogController {
         }
         FeatureTypeInfo ft;
         if (featureType != null) {
-            ft = checkFeatureType(featureType);
+            ft = checkFeatureType(ws, featureType);
             ws = ft.getStore().getWorkspace().getName();
             featureType = ft.getName();
         }
@@ -376,7 +390,7 @@ public class TemplateRestController extends AbstractCatalogController {
     @GetMapping(
         value = {
             "/featurestemplates/{templateName}",
-            "/featuretypes/{featureType}/featurestemplates/{templateName}",
+            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates/{templateName}",
             "/workspaces/{ws}/featurestemplates/{templateName}"
         },
         produces = {
@@ -397,7 +411,7 @@ public class TemplateRestController extends AbstractCatalogController {
         }
         FeatureTypeInfo ft;
         if (featureType != null) {
-            ft = checkFeatureType(featureType);
+            ft = checkFeatureType(ws, featureType);
             ws = ft.getStore().getWorkspace().getName();
             featureType = ft.getName();
         }
@@ -426,7 +440,7 @@ public class TemplateRestController extends AbstractCatalogController {
     @GetMapping(
         value = {
             "/featurestemplates",
-            "/featuretypes/{featureType}/featurestemplates",
+            "/workspaces/{workspace}/featuretypes/{featuretype}/featurestemplates",
             "/workspaces/{ws}/featurestemplates"
         },
         produces = {
@@ -447,7 +461,7 @@ public class TemplateRestController extends AbstractCatalogController {
         }
         FeatureTypeInfo ft;
         if (featureType != null) {
-            ft = checkFeatureType(featureType);
+            ft = checkFeatureType(ws, featureType);
             ws = ft.getStore().getWorkspace().getName();
             featureType = ft.getName();
         }
@@ -539,8 +553,9 @@ public class TemplateRestController extends AbstractCatalogController {
         }
     }
 
-    private FeatureTypeInfo checkFeatureType(String featureTypeName) {
-        FeatureTypeInfo featureType = catalog.getFeatureTypeByName(featureTypeName);
+    private FeatureTypeInfo checkFeatureType(String workspace, String featureTypeName) {
+        FeatureTypeInfo featureType =
+                catalog.getFeatureTypeByName(new NameImpl(workspace, featureTypeName));
         if (featureType == null) {
             throw new ResourceNotFoundException("FeatureType " + featureTypeName + " not found");
         }

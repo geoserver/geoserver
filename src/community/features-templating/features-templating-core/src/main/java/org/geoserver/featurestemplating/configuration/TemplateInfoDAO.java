@@ -65,5 +65,14 @@ public interface TemplateInfoDAO {
      */
     public void addTemplateListener(TemplateDAOListener listener);
 
+    /**
+     * Find a TemplateInfo from full name. By full name is meant the name of the template file
+     * preceded by the workspace name and the feature type name if defined for the template. Format
+     * for a full name is like the following: templateName or workspaceName:templateName or
+     * workspaceName:featureTypeName:templateName
+     *
+     * @param fullName the full name of the template.
+     * @return the corresponding TemplateInfo.
+     */
     public TemplateInfo findByFullName(String fullName);
 }

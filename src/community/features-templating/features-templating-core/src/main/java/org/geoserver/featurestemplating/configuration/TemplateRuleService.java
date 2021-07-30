@@ -5,6 +5,7 @@
 package org.geoserver.featurestemplating.configuration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -62,48 +63,6 @@ public class TemplateRuleService {
     }
 
     /**
-     * Update the rule with the attributes from the rule passed as an argument. Only populated
-     * fields will be updated.
-     *
-     * @param rule the rule with updating attributes.
-     */
-    public void updateRule(TemplateRule rule) {
-        Set<TemplateRule> rules = getRules();
-        if (rules != null) {
-            Optional<TemplateRule> optional =
-                    rules.stream().filter(r -> r.getRuleId().equals(rule.getRuleId())).findFirst();
-            if (optional.isPresent()) {
-                TemplateRule old = optional.get();
-                updateFields(rule, old);
-                Set<TemplateRule> ruleset = updatePriorities(new ArrayList<>(rules), old);
-                TemplateLayerConfig config = getTemplateLayerConfig();
-                config.setTemplateRules(ruleset);
-                featureTypeInfo.getMetadata().put(TemplateLayerConfig.METADATA_KEY, config);
-                getCatalog().save(featureTypeInfo);
-            }
-        }
-    }
-
-    private void updateFields(TemplateRule updating, TemplateRule updated) {
-        TemplateInfoDAO dao = TemplateInfoDAO.get();
-        if (updating.getTemplateName() != null) {
-            updated.setTemplateName(updating.getTemplateName());
-            updated.setTemplateIdentifier(
-                    dao.findByFullName(updating.getTemplateName()).getIdentifier());
-        }
-        if (updating.getTemplateIdentifier() != null) {
-            updated.setTemplateIdentifier(updating.getTemplateIdentifier());
-            updated.setTemplateName(
-                    dao.findById(updating.getTemplateIdentifier()).getTemplateName());
-        }
-        if (updating.getOutputFormat() != null) updated.setOutputFormat(updating.getOutputFormat());
-        if (updating.getCqlFilter() != null) updated.setCqlFilter(updating.getCqlFilter());
-        if (updating.getPriority() != null) updated.setPriority(updating.getPriority());
-        if (updating.getProfileFilter() != null)
-            updated.setProfileFilter(updating.getProfileFilter());
-    }
-
-    /**
      * Save a rule.
      *
      * @param rule the rule to save.
@@ -126,10 +85,10 @@ public class TemplateRuleService {
                 .get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
     }
 
-    private Set<TemplateRule> getRules() {
+    public Set<TemplateRule> getRules() {
         TemplateLayerConfig layerConfig = getTemplateLayerConfig();
         if (layerConfig != null) return layerConfig.getTemplateRules();
-        return null;
+        return Collections.emptySet();
     }
 
     /**

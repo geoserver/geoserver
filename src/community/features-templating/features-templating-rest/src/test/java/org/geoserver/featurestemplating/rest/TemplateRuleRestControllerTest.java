@@ -1,7 +1,12 @@
+/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.featurestemplating.rest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -14,6 +19,7 @@ import org.geoserver.featurestemplating.configuration.TemplateInfo;
 import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
 import org.geoserver.featurestemplating.configuration.TemplateLayerConfig;
 import org.geoserver.featurestemplating.configuration.TemplateRule;
+import org.geoserver.featurestemplating.configuration.TemplateRuleService;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
 import org.junit.Test;
@@ -41,7 +47,8 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
                         + "}";
         MockHttpServletResponse response =
                 postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/featuretypes/cdf:Fifteen/templaterules",
+                        RestBaseController.ROOT_PATH
+                                + "/workspaces/cdf/featuretypes/Fifteen/templaterules",
                         json,
                         MediaType.APPLICATION_JSON_VALUE);
         assertEquals(201, response.getStatus());
@@ -55,7 +62,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
                 (JSONObject)
                         getAsJSON(
                                 RestBaseController.ROOT_PATH
-                                        + "/featuretypes/cdf:Fifteen/templaterules/"
+                                        + "/workspaces/cdf/featuretypes/Fifteen/templaterules/"
                                         + id
                                         + ".json");
         JSONObject ruleJSON = result.getJSONObject("Rule");
@@ -75,7 +82,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
         response =
                 putAsServletResponse(
                         RestBaseController.ROOT_PATH
-                                + "/featuretypes/cdf:Fifteen/templaterules/"
+                                + "/workspaces/cdf/featuretypes/Fifteen/templaterules/"
                                 + rule.getRuleId(),
                         xmlRule,
                         MediaType.APPLICATION_XML_VALUE);
@@ -85,7 +92,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
                 (JSONObject)
                         getAsJSON(
                                 RestBaseController.ROOT_PATH
-                                        + "/featuretypes/cdf:Fifteen/templaterules/"
+                                        + "/workspaces/cdf/featuretypes/Fifteen/templaterules/"
                                         + id
                                         + ".json");
         ruleJSON = result.getJSONObject("Rule");
@@ -97,7 +104,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
         response =
                 deleteAsServletResponse(
                         RestBaseController.ROOT_PATH
-                                + "/featuretypes/cdf:Fifteen/templaterules/"
+                                + "/workspaces/cdf/featuretypes/Fifteen/templaterules/"
                                 + rule.getRuleId());
         assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatus());
 
@@ -129,7 +136,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
             MockHttpServletResponse response =
                     postAsServletResponse(
                             RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cite:Forests/templaterules",
+                                    + "/workspaces/cite/featuretypes/Forests/templaterules",
                             json,
                             MediaType.APPLICATION_JSON_VALUE);
             assertEquals(201, response.getStatus());
@@ -143,7 +150,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
                     (JSONObject)
                             getAsJSON(
                                     RestBaseController.ROOT_PATH
-                                            + "/featuretypes/cite:Forests/templaterules/"
+                                            + "/workspaces/cite/featuretypes/Forests/templaterules/"
                                             + id
                                             + ".json");
             JSONObject ruleJSON = result.getJSONObject("Rule");
@@ -161,7 +168,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
             response =
                     patchAsServletResponse(
                             RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cite:Forests/templaterules/"
+                                    + "/workspaces/cite/featuretypes/Forests/templaterules/"
                                     + rule.getRuleId(),
                             xmlRule,
                             MediaType.APPLICATION_XML_VALUE);
@@ -171,7 +178,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
                     (JSONObject)
                             getAsJSON(
                                     RestBaseController.ROOT_PATH
-                                            + "/featuretypes/cite:Forests/templaterules/"
+                                            + "/workspaces/cite/featuretypes/Forests/templaterules/"
                                             + id
                                             + ".json");
             ruleJSON = result.getJSONObject("Rule");
@@ -230,7 +237,7 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
                     (JSONObject)
                             getAsJSON(
                                     RestBaseController.ROOT_PATH
-                                            + "/featuretypes/cite:NamedPlaces/templaterules.json");
+                                            + "/workspaces/cite/featuretypes/NamedPlaces/templaterules.json");
             JSONArray array = result.getJSONObject("RulesList").getJSONArray("Rules");
             assertEquals(3, array.size());
             for (int i = 0; i < array.size(); i++) {
@@ -239,6 +246,73 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
             }
         } finally {
             cleanup(catalog.getFeatureTypeByName("cite", "NamedPlaces"));
+        }
+    }
+
+    @Test
+    public void testPatch() throws Exception {
+        try {
+            TemplateInfo info = new TemplateInfo();
+            info.setTemplateName("test-rules");
+            info.setExtension("xhtml");
+            TemplateInfoDAO.get().saveOrUpdate(info);
+
+            TemplateInfo info2 = new TemplateInfo();
+            info2.setTemplateName("test-rules2");
+            info2.setExtension("xml");
+            TemplateInfoDAO.get().saveOrUpdate(info2);
+
+            FeatureTypeInfo places = catalog.getFeatureTypeByName("cite", "Lakes");
+            TemplateLayerConfig templateLayerConfig = new TemplateLayerConfig();
+            TemplateRule rule = new TemplateRule();
+            rule.setTemplateName("test-rules");
+            rule.setOutputFormat(SupportedFormat.HTML);
+            rule.setTemplateIdentifier(info.getIdentifier());
+            rule.setCqlFilter("requestParam('myRequestParam')='value'");
+            templateLayerConfig.addTemplateRule(rule);
+
+            TemplateRule rule2 = new TemplateRule();
+            rule2.setTemplateName("test-rules2");
+            rule2.setOutputFormat(SupportedFormat.GML);
+            rule2.setTemplateIdentifier(info2.getIdentifier());
+            rule2.setCqlFilter("requestParam('myRequestParam')='value'");
+            templateLayerConfig.addTemplateRule(rule2);
+
+            places.getMetadata().put(TemplateLayerConfig.METADATA_KEY, templateLayerConfig);
+            getCatalog().save(places);
+
+            String xmlRule =
+                    " <Rule>\n"
+                            + "        <priority>2</priority>\n"
+                            + "        <cqlFilter xs:nil=\"true\"/>\n"
+                            + "    </Rule>";
+            MockHttpServletResponse response =
+                    patchAsServletResponse(
+                            RestBaseController.ROOT_PATH
+                                    + "/workspaces/cite/featuretypes/Lakes/templaterules/"
+                                    + rule.getRuleId(),
+                            xmlRule,
+                            MediaType.APPLICATION_XML_VALUE);
+            assertEquals(HttpStatus.OK.value(), response.getStatus());
+            String json = "{\"Rule\":{\"outputFormat\":\"HTML\",\"cqlFilter\":null}}";
+            response =
+                    patchAsServletResponse(
+                            RestBaseController.ROOT_PATH
+                                    + "/workspaces/cite/featuretypes/Lakes/templaterules/"
+                                    + rule2.getRuleId(),
+                            json,
+                            MediaType.APPLICATION_JSON_VALUE);
+            assertEquals(HttpStatus.OK.value(), response.getStatus());
+            FeatureTypeInfo fti = catalog.getFeatureTypeByName("cite", "Lakes");
+            TemplateRuleService service = new TemplateRuleService(fti);
+            TemplateRule nullCQL = service.getRule(rule.getRuleId());
+            assertNull(nullCQL.getCqlFilter());
+            assertEquals(2, nullCQL.getPriority().intValue());
+            nullCQL = service.getRule(rule2.getRuleId());
+            assertNull(nullCQL.getCqlFilter());
+            assertEquals(SupportedFormat.HTML, nullCQL.getOutputFormat());
+        } finally {
+            cleanup(catalog.getFeatureTypeByName("cite", "Lakes"));
         }
     }
 

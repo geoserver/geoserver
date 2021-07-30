@@ -11,8 +11,11 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.util.XStreamPersister;
@@ -28,6 +31,7 @@ import org.geoserver.rest.catalog.AbstractCatalogController;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
+import org.geotools.feature.NameImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
@@ -42,6 +46,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
@@ -66,7 +71,7 @@ public class TemplateRuleRestController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        value = "/featuretypes/{featuretype}/templaterules",
+        value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules",
         produces = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
@@ -75,15 +80,16 @@ public class TemplateRuleRestController extends AbstractCatalogController {
         }
     )
     public RestWrapper<TemplateRuleList> findAll(
+            @PathVariable(name = "workspace") String workspace,
             @PathVariable(name = "featuretype") String featuretype) {
-        FeatureTypeInfo info = checkFeatureType(featuretype);
+        FeatureTypeInfo info = checkFeatureType(workspace, featuretype);
         TemplateLayerConfig layerConfig = checkRules(info);
         return wrapObject(
                 new TemplateRuleList(layerConfig.getTemplateRules()), TemplateRuleList.class);
     }
 
     @GetMapping(
-        value = "/featuretypes/{featuretype}/templaterules/{identifier}",
+        value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{identifier}",
         produces = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
@@ -92,9 +98,10 @@ public class TemplateRuleRestController extends AbstractCatalogController {
         }
     )
     public RestWrapper<TemplateRule> findById(
+            @PathVariable(name = "workspace") String workspace,
             @PathVariable(name = "featuretype") String featuretype,
             @PathVariable String identifier) {
-        FeatureTypeInfo info = checkFeatureType(featuretype);
+        FeatureTypeInfo info = checkFeatureType(workspace, featuretype);
         TemplateLayerConfig layerConfig = checkRules(info);
         Optional<TemplateRule> rule =
                 layerConfig
@@ -110,7 +117,7 @@ public class TemplateRuleRestController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        value = "/featuretypes/{featuretype}/templaterules/{identifier}",
+        value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{identifier}",
         consumes = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
@@ -120,9 +127,10 @@ public class TemplateRuleRestController extends AbstractCatalogController {
     )
     public ResponseEntity<String> putRule(
             @RequestBody TemplateRule rule,
+            @PathVariable(name = "workspace") String workspace,
             @PathVariable(name = "featuretype") String featuretype,
             @PathVariable(name = "identifier") String identifier) {
-        FeatureTypeInfo info = checkFeatureType(featuretype);
+        FeatureTypeInfo info = checkFeatureType(workspace, featuretype);
         checkRules(info);
         rule.setRuleId(identifier);
         validateRule(rule);
@@ -133,7 +141,7 @@ public class TemplateRuleRestController extends AbstractCatalogController {
     }
 
     @PatchMapping(
-        value = "/featuretypes/{featuretype}/templaterules/{identifier}",
+        value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{identifier}",
         consumes = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
@@ -142,20 +150,31 @@ public class TemplateRuleRestController extends AbstractCatalogController {
         }
     )
     public ResponseEntity<String> patchRule(
-            @RequestBody TemplateRule rule,
+            HttpServletRequest request,
+            @RequestHeader("Content-Type") String contentType,
+            @PathVariable(name = "workspace") String workspace,
             @PathVariable(name = "featuretype") String featuretype,
             @PathVariable(name = "identifier") String identifier) {
-        FeatureTypeInfo info = checkFeatureType(featuretype);
+        FeatureTypeInfo info = checkFeatureType(workspace, featuretype);
         checkRules(info);
-        rule.setRuleId(identifier);
         TemplateRuleService service = new TemplateRuleService(info);
         checkRule(identifier, service);
-        service.updateRule(rule);
-        return new ResponseEntity<>(rule.getRuleId(), HttpStatus.OK);
+        TemplateRule toPatch = service.getRule(identifier);
+        try {
+            String rule = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8.name());
+            PatchMergeHandler<TemplateRule> patchHandler =
+                    new PatchMergeHandler<>(TemplateRule.class);
+            toPatch = patchHandler.applyPatch(rule.trim(), toPatch, contentType);
+            validateRule(toPatch);
+            service.replaceRule(toPatch);
+        } catch (Exception e) {
+            throw new RestException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(toPatch.getRuleId(), HttpStatus.OK);
     }
 
     @PostMapping(
-        value = "/featuretypes/{featuretype}/templaterules",
+        value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules",
         consumes = {
             MediaType.TEXT_XML_VALUE,
             MediaType.APPLICATION_XML_VALUE,
@@ -165,24 +184,28 @@ public class TemplateRuleRestController extends AbstractCatalogController {
     )
     public ResponseEntity<String> postRule(
             @RequestBody TemplateRule rule,
+            @PathVariable(name = "workspace") String workspace,
             @PathVariable(name = "featuretype") String featuretype,
             UriComponentsBuilder builder) {
         rule = new TemplateRule(rule);
-        FeatureTypeInfo info = checkFeatureType(featuretype);
+        FeatureTypeInfo info = checkFeatureType(workspace, featuretype);
         validateRule(rule);
         TemplateRuleService service = new TemplateRuleService(info);
         service.saveRule(rule);
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(getUri(rule.getRuleId(), featuretype, builder));
+        headers.setLocation(getUri(rule.getRuleId(), workspace, featuretype, builder));
         headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>(rule.getRuleId(), headers, HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value = "/featuretypes/{featuretype}/templaterules/{identifier}")
+    @DeleteMapping(
+        value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{identifier}"
+    )
     public ResponseEntity<String> deleteRule(
+            @PathVariable(name = "workspace") String workspace,
             @PathVariable(name = "featuretype") String featuretype,
             @PathVariable(name = "identifier") String identifier) {
-        FeatureTypeInfo info = checkFeatureType(featuretype);
+        FeatureTypeInfo info = checkFeatureType(workspace, featuretype);
         TemplateRuleService service = new TemplateRuleService(info);
         boolean removed = service.removeRule(identifier);
         if (!removed) {
@@ -215,23 +238,26 @@ public class TemplateRuleRestController extends AbstractCatalogController {
         }
         if (info == null) {
             throw new RestException(
-                    "The template with name " + rule.getTemplateName() + "does not exist",
+                    "The template with name " + rule.getTemplateName() + " does not exist",
                     HttpStatus.BAD_REQUEST);
         }
         rule.setTemplateIdentifier(info.getIdentifier());
         rule.setTemplateName(info.getFullName());
     }
 
-    private URI getUri(String ruleId, String featureType, UriComponentsBuilder builder) {
+    private URI getUri(
+            String ruleId, String workspace, String featureType, UriComponentsBuilder builder) {
         builder = builder.cloneBuilder();
         UriComponents uriComponents =
-                builder.path("/featuretypes/{featureType}/templaterules/{id}")
-                        .buildAndExpand(featureType, ruleId);
+                builder.path(
+                                "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{id}")
+                        .buildAndExpand(workspace, featureType, ruleId);
         return uriComponents.toUri();
     }
 
-    private FeatureTypeInfo checkFeatureType(String featureTypeName) {
-        FeatureTypeInfo featureType = catalog.getFeatureTypeByName(featureTypeName);
+    private FeatureTypeInfo checkFeatureType(String workspaceName, String featureTypeName) {
+        FeatureTypeInfo featureType =
+                catalog.getFeatureTypeByName(new NameImpl(workspaceName, featureTypeName));
         if (featureType == null) {
             throw new ResourceNotFoundException("Feature Type " + featureTypeName + " not found");
         }

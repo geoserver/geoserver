@@ -1,3 +1,7 @@
+/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.featurestemplating.rest;
 
 import static org.junit.Assert.assertEquals;
@@ -257,34 +261,34 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
             MockHttpServletResponse response =
                     postAsServletResponse(
                             RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/featurestemplates?templateName=foo3",
+                                    + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates?templateName=foo3",
                             XHTML_TEMPLATE,
                             MediaType.APPLICATION_XHTML_XML_VALUE);
             assertEquals(201, response.getStatus());
             response =
                     getAsServletResponse(
                             RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/featurestemplates/foo3");
+                                    + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates/foo3");
             assertEquals(200, response.getStatus());
             assertEquals(XHTML_TEMPLATE.trim(), response.getContentAsString());
             response =
                     putAsServletResponse(
                             RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/featurestemplates/foo3",
+                                    + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates/foo3",
                             XHTML_TEMPLATE_2,
                             MediaType.APPLICATION_XHTML_XML_VALUE);
             assertEquals(201, response.getStatus());
             response =
                     getAsServletResponse(
                             RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/featurestemplates/foo3");
+                                    + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates/foo3");
             assertEquals(200, response.getStatus());
             assertEquals(XHTML_TEMPLATE_2.trim(), response.getContentAsString());
 
             response =
                     deleteAsServletResponse(
                             RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/featurestemplates/foo3");
+                                    + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates/foo3");
             assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatus());
             assertNull(TemplateInfoDAO.get().findByFullName("cdf:Fifteen:foo3"));
         } finally {
@@ -300,14 +304,14 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
             MockHttpServletResponse response =
                     postAsServletResponse(
                             RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/featurestemplates",
+                                    + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates",
                             bytes,
                             MediaTypeExtensions.APPLICATION_ZIP_VALUE);
             assertEquals(201, response.getStatus());
             response =
                     getAsServletResponse(
                             RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/featurestemplates/test-template");
+                                    + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates/test-template");
             assertEquals(200, response.getStatus());
             assertEquals(
                     unzip("test-template.zip", getClass()).trim(),
@@ -317,14 +321,14 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
             response =
                     putAsServletResponse(
                             RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/featurestemplates/test-template",
+                                    + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates/test-template",
                             bytes,
                             MediaTypeExtensions.APPLICATION_ZIP_VALUE);
             assertEquals(201, response.getStatus());
             response =
                     getAsServletResponse(
                             RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/featurestemplates/test-template");
+                                    + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates/test-template");
             assertEquals(200, response.getStatus());
             assertEquals(
                     unzip("test-template2.zip", getClass()).trim(), response.getContentAsString());
@@ -332,7 +336,7 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
             response =
                     deleteAsServletResponse(
                             RestBaseController.ROOT_PATH
-                                    + "/featuretypes/cdf:Fifteen/featurestemplates/test-template");
+                                    + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates/test-template");
             assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatus());
             assertNull(TemplateInfoDAO.get().findByFullName("cdf:Fifteen:test-template"));
         } finally {
@@ -369,7 +373,7 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
         JSON result =
                 getAsJSON(
                         RestBaseController.ROOT_PATH
-                                + "/featuretypes/cdf:Fifteen/featurestemplates.json",
+                                + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates.json",
                         200);
         JSONObject object = ((JSONObject) result).getJSONObject("templatesInfo");
         JSONArray array = object.getJSONArray("templates");

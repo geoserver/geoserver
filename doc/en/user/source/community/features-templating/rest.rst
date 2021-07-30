@@ -68,10 +68,10 @@ Finds all templates in the ``workspace`` directory or creates a new template in 
      - 201. Created ``Location`` header.
 
 
-``/rest/featuretypes/<featureType name>/featurestemplates``
+``/rest/workspaces/<workspace name>/featuretypes/<featureType name>/featurestemplates``
 
 
-Finds all templates in the ``Feature Type`` directory or creates a new template in the ``Feature Type`` directory.
+Finds all templates in the ``featuretype`` directory or creates a new template in the ``featuretype`` directory.
 
 .. list-table::
    :header-rows: 1
@@ -86,7 +86,7 @@ Finds all templates in the ``Feature Type`` directory or creates a new template 
    * - GET
      -
      - application/json, application/xml.
-     - List of all the templates available in the  ``Feature Type`` directory
+     - List of all the templates available in the  ``featuretype`` directory
      - 
      - 200. List of rules in XML or JSON.
    * - POST
@@ -159,7 +159,8 @@ If the template with the specified name exisits in the ``workspace`` directory, 
      - 204.
 
 
-``/rest/featuretypes/<featureType name>/featurestemplates/<template name>``
+``/rest/workspaces/<workspace name>/featuretypes/<featureType name>``
+``/featurestemplates/<template name>``
 
 If the template with the specified name exisits in the ``featuretype`` directory, returns the template or replaces the template content with the one in the request body.
 
@@ -193,9 +194,9 @@ Template Rule Configuration
 ----------------------------
 
 
-``/rest/featuretypes/{featureType name}/templaterules``
+``/rest/workspaces/<workspace name>/featuretypes/<featureType name>/templaterules``
 
-Finds all the configured template rules for the ``Feature Type`` or creates a new one.
+Finds all the configured template rules for the ``featuretype`` or creates a new one.
 
 .. list-table::
    :header-rows: 1
@@ -209,7 +210,7 @@ Finds all the configured template rules for the ``Feature Type`` or creates a ne
    * - GET
      -
      - application/xml, application/json.
-     - List of all the template rules available for the ``Feature Type``.
+     - List of all the template rules available for the ``featuretype``.
      - 200. List of rules in XML or JSON.
    * - POST
      - application/xml, text/xml, application/json, text/json.
@@ -218,7 +219,8 @@ Finds all the configured template rules for the ``Feature Type`` or creates a ne
      - 201. Created ``Location`` header.
 
 
-``/rest/featuretypes/{featureType name}/templaterules/{rule identifier}``
+``/rest/workspaces/<workspace name>/featuretypes/<featureType name>``
+``/templaterules/<rule identifier>``
 
 Finds, replaces, updates or deletes the template rule with the specified identifier.
 
@@ -244,7 +246,7 @@ Finds, replaces, updates or deletes the template rule with the specified identif
    * - PATCH
      - application/xml, text/xml, application/json, text/json.
      - text/plain.
-     - Update the rule with the specified id using the fields specified in the rule provided in the request body. Unspecified fields remanin unchanged. 
+     - Allows partial updates of the rule with the specified id using the fields specified in the rule provided in the request body. It uses a `JSON merge patch like strategy <https://datatracker.ietf.org/doc/html/rfc7386>`_
      - 201.
    * - DELETE
      - 
@@ -265,8 +267,22 @@ Encoding of a template rule in XML::
 		<templateName>..</templateName>
 		<outputFormat>..</outputFormat>
 		<cqlFilter>..</cqlFilter>
+    <profileFilter>...</profileFilter>
 	</Rule>
 
 Encoding of a rule in JSON::
 
-	{"Rule": {"ruleId":..,"priority":..,"templateName":"..","outputFormat":"..","cqlFilter":".."}}
+	{"Rule": {"ruleId":..,"priority":..,"templateName":"..","outputFormat":"..","cqlFilter":"..","profileFilter":".."}}
+
+When applying partial updates missing attributes/element in incoming object are left unchanged. Properties can be set to null. E.g. the following example will allow to set the profileFilter to null:
+
+XML:: 
+
+  <Rule>
+    <profileFilter xsi:nil="true"/>
+  </Rule>
+
+JSON:: 
+
+  {"Rule":{"profileFilter":null}}
+

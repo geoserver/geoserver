@@ -4,8 +4,10 @@
  */
 package org.geoserver.ogcapi.stac;
 
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -173,6 +175,20 @@ public class SearchTest extends STACTestSupport {
                 containsInAnyOrder("LANDSAT8", "SAS1", "SAS1"),
                 containsInAnyOrder(
                         "LS8_TEST.02", "SAS1_20180226102021.01", "SAS1_20180227102021.02"));
+    }
+
+    @Test
+    public void testAllProductsNoDisabled() throws Exception {
+        // only SAS and LANDSAT intersecting this point
+        DocumentContext doc = getAsJSONPath("ogc/stac/search?limit=50", 200);
+
+        // had to inline as "CoreMatches.not" has poor generics management
+        assertEquals(Integer.valueOf(23), doc.read("numberMatched"));
+        assertEquals(Integer.valueOf(23), doc.read("numberReturned"));
+        assertThat(doc.read("features[*].collection"), not(hasItem("DISABLED_COLLECTION")));
+        assertThat(
+                (List<String>) doc.read("features[*].id"),
+                not(hasItem("PRODUCT.IN.DISABLED.COLLECTION")));
     }
 
     @Test

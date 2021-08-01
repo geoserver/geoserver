@@ -13,29 +13,29 @@ info:
     url: https://creativecommons.org/licenses/by/4.0/
   version: 1.0.0
 servers:
-- url: https://virtserver.swaggerhub.com/constantinius/ogc-api-coverages/1.0.0
-  description: SwaggerHub API Auto Mocking
-- url: https://dev.example.org/
-  description: Development server
-- url: https://data.example.org/
-  description: Production server
+  - url: https://virtserver.swaggerhub.com/constantinius/ogc-api-coverages/1.0.0
+    description: SwaggerHub API Auto Mocking
+  - url: https://dev.example.org/
+    description: Development server
+  - url: https://data.example.org/
+    description: Production server
 tags:
-- name: Capabilities
-  description: Essential characteristics of this API including information about the
-    data.
-- name: Coverage
-  description: Access to data (coverage).
+  - name: Capabilities
+    description: Essential characteristics of this API including information about the
+      data.
+  - name: Coverage
+    description: Access to data (coverage).
 paths:
   /:
     get:
       tags:
-      - Capabilities
+        - Capabilities
       summary: landing page of this API
       description: The landing page provides links to the API definition, the Conformance
         statements and the metadata about the coverage data in this dataset.
       operationId: getLandingPage
       parameters:
-      - $ref: '#/components/parameters/f'
+        - $ref: '#/components/parameters/f'
       responses:
         "200":
           description: links to the API capabilities
@@ -49,7 +49,7 @@ paths:
   /api:
     get:
       tags:
-      - Capabilities
+        - Capabilities
       summary: API definition
       description:
       parameters:
@@ -84,12 +84,12 @@ paths:
   /conformance:
     get:
       tags:
-      - Capabilities
+        - Capabilities
       operationId: getConformanceDeclaration
       summary: API conformance definition
       description: list of all conformance classes that the server conforms to
       parameters:
-      - $ref: '#/components/parameters/f'   
+        - $ref: '#/components/parameters/f'
       responses:
         "200":
           description: the URIs of all requirements classes supported by the server
@@ -106,11 +106,11 @@ paths:
   /collections:
     get:
       tags:
-      - Capabilities
+        - Capabilities
       summary: describe the collections in the dataset
       operationId: getCollections
       parameters:
-      - $ref: '#/components/parameters/f'
+        - $ref: '#/components/parameters/f'
       responses:
         "200":
           description: Metadata about the collections shared by this API.
@@ -133,13 +133,13 @@ paths:
   /collections/{collectionId}:
     get:
       tags:
-      - Capabilities
+        - Capabilities
       summary: Collection Information is the set of metadata which describes a single
         collection, or in the the case of API-Coverages, a single Coverage.
       operationId: describeCollection
       parameters:
-      - $ref: '#/components/parameters/collectionId'
-      - $ref: '#/components/parameters/f'          
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/f'
       responses:
         "200":
           description: Metadata about the {collectionId} collection shared by this API.
@@ -162,7 +162,7 @@ paths:
   /collections/{collectionId}/coverage:
     get:
       tags:
-      - Coverage
+        - Coverage
       summary: description of the coverage offering identified by {collectionId} including
         envelope
       description: |-
@@ -170,24 +170,24 @@ paths:
         Use content negotiation to request HTML or GeoJSON.
       operationId: getCoverage
       parameters:
-      - $ref: '#/components/parameters/collectionId'
-      - $ref: '#/components/parameters/bbox'
-      - $ref: '#/components/parameters/datetime'
-      - $ref: '#/components/parameters/otherParameters' 
-      - name: f
-        in: query
-        description: |
-          The optional f parameter indicates the output format which the server shall provide as part of the response document. It has preference over the HTTP Accept header. The default format is JSON.
-        required: false
-        style: form
-        explode: false
-        schema:
-          type: string
-          default: json
-          enum:
-            - json
-            - html
-            - yaml
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/datetime'
+        - $ref: '#/components/parameters/otherParameters'
+        - name: f
+          in: query
+          description: |
+            The optional f parameter indicates the output format which the server shall provide as part of the response document. It has preference over the HTTP Accept header. The default format is JSON.
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: string
+            default: json
+            enum:
+              - json
+              - html
+              - yaml
       responses:
         "200":
           description: Information about the coverage collection.
@@ -207,50 +207,34 @@ paths:
             text/html:
               schema:
                 type: string
-#  /collections/{collectionId}/coverage/domainset:
-#    get:
-#      tags:
-#      - Coverage
-#      summary: retrieve a coverages domainset; use content negotiation to request
-#        HTML or GeoJSON
-#      operationId: getCoverageDomainSet
-#      parameters:
-#      - name: collectionId
-#        in: path
-#        description: Identifier (name) of a specific collection
-#        required: true
-#        style: simple
-#        explode: false
-#        schema:
-#          type: string
-#      - name: subset
-#        in: query
-#        description: get a subset of the coverage by slicing or trimming among one
-#          axis
-#        required: false
-#        style: form
-#        explode: true
-#        schema:
-#          type: string
-#      responses:
-#        "200":
-#          description: A coverages domainset.
-#          content:
-#            application/json:
-#              schema:
-#                $ref: http://schemas.opengis.net/cis/1.1/json/coverage-schema.json#/definitions/domainSet
-#            text/html:
-#              schema:
-#                type: string
-#        default:
-#          description: An error occured.
-#          content:
-#            application/json:
-#              schema:
-#                $ref: '#/components/schemas/exception'
-#            text/html:
-#              schema:
-#                type: string
+  /collections/{collectionId}/coverage/domainset:
+    get:
+      tags:
+        - Coverage
+      summary: retrieve a coverages domainset; use content negotiation to request
+        HTML or GeoJSON
+      operationId: getCoverageDomainSet
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        "200":
+          description: A coverages domainset.
+          content:
+            application/json:
+              schema:
+                $ref: http://schemas.opengis.net/cis/1.1/json/coverage-schema.json#/definitions/domainSet
+            text/html:
+              schema:
+                type: string
+        default:
+          description: An error occured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+            text/html:
+              schema:
+                type: string
 #  /collections/{collectionId}/coverage/rangetype:
 #    get:
 #      tags:
@@ -414,7 +398,7 @@ components:
   schemas:
     exception:
       required:
-      - code
+        - code
       type: object
       properties:
         code:
@@ -423,7 +407,7 @@ components:
           type: string
     root:
       required:
-      - links
+        - links
       type: object
       properties:
         title:
@@ -436,41 +420,41 @@ components:
           type: array
           description: Links to the resources exposed through this API.
           example:
-          - href: http://data.example.org/
-            rel: self
-            type: application/json
-            title: this document
-          - href: http://data.example.org/api
-            rel: service-desc
-            type: application/openapi+json;version=3.0
-            title: the API definition
-          - href: http://data.example.org/conformance
-            rel: conformance
-            type: application/json
-            title: OGC conformance classes implemented by this API
-          - href: http://data.example.org/collections
-            title: Metadata about the resource collections
+            - href: http://data.example.org/
+              rel: self
+              type: application/json
+              title: this document
+            - href: http://data.example.org/api
+              rel: service-desc
+              type: application/openapi+json;version=3.0
+              title: the API definition
+            - href: http://data.example.org/conformance
+              rel: conformance
+              type: application/json
+              title: OGC conformance classes implemented by this API
+            - href: http://data.example.org/collections
+              title: Metadata about the resource collections
           items:
             $ref: '#/components/schemas/link'
     req-classes:
       required:
-      - conformsTo
+        - conformsTo
       type: object
       properties:
         conformsTo:
           type: array
           example:
-          - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core
-          - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/collections
-          - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/oas3
-          - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/html
-          - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/geojson
-          - http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/core
+            - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core
+            - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/collections
+            - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/oas3
+            - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/html
+            - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/geojson
+            - http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/core
           items:
             type: string
     link:
       required:
-      - href
+        - href
       type: object
       properties:
         href:
@@ -490,8 +474,8 @@ components:
           example: Digital Elevation Model
     content:
       required:
-      - collections
-      - links
+        - collections
+        - links
       type: object
       properties:
         collections:
@@ -501,6 +485,67 @@ components:
             title: Digital Elevation Model
             description: Digital Elevation Model
             links:
+              - href: http://data.example.org/collections/dem?f=json
+                rel: self
+                type: application/json
+                title: Digital Elevation Model
+              - href: http://data.example.org/collections/dem?f=html
+                rel: alternate
+                type: application/json
+                title: Digital Elevation Model
+              - href: http://data.example.org/collections/dem/coverage
+                rel: coverage
+                type: application/json
+                title: Digital Elevation Model
+            extent:
+              crs: http://www.opengis.net/def/crs/OGC/1.3/CRS84
+              spatial:
+                - -180
+                - -90
+                - 180
+                - 90
+              trs: http://www.opengis.net/def/uom/ISO-8601/0/Gregorian
+              temporal:
+                - 2020-01-06T14:00:00Z
+                - 2020-02-07T22:00:00Z
+            crs:
+              - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+          items:
+            $ref: '#/components/schemas/collectionInfo'
+        links:
+          type: array
+          example:
+            - href: http://data.example.org/collections?f=json
+              rel: self
+              type: application/json
+              title: this document
+            - href: http://data.example.org/collections?f=html
+              rel: alternate
+              type: text/html
+              title: this document as HTML
+          items:
+            $ref: '#/components/schemas/link'
+    collectionInfo:
+      required:
+        - links
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: identifier of the collection used, for example, in URIs
+          example: dem
+        title:
+          type: string
+          description: human readable title of the collection
+          example: Digital Elevation Model
+        description:
+          type: string
+          description: a description of the data in the collection
+          example: Digital Elevation Model
+        links:
+          type: array
+          example:
             - href: http://data.example.org/collections/dem?f=json
               rel: self
               type: application/json
@@ -513,91 +558,30 @@ components:
               rel: coverage
               type: application/json
               title: Digital Elevation Model
-            extent:
-              crs: http://www.opengis.net/def/crs/OGC/1.3/CRS84
-              spatial:
-              - -180
-              - -90
-              - 180
-              - 90
-              trs: http://www.opengis.net/def/uom/ISO-8601/0/Gregorian
-              temporal:
-              - 2020-01-06T14:00:00Z
-              - 2020-02-07T22:00:00Z
-            crs:
-            - http://www.opengis.net/def/crs/OGC/1.3/CRS84
-          items:
-            $ref: '#/components/schemas/collectionInfo'
-        links:
-          type: array
-          example:
-          - href: http://data.example.org/collections?f=json
-            rel: self
-            type: application/json
-            title: this document
-          - href: http://data.example.org/collections?f=html
-            rel: alternate
-            type: text/html
-            title: this document as HTML
-          items:
-            $ref: '#/components/schemas/link'
-    collectionInfo:
-      required:
-      - links
-      - name
-      type: object
-      properties:
-        name:
-          type: string
-          description: identifier of the collection used, for example, in URIs
-          example: dem
-        title:
-          type: string
-          description: human readable title of the collection
-          example: Digital Elevation Model
-        description:
-          type: string
-          description: a description of the data in the collection
-          example: Digital Elevation Model
-        links:
-          type: array
-          example:
-          - href: http://data.example.org/collections/dem?f=json
-            rel: self
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem?f=html
-            rel: alternate
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage
-            rel: coverage
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/domainset
-            rel: domainset
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/rangetype
-            rel: rangetype
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/metadata
-            rel: metadata
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/rangeset
-            rel: rangeset
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/description
-            rel: description
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/all
-            rel: data
-            type: application/json
-            title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/domainset
+              rel: domainset
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/rangetype
+              rel: rangetype
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/metadata
+              rel: metadata
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/rangeset
+              rel: rangeset
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/description
+              rel: description
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/all
+              rel: data
+              type: application/json
+              title: Digital Elevation Model
           items:
             $ref: '#/components/schemas/link'
         extent:
@@ -610,11 +594,11 @@ components:
             used by default. This is always "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
             i.e. WGS84 longitude/latitude.
           example:
-          - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+            - http://www.opengis.net/def/crs/OGC/1.3/CRS84
           items:
             type: string
           default:
-          - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+            - http://www.opengis.net/def/crs/OGC/1.3/CRS84
     extent:
       type: object
       properties:
@@ -625,7 +609,7 @@ components:
             is supported. Extensions may support additional coordinate reference systems.
           default: http://www.opengis.net/def/crs/OGC/1.3/CRS84
           enum:
-          - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+            - http://www.opengis.net/def/crs/OGC/1.3/CRS84
         spatial:
           maxItems: 6
           minItems: 4
@@ -635,10 +619,10 @@ components:
             that is supported in the Core. If, for example, a projected coordinate
             reference system is used, the minimum and maximum values need to be adjusted.
           example:
-          - -180
-          - -90
-          - 180
-          - 90
+            - -180
+            - -90
+            - 180
+            - 90
           items:
             type: number
         trs:
@@ -648,26 +632,26 @@ components:
             is supported. Extensions may support additional temporal reference systems.
           default: http://www.opengis.net/def/uom/ISO-8601/0/Gregorian
           enum:
-          - http://www.opengis.net/def/uom/ISO-8601/0/Gregorian
+            - http://www.opengis.net/def/uom/ISO-8601/0/Gregorian
         temporal:
           maxItems: 2
           minItems: 2
           type: array
           description: Begin and end times of the temporal extent.
           example:
-          - 2020-01-06T14:00:00Z
-          - 2020-02-07T22:00:00Z
+            - 2020-01-06T14:00:00Z
+            - 2020-02-07T22:00:00Z
           items:
             type: string
             format: dateTime
     coverageOffering:
       title: Coverage Offering
       required:
-      - envelope
-      - links
-      - name
-      - rangeType
-      - serviceMetadata
+        - envelope
+        - links
+        - name
+        - rangeType
+        - serviceMetadata
       type: object
       properties:
         name:
@@ -685,38 +669,38 @@ components:
         links:
           type: array
           example:
-          - href: http://data.example.org/collections/dem/coverage?f=json
-            rel: self
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage?f=html
-            rel: alternate
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/domainset
-            rel: domainset
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/rangetype
-            rel: rangetype
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/metadata
-            rel: metadata
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/rangeset
-            rel: rangeset
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/description
-            rel: description
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/all
-            rel: data
-            type: application/json
-            title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage?f=json
+              rel: self
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage?f=html
+              rel: alternate
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/domainset
+              rel: domainset
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/rangetype
+              rel: rangetype
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/metadata
+              rel: metadata
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/rangeset
+              rel: rangeset
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/description
+              rel: description
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/all
+              rel: data
+              type: application/json
+              title: Digital Elevation Model
           items:
             $ref: '#/components/schemas/link'
         envelope:
@@ -724,23 +708,23 @@ components:
             id: dem_envelope
             srsName: http://www.opengis.net/def/crs/OGC/1.3/CRS84
             axisLabels:
-            - Lat
-            - Long
+              - Lat
+              - Long
             axis:
-            - type: AxisExtentType
-              id: dem_envelope_lat
-              axisLabel: Lat
-              lowerBound: -90
-              upperBound: 90
-              uomLabel: deg
-            - type: AxisExtentType
-              id: dem_envelope_long
-              axisLabel: Long
-              lowerBound: -180
-              upperBound: 180
-              uomLabel: deg
+              - type: AxisExtentType
+                id: dem_envelope_lat
+                axisLabel: Lat
+                lowerBound: -90
+                upperBound: 90
+                uomLabel: deg
+              - type: AxisExtentType
+                id: dem_envelope_long
+                axisLabel: Long
+                lowerBound: -180
+                upperBound: 180
+                uomLabel: deg
           allOf:
-          - $ref: http://schemas.opengis.net/cis/1.1/json/coverage-schema.json#/definitions/envelope
+            - $ref: http://schemas.opengis.net/cis/1.1/json/coverage-schema.json#/definitions/envelope
         rangeType:
           example:
             type: DataRecordType
@@ -755,22 +739,22 @@ components:
               constraint:
                 type: AllowedValues
                 interval:
-                - 0
-                - 10000
+                  - 0
+                  - 10000
             interpolationRestriction:
               type: InterpolationRestrictionType
               allowedInterpolation:
-              - linear
+                - linear
           allOf:
-          - $ref: http://schemas.opengis.net/cis/1.1/json/coverage-schema.json#/definitions/rangeType
+            - $ref: http://schemas.opengis.net/cis/1.1/json/coverage-schema.json#/definitions/rangeType
         serviceMetadata:
           $ref: '#/components/schemas/serviceMetadata'
       description: Description of the Coverage Offering
     serviceMetadata:
       title: serviceMetadata
       required:
-      - coverageSubtype
-      - nativeFormat
+        - coverageSubtype
+        - nativeFormat
       type: object
       properties:
         nativeFormat:
@@ -789,7 +773,7 @@ components:
     coverageSubtypeParent:
       title: coverageSubtypeParent
       required:
-      - coverageSubtype
+        - coverageSubtype
       type: object
       properties:
         coverageSubtype:
@@ -799,11 +783,11 @@ components:
     coverageDescription:
       title: Coverage Description
       required:
-      - domainSet
-      - links
-      - metadata
-      - name
-      - rangeType
+        - domainSet
+        - links
+        - metadata
+        - name
+        - rangeType
       type: object
       properties:
         name:
@@ -821,22 +805,22 @@ components:
         links:
           type: array
           example:
-          - href: http://data.example.org/collections/dem/coverage/description?f=json
-            rel: self
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/description?f=html
-            rel: alternate
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/rangeset
-            rel: rangeset
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/all
-            rel: data
-            type: application/json
-            title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/description?f=json
+              rel: self
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/description?f=html
+              rel: alternate
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/rangeset
+              rel: rangeset
+              type: application/json
+              title: Digital Elevation Model
+            - href: http://data.example.org/collections/dem/coverage/all
+              rel: data
+              type: application/json
+              title: Digital Elevation Model
           items:
             $ref: '#/components/schemas/link'
         domainSet:
@@ -928,9 +912,9 @@ components:
         type: string
         default: json
         enum:
-        - json
-        - html
-        - yaml
+          - json
+          - html
+          - yaml
     collectionId:
       name: collectionId
       in: path

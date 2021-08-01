@@ -41,7 +41,7 @@ The response content language can be selected using the ``AcceptLanguages`` requ
 
 * If not all the configurable elements have i18n title and abstract available for the requested language, GeoServer will encode those attributes only for services, layers, layergroups and styles that have them defined. In case the missing value is the tile, in place of the missing internationalized content an error message like the following, will appear: ``DID NOT FIND i18n CONTENT FOR THIS ELEMENT``.
 
-
+* When using ``AcceptLanguages`` parameter GeoServer will encode URL present in the response adding language parameter with the first value retrieved from the ``AcceptLanguages`` parameter.
 
 .. figure:: img/ErrorMessages.png
 

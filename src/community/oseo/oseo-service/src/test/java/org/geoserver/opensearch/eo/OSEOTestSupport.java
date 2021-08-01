@@ -111,9 +111,10 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         GeoServer geoServer = getGeoServer();
         setupBasicOpenSearch(testData, getCatalog(), geoServer, populateGranulesTable());
 
-        // add the custom product class
+        // add the custom product class and attribution
         OSEOInfo oseo = geoServer.getService(OSEOInfo.class);
         oseo.getProductClasses().add(JDBCOpenSearchAccessTest.GS_PRODUCT);
+        oseo.setAttribution("Copyright 2020-2030, GeoServer");
         geoServer.save(oseo);
     }
 

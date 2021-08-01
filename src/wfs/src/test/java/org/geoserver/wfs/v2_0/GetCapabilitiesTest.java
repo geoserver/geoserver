@@ -718,6 +718,7 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         wfs.setInternationalTitle(title);
         wfs.setInternationalAbstract(_abstract);
         gs.save(wfs);
+
         MockHttpServletResponse response =
                 getAsServletResponse(
                         "wfs?service=WFS&request=getCapabilities&version=2.0.0&acceptLanguages=fre");
@@ -776,5 +777,25 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
         // it was not specified french should have been selected
         assertXpathEvaluatesTo("resumé", fifteenLayer + "/wfs:Abstract", doc);
         assertXpathEvaluatesTo("parola chiave", fifteenLayer + "/ows:Keywords/ows:Keyword", doc);
+    }
+
+    @Test
+    public void testAcceptLanguagesParameter() throws Exception {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(MockData.FIFTEEN));
+        GrowableInternationalString title = new GrowableInternationalString();
+        title.add(Locale.ENGLISH, "a i18n title for fti fifteen");
+        title.add(Locale.ITALIAN, "titolo italiano");
+        fti.setInternationalTitle(title);
+        catalog.save(fti);
+
+        Document dom =
+                getAsDOM(
+                        "wfs?service=WFS&request=getCapabilities&version=2.0.0&acceptLanguages=it");
+
+        assertXpathEvaluatesTo(
+                "src/test/resources/geoserver/wfs?Language=it",
+                "//ows:DCP/ows:HTTP/ows:Get/@xlink:href",
+                dom);
     }
 }

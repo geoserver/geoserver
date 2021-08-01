@@ -14,9 +14,11 @@ import static org.easymock.EasyMock.replay;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Stream;
 import org.easymock.Capture;
 import org.easymock.CaptureType;
 import org.easymock.EasyMock;
@@ -53,6 +55,9 @@ import org.geotools.data.FeatureStore;
 import org.junit.After;
 import org.junit.Before;
 import org.opengis.filter.Filter;
+import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.sort.SortOrder;
+import org.springframework.beans.support.PropertyComparator;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -607,6 +612,40 @@ public abstract class AbstractAuthorizationTest extends SecureObjectsTest {
                             Filter f = (Filter) EasyMock.getCurrentArguments()[1];
                             Iterator<LayerGroupInfo> it =
                                     groups.stream().filter(lg -> f.evaluate(lg)).iterator();
+                            return new CloseableIteratorAdapter<>(it);
+                        })
+                .anyTimes();
+        expect(
+                        catalog.list(
+                                eq(LayerGroupInfo.class),
+                                anyObject(Filter.class),
+                                anyObject(),
+                                anyObject(),
+                                anyObject()))
+                .andAnswer(
+                        () -> {
+                            List<LayerGroupInfo> groups = catalog.getLayerGroups();
+                            Filter f = (Filter) EasyMock.getCurrentArguments()[1];
+                            Stream<LayerGroupInfo> stream =
+                                    groups.stream().filter(lg -> f.evaluate(lg));
+                            Integer offset = (Integer) EasyMock.getCurrentArguments()[2];
+                            if (offset != null) {
+                                stream = stream.skip(offset);
+                            }
+                            Integer count = (Integer) EasyMock.getCurrentArguments()[3];
+                            if (count != null) {
+                                stream = stream.limit(count);
+                            }
+                            SortBy sortBy = (SortBy) EasyMock.getCurrentArguments()[4];
+                            if (sortBy != null) {
+                                Comparator<LayerGroupInfo> comparator =
+                                        new PropertyComparator<>(
+                                                sortBy.getPropertyName().getPropertyName(),
+                                                false,
+                                                sortBy.getSortOrder() == SortOrder.ASCENDING);
+                                stream = stream.sorted(comparator);
+                            }
+                            Iterator<LayerGroupInfo> it = stream.iterator();
                             return new CloseableIteratorAdapter<>(it);
                         })
                 .anyTimes();

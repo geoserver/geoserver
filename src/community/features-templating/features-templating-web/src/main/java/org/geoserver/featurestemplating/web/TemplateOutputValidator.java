@@ -32,7 +32,8 @@ public class TemplateOutputValidator {
         boolean result = true;
         if (outputFormat.equals(SupportedFormat.JSONLD)) result = validateJSONLD(input);
         else if (outputFormat.equals(SupportedFormat.GML)) result = validateGML(input);
-        else if (outputFormat.equals(SupportedFormat.GEOJSON)) result = validateGeoJSON(input);
+        else if (outputFormat.equals(SupportedFormat.GEOJSON)
+                || outputFormat.equals(SupportedFormat.HTML)) result = validateGeoJSON(input);
         if (result) this.message = "Result is valid";
         return result;
     }

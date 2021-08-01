@@ -21,7 +21,7 @@ public class TemplateReaderProvider {
      * Find the proper TemplateReader.
      *
      * @param resourceExtension the resource file extension can be xml, xhtml, json.
-     * @param is the input stream of the resource to be parsed.
+     * @param resource the resource to be parsed.
      * @param configuration the TemplateReaderConfiguration.
      * @return
      * @throws IOException
@@ -33,9 +33,10 @@ public class TemplateReaderProvider {
         if (resourceExtension.equalsIgnoreCase(SupportedExtension.JSON.name())) {
             RecursiveJSONParser parser = new RecursiveJSONParser(resource);
             reader = new JSONTemplateReader(parser.parse(), configuration, parser.getWatchers());
-        } else if (resourceExtension.equalsIgnoreCase(SupportedExtension.XHTML.name())
-                || resourceExtension.equalsIgnoreCase(SupportedExtension.XML.name())) {
-            reader = new XMLRecursiveTemplateReader(resource, configuration.getNamespaces());
+        } else if (resourceExtension.equalsIgnoreCase(SupportedExtension.XML.name())) {
+            reader = new GMLTemplateReader(resource, configuration.getNamespaces());
+        } else if (resourceExtension.equalsIgnoreCase(SupportedExtension.XHTML.name())) {
+            reader = new XHTMLTemplateReader(resource, configuration.getNamespaces());
         } else {
             throw new UnsupportedOperationException(
                     "Not a supported extension " + resourceExtension);

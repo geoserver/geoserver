@@ -1,3 +1,15 @@
+/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ * Copyright © 2019 World Wide Web Consortium, (Massachusetts Institute of Technology, 
+ * European Research Consortium for Informatics and Mathematics, Keio    
+ * University, Beihang). All Rights Reserved. This work is distributed under the 
+ * W3C® Software License [1] in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR 
+ * A PARTICULAR PURPOSE.
+ * [1] http://www.w3.org/Consortium/Legal/copyright-software
+ * 
+ */
 import './leaflet-src.js';  // a lightly modified version of Leaflet for use as browser module
 import './proj4-src.js';        // modified version of proj4; could be stripped down for mapml
 import './proj4leaflet.js'; // not modified, seems to adapt proj4 for leaflet use.
@@ -35,7 +47,6 @@ export class WebMap extends HTMLMapElement {
     if (this.controlslist.includes(lowerVal) || !options.includes(lowerVal))return;
     this.setAttribute("controlslist", this.controlslist+` ${lowerVal}`);
   }
-  
   get lat() {
     return this.hasAttribute("lat") ? this.getAttribute("lat") : "0";
   }
@@ -53,15 +64,22 @@ export class WebMap extends HTMLMapElement {
     }
   }
   get projection() {
-    return this.hasAttribute("projection") ? this.getAttribute("projection") : "";
+    return this.hasAttribute("projection") ? this.getAttribute("projection") : "OSMTILE";
   }
   set projection(val) {
     if(val && M[val]){
       this.setAttribute('projection', val);
-      this.dispatchEvent(new CustomEvent('createmap'));
-    } else {
-      throw new Error("Undefined Projection");
-    }
+      if (this._map && this._map.options.projection !== val){
+        this._map.options.crs = M[val];
+        this._map.options.projection = val;
+        for(let layer of this.querySelectorAll("layer-")){
+          layer.removeAttribute("disabled");
+          let reAttach = this.removeChild(layer);
+          this.appendChild(reAttach);
+        }
+        if(this._debug) for(let i = 0; i<2;i++) this.toggleDebug();
+      } else this.dispatchEvent(new CustomEvent('createmap'));
+    } else throw new Error("Undefined Projection");
   }
   get zoom() {
     return this.hasAttribute("zoom") ? this.getAttribute("zoom") : 0;
@@ -107,7 +125,7 @@ export class WebMap extends HTMLMapElement {
     `<link rel="stylesheet" href="${new URL("mapml.css", import.meta.url).href}">`;
 
     const rootDiv = document.createElement('div');
-    rootDiv.classList.add('web-map');
+    rootDiv.classList.add('mapml-web-map');
 
     let shadowRoot = rootDiv.attachShadow({mode: 'open'});
     this._container = document.createElement('div');
@@ -128,7 +146,7 @@ export class WebMap extends HTMLMapElement {
     `[is="web-map"][frameborder="0"] {` +
   	`border-width: 0;` +
   	`}` +
-    `[is="web-map"] .web-map {` +
+    `[is="web-map"] .mapml-web-map {` +
     `display: contents;` + // This div doesn't have to participate in layout by generating its own box.
     `}`;
     
@@ -143,10 +161,10 @@ export class WebMap extends HTMLMapElement {
     `}`;
     
     // Hide all (light DOM) children of the map element except for the
-    // `<area>` and `<div class="web-map">` (shadow root host) elements.
+    // `<area>` and `<div class="mapml-web-map">` (shadow root host) elements.
     let hideElementsCSS = document.createElement('style');
     hideElementsCSS.innerHTML =
-    `[is="web-map"] > :not(area):not(.web-map) {` +
+    `[is="web-map"] > :not(area):not(.mapml-web-map) {` +
     `display: none!important;` +
     `}`;
     
@@ -242,12 +260,16 @@ export class WebMap extends HTMLMapElement {
             }
           }
 
-          // undisplay the img in the image map, because it's not needed now
-          // gives a slight fouc, not optimal
+          // undisplay the img in the image map, because it's not needed now.
+          // gives a slight FOUC, unless:
+          // 1) the img is pre-styled (https://github.com/Maps4HTML/Web-Map-Custom-Element/blob/80a4a4e372d2ef61bb7cad6a111e17e396b8e908/index-map-area.html#L35)
+          // 2) placed after the map element
           if (this.poster) {
-            this.poster.style.display = 'none';
+            this.poster.setAttribute('hidden', '');
           }
           
+          // https://github.com/Maps4HTML/Web-Map-Custom-Element/issues/274
+          this.setAttribute('role', 'application');
           // Make the Leaflet container element programmatically identifiable
           // (https://github.com/Leaflet/Leaflet/issues/7193).
           this._container.setAttribute('role', 'region');
@@ -272,6 +294,7 @@ export class WebMap extends HTMLMapElement {
   adoptedCallback() {
 //    console.log('Custom map element moved to new page.');
   }
+
   setControls(isToggle, toggleShow, setup){
     if (this.controls && this._map) {
       let controls = ["_zoomControl", "_reloadButton", "_fullScreenControl", "_layerControl"],
@@ -503,8 +526,7 @@ export class WebMap extends HTMLMapElement {
   }
 
   toggleDebug(){
-    let mapEl = this;
-    if(mapEl._debug){
+    if(this._debug){
       this._debug.remove();
       this._debug = undefined;
     } else {
@@ -527,8 +549,8 @@ export class WebMap extends HTMLMapElement {
     }
   }
   zoomTo(lat, lon, zoom) {
-    zoom = Number.isInteger(zoom)? zoom:this.zoom;
-    var location = new L.LatLng(lat,lon);
+    zoom = Number.isInteger(+zoom) ? +zoom : this.zoom;
+    let location = new L.LatLng(+lat, +lon);
     this._map.setView(location, zoom);
     this.zoom = zoom;
     this.lat = location.lat;
@@ -597,11 +619,12 @@ export class WebMap extends HTMLMapElement {
 
   defineCustomProjection(jsonTemplate) {
     let t = JSON.parse(jsonTemplate);
-    if (t === undefined || !t.code || !t.proj4string || !t.projection || !t.resolutions || !t.origin || !t.bounds) throw new Error('Incomplete TCRS Definition');
+    if (t === undefined || !t.proj4string || !t.projection || !t.resolutions || !t.origin || !t.bounds) throw new Error('Incomplete TCRS Definition');
+    if (t.projection.indexOf(":") >= 0) throw new Error('":" is not permitted in projection name');
     if (M[t.projection.toUpperCase()]) return t.projection.toUpperCase();
     let tileSize = [256, 512, 1024, 2048, 4096].includes(t.tilesize)?t.tilesize:256;
 
-    M[t.projection] = new L.Proj.CRS(t.code, t.proj4string, {
+    M[t.projection] = new L.Proj.CRS(t.projection, t.proj4string, {
       origin: t.origin,
       resolutions: t.resolutions,
       bounds: L.bounds(t.bounds),
@@ -704,25 +727,6 @@ export class WebMap extends HTMLMapElement {
   }
 
   _ready() {
-    // when used in a custom element, the leaflet script element is hidden inside
-    // the import's shadow dom.
-    // this might not work and may not be necessary in standard custom elements
-    L.Icon.Default.imagePath = (function () {
-      var imp = document.querySelector('link[rel="import"][href*="web-map.html"]'),
-        doc = imp ? imp.import : document,
-        scripts = doc.getElementsByTagName('script'),
-        leafletRe = /[\/^]leaflet[\-\._]?([\w\-\._]*)\.js\??/;
-
-      var i, len, src, path;
-
-      for (i = 0, len = scripts.length; i < len; i++) {
-        src = scripts[i].src;
-        if (src.match(leafletRe)) {
-          path = src.split(leafletRe)[0];
-          return (path ? path + '/' : '') + 'images';
-        }
-      }
-    }());
     if (this.hasAttribute('name')) {
       var name = this.getAttribute('name');
       if (name) {

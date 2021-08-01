@@ -69,7 +69,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		unproject: function (point, unbounded) {
 			var point2 = this._proj.inverse([point.x, point.y]);
-			return new L.LatLng(point2[1], point2[0], unbounded);
+			return new L.LatLng(point2[1] || 0, point2[0] || 0, unbounded);
 		},
 
 		_projFromCodeDef: function(code, def) {

@@ -41,7 +41,9 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
         try {
             String elemName = elementName.toString();
             String[] elems = elemName.split(":");
-            streamWriter.writeStartElement(elems[0], elems[1], namespaces.get(elems[0]));
+            if (elems.length > 1)
+                streamWriter.writeStartElement(elems[0], elems[1], namespaces.get(elems[0]));
+            else streamWriter.writeStartElement(elems[0]);
         } catch (XMLStreamException e) {
             throw new IOException(e);
         }

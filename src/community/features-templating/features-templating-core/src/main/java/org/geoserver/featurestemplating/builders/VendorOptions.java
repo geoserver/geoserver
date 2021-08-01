@@ -23,6 +23,14 @@ public class VendorOptions extends HashMap<String, Object> {
     // vendor option used to customize the separator in GeoJSON flat output attributes
     public static final String SEPARATOR = "separator";
 
+    // vendor option used to define Javascript for XHTML templates
+    public static final String SCRIPT = "script";
+
+    // vendor option used to define Style for XHTML templates
+    public static final String STYLE = "style";
+
+    public static final String LINK = "link";
+
     public <T> T get(String key, Class<T> cast) {
         Object value = get(key);
         T result = null;

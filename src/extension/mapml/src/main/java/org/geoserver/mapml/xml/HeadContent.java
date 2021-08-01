@@ -39,16 +39,16 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "headContent")
 public class HeadContent {
 
-    @XmlElement(name = "title", namespace = "http://www.w3.org/1999/xhtml/")
+    @XmlElement(name = "title", namespace = "http://www.w3.org/1999/xhtml")
     protected String title;
 
-    @XmlElement(name = "base", namespace = "http://www.w3.org/1999/xhtml/")
+    @XmlElement(name = "base", namespace = "http://www.w3.org/1999/xhtml")
     protected Base base;
 
-    @XmlElement(name = "meta", type = Meta.class, namespace = "http://www.w3.org/1999/xhtml/")
+    @XmlElement(name = "meta", type = Meta.class, namespace = "http://www.w3.org/1999/xhtml")
     protected List<Meta> metas;
 
-    @XmlElement(name = "link", type = Link.class, namespace = "http://www.w3.org/1999/xhtml/")
+    @XmlElement(name = "link", type = Link.class, namespace = "http://www.w3.org/1999/xhtml")
     protected List<Link> links;
 
     public void setTitle(String title) {

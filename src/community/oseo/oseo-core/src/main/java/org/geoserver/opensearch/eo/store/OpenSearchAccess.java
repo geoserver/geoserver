@@ -46,6 +46,9 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
     /** The optional property in product containing the collection and most of its attributes */
     public static Name COLLECTION_PROPERTY_NAME = new NameImpl(EO_NAMESPACE, "collection");
 
+    /** The collection identifier property */
+    public static Name EO_IDENTIFIER = new NameImpl(EO_NAMESPACE, "identifier");
+
     /**
      * Local part of the optional collection property containing the layers publishing information
      */

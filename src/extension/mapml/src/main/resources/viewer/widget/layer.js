@@ -27,6 +27,7 @@ export class MapLayer extends HTMLElement {
     if (val) {
       this.setAttribute('src', val);
       if (this._layer) {
+        let oldOpacity = this.opacity;
         // go through the same sequence as if the layer had been removed from
         // the DOM and re-attached with a new URL source.
         this.disconnectedCallback();
@@ -37,6 +38,7 @@ export class MapLayer extends HTMLElement {
         if (this.parentNode) {
           this.connectedCallback();
         }
+        this.opacity = oldOpacity;
       }
     }
   }
@@ -71,6 +73,16 @@ export class MapLayer extends HTMLElement {
       this.removeAttribute('hidden');
     }
   }
+
+  get opacity(){
+    return this._layer._container.style.opacity || this._layer.options.opacity;
+  }
+
+  set opacity(val) {
+    if(+val > 1 || +val < 0) return;
+    this._layer.changeOpacity(val);
+  }
+
   constructor() {
     // Always call super first in constructor
     super();
@@ -313,5 +325,42 @@ export class MapLayer extends HTMLElement {
           this.dispatchEvent(new CustomEvent('changeprojection', {detail: 
               {target: this}}));
         },this);
+  }
+  focus(){
+    if(!this.extent) return;
+    let map = this._layer._map,
+      tL = this.extent.topLeft.pcrs,
+      bR = this.extent.bottomRight.pcrs,
+      layerBounds = L.bounds(L.point(tL.horizontal, tL.vertical), L.point(bR.horizontal, bR.vertical)),
+      center = map.options.crs.unproject(layerBounds.getCenter(true)),
+      currentZoom = map.getZoom();
+
+    map.setView(center, currentZoom, {animate:false});
+    let mapBounds = M.pixelToPCRSBounds(
+      map.getPixelBounds(),
+      map.getZoom(),
+      map.options.projection);
+
+    //fits the bounds to the map view
+    if(mapBounds.contains(layerBounds)){
+      while(mapBounds.contains(layerBounds) && (currentZoom + 1) <= this.extent.zoom.maxZoom){
+        currentZoom++;
+        map.setView(center, currentZoom, {animate:false});
+        mapBounds = M.pixelToPCRSBounds(
+          map.getPixelBounds(),
+          map.getZoom(),
+          map.options.projection);
+      }
+      if(currentZoom - 1 >= 0) map.flyTo(center, (currentZoom - 1));
+    } else {
+      while(!(mapBounds.contains(layerBounds)) && (currentZoom - 1) >= this.extent.zoom.minZoom){
+        currentZoom--;
+        map.setView(center, currentZoom, {animate:false});
+        mapBounds = M.pixelToPCRSBounds(
+          map.getPixelBounds(),
+          map.getZoom(),
+          map.options.projection);
+      }
+    }
   }
 }

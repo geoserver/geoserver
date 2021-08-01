@@ -35,10 +35,12 @@ public class FlatStaticBuilder extends StaticBuilder implements FlatBuilder {
         GeoJSONWriter geoJsonWriter = (GeoJSONWriter) writer;
         if (strValue != null)
             geoJsonWriter.writeStaticContent(
-                    nameHelper.getFinalAttributeName(), strValue, nameHelper.getSeparator());
+                    nameHelper.getFinalAttributeName(context), strValue, nameHelper.getSeparator());
         else
             geoJsonWriter.writeStaticContent(
-                    nameHelper.getFinalAttributeName(), staticValue, nameHelper.getSeparator());
+                    nameHelper.getFinalAttributeName(context),
+                    staticValue,
+                    nameHelper.getSeparator());
     }
 
     @Override

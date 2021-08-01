@@ -46,35 +46,31 @@ import javax.xml.bind.annotation.XmlType;
 public class GeometryCollection {
 
     @XmlElements({
-        @XmlElement(
-            name = "point",
-            type = Point.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
-        ),
+        @XmlElement(name = "point", type = Point.class, namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(
             name = "linestring",
             type = LineString.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
+            namespace = "http://www.w3.org/1999/xhtml"
         ),
         @XmlElement(
             name = "polygon",
             type = Polygon.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
+            namespace = "http://www.w3.org/1999/xhtml"
         ),
         @XmlElement(
             name = "multipoint",
             type = MultiPoint.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
+            namespace = "http://www.w3.org/1999/xhtml"
         ),
         @XmlElement(
             name = "multilinestring",
             type = MultiLineString.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
+            namespace = "http://www.w3.org/1999/xhtml"
         ),
         @XmlElement(
             name = "multipolygon",
             type = MultiPolygon.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
+            namespace = "http://www.w3.org/1999/xhtml"
         )
     })
     protected List<Object> pointOrLineStringOrPolygon;

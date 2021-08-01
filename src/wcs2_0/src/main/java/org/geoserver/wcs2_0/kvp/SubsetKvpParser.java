@@ -20,17 +20,24 @@ import org.geoserver.wcs2_0.exception.WCS20Exception.WCS20ExceptionCode;
  */
 public class SubsetKvpParser extends KvpParser {
 
+    private final String intervalSeparator;
+
     public SubsetKvpParser() {
+        this(",");
+    }
+
+    public SubsetKvpParser(String intervalSeparator) {
         super("subset", DimensionSubsetType.class);
+        this.intervalSeparator = intervalSeparator;
     }
 
     @Override
-    public Object parse(String value) throws Exception {
+    public DimensionSubsetType parse(String value) {
         // SubsetSpec: dimension [ , crs ] ( intervalOrPoint )
         // dimension: NCName
         // crs: anyURI
         // intervalOrPoint: interval | point
-        // interval: low , high
+        // interval: low , high (, is the intervalSeparator, can be configured to be something else)
         // low: point | *
         // high: point | *
         // point: number | " token " // " = ASCII 0x42
@@ -69,8 +76,9 @@ public class SubsetKvpParser extends KvpParser {
 
         // parse the second part, intervalOrPoint
         String valuePoint = value.substring(openIdx + 1, closeIdx);
-        // split on all commas not contained in quotes
-        String[] vpElements = valuePoint.split(",\\s*(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+        // split on all interval separators not contained in quotes
+        String[] vpElements =
+                valuePoint.split(intervalSeparator + "\\s*(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
         if (vpElements.length == 1) {
             // point
             String point = parsePoint(vpElements[0], false);

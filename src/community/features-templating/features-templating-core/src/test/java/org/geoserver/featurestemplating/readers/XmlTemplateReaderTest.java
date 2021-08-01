@@ -30,14 +30,14 @@ public class XmlTemplateReaderTest {
     @Test
     public void testFlatInclusion() throws IOException {
         XMLRecursiveTemplateReader reader =
-                new XMLRecursiveTemplateReader(
+                new GMLTemplateReader(
                         store.get("MappedFeatureIncludeFlat.xml"), new NamespaceSupport());
         RootBuilder rootBuilder = reader.getRootBuilder();
         TemplateBuilder mappedFeatureBuilder =
                 rootBuilder.getChildren().get(0).getChildren().get(0).getChildren().get(0);
         TemplateBuilder specification = null;
         for (TemplateBuilder b : mappedFeatureBuilder.getChildren()) {
-            if (((AbstractTemplateBuilder) b).getKey().equals("gsml:specification")) {
+            if (((AbstractTemplateBuilder) b).getKey(null).equals("gsml:specification")) {
                 specification = b;
                 break;
             }
@@ -47,20 +47,20 @@ public class XmlTemplateReaderTest {
         assertTrue(specification.getChildren().get(1) instanceof StaticBuilder);
         AbstractTemplateBuilder geologicUnit =
                 (AbstractTemplateBuilder) specification.getChildren().get(0);
-        assertEquals("gsml:GeologicUnit", geologicUnit.getKey());
+        assertEquals("gsml:GeologicUnit", geologicUnit.getKey(null));
         assertEquals(4, geologicUnit.getChildren().size());
     }
 
     @Test
     public void testInlineInclusion() throws IOException {
         XMLRecursiveTemplateReader reader =
-                new XMLRecursiveTemplateReader(
+                new GMLTemplateReader(
                         store.get("MappedFeatureInclude.xml"), new NamespaceSupport());
         RootBuilder rootBuilder = reader.getRootBuilder();
         TemplateBuilder mappedFeatureBuilder = rootBuilder.getChildren().get(0);
         TemplateBuilder specification = null;
         for (TemplateBuilder b : mappedFeatureBuilder.getChildren()) {
-            String key = ((AbstractTemplateBuilder) b).getKey();
+            String key = ((AbstractTemplateBuilder) b).getKey(null);
             if (key != null && key.equals("gsml:specification")) {
                 specification = b;
                 break;
@@ -69,7 +69,7 @@ public class XmlTemplateReaderTest {
         assertNotNull(specification);
         AbstractTemplateBuilder geologicUnit =
                 (AbstractTemplateBuilder) specification.getChildren().get(0);
-        assertEquals("gsml:GeologicUnit", geologicUnit.getKey());
+        assertEquals("gsml:GeologicUnit", geologicUnit.getKey(null));
         assertTrue(geologicUnit.getChildren().size() > 0);
     }
 
@@ -89,8 +89,6 @@ public class XmlTemplateReaderTest {
     private RuntimeException checkThrowingTemplate(String s) {
         return assertThrows(
                 RuntimeException.class,
-                () ->
-                        new XMLRecursiveTemplateReader(store.get(s), new NamespaceSupport())
-                                .getRootBuilder());
+                () -> new GMLTemplateReader(store.get(s), new NamespaceSupport()).getRootBuilder());
     }
 }

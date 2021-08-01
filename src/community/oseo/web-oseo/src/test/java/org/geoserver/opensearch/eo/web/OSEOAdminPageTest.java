@@ -25,6 +25,7 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
         tester.assertNoErrorMessage();
         tester.assertModelValue("form:maximumRecordsPerPage", OSEOInfo.DEFAULT_MAXIMUM_RECORDS);
         tester.assertModelValue("form:recordsPerPage", OSEOInfo.DEFAULT_RECORDS_PER_PAGE);
+        tester.assertModelValue("form:attribution", null);
         // print(tester.getLastRenderedPage(), true, true);
     }
 
@@ -32,6 +33,18 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
     public void verifyRequiredFields() throws Exception {
         checkRequired("maximumRecordsPerPage");
         checkRequired("recordsPerPage");
+    }
+
+    @Test
+    public void testAttribution() throws Exception {
+        tester.startPage(OSEOAdminPage.class);
+        FormTester formTester = tester.newFormTester("form");
+        String attributionValue = "Attribution test";
+        formTester.setValue("attribution", attributionValue);
+        formTester.submit("submit");
+
+        OSEOInfo oseo = getGeoServer().getService(OSEOInfo.class);
+        assertEquals(attributionValue, oseo.getAttribution());
     }
 
     @Test

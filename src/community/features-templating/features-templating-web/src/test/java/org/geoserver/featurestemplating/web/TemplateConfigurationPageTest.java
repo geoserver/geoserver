@@ -8,6 +8,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.geoserver.featurestemplating.configuration.TemplateFileManager;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
 import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
@@ -75,13 +76,157 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
                     + "  </topp:states>\n"
                     + "</gft:Template>";
 
+    private static final String HTML_TEMPLATE =
+            "<gft:Template>\n"
+                    + "  <gft:Options>\n"
+                    + "    <style>\n"
+                    + "      <![CDATA[\n"
+                    + "ul, #myUL {\n"
+                    + "  list-style-type: none;\n"
+                    + "}\n"
+                    + "\n"
+                    + "#myUL {\n"
+                    + "  margin: 0;\n"
+                    + "  padding: 0;\n"
+                    + "}\n"
+                    + "\n"
+                    + ".caret {\n"
+                    + "  cursor: pointer;\n"
+                    + "  -webkit-user-select: none; /* Safari 3.1+ */\n"
+                    + "  -moz-user-select: none; /* Firefox 2+ */\n"
+                    + "  -ms-user-select: none; /* IE 10+ */\n"
+                    + "  user-select: none;\n"
+                    + "}\n"
+                    + "\n"
+                    + ".caret::before {\n"
+                    + "  content: \"\\25B6\";\n"
+                    + "  color: black;\n"
+                    + "  display: inline-block;\n"
+                    + "  margin-right: 6px;\n"
+                    + "}\n"
+                    + "\n"
+                    + ".caret-down::before {\n"
+                    + "  -ms-transform: rotate(90deg); /* IE 9 */\n"
+                    + "  -webkit-transform: rotate(90deg); /* Safari */'\n"
+                    + "  transform: rotate(90deg);  \n"
+                    + "}\n"
+                    + "\n"
+                    + ".nested {\n"
+                    + "  display: none;\n"
+                    + "}\n"
+                    + "\n"
+                    + ".active {\n"
+                    + "  display: block;\n"
+                    + "}\n"
+                    + "]]>\n"
+                    + "    </style>\n"
+                    + "    <script>\n"
+                    + "      <![CDATA[\n"
+                    + "  window.onload = function() {\n"
+                    + "  var toggler = document.getElementsByClassName(\"caret\");\n"
+                    + "  for (let item of toggler){\n"
+                    + "    item.addEventListener(\"click\", function() {\n"
+                    + "    this.parentElement.querySelector(\".nested\").classList.toggle(\"active\");\n"
+                    + "    this.classList.toggle(\"caret-down\");\n"
+                    + "  });\n"
+                    + "  }\n"
+                    + "  }\n"
+                    + "]]>\n"
+                    + "    </script>\n"
+                    + "  </gft:Options>\n"
+                    + "  <ul id=\"myUL\">\n"
+                    + "    <li><span class=\"caret\">MeteoStations</span>\n"
+                    + "      <ul class=\"nested\">\n"
+                    + "        <li><span class=\"caret\">Code</span>\n"
+                    + "          <ul class=\"nested\">\n"
+                    + "            <li>\n"
+                    + "              $${strConcat('Station_',st:code)}\n"
+                    + "            </li>\n"
+                    + "          </ul>\n"
+                    + "        </li>\n"
+                    + "        <li><span class=\"caret\">Name</span>\n"
+                    + "          <ul class=\"nested\">\n"
+                    + "            <li>\n"
+                    + "              ${st:common_name}\n"
+                    + "            </li>\n"
+                    + "          </ul>\n"
+                    + "        </li>\n"
+                    + "        <li><span class=\"caret\">Geometry</span>\n"
+                    + "          <ul class=\"nested\">\n"
+                    + "            <li>\n"
+                    + "              ${st:position}\n"
+                    + "            </li>\n"
+                    + "          </ul>\n"
+                    + "        </li>\n"
+                    + "        <li gft:isCollection=\"true\" gft:source=\"st:meteoObservations/st:MeteoObservationsFeature\" gft:filter=\"xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'temperature'\">\n"
+                    + "          <span class=\"caret\">Temperature</span>\n"
+                    + "          <ul class=\"nested\">\n"
+                    + "            <li><span class=\"caret\">Time</span>\n"
+                    + "              <ul class=\"nested\">\n"
+                    + "                <li>\n"
+                    + "                  ${st:time}\n"
+                    + "                </li>\n"
+                    + "              </ul>\n"
+                    + "            </li>\n"
+                    + "            <li><span class=\"caret\">Value</span>\n"
+                    + "              <ul class=\"nested\">\n"
+                    + "                <li>\n"
+                    + "                  ${st:time}\n"
+                    + "                </li>\n"
+                    + "              </ul>\n"
+                    + "            </li>\n"
+                    + "          </ul>\n"
+                    + "        </li>\n"
+                    + "        <li gft:isCollection=\"true\" gft:source=\"st:meteoObservations/st:MeteoObservationsFeature\" gft:filter=\"xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'pressure'\">\n"
+                    + "          <span class=\"caret\">Pressure</span>\n"
+                    + "          <ul class=\"nested\">\n"
+                    + "            <li><span class=\"caret\">Time</span>\n"
+                    + "              <ul class=\"nested\">\n"
+                    + "                <li>\n"
+                    + "                  ${st:time}\n"
+                    + "                </li>\n"
+                    + "              </ul>\n"
+                    + "            </li>\n"
+                    + "            <li><span class=\"caret\">Value</span>\n"
+                    + "              <ul class=\"nested\">\n"
+                    + "                <li>\n"
+                    + "                  ${st:time}\n"
+                    + "                </li>\n"
+                    + "              </ul>\n"
+                    + "            </li>\n"
+                    + "          </ul>\n"
+                    + "        </li>\n"
+                    + "        <li gft:isCollection=\"true\" gft:source=\"st:meteoObservations/st:MeteoObservationsFeature\" gft:filter=\"xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'wind speed'\">\n"
+                    + "          <span class=\"caret\">Wind Speed</span>\n"
+                    + "          <ul class=\"nested\">\n"
+                    + "            <li><span class=\"caret\">Time</span>\n"
+                    + "              <ul class=\"nested\">\n"
+                    + "                <li>\n"
+                    + "                  ${st:time}\n"
+                    + "                </li>\n"
+                    + "              </ul>\n"
+                    + "            </li>\n"
+                    + "            <li><span class=\"caret\">Value</span>\n"
+                    + "              <ul class=\"nested\">\n"
+                    + "                <li>\n"
+                    + "                  ${st:time}\n"
+                    + "                </li>\n"
+                    + "              </ul>\n"
+                    + "            </li>\n"
+                    + "          </ul>\n"
+                    + "        </li>\n"
+                    + "      </ul>\n"
+                    + "    </li>\n"
+                    + "  </ul>\n"
+                    + "</gft:Template>";
+
     @Test
     public void testNew() {
         try {
             login();
             tester.startPage(new TemplateConfigurationPage(new Model<>(new TemplateInfo()), true));
             FormTester form = tester.newFormTester("theForm");
-            form.select("tabbedPanel:panel:extension", 1);
+            form.select("tabbedPanel:panel:extension", 2);
             tester.executeAjaxEvent("theForm:tabbedPanel:panel:extension", "change");
             form.select("tabbedPanel:panel:workspace", 2);
             tester.executeAjaxEvent("theForm:tabbedPanel:panel:workspace", "change");
@@ -257,6 +402,62 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
             form2.select("featureTypes", 0);
 
             tester.newFormTester("theForm").submit("save");
+            tester.assertNoErrorMessage();
+            tester.assertRenderedPage(TemplateInfoPage.class);
+        } finally {
+            TemplateInfoDAO.get().deleteAll();
+        }
+    }
+
+    @Test
+    public void testHTMLTemplate() {
+        try {
+            login();
+            tester.startPage(new TemplateConfigurationPage(new Model<>(new TemplateInfo()), true));
+            FormTester form = tester.newFormTester("theForm");
+            form.select("tabbedPanel:panel:extension", 1);
+            tester.executeAjaxEvent("theForm:tabbedPanel:panel:extension", "change");
+            form.select("tabbedPanel:panel:workspace", 2);
+            tester.executeAjaxEvent("theForm:tabbedPanel:panel:workspace", "change");
+            form.select("tabbedPanel:panel:featureTypeInfo", 8);
+            tester.executeAjaxEvent("theForm:tabbedPanel:panel:featureTypeInfo", "change");
+            form.setValue("templateEditor:editorContainer:editorParent:editor", HTML_TEMPLATE);
+            form.setValue("tabbedPanel:panel:templateName", "testJsonLDTemplate");
+            tester.clickLink("theForm:tabbedPanel:tabs-container:tabs:1:link");
+            FormTester form2 = tester.newFormTester("theForm:tabbedPanel:panel:previewForm");
+            form2.select("outputFormats", 0);
+
+            OutputFormatsDropDown outputFormatsDropDown =
+                    (OutputFormatsDropDown)
+                            tester.getComponentFromLastRenderedPage(
+                                    "theForm:tabbedPanel:panel:previewForm:outputFormats");
+            // only JSON-LD and GEOJSON should be available
+            assertEquals(1, outputFormatsDropDown.getChoices().size());
+            assertEquals(SupportedFormat.HTML, outputFormatsDropDown.getChoices().get(0));
+            tester.assertComponent(
+                    "theForm:tabbedPanel:panel:previewForm:workspaces", DropDownChoice.class);
+            DropDownChoice ws =
+                    (DropDownChoice)
+                            tester.getComponentFromLastRenderedPage(
+                                    "theForm:tabbedPanel:panel:previewForm:workspaces");
+            // template is Local to feature type no need to select ws
+            assertFalse(ws.isEnabled());
+            tester.assertComponent(
+                    "theForm:tabbedPanel:panel:previewForm:featureTypes", DropDownChoice.class);
+
+            DropDownChoice ft =
+                    (DropDownChoice)
+                            tester.getComponentFromLastRenderedPage(
+                                    "theForm:tabbedPanel:panel:previewForm:featureTypes");
+            // template is Local to feature type no need to select ft
+            assertFalse(ft.isEnabled());
+            tester.assertComponent(
+                    "theForm:tabbedPanel:panel:previewForm:previewArea", CodeMirrorEditor.class);
+            tester.assertComponent(
+                    "theForm:tabbedPanel:panel:previewForm:preview", AjaxSubmitLink.class);
+            tester.assertComponent(
+                    "theForm:tabbedPanel:panel:previewForm:validate", AjaxSubmitLink.class);
+            form.submit("save");
             tester.assertNoErrorMessage();
             tester.assertRenderedPage(TemplateInfoPage.class);
         } finally {

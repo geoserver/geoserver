@@ -64,27 +64,23 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     name = "",
     propOrder = {"inputOrDatalistOrLink"}
 )
-@XmlRootElement(name = "extent", namespace = "http://www.w3.org/1999/xhtml/")
+@XmlRootElement(name = "extent", namespace = "http://www.w3.org/1999/xhtml")
 public class Extent {
 
     @XmlElements({
-        @XmlElement(
-            name = "input",
-            type = Input.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
-        ),
+        @XmlElement(name = "input", type = Input.class, namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(
             name = "datalist",
             type = Datalist.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
+            namespace = "http://www.w3.org/1999/xhtml"
         ),
-        @XmlElement(name = "link", type = Link.class, namespace = "http://www.w3.org/1999/xhtml/"),
+        @XmlElement(name = "link", type = Link.class, namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(
             name = "select",
             type = Select.class,
-            namespace = "http://www.w3.org/1999/xhtml/"
+            namespace = "http://www.w3.org/1999/xhtml"
         ),
-        @XmlElement(name = "label", type = Label.class, namespace = "http://www.w3.org/1999/xhtml/")
+        @XmlElement(name = "label", type = Label.class, namespace = "http://www.w3.org/1999/xhtml")
     })
     protected List<Object> inputOrDatalistOrLink;
 

@@ -126,11 +126,9 @@ public class TemplateCallback extends AbstractDispatcherCallback {
     // to the pointed template attribute and set the new filter to the query
     private void replaceTemplatePath(Query q, FeatureTypeInfo fti, RootBuilder root) {
         try {
-
             TemplatePathVisitor visitor = new TemplatePathVisitor(fti.getFeatureType());
             if (q.getFilter() != null) {
                 Filter old = q.getFilter();
-                String cql = ECQL.toCQL(old);
                 Filter newFilter = (Filter) old.accept(visitor, root);
                 List<Filter> templateFilters = new ArrayList<>();
                 templateFilters.addAll(visitor.getFilters());
@@ -142,7 +140,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
                 if (newFilter.equals(old)) {
                     LOGGER.warning(
                             "Failed to resolve filter "
-                                    + cql
+                                    + ECQL.toCQL(old)
                                     + " against the template. "
                                     + "If the property name was intended to be a template path, "
                                     + "check that the path specified in the cql filter is correct.");
@@ -192,6 +190,9 @@ public class TemplateCallback extends AbstractDispatcherCallback {
                     case GML31:
                     case GML2:
                         response = new GMLTemplateResponse(gs, configuration, templateIdentifier);
+                        break;
+                    case HTML:
+                        response = new HTMLTemplateResponse(gs, configuration);
                         break;
                 }
             }

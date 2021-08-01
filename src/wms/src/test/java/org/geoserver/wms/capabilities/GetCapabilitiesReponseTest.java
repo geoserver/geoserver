@@ -9,6 +9,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 
 import java.util.Locale;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
@@ -178,5 +179,32 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
         assertXpathEvaluatesTo("abstract italiano", natureGroup + "/Abstract", result);
 
         assertXpathEvaluatesTo("parola chiave", natureGroup + "/KeywordList/Keyword", result);
+    }
+
+    @Test
+    public void testAcceptLanguagesParameter() throws Exception {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(MockData.FIFTEEN));
+        GrowableInternationalString title = new GrowableInternationalString();
+        title.add(Locale.ENGLISH, "a i18n title for fti fifteen");
+        title.add(Locale.ITALIAN, "titolo italiano");
+        fti.setInternationalTitle(title);
+        catalog.save(fti);
+
+        Document dom =
+                getAsDOM(
+                        "wms?version=1.1.1&request=GetCapabilities&service=WMS&AcceptLanguages=it");
+
+        assertXpathEvaluatesTo(
+                "http://localhost:8080/geoserver/?Language=it",
+                "WMT_MS_Capabilities/Service/OnlineResource/@xlink:href",
+                dom);
+        assertXpathEvaluatesTo(
+                "http://localhost:8080/geoserver/wms?SERVICE=WMS&Language=it&",
+                "WMT_MS_Capabilities/Capability/Request/GetCapabilities/DCPType/HTTP/Get/OnlineResource/@xlink:href",
+                dom);
+        assertXpathEvaluatesTo(
+                "http://localhost:8080/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=nature&Language=it",
+                "//Layer[Name='nature']/Style/LegendURL/OnlineResource/@xlink:href", dom);
     }
 }

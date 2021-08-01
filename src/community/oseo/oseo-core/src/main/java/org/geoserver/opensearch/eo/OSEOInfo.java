@@ -43,4 +43,9 @@ public interface OSEOInfo extends ServiceInfo {
      * ProductClass#DEFAULT_PRODUCT_CLASSES} is returned instead
      */
     List<ProductClass> getProductClasses();
+
+    /** Sets the OpenSearch Attribution, provided in the OSDD document */
+    String getAttribution();
+
+    void setAttribution(String attribution);
 }

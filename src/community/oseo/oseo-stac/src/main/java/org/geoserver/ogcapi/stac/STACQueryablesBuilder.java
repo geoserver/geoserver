@@ -71,9 +71,9 @@ public class STACQueryablesBuilder {
         for (TemplateBuilder child : parent.getChildren()) {
             if (child instanceof AbstractTemplateBuilder) {
                 AbstractTemplateBuilder atb = (AbstractTemplateBuilder) child;
-                if (key.equals(atb.getKey())) {
+                if (key.equals(atb.getKey(null))) {
                     return atb;
-                } else if (atb instanceof CompositeBuilder && atb.getKey() == null) {
+                } else if (atb instanceof CompositeBuilder && atb.getKey(null) == null) {
                     return lookupBuilder(atb, key);
                 }
             }
@@ -86,7 +86,11 @@ public class STACQueryablesBuilder {
         // to revisit once we consider eventual filters
         if (atb instanceof StaticBuilder || !(atb instanceof AbstractTemplateBuilder)) return;
 
-        String key = ((AbstractTemplateBuilder) atb).getKey();
+        // check the key, if we get a null it means the key is dynamic and it's not possible
+        // to do anything with this JSON sub-tree
+        String key = ((AbstractTemplateBuilder) atb).getKey(null);
+        if (key == null) return;
+
         String path = getPath(parentPath, key, skipPath);
         if (atb instanceof DynamicValueBuilder) {
             DynamicValueBuilder db = (DynamicValueBuilder) atb;

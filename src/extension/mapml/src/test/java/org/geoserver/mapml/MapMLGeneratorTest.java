@@ -40,12 +40,12 @@ public class MapMLGeneratorTest extends GeoServerTestSupport {
             new Point(new CoordinateArraySequence(ca1), jtsf),
             new Point(new CoordinateArraySequence(ca2), jtsf)
         };
-
+        MapMLGenerator featureBuilder = new MapMLGenerator();
         org.locationtech.jts.geom.MultiPoint jtsMultiPoint =
                 new org.locationtech.jts.geom.MultiPoint(points, jtsf);
         JAXBElement<org.geoserver.mapml.xml.MultiPoint> mp = null;
         try {
-            GeometryContent g = MapMLGenerator.buildGeometry(jtsMultiPoint);
+            GeometryContent g = featureBuilder.buildGeometry(jtsMultiPoint);
 
             mp = (JAXBElement<org.geoserver.mapml.xml.MultiPoint>) g.getGeometryContent();
         } catch (Exception e) {
@@ -59,8 +59,46 @@ public class MapMLGeneratorTest extends GeoServerTestSupport {
             fail("DataBindingException while reading MapML JAXB MultiPoint object");
         }
         assertTrue(
+                "Coordinates of 6 digit precision (default numDecimals) should be returned",
                 sw.toString()
                         .contains(
-                                "<multipoint xmlns=\"http://www.w3.org/1999/xhtml/\"><coordinates>-75.705338 45.397785 -75.702082 45.397847</coordinates>"));
+                                "<multipoint xmlns=\"http://www.w3.org/1999/xhtml\"><coordinates>-75.705338 45.397785 -75.702082 45.397847</coordinates>"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testNumDecimals() throws Exception {
+
+        GeometryFactory jtsf = new GeometryFactory();
+        Coordinate[] ca1 = {new Coordinate(-75.705338D, 45.397785D)};
+        Coordinate[] ca2 = {new Coordinate(-75.702082D, 45.397847D)};
+        Point[] points = {
+            new Point(new CoordinateArraySequence(ca1), jtsf),
+            new Point(new CoordinateArraySequence(ca2), jtsf)
+        };
+        MapMLGenerator featureBuilder = new MapMLGenerator();
+        featureBuilder.setNumDecimals(5);
+        org.locationtech.jts.geom.MultiPoint jtsMultiPoint =
+                new org.locationtech.jts.geom.MultiPoint(points, jtsf);
+        JAXBElement<org.geoserver.mapml.xml.MultiPoint> mp = null;
+        try {
+            GeometryContent g = featureBuilder.buildGeometry(jtsMultiPoint);
+
+            mp = (JAXBElement<org.geoserver.mapml.xml.MultiPoint>) g.getGeometryContent();
+        } catch (Exception e) {
+            fail("org.geoserver.mapml.xml.MultiPoint should be returned by JAXB");
+        }
+
+        StringWriter sw = new StringWriter();
+        try {
+            mapmlMarshaller.marshal(mp, new StreamResult(sw));
+        } catch (DataBindingException ex) {
+            fail("DataBindingException while reading MapML JAXB MultiPoint object");
+        }
+        assertTrue(
+                "Coordinates should be rounded to 5 decimal places (non-default numDecimals)",
+                sw.toString()
+                        .contains(
+                                "<multipoint xmlns=\"http://www.w3.org/1999/xhtml\"><coordinates>-75.70534 45.39779 -75.70208 45.39785</coordinates>"));
     }
 }

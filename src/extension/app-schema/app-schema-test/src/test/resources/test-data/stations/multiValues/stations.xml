@@ -98,6 +98,23 @@
             <value>CODE</value>
           </ClientProperty>
         </AttributeMapping>
+        <AttributeMapping>
+          <targetAttribute>st_${GML_PREFIX}:use</targetAttribute>
+          <jdbcMultipleValue>
+            <sourceColumn>use_id</sourceColumn>
+            <targetTable>USE_${GML_PREFIX_UPPER}</targetTable>
+            <targetColumn>USE_${GML_PREFIX}_PKEY</targetColumn>
+            <targetValue></targetValue>
+          </jdbcMultipleValue>
+          <ClientProperty>
+            <name>xlink:href</name>
+            <value>LINK</value>
+          </ClientProperty>
+          <ClientProperty>
+            <name>xlink:title</name>
+            <value>TITLE</value>
+          </ClientProperty>
+        </AttributeMapping>
       </attributeMappings>
     </FeatureTypeMapping>
   </typeMappings>

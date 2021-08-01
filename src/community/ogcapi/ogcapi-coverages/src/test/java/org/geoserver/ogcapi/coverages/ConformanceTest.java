@@ -36,7 +36,8 @@ public class ConformanceTest extends CoveragesTestSupport {
             ConformanceClass.OAS3,
             ConformanceClass.GEODATA,
             CoveragesService.CONF_CLASS_COVERAGE,
-            CoveragesService.CONF_CLASS_GEOTIFF
+            CoveragesService.CONF_CLASS_GEOTIFF,
+            CoveragesService.CONF_CLASS_SUBSET
         };
     }
 

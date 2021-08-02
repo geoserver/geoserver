@@ -39,7 +39,7 @@ public abstract class JDBCDataStoreMetadataTest extends AbstractJDBCSmartDataLoa
                 new JdbcTableMetadata(
                         metaData.getConnection(), null, ONLINE_DB_SCHEMA, "meteo_observations");
 
-        assertEquals(5, entity.getAttributes().size());
+        assertEquals(6, entity.getAttributes().size());
 
         metaData.getConnection().close();
     }

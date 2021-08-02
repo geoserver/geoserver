@@ -9,6 +9,8 @@
           <xs:element maxOccurs="1" minOccurs="0" name="name" type="xs:string" />
           <xs:element maxOccurs="1" minOccurs="0" name="surname" type="xs:string" />
           <xs:element maxOccurs="1" minOccurs="0" name="company" type="xs:string" />
+          <xs:element maxOccurs="1" minOccurs="0" name="active" type="xs:boolean" />
+          <xs:element maxOccurs="1" minOccurs="0" name="place" type="gml:GeometryPropertyType" />
           <xs:element maxOccurs="unbounded" minOccurs="0" name="meteoStationsMaintainers" type="mt:MeteoStationsMaintainersPropertyType" />
         </xs:sequence>
       </xs:extension>
@@ -59,6 +61,7 @@
           <xs:element maxOccurs="1" minOccurs="0" name="id" type="xs:int" />
           <xs:element maxOccurs="1" minOccurs="0" name="time" type="xs:dateTime" />
           <xs:element maxOccurs="1" minOccurs="0" name="value" type="xs:double" />
+          <xs:element maxOccurs="1" minOccurs="0" name="decimal_value" type="xs:double" />
           <xs:element maxOccurs="unbounded" minOccurs="0" name="meteoParameters" type="mt:MeteoParametersPropertyType" />
         </xs:sequence>
       </xs:extension>

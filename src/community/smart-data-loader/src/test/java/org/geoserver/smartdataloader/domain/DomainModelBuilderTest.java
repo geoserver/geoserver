@@ -161,6 +161,6 @@ public abstract class DomainModelBuilderTest extends AbstractJDBCSmartDataLoader
         String paramContainingEntity = relationParam.getContainingEntity().getName();
         assertEquals(stContainingEntity, paramContainingEntity);
         assertEquals("meteo_observations", stContainingEntity);
-        assertEquals(3, dm.getRootEntity().getAttributes().size());
+        assertEquals(4, dm.getRootEntity().getAttributes().size());
     }
 }

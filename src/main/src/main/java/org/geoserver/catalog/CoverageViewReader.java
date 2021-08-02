@@ -43,10 +43,12 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridCoverageFactory;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
+import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.OverviewPolicy;
 import org.geotools.coverage.grid.io.StructuredGridCoverage2DReader;
+import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.data.ResourceInfo;
 import org.geotools.data.ServiceInfo;
@@ -62,6 +64,7 @@ import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridCoverage;
+import org.opengis.coverage.grid.GridCoverageWriter;
 import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.geometry.BoundingBox;
@@ -668,9 +671,10 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
     @Override
     public Format getFormat() {
-        return new Format() {
+        return new AbstractGridFormat() {
 
-            private final Format delegateFormat = delegate.getFormat();
+            private final AbstractGridFormat delegateFormat =
+                    (AbstractGridFormat) delegate.getFormat();
 
             @Override
             public ParameterValueGroup getWriteParameters() {
@@ -678,8 +682,38 @@ public class CoverageViewReader implements GridCoverage2DReader {
             }
 
             @Override
+            public GeoToolsWriteParams getDefaultImageIOWriteParameters() {
+                return delegateFormat.getDefaultImageIOWriteParameters();
+            }
+
+            @Override
+            public GridCoverageWriter getWriter(Object o, Hints hints) {
+                return delegateFormat.getWriter(o, hints);
+            }
+
+            @Override
             public String getVersion() {
                 return delegateFormat.getVersion();
+            }
+
+            @Override
+            public AbstractGridCoverage2DReader getReader(Object o) {
+                return delegateFormat.getReader(o);
+            }
+
+            @Override
+            public AbstractGridCoverage2DReader getReader(Object o, Hints hints) {
+                return delegateFormat.getReader(o, hints);
+            }
+
+            @Override
+            public GridCoverageWriter getWriter(Object o) {
+                return delegateFormat.getWriter(o);
+            }
+
+            @Override
+            public boolean accepts(Object o, Hints hints) {
+                return delegateFormat.accepts(o, hints);
             }
 
             @Override

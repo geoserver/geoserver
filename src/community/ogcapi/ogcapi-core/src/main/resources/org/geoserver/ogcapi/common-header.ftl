@@ -9,6 +9,7 @@
       </#if>
       <link rel="stylesheet" href="${resourceLink("apicss/bootstrap.min.css")}" type="text/css" media="all" />
       <link rel="stylesheet" href="${resourceLink("apicss/geoserver.css")}" type="text/css" media="all" />
+      <link rel="stylesheet" href="${resourceLink("apicss/treeview.css")}" type="text/css" media="all" />
   </head>
 <body>
   <header id="header">

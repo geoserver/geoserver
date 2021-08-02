@@ -7,9 +7,7 @@ package org.geoserver.featurestemplating.web;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -31,6 +29,7 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
 import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
 import org.geoserver.featurestemplating.configuration.TemplateRule;
+import org.geoserver.featurestemplating.configuration.TemplateRuleService;
 import org.geoserver.util.XCQL;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.filter.text.cql2.CQLException;
@@ -44,6 +43,7 @@ public class TemplateRuleConfigurationPanel extends Panel {
     DropDownChoice<TemplateInfo> templateInfoDropDownChoice;
     OutputFormatsDropDown mimeTypeDropDown;
     TextArea<String> cqlFilterArea;
+    TextArea<String> profileField;
     FeedbackPanel ruleFeedbackPanel;
     LayerInfo layer;
     Label submitLabel;
@@ -92,19 +92,23 @@ public class TemplateRuleConfigurationPanel extends Panel {
         mimeTypeDropDown.setOutputMarkupId(true);
         theForm.add(mimeTypeDropDown);
 
+        profileField = new TextArea<>("profileFilter", model.bind("profileFilter"));
+        profileField.setOutputMarkupId(true);
+        profileField.add(getCqlValidator());
+        theForm.add(profileField);
+
         cqlFilterArea = new TextArea<>("cqlFilter", model.bind("cqlFilter"));
         cqlFilterArea.setOutputMarkupId(true);
         cqlFilterArea.add(getCqlValidator());
         theForm.add(cqlFilterArea);
+
         AjaxSubmitLink submitLink =
                 new AjaxSubmitLink("save") {
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         super.onSubmit(target, form);
                         cleanFeedbackPanel();
-                        target.add(ruleFeedbackPanel);
                         TemplateRule rule = theForm.getModelObject();
-                        TemplateInfo info = templateInfoDropDownChoice.getModelObject();
                         if (!validateAndReport(rule)) return;
                         updateModelRules(rule);
                         target.add(tablePanel);
@@ -114,6 +118,12 @@ public class TemplateRuleConfigurationPanel extends Panel {
 
                     @Override
                     protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
+                        if (theForm.hasError()) target.add(ruleFeedbackPanel);
+                    }
+
+                    @Override
+                    protected void onError(AjaxRequestTarget target, Form<?> form) {
+                        super.onError(target, form);
                         if (theForm.hasError()) target.add(ruleFeedbackPanel);
                     }
                 };
@@ -157,30 +167,9 @@ public class TemplateRuleConfigurationPanel extends Panel {
         List<TemplateRule> rules = new ArrayList<>(tablePanel.getModel().getObject());
         Collections.sort(rules, new TemplateRule.TemplateRuleComparator());
         rules.removeIf(r -> r.getRuleId().equals(rule.getRuleId()));
-        tablePanel.getModel().setObject(updatePriorities(rules, rule));
+        tablePanel.getModel().setObject(TemplateRuleService.updatePriorities(rules, rule));
         tablePanel.modelChanged();
         tablePanel.getTable().modelChanged();
-    }
-
-    private Set<TemplateRule> updatePriorities(List<TemplateRule> rules, TemplateRule newRule) {
-        Set<TemplateRule> set = new HashSet<>(rules.size());
-        int updatedPriority = newRule.getPriority();
-        boolean newRuleAdded = false;
-        for (TemplateRule rule : rules) {
-            int priority = rule.getPriority();
-            if (priority == updatedPriority) {
-                if (!newRuleAdded) {
-                    set.add(newRule);
-                    newRuleAdded = true;
-                }
-                priority++;
-                rule.setPriority(priority);
-                updatedPriority = priority;
-            }
-            set.add(rule);
-        }
-        if (set.isEmpty() || !newRuleAdded) set.add(newRule);
-        return set;
     }
 
     private void clearForm(AjaxRequestTarget target) {
@@ -190,12 +179,14 @@ public class TemplateRuleConfigurationPanel extends Panel {
         templateInfoDropDownChoice.modelChanged();
         mimeTypeDropDown.modelChanged();
         cqlFilterArea.modelChanged();
+        profileField.modelChanged();
         submitLabelModel.setObject(getSubmitLabelValue("add"));
         panelLabelModel.setObject(getPanelLabelValue("add"));
         target.add(theForm);
         target.add(templateInfoDropDownChoice);
         target.add(mimeTypeDropDown);
         target.add(cqlFilterArea);
+        target.add(profileField);
         target.add(submitLabel);
         target.add(panelLabel);
     }
@@ -223,7 +214,8 @@ public class TemplateRuleConfigurationPanel extends Panel {
             @Override
             public void validate(IValidatable<String> iValidatable) {
                 try {
-                    XCQL.toFilter(iValidatable.getValue());
+                    String value = iValidatable.getValue();
+                    if (value != null && !"".equals(value)) XCQL.toFilter(iValidatable.getValue());
                 } catch (CQLException e) {
                     ValidationError error = new ValidationError();
                     String message =

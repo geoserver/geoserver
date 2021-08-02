@@ -63,21 +63,27 @@ The :guilabel:`Validate` button acts differently according to the output format:
 Add  Templates Rules to a Layer
 --------------------------------
 
+<<<<<<< HEAD
 To inform GeoServer when to apply a template, the user needs to specify rule on a per layer basis. 
 The most basic rule is one that bounds a template to specific output format. :guilabel:``Request CQL Functions`` allow to specify more advanced rules.
+=======
+To inform GeoServer when to apply a template, the user needs to specify the rules on a per layer basis.
+The most basic rule is one that binds a template to a specific output format. :guilabel:`Request CQL Functions` allow specifying more advanced rules.
+>>>>>>> 0449bb5021... [GEOS-10165] Features templating add Rest API - [GEOS-10166] Features templating - Add CQL profile field in template rule UI (#5183)
 
 When the plug-in is installed a new tab will be available in the Layer configuration page, allowing for the definition of Template rules.
 
 .. figure:: images/template-rules.png
 
-Once the form is filled the user needs to press the :guilabel:``Add`` button to add the rule to the rules' table. The rules will be then persisted to the layer configuration only when the :guilabel:``Save`` button is pressed.
+Once the form is filled the user needs to press the :guilabel:`Add` button to add the rule to the rules table. The rules will be then persisted to the layer configuration only when the :guilabel:`Save` button is pressed.
 
 The following values can be specified:
 
-* the :guilabel:``Priority`` needed to inform GeoServer which rule needs to be applied if more then one rule match the GetFeature request.
-* the :guilabel:``Template Name`` that indicates which template should be applied. If the template has a global scope the dropdown will present it with the template name value only. If a Workspace has been defined at template configuration time, the format will be {workspace name}:{template name}. If a Layer Name has been specified at template configuration time, the format will be {workspace name}:{layer name}:{template name}.
-* the :guilabel:``Supported Output Formats`` dropdown shows the output formats for which a template can be invoked. The user can choose one to indicate to which output format should be applied the selected template. If the GML value is selected, the template will be applied to all GML version output formats. If different GML templates should be applied for different GML versions, it is possible to define a condition on the MIME Type using the mimeType() function.
-* the :guilabel:``Request CQL filter`` area allows to define a CQL filter to be applied to the request to determine if the template should be applied. The available request function to be used are listed on the right side of the form.
+* the :guilabel:`Priority` needed to inform GeoServer which rule should be applied if more then one rule matches the GetFeature request.
+* the :guilabel:`Template Name` that indicates which template should be applied. If the template has a global scope the dropdown will present it with the template name value only. If a Workspace has been defined at template configuration time, the format will be {workspace name}:{template name}. If a Layer Name has been specified at template configuration time, the format will be {workspace name}:{layer name}:{template name}.
+* the :guilabel:`Supported Output Formats` dropdown shows the output formats for which a template can be invoked. The user can choose one to indicate which output format the selected template should be applied to. If the GML value is selected, the template will be applied to all GML version output formats. If different GML templates should be applied for different GML versions, it is possible to define a condition on the MIME Type using the mimeType() function.
+* the :guilabel:`Request CQL filter` area allows defining a generic CQL filter to evaluate against the request to determine if the template should be t. The available request functions to be used are listed on the right side of the form.
+* the :guilabel:`Profile CQL Filter` allows defining a CQL filter allowing a content negotiation to be done per profile. The available request functions to be used are listed on the right side of the form. There is several approaches for content negotions per profile, for example one of them is the `W3C recommended approach <https://www.w3.org/TR/dx-prof-conneg/>`_ where the profile is provided as an HTTP header. This will translate in a CQL filter similar to this one ``header('Accept-Profile')='http://my-profile/geo+json'``. 
 
 Example CQL filter might be the following:
 
@@ -86,7 +92,7 @@ Example CQL filter might be the following:
 * ``requestMatchRegex('^.*matchedPart.*$')`` = true
 * ``header('testHeader')`` = 'myHeaderValue'
 
-Every rule must have defined at least either a value from :guilabel:``Supported Output Formats`` dropdown either a :guilabel:``Request CQL filter``  with a filter on the mimeType() value.
+Every rule must define either a value from the :guilabel:`Supported Output Formats` dropdown or a :guilabel:`Request CQL filter`  with a filter on the mimeType() value, or both.
 
 Once rules are defined, if an incoming GetFeature request is matched the template corresponding to the matched rule will be applied to the output.
 
@@ -101,3 +107,4 @@ A features template can be configured directly from the GeoServer data dir witho
 * GML 3.2 = gml32-template.xml
 * JSON-LD = json-ld-template.json
 * GEOJSON = geojson-template.json
+* HTML = html-template.xhtml

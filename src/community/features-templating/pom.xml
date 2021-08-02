@@ -32,6 +32,7 @@
     <module>features-templating-wfs</module>
     <module>features-templating-ogcapi</module>
     <module>features-templating-web</module>
+    <module>features-templating-rest</module>
   </modules>
 
 </project>

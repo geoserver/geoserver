@@ -28,6 +28,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.geoserver.featurestemplating.configuration.TemplateFileManager;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
 import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
+import org.geoserver.platform.exception.GeoServerException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.CodeMirrorEditor;
@@ -166,10 +167,10 @@ public class TemplateConfigurationPage extends GeoServerSecuredPage {
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         super.onSubmit(target, form);
                         clearFeedbackMessages();
+                        TemplateInfo templateInfo = (TemplateInfo) form.getModelObject();
                         target.add(topFeedbackPanel);
                         target.add(bottomFeedbackPanel);
-                        TemplateInfo templateInfo = (TemplateInfo) form.getModelObject();
-
+                        if (!validateAndReport(templateInfo)) return;
                         String rawTemplate = TemplateConfigurationPage.this.rawTemplate;
                         saveTemplateInfo(templateInfo, rawTemplate);
                     }
@@ -219,6 +220,17 @@ public class TemplateConfigurationPage extends GeoServerSecuredPage {
         this.bottomFeedbackPanel.getFeedbackMessages().clear();
     }
 
+    private boolean validateAndReport(TemplateInfo info) {
+        try {
+            TemplateModelsValidator validator = new TemplateModelsValidator();
+            validator.validate(info);
+        } catch (GeoServerException e) {
+            getForm().error(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
     private AjaxTabbedPanel<ITab> newTabbedPanel(List<ITab> tabs) {
         return new AjaxTabbedPanel<ITab>("tabbedPanel", tabs) {
             @Override
@@ -238,6 +250,7 @@ public class TemplateConfigurationPage extends GeoServerSecuredPage {
                             public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                                 TemplateInfo templateInfo =
                                         TemplateConfigurationPage.this.form.getModelObject();
+                                if (!validateAndReport(templateInfo)) return;
                                 String rawTemplate = getStringTemplateFromInput();
                                 saveTemplateInfo(templateInfo, rawTemplate);
                                 setSelectedTab(index);

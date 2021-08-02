@@ -12,11 +12,7 @@ public class TemplateLayerConfigXStreamPersisterInitializer implements XStreamPe
 
     @Override
     public void init(XStreamPersister persister) {
-        persister
-                .getXStream()
-                .allowTypesByWildcard(
-                        new String[] {"emsa.europa.eu.starogc.authorization.web.model.*"});
-        persister.getXStream().alias("rules", TemplateRule.class);
+        persister.getXStream().alias("Rule", TemplateRule.class);
         persister.getXStream().alias("TemplateLayerConfig", TemplateLayerConfig.class);
         persister.registerBreifMapComplexType("TemplateRuleType", TemplateRule.class);
         persister.registerBreifMapComplexType("LayerConfigType", TemplateLayerConfig.class);

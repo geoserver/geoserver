@@ -169,4 +169,26 @@ public class TemplateRuleConfigurationPanelTest extends GeoServerWicketTestSuppo
         tester.assertErrorMessages(
                 "The Template extension and the chosen output format are incompatible.");
     }
+
+    @Test
+    public void testLayerRuleProfileCQL() {
+        LayerInfo layerInfo = getCatalog().getLayerByName(getLayerId(MockData.LAKES));
+        Model<LayerInfo> layerModel = new Model<>(layerInfo);
+        tester.startPage(
+                new FormTestPage(
+                        new ComponentBuilder() {
+                            private static final long serialVersionUID = -5907648151984337786L;
+
+                            @Override
+                            public Component buildComponent(final String id) {
+                                return new TemplateRulesTabPanel(id, layerModel);
+                            }
+                        }));
+        FormTester form = tester.newFormTester("form:panel:ruleConfiguration:theForm");
+        form.select("templateIdentifier", 0);
+        form.select("outputFormats", 0);
+        form.setValue("profileFilter", "header('Contet-Profile')='http://myProfile'");
+        form.submit("save");
+        tester.assertNoErrorMessage();
+    }
 }

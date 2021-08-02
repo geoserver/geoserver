@@ -153,6 +153,27 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
             String workspace,
             FeatureTypeInfo ft)
             throws IOException {
+        setUpTemplate(
+                cqlRuleCondition,
+                null,
+                outputFormat,
+                templateFileName,
+                templateName,
+                templateExtension,
+                workspace,
+                ft);
+    }
+
+    protected void setUpTemplate(
+            String cqlRuleCondition,
+            String profile,
+            SupportedFormat outputFormat,
+            String templateFileName,
+            String templateName,
+            String templateExtension,
+            String workspace,
+            FeatureTypeInfo ft)
+            throws IOException {
         String rawTemplate =
                 IOUtils.toString(getClass().getResourceAsStream(templateFileName), Charsets.UTF_8);
         TemplateInfo info = new TemplateInfo();
@@ -165,6 +186,7 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         TemplateRule rule = new TemplateRule();
         rule.setTemplateName(info.getFullName());
         rule.setCqlFilter(cqlRuleCondition);
+        rule.setProfileFilter(profile);
         rule.setOutputFormat(outputFormat);
         rule.setTemplateIdentifier(info.getIdentifier());
         TemplateLayerConfig config = new TemplateLayerConfig();

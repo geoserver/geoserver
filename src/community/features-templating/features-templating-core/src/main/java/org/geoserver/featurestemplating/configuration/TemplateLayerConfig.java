@@ -19,7 +19,7 @@ public class TemplateLayerConfig implements Serializable {
 
     public static final String METADATA_KEY = "FEATURES_TEMPLATING_LAYER_CONF";
 
-    @XmlElement(name = "rules")
+    @XmlElement(name = "Rule")
     private Set<TemplateRule> templateRules;
 
     public TemplateLayerConfig(Set<TemplateRule> templateRules) {

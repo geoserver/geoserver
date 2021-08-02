@@ -2,6 +2,7 @@ meteo_observations
 id
 time
 value
+decimal_value
 meteo_observations -> meteo_parameters
 meteo_parameters
 id
@@ -22,3 +23,5 @@ id
 name
 surname
 company
+active
+place

@@ -27,6 +27,7 @@ public final class GmlSchemaUtils {
         DOMAIN_TYPES_MAPPING.put(DomainAttributeType.INTEGER, "xs:integer");
         DOMAIN_TYPES_MAPPING.put(DomainAttributeType.NUMBER, "xs:double");
         DOMAIN_TYPES_MAPPING.put(DomainAttributeType.DATE, "xs:dateTime");
+        DOMAIN_TYPES_MAPPING.put(DomainAttributeType.BOOLEAN, "xs:boolean");
         DOMAIN_TYPES_MAPPING.put(DomainAttributeType.GEOMETRY, "gml:GeometryPropertyType");
     }
 

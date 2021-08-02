@@ -3,7 +3,11 @@ Macro's used for content
 -->
 
 <#macro property node>
-    <#if !node.isGeometry>
+    <#if node?is_enumerable>
+       <#list node as element>
+         <@property node=element/>
+       </#list>
+    <#elseif !node.isGeometry>
        <#if node.isComplex>      
        <td> <@feature node=node.rawValue type=node.type /> </td>  
       <#else>

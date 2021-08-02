@@ -761,13 +761,13 @@ public final class NormalizedMultiValuesTest extends AbstractAppSchemaTestSuppor
                 WFS20_XPATH_ENGINE,
                 document,
                 1,
-                "/wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32/st_gml32:info"
+                "/wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32/st_gml32:use"
                         + "[@xlink:href='http://link/use2' and @xlink:title='use2']");
 
         checkCount(
                 WFS20_XPATH_ENGINE,
                 document,
                 1,
-                "/wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32/st_gml32:info[@xlink:href='http://link/use3' and @xlink:title='use3']");
+                "/wfs:FeatureCollection/wfs:member/st_gml32:Station_gml32/st_gml32:use[@xlink:href='http://link/use3' and @xlink:title='use3']");
     }
 }

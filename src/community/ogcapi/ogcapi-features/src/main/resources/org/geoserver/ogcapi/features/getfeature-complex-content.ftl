@@ -1,8 +1,9 @@
-<#-- 
-Macro's used for content
--->
 <#macro property node>
-<#if node.isComplex>
+<#if node?is_enumerable>
+<#list node as element>
+  <@property node=element />
+</#list>
+<#elseif node.isComplex>
 <@feature node=node.rawValue type=node.type />
 <#else>
 <#assign stringVal = node.value?string>

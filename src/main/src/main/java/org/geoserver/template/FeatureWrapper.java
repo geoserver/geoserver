@@ -349,21 +349,24 @@ public class FeatureWrapper extends BeansWrapper {
                 Name attName;
                 for (PropertyDescriptor type : types) {
                     attName = type.getName();
-                    if (type.getMaxOccurs() > 1) {
-                        for (Property property : feature.getProperties(attName)) {
-                            addAttributeMap(attName, property);
-                        }
-                    } else {
-                        addAttributeMap(attName, feature.getProperty(attName));
-                    }
+                    Object attributeMap;
+                    if (type.getMaxOccurs() > 1) attributeMap = getListMaps(attName);
+                    else
+                        attributeMap =
+                                new AttributeMap(attName, feature, feature.getProperty(attName));
+                    entrySet.add(
+                            new MapEntry<Object, Object>(attName.getLocalPart(), attributeMap));
                 }
             }
             return entrySet;
         }
 
-        private void addAttributeMap(Name attName, Property property) {
-            Map attributesMap = new AttributeMap(attName, feature, property);
-            entrySet.add(new MapEntry<Object, Object>(attName.getLocalPart(), attributesMap));
+        private List<Map> getListMaps(Name attName) {
+            List<Map> listProps = new ArrayList<>();
+            for (Property property : feature.getProperties(attName)) {
+                listProps.add(new AttributeMap(attName, feature, property));
+            }
+            return listProps;
         }
     }
 

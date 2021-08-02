@@ -1,9 +1,15 @@
 <#macro property prop>
-<#if prop.isComplex>
+<#if prop?is_enumerable>
+<#list prop as elem>
+<@property prop=elem/>
+</#list>
+<#elseif prop.isComplex>
 <@feature node=prop.rawValue/>
 <#else>
+<#if !prop.name?contains("FEATURE_LINK")>
 Name: ${prop.name}
 Value: ${prop.value?string}
+</#if>
 </#if>
 </#macro>
 

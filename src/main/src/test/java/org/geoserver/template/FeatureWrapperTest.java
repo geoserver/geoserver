@@ -136,7 +136,7 @@ public class FeatureWrapperTest {
     }
 
     @Test
-    public void testFeatureAttributeMapMaxOccurs() throws IOException, TemplateException {
+    public void v() throws IOException, TemplateException {
         Feature f = buildComplexFeature();
         Template template = cfg.getTemplate("ComplexFeatureMaxOccurs.ftl");
 

@@ -106,8 +106,13 @@ public class MessageConverterResponseAdapter<T>
                 .stream()
                 .filter(
                         r ->
-                                getMediaTypeStream(r).anyMatch(mt -> mediaType.isCompatibleWith(mt))
-                                        || (r.canHandle(op) && r.getBinding().isInstance(result)))
+                                r.canHandle(op)
+                                        && (getMediaTypeStream(r)
+                                                        .anyMatch(
+                                                                mt ->
+                                                                        mediaType.isCompatibleWith(
+                                                                                mt))
+                                                || r.getBinding().isInstance(result)))
                 .findFirst();
     }
 

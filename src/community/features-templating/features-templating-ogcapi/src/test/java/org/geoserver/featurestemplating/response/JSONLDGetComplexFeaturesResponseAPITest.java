@@ -11,7 +11,9 @@ import static org.junit.Assert.assertTrue;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -194,5 +196,39 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
         assertTrue(result.has("gsml:positionalAccuracy"));
         assertTrue(result.has("gsml:GeologicUnit"));
         assertTrue(result.has("geometry"));
+    }
+
+    @Test
+    public void testContentNegotiationByProfile() throws Exception {
+        String profile = "header('Accept-Profile')='http://my-test-profile/ld+json'";
+        setUpTemplate(
+                null,
+                profile,
+                SupportedFormat.JSONLD,
+                "MappedFeature.json",
+                "ProfileJsonLDTemplate",
+                ".json",
+                "gsml",
+                mappedFeature);
+        setUpMappedFeature();
+        String path =
+                "ogc/features/collections/"
+                        + "gsml:MappedFeature"
+                        + "/items?f=application%2Fld%2Bjson";
+        MockHttpServletRequest request = createRequest(path);
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+        request.addHeader("Accept-Profile", "http://my-test-profile/json");
+        MockHttpServletResponse response = dispatch(request, null);
+        JSONObject result = (JSONObject) json(response);
+        Object context = result.get("@context");
+        checkContext(context);
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        assertEquals(5, features.size());
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = (JSONObject) features.get(i);
+            checkMappedFeatureJSON(feature);
+        }
     }
 }

@@ -369,6 +369,7 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
             login();
             tester.startPage(new TemplateConfigurationPage(new Model<>(info), false));
             tester.assertModelValue("theForm:tabbedPanel:panel:templateName", "testGMLTemplate");
+
             tester.assertModelValue("theForm:tabbedPanel:panel:extension", "xml");
             tester.assertModelValue("theForm:tabbedPanel:panel:workspace", "cite");
             tester.assertModelValue("theForm:tabbedPanel:panel:featureTypeInfo", null);

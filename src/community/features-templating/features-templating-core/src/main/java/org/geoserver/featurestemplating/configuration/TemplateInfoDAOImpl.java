@@ -118,6 +118,18 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
     }
 
     @Override
+    public TemplateInfo findByFullName(String fullName) {
+        reloadIfNeeded();
+        Optional<TemplateInfo> templateInfo =
+                templateDataSet
+                        .stream()
+                        .filter(ti -> ti.getFullName().equals(fullName))
+                        .findFirst();
+        if (templateInfo.isPresent()) return templateInfo.get();
+        return null;
+    }
+
+    @Override
     public List<TemplateInfo> findByFeatureTypeInfo(FeatureTypeInfo featureTypeInfo) {
         reloadIfNeeded();
         String workspace = featureTypeInfo.getStore().getWorkspace().getName();

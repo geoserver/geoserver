@@ -383,6 +383,11 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-features-templating-rest</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
       <artifactId>gs-gsr</artifactId>
       <version>${project.version}</version>
     </dependency>

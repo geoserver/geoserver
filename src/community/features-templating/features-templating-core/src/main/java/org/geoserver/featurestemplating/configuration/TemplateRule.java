@@ -17,7 +17,7 @@ import org.geotools.filter.text.cql2.CQLException;
  * A template rule associated to a FeatureTypeInfo. Its evaluation determines if a specific template
  * should be applied for a Request.
  */
-@XmlRootElement(name = "rules")
+@XmlRootElement(name = "Rule")
 public class TemplateRule implements Serializable {
 
     private String ruleId;
@@ -34,6 +34,8 @@ public class TemplateRule implements Serializable {
 
     private String cqlFilter;
 
+    private String profileFilter;
+
     // use to force a rule to be applied regardless of priority
     // currently used only from the preview mechanism in the web module.
     private boolean forceRule;
@@ -41,6 +43,18 @@ public class TemplateRule implements Serializable {
     public TemplateRule() {
         this.priority = 0;
         this.ruleId = UUID.randomUUID().toString();
+    }
+
+    public TemplateRule(TemplateRule rule) {
+        this.ruleId = rule.ruleId == null ? UUID.randomUUID().toString() : rule.ruleId;
+        this.priority = rule.priority;
+        this.outputFormat = rule.outputFormat;
+        this.cqlFilter = rule.cqlFilter;
+        this.service = rule.service;
+        this.forceRule = rule.forceRule;
+        this.templateName = rule.templateName;
+        this.templateIdentifier = rule.templateIdentifier;
+        this.profileFilter = rule.profileFilter;
     }
 
     public String getTemplateName() {
@@ -55,18 +69,22 @@ public class TemplateRule implements Serializable {
      */
     public boolean applyRule(Request request) {
         boolean result = true;
-        if (outputFormat != null) {
-            result = matchOutputFormat(getOutputFormat(request));
-        }
+        if (outputFormat != null) result = matchOutputFormat(getOutputFormat(request));
 
         if (result && cqlFilter != null) {
-            try {
-                result = XCQL.toFilter(cqlFilter).evaluate(null);
-            } catch (CQLException e) {
-                throw new RuntimeException(e);
-            }
+            result = evaluateCQLFilter(cqlFilter);
         }
+        if (result && profileFilter != null) result = evaluateCQLFilter(profileFilter);
+
         return result;
+    }
+
+    private boolean evaluateCQLFilter(String filter) {
+        try {
+            return XCQL.toFilter(filter).evaluate(null);
+        } catch (CQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setTemplateName(String templateName) {
@@ -180,6 +198,14 @@ public class TemplateRule implements Serializable {
         this.priority = priority;
     }
 
+    public String getProfileFilter() {
+        return profileFilter;
+    }
+
+    public void setProfileFilter(String profileFilter) {
+        this.profileFilter = profileFilter;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -189,6 +215,7 @@ public class TemplateRule implements Serializable {
                 && Objects.equals(templateName, that.templateName)
                 && Objects.equals(outputFormat, that.outputFormat)
                 && Objects.equals(service, that.service)
+                && Objects.equals(profileFilter, that.profileFilter)
                 && Objects.equals(cqlFilter, that.cqlFilter)
                 && Objects.equals(priority, that.priority);
     }

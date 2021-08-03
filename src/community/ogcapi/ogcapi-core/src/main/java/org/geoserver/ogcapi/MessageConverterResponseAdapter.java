@@ -102,18 +102,13 @@ public class MessageConverterResponseAdapter<T>
         Request dr = Dispatcher.REQUEST.get();
         Operation originalOperation = dr.getOperation();
         Operation op = result != null ? getOperation(result, dr, mediaType) : originalOperation;
-        return responses
-                .stream()
-                .filter(
-                        r ->
-                                r.canHandle(op)
-                                        && (getMediaTypeStream(r)
-                                                        .anyMatch(
-                                                                mt ->
-                                                                        mediaType.isCompatibleWith(
-                                                                                mt))
-                                                || r.getBinding().isInstance(result)))
-                .findFirst();
+        Predicate<MediaType> matchMediaType = mt -> mediaType.isCompatibleWith(mt);
+        Predicate<Response> matchResponse =
+                r ->
+                        r.canHandle(op)
+                                && (getMediaTypeStream(r).anyMatch(matchMediaType)
+                                        || r.getBinding().isInstance(result));
+        return responses.stream().filter(matchResponse).findFirst();
     }
 
     @Override

@@ -129,25 +129,35 @@ public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {
                     operation != null
                             && operation.getParameters() != null
                             && operation.getParameters().length > 0;
-            Object param = hasParam ? operation.getParameters()[0] : null;
-            String ftName = param != null ? param.toString() : null;
+            String param = hasParam ? operation.getParameters()[0].toString() : null;
             Request request = Dispatcher.REQUEST.get();
-            if (request != null
-                    && ftName != null
-                    && "FEATURES".equalsIgnoreCase(request.getService())
-                    && outputFormat != null) {
+            // check it is OGCAPI Features collection request
+            if (isFeaturesRequest(request, param, outputFormat)) {
                 Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
-                FeatureTypeInfo fti = catalog.getFeatureTypeByName(ftName);
-                try {
-                    RootBuilder template =
-                            configuration.getTemplate(
-                                    fti, TemplateIdentifier.HTML.getOutputFormat());
-                    if (template == null) result = false;
-                } catch (Exception e) {
-                    result = false;
-                }
+                FeatureTypeInfo fti = catalog.getFeatureTypeByName(param);
+                // if no template for fti then this response object should not be used.
+                result = hasTemplate(fti);
             }
         }
         return result;
+    }
+
+    private boolean hasTemplate(FeatureTypeInfo fti) {
+        boolean result = true;
+        try {
+            RootBuilder template =
+                    configuration.getTemplate(fti, TemplateIdentifier.HTML.getOutputFormat());
+            if (template == null) result = false;
+        } catch (Exception e) {
+            result = false;
+        }
+        return result;
+    }
+
+    private boolean isFeaturesRequest(Request request, String ftName, String outputFormat) {
+        return request != null
+                && ftName != null
+                && "FEATURES".equalsIgnoreCase(request.getService())
+                && outputFormat != null;
     }
 }

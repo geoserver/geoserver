@@ -14,6 +14,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.EncodingHints;
@@ -24,6 +25,9 @@ import org.geoserver.featurestemplating.configuration.TemplateLoader;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geoserver.featurestemplating.writers.XHTMLTemplateWriter;
 import org.geoserver.featurestemplating.writers.XMLTemplateWriter;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
@@ -114,5 +118,46 @@ public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {
     protected void afterEvaluation(TemplateOutputWriter writer, RootBuilder root, Feature feature)
             throws IOException {
         super.afterEvaluation(writer, root, feature);
+    }
+
+    @Override
+    protected boolean canHandleInternal(Operation operation) {
+        boolean result = super.canHandleInternal(operation);
+        if (result) {
+            String outputFormat = identifier.getOutputFormat();
+            boolean hasParam =
+                    operation != null
+                            && operation.getParameters() != null
+                            && operation.getParameters().length > 0;
+            String param = hasParam ? operation.getParameters()[0].toString() : null;
+            Request request = Dispatcher.REQUEST.get();
+            // check it is OGCAPI Features collection request
+            if (isFeaturesRequest(request, param, outputFormat)) {
+                Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
+                FeatureTypeInfo fti = catalog.getFeatureTypeByName(param);
+                // if no template for fti then this response object should not be used.
+                result = hasTemplate(fti);
+            }
+        }
+        return result;
+    }
+
+    private boolean hasTemplate(FeatureTypeInfo fti) {
+        boolean result = true;
+        try {
+            RootBuilder template =
+                    configuration.getTemplate(fti, TemplateIdentifier.HTML.getOutputFormat());
+            if (template == null) result = false;
+        } catch (Exception e) {
+            result = false;
+        }
+        return result;
+    }
+
+    private boolean isFeaturesRequest(Request request, String ftName, String outputFormat) {
+        return request != null
+                && ftName != null
+                && "FEATURES".equalsIgnoreCase(request.getService())
+                && outputFormat != null;
     }
 }

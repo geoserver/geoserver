@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0"
+                       xmlns:gml="http://www.opengis.net/gml/3.2"
+                       xmlns:gsml="urn:cgi:xmlns:CGI:GeoSciML:2.0"
+                       xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                       xmlns:xlink="http://www.w3.org/1999/xlink"
+                       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                       xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/wfs.xsd urn:cgi:xmlns:CGI:GeoSciML:2.0 http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
+    <wfs:member>
+        <gsml:MappedFeature gml:id="${@gml:id}" gft:isCollection="true" gft:source="gsml:MappedFeature">
+            <gml:name xmlns:gml="http://www.opengis.net/gml">$${strConcat('mf.', xpath('gml:name'))}</gml:name>
+            <gsml:samplingFrame xlink:href="urn:cgi:feature:CGI:EarthNaturalSurface" />
+            <gsml:specification gft:source="gsml:specification" gft:isCollection="true">
+                <gft:includeFlat>includedGeologicUnit.xml</gft:includeFlat>
+                <gsml:testStatic>testStatic</gsml:testStatic>
+            </gsml:specification>
+            <gsml:geometry>${gsml:shape}</gsml:geometry>
+        </gsml:MappedFeature>
+    </wfs:member>
+</wfs:FeatureCollection>

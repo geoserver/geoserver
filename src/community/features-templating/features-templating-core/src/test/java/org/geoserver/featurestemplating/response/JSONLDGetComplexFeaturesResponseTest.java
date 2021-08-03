@@ -11,8 +11,6 @@ import static org.junit.Assert.assertTrue;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
-import org.geoserver.platform.resource.Resource;
-import org.junit.After;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -63,31 +61,6 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateComplexTestSup
         assertEquals(value, arrayWithDynamic.getString(0));
         assertEquals("someStaticVal", arrayWithDynamic.getString(1));
         assertEquals("duplicated value: " + value, arrayWithDynamic.getString(2));
-    }
-
-    @After
-    public void cleanup() {
-        Resource res =
-                dd.getResourceLoader()
-                        .get(
-                                "workspaces/gsml/"
-                                        + mappedFeature.getStore().getName()
-                                        + "/"
-                                        + mappedFeature.getName()
-                                        + "/"
-                                        + TemplateIdentifier.JSONLD.getFilename());
-        if (res != null) res.delete();
-
-        Resource res2 =
-                dd.getResourceLoader()
-                        .get(
-                                "workspaces/gsml/"
-                                        + geologicUnit.getStore().getName()
-                                        + "/"
-                                        + geologicUnit.getName()
-                                        + "/"
-                                        + TemplateIdentifier.JSONLD.getFilename());
-        if (res2 != null) res2.delete();
     }
 
     @Override

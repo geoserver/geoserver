@@ -1,0 +1,4 @@
+{
+  "name": "recursive inclusion test, pong",
+  "sub": "$include{ping.json}"
+}

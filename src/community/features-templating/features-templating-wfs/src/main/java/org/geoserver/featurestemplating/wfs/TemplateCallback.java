@@ -13,8 +13,8 @@ import org.geoserver.catalog.*;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geoserver.featurestemplating.configuration.TemplateLoader;
 import org.geoserver.featurestemplating.request.TemplatePathVisitor;
 import org.geoserver.ows.AbstractDispatcherCallback;
 import org.geoserver.ows.DispatcherCallback;
@@ -43,11 +43,11 @@ public class TemplateCallback extends AbstractDispatcherCallback {
 
     private GeoServer gs;
 
-    private TemplateConfiguration configuration;
+    private TemplateLoader configuration;
 
     static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
-    public TemplateCallback(GeoServer gs, TemplateConfiguration configuration) {
+    public TemplateCallback(GeoServer gs, TemplateLoader configuration) {
         this.gs = gs;
         this.catalog = gs.getCatalog();
         this.configuration = configuration;
@@ -126,11 +126,9 @@ public class TemplateCallback extends AbstractDispatcherCallback {
     // to the pointed template attribute and set the new filter to the query
     private void replaceTemplatePath(Query q, FeatureTypeInfo fti, RootBuilder root) {
         try {
-
             TemplatePathVisitor visitor = new TemplatePathVisitor(fti.getFeatureType());
             if (q.getFilter() != null) {
                 Filter old = q.getFilter();
-                String cql = ECQL.toCQL(old);
                 Filter newFilter = (Filter) old.accept(visitor, root);
                 List<Filter> templateFilters = new ArrayList<>();
                 templateFilters.addAll(visitor.getFilters());
@@ -142,7 +140,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
                 if (newFilter.equals(old)) {
                     LOGGER.warning(
                             "Failed to resolve filter "
-                                    + cql
+                                    + ECQL.toCQL(old)
                                     + " against the template. "
                                     + "If the property name was intended to be a template path, "
                                     + "check that the path specified in the cql filter is correct.");
@@ -180,7 +178,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
                     getRootBuildersFromFeatureTypeInfo(typeInfos, outputFormat);
             if (rootBuilders.size() > 0) {
                 TemplateIdentifier templateIdentifier =
-                        TemplateIdentifier.getTemplateIdentifierFromOutputFormat(outputFormat);
+                        TemplateIdentifier.fromOutputFormat(outputFormat);
                 switch (templateIdentifier) {
                     case JSON:
                     case GEOJSON:
@@ -192,6 +190,9 @@ public class TemplateCallback extends AbstractDispatcherCallback {
                     case GML31:
                     case GML2:
                         response = new GMLTemplateResponse(gs, configuration, templateIdentifier);
+                        break;
+                    case HTML:
+                        response = new HTMLTemplateResponse(gs, configuration);
                         break;
                 }
             }
@@ -205,8 +206,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
     // null and json-ld output is requested
     private RootBuilder ensureTemplatesExist(FeatureTypeInfo typeInfo, String outputFormat)
             throws ExecutionException {
-        TemplateIdentifier identifier =
-                TemplateIdentifier.getTemplateIdentifierFromOutputFormat(outputFormat);
+        TemplateIdentifier identifier = TemplateIdentifier.fromOutputFormat(outputFormat);
         RootBuilder rootBuilder = null;
         if (identifier != null) {
             rootBuilder = configuration.getTemplate(typeInfo, identifier.getOutputFormat());

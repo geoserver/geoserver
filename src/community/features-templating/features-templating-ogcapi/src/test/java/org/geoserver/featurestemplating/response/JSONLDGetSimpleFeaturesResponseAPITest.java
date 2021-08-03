@@ -6,6 +6,7 @@ package org.geoserver.featurestemplating.response;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -48,5 +49,21 @@ public class JSONLDGetSimpleFeaturesResponseAPITest extends JSONLDGetSimpleFeatu
         JSONObject geometry = (JSONObject) feature.get("geometry");
         assertEquals(geometry.getString("@type"), "MultiPolygon");
         assertNotNull(geometry.getString("wkt"));
+    }
+
+    @Test
+    public void testJsonLdResponseOGCAPISingleFeature() throws Exception {
+        setUpSimple("NamedPlaces.json");
+        StringBuilder path =
+                new StringBuilder("ogc/features/collections/")
+                        .append("cite:NamedPlaces")
+                        .append("/items/NamedPlaces.1107531895891?f=application%2Fld%2Bjson");
+        JSONObject result = (JSONObject) getJsonLd(path.toString());
+        JSONObject context = (JSONObject) result.get("@context");
+        assertNotNull(context);
+        assertEquals("118", result.getString("id"));
+        assertEquals("Goose Island", result.getString("name"));
+        assertTrue(result.has("@type"));
+        assertTrue(result.has("geometry"));
     }
 }

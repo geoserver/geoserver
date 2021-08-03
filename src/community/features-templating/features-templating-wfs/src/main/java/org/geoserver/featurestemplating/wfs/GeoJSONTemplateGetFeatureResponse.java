@@ -4,15 +4,18 @@
  */
 package org.geoserver.featurestemplating.wfs;
 
+import static org.geoserver.featurestemplating.builders.EncodingHints.isSingleFeatureRequest;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geoserver.featurestemplating.configuration.TemplateLoader;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geoserver.platform.Operation;
@@ -26,7 +29,7 @@ public class GeoJSONTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
     protected boolean hasGeometry;
 
     public GeoJSONTemplateGetFeatureResponse(
-            GeoServer gs, TemplateConfiguration configuration, TemplateIdentifier identifier) {
+            GeoServer gs, TemplateLoader configuration, TemplateIdentifier identifier) {
         super(gs, configuration, identifier);
     }
 
@@ -36,11 +39,13 @@ public class GeoJSONTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
             throws ServiceException {
 
         try (GeoJSONWriter writer = getOutputWriter(output)) {
-            writer.startTemplateOutput(null);
+            EncodingHints encodingHints = new EncodingHints();
+            writer.startTemplateOutput(encodingHints);
             iterateFeatureCollection(writer, featureCollection);
-            writer.endArray(null, null);
+            if (!isSingleFeatureRequest() || !identifier.equals(TemplateIdentifier.GEOJSON))
+                writer.endArray(null, null);
             writeAdditionalFields(writer, featureCollection, getFeature);
-            writer.endTemplateOutput(null);
+            writer.endTemplateOutput(encodingHints);
         } catch (Exception e) {
             throw new ServiceException(e);
         }

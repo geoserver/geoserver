@@ -1,5 +1,7 @@
 {
-  "$VendorOptions": "flat_output:true;separator:.",
+  "$options": {
+    "flat_output":true,
+    "separator":"."},
   "type": "FeatureCollection",
   "features": [
     {

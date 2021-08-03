@@ -40,7 +40,9 @@ public class TemplateBuilderMaker {
 
     private boolean flatOutput;
 
-    private boolean rootCollection;
+    private boolean ownOutput = true;
+
+    private boolean topLevelFeature;
 
     private EncodingHints encondingHints;
 
@@ -69,7 +71,7 @@ public class TemplateBuilderMaker {
      * @return this TemplateBuilderMaker
      */
     public TemplateBuilderMaker textContent(String textContent) {
-        this.textContent = textContent;
+        this.textContent = textContent.trim();
         return this;
     }
 
@@ -188,12 +190,14 @@ public class TemplateBuilderMaker {
      * Set a boolean to tell the TemplateBuilderMaker if the IteratingBuilder being created should
      * be considered as the first IteratingBuilder of the builder tree.
      *
-     * @param root true if the IteratingBuilder being created is the root IteratingBuilder of the
-     *     builder tree.
+     * @param hasOwnOutput false if the Builder being created is mapping element that are wrote by
+     *     ${@link
+     *     org.geoserver.featurestemplating.writers.TemplateOutputWriter#startTemplateOutput(EncodingHints)}
+     *     method
      * @return this TemplateBuilderMaker.
      */
-    public TemplateBuilderMaker rootCollection(boolean root) {
-        rootCollection = root;
+    public TemplateBuilderMaker hasOwnOutput(boolean hasOwnOutput) {
+        this.ownOutput = hasOwnOutput;
         return this;
     }
 
@@ -243,6 +247,19 @@ public class TemplateBuilderMaker {
         return this;
     }
 
+    /**
+     * Set to true if the builder is the top level feature builder: a top level builder is a
+     * SourceBuilder that is mapping the start of a Feature or of the root Feature in case of
+     * complex features
+     *
+     * @param topLevelFeature
+     * @return
+     */
+    public TemplateBuilderMaker topLevelFeature(boolean topLevelFeature) {
+        this.topLevelFeature = topLevelFeature;
+        return this;
+    }
+
     /** Reset all the attributes of this TemplateBuilderMaker. */
     public void globalReset() {
         localReset();
@@ -257,12 +274,13 @@ public class TemplateBuilderMaker {
         this.vendorOptions = new VendorOptions();
         this.filter = null;
         this.isCollection = false;
-        this.rootCollection = false;
+        this.ownOutput = true;
         this.name = null;
         this.source = null;
         this.textContent = null;
         this.jsonNode = null;
         this.rootBuilder = false;
+        this.topLevelFeature = false;
     }
 
     /**
@@ -282,26 +300,31 @@ public class TemplateBuilderMaker {
 
     private IteratingBuilder buildIteratingBuilder() {
         IteratingBuilder iteratingBuilder;
-        if (flatOutput) iteratingBuilder = new FlatIteratingBuilder(name, namespaces, separator);
-        else iteratingBuilder = new IteratingBuilder(name, namespaces);
+        if (flatOutput)
+            iteratingBuilder =
+                    new FlatIteratingBuilder(name, namespaces, separator, topLevelFeature);
+        else iteratingBuilder = new IteratingBuilder(name, namespaces, topLevelFeature);
         if (source != null) iteratingBuilder.setSource(source);
         if (filter != null) iteratingBuilder.setFilter(filter);
         if (!encondingHints.isEmpty()) iteratingBuilder.getEncodingHints().putAll(encondingHints);
         if (name != null && rootCollectionName != null && rootCollectionName.equals(name))
-            rootCollection = true;
-        iteratingBuilder.setRootCollection(rootCollection);
+            ownOutput = false;
+        iteratingBuilder.setOwnOutput(ownOutput);
+        iteratingBuilder.setTopLevelFeature(topLevelFeature);
         return iteratingBuilder;
     }
 
     private CompositeBuilder buildCompositeBuilder() {
         CompositeBuilder compositeBuilder;
-        if (flatOutput) compositeBuilder = new FlatCompositeBuilder(name, namespaces, separator);
-        else compositeBuilder = new CompositeBuilder(name, namespaces);
+        if (flatOutput)
+            compositeBuilder =
+                    new FlatCompositeBuilder(name, namespaces, separator, topLevelFeature);
+        else compositeBuilder = new CompositeBuilder(name, namespaces, topLevelFeature);
 
         if (source != null) compositeBuilder.setSource(source);
         if (filter != null) compositeBuilder.setFilter(filter);
         if (!encondingHints.isEmpty()) compositeBuilder.getEncodingHints().putAll(encondingHints);
-
+        compositeBuilder.setOwnOutput(ownOutput);
         return compositeBuilder;
     }
 

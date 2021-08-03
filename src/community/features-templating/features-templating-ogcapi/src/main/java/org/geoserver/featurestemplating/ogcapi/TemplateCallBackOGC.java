@@ -7,20 +7,24 @@ package org.geoserver.featurestemplating.ogcapi;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geoserver.featurestemplating.configuration.TemplateLoader;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.request.TemplatePathVisitor;
 import org.geoserver.featurestemplating.wfs.BaseTemplateGetFeatureResponse;
 import org.geoserver.featurestemplating.wfs.GMLTemplateResponse;
+import org.geoserver.featurestemplating.wfs.HTMLTemplateResponse;
 import org.geoserver.featurestemplating.wfs.TemplateCallback;
 import org.geoserver.ogcapi.APIService;
 import org.geoserver.ogcapi.features.FeatureService;
@@ -56,7 +60,7 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
 
     private Catalog catalog;
 
-    private TemplateConfiguration configuration;
+    private TemplateLoader configuration;
 
     private GeoServer gs;
 
@@ -64,7 +68,7 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
-    public TemplateCallBackOGC(GeoServer gs, TemplateConfiguration configuration) {
+    public TemplateCallBackOGC(GeoServer gs, TemplateLoader configuration) {
         this.catalog = gs.getCatalog();
         this.configuration = configuration;
         this.gs = gs;
@@ -77,17 +81,21 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
     @Override
     public Operation operationDispatched(Request request, Operation operation) {
         TemplateIdentifier identifier = getTemplateIdentifier(request);
-        if (identifier != null) {
+        boolean isOpWithParams = operation != null && operation.getParameters().length > 0;
+        if (identifier != null && isOpWithParams) {
             String outputFormat = identifier.getOutputFormat();
+            Object param = operation.getParameters()[0];
+            String ftName = param != null ? param.toString() : null;
             if ("FEATURES".equalsIgnoreCase(request.getService()) && outputFormat != null) {
                 try {
-                    FeatureTypeInfo typeInfo =
-                            getFeatureType((String) operation.getParameters()[0]);
+                    FeatureTypeInfo typeInfo = catalog.getFeatureTypeByName(ftName);
+                    if (typeInfo == null) return operation;
                     RootBuilder root = configuration.getTemplate(typeInfo, outputFormat);
                     String filterLang = (String) request.getKvp().get("FILTER-LANG");
-                    if (filterLang != null && filterLang.equalsIgnoreCase("CQL-TEXT")) {
+                    if (filterLang == null || filterLang.equalsIgnoreCase("CQL-TEXT")) {
                         String filter = (String) request.getKvp().get("FILTER");
-                        replaceTemplatePathWithFilter(filter, root, typeInfo, operation);
+                        if (filter != null)
+                            replaceTemplatePathWithFilter(filter, root, typeInfo, operation);
                     }
                     String envParam =
                             request.getRawKvp().get("ENV") != null
@@ -130,9 +138,9 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
         String format = request.getKvp() != null ? (String) request.getKvp().get("f") : null;
         TemplateIdentifier identifier = null;
         if (format != null) {
-            identifier = TemplateIdentifier.getTemplateIdentifierFromOutputFormat(format);
+            identifier = TemplateIdentifier.fromOutputFormat(format);
         } else if (accept != null) {
-            identifier = TemplateIdentifier.getTemplateIdentifierFromOutputFormat(accept);
+            identifier = TemplateIdentifier.fromOutputFormat(accept);
         }
         return identifier;
     }
@@ -149,7 +157,6 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
             String strFilter, RootBuilder root, FeatureTypeInfo typeInfo, Operation operation)
             throws IOException, CQLException {
         TemplatePathVisitor visitor = new TemplatePathVisitor(typeInfo.getFeatureType());
-        /* Todo find a better way to replace json-ld path with corresponding template attribute*/
         // Get filter from string in order to make it accept the visitor
         Filter old = XCQL.toFilter(strFilter);
         Filter f = (Filter) old.accept(visitor, root);
@@ -165,9 +172,9 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
             templateFilters.add(f);
             f = FF.and(templateFilters);
         }
-        // Taking back a string from Function cause
+        // Taking back a string from the Filter cause
         // OGC API get a string cql filter from query string
-        String newFilter = TemplateCQLManager.removeQuotes(ECQL.toCQL(f)).replaceAll("/", ".");
+        String newFilter = fixPropertyNames(ECQL.toCQL(f));
         newFilter = TemplateCQLManager.quoteXpathAttribute(newFilter);
         for (int i = 0; i < operation.getParameters().length; i++) {
             Object p = operation.getParameters()[i];
@@ -176,6 +183,25 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
                 break;
             }
         }
+    }
+
+    // since the toCQL method quotes the propertynames and that
+    // they need to be provided to the ogcapi controller with dot separator
+    // this methods remove the quotes and replace slash with dots.
+    private String fixPropertyNames(String cqlFilter) {
+        Map<String, String> replacements = new HashMap<>();
+        Pattern p = Pattern.compile("\"([^\"]*)\"");
+        Matcher m = p.matcher(cqlFilter);
+        while (m.find()) {
+            String matched = m.group(1);
+            String quoted = "\"" + matched + "\"";
+            replacements.put(quoted, matched.replaceAll("/", "."));
+        }
+        for (String toReplace : replacements.keySet()) {
+            String replacement = replacements.get(toReplace);
+            cqlFilter = cqlFilter.replace(toReplace, replacement);
+        }
+        return cqlFilter;
     }
 
     @Override
@@ -226,6 +252,21 @@ public class TemplateCallBackOGC extends AbstractDispatcherCallback {
             case GML32:
                 templatingResp =
                         new GMLTemplateResponse(gs, configuration, identifier) {
+                            @Override
+                            protected void write(
+                                    FeatureCollectionResponse featureCollection,
+                                    OutputStream output,
+                                    Operation getFeature)
+                                    throws ServiceException {
+                                FeaturesResponse fr = (FeaturesResponse) result;
+                                super.write(fr.getResponse(), output, operation);
+                            }
+                        };
+                break;
+
+            case HTML:
+                templatingResp =
+                        new HTMLTemplateResponse(gs, configuration) {
                             @Override
                             protected void write(
                                     FeatureCollectionResponse featureCollection,

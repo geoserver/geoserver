@@ -1,0 +1,45 @@
+{
+  "$options": {
+    "flat_output":true
+  },
+  "type":"FeatureCollection",
+  "features":[
+    {
+      "$source":"gsml:MappedFeature"
+    },
+    {
+      "@id":"${ID}",
+      "geometry":"${SHAPE}",
+      "properties":{
+        "name":"$${strConcat('FeatureName: ', LEX_D)}",
+        "gsml:GeologicUnit_description":"${->GeologicUnit.TEXTDESCRIPTION}",
+        "gsml:GeologicUnit_gsml:geologicUnitType":"urn:ogc:def:nil:OGC::unknown",
+        "gsml:GeologicUnit_gsml:composition":[
+            {
+              "$source":"GeologicUnit"
+            },
+            {
+              "gsml:compositionPart":[
+                {
+                  "$source":"CompositionPart"
+                },
+                {
+                  "gsml:role_value":"${COMPONENT_ROLE}",
+                  "gsml:role_@codeSpace":"urn:cgi:classifierScheme:Example:CompositionPartRole",
+                  "lithology":[
+                    {
+                      "$source":"ControlledConcept"
+                    },
+                    {
+                      "name":"${NAME}" ,
+                      "vocabulary":"@href:urn:ogc:def:nil:OGC::missing"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+    }
+  ]
+}

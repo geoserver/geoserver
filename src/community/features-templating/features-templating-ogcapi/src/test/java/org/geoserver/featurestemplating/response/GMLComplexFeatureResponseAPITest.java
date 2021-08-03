@@ -22,6 +22,20 @@ public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport
         assertXpathCount(4, "//gsml:samplingFrame//@xlink:href", doc);
         assertXpathCount(4, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
         assertXpathCount(4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit", doc);
+
+        assertXpathCount(
+                4,
+                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gml:description/@xlink:href",
+                doc);
+        assertXpathCount(
+                4,
+                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent",
+                doc);
+        assertXpathCount(
+                4,
+                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent/@xlink:title",
+                doc);
+
         // filter on array element lithology
         assertXpathCount(2, "//gsml:lithology", doc);
     }
@@ -43,7 +57,7 @@ public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport
         setUpComplex("MappedFeatureGML32.xml", mappedFeature);
         Document doc =
                 getAsDOM(
-                        "ogc/features/collections/gsml:MappedFeature/items?filter-lang=cql-text&f=application%2Fgml%2Bxml%3Bversion%3D3.2"
+                        "ogc/features/collections/gsml:MappedFeature/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2"
                                 + "&filter=wfs:FeatureCollection.wfs:member.gsml:MappedFeature.gsml:specification.gsml:GeologicUnit"
                                 + ".gsml:composition.gsml:CompositionPart.gsml:role='interbedded component'");
         assertXpathCount(3, "//gsml:MappedFeature", doc);

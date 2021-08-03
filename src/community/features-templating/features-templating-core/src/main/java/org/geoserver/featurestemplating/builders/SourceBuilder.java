@@ -4,6 +4,8 @@
  */
 package org.geoserver.featurestemplating.builders;
 
+import static org.geoserver.featurestemplating.builders.EncodingHints.SKIP_OBJECT_ENCODING;
+
 import java.util.LinkedList;
 import java.util.Optional;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
@@ -18,9 +20,24 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
 
     private Expression source;
 
-    public SourceBuilder(String key, NamespaceSupport namespaces) {
+    /**
+     * A SourceBuilder hasNotOwnOutput when it not invoke the writer to encode any output but simply
+     * call the evaluation of children builder. This is the case when the builder does not map any
+     * feature attribute but part of an output format that are handle by ${@link
+     * org.geoserver.featurestemplating.writers.TemplateOutputWriter#startTemplateOutput(EncodingHints)}
+     */
+    protected boolean ownOutput = true;
+
+    /**
+     * A SourceBuilder is topLevelFeature when its mapping the start of a Feature or of the root
+     * Feature in case of complex features.
+     */
+    protected boolean topLevelFeature;
+
+    public SourceBuilder(String key, NamespaceSupport namespaces, boolean topLevelFeature) {
         super(key, namespaces);
         this.children = new LinkedList<>();
+        this.topLevelFeature = topLevelFeature;
     }
 
     /**
@@ -53,11 +70,6 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
             return sourceToEval.evaluate(o);
         }
         return source.evaluate(o);
-    }
-
-    @Override
-    public void addChild(TemplateBuilder builder) {
-        this.children.add(builder);
     }
 
     /**
@@ -97,5 +109,25 @@ public abstract class SourceBuilder extends AbstractTemplateBuilder {
             this.source =
                     new AttributeExpressionImpl(sourceExpr.evaluate(null).toString(), namespaces);
         else this.source = sourceExpr;
+    }
+
+    public boolean hasOwnOutput() {
+        return ownOutput;
+    }
+
+    public void setOwnOutput(boolean ownOutput) {
+        this.ownOutput = ownOutput;
+    }
+
+    protected void addSkipObjectEncodingHint(TemplateBuilderContext context) {
+        if (topLevelFeature) addEncodingHint(SKIP_OBJECT_ENCODING, true);
+    }
+
+    public boolean isTopLevelFeature() {
+        return topLevelFeature;
+    }
+
+    public void setTopLevelFeature(boolean topLevelFeature) {
+        this.topLevelFeature = topLevelFeature;
     }
 }

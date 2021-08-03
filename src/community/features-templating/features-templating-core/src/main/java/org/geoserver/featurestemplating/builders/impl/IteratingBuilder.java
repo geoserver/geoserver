@@ -7,10 +7,13 @@ package org.geoserver.featurestemplating.builders.impl;
 import static org.geoserver.featurestemplating.builders.EncodingHints.ITERATE_KEY;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.List;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
+import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
+import org.geotools.util.Converters;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
@@ -19,22 +22,24 @@ import org.xml.sax.helpers.NamespaceSupport;
  */
 public class IteratingBuilder extends SourceBuilder {
 
-    protected boolean rootCollection;
-
     public IteratingBuilder(String key, NamespaceSupport namespaces) {
-        super(key, namespaces);
+        super(key, namespaces, false);
+    }
+
+    public IteratingBuilder(String key, NamespaceSupport namespaces, boolean topLevelComplex) {
+        super(key, namespaces, topLevelComplex);
     }
 
     @Override
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        if (!rootCollection) {
+        if (ownOutput) {
             context = evaluateSource(context);
             if (context.getCurrentObj() != null) {
                 evaluateNonFeaturesField(writer, context);
             }
         } else {
-            evaluateInternal(writer, context);
+            evaluateInternal(writer, context, false);
         }
     }
 
@@ -49,19 +54,25 @@ public class IteratingBuilder extends SourceBuilder {
             TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
         if (canWrite(context)) {
             boolean iterateKey = isIterateKey();
-            String key = getKey();
-            boolean isList = context.getCurrentObj() instanceof List;
-            // if this is not a context as list or we don't have
+            String key = getKey(context);
+            Object o = context.getCurrentObj();
+            boolean isList = o instanceof List;
+            boolean isArray = o != null && o.getClass().isArray();
+            // if this is not a context as list and we don't have
             // iterate key hint we start the array and encode the key once here
-            if (!iterateKey || !isList) writer.startArray(key, encodingHints);
+            if (!iterateKey && hasOwnOutput()) writer.startArray(key, encodingHints);
 
             if (isList) {
-                evaluateCollection(writer, context, iterateKey);
+                evaluateCollection(
+                        writer, (List) context.getCurrentObj(), context.getParent(), iterateKey);
+            } else if (isArray) {
+                List list = Converters.convert(o, List.class);
+                evaluateCollection(writer, list, context.getParent(), iterateKey);
             } else {
-                evaluateInternal(writer, context);
+                evaluateInternal(writer, context, iterateKey);
             }
 
-            if (!iterateKey || !isList) writer.endArray(key, encodingHints);
+            if (!iterateKey && hasOwnOutput()) writer.endArray(key, encodingHints);
         }
     }
 
@@ -69,25 +80,28 @@ public class IteratingBuilder extends SourceBuilder {
      * Evaluate a context which is a List
      *
      * @param writer the template writer
-     * @param context the context against which evaluate
+     * @param elements
+     * @param parent
      * @throws IOException
      */
     protected void evaluateCollection(
-            TemplateOutputWriter writer, TemplateBuilderContext context, boolean iterateKey)
+            TemplateOutputWriter writer,
+            List elements,
+            TemplateBuilderContext parent,
+            boolean iterateKey)
             throws IOException {
 
-        List elements = (List) context.getCurrentObj();
         for (Object o : elements) {
             TemplateBuilderContext childContext = new TemplateBuilderContext(o);
-            childContext.setParent(context.getParent());
+            childContext.setParent(parent);
             if (evaluateFilter(childContext)) {
-                String key = getKey();
+                String key = getKey(parent);
                 // repeat the key attribute according to the hint
-                if (iterateKey && !rootCollection) writer.startArray(key, encodingHints);
+                if (iterateKey && hasOwnOutput()) writer.startArray(key, encodingHints);
                 for (TemplateBuilder child : children) {
                     child.evaluate(writer, childContext);
                 }
-                if (iterateKey && !rootCollection) writer.endArray(key, encodingHints);
+                if (iterateKey && hasOwnOutput()) writer.endArray(key, encodingHints);
             }
         }
     }
@@ -99,12 +113,16 @@ public class IteratingBuilder extends SourceBuilder {
      * @param context the current context
      * @throws IOException
      */
-    protected void evaluateInternal(TemplateOutputWriter writer, TemplateBuilderContext context)
+    protected void evaluateInternal(
+            TemplateOutputWriter writer, TemplateBuilderContext context, boolean iterateKey)
             throws IOException {
         if (evaluateFilter(context)) {
+            String key = getKey(context);
+            if (iterateKey && hasOwnOutput()) writer.startArray(key, encodingHints);
             for (TemplateBuilder child : children) {
                 child.evaluate(writer, context);
             }
+            if (iterateKey && hasOwnOutput()) writer.endArray(key, encodingHints);
         }
     }
 
@@ -113,6 +131,8 @@ public class IteratingBuilder extends SourceBuilder {
         boolean result;
         if (o instanceof List) {
             result = canWriteList((List) o, context);
+        } else if (o != null && o.getClass().isArray()) {
+            result = canWriteArray(o, context);
         } else {
             result = canWriteSingle(o, context);
         }
@@ -128,6 +148,17 @@ public class IteratingBuilder extends SourceBuilder {
         return false;
     }
 
+    private boolean canWriteArray(Object array, TemplateBuilderContext context) {
+        int length = Array.getLength(array);
+        for (int i = 0; i < length; i++) {
+            Object item = Array.get(array, i);
+            TemplateBuilderContext childContext = new TemplateBuilderContext(item);
+            childContext.setParent(context.getParent());
+            if (evaluateFilter(childContext)) return true;
+        }
+        return false;
+    }
+
     private boolean canWriteSingle(Object element, TemplateBuilderContext context) {
         TemplateBuilderContext childContext = new TemplateBuilderContext(element);
         childContext.setParent(context.getParent());
@@ -135,16 +166,13 @@ public class IteratingBuilder extends SourceBuilder {
         return false;
     }
 
-    public boolean isRootCollection() {
-        return rootCollection;
-    }
-
-    public void setRootCollection(boolean rootCollection) {
-        this.rootCollection = rootCollection;
-    }
-
     private boolean isIterateKey() {
         Object iterateKey = getEncodingHints().get(ITERATE_KEY);
         return iterateKey != null && Boolean.valueOf(iterateKey.toString()).booleanValue();
+    }
+
+    @Override
+    public Object accept(TemplateVisitor visitor, Object value) {
+        return visitor.visit(this, value);
     }
 }

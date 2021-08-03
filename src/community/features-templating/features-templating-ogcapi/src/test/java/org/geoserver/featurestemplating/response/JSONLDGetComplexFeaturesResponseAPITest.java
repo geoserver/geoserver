@@ -5,12 +5,15 @@
 package org.geoserver.featurestemplating.response;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -82,14 +85,14 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
                 new StringBuilder("ogc/features/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
-                        .append("&env=source:NotMappedFeature");
+                        .append("&env=source:notComposition");
         MockHttpServletResponse response = getAsServletResponse(sb.toString());
         // source changed validation should fail
         assertTrue(
                 response.getContentAsString()
                         .contains(
                                 "Failed to validate template for feature type MappedFeature. "
-                                        + "Failing attribute is Source: gsml:NotMappedFeature"));
+                                        + "Failing attribute is Source: gsml:notComposition"));
     }
 
     @Test
@@ -148,7 +151,6 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
                 new StringBuilder("ogc/features/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
-                        .append("&filter-lang=cql-text")
                         .append("&filter= features.gsml:positionalAccuracy.valueArray1 > 120");
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         JSONArray features = result.getJSONArray("features");
@@ -174,5 +176,59 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
         assertTrue(
                 strResult.contains(
                         "Validation failed. Unable to resolve the following fields against the @context: proportion,previousContextValue,lithology,valueArray,type,value,@codeSpace."));
+    }
+
+    @Test
+    public void testJsonLdResponseOGCAPISingleFeature() throws Exception {
+        setUpMappedFeature();
+        String path =
+                "ogc/features/collections/"
+                        + "gsml:MappedFeature"
+                        + "/items/mf4?f=application%2Fld%2Bjson";
+        JSONObject result = (JSONObject) getJsonLd(path);
+        Object context = result.get("@context");
+        checkContext(context);
+        assertNotNull(context);
+        assertFalse(result.has("features"));
+        assertEquals("mf4", result.getString("@id"));
+        assertEquals("MURRADUC BASALT", result.getString("name"));
+        assertTrue(result.has("@type"));
+        assertTrue(result.has("gsml:positionalAccuracy"));
+        assertTrue(result.has("gsml:GeologicUnit"));
+        assertTrue(result.has("geometry"));
+    }
+
+    @Test
+    public void testContentNegotiationByProfile() throws Exception {
+        String profile = "header('Accept-Profile')='http://my-test-profile/ld+json'";
+        setUpTemplate(
+                null,
+                profile,
+                SupportedFormat.JSONLD,
+                "MappedFeature.json",
+                "ProfileJsonLDTemplate",
+                ".json",
+                "gsml",
+                mappedFeature);
+        setUpMappedFeature();
+        String path =
+                "ogc/features/collections/"
+                        + "gsml:MappedFeature"
+                        + "/items?f=application%2Fld%2Bjson";
+        MockHttpServletRequest request = createRequest(path);
+        request.setMethod("GET");
+        request.setContent(new byte[] {});
+        request.addHeader("Accept-Profile", "http://my-test-profile/json");
+        MockHttpServletResponse response = dispatch(request, null);
+        JSONObject result = (JSONObject) json(response);
+        Object context = result.get("@context");
+        checkContext(context);
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        assertEquals(4, features.size());
+        for (int i = 0; i < features.size(); i++) {
+            JSONObject feature = (JSONObject) features.get(i);
+            checkMappedFeatureJSON(feature);
+        }
     }
 }

@@ -116,7 +116,7 @@ public class GMLWriterTest {
         outputWriter.endTemplateOutput(null);
         outputWriter.close();
         String result = baos.toString();
-        assertTrue(result.contains("xmlns:wfs=\"http://www.opengis.net/wfs\""));
+        assertTrue(result.contains("xmlns:wfs=\"http://www.opengis.net/wfs/2.0\""));
         assertTrue(result.contains("xmlns:gml=\"http://www.opengis.net/gml/3.2\""));
     }
 

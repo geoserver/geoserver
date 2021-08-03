@@ -4,6 +4,7 @@
  */
 package org.geoserver.featurestemplating.ogcapi;
 
+import static org.geoserver.featurestemplating.builders.EncodingHints.isSingleFeatureRequest;
 import static org.geoserver.ogcapi.features.FeatureService.ITEM_ID;
 import static org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST;
 
@@ -14,8 +15,8 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.Optional;
 import org.geoserver.config.GeoServer;
-import org.geoserver.featurestemplating.configuration.TemplateConfiguration;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geoserver.featurestemplating.configuration.TemplateLoader;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geoserver.platform.Operation;
@@ -31,13 +32,14 @@ class GeoJSONTemplateGetFeatureResponse
         extends org.geoserver.featurestemplating.wfs.GeoJSONTemplateGetFeatureResponse {
 
     public GeoJSONTemplateGetFeatureResponse(
-            GeoServer gs, TemplateConfiguration configuration, TemplateIdentifier identifier) {
+            GeoServer gs, TemplateLoader configuration, TemplateIdentifier identifier) {
         super(gs, configuration, identifier);
     }
 
     @Override
     protected GeoJSONWriter getOutputWriter(OutputStream output) throws IOException {
-        return new GeoJSONAPIWriter(new JsonFactory().createGenerator(output, JsonEncoding.UTF8));
+        return new GeoJSONAPIWriter(
+                new JsonFactory().createGenerator(output, JsonEncoding.UTF8), identifier);
     }
 
     @Override
@@ -54,8 +56,10 @@ class GeoJSONTemplateGetFeatureResponse
                     writer, featureCollection, getFeature, featureCount, bounds);
             return;
         }
-        writer.writeNumberReturned();
-        writer.writeTimeStamp();
+        if (!isSingleFeatureRequest()) {
+            writer.writeNumberReturned();
+            writer.writeTimeStamp();
+        }
         String collId = getFeature.getParameters()[0].toString();
         String name = helper.getFeatureType(collId).prefixedName();
         ((GeoJSONAPIWriter) writer)

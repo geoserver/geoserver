@@ -12,7 +12,8 @@ public enum TemplateIdentifier {
     JSONLD("application/ld+json", "json-ld-template.json"),
     GML32("application/gml+xml;version=3.2", "gml32-template.xml"),
     GML31("gml3", "gml31-template.xml"),
-    GML2("GML2text/xml;subtype=gml/2.1.2", "gml2-template.xml");
+    GML2("GML2text/xml;subtype=gml/2.1.2", "gml2-template.xml"),
+    HTML("text/html", "html-template.xhtml");
 
     private String outputFormat;
     private String filename;
@@ -36,7 +37,7 @@ public enum TemplateIdentifier {
      * @param outputFormat the outputFormat for which to find a TemplateIdentifier.
      * @return the TemplateIdentifier matching the outputFormat.
      */
-    public static TemplateIdentifier getTemplateIdentifierFromOutputFormat(String outputFormat) {
+    public static TemplateIdentifier fromOutputFormat(String outputFormat) {
         TemplateIdentifier identifier = null;
         String trimOutputFormat = outputFormat.trim().replaceAll(" ", "");
         if (trimOutputFormat.equalsIgnoreCase(TemplateIdentifier.JSON.getOutputFormat()))
@@ -51,6 +52,8 @@ public enum TemplateIdentifier {
             identifier = TemplateIdentifier.GML31;
         else if (TemplateIdentifier.GML2.getOutputFormat().contains(trimOutputFormat))
             identifier = TemplateIdentifier.GML2;
+        else if (TemplateIdentifier.HTML.getOutputFormat().equals(trimOutputFormat))
+            identifier = TemplateIdentifier.HTML;
         return identifier;
     }
 }

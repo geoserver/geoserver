@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
+import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -21,14 +22,15 @@ public class CompositeBuilder extends SourceBuilder {
 
     protected List<TemplateBuilder> children;
 
-    public CompositeBuilder(String key, NamespaceSupport namespaces) {
-        super(key, namespaces);
+    public CompositeBuilder(String key, NamespaceSupport namespaces, boolean topLevelComplex) {
+        super(key, namespaces, topLevelComplex);
         this.children = new LinkedList<>();
     }
 
     @Override
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
+        addSkipObjectEncodingHint(context);
         context = evaluateSource(context);
         Object o = context.getCurrentObj();
         if (o != null && evaluateFilter(context) && canWrite(context)) {
@@ -45,11 +47,11 @@ public class CompositeBuilder extends SourceBuilder {
      */
     protected void evaluateChildren(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
-        writer.startObject(getKey(), encodingHints);
+        if (ownOutput) writer.startObject(getKey(context), encodingHints);
         for (TemplateBuilder jb : children) {
             jb.evaluate(writer, context);
         }
-        writer.endObject(getKey(), encodingHints);
+        if (ownOutput) writer.endObject(getKey(context), encodingHints);
     }
 
     /**
@@ -62,16 +64,15 @@ public class CompositeBuilder extends SourceBuilder {
     public boolean canWrite(TemplateBuilderContext context) {
         List<TemplateBuilder> filtered =
                 children.stream()
-                        .filter(
-                                b ->
-                                        b instanceof DynamicValueBuilder
-                                                || b instanceof CompositeBuilder)
+                        .filter(b -> b instanceof DynamicValueBuilder || b instanceof SourceBuilder)
                         .collect(Collectors.toList());
         if (filtered.size() == children.size()) {
             int falseCounter = 0;
             for (TemplateBuilder b : filtered) {
                 if (b instanceof CompositeBuilder) {
                     if (!((CompositeBuilder) b).canWrite(context)) falseCounter++;
+                } else if (b instanceof IteratingBuilder) {
+                    if (!((IteratingBuilder) b).canWrite(context)) falseCounter++;
                 } else {
                     if (!((DynamicValueBuilder) b).checkNotNullValue(context)) falseCounter++;
                 }
@@ -92,7 +93,7 @@ public class CompositeBuilder extends SourceBuilder {
     }
 
     @Override
-    protected void writeKey(TemplateOutputWriter writer) throws IOException {
-        if (key != null && !key.equals("")) writer.writeElementName(key, getEncodingHints());
+    public Object accept(TemplateVisitor visitor, Object value) {
+        return visitor.visit(this, value);
     }
 }

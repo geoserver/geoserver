@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.featurestemplating.builders.impl.TemplateBuilderContext;
+import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 
 /** Basic interface for all the builders */
@@ -50,4 +51,6 @@ public interface TemplateBuilder {
      * @param value the hint value.
      */
     void addEncodingHint(String key, Object value);
+
+    Object accept(TemplateVisitor visitor, Object value);
 }

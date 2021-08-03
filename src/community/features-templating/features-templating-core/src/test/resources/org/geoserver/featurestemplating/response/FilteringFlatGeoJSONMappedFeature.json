@@ -1,5 +1,7 @@
 {
-  "$VendorOptions": "flat_output:true",
+  "$options": {
+    "flat_output":true
+  },
   "type":"FeatureCollection",
   "features":[
     {

@@ -4,6 +4,9 @@
  */
 package org.geoserver.featurestemplating.writers;
 
+import static org.geoserver.featurestemplating.builders.EncodingHints.SKIP_OBJECT_ENCODING;
+import static org.geoserver.featurestemplating.builders.EncodingHints.isSingleFeatureRequest;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import java.io.IOException;
@@ -14,6 +17,8 @@ import java.util.Map;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geotools.util.Converters;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Attribute;
 import org.opengis.feature.ComplexAttribute;
@@ -24,8 +29,13 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     protected com.fasterxml.jackson.core.JsonGenerator generator;
     private boolean flatOutput;
 
-    public CommonJSONWriter(com.fasterxml.jackson.core.JsonGenerator generator) {
+    protected TemplateIdentifier identifier;
+
+    public CommonJSONWriter(
+            com.fasterxml.jackson.core.JsonGenerator generator,
+            TemplateIdentifier templateIdentifier) {
         this.generator = generator;
+        this.identifier = templateIdentifier;
     }
 
     @Override
@@ -154,32 +164,44 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
         } else if (result instanceof JsonNode) {
             writeStaticContent(key, result, encodingHints);
         } else if (result instanceof List) {
-            List list = (List) result;
-            if (list.size() == 1) {
-                writeElementNameAndValue(key, list.get(0), encodingHints);
-            } else {
-                if (!flatOutput) {
-                    generator.writeFieldName(key);
-                    writeStartArray();
-                    for (int i = 0; i < list.size(); i++) {
-                        writeElementValue(list.get(i), encodingHints);
-                    }
-                    writeEndArray();
-                } else {
-                    for (int i = 0; i < list.size(); i++) {
-                        String itKey = null;
-                        itKey = key + "_" + (i + 1);
-                        writeElementNameAndValue(itKey, list.get(i), encodingHints);
-                    }
-                }
-            }
+            writeList(key, (List) result, encodingHints, false);
         } else if (result == null) {
             writeElementName(key, encodingHints);
             generator.writeNull();
+        } else if (result.getClass().isArray()) {
+            List list = Converters.convert(result, List.class);
+            writeList(key, list, encodingHints, true);
         } else {
             writeElementName(key, encodingHints);
             writeValue(result.toString());
         }
+    }
+
+    private void writeList(String key, List result, EncodingHints encodingHints, boolean forceArray)
+            throws IOException {
+        List list = result;
+        if (list.size() == 1 && !forceArray) {
+            writeElementNameAndValue(key, list.get(0), encodingHints);
+        } else {
+            if (!flatOutput) {
+                generator.writeFieldName(key);
+                writeList(encodingHints, list);
+            } else {
+                for (int i = 0; i < list.size(); i++) {
+                    String itKey = null;
+                    itKey = key + "_" + (i + 1);
+                    writeElementNameAndValue(itKey, list.get(i), encodingHints);
+                }
+            }
+        }
+    }
+
+    private void writeList(EncodingHints encodingHints, List list) throws IOException {
+        writeStartArray();
+        for (int i = 0; i < list.size(); i++) {
+            writeElementValue(list.get(i), encodingHints);
+        }
+        writeEndArray();
     }
 
     @Override
@@ -194,7 +216,9 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
 
     @Override
     public void endTemplateOutput(EncodingHints encodingHints) throws IOException {
-        writeEndArray();
+        if (!isSingleFeatureRequest()) {
+            writeEndArray();
+        }
         writeEndObject();
     }
 
@@ -243,5 +267,15 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
     @Override
     public void close() throws IOException {
         generator.close();
+    }
+
+    protected boolean skipObjectWriting(EncodingHints encodingHints) {
+        Boolean skipIfSingleFeature =
+                getEncodingHintIfPresent(encodingHints, SKIP_OBJECT_ENCODING, Boolean.class);
+        return skipIfSingleFeature != null
+                && skipIfSingleFeature.booleanValue()
+                && isSingleFeatureRequest()
+                && (identifier.equals(TemplateIdentifier.GEOJSON)
+                        || identifier.equals(TemplateIdentifier.JSONLD));
     }
 }

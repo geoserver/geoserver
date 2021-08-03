@@ -1,0 +1,5 @@
+{
+  "a": 10,
+  "b": "abc",
+  "$merge": "./recurse.json"
+}

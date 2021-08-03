@@ -4,24 +4,34 @@
  */
 package org.geoserver.featurestemplating.response;
 
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.base.Charsets;
 import java.io.File;
 import java.io.IOException;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.platform.resource.Resource;
+import org.geoserver.featurestemplating.configuration.SupportedFormat;
+import org.geoserver.featurestemplating.configuration.TemplateFileManager;
+import org.geoserver.featurestemplating.configuration.TemplateInfo;
+import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
+import org.geoserver.featurestemplating.configuration.TemplateLayerConfig;
+import org.geoserver.featurestemplating.configuration.TemplateRule;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.AbstractAppSchemaTestSupport;
 import org.geoserver.test.FeatureChainingMockData;
-import org.junit.After;
 import org.junit.Before;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -55,20 +65,19 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         setUpComplex(fileName, "gsml", ft);
     }
 
+    protected void setUpComplex(
+            String fileName, String workspace, String templateFileName, FeatureTypeInfo ft)
+            throws IOException {
+        String resourceLocation =
+                "workspaces/" + workspace + "/" + ft.getStore().getName() + "/" + ft.getName();
+        File file = dd.get(Paths.path(resourceLocation, templateFileName)).file();
+        file.createNewFile();
+        dd.getResourceLoader().copyFromClassPath(fileName, file, getClass());
+    }
+
     protected void setUpComplex(String fileName, String workspace, FeatureTypeInfo ft)
             throws IOException {
-        File file =
-                dd.getResourceLoader()
-                        .createFile(
-                                "workspaces/"
-                                        + workspace
-                                        + "/"
-                                        + ft.getStore().getName()
-                                        + "/"
-                                        + ft.getName(),
-                                getTemplateFileName());
-
-        dd.getResourceLoader().copyFromClassPath(fileName, file, getClass());
+        setUpComplex(fileName, workspace, getTemplateFileName(), ft);
     }
 
     protected JSON getJsonLd(String path) throws Exception {
@@ -94,9 +103,9 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         // in case of GEOSJSON response with ogcapi, the output format is not
         // set to MockHttpServlet request, so skipping
         if (contentType != null)
-            assertTrue(
-                    contentType.equals("application/json")
-                            || contentType.equals("application/geo+json"));
+            assertThat(
+                    contentType,
+                    anyOf(equalTo("application/json"), equalTo("application/geo+json")));
         return json(response);
     }
 
@@ -107,43 +116,6 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         // set to MockHttpServlet request, so skipping
         if (contentType != null) assertEquals(contentType, "application/json");
         return json(response);
-    }
-
-    @After
-    public void cleanup() {
-        String templateFileName = getTemplateFileName();
-        Resource res =
-                dd.getResourceLoader()
-                        .get(
-                                "workspaces/gsml/"
-                                        + mappedFeature.getStore().getName()
-                                        + "/"
-                                        + mappedFeature.getName()
-                                        + "/"
-                                        + templateFileName);
-        if (res != null) res.delete();
-
-        Resource res2 =
-                dd.getResourceLoader()
-                        .get(
-                                "workspaces/gsml/"
-                                        + geologicUnit.getStore().getName()
-                                        + "/"
-                                        + geologicUnit.getName()
-                                        + "/"
-                                        + templateFileName);
-        if (res2 != null) res2.delete();
-
-        Resource res3 =
-                dd.getResourceLoader()
-                        .get(
-                                "workspaces/ex/"
-                                        + parentFeature.getStore().getName()
-                                        + "/"
-                                        + parentFeature.getName()
-                                        + "/"
-                                        + getTemplateFileName());
-        if (res3 != null) res3.delete();
     }
 
     protected abstract String getTemplateFileName();
@@ -171,5 +143,56 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         if (context instanceof JSONObject) {
             assertFalse(((JSONObject) context).isEmpty());
         }
+    }
+
+    protected void setUpTemplate(
+            String cqlRuleCondition,
+            SupportedFormat outputFormat,
+            String templateFileName,
+            String templateName,
+            String templateExtension,
+            String workspace,
+            FeatureTypeInfo ft)
+            throws IOException {
+        setUpTemplate(
+                cqlRuleCondition,
+                null,
+                outputFormat,
+                templateFileName,
+                templateName,
+                templateExtension,
+                workspace,
+                ft);
+    }
+
+    protected void setUpTemplate(
+            String cqlRuleCondition,
+            String profile,
+            SupportedFormat outputFormat,
+            String templateFileName,
+            String templateName,
+            String templateExtension,
+            String workspace,
+            FeatureTypeInfo ft)
+            throws IOException {
+        String rawTemplate =
+                IOUtils.toString(getClass().getResourceAsStream(templateFileName), Charsets.UTF_8);
+        TemplateInfo info = new TemplateInfo();
+        info.setExtension(templateExtension);
+        info.setTemplateName(templateName);
+        info.setWorkspace(workspace);
+        info.setFeatureType(ft.getNativeName());
+        TemplateInfoDAO.get().saveOrUpdate(info);
+        TemplateFileManager.get().saveTemplateFile(info, rawTemplate);
+        TemplateRule rule = new TemplateRule();
+        rule.setTemplateName(info.getFullName());
+        rule.setCqlFilter(cqlRuleCondition);
+        rule.setProfileFilter(profile);
+        rule.setOutputFormat(outputFormat);
+        rule.setTemplateIdentifier(info.getIdentifier());
+        TemplateLayerConfig config = new TemplateLayerConfig();
+        config.addTemplateRule(rule);
+        ft.getMetadata().put(TemplateLayerConfig.METADATA_KEY, config);
+        getCatalog().save(ft);
     }
 }

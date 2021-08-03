@@ -5,6 +5,9 @@
 package org.geoserver.featurestemplating.builders;
 
 import java.util.HashMap;
+import java.util.Optional;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * This class represent a Map of encoding hints. An encoding hint is a value giving additional
@@ -13,15 +16,37 @@ import java.util.HashMap;
  */
 public class EncodingHints extends HashMap<String, Object> {
 
+    // encoding hint to retrieve the json-ld context
     public static final String CONTEXT = "@context";
 
+    // encoding hint to retrieve gml namespaces
     public static final String NAMESPACES = "NAMESPACES";
 
+    // encoding hint to retrieve gml schema_location
     public static final String SCHEMA_LOCATION = "SCHEMA_LOCATION";
 
+    // encoding hint to tell when a value builder has to be encoded as an xml attribute
     public static final String ENCODE_AS_ATTRIBUTE = "ENCODE_AS_ATTRIBUTE";
 
+    // encoding hint to tell if the Iterating builder should iterate also
+    // the key value (eg. for xml output)
     public static final String ITERATE_KEY = "INTERATE_KEY";
+
+    // encoding hint to issue children evaluation in value builder (Dynamic and Static)
+    // this is needed for xml output where a value builder can have children for xml attributes
+    public static final String CHILDREN_EVALUATION = "CHILDREN_EVALUATION";
+
+    // encoding hint to tell the writer to skip start and end object
+    // when we are dealing with a single feature request
+    public static final String SKIP_OBJECT_ENCODING = "SKIP_OBJECT_ENCODING";
+
+    public EncodingHints() {
+        super();
+    }
+
+    public EncodingHints(EncodingHints encodingHints) {
+        super(encodingHints);
+    }
 
     /**
      * Check if the hint is present.
@@ -42,5 +67,21 @@ public class EncodingHints extends HashMap<String, Object> {
      */
     public <T> T get(String key, Class<T> cast) {
         return cast.cast(get(key));
+    }
+
+    /**
+     * Check if the current request is an OGCAPI request by feature id.
+     *
+     * @return true if is a single feature request, false otherwise.
+     */
+    public static boolean isSingleFeatureRequest() {
+        return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
+                .map(
+                        att ->
+                                (String)
+                                        att.getAttribute(
+                                                "OGCFeatures:ItemId",
+                                                RequestAttributes.SCOPE_REQUEST))
+                .isPresent();
     }
 }

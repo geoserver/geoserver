@@ -1,389 +1,110 @@
+
+.. _template-configuration:
+
 Template Configuration
 ======================
- 
-Producing the template file
----------------------------
 
-The template file, operate as a mapping level over the stream of features received by a store, transforming them in the desired output. 
-The file has to be managed directly through file system editing, without any UI or REST API. In order to associate it with a given feature type, it has to be placed in FeatureType folder in the GeoServer data directory named as json-ld-template.json,
-or as geojson-template.json e.g. :code:`workspace/store/featuretype/json-ld-template.json`.
-If the client asks json-ld output format  for a feature type that does not have a json-ld template file, an error will be returned.
-This is an example of a json-ld configuration file 
+This part of the documentation explains how to add new templates to GeoServer and how to define rules from the layer configuration page in order to define under which condition a template should be applied.
 
-.. code-block:: json
+Add Features Templates to GeoServer
+------------------------------------
 
-  {
-   "@context": {
-     "gsp": "http://www.opengis.net/ont/geosparql#",
-     "sf": "http://www.opengis.net/ont/sf#",
-     "schema": "https://schema.org/",
-     "dc": "http://purl.org/dc/terms/",
-     "Feature": "gsp:Feature",
-     "FeatureCollection": "schema:Collection",
-     "Point": "sf:Point",
-     "wkt": "gsp:asWKT",
-     "features": {
-       "@container": "@set",
-       "@id": "schema:hasPart"
-     },
-     "geometry": "sf:geometry",
-     "description": "dc:description",
-     "title": "dc:title",
-     "name": "schema:name"
-   },
-   "type": "FeatureCollection",
-   "features": [
-     {
-       "$source": "gsml:MappedFeature"
-     },
-     {
-       "@id": "${@id}",
-       "@type": [
-         "Feature",
-         "gsml:MappedFeature",
-         "http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature"
-       ],
-       "name": "${gml:name}",
-       "gsml:positionalAccuracy": {
-         "type": "gsml:CGI_NumericValue",
-         "value": "${gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue}"
-       },
-       "gsml:GeologicUnit": {
-         "$source": "gsml:specification/gsml:GeologicUnit",
-         "@id": "${@id}",
-         "description": "${gml:description}",
-         "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
-         "gsml:composition": [
-           {
-             "$source": "gsml:composition"
-           },
-           {
-             "gsml:compositionPart": [
-               {
-                 "$source": "gsml:CompositionPart"
-               },
-               {
-                 "gsml:role": {
-                   "value": "${gsml:role}",
-                   "@codeSpace": "urn:cgi:classifierScheme:Example:CompositionPartRole"
-                 },
-                 "proportion": {
-                   "$source": "gsml:proportion",
-                   "@dataType": "CGI_ValueProperty",
-                   "CGI_TermValue": {
-                     "@dataType": "CGI_TermValue",
-                     "value": {
-                       "value": "${gsml:CGI_TermValue}",
-                       "@codeSpace": "some:uri"
-                     }
-                   }
-                 },
-                 "lithology": [
-                   {
-                     "$source": "gsml:lithology"
-                   },
-                   {
-                     "@id": "${gsml:ControlledConcept/@id}",
-                     "name": {
-                       "value": "${gsml:ControlledConcept/gsml:name}",
-                       "@lang": "en"
-                     },
-                     "vocabulary": {
-                       "@href": "urn:ogc:def:nil:OGC::missing"
-                     }
-                   }
-                 ]
-               }
-             ]
-           }
-         ]
-       },
-       "geometry": {
-         "@type": "Polygon",
-         "wkt": "$${toWKT(xpath('gsml:shape'))}"
-       }
-     }
-   ]
-  }
+Once the plug-in is installed, in the left panel of the GeoServer UI will show up a new option ``Feature Templating`` under the ``Data`` section.
+By clicking on it a table with available templates will be presented.
+
+.. figure:: images/templates-table.png
+
+By clicking on :guilabel:`add New` button the configuration page will open.
+
+.. figure:: images/template-ui.png
+
+In the first tab the user can specify the following values:
+
+* the :guilabel:`Template Name`. This name will be the one used for the template file name when saved in the data dir.
+* the :guilabel:`Template File Type` (file extension) of the template, by selecting one among those available.
+* the :guilabel:`Workspace` if the user want to reduce the scope of usage of the templates to the vector layers available in a specific workspace.
+* the :guilabel:`Layer Name` if the user want to reduce the scope of usage of the templates to a specific vector layer only. Selecting a :guilabel:`Layer Name` will not cause the template to be applied to that Layer. This option is instead meant to make the template usable only by the selected Layer. In order to apply a template content negotion rules need to be configured on a per layer basis (see section below).
+
+The :guilabel:`Workspace` and :guilabel:`Layer Name` values, if specified, will affect also the place where the template will be saved:
+
+* if none is specified the template will be saved inside the :code:`features-templating` directory.
+* if a :guilabel:`Workspace` is specified the template will be saved in that workspace folder.
+* if a :guilabel:`Layer Name` is specified the template will be saved in that layer folder.
 
 
-While this is an example for a GeoJSON template
+The :guilabel:`Template Content` section is where the template is actually defined. 
 
-.. code-block:: json
+* The template can be uploaded from a file, and in that case the :guilabel:`Template Name` and :guilabel:`Template File Type` fields are automatically populated from the file.
+* Otherwise the template can be written from scratch into the template editor.
 
-   {
-   "type":"FeatureCollection",
-   "features":[
-      {
-         "$source":"gsml:MappedFeature"
-      },
-      {
-         "@id":"${@id}",
-         "@type":[
-            "Feature",
-            "gsml:MappedFeature",
-            "http://vocabulary.odm2.org/samplingfeaturetype/mappedFeature"
-         ],
-         "name":"$${strConcat('FeatureName: ', xpath('gml:name'))}",
-         "gsml:positionalAccuracy":{
-            "type":"gsml:CGI_NumericValue",
-            "value":"${gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue}"
-         },
-         "gsml:GeologicUnit":{
-            "$source":"gsml:specification/gsml:GeologicUnit",
-            "@id":"${@id}",
-            "description":"${gml:description}",
-            "gsml:geologicUnitType":"urn:ogc:def:nil:OGC::unknown",
-            "gsml:composition":[
-               {
-                  "$source":"gsml:composition"
-               },
-               {
-                  "gsml:compositionPart":[
-                     {
-                        "$source":"gsml:CompositionPart"
-                     },
-                     {
-                        "gsml:role":{
-                           "value":"$${strConcat('FeatureName: ', xpath('gsml:role'))}",
-                           "@codeSpace":"urn:cgi:classifierScheme:Example:CompositionPartRole"
-                        },
-                        "proportion":{
-                           "$source":"gsml:proportion",
-                           "@dataType":"CGI_ValueProperty",
-                           "CGI_TermValue":{
-                              "@dataType":"CGI_TermValue",
-                              "value":{
-                                 "value":"${gsml:CGI_TermValue}",
-                                 "@codeSpace":"some:uri"
-                              }
-                           }
-                        },
-                        "lithology":[
-                           {
-                              "$source":"gsml:lithology"
-                           },
-                           {
-                              "@id":"${gsml:ControlledConcept/@id}",
-                              "name":{
-                                 "value":"${gsml:ControlledConcept/gsml:name}",
-                                 "@lang":"en"
-                              },
-                              "vocabulary":{
-                                 "@href":"urn:ogc:def:nil:OGC::missing"
-                              }
-                           }
-                        ]
-                     }
-                  ]
-               }
-            ]
-         },
-         "geometry":"${gsml:shape}"
-      }
-   ]
- }
+By clicking on the :guilabel:`Preview` tab the user can specify parameters to test the template and preview the result. The preview will return only a single feature.
+
+.. warning:: When previewing template the template gets saved/updated in the data directory. This is due the fact that the preview works by issuing a WFS request. This implies that the previous state is lost, but also that any modification is immediately visible to a user that might be accessing the layer.
+
+.. figure:: images/preview-ui.png
+
+* The user must specify one value among the :guilabel:`Available Output Formats`
+* The user must specify values among the available for fields :guilabel:`Workspace` and :guilabel:`Layer Name`.
+* If the user specified a  :guilabel:`Workspace` for the template in the :guilabel:`Data` tab the preview :guilabel:`Workspace` will be automatically set from that one.
+* If the user specified a  :guilabel:`Layer Name` for the template in the :guilabel:`Data` tab the preview :guilabel:`Layer Name` will be automatically set from that one.
+* The user can specify a :guilabel:`Feature ID` to obtain a preview for the specified feature.
+* The user can specify a :guilabel:`CQL Filter` to obtain a preview for a feature matching the filter.
 
 
-The content of the output depends on specified properties in the template file, in a way that follows the below rules:
+The :guilabel:`Validate` button acts differently according to the output format:
 
-* xpath property interpolation can be invoked using a :code:`${xpath}` syntax;
-* in case complex operation are needed a CQL expression can be used throught a :code:`$${cql}` syntax (all CQL functions are supported);
-* properties without directives are reproduced in the output as-is;
-* a :code:`"$source":"xpath"` attribute can be added as the first element of an array or of an object;
-* if a :code:`"$source": "xpath"` attribute is present, it will act as a context against which all xpath expression will be evaluated. In the case of an array it will be use to iterate over a collection of element; if source evaluates to null the entire object/array will be skipped;
-* a :code:`../` syntax in an xpath means that xpath evaluation will be relative to the previous :code:`$source`. Give the above template file, the xpath :code:`"../gsml:shape"` will be evaluate not against the corresponding :code:`"$source": "gsml:specification/gsml:GeologicUnit"`, but against the parent one :code:`"$source": "gsml:MappedFeature"`.
+* In the GML case will trigger a schema validation based on the Schema Location specified in the template.
 
-.. warning:: the :code:`xpath('some xpath)` cql function is meant to be used in the scope of this plugin. For general usage please refers to the :geotools:`property function <library/main/function_list.html#property-propertyname-returns-propertyvalue>`.
+* In the JSON-LD case will perform a JSON-LD ``@context`` validation.
+
+* In the GeoJSON case no validation will occur.
 
 
-Filtering Support
-------------------
+Add  Templates Rules to a Layer
+--------------------------------
 
-In order to have a more fined grained control over the output it is possible to specify a filter at the array, object and attribute level.
-Assuming to have a template file like the above, valid filters could be the followings:
+<<<<<<< HEAD
+To inform GeoServer when to apply a template, the user needs to specify rule on a per layer basis. 
+The most basic rule is one that bounds a template to specific output format. :guilabel:``Request CQL Functions`` allow to specify more advanced rules.
+=======
+To inform GeoServer when to apply a template, the user needs to specify the rules on a per layer basis.
+The most basic rule is one that binds a template to a specific output format. :guilabel:`Request CQL Functions` allow specifying more advanced rules.
+>>>>>>> 0449bb5021... [GEOS-10165] Features templating add Rest API - [GEOS-10166] Features templating - Add CQL profile field in template rule UI (#5183)
 
-array 
+When the plug-in is installed a new tab will be available in the Layer configuration page, allowing for the definition of Template rules.
 
-.. code-block:: json
+.. figure:: images/template-rules.png
 
- {
-   "lithology":[
-      {
-         "$source":"gsml:lithology",
-         "$filter":"xpath('gsml:ControlledConcept/gsml:name') = 'name_2'"
-      },
-      {
-         "@id":"${gsml:ControlledConcept/@id}",
-         "name":{
-            "value":"${gsml:ControlledConcept/gsml:name}",
-            "@lang":"en"
-         },
-         "vocabulary":{
-            "@href":"urn:ogc:def:nil:OGC::missing"
-         }
-      }
-   ]
- }
+Once the form is filled the user needs to press the :guilabel:`Add` button to add the rule to the rules table. The rules will be then persisted to the layer configuration only when the :guilabel:`Save` button is pressed.
 
+The following values can be specified:
 
-object 
+* the :guilabel:`Priority` needed to inform GeoServer which rule should be applied if more then one rule matches the GetFeature request.
+* the :guilabel:`Template Name` that indicates which template should be applied. If the template has a global scope the dropdown will present it with the template name value only. If a Workspace has been defined at template configuration time, the format will be {workspace name}:{template name}. If a Layer Name has been specified at template configuration time, the format will be {workspace name}:{layer name}:{template name}.
+* the :guilabel:`Supported Output Formats` dropdown shows the output formats for which a template can be invoked. The user can choose one to indicate which output format the selected template should be applied to. If the GML value is selected, the template will be applied to all GML version output formats. If different GML templates should be applied for different GML versions, it is possible to define a condition on the MIME Type using the mimeType() function.
+* the :guilabel:`Request CQL filter` area allows defining a generic CQL filter to evaluate against the request to determine if the template should be t. The available request functions to be used are listed on the right side of the form.
+* the :guilabel:`Profile CQL Filter` allows defining a CQL filter allowing a content negotiation to be done per profile. The available request functions to be used are listed on the right side of the form. There is several approaches for content negotions per profile, for example one of them is the `W3C recommended approach <https://www.w3.org/TR/dx-prof-conneg/>`_ where the profile is provided as an HTTP header. This will translate in a CQL filter similar to this one ``header('Accept-Profile')='http://my-profile/geo+json'``. 
 
-.. code-block:: json
+Example CQL filter might be the following:
 
- {
-   "gsml:GeologicUnit":{
-      "$source":"gsml:specification/gsml:GeologicUnit",
-      "$filter":"xpath('gml:description') = 'Olivine basalt'",
-      "@id":"${@id}",
-      "description":"${gml:description}",
-      "gsml:geologicUnitType":"urn:ogc:def:nil:OGC::unknown",
-      "gsml:composition":"..."
-   }
- }
+* ``requestParam('myParameter')``` = 'use this template'
+* ``mimeType()`` = 'application/geo+json'
+* ``requestMatchRegex('^.*matchedPart.*$')`` = true
+* ``header('testHeader')`` = 'myHeaderValue'
+
+Every rule must define either a value from the :guilabel:`Supported Output Formats` dropdown or a :guilabel:`Request CQL filter`  with a filter on the mimeType() value, or both.
+
+Once rules are defined, if an incoming GetFeature request is matched the template corresponding to the matched rule will be applied to the output.
 
 
+Data Directory configuration
+----------------------------
 
-attribute (dynamic) 
+A features template can be configured directly from the GeoServer data dir without any UI usage. In this case the template needs to be placed in the Feature Type directory. When configuring templates in this way only one feature template per Feature Type is supported and the name is fixed for each outputformat like in the list below:
 
-.. code-block:: json
-
-  {
-  "gsml:GeologicUnit": {
-        "$source": "gsml:specification/gsml:GeologicUnit",
-        "@id": "${@id}",
-        "description": "$filter{xpath('gml:description')='Olivine basalt'},${gml:description}",
-        "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
-        "gsml:composition": "..."
-    }
-  }
-
-
-attribute (static) 
-
-.. code-block:: json
-
-   {
-   "gsml:composition":[
-      {
-         "$source":"gsml:composition"
-      },
-      {
-         "gsml:compositionPart":[
-            {
-               "$source":"gsml:CompositionPart"
-            },
-            {
-               "gsml:role":{
-                  "value":"${gsml:role}",
-                  "@codeSpace":"$filter{xpath('../../gml:description')='Olivine basalt'},urn:cgi:classifierScheme:Example:CompositionPartRole"
-               }
-            }
-         ]
-      }
-   ]
- }
-
-
-
-In the array and object case the filter sintax expected a :code:`"$filter"` key followed by an attribute with the filter to evaluate. In the attribute case, instead, the filter is being specified inside the value as :code:`"$filter{...}"`, followed by  the cql expression, or by the static content, with a comma separating the two.
-The evaluation of a filter is handled by the module in the following way:
-
-* if a :code:`"$filter": "cql"` attribute is present after the :code:`"$source"` attribute in an array or an object:
-  
-  * in the array case, each array element will be included in the output only if the condition in the filter is matched, otherwise it will be skipped;
-  
-  * in the object case, the entire object will be included in the output only if the condition in the filter is matched, otherwise the object will be skipped;
-
-* if a :code:`$filter{cql}` is present inside an attribute value before the expression or the static content, separated by it from a :code:`,`:
-  
-  * in case of an expression attribute, the result of the expression will be included in the output if the filter condition is true;
-  
-  * in case of a static content attribute, the static content will be included in the output if the filter condition is true.
-  
-  * in case the expression is not matched, the content, static or dynamic, will not be set, resulting in the attribute being skipped.
-
-
-Inspire GeoJSON Output
-----------------------
-
-In order to provide a GeoJSON output encoded following INSPIRE rule for `alternative feature GeoJSON encoding <https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/ads/simple-addresses.md>`_ (`see also <https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/efs/simple-environmental-monitoring-facilities.md>`_), it is possible to provide a VendorOption in the template file by adding the following attribute :code:`"$VendorOptions": "flat_output:true"`.
-Along with the :code:`flat_output` vendor option it is possible to specify a  :code:`separator` option, to customize the attribute name separator eg :code:`"$VendorOptions": "flat_output:true;separator:."`. Default is :code:`_`.
-Below an example configuration file for a Complex Feature type:
-
-.. code-block:: json
-
-
-  {
-   "$VendorOptions":"flat_output:true",
-   "type":"FeatureCollection",
-   "features":[
-      {
-         "$source":"gsml:MappedFeature"
-      },
-      {
-         "@id":"${@id}",
-         "geometry":"${gsml:shape}",
-         "properties":{
-            "name":"$${strConcat('FeatureName: ', xpath('gml:name'))}",
-            "gsml:GeologicUnit":{
-               "$source":"gsml:specification/gsml:GeologicUnit",
-               "description":"${gml:description}",
-               "gsml:geologicUnitType":"urn:ogc:def:nil:OGC::unknown",
-               "gsml:composition":[
-                  {
-                     "$source":"gsml:composition"
-                  },
-                  {
-                     "gsml:compositionPart":[
-                        {
-                           "$source":"gsml:CompositionPart"
-                        },
-                        {
-                           "gsml:role_value":"$${strConcat('FeatureName: ', xpath('gsml:role'))}",
-                           "gsml:role_codeSpace":"urn:cgi:classifierScheme:Example:CompositionPartRole",
-                           "proportion":{
-                              "$source":"gsml:proportion",
-                              "@dataType":"CGI_ValueProperty",
-                              "CGI-TermValue_@dataType":"CGI_TermValue",
-                              "CGI-TermValue_value":"${gsml:CGI_TermValue}"
-                           },
-                           "lithology":[
-                              {
-                                 "$source":"gsml:lithology"
-                              },
-                              {
-                                 "name":"${gsml:ControlledConcept/gsml:name}",
-                                 "vocabulary":"@href:urn:ogc:def:nil:OGC::missing"
-                              }
-                           ]
-                        }
-                     ]
-                  }
-               ]
-            }
-         }
-      }
-   ]
- }
-
-
-Given the above configuration file, the plugin will act in the following way:
-
- * the encoding of nested arrays and objects will be skipped, by encoding only their attributes.
- * Arrays' and objects' attribute names will be concatenated with the ones of their json attributes.
- * The final output will have a flat list of attributes with names produced by the concatenation.
-
-An example output, give this configuration file, can be seen in the output section.
-
-Environment parametrization
----------------------------
-
-A template configuration can also be manipulated on the fly, replacing existing attributes, attributes' names and sources using the :code:`env` parameter. 
-To achieve this the attribute name, the attribute, or the source should be replaced by the env function in the following way :code:`$${env('nameOfTheEnvParameter','defaultValue')}`. 
-If in the request it is specified an env query parameter :code:`env='nameOfTheEnvParameter':'newValue'`, the default value will be replaced in the final output with the one specified in the request.
-
-The functionality allows also to manipulate dynamically filters and expression. For example it is possible to change Filter arguments: :code:`"$filter":"xpath('gsml:name') = env('nameOfTheEnvParameter','defaultValue')`.
-
-Xpaths can be manipulated as well to be totally or partially replaced: :code:`$${xpath(env('xpath','gsml:ControlledConcept/gsml:name')}` or :code:`$${xpath(strConcat('env('gsml:ControlledConcept',xpath','/gsml:name')))}`.
-
+* GML 2 = gml2-template.xml
+* GML 3.1 = gml31-template.xml
+* GML 3.2 = gml32-template.xml
+* JSON-LD = json-ld-template.json
+* GEOJSON = geojson-template.json
+* HTML = html-template.xhtml

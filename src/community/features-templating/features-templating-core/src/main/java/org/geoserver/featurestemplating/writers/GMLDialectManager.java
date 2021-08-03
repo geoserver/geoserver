@@ -35,12 +35,18 @@ abstract class GMLDialectManager {
 
     private CRS.AxisOrder axisOrder = CRS.AxisOrder.EAST_NORTH;
 
+    protected CoordinateReferenceSystem crs;
+
     private String coordElementName;
+
+    protected String typeName;
 
     protected Map<String, String> namespaces = new HashMap<>();
 
     static final String GML_PREFIX = "gml";
     static final String WFS_PREFIX = "wfs";
+
+    long currentFeatureNumber = 1L;
 
     GMLDialectManager(XMLStreamWriter streamWriter, String coorElementName) {
         this.streamWriter = streamWriter;
@@ -67,7 +73,12 @@ abstract class GMLDialectManager {
     }
 
     void writePoint(Point point, String gmlNsUri) throws XMLStreamException {
+        writePoint(point, gmlNsUri, 0);
+    }
+
+    void writePoint(Point point, String gmlNsUri, int index) throws XMLStreamException {
         streamWriter.writeStartElement(GML_PREFIX, "Point", gmlNsUri);
+        writeGeometryAttributes(index);
         streamWriter.writeStartElement(
                 GML_PREFIX,
                 coordElementName.equals("coordinates") ? coordElementName : "pos",
@@ -88,16 +99,22 @@ abstract class GMLDialectManager {
         streamWriter.writeStartElement(GML_PREFIX, "MultiPoint", gmlNsUri);
         for (int i = 0; i < nPoints; i++) {
             streamWriter.writeStartElement(GML_PREFIX, "pointMember", gmlNsUri);
-            writePoint((Point) multiPoint.getGeometryN(i), gmlNsUri);
+            writeGeometryAttributes(0);
+            writePoint((Point) multiPoint.getGeometryN(i), gmlNsUri, i);
             streamWriter.writeEndElement();
         }
         streamWriter.writeEndElement();
     }
 
     void writePolygon(Polygon polygon, String gmlNsUri) throws XMLStreamException {
+        writePolygon(polygon, gmlNsUri, 0);
+    }
+
+    void writePolygon(Polygon polygon, String gmlNsUri, int index) throws XMLStreamException {
         LinearRing exteriorRing = polygon.getExteriorRing();
         Coordinate[] coordinates = exteriorRing.getCoordinates();
         streamWriter.writeStartElement(GML_PREFIX, "Surface", gmlNsUri);
+        writeGeometryAttributes(index);
         writePolygonRing("exterior", coordinates, gmlNsUri);
         int numInterior = polygon.getNumInteriorRing();
         for (int i = 0; i < numInterior; i++) {
@@ -119,8 +136,14 @@ abstract class GMLDialectManager {
     }
 
     void writeLineString(LineString lineString, String gmlNsUri) throws XMLStreamException {
+        writeLineString(lineString, gmlNsUri, 0);
+    }
+
+    void writeLineString(LineString lineString, String gmlNsUri, int index)
+            throws XMLStreamException {
         Coordinate[] coordinates = lineString.getCoordinates();
         streamWriter.writeStartElement(GML_PREFIX, "LineString", gmlNsUri);
+        writeGeometryAttributes(index);
         streamWriter.writeStartElement(GML_PREFIX, coordElementName, gmlNsUri);
         writeCoordinates(coordinates);
         streamWriter.writeEndElement();
@@ -131,6 +154,7 @@ abstract class GMLDialectManager {
             throws XMLStreamException {
         int numGeom = lineString.getNumGeometries();
         streamWriter.writeStartElement(GML_PREFIX, "MultiLineString", gmlNsUri);
+        writeGeometryAttributes(0);
         for (int i = 0; i < numGeom; i++) {
             streamWriter.writeStartElement(GML_PREFIX, "LineStringMember", gmlNsUri);
             writeLineString((LineString) lineString.getGeometryN(i), gmlNsUri);
@@ -144,6 +168,7 @@ abstract class GMLDialectManager {
         boolean isMultiSurface = multiPolygon instanceof MultiSurface;
         streamWriter.writeStartElement(
                 GML_PREFIX, isMultiSurface ? "MultiSurface" : "MultiPolygon", gmlNsUri);
+        writeGeometryAttributes(0);
         for (int i = 0; i < numGeom; i++) {
             streamWriter.writeStartElement(
                     GML_PREFIX, isMultiSurface ? "surfaceMember" : "polygonMember", gmlNsUri);
@@ -208,6 +233,10 @@ abstract class GMLDialectManager {
         }
     }
 
+    void setCrs(CoordinateReferenceSystem crs) {
+        this.crs = crs;
+    }
+
     void setAxisOrder(CRS.AxisOrder axisOrder) {
         this.axisOrder = axisOrder;
     }
@@ -218,5 +247,21 @@ abstract class GMLDialectManager {
 
     Map<String, String> getNamespaces() {
         return this.namespaces;
+    }
+
+    abstract void startFeatureMember() throws XMLStreamException;
+
+    void endFeatureMember() throws XMLStreamException {
+        streamWriter.writeEndElement();
+        currentFeatureNumber++;
+    }
+
+    void writeGeometryAttributes(int geometryIndex) throws XMLStreamException {
+        if (crs != null) streamWriter.writeAttribute("srsName", CRS.toSRS(this.crs));
+    }
+
+    void setTypeName(String typeName) {
+        this.typeName = typeName;
+        this.currentFeatureNumber = 1L;
     }
 }

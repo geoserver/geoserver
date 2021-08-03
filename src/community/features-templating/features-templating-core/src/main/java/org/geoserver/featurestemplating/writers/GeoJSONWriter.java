@@ -13,19 +13,26 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.geoserver.featurestemplating.builders.EncodingHints;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.util.ISO8601Formatter;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.geotools.util.Converters;
 import org.locationtech.jts.geom.Geometry;
 
 /** Implements its superclass methods to write a valid GeoJSON output */
 public class GeoJSONWriter extends CommonJSONWriter {
 
+    public GeoJSONWriter(JsonGenerator generator, TemplateIdentifier identifier) {
+        super(generator, identifier);
+    }
+
     public GeoJSONWriter(JsonGenerator generator) {
-        super(generator);
+        super(generator, TemplateIdentifier.JSON);
     }
 
     @Override
@@ -48,6 +55,13 @@ public class GeoJSONWriter extends CommonJSONWriter {
             generator.writeBoolean((Boolean) value);
         } else if (value instanceof Date) {
             generator.writeString(new ISO8601Formatter().format(value));
+        } else if (value.getClass().isArray()) {
+            List list = Converters.convert(value, List.class);
+            generator.writeStartArray();
+            for (Object o : list) {
+                writeValue(o);
+            }
+            generator.writeEndArray();
         } else {
             generator.writeString(value.toString());
         }

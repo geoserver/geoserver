@@ -10,8 +10,10 @@ import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.flat.FlatBuilder;
+import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
+import org.geoserver.platform.FileWatcher;
 
 /** The root of the builders' tree. It triggers the evaluation process */
 public class RootBuilder implements TemplateBuilder {
@@ -23,6 +25,11 @@ public class RootBuilder implements TemplateBuilder {
     private EncodingHints encodingHints;
 
     protected List<String> supportedOptions = new ArrayList<>();
+
+    /**
+     * List of template watchers for included template. Used to know if cache needs to be reloaded
+     */
+    private List<FileWatcher<Object>> watchers;
 
     public RootBuilder() {
         super();
@@ -57,7 +64,7 @@ public class RootBuilder implements TemplateBuilder {
         vendorOptions.put(vendorOption[0], cqlManager.getExpressionFromString());
     }
 
-    public void addVendorOption(String name, String value) {
+    public void addVendorOption(String name, Object value) {
         vendorOptions.put(name, value);
     }
 
@@ -72,7 +79,12 @@ public class RootBuilder implements TemplateBuilder {
                 vendorOptions.get(VendorOptions.FLAT_OUTPUT, Boolean.class, false).booleanValue();
         if (isCachedFlattened && !isFlatOutput) return true;
         else if (!isCachedFlattened && isFlatOutput) return true;
-        else return false;
+        else if (watchers != null && !watchers.isEmpty()) {
+            for (FileWatcher<Object> watcher : watchers) {
+                if (watcher.isModified()) return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -89,5 +101,14 @@ public class RootBuilder implements TemplateBuilder {
 
     public VendorOptions getVendorOptions() {
         return this.vendorOptions;
+    }
+
+    @Override
+    public Object accept(TemplateVisitor visitor, Object value) {
+        return visitor.visit(this, value);
+    }
+
+    public void setWatchers(List<FileWatcher<Object>> watchers) {
+        this.watchers = watchers;
     }
 }

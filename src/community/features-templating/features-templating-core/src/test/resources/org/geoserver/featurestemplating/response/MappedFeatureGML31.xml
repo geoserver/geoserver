@@ -7,19 +7,19 @@
                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                        xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/wfs.xsd urn:cgi:xmlns:CGI:GeoSciML:2.0 http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd">
     <gml:featureMember>
-        <gsml:MappedFeature gml:id="${@gml:id}" gft:isCollection="true" gft:source="gsml:MappedFeature">
+        <gsml:MappedFeature gml:id="${@gml:id}" gft:source="gsml:MappedFeature">
             <gml:name xmlns:gml="http://www.opengis.net/gml">$filter{gml:name = 'GUNTHORPE FORMATION'},${gml:name}</gml:name>
             <gsml:samplingFrame xlink:href="urn:cgi:feature:CGI:EarthNaturalSurface" />
-            <gsml:specification gft:source="gsml:specification" gft:isCollection="true">
-                <gsml:GeologicUnit gft:source="gsml:GeologicUnit" gft:filter="xpath('gml:name') = 'Yaugher Volcanic Group 1'" gft:isCollection="true">
+            <gsml:specification gft:source="gsml:specification/gsml:GeologicUnit" gft:isCollection="true">
+                <gsml:GeologicUnit gft:filter="xpath('gml:name') = 'Yaugher Volcanic Group 1'">
                     <gml:description>${gml:description}</gml:description>
                     <gml:name>${gml:name}</gml:name>
                     <gsml:purpose>${gsml:purpose}</gsml:purpose>
-                    <gsml:composition gft:source="gsml:composition" gft:isCollection="true">
-                        <gsml:CompositionPart gft:source="gsml:CompositionPart" gft:isCollection="true">
+                    <gsml:composition gft:source="gsml:composition/gsml:CompositionPart" gft:isCollection="true">
+                        <gsml:CompositionPart>
                             <gsml:role codeSpace="urn:cgi:classifierScheme:Example:CompositionPartRole">${gsml:role}</gsml:role>
-                            <gsml:lithology gft:source="gsml:lithology" gft:isCollection="true">
-                                <gsml:ControlledConcept gft:source="gsml:ControlledConcept" gft:isCollection="true">
+                            <gsml:lithology gft:source="gsml:lithology/gsml:ControlledConcept" gft:isCollection="true">
+                                <gsml:ControlledConcept>
                                     <gsml:name>${gsml:name}</gsml:name>
                                     <gsml:vocabulary xlink:href="@xlink:href"/>
                                 </gsml:ControlledConcept>

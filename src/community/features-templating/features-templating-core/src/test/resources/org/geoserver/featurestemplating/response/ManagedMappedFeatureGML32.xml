@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gft:Template>
+    <gft:Options>
+        <gft:Namespaces xmlns:wfs="http://www.opengis.net/wfs/2.0"
+                        xmlns:gml="http://www.opengis.net/gml/3.2"
+                        xmlns:gsml="urn:cgi:xmlns:CGI:GeoSciML:2.0"
+                        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <gft:SchemaLocation xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/wfs.xsd urn:cgi:xmlns:CGI:GeoSciML:2.0 http://www.geosciml.org/geosciml/2.0/xsd/geosciml.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd"/>
+    </gft:Options>
+    <gsml:MappedFeature gml:id="${@gml:id}" gft:source="gsml:MappedFeature">
+        <gml:name xmlns:gml="http://www.opengis.net/gml">$${strConcat('mf.', xpath('gml:name'))}</gml:name>
+        <gsml:samplingFrame xlink:href="urn:cgi:feature:CGI:EarthNaturalSurface" />
+        <gsml:specification gft:source="gsml:specification" gft:isCollection="true">
+            <gsml:GeologicUnit gft:source="gsml:GeologicUnit" gft:isCollection="true">
+                <gml:description xlink:href="http://static_content.org">${gml:description}</gml:description>
+                <gml:name>${gml:name}</gml:name>
+                <gsml:staticContent xlink:title="${gml:name[0]}">static content</gsml:staticContent>
+                <gsml:purpose>${gsml:purpose}</gsml:purpose>
+                <gsml:composition gft:source="gsml:composition/gsml:CompositionPart" gft:isCollection="true">
+                    <gsml:CompositionPart>
+                        <gsml:role codeSpace="urn:cgi:classifierScheme:Example:CompositionPartRole">${gsml:role}</gsml:role>
+                        <gsml:lithology gft:source="gsml:lithology/gsml:ControlledConcept" gft:filter="xpath('gsml:name') = 'name_cc_3'" gft:isCollection="true">
+                            <gsml:ControlledConcept>
+                                <gsml:name>${gsml:name}</gsml:name>
+                                <gsml:vocabulary xlink:href="@xlink:href"/>
+                            </gsml:ControlledConcept>
+                        </gsml:lithology>
+                    </gsml:CompositionPart>
+                </gsml:composition>
+            </gsml:GeologicUnit>
+        </gsml:specification>
+        <gsml:geometry>${gsml:shape}</gsml:geometry>
+    </gsml:MappedFeature>
+</gft:Template>

@@ -14,14 +14,13 @@ import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
+import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
-import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.expression.PropertyName;
 
@@ -33,7 +32,6 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
 
     protected int currentEl;
     protected String currentSource;
-    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
     boolean isSimple;
     private List<Filter> filters = new ArrayList<>();
 
@@ -78,8 +76,8 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
             }
         } catch (Throwable ex) {
             throw new RuntimeException(
-                    "Unable to evaluate the json-ld path against"
-                            + "the json-ld template. Cause: "
+                    "Unable to evaluate template path against"
+                            + "the template. Cause: "
                             + ex.getMessage());
         }
         return null;
@@ -176,15 +174,15 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         List<TemplateBuilder> children = parent.getChildren();
         int length = pathElements.size();
         if (children != null) {
-            for (TemplateBuilder jb : children) {
-                String key = ((AbstractTemplateBuilder) jb).getKey();
-                if (keyMatched(jb, key, pathElements)) {
+            for (TemplateBuilder tb : children) {
+                String key = ((AbstractTemplateBuilder) tb).getKey(null);
+                if (matchBuilder(tb, key, pathElements, parent)) {
                     boolean isLastEl = currentEl == length;
-                    if (isLastEl || jb instanceof StaticBuilder) {
-                        return jb;
-                    } else if (jb instanceof SourceBuilder) {
-                        pickSourceAndFilter((SourceBuilder) jb);
-                        TemplateBuilder result = findBuilder(jb, pathElements);
+                    if (isLastEl || tb instanceof StaticBuilder) {
+                        return tb;
+                    } else if (tb instanceof SourceBuilder) {
+                        pickSourceAndFilter((SourceBuilder) tb);
+                        TemplateBuilder result = findBuilder(tb, pathElements);
                         if (result != null) {
                             return result;
                         }
@@ -212,18 +210,6 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         if (keyMatchedOtherBuilder) currentEl++;
 
         return allowNullKey || keyMatchedOtherBuilder;
-    }
-
-    // checks whether the parent builder key and the lastMatchedKey are equals
-    // to avoid to continue iterating over a builder branch unnecessarily
-    private boolean parentKeyEqualsLastMatchedKey(TemplateBuilder parent, String lastMatchedKey) {
-        String parentKey = null;
-        if (parent instanceof AbstractTemplateBuilder)
-            parentKey = ((AbstractTemplateBuilder) parent).getKey();
-
-        if (lastMatchedKey != null && parentKey != null && !parentKey.equals(lastMatchedKey))
-            return false;
-        return true;
     }
 
     // takes source and filter from the SourceBuilder
@@ -258,5 +244,19 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
 
     public List<Filter> getFilters() {
         return filters;
+    }
+
+    private boolean matchBuilder(
+            TemplateBuilder current,
+            String key,
+            List<String> pathElements,
+            TemplateBuilder parent) {
+        boolean result = keyMatched(current, key, pathElements);
+        if (!result) {
+            if (parent instanceof RootBuilder) result = true;
+            else if (parent instanceof SourceBuilder && !((SourceBuilder) parent).hasOwnOutput())
+                result = true;
+        }
+        return result;
     }
 }

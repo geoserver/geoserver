@@ -20,7 +20,7 @@
   "type": "FeatureCollection",
   "features": [
     {
-      "$source": "$${strConcat('gsml:',env('source', 'MappedFeature'))}"
+      "$source": "gsml:MappedFeature"
     },
     {
       "$${env('id','@id')}": "${@id}",
@@ -42,7 +42,7 @@
         "gsml:geologicUnitType": "urn:ogc:def:nil:OGC::unknown",
         "gsml:composition": [
           {
-            "$source": "gsml:composition"
+            "$source": "$${strConcat('gsml:',env('source', 'composition'))}"
           },
           {
             "previousContextValue": "$${xpath(strConcat('../',env('previous','gml:description')))}",
@@ -52,7 +52,7 @@
               },
               {
                 "gsml:role": {
-                  "value": "${gsml:role}",
+                  "value": "${../gsml:CompositionPart/gsml:role}",
                   "@codeSpace": "urn:cgi:classifierScheme:Example:CompositionPartRole"
                 },
                 "proportion": {

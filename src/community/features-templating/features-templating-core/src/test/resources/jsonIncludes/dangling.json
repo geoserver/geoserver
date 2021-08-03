@@ -1,0 +1,4 @@
+{
+  "name": "test for dangling inclusion error message",
+  "fail": "$include{notThere.json}"
+}

@@ -4,8 +4,12 @@
  */
 package org.geoserver.featurestemplating.readers;
 
+import static org.geoserver.featurestemplating.builders.VendorOptions.FLAT_OUTPUT;
+import static org.geoserver.featurestemplating.builders.VendorOptions.SEPARATOR;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.SourceBuilder;
@@ -13,6 +17,10 @@ import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilderMaker;
 import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
+import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
+import org.geoserver.platform.FileWatcher;
+import org.geotools.filter.LiteralExpressionImpl;
+import org.opengis.filter.expression.Expression;
 
 /** Produce the builder tree starting from the evaluation of json-ld template file * */
 public class JSONTemplateReader implements TemplateReader {
@@ -23,17 +31,25 @@ public class JSONTemplateReader implements TemplateReader {
 
     public static final String FILTERKEY = "$filter";
 
+    public static final String INCLUDEKEY = "$include";
+
     public static final String EXPRSTART = "${";
 
-    public static final String VENDOROPTION = "$VendorOptions";
+    public static final String VENDOROPTION = "$options";
 
     private JsonNode template;
 
     private TemplateReaderConfiguration configuration;
 
-    public JSONTemplateReader(JsonNode template, TemplateReaderConfiguration configuration) {
+    private List<FileWatcher<Object>> watchers;
+
+    public JSONTemplateReader(
+            JsonNode template,
+            TemplateReaderConfiguration configuration,
+            List<FileWatcher<Object>> watchers) {
         this.template = template;
         this.configuration = configuration;
+        this.watchers = watchers;
     }
 
     /**
@@ -93,10 +109,12 @@ public class JSONTemplateReader implements TemplateReader {
                                 || entryName.equalsIgnoreCase("features");
                 if (entryName.equals(SOURCEKEY)) {
                     String source = valueNode.asText();
+                    currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
                     if (currentBuilder instanceof SourceBuilder) {
                         ((SourceBuilder) currentBuilder).setSource(source);
                     }
                 } else if (entryName.equals(FILTERKEY)) {
+                    currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
                     setFilterToBuilder(currentBuilder, node);
                 } else if (entryName.equals(CONTEXTKEY)) {
                     RootBuilder rootBuilder = (RootBuilder) currentBuilder;
@@ -108,20 +126,28 @@ public class JSONTemplateReader implements TemplateReader {
                 } else if (!strValueNode.contains(EXPRSTART)
                         && !strValueNode.contains(FILTERKEY)
                         && !jumpField) {
+                    currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
                     maker.name(entryName).jsonNode(valueNode);
                     currentBuilder.addChild(maker.build());
                 } else {
                     if (valueNode.isObject()) {
                         maker.name(entryName);
+                        // if the parent of the template builder being created
+                        // is a root one, in case of simplified template support,
+                        // or hasNotOwnOutput is flagged the CompositeBuilder being produced
+                        // maps the topLevelFeature source.
+                        maker.topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder));
                         TemplateBuilder compositeBuilder = maker.build();
                         currentBuilder.addChild(compositeBuilder);
                         getBuilderFromJsonObject(valueNode, compositeBuilder, maker);
                     } else if (valueNode.isArray()) {
                         getBuilderFromJsonArray(entryName, valueNode, currentBuilder, maker);
                     } else {
-                        if (!jumpField)
+                        if (!jumpField) {
+                            currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
                             getBuilderFromJsonAttribute(
                                     entryName, valueNode, currentBuilder, maker);
+                        }
                     }
                 }
             }
@@ -133,7 +159,15 @@ public class JSONTemplateReader implements TemplateReader {
             JsonNode node,
             TemplateBuilder currentBuilder,
             TemplateBuilderMaker maker) {
-        TemplateBuilder iteratingBuilder = maker.name(nodeName).collection(true).build();
+        TemplateBuilder iteratingBuilder =
+                maker.name(nodeName)
+                        .collection(true)
+                        // if the parent of the template builder being created
+                        // is a root one, in case of simplified template support,
+                        // or hasNotOwnOutput is flagged the CompositeBuilder being produced
+                        // maps the topLevelFeature source.
+                        .topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder))
+                        .build();
         currentBuilder.addChild(iteratingBuilder);
         if (!node.toString().contains(EXPRSTART) && !node.toString().contains(FILTERKEY)) {
             maker.name(nodeName).jsonNode(node);
@@ -149,7 +183,9 @@ public class JSONTemplateReader implements TemplateReader {
                         getBuilderFromJsonObject(childNode, iteratingBuilder, maker);
                     } else if (childJSON.contains(EXPRSTART) || childJSON.contains(FILTERKEY)) {
                         // regular dynamic object/filtered object
-                        TemplateBuilder compositeBuilder = maker.build();
+                        TemplateBuilder compositeBuilder =
+                                maker.topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder))
+                                        .build();
                         iteratingBuilder.addChild(compositeBuilder);
                         getBuilderFromJsonObject(childNode, compositeBuilder, maker);
                     } else {
@@ -190,17 +226,51 @@ public class JSONTemplateReader implements TemplateReader {
     }
 
     private void setVendorOptions(JsonNode node, RootBuilder builder, TemplateBuilderMaker maker) {
-        String vendorOption = node.asText();
-        String[] options = vendorOption.split(";");
-        for (String option : options) {
-            String[] arrOp = option.split(":");
-            builder.setVendorOptions(arrOp);
+        if (!node.isObject()) {
+            throw new RuntimeException("VendorOptions should be defined as a JSON object");
         }
-        boolean flatOutput =
+        if (node.has(FLAT_OUTPUT)) {
+            TemplateCQLManager cqlManager =
+                    new TemplateCQLManager(node.get(FLAT_OUTPUT).asText(), null);
+            builder.addVendorOption(FLAT_OUTPUT, cqlManager.getExpressionFromString());
+        }
+        if (node.has(VendorOptions.SEPARATOR)) {
+            TemplateCQLManager cqlManager =
+                    new TemplateCQLManager(node.get(SEPARATOR).asText(), null);
+            builder.addVendorOption(VendorOptions.SEPARATOR, cqlManager.getExpressionFromString());
+        }
+
+        if (node.has(CONTEXTKEY)) {
+            builder.addVendorOption(CONTEXTKEY, node.get(CONTEXTKEY));
+        }
+        Expression flatOutput =
                 builder.getVendorOptions()
-                        .get(VendorOptions.FLAT_OUTPUT, Boolean.class, false)
-                        .booleanValue();
-        String separator = builder.getVendorOptions().get(VendorOptions.SEPARATOR, String.class);
-        maker.flatOutput(flatOutput).separator(separator);
+                        .get(FLAT_OUTPUT, Expression.class, new LiteralExpressionImpl(false));
+        boolean bFlatOutput = flatOutput.evaluate(null, Boolean.class).booleanValue();
+        Expression expression =
+                builder.getVendorOptions()
+                        .get(
+                                VendorOptions.SEPARATOR,
+                                Expression.class,
+                                new LiteralExpressionImpl("_"));
+        maker.flatOutput(bFlatOutput).separator(expression.evaluate(null, String.class));
+    }
+
+    // create a composite as direct child of a Root builder
+    // needed for the case where we have a template not defining the features array but only
+    // the feature attributes template
+    private TemplateBuilder createCompositeIfNeeded(
+            TemplateBuilder currentParent, TemplateBuilderMaker maker) {
+        TemplateBuilder builder;
+        if (currentParent instanceof RootBuilder) {
+            maker.topLevelFeature(true);
+            builder = maker.build();
+            currentParent.addChild(builder);
+        } else builder = currentParent;
+        return builder;
+    }
+
+    private boolean isRootOrHasNotOwnOutput(TemplateBuilder parent) {
+        return parent instanceof RootBuilder || !((SourceBuilder) parent).hasOwnOutput();
     }
 }

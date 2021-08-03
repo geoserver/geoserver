@@ -30,6 +30,7 @@ import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.security.PropertyFileWatcher;
 
@@ -51,7 +52,7 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
         Resource templateDir = dd.get(TEMPLATE_DIR);
         File dir = templateDir.dir();
         if (!dir.exists()) dir.mkdir();
-        Resource prop = dd.get(TEMPLATE_DIR, PROPERTY_FILE_NAME);
+        Resource prop = dd.get(Paths.path(TEMPLATE_DIR, PROPERTY_FILE_NAME));
         prop.file();
         this.fileWatcher = new PropertyFileWatcher(prop);
         this.templateDataSet = Collections.synchronizedSortedSet(new TreeSet<>());
@@ -199,7 +200,7 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
 
     public void storeProperties() {
         Properties p = toProperties();
-        Resource propFile = dd.get(TEMPLATE_DIR, PROPERTY_FILE_NAME);
+        Resource propFile = dd.get(Paths.path(TEMPLATE_DIR, PROPERTY_FILE_NAME));
         try (OutputStream os = propFile.out()) {
             p.store(os, null);
         } catch (Exception e) {

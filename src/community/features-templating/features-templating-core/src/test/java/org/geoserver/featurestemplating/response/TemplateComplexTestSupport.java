@@ -28,6 +28,7 @@ import org.geoserver.featurestemplating.configuration.TemplateInfo;
 import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
 import org.geoserver.featurestemplating.configuration.TemplateLayerConfig;
 import org.geoserver.featurestemplating.configuration.TemplateRule;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.AbstractAppSchemaTestSupport;
 import org.geoserver.test.FeatureChainingMockData;
@@ -69,7 +70,7 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
             throws IOException {
         String resourceLocation =
                 "workspaces/" + workspace + "/" + ft.getStore().getName() + "/" + ft.getName();
-        File file = dd.get(resourceLocation, templateFileName).file();
+        File file = dd.get(Paths.path(resourceLocation, templateFileName)).file();
         file.createNewFile();
         dd.getResourceLoader().copyFromClassPath(fileName, file, getClass());
     }

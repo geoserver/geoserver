@@ -12,6 +12,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
 
 /** Helper class that provides methods to manage the template file. */
@@ -50,7 +51,11 @@ public class TemplateFileManager {
             WorkspaceInfo ws = catalog.getWorkspaceByName(workspace);
             resource = dd.get(ws, templateName + "." + extension);
         } else {
-            resource = dd.get(TemplateInfoDAOImpl.TEMPLATE_DIR, templateName + "." + extension);
+            resource =
+                    dd.get(
+                            Paths.path(
+                                    TemplateInfoDAOImpl.TEMPLATE_DIR,
+                                    templateName + "." + extension));
         }
         return resource;
     }

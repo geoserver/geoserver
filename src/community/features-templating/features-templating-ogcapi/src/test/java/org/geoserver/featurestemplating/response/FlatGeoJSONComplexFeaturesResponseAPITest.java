@@ -94,7 +94,7 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest
         path += "&separator=.";
         JSONObject result = (JSONObject) getJson(path);
         JSONArray features = (JSONArray) result.get("features");
-        assertEquals(5, features.size());
+        assertEquals(4, features.size());
         for (int i = 0; i < features.size(); i++) {
             JSONObject feature = (JSONObject) features.get(i);
             JSONObject properties = feature.getJSONObject("properties");

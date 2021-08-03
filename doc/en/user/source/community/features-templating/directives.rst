@@ -78,7 +78,6 @@ The following are the directives available in XML based templates.
      - gft:Options
      - specify it as an element at the beggining of the xml document after the :code:`<gft:Template>` one (:code:`<gft:Options></gft:Options>`). GML options: :code:`<gtf:Namespaces>`,:code:`<gtf:SchemaLocation>`. HTML options: :code:`<script>`,:code:`<style>`, :code: `<link>`.
    * - allows including a template into another
->>>>>>> 507ca3bb3b... [GEOS-10154] Feature templating - Add HTML template support (#5169)
      - $include, gft:includeFlat
      - specify the :code:`$include` option as an element value (:code:`<element>$include{included.xml}</element>`) and the :code:`gft:includeFlat` as an element having the included tempalte as text content (:code:`<gft:includeFlat>included.xml</gft:includeFlat>`)
 

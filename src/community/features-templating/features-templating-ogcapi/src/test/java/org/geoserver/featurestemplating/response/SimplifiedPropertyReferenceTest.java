@@ -23,9 +23,9 @@ public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport 
                 getAsDOM(
                         "ogc/features/collections/gsml:MappedFeature"
                                 + "/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2");
-        assertXpathCount(5, "//gsml:MappedFeature", doc);
-        assertXpathCount(5, "//gsml:samplingFrame//@xlink:href", doc);
-        assertXpathCount(5, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
+        assertXpathCount(4, "//gsml:MappedFeature", doc);
+        assertXpathCount(4, "//gsml:samplingFrame//@xlink:href", doc);
+        assertXpathCount(4, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
         assertXpathCount(4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit", doc);
         assertXpathCount(
                 4,
@@ -51,7 +51,7 @@ public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport 
         checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
-        assertEquals(5, features.size());
+        assertEquals(4, features.size());
         JSONObject feature = features.getJSONObject(0);
         assertEquals("mf1", feature.getString("@id"));
         assertEquals("GUNTHORPE FORMATION", feature.getString("name"));
@@ -84,7 +84,7 @@ public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport 
                         + "/items?f=application%2Fgeo%2Bjson";
         JSONObject result = (JSONObject) getJson(path);
         JSONArray features = (JSONArray) result.get("features");
-        assertEquals(5, features.size());
+        assertEquals(4, features.size());
         JSONObject feature = features.getJSONObject(0);
         assertNotNull(feature.getJSONObject("geometry"));
         assertEquals("mf1", feature.getString("@id"));

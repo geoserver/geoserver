@@ -29,9 +29,9 @@ public class GML3GetComplexFeatureTest extends TemplateComplexTestSupport {
                                 + "&"
                                 + requestParam
                                 + "=true");
-        assertXpathCount(5, "//gsml:MappedFeature", doc);
-        assertXpathCount(5, "//gsml:samplingFrame//@xlink:href", doc);
-        assertXpathCount(5, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
+        assertXpathCount(4, "//gsml:MappedFeature", doc);
+        assertXpathCount(4, "//gsml:samplingFrame//@xlink:href", doc);
+        assertXpathCount(4, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
         // filter dynamic value element
         assertXpathCount(1, "//gsml:MappedFeature/gml:name", doc);
         // filtered element

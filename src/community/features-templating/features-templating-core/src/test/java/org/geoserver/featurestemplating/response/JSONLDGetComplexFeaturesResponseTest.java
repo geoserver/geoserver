@@ -63,7 +63,6 @@ public class JSONLDGetComplexFeaturesResponseTest extends TemplateComplexTestSup
         assertEquals("duplicated value: " + value, arrayWithDynamic.getString(2));
     }
 
-
     @Override
     protected String getTemplateFileName() {
         return TemplateIdentifier.JSONLD.getFilename();

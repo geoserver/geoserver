@@ -24,7 +24,6 @@ public class GeoJSONGetComplexFeaturesResponseTest extends TemplateComplexTestSu
         assertNotNull(geom);
         assertEquals(String.valueOf(geom.get("type")), "Polygon");
         assertNotNull(geom.get("coordinates"));
-        if ("mf5".equals(id)) return; // mf5 does not have all the structure expected
         JSONObject geologicUnit = feature.getJSONObject("gsml:GeologicUnit");
         JSONArray composition = geologicUnit.getJSONArray("gsml:composition");
         assertTrue(composition.size() > 0);

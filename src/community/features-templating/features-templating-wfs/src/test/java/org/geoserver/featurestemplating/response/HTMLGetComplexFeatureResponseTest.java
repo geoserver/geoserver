@@ -30,20 +30,18 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
 
         assertXpathCount(1, "//html/head/script", doc);
         assertXpathCount(1, "//html/head/style", doc);
-        assertXpathCount(5, "//html/body/ul/li[./span = 'MappedFeature']", doc);
+        assertXpathCount(4, "//html/body/ul/li[./span = 'MappedFeature']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul[./li = 'mf1']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul[./li = 'mf2']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul[./li = 'mf3']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul[./li = 'mf4']", doc);
-        assertXpathCount(1, "//html/body/ul/li/ul[./li = 'mf5']", doc);
 
         assertXpathCount(1, "//html/body/ul/li/ul/li/ul[./li = 'GUNTHORPE FORMATION']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul/li/ul[./li = 'MERCIA MUDSTONE GROUP']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul/li/ul[./li = 'CLIFTON FORMATION']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul/li/ul[./li = 'MURRADUC BASALT']", doc);
-        assertXpathCount(1, "//html/body/ul/li/ul/li/ul[./li = 'IDONTKNOW']", doc);
 
-        assertXpathCount(5, "//html/body/ul/li/ul/li[./span = 'Shape']", doc);
+        assertXpathCount(4, "//html/body/ul/li/ul/li[./span = 'Shape']", doc);
 
         assertXpathCount(4, "//html/body/ul/li/ul/li[./span = 'Specifications']", doc);
         assertXpathCount(4, "//html/body/ul/li/ul/li/ul/li[./span = 'Geologic Unit']", doc);

@@ -26,9 +26,9 @@ public class ManagedComplexFeaturesResponseTest extends JSONLDGetComplexFeatures
         sb.append("&TYPENAME=gsml:MappedFeature&outputFormat=");
         sb.append("application%2Fgml%2Bxml%3B%20version%3D3.2");
         Document doc = getAsDOM(sb.toString());
-        assertXpathCount(5, "//gsml:MappedFeature", doc);
-        assertXpathCount(5, "//gsml:samplingFrame//@xlink:href", doc);
-        assertXpathCount(5, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
+        assertXpathCount(4, "//gsml:MappedFeature", doc);
+        assertXpathCount(4, "//gsml:samplingFrame//@xlink:href", doc);
+        assertXpathCount(4, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
         assertXpathCount(4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit", doc);
 
         assertXpathCount(
@@ -63,7 +63,7 @@ public class ManagedComplexFeaturesResponseTest extends JSONLDGetComplexFeatures
         checkContext(context);
         assertNotNull(context);
         JSONArray features = (JSONArray) result.get("features");
-        assertEquals(5, features.size());
+        assertEquals(4, features.size());
         for (int i = 0; i < features.size(); i++) {
             JSONObject feature = (JSONObject) features.get(i);
             checkMappedFeatureJSON(feature);
@@ -82,7 +82,7 @@ public class ManagedComplexFeaturesResponseTest extends JSONLDGetComplexFeatures
         sb.append("application/json");
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
-        assertEquals(5, features.size());
+        assertEquals(4, features.size());
         for (int i = 0; i < features.size(); i++) {
             JSONObject feature = (JSONObject) features.get(i);
             checkMappedFeatureJSON(feature);

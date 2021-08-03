@@ -52,7 +52,6 @@ public class FlatCompositeBuilder extends CompositeBuilder implements FlatBuilde
             writer.endObject(key, encodingHints);
     }
 
-
     private boolean isFeatureTypeBuilder(Object o) {
         boolean result = false;
         if (o instanceof Feature) {

@@ -342,15 +342,26 @@ public class FeatureWrapper extends BeansWrapper {
                 entrySet = new LinkedHashSet<>();
                 final Collection<PropertyDescriptor> types = feature.getType().getDescriptors();
                 Name attName;
-                Map attributesMap;
                 for (PropertyDescriptor type : types) {
                     attName = type.getName();
-                    attributesMap = new AttributeMap(attName, feature);
+                    Object attributeMap;
+                    if (type.getMaxOccurs() > 1) attributeMap = getListMaps(attName);
+                    else
+                        attributeMap =
+                                new AttributeMap(attName, feature, feature.getProperty(attName));
                     entrySet.add(
-                            new MapEntry<Object, Object>(attName.getLocalPart(), attributesMap));
+                            new MapEntry<Object, Object>(attName.getLocalPart(), attributeMap));
                 }
             }
             return entrySet;
+        }
+
+        private List<Map> getListMaps(Name attName) {
+            List<Map> listProps = new ArrayList<>();
+            for (Property property : feature.getProperties(attName)) {
+                listProps.add(new AttributeMap(attName, feature, property));
+            }
+            return listProps;
         }
     }
 
@@ -378,6 +389,8 @@ public class FeatureWrapper extends BeansWrapper {
 
         private final ComplexAttribute feature;
 
+        private Property prop = null;
+
         private Set<MapEntry> entrySet;
 
         /**
@@ -391,6 +404,12 @@ public class FeatureWrapper extends BeansWrapper {
         public AttributeMap(final Name attributeName, final ComplexAttribute feature) {
             this.attributeName = attributeName;
             this.feature = feature;
+        }
+
+        public AttributeMap(
+                final Name attributeName, final ComplexAttribute feature, final Property prop) {
+            this(attributeName, feature);
+            this.prop = prop;
         }
 
         /**
@@ -413,7 +432,8 @@ public class FeatureWrapper extends BeansWrapper {
                 entrySet = new LinkedHashSet<>();
                 final ComplexType featureType = feature.getType();
                 PropertyDescriptor attributeDescr = featureType.getDescriptor(attributeName);
-                Property property = feature.getProperty(attributeName);
+                Property property =
+                        this.prop == null ? feature.getProperty(attributeName) : this.prop;
 
                 if (property == null) {
                     // maybe polymorphism? let's try

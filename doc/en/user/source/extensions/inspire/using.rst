@@ -42,7 +42,7 @@ Extended WMS and WMTS Capabilities
 
 The WMS 1.3.0 and WMTS 1.0.0 capabilities document will contain two additional entries in the ``xsi:schemaLocation`` of the root ``<WMS_Capabilities>`` tag once the INSPIRE extension is installed:
 
-* ``https://inspire.ec.europa.eu/schemas/inspire_vs/1.0``
+* ``http://inspire.ec.europa.eu/schemas/inspire_vs/1.0``
 * ``https://inspire.ec.europa.eu/schemas/inspire_vs/1.0/inspire_vs.xsd``
 
 If you have enabled the check box to create the INSPIRE ExtendedCapabilities element and entered the values described in the previous section then there will also be an additional ExtendedCapabilities block. This tag block shows up in between the tags for ``<Exception>`` and ``<Layer>``.  It contains the following information:

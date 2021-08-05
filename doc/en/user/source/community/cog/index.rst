@@ -10,4 +10,5 @@ This section describes the COG plugin usage and it also contains an example on h
 
    cog
    mosaic
+   update
 

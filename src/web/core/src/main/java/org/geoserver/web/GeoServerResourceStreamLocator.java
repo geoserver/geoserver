@@ -65,8 +65,10 @@ public class GeoServerResourceStreamLocator extends ResourceStreamLocator {
                         URL url = urls.nextElement();
 
                         try (InputStream in = url.openStream()) {
-                            Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8);
-                            properties.load(reader);
+                            try (Reader reader =
+                                    new InputStreamReader(in, StandardCharsets.UTF_8)) {
+                                properties.load(reader);
+                            }
                         }
                     }
 

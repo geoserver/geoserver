@@ -22,7 +22,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LegendInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.data.InternationalContentHelper;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.CascadedLegendRequest;
 import org.geoserver.wms.GetLegendGraphicRequest;
@@ -101,6 +106,8 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
      */
     private final double MINIMUM_SYMBOL_SIZE = 3.0;
 
+    private InternationalContentHelper internationalContentHelper;
+
     /**
      * Default constructor. Subclasses may provide its own with a String parameter to establish its
      * desired output format, if they support more than one (e.g. a JAI based one)
@@ -127,8 +134,30 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         setup(request);
 
         List<RenderedImage> layersImages = new ArrayList<>();
+
+        Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
+        if (request.getKvp() != null && request.getKvp().get("LANGUAGE") != null) {
+            String language = (String) request.getKvp().get("LANGUAGE");
+            internationalContentHelper = new InternationalContentHelper(language);
+        } else {
+            internationalContentHelper = new InternationalContentHelper(null);
+        }
+
         for (LegendRequest legend : layers) {
             FeatureType layer = legend.getFeatureType();
+            if (internationalContentHelper != null
+                    && catalog != null
+                    && layer != null
+                    && layer.getName() != null) {
+                ResourceInfo featureType =
+                        catalog.getResourceByName(layer.getName(), FeatureTypeInfo.class);
+                if (featureType != null) {
+                    String title = internationalContentHelper.getTitle(featureType);
+                    if (title != null) {
+                        legend.setTitle(title);
+                    }
+                }
+            }
 
             // style and rule to use for the current layer
             Style gt2Style = legend.getStyle();

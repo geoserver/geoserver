@@ -67,8 +67,32 @@ public class InternationalContentHelper {
         verify();
     }
 
-    public InternationalContentHelper(String[] acceptLanguages) {
-        setRequestedLocales(acceptLanguages);
+    public InternationalContentHelper(String language) {
+        Locale locale = null;
+        if (language == null) {
+            requestedLocales.add(null);
+        } else {
+            if (language.equals("*")) {
+                this.anyMatch = true;
+                locale = Locale.getDefault();
+            } else if (language.contains("-")) locale = Locale.forLanguageTag(language);
+            else requestedLocales.add(Locale.forLanguageTag(language));
+            if (locale != null) requestedLocales.add(locale);
+        }
+    }
+
+    public InternationalContentHelper(String language) {
+        Locale locale = null;
+        if (language == null) {
+            requestedLocales.add(null);
+        } else {
+            if (language.equals("*")) {
+                this.anyMatch = true;
+                locale = Locale.getDefault();
+            } else if (language.contains("-")) locale = Locale.forLanguageTag(language);
+            else requestedLocales.add(Locale.forLanguageTag(language));
+            if (locale != null) requestedLocales.add(locale);
+        }
     }
 
     public InternationalContentHelper(

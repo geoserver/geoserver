@@ -1503,6 +1503,34 @@ public class BufferedImageLegendGraphicOutputFormatTest
         ImageAssert.assertEquals(new File(result.toURI()), image, 50);
     }
 
+    @org.junit.Test
+    public void testInternationalizedImages() throws Exception {
+        GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
+
+        Map<String, String> options = new HashMap<>();
+        options.put("forceLabels", "on");
+        req.setLegendOptions(options);
+
+        FeatureTypeInfo ftInfo =
+                getCatalog()
+                        .getFeatureTypeByName(
+                                MockData.MPOINTS.getNamespaceURI(),
+                                MockData.MPOINTS.getLocalPart());
+
+        req.setLayer(ftInfo.getFeatureType());
+        req.setStyle(readSLD("Internationalized.sld"));
+        req.setLocale(Locale.ITALIAN);
+
+        BufferedImage image = this.legendProducer.buildLegendGraphic(req);
+        int itImageWidth = image.getWidth();
+
+        req.setLocale(Locale.ENGLISH);
+        image = this.legendProducer.buildLegendGraphic(req);
+        int enImageWidth = image.getWidth();
+
+        assertNotEquals(enImageWidth, itImageWidth);
+    }
+
     /** */
     private Style readSLD(String sldName) throws IOException {
         StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);

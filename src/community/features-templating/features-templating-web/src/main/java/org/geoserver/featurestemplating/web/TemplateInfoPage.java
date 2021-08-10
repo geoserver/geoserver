@@ -98,7 +98,7 @@ public class TemplateInfoPage extends GeoServerSecuredPage {
             public void onClick(AjaxRequestTarget target) {
                 TemplateInfoDAO dao = TemplateInfoDAO.get();
                 TemplateFileManager fileManager = TemplateFileManager.get();
-                dao.findAll().forEach(ti -> fileManager.delete(ti));
+                tablePanel.getSelection().forEach(ti -> fileManager.delete(ti));
                 dao.delete(tablePanel.getSelection());
                 tablePanel.modelChanged();
                 target.add(tablePanel);

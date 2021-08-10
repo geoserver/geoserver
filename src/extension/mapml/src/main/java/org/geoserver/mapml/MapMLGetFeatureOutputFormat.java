@@ -138,6 +138,10 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         MapMLGenerator featureBuilder = new MapMLGenerator();
         int numDecimals = this.getNumDecimals(featureCollections, gs, gs.getCatalog());
         featureBuilder.setNumDecimals(numDecimals);
+        featureBuilder.setForcedDecimal(
+                this.getForcedDecimal(featureCollections, gs, gs.getCatalog()));
+        featureBuilder.setPadWithZeros(
+                this.getPadWithZeros(featureCollections, gs, gs.getCatalog()));
         try (SimpleFeatureIterator iterator = fc.features()) {
             while (iterator.hasNext()) {
                 SimpleFeature feature = iterator.next();

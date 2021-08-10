@@ -364,6 +364,59 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
                 "numDecimals=2 should return 2 digits of precision",
                 "329290.84 -5812472.17",
                 coords);
+
+        // assure that forcedDecimal has effect
+        layerInfo = getFeatureTypeInfo(MockData.FIFTEEN);
+        layerInfo.setNumDecimals(4);
+        layerInfo.setForcedDecimal(false);
+        getCatalog().save(layerInfo);
+
+        // coordinates can be very large in this CRS
+        vars.replace("srsName", "urn:x-ogc:def:crs:EPSG:3857");
+
+        doc = getMapML("wfs", vars);
+        assertEquals("mapml", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
+        coords = xpath.evaluate("//html:feature[@id='Fifteen.1']//html:coordinates/text()", doc);
+        assertEquals(
+                "With forcedDecimals=false, very large or very small numbers should be returned as scientific notation",
+                "-1.03526624685E7 504135.1496",
+                coords);
+    }
+
+    @Test
+    public void testPadWithZeros() throws Exception {
+        FeatureTypeInfo layerInfo = getFeatureTypeInfo(MockData.BASIC_POLYGONS);
+        layerInfo.setNumDecimals(4);
+        layerInfo.setPadWithZeros(true);
+        getCatalog().save(layerInfo);
+        // why is xpath null here? Need a new instance or we get NPE.
+        xpath = XMLUnit.newXpathEngine();
+
+        HashMap<String, String> vars = new HashMap<>();
+        vars.put("service", "wfs");
+        vars.put("version", "1.0");
+        vars.put("request", "GetFeature");
+        vars.put(
+                "typename",
+                MockData.BASIC_POLYGONS.getPrefix() + ":" + MockData.BASIC_POLYGONS.getLocalPart());
+        vars.put("outputFormat", "MAPML");
+        getCatalog().save(layerInfo);
+
+        Document doc = getMapML("wfs", vars);
+
+        // assure that pad with zeros works
+        doc = getMapML("wfs", vars);
+        assertEquals("mapml", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
+        String coords =
+                xpath.evaluate(
+                        "//html:feature[@id='BasicPolygons.1107531493630']//html:coordinates/text()",
+                        doc);
+        assertEquals(
+                "numDecimals=4 should return 4 digits of precision including padding with zeros",
+                "0.0000 -1.0000 1.0000 0.0000 0.0000 1.0000 -1.0000 0.0000 0.0000 -1.0000",
+                coords);
     }
     /**
      * Executes a request using the GET method and returns the result as an MapML document.

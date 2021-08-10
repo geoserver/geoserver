@@ -40,6 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.util.InternationalString;
 
 public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
@@ -612,5 +613,93 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.setValue("tabs:panel:bounds:crsContainer:crs:srs", "EPSG:4326");
         form.submit("save");
         tester.assertNoErrorMessage();
+    }
+
+    @Test
+    public void testEmptyLangInternationalContent() {
+        // create a new layer group page
+        LayerGroupEditPage page = new LayerGroupEditPage();
+        tester.startPage(page);
+        tester.assertRenderedPage(LayerGroupEditPage.class);
+        // check that keywords editor panel was rendered
+        tester.assertComponent(
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle",
+                InternationalStringPanel.class);
+        tester.assertComponent(
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract",
+                InternationalStringPanel.class);
+
+        // add layer group entries
+        page.lgEntryPanel
+                .getEntries()
+                .add(
+                        new LayerGroupEntry(
+                                getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
+        // add layer group mandatory parameters
+        FormTester form = tester.newFormTester("publishedinfo");
+
+        // enable i18n for title
+        form.setValue("tabs:panel:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", true);
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
+                "change");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew",
+                "click");
+
+        form.select(
+                "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                10);
+
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew",
+                "click");
+
+        // enable i18n for abstract
+        form.setValue("tabs:panel:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", true);
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
+                "change");
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:addNew",
+                "click");
+        form.select(
+                "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
+                10);
+
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:addNew",
+                "click");
+
+        form = tester.newFormTester("publishedinfo");
+
+        // set the titles to i18n fields
+        form.setValue(
+                "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "an international title");
+        form.setValue(
+                "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "empty lang international title");
+        form.setValue(
+                "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "an international abstract");
+        form.setValue(
+                "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "empty lang international abstract");
+
+        // set mandatory fields
+        form.setValue("tabs:panel:name", "bridges-i18n-layer-group");
+        form.setValue("tabs:panel:bounds:minX", "-180");
+        form.setValue("tabs:panel:bounds:minY", "-90");
+        form.setValue("tabs:panel:bounds:maxX", "180");
+        form.setValue("tabs:panel:bounds:maxY", "90");
+        form.setValue("tabs:panel:bounds:crsContainer:crs:srs", "EPSG:4326");
+        form.submit("save");
+        tester.assertNoErrorMessage();
+        LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("bridges-i18n-layer-group");
+        InternationalString i18nTitle = groupInfo.getInternationalTitle();
+        assertEquals("empty lang international title", i18nTitle.toString(null));
+        InternationalString i18nAbstract = groupInfo.getInternationalAbstract();
+        assertEquals("empty lang international abstract", i18nAbstract.toString(null));
     }
 }

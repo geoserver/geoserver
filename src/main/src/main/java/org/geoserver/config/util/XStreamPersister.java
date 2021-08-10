@@ -2618,16 +2618,19 @@ public class XStreamPersister {
                 Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             GrowableInternationalString internationalString = (GrowableInternationalString) source;
             Set<Locale> locales = internationalString.getLocales();
+            int size = locales.size();
             for (Locale l : locales) {
                 if (l != null) {
                     String elementName = l.toLanguageTag();
                     if (elementName.contains(" ")) elementName = elementName.replaceAll(" ", "__");
                     writer.startNode(elementName);
-                } else {
+                    writer.setValue(internationalString.toString(l));
+                    writer.endNode();
+                } else if (size > 1) {
                     writer.startNode(DEFAULT_LOCALE);
+                    writer.setValue(internationalString.toString(l));
+                    writer.endNode();
                 }
-                writer.setValue(internationalString.toString(l));
-                writer.endNode();
             }
         }
 
@@ -2635,6 +2638,7 @@ public class XStreamPersister {
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             GrowableInternationalString growableInternationalString =
                     new GrowableInternationalString();
+            if (!reader.hasMoreChildren()) return null;
             while (reader.hasMoreChildren()) {
                 reader.moveDown();
                 String nodeName = reader.getNodeName();

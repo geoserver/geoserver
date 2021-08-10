@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
@@ -28,8 +27,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.validation.INullAcceptingValidator;
 import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -64,7 +63,9 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
             C nonInternationalComponent,
             WebMarkupContainer checkBoxContainer) {
         super(id, model);
-        setModelObject(model, nonInternationalComponent);
+        // in case the internationalComponent is null set a new instance
+        // with the non international value as the starting one.
+        setObjectIfMissing(model, nonInternationalComponent);
         this.nonInternationalComponent = nonInternationalComponent;
         this.nonInternationalComponent.setOutputMarkupId(true);
         this.nonInternationalComponent.setOutputMarkupPlaceholderTag(true);
@@ -73,7 +74,7 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         setOutputMarkupId(true);
     }
 
-    private void setModelObject(
+    private void setObjectIfMissing(
             IModel<GrowableInternationalString> model, C nonInternationalComponent) {
         if (model.getObject() == null) {
             if (nonInternationalComponent.getModelObject() != null) {
@@ -328,7 +329,7 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         return !entries.isEmpty() && !(entries.size() == 1 && entries.get(0).getLocale() == null);
     }
 
-    private class LocaleValidator implements INullAcceptingValidator<Locale> {
+    private class LocaleValidator implements IValidator<Locale> {
         @Override
         public void validate(IValidatable<Locale> iValidatable) {
             Locale locale = iValidatable.getValue();
@@ -347,15 +348,15 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
             if (locale != null && (exisits || count > 2)) {
 
                 ValidationError error = new ValidationError();
-                error.setMessage(getErrorMessage(locale));
+                error.setMessage(duplicateLocaleMessage(locale));
                 iValidatable.error(error);
             }
         }
     }
 
-    private String getErrorMessage(Locale locale) {
+    private String duplicateLocaleMessage(Locale locale) {
         String lang =
-                locale != null && locale.getLanguage() != null ? locale.toLanguageTag() : "empty";
+                locale != null && locale.toLanguageTag() != null ? locale.toLanguageTag() : "empty";
         String message =
                 new StringResourceModel("InternationalStringPanel.duplicatedLocale", this)
                                 .getString()
@@ -365,13 +366,10 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
     }
 
     private String validateNullLocale() {
-        List<GrowableStringModel.InternationalStringEntry> entries =
-                provider.getItems()
-                        .stream()
-                        .filter(i -> i.getText() != null)
-                        .collect(Collectors.toList());
-        if (entries.stream().filter(i -> i != null && i.getLocale() == null).count() > 1) {
-            return getErrorMessage(null);
+        List<GrowableStringModel.InternationalStringEntry> entries = provider.getItems();
+        long count = entries.stream().filter(i -> i != null && i.getLocale() == null).count();
+        if (count > 1) {
+            return duplicateLocaleMessage(null);
         }
         return null;
     }

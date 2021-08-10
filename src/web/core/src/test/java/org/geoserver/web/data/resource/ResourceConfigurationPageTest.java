@@ -734,4 +734,40 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         form.submit("save");
         tester.assertNoErrorMessage();
     }
+
+    @Test
+    public void testDuplicateNullEntry() {
+        Catalog catalog = getGeoServerApplication().getCatalog();
+        String layerId = getLayerId(MockData.FIFTEEN);
+        LayerInfo layer = catalog.getLayerByName(layerId);
+
+        login();
+        tester.startPage(new ResourceConfigurationPage(layer, false));
+
+        FormTester form = tester.newFormTester("publishedinfo");
+
+        // enable i18n for title
+        form.setValue(
+                "tabs:panel:theList:0:content:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
+                true);
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:theList:0:content:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
+                "change");
+
+        form.setValue(
+                "tabs:panel:theList:0:content:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
+                "an international title");
+
+        tester.executeAjaxEvent(
+                "publishedinfo:tabs:panel:theList:0:content:titleAndAbstract:internationalTitle:container:addNew",
+                "click");
+
+        tester.newFormTester("publishedinfo");
+        form.setValue(
+                "tabs:panel:theList:0:content:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:1:component:border:border_body:txt",
+                "another international title");
+        form.submit("save");
+        tester.assertErrorMessages(
+                "There are more than one entries for the same language in one of the i18n fields. Duplicate language is empty");
+    }
 }

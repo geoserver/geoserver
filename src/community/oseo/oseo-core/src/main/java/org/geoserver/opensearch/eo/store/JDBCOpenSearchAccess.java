@@ -177,11 +177,6 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
             typeBuilder.add(mappedDescriptor);
         }
 
-        // adding the metadata property
-        AttributeDescriptor metadataDescriptor =
-                buildSimpleDescriptor(METADATA_PROPERTY_NAME, EO_PREFIX, String.class);
-        typeBuilder.add(metadataDescriptor);
-
         // adding the layer publishing property
         AttributeDescriptor layerDescriptor =
                 buildFeatureListDescriptor(
@@ -305,10 +300,6 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
 
             typeBuilder.add(mappedDescriptor);
         }
-        // adding the metadata property
-        AttributeDescriptor metadataDescriptor =
-                buildSimpleDescriptor(METADATA_PROPERTY_NAME, EO_PREFIX, String.class);
-        typeBuilder.add(metadataDescriptor);
 
         // adding the quicklook property
         AttributeDescriptor quicklookDescriptor =

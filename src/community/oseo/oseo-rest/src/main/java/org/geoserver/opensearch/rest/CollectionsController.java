@@ -4,7 +4,6 @@
  */
 package org.geoserver.opensearch.rest;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYERS_PROPERTY_NAME;
 
 import java.io.IOException;
@@ -20,8 +19,6 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.opensearch.eo.OpenSearchAccessProvider;
 import org.geoserver.opensearch.eo.store.CollectionLayer;
@@ -57,7 +54,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -83,7 +79,6 @@ public class CollectionsController extends AbstractOpenSearchController {
     /** List of parts making up a zipfile for a collection */
     enum CollectionPart implements ZipPart {
         Collection("collection.json"),
-        Metadata("metadata.xml"),
         Thumbnail("thumbnail\\.[png|jpeg|jpg]"),
         OwsLinks("owsLinks.json");
 
@@ -207,7 +202,6 @@ public class CollectionsController extends AbstractOpenSearchController {
                 simpleToComplex(jsonFeature, getCollectionSchema(), COLLECTION_HREFS);
 
         // grab the other parts
-        byte[] metadata = parts.get(CollectionPart.Metadata);
         byte[] rawLinks = parts.get(CollectionPart.OwsLinks);
         SimpleFeatureCollection linksCollection;
         if (rawLinks != null) {
@@ -222,14 +216,7 @@ public class CollectionsController extends AbstractOpenSearchController {
                 fs -> {
                     fs.addFeatures(singleton(collectionFeature));
 
-                    final String nsURI = fs.getSchema().getName().getNamespaceURI();
                     Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(eoId), true);
-
-                    if (metadata != null) {
-                        String descriptionString = new String(metadata);
-                        fs.modifyFeatures(
-                                OpenSearchAccess.METADATA_PROPERTY_NAME, descriptionString, filter);
-                    }
 
                     if (linksCollection != null) {
                         fs.modifyFeatures(
@@ -306,8 +293,7 @@ public class CollectionsController extends AbstractOpenSearchController {
         for (Property p : collectionFeature.getProperties()) {
             // skip over the large/complex attributes that are being modified via separate calls
             final Name propertyName = p.getName();
-            if (OpenSearchAccess.METADATA_PROPERTY_NAME.equals(propertyName)
-                    || OpenSearchAccess.OGC_LINKS_PROPERTY_NAME.equals(propertyName)
+            if (OpenSearchAccess.OGC_LINKS_PROPERTY_NAME.equals(propertyName)
                     || OpenSearchAccess.DESCRIPTION.equals(propertyName.getLocalPart())) {
                 continue;
             }
@@ -678,67 +664,6 @@ public class CollectionsController extends AbstractOpenSearchController {
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
         runTransactionOnCollectionStore(
                 fs -> fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, null, filter));
-    }
-
-    @GetMapping(
-        path = "{collection}/metadata",
-        produces = {MediaType.TEXT_XML_VALUE}
-    )
-    public void getCollectionMetadata(
-            @PathVariable(name = "collection", required = true) String collection,
-            HttpServletResponse response)
-            throws IOException {
-        // query one collection and grab its OGC links
-        Feature feature =
-                queryCollection(
-                        collection,
-                        q -> {
-                            q.setProperties(
-                                    Collections.singletonList(
-                                            FF.property(OpenSearchAccess.METADATA_PROPERTY_NAME)));
-                        });
-
-        // grab the metadata
-        Property metadataProperty = feature.getProperty(OpenSearchAccess.METADATA_PROPERTY_NAME);
-        if (metadataProperty != null && metadataProperty.getValue() instanceof String) {
-            String value = (String) metadataProperty.getValue();
-            response.setContentType("text/xml");
-            StreamUtils.copy(value, UTF_8, response.getOutputStream());
-        } else {
-            throw new ResourceNotFoundException(
-                    "Metadata for collection '" + collection + "' could not be found");
-        }
-    }
-
-    @PutMapping(path = "{collection}/metadata", consumes = MediaType.TEXT_XML_VALUE)
-    public void putCollectionMetadata(
-            @PathVariable(name = "collection", required = true) String collection,
-            HttpServletRequest request)
-            throws IOException {
-        // check the collection is there
-        queryCollection(collection, q -> {});
-
-        // TODO: validate it's actual ISO metadata
-        String metadata = IOUtils.toString(request.getReader());
-        checkWellFormedXML(metadata);
-
-        // prepare the update
-        Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
-        runTransactionOnCollectionStore(
-                fs -> fs.modifyFeatures(OpenSearchAccess.METADATA_PROPERTY_NAME, metadata, filter));
-    }
-
-    @DeleteMapping(path = "{collection}/metadata")
-    public void deleteCollectionMetadata(
-            @PathVariable(name = "collection", required = true) String collection)
-            throws IOException {
-        // check the collection is there
-        queryCollection(collection, q -> {});
-
-        // prepare the update
-        Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
-        runTransactionOnCollectionStore(
-                fs -> fs.modifyFeatures(OpenSearchAccess.METADATA_PROPERTY_NAME, null, filter));
     }
 
     private void runTransactionOnCollectionStore(IOConsumer<FeatureStore> featureStoreConsumer)

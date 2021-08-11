@@ -6,7 +6,6 @@ package org.geoserver.opensearch.eo.store;
 
 import static org.geoserver.opensearch.eo.store.JDBCOpenSearchAccess.FF;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYERS_PROPERTY_NAME;
-import static org.geoserver.opensearch.eo.store.OpenSearchAccess.METADATA_PROPERTY_NAME;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.OGC_LINKS_PROPERTY_NAME;
 
 import java.awt.RenderingHints.Key;
@@ -311,17 +310,7 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
         }
 
         if (addJoins) {
-            // join to metadata table if necessary
-            if (hasOutputProperty(query, METADATA_PROPERTY_NAME, false)) {
-                Filter filter = FF.equal(FF.property("id"), FF.property("metadata.mid"), true);
-                final String metadataTable = getMetadataTable();
-                Join join = new Join(metadataTable, filter);
-                join.setAlias("metadata");
-                join.setType(Type.OUTER);
-                result.getJoins().add(join);
-            }
-
-            // same for output layer, if necessary
+            // join output layer, if necessary
             if (hasOutputProperty(query, LAYERS_PROPERTY_NAME, false)
                     || hasOutputProperty(query, LAYERS_PROPERTY_NAME, false)) {
                 Filter filter = FF.equal(FF.property("id"), FF.property("layer.cid"), true);
@@ -364,12 +353,6 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
     protected String getCollectionLayerTable() {
         return "collection_layer";
     }
-
-    /**
-     * Name of the metadata table to join in case the {@link
-     * OpenSearchAccess#METADATA_PROPERTY_NAME} property is requested
-     */
-    protected abstract String getMetadataTable();
 
     /**
      * Name of the link table to join in case the {@link OpenSearchAccess#OGC_LINKS_PROPERTY_NAME}
@@ -510,15 +493,6 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             Attribute attribute = ab.buildSimple(null, value);
             builder.append(pd.getName(), attribute);
         }
-
-        // handle joined metadata
-        Object metadataValue = fi.getAttribute("metadata");
-        if (metadataValue instanceof SimpleFeature) {
-            SimpleFeature metadataFeature = (SimpleFeature) metadataValue;
-            ab.setDescriptor((AttributeDescriptor) schema.getDescriptor(METADATA_PROPERTY_NAME));
-            Attribute attribute = ab.buildSimple(null, metadataFeature.getAttribute("metadata"));
-            builder.append(METADATA_PROPERTY_NAME, attribute);
-        }
     }
 
     private SimpleFeature retypeLayerFeature(SimpleFeature layerFeature) {
@@ -625,19 +599,8 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
      */
     protected void removeChildFeatures(final List<String> collectionIdentifiers)
             throws IOException {
-        // remove all related metadata
-        List<Filter> filters =
-                collectionIdentifiers
-                        .stream()
-                        .map(id -> FF.equal(FF.property("mid"), FF.literal(id), false))
-                        .collect(Collectors.toList());
-        Filter metadataFilter = FF.or(filters);
-        SimpleFeatureStore metadataStore = getFeatureStoreForTable(getMetadataTable());
-        metadataStore.setTransaction(getTransaction());
-        metadataStore.removeFeatures(metadataFilter);
-
         // remove all related OGC links
-        filters =
+        List<Filter> filters =
                 collectionIdentifiers
                         .stream()
                         .map(
@@ -671,26 +634,6 @@ public abstract class AbstractMappingStore implements FeatureStore<FeatureType, 
             Name name = attributeNames[i];
             Object value = attributeValues[i];
             // sub-table related updates
-            if (OpenSearchAccess.METADATA_PROPERTY_NAME.equals(name)) {
-                final String tableName = getMetadataTable();
-                modifySecondaryTable(
-                        mappedFilter,
-                        value,
-                        tableName,
-                        id -> FF.id(FF.featureId(tableName + "." + id)),
-                        (id, secondaryStore) -> {
-                            SimpleFeatureBuilder fb =
-                                    new SimpleFeatureBuilder(secondaryStore.getSchema());
-                            fb.set("mid", id);
-                            fb.set("metadata", value);
-                            SimpleFeature metadataFeature = fb.buildFeature(tableName + "." + id);
-                            metadataFeature.getUserData().put(Hints.USE_PROVIDED_FID, true);
-                            return DataUtilities.collection(metadataFeature);
-                        });
-
-                // this one has been handled
-                continue;
-            }
             if (OpenSearchAccess.QUICKLOOK_PROPERTY_NAME.equals(name)) {
                 final String tableName = getThumbnailTable();
                 modifySecondaryTable(

@@ -33,11 +33,6 @@ public class JDBCCollectionFeatureStore extends AbstractMappingStore {
     }
 
     @Override
-    protected String getMetadataTable() {
-        return "collection_metadata";
-    }
-
-    @Override
     protected String getLinkTable() {
         return "collection_ogclink";
     }

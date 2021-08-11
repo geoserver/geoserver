@@ -6,7 +6,6 @@ package org.geoserver.opensearch.rest;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -14,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.DocumentContext;
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -288,59 +286,6 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
     }
 
     @Test
-    public void testGetCollectionMetadata() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse("/rest/oseo/collections/SENTINEL2/metadata");
-        assertEquals(200, response.getStatus());
-        assertEquals("text/xml", response.getContentType());
-        assertThat(
-                response.getContentAsString(),
-                both(containsString("gmi:MI_Metadata")).and(containsString("Sentinel-2")));
-    }
-
-    @Test
-    public void testPutCollectionMetadata() throws Exception {
-        MockHttpServletResponse response;
-        createTest123Collection();
-
-        // create the metadata
-        response =
-                putAsServletResponse(
-                        "rest/oseo/collections/TEST123/metadata",
-                        getTestData("/test123-metadata.xml"),
-                        MediaType.TEXT_XML_VALUE);
-        assertEquals(200, response.getStatus());
-
-        // grab and check
-        assertTest123Metadata();
-    }
-
-    private void assertTest123Metadata() throws Exception, UnsupportedEncodingException {
-        MockHttpServletResponse response;
-        response = getAsServletResponse("rest/oseo/collections/TEST123/metadata");
-        assertEquals(200, response.getStatus());
-        assertEquals("text/xml", response.getContentType());
-        assertThat(
-                response.getContentAsString(),
-                both(containsString("gmi:MI_Metadata")).and(containsString("TEST123")));
-    }
-
-    @Test
-    public void testDeleteCollectionMetadata() throws Exception {
-        // creates the collection and adds the metadata
-        testPutCollectionMetadata();
-
-        // now remove
-        MockHttpServletResponse response =
-                deleteAsServletResponse("rest/oseo/collections/TEST123/metadata");
-        assertEquals(200, response.getStatus());
-
-        // check it's not there anymore
-        response = getAsServletResponse("rest/oseo/collections/TEST123/metadata");
-        assertEquals(404, response.getStatus());
-    }
-
-    @Test
     public void testGetCollectionThumbnail() throws Exception {
         // missing from the DB right now
         MockHttpServletResponse response =
@@ -354,10 +299,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         Set<Set<CollectionPart>> sets =
                 Sets.powerSet(
                         new HashSet<>(
-                                Arrays.asList(
-                                        CollectionPart.Collection,
-                                        CollectionPart.Metadata,
-                                        CollectionPart.OwsLinks)));
+                                Arrays.asList(CollectionPart.Collection, CollectionPart.OwsLinks)));
 
         for (Set<CollectionPart> parts : sets) {
             if (parts.isEmpty()) {
@@ -380,10 +322,6 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
                     case Collection:
                         resource = "/collection.json";
                         name = "collection.json";
-                        break;
-                    case Metadata:
-                        resource = "/test123-metadata.xml";
-                        name = "metadata.xml";
                         break;
                     case OwsLinks:
                         resource = "/test123-links.json";
@@ -418,9 +356,6 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
             return;
         }
 
-        if (parts.contains(CollectionPart.Metadata)) {
-            assertTest123Metadata();
-        }
         if (parts.contains(CollectionPart.OwsLinks)) {
             assertTest123Links();
         }

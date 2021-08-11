@@ -32,9 +32,6 @@ public interface OpenSearchAccess extends DataAccess<FeatureType, Feature> {
     /** Internal attribute stating he original package mime type */
     public static String ORIGINAL_PACKAGE_TYPE = "originalPackageType";
 
-    /** The optional property in collection and product containing the metadata (ISO or O&M) */
-    public static Name METADATA_PROPERTY_NAME = new NameImpl(EO_NAMESPACE, "metadata");
-
     /**
      * The optional property in collection and product containing the OGC links (it's a collection)
      */

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Predicates;
 import org.geoserver.config.GeoServer;
+import org.geoserver.opensearch.eo.response.TemplatesProcessor;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.platform.OWS20Exception.OWSExceptionCode;
@@ -55,15 +56,19 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
     private static String PNG_MIME = "image/png";
 
     private static String BINARY_MIME = "application/octet-stream ";
+    private final FreemarkerTemplateSupport templates;
 
     GeoServer geoServer;
 
     OpenSearchAccessProvider accessProvider;
 
     public DefaultOpenSearchEoService(
-            GeoServer geoServer, OpenSearchAccessProvider accessProvider) {
+            GeoServer geoServer,
+            OpenSearchAccessProvider accessProvider,
+            FreemarkerTemplateSupport templates) {
         this.geoServer = geoServer;
         this.accessProvider = accessProvider;
+        this.templates = templates;
     }
 
     @Override
@@ -279,40 +284,38 @@ public class DefaultOpenSearchEoService implements OpenSearchEoService {
         OpenSearchAccess access = getOpenSearchAccess();
 
         // build the query
-        Query query = filterEnabled(queryByIdentifier(request.getId()));
-        query.setProperties(Arrays.asList(FF.property(OpenSearchAccess.METADATA_PROPERTY_NAME)));
+        String id = request.getId();
+        Query query = filterEnabled(queryByIdentifier(id));
 
         // run it
         FeatureSource<FeatureType, Feature> source;
-        if (request.getParentIdentifier() == null) {
+        String parentId = request.getParentIdentifier();
+        if (parentId == null) {
             // collection request
             source = access.getCollectionSource();
         } else {
             source = access.getProductSource();
+            // get the collection property as well
+            query.setProperties(getProductProperties(accessProvider.getOpenSearchAccess()));
         }
         FeatureCollection<FeatureType, Feature> features = source.getFeatures(query);
-        if (features.isEmpty()) {
-            throw new OWS20Exception(
-                    "Could not locate the requested product for uid = "
-                            + request.getId()
-                            + " and parentId = "
-                            + request.getParentIdentifier(),
-                    OWSExceptionCode.NotFound);
+        Feature feature = DataUtilities.first(features);
+        if (feature == null) {
+            String msg = "Could not locate the requested product for uid = " + id;
+            if (parentId != null) msg += " and parentId = " + parentId;
+            throw new OWS20Exception(msg, OWSExceptionCode.NotFound);
         }
 
-        // get the metadata from the feature
-        String metadata =
-                (String)
-                        getPropertyFromFirstFeature(
-                                features, OpenSearchAccess.METADATA_PROPERTY_NAME);
-        if (metadata == null) {
-            throw new OWS20Exception(
-                    "Could not locate the requested metadata for uid = "
-                            + request.getId()
-                            + " and parentId = "
-                            + request.getParentIdentifier());
+        TemplatesProcessor processor = new TemplatesProcessor(templates);
+        String templateName, collectionId;
+        if (parentId == null) {
+            templateName = "collection-metadata";
+            collectionId = (String) feature.getProperty(OpenSearchAccess.EO_IDENTIFIER).getValue();
+        } else {
+            templateName = "product-metadata";
+            collectionId = parentId;
         }
-
+        String metadata = processor.processTemplate(collectionId, templateName, feature);
         return new MetadataResults(request, metadata);
     }
 

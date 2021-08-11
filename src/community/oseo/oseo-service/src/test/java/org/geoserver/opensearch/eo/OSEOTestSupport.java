@@ -136,17 +136,23 @@ public class OSEOTestSupport extends GeoServerSystemTestSupport {
         namespaceContext.bindNamespaceUri(
                 "param", "http://a9.com/-/spec/opensearch/extensions/parameters/1.0/");
         namespaceContext.bindNamespaceUri("at", "http://www.w3.org/2005/Atom");
-        namespaceContext.bindNamespaceUri("gml", "http://www.opengis.net/gml");
+        namespaceContext.bindNamespaceUri("gml", "http://www.opengis.net/gml/3.2");
         namespaceContext.bindNamespaceUri("georss", "http://www.georss.org/georss");
         namespaceContext.bindNamespaceUri("eo", OpenSearchAccess.EO_NAMESPACE);
         namespaceContext.bindNamespaceUri("geo", OpenSearchAccess.GEO_NAMESPACE);
         namespaceContext.bindNamespaceUri("gmi", "http://www.isotc211.org/2005/gmi");
         namespaceContext.bindNamespaceUri("gmd", "http://www.isotc211.org/2005/gmd");
         namespaceContext.bindNamespaceUri("gco", "http://www.isotc211.org/2005/gco");
+        namespaceContext.bindNamespaceUri("gmx", "http://www.isotc211.org/2005/gmx");
         namespaceContext.bindNamespaceUri("time", "http://a9.com/-/opensearch/extensions/time/1.0");
         namespaceContext.bindNamespaceUri("owc", "http://www.opengis.net/owc/1.0");
         namespaceContext.bindNamespaceUri("dc", "http://purl.org/dc/elements/1.1/");
         namespaceContext.bindNamespaceUri("media", "http://search.yahoo.com/mrss/");
+        namespaceContext.bindNamespaceUri("opt", "http://www.opengis.net/opt/2.1");
+        namespaceContext.bindNamespaceUri("om", "http://www.opengis.net/om/2.0");
+        namespaceContext.bindNamespaceUri("eop", "http://www.opengis.net/eop/2.1");
+        namespaceContext.bindNamespaceUri("ows", "http://www.opengis.net/ows/2.0");
+        namespaceContext.bindNamespaceUri("xlink", "http://www.w3.org/1999/xlink");
         for (ProductClass pc : ProductClass.DEFAULT_PRODUCT_CLASSES) {
             namespaceContext.bindNamespaceUri(pc.getPrefix(), pc.getNamespace());
         }

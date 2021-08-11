@@ -12,8 +12,8 @@ The full API is available at this URL:
 
 In general terms, one would:
 
-* Create a collection, along with thumbnail, metadata, OGC links
-* Then create a product, along with thumbnail, metadata, OGC links
+* Create a collection, along with thumbnail, OGC links
+* Then create a product, along with thumbnail, OGC links
 * Finally, and optionally, specify the granules composing the product (actually needed only
   if the OpenSearch subsystem is meant to be used for publishing OGC services layers too, 
   instead of being a simple search engine.
@@ -44,9 +44,6 @@ A collection.zip, sent as a PUT request to ``rest/collections`` would contain th
    * - description.html
      - Y
      - The HTML description for the collection
-   * - metadata.xml
-     - Y
-     - The metadata for the collection, in ISO format
    * - thumbnail.png, thumbnail.jpg or thumbnail.jpeg
      - Y
      - The collection thumbnail
@@ -74,9 +71,6 @@ A product.zip, sent as a POST request to ``rest/collections/<theCollection>/prod
    * - description.html
      - Y
      - The HTML description for the product
-   * - metadata.xml
-     - Y
-     - The metadata for the collection, in O&M format
    * - thumbnail.png, thumbnail.jpg or thumbnail.jpeg
      - Y
      - The collection thumbnail

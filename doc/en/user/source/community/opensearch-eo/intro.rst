@@ -14,7 +14,7 @@ GeoServer. References:
 The OpenSearch plugin organizes data in "Collections" and "Products":
 
 * A collection is a set of products with some uniformity, described by some search attributes and a ISO metadata sheet
-* A product is a set of images (and ancilliary information), describe by some search attributes and a O&M metadata sheet
+* A product is a set of images (and ancillary information), describe by some search attributes and a O&M metadata sheet
 
 The system allows the common EO "two level" searches, that is:
 

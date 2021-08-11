@@ -30,11 +30,9 @@ import org.geoserver.platform.resource.Resource;
 import org.geotools.data.DataStore;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.filter.text.cql2.CQL;
-import org.hamcrest.Matchers;
 import org.jsoup.Jsoup;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
 
 public class SearchTest extends OSEOTestSupport {
@@ -55,6 +53,9 @@ public class SearchTest extends OSEOTestSupport {
 
     @Test
     public void testAllCollection() throws Exception {
+        // this test needs gml bound to GML 2
+        namespaceContext.bindNamespaceUri("gml", "http://www.opengis.net/gml");
+
         MockHttpServletResponse response =
                 getAsServletResponse("oseo/search?httpAccept=" + ENCODED_ATOM_MIME);
         assertEquals(AtomSearchResponse.MIME, response.getContentType());
@@ -814,94 +815,6 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/os:Query[@count]"));
         assertThat(dom, hasXPath("/at:feed/os:Query[@startIndex='1']"));
         assertThat(dom, hasXPath("/at:feed/os:Query[@eo:test='abc']"));
-    }
-
-    @Test
-    public void testGetSentinel2Metadata() throws Exception {
-        Document dom = getAsDOM("oseo/metadata?uid=SENTINEL2", 200, MetadataRequest.ISO_METADATA);
-        // print(dom);
-
-        // just check we got the right one
-        assertThat(
-                dom,
-                hasXPath(
-                        "/gmi:MI_Metadata/gmd:fileIdentifier/gco:CharacterString",
-                        equalTo("EOP:CNES:PEPS:S2")));
-    }
-
-    @Test
-    public void testGetSentinel1Metadata() throws Exception {
-        Document dom = getAsDOM("oseo/metadata?uid=SENTINEL1", 200, MetadataRequest.ISO_METADATA);
-        // print(dom);
-
-        // just check we got the right one
-        assertThat(
-                dom,
-                hasXPath(
-                        "/gmi:MI_Metadata/gmd:fileIdentifier/gco:CharacterString",
-                        equalTo("EOP:CNES:PEPS:S1")));
-    }
-
-    @Test
-    public void testProductMetadata() throws Exception {
-        String path =
-                "oseo/metadata?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04&httpAccept=application/gml%2Bxml";
-        Document dom = getAsDOM(path, 200, MetadataRequest.OM_METADATA);
-        // print(dom);
-
-        // just check we got the right one (the namespaces used here are different than the ones
-        // used
-        SimpleNamespaceContext ctx = new SimpleNamespaceContext();
-        ctx.bindNamespaceUri("gml", "http://www.opengis.net/gml/3.2");
-        ctx.bindNamespaceUri("opt", "http://www.opengis.net/opt/2.1");
-        ctx.bindNamespaceUri("om", "http://www.opengis.net/om/2.0");
-        assertThat(
-                dom,
-                Matchers.hasXPath(
-                        "/opt:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:beginPosition",
-                        ctx,
-                        equalTo("2016-09-29T10:20:22.026Z")));
-    }
-
-    @Test
-    public void testGetCollectionMetadataInvalidFormat() throws Exception {
-        Document dom =
-                getAsOpenSearchException("oseo/metadata?uid=SENTINEL2&httpAccept=foo/bar", 400);
-        assertThat(
-                dom,
-                hasXPath("/rss/channel/item/title", containsString(MetadataRequest.ISO_METADATA)));
-    }
-
-    @Test
-    public void testGetDisableCollectionMetadata() throws Exception {
-        Document dom = getAsOpenSearchException("oseo/metadata?uid=DISABLED_COLLECTION", 404);
-        assertThat(
-                dom,
-                hasXPath(
-                        "/rss/channel/item/title",
-                        containsString("Could not locate the requested product")));
-    }
-
-    @Test
-    public void testGetProductMetadataInvalidFormat() throws Exception {
-        Document dom =
-                getAsOpenSearchException(
-                        "oseo/metadata?parentId=SENTINEL2&uid=123&httpAccept=foo/bar", 400);
-        assertThat(
-                dom,
-                hasXPath("/rss/channel/item/title", containsString(MetadataRequest.OM_METADATA)));
-    }
-
-    @Test
-    public void testGetDisabledProductMetadata() throws Exception {
-        Document dom =
-                getAsOpenSearchException(
-                        "oseo/metadata?parentId=LANDSAT8&uid=LS8_TEST.DISABLED", 404);
-        assertThat(
-                dom,
-                hasXPath(
-                        "/rss/channel/item/title",
-                        containsString("Could not locate the requested product")));
     }
 
     @Test

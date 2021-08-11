@@ -176,7 +176,6 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
             // skip multivalue, metadata and quicklook
             final Name propertyName = pd.getName();
             if (pd.getMaxOccurs() > 1
-                    || OpenSearchAccess.METADATA_PROPERTY_NAME.equals(propertyName)
                     || OpenSearchAccess.QUICKLOOK_PROPERTY_NAME.equals(propertyName)
                     || "htmlDescription".equalsIgnoreCase(propertyName.getLocalPart())
                     || "id".equals(propertyName.getLocalPart())) {

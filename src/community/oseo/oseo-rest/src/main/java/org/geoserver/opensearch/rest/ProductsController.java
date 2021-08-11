@@ -82,7 +82,6 @@ public class ProductsController extends AbstractOpenSearchController {
     /** List of parts making up a zipfile for a collection */
     enum ProductPart implements ZipPart {
         Product("product.json"),
-        Metadata("metadata.xml"),
         Thumbnail("thumbnail\\.(png|jpeg|jpg)"),
         OwsLinks("owsLinks.json"),
         Granules("granules.json");
@@ -205,7 +204,6 @@ public class ProductsController extends AbstractOpenSearchController {
         Feature productFeature = simpleToComplex(jsonFeature, getProductSchema(), PRODUCT_HREFS);
 
         // grab the other parts
-        byte[] metadata = parts.get(ProductPart.Metadata);
         byte[] thumbnail = parts.get(ProductPart.Thumbnail);
         byte[] rawLinks = parts.get(ProductPart.OwsLinks);
         SimpleFeatureCollection linksCollection;
@@ -230,12 +228,6 @@ public class ProductsController extends AbstractOpenSearchController {
 
                     final String nsURI = fs.getSchema().getName().getNamespaceURI();
                     Filter filter = getProductFilter(collection, productId);
-
-                    if (metadata != null) {
-                        String descriptionString = new String(metadata);
-                        fs.modifyFeatures(
-                                OpenSearchAccess.METADATA_PROPERTY_NAME, descriptionString, filter);
-                    }
 
                     if (linksCollection != null) {
                         fs.modifyFeatures(
@@ -356,8 +348,7 @@ public class ProductsController extends AbstractOpenSearchController {
             // skip over the large/complex attributes that are being modified via
             // separate calls
             final Name propertyName = p.getName();
-            if (OpenSearchAccess.METADATA_PROPERTY_NAME.equals(propertyName)
-                    || OpenSearchAccess.OGC_LINKS_PROPERTY_NAME.equals(propertyName)
+            if (OpenSearchAccess.OGC_LINKS_PROPERTY_NAME.equals(propertyName)
                     || OpenSearchAccess.DESCRIPTION.equals(propertyName.getLocalPart())) {
                 continue;
             }
@@ -443,73 +434,6 @@ public class ProductsController extends AbstractOpenSearchController {
         Filter filter = getProductFilter(collection, product);
         runTransactionOnProductStore(
                 fs -> fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, null, filter));
-    }
-
-    /*
-     * Note, the .+ regular expression allows the product id to contain dots instead of having them interpreted as format extension
-     */
-    @GetMapping(
-        path = "{product:.+}/metadata",
-        produces = {MediaType.APPLICATION_JSON_VALUE}
-    )
-    public void getProductMetadata(
-            @PathVariable(name = "collection", required = true) String collection,
-            @PathVariable(name = "product", required = true) String product,
-            HttpServletResponse response)
-            throws IOException {
-        // query one product and grab its metadata
-        Feature feature =
-                queryProduct(
-                        collection,
-                        product,
-                        q -> {
-                            q.setProperties(
-                                    Collections.singletonList(
-                                            FF.property(OpenSearchAccess.METADATA_PROPERTY_NAME)));
-                        });
-
-        // grab the metadata
-        Property metadataProperty = feature.getProperty(OpenSearchAccess.METADATA_PROPERTY_NAME);
-        if (metadataProperty != null && metadataProperty.getValue() instanceof String) {
-            String value = (String) metadataProperty.getValue();
-            response.setContentType("text/xml");
-            StreamUtils.copy(value, UTF_8, response.getOutputStream());
-        } else {
-            throwProductNotFound(collection, product, "Metadata for product");
-        }
-    }
-
-    @PutMapping(path = "{product:.+}/metadata", consumes = MediaType.TEXT_XML_VALUE)
-    public void putCollectionMetadata(
-            @PathVariable(name = "collection", required = true) String collection,
-            @PathVariable(name = "product", required = true) String product,
-            HttpServletRequest request)
-            throws IOException {
-        // check the product exists
-        queryProduct(collection, product, q -> {});
-
-        // TODO: validate it's actual O&M metadata
-        String metadata = IOUtils.toString(request.getReader());
-        checkWellFormedXML(metadata);
-
-        // prepare the update
-        Filter filter = getProductFilter(collection, product);
-        runTransactionOnProductStore(
-                fs -> fs.modifyFeatures(OpenSearchAccess.METADATA_PROPERTY_NAME, metadata, filter));
-    }
-
-    @DeleteMapping(path = "{product:.+}/metadata")
-    public void deleteCollectionMetadata(
-            @PathVariable(name = "collection", required = true) String collection,
-            @PathVariable(name = "product", required = true) String product)
-            throws IOException {
-        // check the product exists
-        queryProduct(collection, product, q -> {});
-
-        // prepare the update
-        Filter filter = getProductFilter(collection, product);
-        runTransactionOnProductStore(
-                fs -> fs.modifyFeatures(OpenSearchAccess.METADATA_PROPERTY_NAME, null, filter));
     }
 
     private void throwProductNotFound(String collection, String product, String item) {
@@ -790,7 +714,6 @@ public class ProductsController extends AbstractOpenSearchController {
         }
 
         // grab the other parts
-        byte[] metadata = parts.get(ProductPart.Metadata);
         byte[] thumbnail = parts.get(ProductPart.Thumbnail);
         byte[] rawLinks = parts.get(ProductPart.OwsLinks);
         SimpleFeatureCollection linksCollection;
@@ -817,12 +740,6 @@ public class ProductsController extends AbstractOpenSearchController {
 
                     final String nsURI = fs.getSchema().getName().getNamespaceURI();
                     Filter filter = getProductFilter(collection, product);
-
-                    if (metadata != null) {
-                        String descriptionString = new String(metadata);
-                        fs.modifyFeatures(
-                                OpenSearchAccess.METADATA_PROPERTY_NAME, descriptionString, filter);
-                    }
 
                     if (linksCollection != null) {
                         fs.modifyFeatures(

@@ -7,11 +7,9 @@ package org.geoserver.opensearch.eo;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
@@ -23,9 +21,7 @@ import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.FeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.util.logging.Logging;
-import org.opengis.feature.Attribute;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
@@ -54,14 +50,25 @@ public class OpenSearchTemplates extends AbstractTemplates {
 
     /** Copies over all HTML templates, to allow customization */
     private void copyHTMLTemplates() throws IOException {
-        Resource stac = dd.get("templates/os-eo");
-        stac.dir();
-        String path =
+        Resource oseo = dd.get("templates/os-eo");
+        oseo.dir();
+        // HTML templates
+        copyResources(
+                oseo,
                 "classpath:/"
                         + AtomSearchResponse.class.getPackage().getName().replace(".", "/")
-                        + "/*.ftl";
+                        + "/*.ftl");
+        // metadata templates
+        copyResources(
+                oseo,
+                "classpath:/"
+                        + DefaultOpenSearchEoService.class.getPackage().getName().replace(".", "/")
+                        + "/*.ftl");
+    }
+
+    private void copyResources(Resource oseo, String path) throws IOException {
         for (org.springframework.core.io.Resource r : resourceResolver.getResources(path)) {
-            Resource target = stac.get(r.getFilename());
+            Resource target = oseo.get(r.getFilename());
             if (target.getType() == Resource.Type.UNDEFINED) {
                 try (InputStream is = r.getInputStream();
                         OutputStream os = target.out()) {
@@ -115,14 +122,6 @@ public class OpenSearchTemplates extends AbstractTemplates {
         copyDefault(items, "products.json");
         this.defaultProductsTemplate =
                 new Template(items, new TemplateReaderConfiguration(namespaces));
-    }
-
-    private Set<String> getCollectionNames(UniqueVisitor visitor) {
-        @SuppressWarnings("unchecked")
-        Set<Object> values = visitor.getResult().toSet();
-        return values.stream()
-                .map(o -> (String) ((o instanceof Attribute) ? ((Attribute) o).getValue() : o))
-                .collect(Collectors.toSet());
     }
 
     /** Returns the products template */

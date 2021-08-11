@@ -106,6 +106,30 @@ The function receives the following parameters:
 * The first argument is a ``path`` segment under the ``oseo`` service path.
 * The other arguments, optional, are couple of keys and values, used to encode the link's query string.
 
+.. _oseo_metadata_templates:
+
+Metadata templates
+------------------
+
+The Freemarker metadata templates for collections and products can be found in ``$GEOSERVER_DATA_DIRECTORY/templates/os-eo``:
+
+* `product-metadata.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/product-metadata.ftl>`_ receives an OpenSearch product and encodes the Atom HTML description for it.
+* `collection-metadata.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/collection-metadata.ftl>`_ receives an OpenSearch collection and encodes the Atom HTML description for it.
+
+The default templates, linked above, generate respectively a ISO metadata sheet for collections, and a 
+EO O&M product metadata sheet for products.
+
+The templates can use a ``oseoLink`` function to build links pointing back to the OpenSearch service.
+The function receives the following parameters:
+
+* The first argument is a ``path`` segment under the ``oseo`` service path.
+* The other arguments, optional, are couple of keys and values, used to encode the link's query string.
+
+The templates can also use a ``gml`` function that generates a GML 3.2 representation of a 
+geometry (mind, the output must be forced not to be escaped, using ``?no_esc``, as well
+as ``minx``, ``miny``, ``maxx``, ``maxy`` that can be used to extract the bounding box
+corner values. All these function expect a geometry as input.
+
 GeoJSON output templates
 ------------------------
 

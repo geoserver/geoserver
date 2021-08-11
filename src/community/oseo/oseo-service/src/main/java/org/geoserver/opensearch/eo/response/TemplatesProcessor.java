@@ -4,6 +4,7 @@
  */
 package org.geoserver.opensearch.eo.response;
 
+import freemarker.ext.beans.BeanModel;
 import freemarker.ext.beans.SimpleMapModel;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -19,15 +20,18 @@ import org.geoserver.opensearch.eo.FreemarkerTemplateSupport;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geotools.gml3.v3_2.GML;
+import org.geotools.gml3.v3_2.GMLConfiguration;
 import org.geotools.util.Converters;
+import org.geotools.xsd.Encoder;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 
 /**
- * Loads, caches and processes HTML description templates against a stream of features. It's meant
- * to be used for a single request, as it caches the template and won't react to on disk template
- * changes.
+ * Loads, caches and processes Freemarker templates against a stream of features. It's meant to be
+ * used for a single request, as it caches the template and won't react to on disk template changes.
  */
-class TemplatesProcessor {
+public class TemplatesProcessor {
 
     FreemarkerTemplateSupport support;
     Map<String, Template> templateCache = new HashMap<>();
@@ -74,7 +78,7 @@ class TemplatesProcessor {
         if (Dispatcher.REQUEST.get() != null) {
             final String baseURL = ResponseUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest());
             model.put("baseURL", baseURL);
-            addLinkFunctions(baseURL, model);
+            addUtilityFunctions(baseURL, model);
         }
 
         return model;
@@ -82,9 +86,9 @@ class TemplatesProcessor {
 
     /**
      * Adds the <code>oseoLink</code> and <code>oseoLink</code> functions to the model, for usage in
-     * the template
+     * the template, and the bbox extraction ones.
      */
-    protected void addLinkFunctions(String baseURL, Map<String, Object> model) {
+    protected void addUtilityFunctions(String baseURL, Map<String, Object> model) {
         model.put(
                 "oseoLink",
                 (TemplateMethodModelEx)
@@ -114,6 +118,59 @@ class TemplatesProcessor {
                                         toString(arguments.get(0)),
                                         null,
                                         URLMangler.URLType.RESOURCE));
+        // bbox extraction functions
+        model.put(
+                "minx",
+                (TemplateMethodModelEx)
+                        arguments -> {
+                            Geometry g = toGeometry(arguments.get(0));
+                            return g.getEnvelopeInternal().getMinX();
+                        });
+        model.put(
+                "miny",
+                (TemplateMethodModelEx)
+                        arguments -> {
+                            Geometry g = toGeometry(arguments.get(0));
+                            return g.getEnvelopeInternal().getMinY();
+                        });
+        model.put(
+                "maxx",
+                (TemplateMethodModelEx)
+                        arguments -> {
+                            Geometry g = toGeometry(arguments.get(0));
+                            return g.getEnvelopeInternal().getMaxX();
+                        });
+        model.put(
+                "maxy",
+                (TemplateMethodModelEx)
+                        arguments -> {
+                            Geometry g = toGeometry(arguments.get(0));
+                            return g.getEnvelopeInternal().getMaxY();
+                        });
+        model.put(
+                "gml",
+                (TemplateMethodModelEx)
+                        arguments -> {
+                            try {
+                                Geometry g = toGeometry(arguments.get(0));
+                                return encodeToGML(g);
+                            } catch (IOException e) {
+                                throw new RuntimeException("Failed to encode geometry", e);
+                            }
+                        });
+    }
+
+    private String encodeToGML(Geometry g) throws IOException {
+        Encoder encoder = new Encoder(new GMLConfiguration());
+        encoder.setOmitXMLDeclaration(true);
+        encoder.setIndenting(true);
+        String gml = encoder.encodeAsString(g, GML.Polygon);
+
+        // has extra prefix declarations that we don't want, sanitize
+        gml = gml.replace("xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"", "");
+        gml = gml.replace("xmlns:gml=\"http://www.opengis.net/gml/3.2\"", "");
+
+        return gml;
     }
 
     private String toString(Object argument) throws TemplateModelException {
@@ -125,5 +182,15 @@ class TemplatesProcessor {
             argument = ((SimpleMapModel) argument).get("rawValue");
         }
         return Converters.convert(argument, String.class);
+    }
+
+    private Geometry toGeometry(Object argument) throws TemplateModelException {
+        // in case it's an attribute, unwrap the raw value and convert
+        if (argument instanceof SimpleMapModel) {
+            argument = ((SimpleMapModel) argument).get("rawValue");
+        } else if (argument instanceof BeanModel) {
+            argument = ((BeanModel) argument).getWrappedObject();
+        }
+        return Converters.convert(argument, Geometry.class);
     }
 }

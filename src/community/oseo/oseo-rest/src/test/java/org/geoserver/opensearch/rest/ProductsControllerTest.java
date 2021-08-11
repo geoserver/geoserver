@@ -7,12 +7,10 @@ package org.geoserver.opensearch.rest;
 import static java.util.Arrays.asList;
 import static org.geoserver.opensearch.eo.ProductClass.GENERIC;
 import static org.geoserver.opensearch.rest.ProductsController.ProductPart.Granules;
-import static org.geoserver.opensearch.rest.ProductsController.ProductPart.Metadata;
 import static org.geoserver.opensearch.rest.ProductsController.ProductPart.OwsLinks;
 import static org.geoserver.opensearch.rest.ProductsController.ProductPart.Product;
 import static org.geoserver.opensearch.rest.ProductsController.ProductPart.Thumbnail;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -515,70 +512,6 @@ public class ProductsControllerTest extends OSEORestTestSupport {
     }
 
     @Test
-    public void testGetProductMetadata() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "/rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T32TPL_N02.01/metadata");
-        assertEquals(200, response.getStatus());
-        assertEquals("text/xml", response.getContentType());
-        assertThat(
-                response.getContentAsString(),
-                both(containsString("opt:EarthObservation"))
-                        .and(
-                                containsString(
-                                        "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T32TPL_N02.01")));
-    }
-
-    @Test
-    public void testPutProductMetadata() throws Exception {
-        testCreateProduct();
-
-        // create the metadata
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        "rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/metadata",
-                        getTestData("/product-metadata.xml"),
-                        MediaType.TEXT_XML_VALUE);
-        assertEquals(200, response.getStatus());
-
-        // grab and check
-        assertProductMetadata("<eop:orbitType>LEO</eop:orbitType>");
-    }
-
-    private void assertProductMetadata(String testContainsContent)
-            throws Exception, UnsupportedEncodingException {
-        MockHttpServletResponse response;
-        response =
-                getAsServletResponse(
-                        "rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/metadata");
-        assertEquals(200, response.getStatus());
-        assertEquals("text/xml", response.getContentType());
-        assertThat(
-                response.getContentAsString(),
-                both(containsString("opt:EarthObservation"))
-                        .and(containsString(PRODUCT_CREATE_UPDATE_ID)));
-        assertThat(response.getContentAsString(), containsString(testContainsContent));
-    }
-
-    @Test
-    public void testDeleteProductMetadata() throws Exception {
-        // creates the product and adds the metadata
-        testPutProductMetadata();
-
-        // now remove
-        MockHttpServletResponse response =
-                deleteAsServletResponse(
-                        "rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/metadata");
-        assertEquals(200, response.getStatus());
-
-        // check it's not there anymore
-        response =
-                getAsServletResponse(
-                        "rest/oseo/collections/SENTINEL2/products/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/metadata");
-        assertEquals(404, response.getStatus());
-    }
-
-    @Test
     public void testGetProductThumbnail() throws Exception {
         // just checking we get an image indeed from the only product that has a thumb
         getAsImage(
@@ -759,7 +692,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
     public void testCreateProductAsZip() throws Exception {
         // build all possible combinations of elements in the zip and check they all work
         HashSet<ProductPart> allProducts =
-                new HashSet<>(asList(Product, Metadata, Thumbnail, OwsLinks, Granules));
+                new HashSet<>(asList(Product, Thumbnail, OwsLinks, Granules));
         Set<Set<ProductPart>> sets = Sets.powerSet(allProducts);
 
         for (Set<ProductPart> parts : sets) {
@@ -791,9 +724,6 @@ public class ProductsControllerTest extends OSEORestTestSupport {
             return;
         }
 
-        if (parts.contains(Metadata)) {
-            assertProductMetadata("<eop:orbitType>LEO</eop:orbitType>");
-        }
         if (parts.contains(Thumbnail)) {
             assertProductThumbnail("./src/test/resources/product-thumb.jpeg");
         }
@@ -815,10 +745,6 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                     case Product:
                         resource = "/product.json";
                         name = "product.json";
-                        break;
-                    case Metadata:
-                        resource = "/product-metadata.xml";
-                        name = "metadata.xml";
                         break;
                     case Thumbnail:
                         resource = "/product-thumb.jpeg";
@@ -876,10 +802,6 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                         resource = "/product-updated.json";
                         name = "product.json";
                         break;
-                    case Metadata:
-                        resource = "/product-metadata-updated.xml";
-                        name = "metadata.xml";
-                        break;
                     case Thumbnail:
                         resource = "/product-thumb-updated.jpeg";
                         name = "thumbnail.jpeg";
@@ -917,9 +839,6 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         if (parts.contains(Product)) {
             assertProduct("2018-05-01T00:00:00.000Z", "2018-05-01T00:00:00.000Z");
         }
-        if (parts.contains(Metadata)) {
-            assertProductMetadata("<eop:orbitType>GEO</eop:orbitType>");
-        }
         if (parts.contains(Thumbnail)) {
             assertProductThumbnail("./src/test/resources/product-thumb-updated.jpeg");
         }
@@ -935,7 +854,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
     public void testUpdateProductAsZipFromFullProduct() throws Exception {
         // prepare a full initial product
         Set<ProductPart> allProductParts =
-                new LinkedHashSet<>(asList(Product, Metadata, Thumbnail, OwsLinks, Granules));
+                new LinkedHashSet<>(asList(Product, Thumbnail, OwsLinks, Granules));
         cleanupTestProduct();
         assertEquals(HttpStatus.CREATED.value(), createProductAsZip(allProductParts).getStatus());
 
@@ -949,7 +868,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
     public void testUpdateAllProductPartsAsZipFromFullProduct() throws Exception {
         // prepare a full initial product
         Set<ProductPart> allProductParts =
-                new LinkedHashSet<>(asList(Product, Metadata, Thumbnail, OwsLinks, Granules));
+                new LinkedHashSet<>(asList(Product, Thumbnail, OwsLinks, Granules));
         cleanupTestProduct();
         assertEquals(HttpStatus.CREATED.value(), createProductAsZip(allProductParts).getStatus());
 
@@ -966,7 +885,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
         // update/add one item at a time
         Set<ProductPart> allProductParts =
-                new LinkedHashSet<>(asList(Product, Metadata, Thumbnail, OwsLinks, Granules));
+                new LinkedHashSet<>(asList(Product, Thumbnail, OwsLinks, Granules));
         for (ProductPart part : allProductParts) {
             testUpdateProductAsZip(asList(part));
         }

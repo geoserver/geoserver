@@ -62,11 +62,6 @@ public class JDBCProductFeatureStore extends AbstractMappingStore {
     }
 
     @Override
-    protected String getMetadataTable() {
-        return "product_metadata";
-    }
-
-    @Override
     protected String getLinkTable() {
         return "product_ogclink";
     }

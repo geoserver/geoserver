@@ -1,3 +1,5 @@
+<#ftl output_format="XML">
+<#assign a = model.attributes />
 <?xml version="1.0" encoding="UTF-8"?>
 <gmi:MI_Metadata xmlns:gmi="http://www.isotc211.org/2005/gmi" xmlns:atom="http://www.w3.org/2005/Atom"
   xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:eo="http://a9.com/-/opensearch/extensions/eo/1.0/"
@@ -9,7 +11,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmi ..\..\schema/ISO/gmi/gmi.xsd "
 >
   <gmd:fileIdentifier>
-    <gco:CharacterString>EOP:CNES:PEPS:S123</gco:CharacterString>
+    <gco:CharacterString>${a.identifier.value}</gco:CharacterString>
   </gmd:fileIdentifier>
   <gmd:language>
     <gmd:LanguageCode
@@ -24,6 +26,7 @@
     >series</gmd:MD_ScopeCode>
   </gmd:hierarchyLevel>
   <gmd:contact>
+    <!-- TODO: add information in the collections table? -->
     <gmd:CI_ResponsibleParty>
       <gmd:individualName>
         <gco:CharacterString>CustomerTechnicalSupport</gco:CharacterString>
@@ -61,7 +64,7 @@
     </gmd:CI_ResponsibleParty>
   </gmd:contact>
   <gmd:dateStamp>
-    <gco:Date>2016-08-31</gco:Date>
+    <gco:Date>${a.timeStart.rawValue?iso_utc}</gco:Date>
   </gmd:dateStamp>
   <gmd:metadataStandardName>
     <gco:CharacterString>ISO19115</gco:CharacterString>
@@ -74,26 +77,27 @@
       <gmd:citation>
         <gmd:CI_Citation>
           <gmd:title>
-            <gco:CharacterString>TEST123 (PEPS)</gco:CharacterString>
+            <gco:CharacterString>${a.identifier.value}</gco:CharacterString>
           </gmd:title>
           <gmd:date>
             <gmd:CI_Date>
               <gmd:date>
-                <gco:Date>2015-06-23</gco:Date>
+                <gco:Date>${a.timeStart.rawValue?iso_utc}</gco:Date>
               </gmd:date>
               <gmd:dateType>
                 <gmd:CI_DateTypeCode
                   codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode"
-                  codeListValue="creation" />
+                  codeListValue="creation" />s
               </gmd:dateType>
             </gmd:CI_Date>
           </gmd:date>
           <gmd:identifier>
             <gmd:RS_Identifier>
               <gmd:code>
-                <gco:CharacterString>EOP:CNES:PEPS:S123</gco:CharacterString>
+                <gco:CharacterString>${a.identifier.value}</gco:CharacterString>
               </gmd:code>
               <gmd:codeSpace>
+                 <!-- TODO: move this codespace to the attribute table? -->
                 <gco:CharacterString>http://peps.cnes.fr</gco:CharacterString>
               </gmd:codeSpace>
             </gmd:RS_Identifier>
@@ -101,12 +105,10 @@
         </gmd:CI_Citation>
       </gmd:citation>
       <gmd:abstract>
-        <gco:CharacterString>The TEST123 mission is a land monitoring constellation of two
-          satellites each equipped with a MSI (Multispectral Imager) instrument covering 13 spectral
-          bands providing high resolution optical imagery (i.e., 10m, 20m, 60 m) every 10 days with
-          one satellite and 5 days with two satellites.</gco:CharacterString>
+        <gco:CharacterString>${a.description.name}</gco:CharacterString>
       </gmd:abstract>
       <gmd:pointOfContact>
+        <!-- TODO: add information in the collections table? -->
         <gmd:CI_ResponsibleParty>
           <gmd:organisationName>
             <gco:CharacterString>CNES</gco:CharacterString>
@@ -152,88 +154,6 @@
           </gmd:role>
         </gmd:CI_ResponsibleParty>
       </gmd:pointOfContact>
-      <gmd:descriptiveKeywords>
-        <gmd:MD_Keywords>
-          <gmd:keyword>
-            <gco:CharacterString>FedEO</gco:CharacterString>
-          </gmd:keyword>
-        </gmd:MD_Keywords>
-      </gmd:descriptiveKeywords>
-      <gmd:descriptiveKeywords>
-        <gmd:MD_Keywords>
-          <gmd:keyword>
-            <gco:CharacterString>PEPS</gco:CharacterString>
-          </gmd:keyword>
-          <gmd:keyword>
-            <gco:CharacterString>CNES</gco:CharacterString>
-          </gmd:keyword>
-          <gmd:keyword>
-            <gco:CharacterString>optical</gco:CharacterString>
-          </gmd:keyword>
-          <gmd:keyword>
-            <gco:CharacterString>TEST123</gco:CharacterString>
-          </gmd:keyword>
-        </gmd:MD_Keywords>
-      </gmd:descriptiveKeywords>
-      <gmd:descriptiveKeywords>
-        <gmd:MD_Keywords>
-          <gmd:keyword>
-            <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/concept/4599">land</gmx:Anchor>
-          </gmd:keyword>
-          <gmd:keyword>
-            <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/concept/4612">land cover</gmx:Anchor>
-          </gmd:keyword>
-          <gmd:keyword>
-            <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/concept/1391">chlorophyll</gmx:Anchor>
-          </gmd:keyword>
-          <gmd:keyword>
-            <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet/concept/5496">natural disaster</gmx:Anchor>
-          </gmd:keyword>
-          <gmd:type>
-            <gmd:MD_KeywordTypeCode
-              codeList="http://www.isotc211.org/2005/resources/codeList.xml#MD_KeywordTypeCode"
-              codeListValue="theme" />
-          </gmd:type>
-          <gmd:thesaurusName>
-            <gmd:CI_Citation>
-              <gmd:title>
-                <gmx:Anchor xlink:href="http://www.eionet.europa.eu/gemet">GEMET - INSPIRE Themes, Version 1.0</gmx:Anchor>
-              </gmd:title>
-              <gmd:date>
-                <gmd:CI_Date>
-                  <gmd:date>
-                    <gco:Date>2008-06-01</gco:Date>
-                  </gmd:date>
-                  <gmd:dateType>
-                    <gmd:CI_DateTypeCode
-                      codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_DateTypeCode"
-                      codeListValue="publication"
-                    >publication</gmd:CI_DateTypeCode>
-                  </gmd:dateType>
-                </gmd:CI_Date>
-              </gmd:date>
-            </gmd:CI_Citation>
-          </gmd:thesaurusName>
-        </gmd:MD_Keywords>
-      </gmd:descriptiveKeywords>
-      <gmd:resourceConstraints>
-        <gmd:MD_Constraints>
-          <gmd:useLimitation>
-            <gco:CharacterString>http://earth.esa.int/dataproducts/accessingeodata/
-            </gco:CharacterString>
-          </gmd:useLimitation>
-        </gmd:MD_Constraints>
-      </gmd:resourceConstraints>
-      <gmd:resourceConstraints>
-        <gmd:MD_LegalConstraints>
-          <gmd:accessConstraints>
-            <gmd:MD_RestrictionCode
-              codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_RestrictionCode"
-              codeListValue="otherRestrictions"
-            >otherRestrictions</gmd:MD_RestrictionCode>
-          </gmd:accessConstraints>
-        </gmd:MD_LegalConstraints>
-      </gmd:resourceConstraints>
       <gmd:language>
         <gmd:LanguageCode
           codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#LanguageCode"
@@ -245,16 +165,16 @@
           <gmd:geographicElement>
             <gmd:EX_GeographicBoundingBox>
               <gmd:westBoundLongitude>
-                <gco:Decimal>-180</gco:Decimal>
+                <gco:Decimal>${minx(a.footprint.rawValue)}</gco:Decimal>
               </gmd:westBoundLongitude>
               <gmd:eastBoundLongitude>
-                <gco:Decimal>180</gco:Decimal>
+                <gco:Decimal>${maxx(a.footprint.rawValue)}</gco:Decimal>
               </gmd:eastBoundLongitude>
               <gmd:southBoundLatitude>
-                <gco:Decimal>-90</gco:Decimal>
+                <gco:Decimal>${miny(a.footprint.rawValue)}</gco:Decimal>
               </gmd:southBoundLatitude>
               <gmd:northBoundLatitude>
-                <gco:Decimal>90</gco:Decimal>
+                <gco:Decimal>${maxy(a.footprint.rawValue)}</gco:Decimal>
               </gmd:northBoundLatitude>
             </gmd:EX_GeographicBoundingBox>
           </gmd:geographicElement>
@@ -266,8 +186,8 @@
             <gmd:EX_TemporalExtent>
               <gmd:extent>
                 <gml:TimePeriod gml:id="timeperiod1">
-                  <gml:beginPosition>2015-06-23</gml:beginPosition>
-                  <gml:endPosition />
+                  <gml:beginPosition>${a.timeStart.rawValue?iso_utc}</gml:beginPosition>
+                  <gml:endPosition><#if a.timeEnd.rawValue?has_content>${a.timeEnd.rawValue?iso_utc}</#if></gml:endPosition>
                 </gml:TimePeriod>
               </gmd:extent>
             </gmd:EX_TemporalExtent>
@@ -289,83 +209,15 @@
           <gmd:onLine>
             <gmd:CI_OnlineResource>
               <gmd:linkage>
-                <gmd:URL>http://fedeo.esa.int/opensearch/description.xml?parentIdentifier=EOP:CNES:PEPS:S123&amp;sensorType=OPTICAL&amp;platform=S2A
+                <gmd:URL>${oseoLink('search', 'uid', a.identifier, 'httpAccept', 'application/atom+xml')}
                 </gmd:URL>
               </gmd:linkage>
-              <gmd:name>
-                <gco:CharacterString>FedEO Clearinghouse</gco:CharacterString>
-              </gmd:name>
-              <gmd:description>
-                <gco:CharacterString>FedEO Clearinghouse</gco:CharacterString>
-              </gmd:description>
-              <gmd:function>
-                <gmd:CI_OnLineFunctionCode
-                  codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#CI_OnLineFunctionCode"
-                  codeListValue="search" />
-              </gmd:function>
             </gmd:CI_OnlineResource>
           </gmd:onLine>
         </gmd:MD_DigitalTransferOptions>
       </gmd:transferOptions>
     </gmd:MD_Distribution>
   </gmd:distributionInfo>
-  <gmd:dataQualityInfo>
-    <gmd:DQ_DataQuality>
-      <gmd:scope>
-        <gmd:DQ_Scope>
-          <gmd:level>
-            <gmd:MD_ScopeCode
-              codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/codelist/ML_gmxCodelists.xml#MD_ScopeCode"
-              codeListValue="series"
-            >series</gmd:MD_ScopeCode>
-          </gmd:level>
-        </gmd:DQ_Scope>
-      </gmd:scope>
-      <gmd:report>
-        <gmd:DQ_DomainConsistency>
-          <gmd:result>
-            <gmd:DQ_ConformanceResult>
-              <gmd:specification>
-                <gmd:CI_Citation>
-                  <gmd:title>
-                    <gco:CharacterString>COMMISSION REGULATION (EU) No 1089/2010 of 23 November 2010
-                      implementing Directive 2007/2/EC of the European Parliament and of the Council
-                      as regards interoperability of spatial data sets and services
-                    </gco:CharacterString>
-                  </gmd:title>
-                  <gmd:date>
-                    <gmd:CI_Date>
-                      <gmd:date>
-                        <gco:Date>2010-12-08</gco:Date>
-                      </gmd:date>
-                      <gmd:dateType>
-                        <gmd:CI_DateTypeCode
-                          codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode"
-                          codeListValue="publication" />
-                      </gmd:dateType>
-                    </gmd:CI_Date>
-                  </gmd:date>
-                </gmd:CI_Citation>
-              </gmd:specification>
-              <gmd:explanation>
-                <gco:CharacterString>non testé</gco:CharacterString>
-              </gmd:explanation>
-              <gmd:pass>
-                <gco:Boolean>false</gco:Boolean>
-              </gmd:pass>
-            </gmd:DQ_ConformanceResult>
-          </gmd:result>
-        </gmd:DQ_DomainConsistency>
-      </gmd:report>
-      <gmd:lineage>
-        <gmd:LI_Lineage>
-          <gmd:statement>
-            <gco:CharacterString>SENTINEL 2 MSI</gco:CharacterString>
-          </gmd:statement>
-        </gmd:LI_Lineage>
-      </gmd:lineage>
-    </gmd:DQ_DataQuality>
-  </gmd:dataQualityInfo>
   <gmi:acquisitionInformation>
     <gmi:MI_AcquisitionInformation>
       <gmi:platform>
@@ -375,47 +227,32 @@
               <gmd:code>
                 <gmx:Anchor
                   xlink:href="http://gcmdservices.gsfc.nasa.gov/kms/concept/2ce20983-98b2-40b9-bb0e-a08074fb93b3"
-                >TEST123</gmx:Anchor>
+                >${a.platform.value}</gmx:Anchor>
               </gmd:code>
             </gmd:MD_Identifier>
           </gmi:identifier>
           <gmi:description>
-            <gco:CharacterString>TEST123</gco:CharacterString>
+            <gco:CharacterString>${a.platform.value}</gco:CharacterString>
           </gmi:description>
+          <#list a.instrument.rawValue as instrument>
           <gmi:instrument>
             <gmi:MI_Instrument>
-              <gmi:citation>
-                <gmd:CI_Citation>
-                  <gmd:title>
-                    <gco:CharacterString>MultiSpectral Instrument (MSI)</gco:CharacterString>
-                  </gmd:title>
-                  <gmd:date>
-                    <gmd:CI_Date>
-                      <gmd:date>
-                        <gco:Date>2015-06-23</gco:Date>
-                      </gmd:date>
-                      <gmd:dateType>
-                        <gmd:CI_DateTypeCode
-                          codeList="http://www.isotc211.org/2005/resources/codeList.xml#CI_DateTypeCode"
-                          codeListValue="creation"
-                        >creation</gmd:CI_DateTypeCode>
-                      </gmd:dateType>
-                    </gmd:CI_Date>
-                  </gmd:date>
-                  <gmd:identifier>
-                    <gmd:RS_Identifier>
-                      <gmd:code>
-                        <gco:CharacterString>MSI</gco:CharacterString>
-                      </gmd:code>
-                    </gmd:RS_Identifier>
-                  </gmd:identifier>
-                </gmd:CI_Citation>
-              </gmi:citation>
+              <gmi:identifier>
+                  <gmd:MD_Identifier>
+                    <gmd:code>
+                      <!-- Not sure what concept code to use here -->
+                      <gmx:Anchor
+                        xlink:href="http://gcmdservices.gsfc.nasa.gov/kms/concept/2ce20983-98b2-40b9-bb0e-a08074fb93b3"
+                      >${instrument}</gmx:Anchor>
+                    </gmd:code>
+                  </gmd:MD_Identifier>
+              </gmi:identifier>
               <gmi:type>
-                <gmi:MI_SensorTypeCode />
+                <gmi:MI_SensorTypeCode codeListValue="${a.sensorType.value}">${a.sensorType.value}</gmi:MI_SensorTypeCode>
               </gmi:type>
             </gmi:MI_Instrument>
           </gmi:instrument>
+          </#list>
         </gmi:MI_Platform>
       </gmi:platform>
     </gmi:MI_AcquisitionInformation>

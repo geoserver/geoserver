@@ -78,12 +78,6 @@ create table collection_layer (
   "defaultLayer" boolean
 );
 
--- the iso metadata storage (large text, not used for search, thus separate table)
-create table collection_metadata (
-  "mid" int primary key references collection("id"),
-  "metadata" text
-);
-
 -- the products and attributes describing them
 create table product (
   "id" serial primary key,
@@ -197,11 +191,6 @@ create index "idx_product_footprint" on product using GIST("footprint");
  -- extra attribute to support heterogeneous CRS mosaic queries
  CREATE INDEX "idx_product_crs" ON product ("crs");
 
- -- the eo metadata storage (large files, not used for search, thus separate table)
-create table product_metadata (
-  "mid" int primary key references product("id") on delete cascade,
-  "metadata" text
-);
 
 -- the eo thumbs storage (small binary files, not used for search, thus separate table)
 create table product_thumb (

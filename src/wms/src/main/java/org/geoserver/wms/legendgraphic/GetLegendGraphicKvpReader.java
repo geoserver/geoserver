@@ -287,7 +287,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                     new LegendRequest(featureType, layerInfo.getResource().getQualifiedName());
             legend.setLayerInfo(layerInfo);
 
-            MapLayerInfo mli = new MapLayerInfo(layerInfo);
+            MapLayerInfo mli = new MapLayerInfo(layerInfo, request.getLocale());
             // Temporary MapLayerInfo used to map a title, if label is defined on layer
             if (mli.getLabel() != null) {
                 legend.setTitle(mli.getLabel());

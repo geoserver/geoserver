@@ -449,7 +449,9 @@ public class MonitorCallbackTest {
         expect(r.getName()).andReturn(name);
         expect(r.prefixedName()).andReturn(ns + ":" + name);
         expect(r.getTitle()).andReturn(name);
+        expect(r.getInternationalTitle()).andReturn(null);
         expect(r.getAbstract()).andReturn(name);
+        expect(r.getInternationalAbstract()).andReturn(null);
         replay(r);
 
         LayerInfo l = createMock(LayerInfo.class);

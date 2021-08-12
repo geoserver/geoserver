@@ -434,7 +434,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         private void handleServiceProvider() {
             start("ows:ServiceProvider");
             SettingsInfo settings = wcs.getGeoServer().getSettings();
-            element("ows:ProviderName", settings.getContact().getContactOrganization());
+            handleServiceProvider(settings.getContact());
             AttributesImpl attributes = new AttributesImpl();
             attributes.addAttribute(
                     "",
@@ -443,10 +443,20 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                     "",
                     settings.getOnlineResource() != null ? settings.getOnlineResource() : "");
             element("ows:ProviderSite", null, attributes);
-
-            handleContact();
+            final GeoServer gs = wcs.getGeoServer();
+            ContactInfo contact = gs.getSettings().getContact();
+            encodeContact(contact, gs.getSettings().getOnlineResource());
 
             end("ows:ServiceProvider");
+        }
+
+        private void handleServiceProvider(ContactInfo contactInfo) {
+            if (!i18nRequested) element("ows:ProviderName", contactInfo.getContactOrganization());
+            else
+                element(
+                        "ows:ProviderName",
+                        internationalContentHelper.getNullableString(
+                                contactInfo.getInternationalContactOrganization()));
         }
 
         /**
@@ -539,12 +549,15 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             }
         }
 
-        /** Handles contacts. */
-        private void handleContact() {
-            final GeoServer gs = wcs.getGeoServer();
+        private void encodeContact(ContactInfo contactInfo, String onlineResource) {
             start("ows:ServiceContact");
+            if (!i18nRequested) handleContact(contactInfo, onlineResource);
+            else handleInternationalContact(contactInfo, onlineResource);
+            end("ows:ServiceContact");
+        }
 
-            ContactInfo contact = gs.getSettings().getContact();
+        /** Handles contacts. */
+        private void handleContact(ContactInfo contact, String onlineResource) {
             elementIfNotEmpty("ows:IndividualName", contact.getContactPerson());
             elementIfNotEmpty("ows:PositionName", contact.getContactPosition());
 
@@ -562,16 +575,72 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             elementIfNotEmpty("ows:ElectronicMailAddress", contact.getContactEmail());
             end("ows:Address");
 
-            String or = gs.getSettings().getOnlineResource();
-            if (isNotBlank(or)) {
+            handleSettingOnlineRes(onlineResource);
+
+            end("ows:ContactInfo");
+        }
+
+        /** Handles contacts. */
+        private void handleInternationalContact(ContactInfo contact, String onlineResource) {
+            elementIfNotEmpty(
+                    "ows:IndividualName",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalContactPerson()));
+            elementIfNotEmpty(
+                    "ows:PositionName",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalContactPosition()));
+
+            start("ows:ContactInfo");
+            start("ows:Phone");
+            elementIfNotEmpty(
+                    "ows:Voice",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalContactVoice()));
+            elementIfNotEmpty(
+                    "ows:Facsimile",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalContactFacsimile()));
+            end("ows:Phone");
+            start("ows:Address");
+            elementIfNotEmpty(
+                    "ows:DeliveryPoint",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalAddress()));
+            elementIfNotEmpty(
+                    "ows:City",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalAddressCity()));
+            elementIfNotEmpty(
+                    "ows:AdministrativeArea",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalAddressState()));
+            elementIfNotEmpty(
+                    "ows:PostalCode",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalAddressPostalCode()));
+            elementIfNotEmpty(
+                    "ows:Country",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalAddressCountry()));
+            elementIfNotEmpty(
+                    "ows:ElectronicMailAddress",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalContactEmail()));
+            end("ows:Address");
+
+            handleSettingOnlineRes(onlineResource);
+
+            end("ows:ContactInfo");
+        }
+
+        private void handleSettingOnlineRes(String onlineResource) {
+            if (isNotBlank(onlineResource)) {
                 AttributesImpl attributes = new AttributesImpl();
-                attributes.addAttribute("", "xlink:href", "xlink:href", "", or);
+                attributes.addAttribute("", "xlink:href", "xlink:href", "", onlineResource);
                 start("ows:OnlineResource", attributes);
                 end("OnlineResource");
             }
-
-            end("ows:ContactInfo");
-            end("ows:ServiceContact");
         }
 
         private void handleWGS84BoundingBox(BoundingBox envelope) {

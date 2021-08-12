@@ -23,7 +23,10 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.config.ContactInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.GeoServerDefaultLocale;
 import org.geotools.styling.Description;
 import org.geotools.styling.Style;
@@ -211,6 +214,16 @@ public class InternationalContentHelper {
         return filtered;
     }
 
+    /**
+     * Get a String value according to the requestedLocales from the InternationalString passed as
+     * an argument.
+     *
+     * @param internationalString the internationalString from which retrieve the localized value.
+     * @param nullable if false when a localized value is not found for the requested locale a
+     *     message (DID NOT FIND i18n CONTENT FOR THIS ELEMENT) will be returned. Otherwise null
+     *     will be returned.
+     * @return the localized value of the internationalString.
+     */
     public String getString(InternationalString internationalString, boolean nullable) {
         String result = null;
         if (internationalString instanceof GrowableInternationalString) {
@@ -224,6 +237,17 @@ public class InternationalContentHelper {
         }
         if (result == null && !nullable) result = ERROR_MESSAGE;
         return result;
+    }
+
+    /**
+     * Get a String value according to the requestedLocales from the InternationalString passed as
+     * an argument. If no value is found for the requestedLocales null will be returned.
+     *
+     * @param internationalString the internationalString from which retrieve the localized value.
+     * @return the localized value.
+     */
+    public String getNullableString(InternationalString internationalString) {
+        return getString(internationalString, true);
     }
 
     private String getFirstMatchingInternationalValue(
@@ -248,6 +272,7 @@ public class InternationalContentHelper {
             candidates.addAll(getLocales(resourceInfo.getInternationalTitle()));
             candidates.addAll(getLocales(resourceInfo.getInternationalAbstract()));
         }
+        setSupportedLocalesFromContactInfo(candidates);
         this.supportedLocales = candidates;
     }
 
@@ -258,7 +283,27 @@ public class InternationalContentHelper {
         candidates.addAll(getLocales(info.getInternationalAbstract()));
         setSupportedLocalesFromGroups(candidates, groups);
         setSupportedLocalesFromLayers(candidates, layerInfos);
+        setSupportedLocalesFromContactInfo(candidates);
         this.supportedLocales = candidates;
+    }
+
+    private void setSupportedLocalesFromContactInfo(Set<Locale> candidates) {
+        GeoServer gs = GeoServerExtensions.bean(GeoServer.class);
+        ContactInfo contact = gs.getGlobal().getSettings().getContact();
+        candidates.addAll(getLocales(contact.getInternationalContactEmail()));
+        candidates.addAll(getLocales(contact.getInternationalAddressCountry()));
+        candidates.addAll(getLocales(contact.getInternationalAddress()));
+        candidates.addAll(getLocales(contact.getInternationalAddressState()));
+        candidates.addAll(getLocales(contact.getInternationalAddressCity()));
+        candidates.addAll(getLocales(contact.getInternationalAddressDeliveryPoint()));
+        candidates.addAll(getLocales(contact.getInternationalContactFacsimile()));
+        candidates.addAll(getLocales(contact.getInternationalContactVoice()));
+        candidates.addAll(getLocales(contact.getInternationalContactPosition()));
+        candidates.addAll(getLocales(contact.getInternationalContactPerson()));
+        candidates.addAll(getLocales(contact.getInternationalContactOrganization()));
+        candidates.addAll(getLocales(contact.getInternationalAddressPostalCode()));
+        candidates.addAll(getLocales(contact.getInternationalAddressType()));
+        candidates.addAll(getLocales(contact.getInternationalOnlineResource()));
     }
 
     private void setSupportedLocalesFromGroups(
@@ -345,6 +390,12 @@ public class InternationalContentHelper {
         }
     }
 
+    /**
+     * Get the list of all the locales that are set for at list an international content of a
+     * resource.
+     *
+     * @return the list of the supported locales.
+     */
     public Set<Locale> getSupportedLocales() {
         return this.supportedLocales;
     }

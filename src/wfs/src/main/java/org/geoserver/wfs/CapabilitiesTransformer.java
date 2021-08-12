@@ -1079,7 +1079,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                     serviceIdentification();
                 }
                 if (sections.contains(Sections.ServiceProvider)) {
-                    serviceProvider(wfs.getGeoServer());
+                    encodeServiceProvider(wfs.getGeoServer());
                 }
                 if (sections.contains(Sections.OperationsMetadata)) {
                     operationsMetadata();
@@ -1247,10 +1247,44 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
              * &lt;/complexType&gt;
              * </pre>
              */
-            protected void serviceProvider(GeoServer gs) {
+            protected void encodeServiceProvider(GeoServer gs) {
                 ContactInfo contact = gs.getSettings().getContact();
                 start("ows:ServiceProvider");
+                if (!i18nRequested) serviceProvider(contact);
+                else internationalServiceProvider(contact);
+                end("ows:ServiceProvider");
+            }
 
+            /**
+             * Encodes the ows:ServiceProvider element.
+             *
+             * <p>
+             *
+             * <pre>
+             * &lt;complexType&gt;
+             *        &lt;sequence&gt;
+             *           &lt;element name="ProviderName" type="string"&gt;
+             *           &lt;annotation&gt;
+             *        &lt;documentation&gt;A unique identifier for the service provider organization. &lt;/documentation&gt;
+             *     &lt;/annotation&gt;
+             *     &lt;/element&gt;
+             *           &lt;element name="ProviderSite" type="ows:OnlineResourceType" minOccurs="0"&gt;
+             *     &lt;annotation&gt;
+             *        &lt;documentation&gt;Reference to the most relevant web site of the service provider. &lt;/documentation&gt;
+             *     &lt;/annotation&gt;
+             *     &lt;/element&gt;
+             *     &lt;element name="ServiceContact" type="ows:ResponsiblePartySubsetType"&gt;
+             *     &lt;annotation&gt;
+             *        &lt;documentation&gt;Information for contacting the service provider. The
+             *        OnlineResource element within this ServiceContact element should not be used
+             *        to reference a web site of the service provider. &lt;/documentation&gt;
+             *     &lt;/annotation&gt;
+             *     &lt;/element&gt;
+             *  &lt;/sequence&gt;
+             * &lt;/complexType&gt;
+             * </pre>
+             */
+            protected void serviceProvider(ContactInfo contact) {
                 element("ows:ProviderName", contact.getContactOrganization());
                 start("ows:ServiceContact");
                 /*
@@ -1304,8 +1338,69 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                 end("ows:ContactInfo");
 
                 end("ows:ServiceContact");
+            }
 
-                end("ows:ServiceProvider");
+            protected void internationalServiceProvider(ContactInfo contact) {
+                element(
+                        "ows:ProviderName",
+                        internationalContentHelper.getNullableString(
+                                contact.getInternationalContactOrganization()));
+                start("ows:ServiceContact");
+
+                element(
+                        "ows:IndividualName",
+                        internationalContentHelper.getNullableString(
+                                contact.getInternationalContactPerson()));
+                element(
+                        "ows:PositionName",
+                        internationalContentHelper.getNullableString(
+                                contact.getInternationalContactPosition()));
+
+                start("ows:ContactInfo");
+
+                start("ows:Phone");
+                element(
+                        "ows:Voice",
+                        internationalContentHelper.getNullableString(
+                                contact.getInternationalContactVoice()));
+                element(
+                        "ows:Facsimile",
+                        internationalContentHelper.getNullableString(
+                                contact.getInternationalContactFacsimile()));
+                end("ows:Phone");
+
+                start("ows:Address");
+
+                element(
+                        "ows:DeliveryPoint",
+                        internationalContentHelper.getNullableString(
+                                contact.getInternationalAddressDeliveryPoint()));
+                element(
+                        "ows:City",
+                        internationalContentHelper.getNullableString(
+                                contact.getInternationalAddressCity()));
+                element(
+                        "ows:AdministrativeArea",
+                        internationalContentHelper.getNullableString(
+                                contact.getInternationalAddressState()));
+                element(
+                        "ows:PostalCode",
+                        internationalContentHelper.getNullableString(
+                                contact.getInternationalAddressPostalCode()));
+                element(
+                        "ows:Country",
+                        internationalContentHelper.getNullableString(
+                                contact.getInternationalAddressCountry()));
+                element(
+                        "ows:ElectronicMailAddress",
+                        internationalContentHelper.getNullableString(
+                                contact.getInternationalContactEmail()));
+
+                end("ows:Address");
+
+                end("ows:ContactInfo");
+
+                end("ows:ServiceContact");
             }
 
             /**
@@ -2289,7 +2384,7 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                     delegate.serviceIdentification("2.0.0");
                 }
                 if (sections.isEmpty() || sections.contains(Sections.ServiceProvider)) {
-                    delegate.serviceProvider(wfs.getGeoServer());
+                    delegate.encodeServiceProvider(wfs.getGeoServer());
                 }
                 if (sections.isEmpty() || sections.contains(Sections.OperationsMetadata)) {
                     operationsMetadata();

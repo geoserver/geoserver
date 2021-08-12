@@ -16,9 +16,14 @@ Configuration
 GeoServer provides an i18n editor for the title and abstract of:
 
 * Layers configuration page.
+
 * Layergroups configuration page.
+
 * WMS, WFS, WCS service configuration pages.
+
 * For Styles i18n configuration see :ref:`sld_language`.
+
+* Contact Information page. 
 
 The editor is disabled by default and can be enabled from the i18n checkbox:
 

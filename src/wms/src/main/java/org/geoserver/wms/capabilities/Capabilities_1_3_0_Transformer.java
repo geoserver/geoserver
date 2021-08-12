@@ -441,7 +441,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
 
             GeoServer geoServer = wmsConfig.getGeoServer();
             ContactInfo contact = geoServer.getSettings().getContact();
-            handleContactInfo(contact);
+            encodeContactInfo(contact);
 
             String fees = serviceInfo.getFees();
             element("Fees", fees == null ? "none" : fees);
@@ -451,6 +451,11 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             // TODO: LayerLimit, MaxWidth and MaxHeight have no equivalence in GeoServer config so
             // far
             end("Service");
+        }
+
+        private void encodeContactInfo(ContactInfo contactInfo) {
+            if (!i18nRequested) handleContactInfo(contactInfo);
+            else handleInternationalContactInfo(contactInfo);
         }
 
         /** Encodes contact information in the WMS capabilities document */
@@ -476,6 +481,69 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             element("ContactVoiceTelephone", contact.getContactVoice());
             element("ContactFacsimileTelephone", contact.getContactFacsimile());
             element("ContactElectronicMailAddress", contact.getContactEmail());
+
+            end("ContactInformation");
+        }
+
+        /** Encodes i18n contact information in the WMS capabilities document */
+        private void handleInternationalContactInfo(ContactInfo contact) {
+            start("ContactInformation");
+
+            start("ContactPersonPrimary");
+            element(
+                    "ContactPerson",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalContactPerson()));
+            element(
+                    "ContactOrganization",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalContactOrganization()));
+            end("ContactPersonPrimary");
+
+            element(
+                    "ContactPosition",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalContactPosition()));
+
+            start("ContactAddress");
+            element(
+                    "AddressType",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalAddressType()));
+            element(
+                    "Address",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalAddress()));
+            element(
+                    "City",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalAddressCity()));
+            element(
+                    "StateOrProvince",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalAddressState()));
+            element(
+                    "PostCode",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalAddressPostalCode()));
+            element(
+                    "Country",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalAddressCountry()));
+            end("ContactAddress");
+
+            element(
+                    "ContactVoiceTelephone",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalContactVoice()));
+            element(
+                    "ContactFacsimileTelephone",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalContactFacsimile()));
+            element(
+                    "ContactElectronicMailAddress",
+                    internationalContentHelper.getNullableString(
+                            contact.getInternationalContactEmail()));
 
             end("ContactInformation");
         }

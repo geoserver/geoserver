@@ -265,9 +265,9 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         wms = request.getWms();
         Locale locale = request.getLocale();
         JSONObject response = new JSONObject();
+
         for (LegendRequest legend : layers) {
             FeatureType layer = legend.getFeatureType();
-
             Style gt2Style = legend.getStyle();
             gt2Style = applyRenderingSelection(gt2Style);
             if (gt2Style == null) {

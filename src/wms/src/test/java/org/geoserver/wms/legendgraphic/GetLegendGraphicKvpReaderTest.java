@@ -16,12 +16,14 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.feature.NameImpl;
 import org.geotools.styling.Style;
+import org.geotools.util.GrowableInternationalString;
 import org.junit.Before;
 import org.springframework.mock.web.MockHttpServletRequest;
 
@@ -222,5 +224,35 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
         assertNotNull(
                 request.getLegend(new NameImpl("http://www.opengis.net/cite", "Lakes")).getTitle());
+    }
+
+    @org.junit.Test
+    public void testI18nLabelAndDescription() throws Exception {
+        FeatureTypeInfo old = getCatalog().getFeatureTypeByName("cite", "Ponds");
+        try {
+            FeatureTypeInfo fti = getCatalog().getFeatureTypeByName("cite", "Ponds");
+            GrowableInternationalString i18nTitle = new GrowableInternationalString();
+            i18nTitle.add(Locale.ENGLISH, "en title");
+            i18nTitle.add(Locale.ITALIAN, "it title");
+            fti.setInternationalTitle(i18nTitle);
+            getCatalog().save(fti);
+
+            this.allParameters.put("LAYER", "cite:Ponds");
+            this.allParameters.put("STYLE", "Ponds");
+            this.allParameters.put("LANGUAGE", "it");
+            GetLegendGraphicRequest request =
+                    requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
+            GetLegendGraphicRequest.LegendRequest legend =
+                    request.getLegend(new NameImpl("http://www.opengis.net/cite", "Ponds"));
+            assertEquals(legend.getTitle(), "it title");
+
+            this.allParameters.put("LANGUAGE", "en");
+            request =
+                    requestReader.read(new GetLegendGraphicRequest(), allParameters, allParameters);
+            legend = request.getLegend(new NameImpl("http://www.opengis.net/cite", "Ponds"));
+            assertEquals(legend.getTitle(), "en title");
+        } finally {
+            getCatalog().save(old);
+        }
     }
 }

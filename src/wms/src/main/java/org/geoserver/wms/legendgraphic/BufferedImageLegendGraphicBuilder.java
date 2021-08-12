@@ -129,7 +129,6 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         List<RenderedImage> layersImages = new ArrayList<>();
         for (LegendRequest legend : layers) {
             FeatureType layer = legend.getFeatureType();
-
             // style and rule to use for the current layer
             Style gt2Style = legend.getStyle();
             if (gt2Style == null) {

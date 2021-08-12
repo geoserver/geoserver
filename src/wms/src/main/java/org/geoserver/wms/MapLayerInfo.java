@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.catalog.CoverageInfo;
@@ -20,6 +21,8 @@ import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.data.InternationalContentHelper;
+import org.geoserver.util.GeoServerDefaultLocale;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.wfs.WFSDataStoreFactory;
@@ -103,22 +106,53 @@ public final class MapLayerInfo {
         this(layerInfo, new MetadataMap());
     }
 
+    public MapLayerInfo(LayerInfo layerInfo, Locale locale) {
+        this(layerInfo, new MetadataMap(), locale);
+    }
+
+    public MapLayerInfo(LayerInfo layerInfo, MetadataMap layerGroupMetadata) {
+        this(layerInfo, layerGroupMetadata, GeoServerDefaultLocale.get());
+    }
+
     /**
      * @param layerInfo
      * @param layerGroupMetadata override layerInfo metadata e.g. max-age
      */
-    public MapLayerInfo(LayerInfo layerInfo, MetadataMap layerGroupMetadata) {
+    public MapLayerInfo(LayerInfo layerInfo, MetadataMap layerGroupMetadata, Locale locale) {
         this.layerInfo = layerInfo;
         this.remoteFeatureSource = null;
         ResourceInfo resource = layerInfo.getResource();
-
         // handle InlineFeatureStuff
         this.name = resource.prefixedName();
-        this.label = resource.getTitle();
-        this.description = resource.getAbstract();
+        this.label = getLabel(locale, resource);
+        this.description = getDescription(locale, resource);
 
         this.type = layerInfo.getType().getCode();
         this.layerGroupMetadata = new MetadataMap(layerGroupMetadata);
+    }
+
+    private String getLabel(Locale locale, ResourceInfo resourceInfo) {
+        String label = resourceInfo.getTitle();
+        if (resourceInfo.getInternationalTitle() != null && locale != null) {
+            InternationalContentHelper internationalContentHelper =
+                    new InternationalContentHelper(locale);
+            String localized =
+                    internationalContentHelper.getString(
+                            resourceInfo.getInternationalTitle(), true);
+            if (localized != null) label = localized;
+        }
+        return label;
+    }
+
+    private String getDescription(Locale locale, ResourceInfo resourceInfo) {
+        String desc = resourceInfo.getAbstract();
+        if (resourceInfo.getInternationalAbstract() != null && locale != null) {
+            InternationalContentHelper internationalContentHelper =
+                    new InternationalContentHelper(locale);
+            String localized = internationalContentHelper.getAbstract(resourceInfo);
+            if (localized != null) desc = localized;
+        }
+        return desc;
     }
 
     public Style getStyle() {

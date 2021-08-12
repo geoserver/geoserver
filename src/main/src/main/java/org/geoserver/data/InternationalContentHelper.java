@@ -67,8 +67,8 @@ public class InternationalContentHelper {
         verify();
     }
 
-    public InternationalContentHelper(String[] acceptLanguages) {
-        setRequestedLocales(acceptLanguages);
+    public InternationalContentHelper(Locale locale) {
+        if (locale != null) requestedLocales.add(locale);
     }
 
     public InternationalContentHelper(

@@ -13,6 +13,7 @@ import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.impl.ContactInfoImpl;
 import org.geoserver.web.GeoServerHomePage;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geotools.util.GrowableInternationalString;
@@ -28,8 +29,9 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
     public void reset() {
         geoServer = getGeoServerApplication().getGeoServer();
         GeoServerInfo info = geoServer.getGlobal();
-        ContactInfo contact = info.getSettings().getContact();
+        ContactInfo contact = new ContactInfoImpl();
         contact.setAddress("My address");
+        info.getSettings().setContact(contact);
         geoServer.save(info);
     }
 
@@ -50,6 +52,7 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
         tester.startPage(ContactPage.class);
         FormTester ft = tester.newFormTester("form");
         ft.setValue("contact:address:stringField", "newAddress1");
+        ft = tester.newFormTester("form");
         ft.submit("submit");
         tester.assertRenderedPage(GeoServerHomePage.class);
 
@@ -75,6 +78,7 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testInternationalContent() {
+
         login();
         tester.startPage(ContactPage.class);
         FormTester ft = tester.newFormTester("form");
@@ -83,6 +87,8 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
         ft.setValue("contact:contactPerson:labelContainer:labelContainer_i18nCheckbox", true);
         tester.executeAjaxEvent(
                 "form:contact:contactPerson:labelContainer:labelContainer_i18nCheckbox", "change");
+        tester.executeAjaxEvent(
+                "form:contact:contactPerson:internationalField:container:addNew", "click");
         tester.executeAjaxEvent(
                 "form:contact:contactPerson:internationalField:container:addNew", "click");
         ft.select(
@@ -114,6 +120,9 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
                 "form:contact:contactEmail:labelContainer:labelContainer_i18nCheckbox", "change");
         tester.executeAjaxEvent(
                 "form:contact:contactEmail:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent(
+                "form:contact:contactEmail:internationalField:container:addNew", "click");
+
         ft.select(
                 "contact:contactEmail:internationalField:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 20);
@@ -174,6 +183,7 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
                 "form:contact:address:labelContainer:labelContainer_i18nCheckbox", "change");
         tester.executeAjaxEvent(
                 "form:contact:address:internationalField:container:addNew", "click");
+
         ft.select(
                 "contact:address:internationalField:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 20);
@@ -218,6 +228,8 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent(
                 "form:contact:addressDeliveryPoint:labelContainer:labelContainer_i18nCheckbox",
                 "change");
+        tester.executeAjaxEvent(
+                "form:contact:addressDeliveryPoint:internationalField:container:addNew", "click");
         tester.executeAjaxEvent(
                 "form:contact:addressDeliveryPoint:internationalField:container:addNew", "click");
         ft.select(
@@ -297,17 +309,17 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
                 "Delivery Point of Pentesilea");
         tester.debugComponentTrees();
         ft.submit("submit");
-        ContactInfo info = getGeoServer().getSettings().getContact();
-        assertI18NContent(info.getInternationalContactPerson());
-        assertI18NContent(info.getInternationalContactOrganization());
-        assertI18NContent(info.getInternationalContactEmail());
-        assertI18NContent(info.getInternationalContactVoice());
-        assertI18NContent(info.getInternationalContactFacsimile());
-        assertI18NContent(info.getInternationalAddress());
-        assertI18NContent(info.getInternationalAddressType());
-        assertI18NContent(info.getInternationalAddressCity());
-        assertI18NContent(info.getInternationalAddressCountry());
-        assertI18NContent(info.getInternationalAddressDeliveryPoint());
+        ContactInfo contactInfo = getGeoServer().getSettings().getContact();
+        assertI18NContent(contactInfo.getInternationalContactPerson());
+        assertI18NContent(contactInfo.getInternationalContactOrganization());
+        assertI18NContent(contactInfo.getInternationalContactEmail());
+        assertI18NContent(contactInfo.getInternationalContactVoice());
+        assertI18NContent(contactInfo.getInternationalContactFacsimile());
+        assertI18NContent(contactInfo.getInternationalAddress());
+        assertI18NContent(contactInfo.getInternationalAddressType());
+        assertI18NContent(contactInfo.getInternationalAddressCity());
+        assertI18NContent(contactInfo.getInternationalAddressCountry());
+        assertI18NContent(contactInfo.getInternationalAddressDeliveryPoint());
     }
 
     private void assertI18NContent(InternationalString internationalString) {

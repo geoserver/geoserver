@@ -5,71 +5,69 @@
  */
 package org.geoserver.config.impl;
 
-import java.util.Locale;
 import org.geoserver.config.ContactInfo;
-import org.geoserver.util.GeoServerDefaultLocale;
-import org.geotools.util.GrowableInternationalString;
+import org.geoserver.util.InternationalStringUtils;
 import org.opengis.util.InternationalString;
 
 public class ContactInfoImpl implements ContactInfo {
 
-    String id = "contact";
+    private String id = "contact";
 
-    String address;
+    private String address;
 
-    String addressCity;
+    private String addressCity;
 
-    String addressCountry;
+    private String addressCountry;
 
-    String addressDeliveryPoint;
+    private String addressDeliveryPoint;
 
-    String addressPostalCode;
+    private String addressPostalCode;
 
-    String addressState;
+    private String addressState;
 
-    String addressType;
+    private String addressType;
 
-    String contactEmail;
+    private String contactEmail;
 
-    String contactFacsimile;
+    private String contactFacsimile;
 
-    String contactOrganization;
+    private String contactOrganization;
 
-    String contactPerson;
+    private String contactPerson;
 
-    String contactPosition;
+    private String contactPosition;
 
-    String contactVoice;
+    private String contactVoice;
 
-    String onlineResource;
+    private String onlineResource;
 
-    InternationalString internationalAddress;
+    private InternationalString internationalAddress;
 
-    InternationalString internationalAddressCity;
+    private InternationalString internationalAddressCity;
 
-    InternationalString internationalAddressCountry;
+    private InternationalString internationalAddressCountry;
 
-    InternationalString internationalAddressDeliveryPoint;
+    private InternationalString internationalAddressDeliveryPoint;
 
-    InternationalString internationalAddressPostalCode;
+    private InternationalString internationalAddressPostalCode;
 
-    InternationalString internationalAddressState;
+    private InternationalString internationalAddressState;
 
-    InternationalString internationalAddressType;
+    private InternationalString internationalAddressType;
 
-    InternationalString internationalContactEmail;
+    private InternationalString internationalContactEmail;
 
-    InternationalString internationalContactFacsimile;
+    private InternationalString internationalContactFacsimile;
 
-    InternationalString internationalContactOrganization;
+    private InternationalString internationalContactOrganization;
 
-    InternationalString internationalContactPerson;
+    private InternationalString internationalContactPerson;
 
-    InternationalString internationalContactPosition;
+    private InternationalString internationalContactPosition;
 
-    InternationalString internationalContactVoice;
+    private InternationalString internationalContactVoice;
 
-    InternationalString internationalOnlineResource;
+    private InternationalString internationalOnlineResource;
 
     @Override
     public String getId() {
@@ -82,9 +80,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddress() {
-        if (address == null && internationalAddress != null)
-            return internationalAddress.toString(GeoServerDefaultLocale.get());
-        return address;
+        return InternationalStringUtils.getOrDefault(address, internationalAddress);
     }
 
     @Override
@@ -94,9 +90,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddressCity() {
-        if (addressCity == null && internationalAddressCity != null)
-            return internationalAddressCity.toString(GeoServerDefaultLocale.get());
-        return addressCity;
+        return InternationalStringUtils.getOrDefault(addressCity, internationalAddressCity);
     }
 
     @Override
@@ -106,9 +100,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddressCountry() {
-        if (addressCountry == null && internationalAddressCountry != null)
-            return internationalAddressCountry.toString(GeoServerDefaultLocale.get());
-        return addressCountry;
+        return InternationalStringUtils.getOrDefault(addressCountry, internationalAddressCountry);
     }
 
     @Override
@@ -118,9 +110,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddressDeliveryPoint() {
-        if (addressDeliveryPoint == null && internationalAddressDeliveryPoint != null)
-            return internationalAddressDeliveryPoint.toString(GeoServerDefaultLocale.get());
-        return addressDeliveryPoint;
+        return InternationalStringUtils.getOrDefault(
+                addressDeliveryPoint, internationalAddressDeliveryPoint);
     }
 
     @Override
@@ -130,9 +121,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddressPostalCode() {
-        if (addressPostalCode == null && internationalAddressPostalCode != null)
-            return internationalAddressPostalCode.toString(GeoServerDefaultLocale.get());
-        return addressPostalCode;
+        return InternationalStringUtils.getOrDefault(
+                addressPostalCode, internationalAddressPostalCode);
     }
 
     @Override
@@ -142,9 +132,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddressState() {
-        if (addressState == null && internationalAddressState != null)
-            return internationalAddressState.toString(GeoServerDefaultLocale.get());
-        return addressState;
+        return InternationalStringUtils.getOrDefault(addressState, internationalAddressState);
     }
 
     @Override
@@ -154,9 +142,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddressType() {
-        if (addressType == null && internationalAddressType != null)
-            return internationalAddressType.toString(GeoServerDefaultLocale.get());
-        return addressType;
+        return InternationalStringUtils.getOrDefault(addressType, internationalAddressType);
     }
 
     @Override
@@ -166,9 +152,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getContactEmail() {
-        if (contactEmail == null && internationalContactEmail != null)
-            return internationalContactEmail.toString(GeoServerDefaultLocale.get());
-        return contactEmail;
+        return InternationalStringUtils.getOrDefault(contactEmail, internationalContactEmail);
     }
 
     @Override
@@ -178,9 +162,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getContactFacsimile() {
-        if (contactFacsimile == null && internationalContactFacsimile != null)
-            return internationalContactFacsimile.toString(GeoServerDefaultLocale.get());
-        return contactFacsimile;
+        return InternationalStringUtils.getOrDefault(
+                contactFacsimile, internationalContactFacsimile);
     }
 
     @Override
@@ -190,9 +173,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getContactOrganization() {
-        if (contactOrganization == null && internationalContactOrganization != null)
-            return internationalContactOrganization.toString(GeoServerDefaultLocale.get());
-        return contactOrganization;
+        return InternationalStringUtils.getOrDefault(
+                contactOrganization, internationalContactOrganization);
     }
 
     @Override
@@ -202,9 +184,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getContactPerson() {
-        if (contactPerson == null && internationalContactPerson != null)
-            return internationalContactPerson.toString(Locale.getDefault());
-        return contactPerson;
+        return InternationalStringUtils.getOrDefault(contactPerson, internationalContactPerson);
     }
 
     @Override
@@ -214,9 +194,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getContactPosition() {
-        if (contactPosition == null && internationalContactPosition != null)
-            return internationalContactPosition.toString(GeoServerDefaultLocale.get());
-        return contactPosition;
+        return InternationalStringUtils.getOrDefault(contactPosition, internationalContactPosition);
     }
 
     @Override
@@ -226,9 +204,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getContactVoice() {
-        if (contactVoice == null && internationalContactVoice != null)
-            return internationalContactVoice.toString(GeoServerDefaultLocale.get());
-        return contactVoice;
+        return InternationalStringUtils.getOrDefault(contactVoice, internationalContactVoice);
     }
 
     @Override
@@ -238,9 +214,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getOnlineResource() {
-        if (onlineResource == null && internationalOnlineResource != null)
-            return internationalOnlineResource.toString(GeoServerDefaultLocale.get());
-        return onlineResource;
+        return InternationalStringUtils.getOrDefault(onlineResource, internationalOnlineResource);
     }
 
     @Override
@@ -255,9 +229,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public void setInternationalAddress(InternationalString internationalAddress) {
-        if (internationalAddress != null)
-            this.internationalAddress = new GrowableInternationalString(internationalAddress);
-        else this.internationalAddress = null;
+        this.internationalAddress = InternationalStringUtils.growable(internationalAddress);
     }
 
     @Override
@@ -268,10 +240,8 @@ public class ContactInfoImpl implements ContactInfo {
     @Override
     public void setInternationalContactFacsimile(
             InternationalString internationalContactFacsimile) {
-        if (internationalContactFacsimile != null)
-            this.internationalContactFacsimile =
-                    new GrowableInternationalString(internationalContactFacsimile);
-        else this.internationalContactFacsimile = null;
+        this.internationalContactFacsimile =
+                InternationalStringUtils.growable(internationalContactFacsimile);
     }
 
     @Override
@@ -282,10 +252,8 @@ public class ContactInfoImpl implements ContactInfo {
     @Override
     public void setInternationalContactOrganization(
             InternationalString internationalContactOrganization) {
-        if (internationalContactOrganization != null)
-            this.internationalContactOrganization =
-                    new GrowableInternationalString(internationalContactOrganization);
-        else this.internationalContactOrganization = null;
+        this.internationalContactOrganization =
+                InternationalStringUtils.growable(internationalContactOrganization);
     }
 
     @Override
@@ -295,10 +263,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public void setInternationalContactPerson(InternationalString internationalContactPerson) {
-        if (internationalContactPerson != null)
-            this.internationalContactPerson =
-                    new GrowableInternationalString(internationalContactPerson);
-        else this.internationalContactPerson = null;
+        this.internationalContactPerson =
+                InternationalStringUtils.growable(internationalContactPerson);
     }
 
     @Override
@@ -308,10 +274,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public void setInternationalContactPosition(InternationalString internationalContactPosition) {
-        if (internationalContactPosition != null)
-            this.internationalContactPosition =
-                    new GrowableInternationalString(internationalContactPosition);
-        else this.internationalContactPosition = null;
+        this.internationalContactPosition =
+                InternationalStringUtils.growable(internationalContactPosition);
     }
 
     @Override
@@ -321,10 +285,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public void setInternationalContactVoice(InternationalString internationalContactVoice) {
-        if (internationalContactVoice != null)
-            this.internationalContactVoice =
-                    new GrowableInternationalString(internationalContactVoice);
-        else this.internationalContactVoice = null;
+        this.internationalContactVoice =
+                InternationalStringUtils.growable(internationalContactVoice);
     }
 
     @Override
@@ -334,10 +296,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public void setInternationalOnlineResource(InternationalString internationalOnlineResource) {
-        if (internationalOnlineResource != null)
-            this.internationalOnlineResource =
-                    new GrowableInternationalString(internationalOnlineResource);
-        else this.internationalOnlineResource = null;
+        this.internationalOnlineResource =
+                InternationalStringUtils.growable(internationalOnlineResource);
     }
 
     @Override
@@ -347,10 +307,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public void setInternationalAddressCity(InternationalString internationalAddressCity) {
-        if (internationalAddressCity != null)
-            this.internationalAddressCity =
-                    new GrowableInternationalString(internationalAddressCity);
-        else this.internationalAddressCity = null;
+        this.internationalAddressCity = InternationalStringUtils.growable(internationalAddressCity);
     }
 
     @Override
@@ -360,10 +317,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public void setInternationalAddressCountry(InternationalString internationalAddressCountry) {
-        if (internationalAddressCountry != null)
-            this.internationalAddressCountry =
-                    new GrowableInternationalString(internationalAddressCountry);
-        else this.internationalAddressCountry = null;
+        this.internationalAddressCountry =
+                InternationalStringUtils.growable(internationalAddressCountry);
     }
 
     @Override
@@ -374,10 +329,8 @@ public class ContactInfoImpl implements ContactInfo {
     @Override
     public void setInternationalAddressDeliveryPoint(
             InternationalString internationalAddressDeliveryPoint) {
-        if (internationalAddressDeliveryPoint != null)
-            this.internationalAddressDeliveryPoint =
-                    new GrowableInternationalString(internationalAddressDeliveryPoint);
-        else this.internationalAddressDeliveryPoint = null;
+        this.internationalAddressDeliveryPoint =
+                InternationalStringUtils.growable(internationalAddressDeliveryPoint);
     }
 
     @Override
@@ -388,10 +341,8 @@ public class ContactInfoImpl implements ContactInfo {
     @Override
     public void setInternationalAddressPostalCode(
             InternationalString internationalAddressPostalCode) {
-        if (internationalAddressPostalCode != null)
-            this.internationalAddressPostalCode =
-                    new GrowableInternationalString(internationalAddressPostalCode);
-        else this.internationalAddressPostalCode = null;
+        this.internationalAddressPostalCode =
+                InternationalStringUtils.growable(internationalAddressPostalCode);
     }
 
     @Override
@@ -401,10 +352,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public void setInternationalAddressState(InternationalString internationalAddressState) {
-        if (internationalAddressState != null)
-            this.internationalAddressState =
-                    new GrowableInternationalString(internationalAddressState);
-        else this.internationalAddressState = null;
+        this.internationalAddressState =
+                InternationalStringUtils.growable(internationalAddressState);
     }
 
     @Override
@@ -414,10 +363,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public void setInternationalAddressType(InternationalString internationalAddressType) {
-        if (internationalAddressType != null)
-            this.internationalAddressType =
-                    new GrowableInternationalString(internationalAddressType);
-        else this.internationalAddressType = null;
+        this.internationalAddressType = InternationalStringUtils.growable(internationalAddressType);
     }
 
     @Override
@@ -427,10 +373,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public void setInternationalContactEmail(InternationalString internationalContactEmail) {
-        if (internationalContactEmail != null)
-            this.internationalContactEmail =
-                    new GrowableInternationalString(internationalContactEmail);
-        else this.internationalContactEmail = null;
+        this.internationalContactEmail =
+                InternationalStringUtils.growable(internationalContactEmail);
     }
 
     @Override

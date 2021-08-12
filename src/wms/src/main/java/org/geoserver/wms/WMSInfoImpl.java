@@ -13,7 +13,7 @@ import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.config.impl.ServiceInfoImpl;
-import org.geoserver.util.GeoServerDefaultLocale;
+import org.geoserver.util.InternationalStringUtils;
 import org.geotools.util.GrowableInternationalString;
 import org.opengis.util.InternationalString;
 
@@ -231,9 +231,7 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     @Override
     public String getRootLayerTitle() {
-        if (rootLayerTitle == null && internationalRootLayerTitle != null)
-            return internationalRootLayerTitle.toString(GeoServerDefaultLocale.get());
-        return rootLayerTitle;
+        return InternationalStringUtils.getOrDefault(rootLayerTitle, internationalRootLayerTitle);
     }
 
     @Override
@@ -243,9 +241,8 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     @Override
     public String getRootLayerAbstract() {
-        if (rootLayerAbstract == null && internationalRootLayerAbstract != null)
-            return internationalRootLayerAbstract.toString(GeoServerDefaultLocale.get());
-        return rootLayerAbstract;
+        return InternationalStringUtils.getOrDefault(
+                rootLayerAbstract, internationalRootLayerAbstract);
     }
 
     @Override
@@ -340,9 +337,7 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     @Override
     public void setInternationalRootLayerTitle(InternationalString rootLayerTitle) {
-        if (rootLayerTitle != null)
-            this.internationalRootLayerTitle = new GrowableInternationalString(rootLayerTitle);
-        else this.internationalRootLayerTitle = null;
+        this.internationalRootLayerTitle = InternationalStringUtils.growable(rootLayerTitle);
     }
 
     @Override
@@ -352,9 +347,6 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     @Override
     public void setInternationalRootLayerAbstract(InternationalString rootLayerAbstract) {
-        if (rootLayerAbstract != null)
-            this.internationalRootLayerAbstract =
-                    new GrowableInternationalString(rootLayerAbstract);
-        else this.internationalRootLayerAbstract = null;
+        this.internationalRootLayerAbstract = InternationalStringUtils.growable(rootLayerAbstract);
     }
 }

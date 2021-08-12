@@ -38,12 +38,14 @@ Here is an example providing labels in multiple languages, integrating the ``lan
                  <Label>
                    <ogc:Function name="Recode">
                      <ogc:Function name="language"/>
+                     <ogc:Literal/>
+                     <ogc:PropertyName>name_default</ogc:PropertyName>
                      <ogc:Literal>en</ogc:Literal>
-                     <ogc:Literal>name_en</ogc:Literal>
+                     <ogc:PropertyName>name_en</ogc:PropertyName>
                      <ogc:Literal>it</ogc:Literal>
-                     <ogc:Literal>name_it</ogc:Literal>
+                     <ogc:PropertyName>name_it</ogc:PropertyName>
                      <ogc:Literal>fr</ogc:Literal>
-                     <ogc:Literal>name_fr</ogc:Literal>
+                     <ogc:PropertyName>name_fr</ogc:PropertyName>
                    </ogc:Function>
                  </Label>
                  <Fill>
@@ -52,4 +54,4 @@ Here is an example providing labels in multiple languages, integrating the ``lan
          </TextSymbolizer>
 
 
-If the Function has been defined in a style and the ``LANGUAGE`` parameter has not been specified in the request or has value ``LANGUAGE=*`` the default language will be used. See :ref:`internationalization` for details on ``Default Language``.
+The empty ``<ogc:Literal/>`` elements acts as the default language, matching a value with a missing language parameter. If there is no default value,the  default language will be returned. See :ref:`internationalization` for details on ``Default Language``.

@@ -125,6 +125,7 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
         // list of images to be rendered for the layers (more than one if
         // a layer group is given)
         setup(request);
+
         List<RenderedImage> layersImages = new ArrayList<>();
         for (LegendRequest legend : layers) {
             FeatureType layer = legend.getFeatureType();

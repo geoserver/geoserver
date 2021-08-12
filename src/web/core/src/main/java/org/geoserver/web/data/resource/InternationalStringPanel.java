@@ -63,12 +63,28 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
             C nonInternationalComponent,
             WebMarkupContainer checkBoxContainer) {
         super(id, model);
+        // in case the internationalComponent is null set a new instance
+        // with the non international value as the starting one.
+        setObjectIfMissing(model, nonInternationalComponent);
         this.nonInternationalComponent = nonInternationalComponent;
         this.nonInternationalComponent.setOutputMarkupId(true);
         this.nonInternationalComponent.setOutputMarkupPlaceholderTag(true);
         initUI(new GrowableStringModel(model), checkBoxContainer);
         setOutputMarkupId(true);
         setOutputMarkupId(true);
+    }
+
+    private void setObjectIfMissing(
+            IModel<GrowableInternationalString> model, C nonInternationalComponent) {
+        if (model.getObject() == null) {
+            if (nonInternationalComponent.getModelObject() != null) {
+                model.setObject(
+                        new GrowableInternationalString(
+                                nonInternationalComponent.getModelObject()));
+            } else {
+                model.setObject(new GrowableInternationalString());
+            }
+        }
     }
 
     private void initUI(GrowableStringModel model, WebMarkupContainer checkBoxContainer) {
@@ -155,7 +171,6 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
                             localeBorder.add(locales);
                             locales.add(new LocaleValidator());
                             locales.setNullValid(true);
-                            locales.setRequired(true);
                             return localeFragment;
                         } else if (property.getName().equals("text")) {
                             AbstractTextComponent<String> field =
@@ -257,10 +272,28 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         GrowableInternationalString growableString = new GrowableInternationalString();
         List<GrowableStringModel.InternationalStringEntry> items = provider.getItems();
         for (GrowableStringModel.InternationalStringEntry entry : items) {
-            growableString.add(entry.getLocale(), entry.getText());
+            if (canAddElement(items, entry)) growableString.add(entry.getLocale(), entry.getText());
         }
         growableModel.setObject(growableString);
         return growableString;
+    }
+
+    // Since null locale is supported and the validation occurs before the
+    // submission this method is used to determine
+    // if an InternationalStringEntry has null locale because explicitly set or because
+    // the input has not been converted. This in order to prevent the addition of entries with
+    // duplicated null key that will cause an exception to be thrown.
+    private boolean canAddElement(
+            List<GrowableStringModel.InternationalStringEntry> items,
+            GrowableStringModel.InternationalStringEntry entry) {
+        // input has not been converted yet skip addition
+        if (entry.getText() == null) return false;
+        long count = items.stream().filter(l -> l.getLocale() == null).count();
+        int lastElem = items.size() - 1;
+        // the lang is null because input has not been converted yet. Return false.
+        if (entry.getLocale() == null && (items.indexOf(entry) == lastElem) && count > 1)
+            return false;
+        return true;
     }
 
     @Override
@@ -276,6 +309,11 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
                 nonInternationalComponent.setModelObject(null);
                 nonInternationalComponent.modelChanged();
             }
+        }
+        String errorMsg = validateNullLocale();
+        if (errorMsg != null) {
+            getForm().error(errorMsg);
+            return;
         }
         updateGrowableString();
     }
@@ -301,22 +339,43 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         public void validate(IValidatable<Locale> iValidatable) {
             Locale locale = iValidatable.getValue();
             List<GrowableStringModel.InternationalStringEntry> items = provider.getItems();
-            if (locale != null) {
-                long count =
-                        items.stream()
-                                .filter(i -> i.getLocale() != null && i.getLocale().equals(locale))
-                                .count();
-                if (count >= 1 && iValidatable.getModel().getObject() == null) {
-                    String message =
-                            new StringResourceModel(
-                                            "InternationalStringPanel.duplicatedLocale",
-                                            InternationalStringPanel.this)
-                                    .getString();
-                    ValidationError error = new ValidationError();
-                    error.setMessage(message);
-                    iValidatable.error(error);
-                }
+            // null locale validation occurs before saving. Here we cannot tell if the model object
+            // is null because
+            // null is the input or because wicket did not convert input
+            long count =
+                    items.stream()
+                            .filter(i -> i.getLocale() != null && i.getLocale().equals(locale))
+                            .count();
+            boolean exisits =
+                    count >= 1
+                            && (iValidatable.getModel().getObject() == null
+                                    || !iValidatable.getModel().getObject().equals(locale));
+            if (locale != null && (exisits || count > 2)) {
+
+                ValidationError error = new ValidationError();
+                error.setMessage(duplicateLocaleMessage(locale));
+                iValidatable.error(error);
             }
         }
+    }
+
+    private String duplicateLocaleMessage(Locale locale) {
+        String lang =
+                locale != null && locale.toLanguageTag() != null ? locale.toLanguageTag() : "empty";
+        String message =
+                new StringResourceModel("InternationalStringPanel.duplicatedLocale", this)
+                                .getString()
+                        + " "
+                        + lang;
+        return message;
+    }
+
+    private String validateNullLocale() {
+        List<GrowableStringModel.InternationalStringEntry> entries = provider.getItems();
+        long count = entries.stream().filter(i -> i != null && i.getLocale() == null).count();
+        if (count > 1) {
+            return duplicateLocaleMessage(null);
+        }
+        return null;
     }
 }

@@ -38,6 +38,7 @@ public class LanguageFunction extends FunctionExpressionImpl {
         if (result == null || result.equals("*")) {
             Locale locale = GeoServerDefaultLocale.get();
             if (locale != null) result = locale.getLanguage();
+            else result = "";
         }
         return result;
     }

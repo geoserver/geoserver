@@ -798,4 +798,20 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
                 "//ows:DCP/ows:HTTP/ows:Get/@xlink:href",
                 dom);
     }
+
+    @Test
+    public void testNullLocale() throws Exception {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(MockData.FIFTEEN));
+        GrowableInternationalString title = new GrowableInternationalString();
+        title.add(Locale.ENGLISH, "a i18n title for fti fifteen");
+        title.add(null, "null locale");
+        fti.setInternationalTitle(title);
+        catalog.save(fti);
+
+        Document dom = getAsDOM("wfs?service=WFS&request=getCapabilities&version=2.0.0");
+
+        assertXpathEvaluatesTo(
+                "src/test/resources/geoserver/wfs", "//ows:DCP/ows:HTTP/ows:Get/@xlink:href", dom);
+    }
 }

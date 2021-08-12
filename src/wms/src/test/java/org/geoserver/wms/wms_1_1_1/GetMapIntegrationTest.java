@@ -242,6 +242,7 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
         testData.addStyle("multiLanguageStyle", "MultiLanguageStyle.sld", getClass(), catalog);
 
+        testData.addStyle("emptyLanguageStyle", "EmptyLanguageStyle.sld", getClass(), catalog);
         Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, "raster");
         testData.addRasterLayer(
@@ -2387,6 +2388,24 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                         + "&Language=en";
         BufferedImage image = getAsImage(url, "image/png");
         URL urlPng = getClass().getResource("multilang_result.png");
+        ImageAssert.assertEquals(new File(urlPng.toURI()), image, 500);
+    }
+
+    @Test
+    public void testEmptyLanguageStyle() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerInfo places = catalog.getLayerByName(getLayerId(MockData.NAMED_PLACES));
+        StyleInfo multiLangStyle = catalog.getStyleByName("emptyLanguageStyle");
+        places.getStyles().add(multiLangStyle);
+        catalog.save(places);
+        String url =
+                "wms?LAYERS="
+                        + places.getName()
+                        + "&STYLES=emptyLanguageStyle&FORMAT=image%2Fpng"
+                        + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256"
+                        + "&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+        BufferedImage image = getAsImage(url, "image/png");
+        URL urlPng = getClass().getResource("nolang_result.png");
         ImageAssert.assertEquals(new File(urlPng.toURI()), image, 500);
     }
 

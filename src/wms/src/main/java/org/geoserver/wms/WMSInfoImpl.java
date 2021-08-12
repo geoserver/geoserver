@@ -335,35 +335,26 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     @Override
     public GrowableInternationalString getInternationalRootLayerTitle() {
-        if (internationalRootLayerTitle == null
-                || this.internationalRootLayerTitle.toString().equals(""))
-            return new GrowableInternationalString(rootLayerTitle);
         return internationalRootLayerTitle;
     }
 
     @Override
     public void setInternationalRootLayerTitle(InternationalString rootLayerTitle) {
-        GrowableInternationalString growable;
-        if (rootLayerTitle == null) growable = new GrowableInternationalString(getRootLayerTitle());
-        else growable = new GrowableInternationalString(rootLayerTitle);
-        this.internationalRootLayerTitle = growable;
+        if (rootLayerTitle != null)
+            this.internationalRootLayerTitle = new GrowableInternationalString(rootLayerTitle);
+        else this.internationalRootLayerTitle = null;
     }
 
     @Override
     public GrowableInternationalString getInternationalRootLayerAbstract() {
-        if (this.internationalRootLayerAbstract == null
-                || this.internationalRootLayerAbstract.toString().equals(""))
-            return new GrowableInternationalString(rootLayerAbstract);
         return this.internationalRootLayerAbstract;
     }
 
     @Override
     public void setInternationalRootLayerAbstract(InternationalString rootLayerAbstract) {
-        GrowableInternationalString growable;
-        if (rootLayerAbstract == null)
-            growable = new GrowableInternationalString(getRootLayerAbstract());
-        else growable = new GrowableInternationalString(rootLayerAbstract);
-
-        this.internationalRootLayerAbstract = growable;
+        if (rootLayerAbstract != null)
+            this.internationalRootLayerAbstract =
+                    new GrowableInternationalString(rootLayerAbstract);
+        else this.internationalRootLayerAbstract = null;
     }
 }

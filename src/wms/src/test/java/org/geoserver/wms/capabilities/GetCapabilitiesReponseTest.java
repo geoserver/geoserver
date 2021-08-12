@@ -207,4 +207,33 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
                 "http://localhost:8080/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=nature&Language=it",
                 "//Layer[Name='nature']/Style/LegendURL/OnlineResource/@xlink:href", dom);
     }
+
+    @Test
+    public void testNullLocale() throws Exception {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo old = catalog.getFeatureTypeByName(getLayerId(MockData.FIFTEEN));
+        try {
+            FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(MockData.FIFTEEN));
+            GrowableInternationalString title = new GrowableInternationalString();
+            title.add(Locale.ENGLISH, "a i18n title for fti fifteen");
+            title.add(null, "null locale title");
+            fti.setInternationalTitle(title);
+            GrowableInternationalString abstrct = new GrowableInternationalString();
+            abstrct.add(Locale.ENGLISH, "english abstract");
+            abstrct.add(null, "null locale abstract");
+            fti.setInternationalAbstract(abstrct);
+            fti.setTitle(null);
+            fti.setAbstract(null);
+            catalog.save(fti);
+
+            Document dom = getAsDOM("wms?version=1.1.1&request=GetCapabilities&service=WMS");
+
+            String fifteenLayer =
+                    "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'cdf:Fifteen']";
+            assertXpathEvaluatesTo("null locale title", fifteenLayer + "/Title", dom);
+            assertXpathEvaluatesTo("null locale abstract", fifteenLayer + "/Abstract", dom);
+        } finally {
+            catalog.save(old);
+        }
+    }
 }

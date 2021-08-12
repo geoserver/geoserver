@@ -178,6 +178,7 @@ import org.opengis.referencing.operation.MathTransform;
  */
 public class XStreamPersister {
 
+    private static final String DEFAULT_LOCALE = "default";
     private boolean unwrapNulls = true;
 
     /** Callback interface or xstream persister. */
@@ -2617,11 +2618,16 @@ public class XStreamPersister {
                 Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             GrowableInternationalString internationalString = (GrowableInternationalString) source;
             Set<Locale> locales = internationalString.getLocales();
+            int size = locales.size();
             for (Locale l : locales) {
                 if (l != null) {
                     String elementName = l.toLanguageTag();
                     if (elementName.contains(" ")) elementName = elementName.replaceAll(" ", "__");
                     writer.startNode(elementName);
+                    writer.setValue(internationalString.toString(l));
+                    writer.endNode();
+                } else if (size > 1) {
+                    writer.startNode(DEFAULT_LOCALE);
                     writer.setValue(internationalString.toString(l));
                     writer.endNode();
                 }
@@ -2632,11 +2638,19 @@ public class XStreamPersister {
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             GrowableInternationalString growableInternationalString =
                     new GrowableInternationalString();
+            if (!reader.hasMoreChildren()) return null;
             while (reader.hasMoreChildren()) {
                 reader.moveDown();
                 String nodeName = reader.getNodeName();
-                if (nodeName.contains("__")) nodeName = nodeName.replaceAll("__", " ");
-                Locale locale = Locale.forLanguageTag(nodeName);
+                Locale locale = null;
+                if (nodeName.contains("__")) {
+                    nodeName = nodeName.replaceAll("__", " ");
+                }
+
+                if (!nodeName.equals(DEFAULT_LOCALE)) {
+                    locale = Locale.forLanguageTag(nodeName);
+                }
+
                 String value = reader.getValue();
                 growableInternationalString.add(locale, value);
                 reader.moveUp();

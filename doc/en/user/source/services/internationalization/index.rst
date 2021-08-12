@@ -53,4 +53,16 @@ GeoServer allows defining a default language to be used when international conte
 
 .. figure:: img/DefaultLanguage.png
 
-GeoServer will first check for a service specific default locale. If not found, it will use the one in the global settings. If  the global default language has not been specified, GeoServer will use the server default locale.
+It is also possible to set an i18n entry with empty language for each configurable field, acting as the default translation.
+
+.. figure:: img/EmptyLanguage.png
+
+When international content is requested, for each internationalized field, GeoServer will behave as follows:
+
+* The service specific default language, if present, will be used.
+
+* If not found, the global default language, if present, will be used. 
+
+* If not found the i18n content empty language value, if present, will be used.
+
+* If not found the first i18n value found for the field will be used.

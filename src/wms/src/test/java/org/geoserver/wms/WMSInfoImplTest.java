@@ -6,6 +6,7 @@
 package org.geoserver.wms;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.lang.SerializationUtils;
@@ -29,14 +30,14 @@ public class WMSInfoImplTest {
         WMSInfoImpl info = new WMSInfoImpl();
         info.setAbstract("test");
         info.setInternationalAbstract(null);
-        assertEquals("test", info.getInternationalAbstract().toString());
+        assertNull(info.getInternationalAbstract());
         info.setInternationalTitle(null);
-        assertEquals("", info.getInternationalTitle().toString());
+        assertNull(info.getInternationalTitle());
 
         info.setRootLayerTitle("rootLayerTitle");
         info.setInternationalRootLayerTitle(null);
-        assertEquals("rootLayerTitle", info.getInternationalRootLayerTitle().toString());
+        assertNull(info.getInternationalRootLayerTitle());
         info.setInternationalRootLayerAbstract(null);
-        assertEquals("", info.getInternationalRootLayerAbstract().toString());
+        assertNull(info.getInternationalRootLayerAbstract());
     }
 }

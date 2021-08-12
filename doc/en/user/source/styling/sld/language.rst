@@ -54,4 +54,4 @@ Here is an example providing labels in multiple languages, integrating the ``lan
          </TextSymbolizer>
 
 
-From the example it is possible to see that by putting an empty property name it is possible to match a value with a notExisting/* language parameter. If there is no default value, default language will be returned. See :ref:`internationalization` for details on ``Default Language``.
+The empty ``<ogc:Literal/>`` elements acts as the default language, matching a value with a missing language parameter. If there is no default value,the  default language will be returned. See :ref:`internationalization` for details on ``Default Language``.

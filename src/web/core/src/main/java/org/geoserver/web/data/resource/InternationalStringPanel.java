@@ -278,6 +278,11 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         return growableString;
     }
 
+    // Since null locale is supported and the validation occurs before the
+    // submission this method is used to determine
+    // if an InternationalStringEntry has null locale because explicitly set or because
+    // the input has not been converted. This in order to prevent the addition of entries with
+    // duplicated null key that will cause an exception to be thrown.
     private boolean canAddElement(
             List<GrowableStringModel.InternationalStringEntry> items,
             GrowableStringModel.InternationalStringEntry entry) {
@@ -285,7 +290,7 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         if (entry.getText() == null) return false;
         long count = items.stream().filter(l -> l.getLocale() == null).count();
         int lastElem = items.size() - 1;
-        // the lang is null because input has not been converted yet. Return null.
+        // the lang is null because input has not been converted yet. Return false.
         if (entry.getLocale() == null && (items.indexOf(entry) == lastElem) && count > 1)
             return false;
         return true;

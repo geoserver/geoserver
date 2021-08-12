@@ -53,7 +53,7 @@ GeoServer allows defining a default language to be used when international conte
 
 .. figure:: img/DefaultLanguage.png
 
-Alternatively from the i18n editor it is possible to set an i18n entry with empty language for each configurable field.
+It is also possible to set an i18n entry with empty language for each configurable field, acting as the default translation.
 
 .. figure:: img/EmptyLanguage.png
 

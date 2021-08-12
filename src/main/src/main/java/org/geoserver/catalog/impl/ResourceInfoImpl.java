@@ -457,6 +457,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     public void setInternationalTitle(InternationalString internationalTitle) {
         if (internationalTitle != null)
             this.internationalTitle = new GrowableInternationalString(internationalTitle);
+        else this.internationalTitle = null;
     }
 
     @Override
@@ -468,6 +469,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
     public void setInternationalAbstract(InternationalString internationalAbstract) {
         if (internationalAbstract != null)
             this.internationalAbstract = new GrowableInternationalString(internationalAbstract);
+        else this.internationalAbstract = null;
     }
 
     @Override

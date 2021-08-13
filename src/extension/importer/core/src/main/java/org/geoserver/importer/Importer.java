@@ -1509,11 +1509,13 @@ public class Importer implements DisposableBean, ApplicationListener {
                         e1);
             }
 
-            // attempt to drop the type that was created as well
-            try {
-                dropSchema(dataStoreDestination, featureTypeName);
-            } catch (Exception e1) {
-                LOGGER.log(Level.WARNING, "Error dropping schema in rollback", e1);
+            // drop the type that was created as well, only if it was created to start with
+            if (task.getUpdateMode() == UpdateMode.CREATE) {
+                try {
+                    dropSchema(dataStoreDestination, featureTypeName);
+                } catch (Exception e1) {
+                    LOGGER.log(Level.WARNING, "Error dropping schema in rollback", e1);
+                }
             }
         }
 
@@ -1597,11 +1599,13 @@ public class Importer implements DisposableBean, ApplicationListener {
                 LOGGER.log(Level.WARNING, "Error rolling back transaction", e1);
             }
 
-            // attempt to drop the type that was created as well
-            try {
-                dropSchema(dataStoreDestination, featureTypeName);
-            } catch (Exception e1) {
-                LOGGER.log(Level.WARNING, "Error dropping schema in rollback", e1);
+            // drop the type that was created as well, only if it was created to start with
+            if (task.getUpdateMode() == UpdateMode.CREATE) {
+                try {
+                    dropSchema(dataStoreDestination, featureTypeName);
+                } catch (Exception e1) {
+                    LOGGER.log(Level.WARNING, "Error dropping schema in rollback", e1);
+                }
             }
         }
         return error;

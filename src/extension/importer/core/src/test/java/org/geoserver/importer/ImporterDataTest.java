@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,9 +68,12 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.jdbc.Index;
+import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.style.StyleAttributeExtractor;
 import org.geotools.styling.Style;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assume;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -713,6 +717,47 @@ public class ImporterDataTest extends ImporterTestSupport {
         checkGMLPoiImport(gmlFile, h2DataStore);
     }
 
+    /**
+     * This is a test of a indirect import from a reader (the GML one), uses a different code path
+     * than the store approach taken in the CSV test
+     */
+    @Test
+    public void testGML3ExceptionsDoNotDropTable() throws Exception {
+        // initial import
+        File gmlFile = file("gml/poi.gml3.gml");
+        String wsName = getCatalog().getDefaultWorkspace().getName();
+        DataStoreInfo h2DataStore = createH2DataStore(wsName, "gml3poi");
+        checkGMLPoiImport(gmlFile, h2DataStore);
+
+        // count how many features at the beginning
+        LayerInfo layer = getCatalog().getLayerByName("poi");
+        FeatureTypeInfo ft = (FeatureTypeInfo) layer.getResource();
+        int initialCount = ft.getFeatureSource(null, null).getCount(Query.ALL);
+
+        // create a unique index that will prevent a new successful import
+        JDBCDataStore ds = (JDBCDataStore) ft.getStore().getDataStore(null);
+        ds.createIndex(new Index("poi", "poi_name_idx", true, "NAME"));
+
+        // run import a second time
+        SpatialFile importData = new SpatialFile(gmlFile);
+        ImportContext context = importer.createContext(importData, h2DataStore);
+        ImportTask task = context.getTasks().get(0);
+        task.setUpdateMode(UpdateMode.APPEND);
+        task.setLayer(layer);
+        importer.prep(task);
+        context.updated();
+        importer.run(context);
+
+        // the task must have failed
+        assertEquals(State.ERROR, task.getState());
+
+        // the table has not been deleted because of that though
+        assertThat(Arrays.asList(ds.getTypeNames()), CoreMatchers.hasItem("poi"));
+        // and the number of features is the same
+        int postImportCount = ft.getFeatureSource(null, null).getCount(Query.ALL);
+        assertEquals(initialCount, postImportCount);
+    }
+
     @Test
     public void testImportGML2WithSchema() throws Exception {
         // TODO: remove this manipulation once we get relative schema references to work
@@ -878,6 +923,43 @@ public class ImporterDataTest extends ImporterTestSupport {
             assertEquals("Invalid x coordinate", 11.12, coordinate.x, 0.1);
             assertEquals("Invalid y coordinate", 46.07, coordinate.y, 0.1);
         }
+    }
+
+    /** This is a test of a indirect import from a store (the CSV store) */
+    @Test
+    public void testCSVExceptionsDoNotDropTable() throws Exception {
+        // import and create a H2 database
+        testImportCSVIndirect();
+
+        // count how many features at the beginning
+        LayerInfo layer = getCatalog().getLayerByName("locations");
+        FeatureTypeInfo ft = (FeatureTypeInfo) layer.getResource();
+        int initialCount = ft.getFeatureSource(null, null).getCount(Query.ALL);
+
+        // create a unique index that will prevent a new successful import
+        JDBCDataStore ds = (JDBCDataStore) ft.getStore().getDataStore(null);
+        ds.createIndex(new Index("locations", "locations_city_idx", true, "CITY"));
+
+        // run the import again
+        File dir = unpack("csv/locations.zip");
+        SpatialFile importData = new SpatialFile(new File(dir, "locations.csv"));
+        ImportContext context = importer.createContext(importData, ft.getStore());
+        ImportTask task = context.getTasks().get(0);
+        task.addTransform(new AttributesToPointGeometryTransform("LAT", "LON"));
+        task.setUpdateMode(UpdateMode.APPEND);
+        task.setLayer(layer);
+        importer.prep(task);
+        context.updated();
+        importer.run(context);
+
+        // the task must have failed
+        assertEquals(State.ERROR, task.getState());
+
+        // the table has not been deleted because of that though
+        assertThat(Arrays.asList(ds.getTypeNames()), CoreMatchers.hasItem("locations"));
+        // and the number of features is the same
+        int postImportCount = ft.getFeatureSource(null, null).getCount(Query.ALL);
+        assertEquals(initialCount, postImportCount);
     }
 
     @Test

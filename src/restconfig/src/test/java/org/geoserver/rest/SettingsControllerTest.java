@@ -572,4 +572,77 @@ public class SettingsControllerTest extends CatalogRESTTestSupport {
         JSONObject deletedJson = (JSONObject) json;
         assertNull(deletedJson.get("workspace"));
     }
+
+    @Test
+    public void testPutContactAsJSONInternationalValues() throws Exception {
+        initContact();
+        String inputJson =
+                "{\n"
+                        + "    \"contact\": {\n"
+                        + "        \"internationalAddress\": {\n"
+                        + "            \"ar-EG\": \"Avenida Atlantica 15\",\n"
+                        + "            \"de\": \"via di Sotterra 13\"\n"
+                        + "        },\n"
+                        + "        \"internationalAddressCity\": {\n"
+                        + "            \"ar-EG\": \"Alexandria\",\n"
+                        + "            \"de\": \"Berlin\"\n"
+                        + "        },\n"
+                        + "        \"internationalAddressCountry\": {\n"
+                        + "            \"ar-EG\": \"Egypt\",\n"
+                        + "            \"de\": \"Germany\"\n"
+                        + "        },\n"
+                        + "        \"internationalAddressDeliveryPoint\": {\n"
+                        + "            \"ar-EG\": \"EG delivery point\",\n"
+                        + "            \"de\": \"DE delivery point\"\n"
+                        + "        },\n"
+                        + "        \"internationalAddressPostalCode\": {\n"
+                        + "            \"ar-EG\": 111110000011111,\n"
+                        + "            \"de\": \"000001111110000\"\n"
+                        + "        },\n"
+                        + "        \"internationalContactEmail\": {\n"
+                        + "            \"ar-EG\": \"claudius.ptolomaeus@gmail.com\",\n"
+                        + "            \"de\": \"alexander.von.humboldt@erdkunde.com\"\n"
+                        + "        },\n"
+                        + "        \"internationalContactPerson\": {\n"
+                        + "            \"ar-EG\": \"Claudius Ptolomaeus\",\n"
+                        + "            \"de\": \"Alexander von Humboldt\"\n"
+                        + "        },\n"
+                        + "    }\n"
+                        + "}";
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        RestBaseController.ROOT_PATH + "/settings/contact", inputJson, "text/json");
+        assertEquals(200, response.getStatus());
+        JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/settings/contact.json");
+        JSONObject jsonObject = (JSONObject) jsonMod;
+        assertNotNull(jsonObject);
+        JSONObject contactInfo = jsonObject.getJSONObject("contact");
+        JSONObject country = contactInfo.getJSONObject("internationalAddressCountry");
+        assertEquals("Egypt", country.getString("ar-EG"));
+        assertEquals("Germany", country.getString("de"));
+
+        JSONObject address = contactInfo.getJSONObject("internationalAddress");
+        assertEquals("Avenida Atlantica 15", address.getString("ar-EG"));
+        assertEquals("via di Sotterra 13", address.getString("de"));
+
+        JSONObject addressCity = contactInfo.getJSONObject("internationalAddressCity");
+        assertEquals("Alexandria", addressCity.getString("ar-EG"));
+        assertEquals("Berlin", addressCity.getString("de"));
+
+        JSONObject delPoint = contactInfo.getJSONObject("internationalAddressDeliveryPoint");
+        assertEquals("EG delivery point", delPoint.getString("ar-EG"));
+        assertEquals("DE delivery point", delPoint.getString("de"));
+
+        JSONObject code = contactInfo.getJSONObject("internationalAddressPostalCode");
+        assertEquals("111110000011111", code.getString("ar-EG"));
+        assertEquals("000001111110000", code.getString("de"));
+
+        JSONObject pers = contactInfo.getJSONObject("internationalContactPerson");
+        assertEquals("Claudius Ptolomaeus", pers.getString("ar-EG"));
+        assertEquals("Alexander von Humboldt", pers.getString("de"));
+
+        JSONObject email = contactInfo.getJSONObject("internationalContactEmail");
+        assertEquals("claudius.ptolomaeus@gmail.com", email.getString("ar-EG"));
+        assertEquals("alexander.von.humboldt@erdkunde.com", email.getString("de"));
+    }
 }

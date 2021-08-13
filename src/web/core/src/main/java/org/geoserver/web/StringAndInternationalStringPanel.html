@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns:wicket="http://wicket.apache.org/">
+<head />
+<body>
+<wicket:panel>
+    <ul>
+        <li>
+            <br/>
+            <span wicket:id="labelContainer">
+                  <label style="float:left" wicket:id="stringLabel" />
+                  <input style="float:left" type="checkbox" wicket:id="labelContainer_i18nCheckbox" />
+                  <wicket:message key="i18nCheckBox">i18n</wicket:message>
+               </span>
+        </li>
+        <li>
+            <input class="text" type="text" wicket:id="stringField" />
+        </li>
+        <li>
+            <div wicket:id="internationalField" />
+        </li>
+    </ul>
+</wicket:panel>
+</body>
+</html>

@@ -6,38 +6,68 @@
 package org.geoserver.config.impl;
 
 import org.geoserver.config.ContactInfo;
+import org.geoserver.util.InternationalStringUtils;
+import org.opengis.util.InternationalString;
 
 public class ContactInfoImpl implements ContactInfo {
 
-    String id = "contact";
+    private String id = "contact";
 
-    String address;
+    private String address;
 
-    String addressCity;
+    private String addressCity;
 
-    String addressCountry;
+    private String addressCountry;
 
-    String addressDeliveryPoint;
+    private String addressDeliveryPoint;
 
-    String addressPostalCode;
+    private String addressPostalCode;
 
-    String addressState;
+    private String addressState;
 
-    String addressType;
+    private String addressType;
 
-    String contactEmail;
+    private String contactEmail;
 
-    String contactFacsimile;
+    private String contactFacsimile;
 
-    String contactOrganization;
+    private String contactOrganization;
 
-    String contactPerson;
+    private String contactPerson;
 
-    String contactPosition;
+    private String contactPosition;
 
-    String contactVoice;
+    private String contactVoice;
 
-    String onlineResource;
+    private String onlineResource;
+
+    private InternationalString internationalAddress;
+
+    private InternationalString internationalAddressCity;
+
+    private InternationalString internationalAddressCountry;
+
+    private InternationalString internationalAddressDeliveryPoint;
+
+    private InternationalString internationalAddressPostalCode;
+
+    private InternationalString internationalAddressState;
+
+    private InternationalString internationalAddressType;
+
+    private InternationalString internationalContactEmail;
+
+    private InternationalString internationalContactFacsimile;
+
+    private InternationalString internationalContactOrganization;
+
+    private InternationalString internationalContactPerson;
+
+    private InternationalString internationalContactPosition;
+
+    private InternationalString internationalContactVoice;
+
+    private InternationalString internationalOnlineResource;
 
     @Override
     public String getId() {
@@ -50,7 +80,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddress() {
-        return address;
+        return InternationalStringUtils.getOrDefault(address, internationalAddress);
     }
 
     @Override
@@ -60,7 +90,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddressCity() {
-        return addressCity;
+        return InternationalStringUtils.getOrDefault(addressCity, internationalAddressCity);
     }
 
     @Override
@@ -70,7 +100,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddressCountry() {
-        return addressCountry;
+        return InternationalStringUtils.getOrDefault(addressCountry, internationalAddressCountry);
     }
 
     @Override
@@ -80,7 +110,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddressDeliveryPoint() {
-        return addressDeliveryPoint;
+        return InternationalStringUtils.getOrDefault(
+                addressDeliveryPoint, internationalAddressDeliveryPoint);
     }
 
     @Override
@@ -90,7 +121,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddressPostalCode() {
-        return addressPostalCode;
+        return InternationalStringUtils.getOrDefault(
+                addressPostalCode, internationalAddressPostalCode);
     }
 
     @Override
@@ -100,7 +132,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddressState() {
-        return addressState;
+        return InternationalStringUtils.getOrDefault(addressState, internationalAddressState);
     }
 
     @Override
@@ -110,7 +142,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getAddressType() {
-        return addressType;
+        return InternationalStringUtils.getOrDefault(addressType, internationalAddressType);
     }
 
     @Override
@@ -120,7 +152,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getContactEmail() {
-        return contactEmail;
+        return InternationalStringUtils.getOrDefault(contactEmail, internationalContactEmail);
     }
 
     @Override
@@ -130,7 +162,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getContactFacsimile() {
-        return contactFacsimile;
+        return InternationalStringUtils.getOrDefault(
+                contactFacsimile, internationalContactFacsimile);
     }
 
     @Override
@@ -140,7 +173,8 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getContactOrganization() {
-        return contactOrganization;
+        return InternationalStringUtils.getOrDefault(
+                contactOrganization, internationalContactOrganization);
     }
 
     @Override
@@ -150,7 +184,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getContactPerson() {
-        return contactPerson;
+        return InternationalStringUtils.getOrDefault(contactPerson, internationalContactPerson);
     }
 
     @Override
@@ -160,7 +194,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getContactPosition() {
-        return contactPosition;
+        return InternationalStringUtils.getOrDefault(contactPosition, internationalContactPosition);
     }
 
     @Override
@@ -170,7 +204,7 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getContactVoice() {
-        return contactVoice;
+        return InternationalStringUtils.getOrDefault(contactVoice, internationalContactVoice);
     }
 
     @Override
@@ -180,12 +214,167 @@ public class ContactInfoImpl implements ContactInfo {
 
     @Override
     public String getOnlineResource() {
-        return onlineResource;
+        return InternationalStringUtils.getOrDefault(onlineResource, internationalOnlineResource);
     }
 
     @Override
     public void setOnlineResource(String onlineResource) {
         this.onlineResource = onlineResource;
+    }
+
+    @Override
+    public InternationalString getInternationalAddress() {
+        return internationalAddress;
+    }
+
+    @Override
+    public void setInternationalAddress(InternationalString internationalAddress) {
+        this.internationalAddress = InternationalStringUtils.growable(internationalAddress);
+    }
+
+    @Override
+    public InternationalString getInternationalContactFacsimile() {
+        return internationalContactFacsimile;
+    }
+
+    @Override
+    public void setInternationalContactFacsimile(
+            InternationalString internationalContactFacsimile) {
+        this.internationalContactFacsimile =
+                InternationalStringUtils.growable(internationalContactFacsimile);
+    }
+
+    @Override
+    public InternationalString getInternationalContactOrganization() {
+        return internationalContactOrganization;
+    }
+
+    @Override
+    public void setInternationalContactOrganization(
+            InternationalString internationalContactOrganization) {
+        this.internationalContactOrganization =
+                InternationalStringUtils.growable(internationalContactOrganization);
+    }
+
+    @Override
+    public InternationalString getInternationalContactPerson() {
+        return internationalContactPerson;
+    }
+
+    @Override
+    public void setInternationalContactPerson(InternationalString internationalContactPerson) {
+        this.internationalContactPerson =
+                InternationalStringUtils.growable(internationalContactPerson);
+    }
+
+    @Override
+    public InternationalString getInternationalContactPosition() {
+        return internationalContactPosition;
+    }
+
+    @Override
+    public void setInternationalContactPosition(InternationalString internationalContactPosition) {
+        this.internationalContactPosition =
+                InternationalStringUtils.growable(internationalContactPosition);
+    }
+
+    @Override
+    public InternationalString getInternationalContactVoice() {
+        return internationalContactVoice;
+    }
+
+    @Override
+    public void setInternationalContactVoice(InternationalString internationalContactVoice) {
+        this.internationalContactVoice =
+                InternationalStringUtils.growable(internationalContactVoice);
+    }
+
+    @Override
+    public InternationalString getInternationalOnlineResource() {
+        return internationalOnlineResource;
+    }
+
+    @Override
+    public void setInternationalOnlineResource(InternationalString internationalOnlineResource) {
+        this.internationalOnlineResource =
+                InternationalStringUtils.growable(internationalOnlineResource);
+    }
+
+    @Override
+    public InternationalString getInternationalAddressCity() {
+        return internationalAddressCity;
+    }
+
+    @Override
+    public void setInternationalAddressCity(InternationalString internationalAddressCity) {
+        this.internationalAddressCity = InternationalStringUtils.growable(internationalAddressCity);
+    }
+
+    @Override
+    public InternationalString getInternationalAddressCountry() {
+        return internationalAddressCountry;
+    }
+
+    @Override
+    public void setInternationalAddressCountry(InternationalString internationalAddressCountry) {
+        this.internationalAddressCountry =
+                InternationalStringUtils.growable(internationalAddressCountry);
+    }
+
+    @Override
+    public InternationalString getInternationalAddressDeliveryPoint() {
+        return internationalAddressDeliveryPoint;
+    }
+
+    @Override
+    public void setInternationalAddressDeliveryPoint(
+            InternationalString internationalAddressDeliveryPoint) {
+        this.internationalAddressDeliveryPoint =
+                InternationalStringUtils.growable(internationalAddressDeliveryPoint);
+    }
+
+    @Override
+    public InternationalString getInternationalAddressPostalCode() {
+        return internationalAddressPostalCode;
+    }
+
+    @Override
+    public void setInternationalAddressPostalCode(
+            InternationalString internationalAddressPostalCode) {
+        this.internationalAddressPostalCode =
+                InternationalStringUtils.growable(internationalAddressPostalCode);
+    }
+
+    @Override
+    public InternationalString getInternationalAddressState() {
+        return internationalAddressState;
+    }
+
+    @Override
+    public void setInternationalAddressState(InternationalString internationalAddressState) {
+        this.internationalAddressState =
+                InternationalStringUtils.growable(internationalAddressState);
+    }
+
+    @Override
+    public InternationalString getInternationalAddressType() {
+        return internationalAddressType;
+    }
+
+    @Override
+    public void setInternationalAddressType(InternationalString internationalAddressType) {
+        this.internationalAddressType = InternationalStringUtils.growable(internationalAddressType);
+    }
+
+    @Override
+    public InternationalString getInternationalContactEmail() {
+        return internationalContactEmail;
+    }
+
+    @Override
+    public void setInternationalContactEmail(InternationalString internationalContactEmail) {
+        this.internationalContactEmail =
+                InternationalStringUtils.growable(internationalContactEmail);
     }
 
     @Override
@@ -210,6 +399,75 @@ public class ContactInfoImpl implements ContactInfo {
         result =
                 PRIME * result
                         + ((addressDeliveryPoint == null) ? 0 : addressDeliveryPoint.hashCode());
+
+        result =
+                PRIME * result
+                        + ((internationalAddress == null) ? 0 : internationalAddress.hashCode());
+        result =
+                PRIME * result
+                        + ((internationalAddressCity == null)
+                                ? 0
+                                : internationalAddressCity.hashCode());
+        result =
+                PRIME * result
+                        + ((internationalAddressCountry == null)
+                                ? 0
+                                : internationalAddressCountry.hashCode());
+        result =
+                PRIME * result
+                        + ((internationalAddressPostalCode == null)
+                                ? 0
+                                : internationalAddressPostalCode.hashCode());
+        result =
+                PRIME * result
+                        + ((internationalAddressState == null)
+                                ? 0
+                                : internationalAddressState.hashCode());
+        result =
+                PRIME * result
+                        + ((internationalAddressType == null)
+                                ? 0
+                                : internationalAddressType.hashCode());
+        result =
+                PRIME * result
+                        + ((internationalContactEmail == null)
+                                ? 0
+                                : internationalContactEmail.hashCode());
+        result =
+                PRIME * result
+                        + ((internationalContactFacsimile == null)
+                                ? 0
+                                : internationalContactFacsimile.hashCode());
+        result =
+                PRIME * result
+                        + ((internationalContactOrganization == null)
+                                ? 0
+                                : internationalContactOrganization.hashCode());
+        result =
+                PRIME * result
+                        + ((internationalContactPerson == null)
+                                ? 0
+                                : internationalContactPerson.hashCode());
+        result =
+                PRIME * result
+                        + ((internationalContactPosition == null)
+                                ? 0
+                                : internationalContactPosition.hashCode());
+        result =
+                PRIME * result
+                        + ((internationalContactVoice == null)
+                                ? 0
+                                : internationalContactVoice.hashCode());
+        result =
+                PRIME * result
+                        + ((internationalOnlineResource == null)
+                                ? 0
+                                : internationalOnlineResource.hashCode());
+        result =
+                PRIME * result
+                        + ((internationalAddressDeliveryPoint == null)
+                                ? 0
+                                : internationalAddressDeliveryPoint.hashCode());
         return result;
     }
 
@@ -261,6 +519,62 @@ public class ContactInfoImpl implements ContactInfo {
         if (addressDeliveryPoint == null) {
             if (other.getAddressDeliveryPoint() != null) return false;
         } else if (!addressDeliveryPoint.equals(other.getAddressDeliveryPoint())) return false;
+
+        if (internationalAddress == null) {
+            if (other.getInternationalAddress() != null) return false;
+        } else if (!internationalAddress.equals(other.getInternationalAddress())) return false;
+        if (internationalAddressCity == null) {
+            if (other.getInternationalAddressCity() != null) return false;
+        } else if (!internationalAddressCity.equals(other.getInternationalAddressCity()))
+            return false;
+        if (internationalAddressCountry == null) {
+            if (other.getInternationalAddressCountry() != null) return false;
+        } else if (!internationalAddressCountry.equals(other.getInternationalAddressCountry()))
+            return false;
+        if (internationalAddressPostalCode == null) {
+            if (other.getInternationalAddressPostalCode() != null) return false;
+        } else if (!internationalAddressPostalCode.equals(
+                other.getInternationalAddressPostalCode())) return false;
+        if (internationalAddressState == null) {
+            if (other.getInternationalAddressState() != null) return false;
+        } else if (!internationalAddressState.equals(other.getInternationalAddressState()))
+            return false;
+        if (internationalAddressType == null) {
+            if (other.getInternationalAddressType() != null) return false;
+        } else if (!internationalAddressType.equals(other.getInternationalAddressType()))
+            return false;
+        if (internationalContactEmail == null) {
+            if (other.getInternationalContactEmail() != null) return false;
+        } else if (!internationalContactEmail.equals(other.getInternationalContactEmail()))
+            return false;
+        if (internationalContactFacsimile == null) {
+            if (other.getInternationalContactFacsimile() != null) return false;
+        } else if (!internationalContactFacsimile.equals(other.getInternationalContactFacsimile()))
+            return false;
+        if (internationalContactOrganization == null) {
+            if (other.getInternationalContactOrganization() != null) return false;
+        } else if (!internationalContactOrganization.equals(
+                other.getInternationalContactOrganization())) return false;
+        if (internationalContactPerson == null) {
+            if (other.getInternationalContactPerson() != null) return false;
+        } else if (!internationalContactPerson.equals(other.getInternationalContactPerson()))
+            return false;
+        if (internationalContactPosition == null) {
+            if (other.getInternationalContactPosition() != null) return false;
+        } else if (!internationalContactPosition.equals(other.getInternationalContactPosition()))
+            return false;
+        if (internationalContactVoice == null) {
+            if (other.getInternationalContactVoice() != null) return false;
+        } else if (!internationalContactVoice.equals(other.getInternationalContactVoice()))
+            return false;
+        if (internationalOnlineResource == null) {
+            if (other.getInternationalOnlineResource() != null) return false;
+        } else if (!internationalOnlineResource.equals(other.getInternationalOnlineResource()))
+            return false;
+        if (internationalAddressDeliveryPoint == null) {
+            if (other.getInternationalAddressDeliveryPoint() != null) return false;
+        } else if (!internationalAddressDeliveryPoint.equals(
+                other.getInternationalAddressDeliveryPoint())) return false;
         return true;
     }
 }

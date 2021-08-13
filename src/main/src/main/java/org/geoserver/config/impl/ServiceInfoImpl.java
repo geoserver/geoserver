@@ -16,7 +16,7 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.util.GeoServerDefaultLocale;
+import org.geoserver.util.InternationalStringUtils;
 import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.Version;
 import org.opengis.util.InternationalString;
@@ -122,9 +122,7 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     @Override
     public String getTitle() {
-        if (title == null && internationalTitle != null)
-            return internationalTitle.toString(GeoServerDefaultLocale.get());
-        else return title;
+        return InternationalStringUtils.getOrDefault(title, internationalTitle);
     }
 
     @Override
@@ -139,9 +137,7 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     @Override
     public void setInternationalTitle(InternationalString internationalTitle) {
-        if (internationalTitle != null)
-            this.internationalTitle = new GrowableInternationalString(internationalTitle);
-        else this.internationalTitle = null;
+        this.internationalTitle = InternationalStringUtils.growable(internationalTitle);
     }
 
     @Override
@@ -156,9 +152,7 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     @Override
     public String getAbstract() {
-        if (abstrct == null && internationalAbstract != null)
-            return internationalAbstract.toString(GeoServerDefaultLocale.get());
-        else return abstrct;
+        return InternationalStringUtils.getOrDefault(abstrct, internationalAbstract);
     }
 
     @Override
@@ -173,9 +167,7 @@ public class ServiceInfoImpl implements ServiceInfo {
 
     @Override
     public void setInternationalAbstract(InternationalString internationalAbstract) {
-        if (internationalAbstract != null)
-            this.internationalAbstract = new GrowableInternationalString(internationalAbstract);
-        else this.internationalAbstract = null;
+        this.internationalAbstract = InternationalStringUtils.growable(internationalAbstract);
     }
 
     @Override

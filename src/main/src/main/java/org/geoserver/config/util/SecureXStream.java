@@ -73,6 +73,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.NumberRange;
 import org.geotools.util.SimpleInternationalString;
 import org.geotools.util.Version;
@@ -167,7 +168,12 @@ public class SecureXStream extends XStream {
         allowTypeHierarchy(NumberRange.class);
         allowTypeHierarchy(CoordinateReferenceSystem.class);
         allowTypeHierarchy(Name.class);
-        allowTypes(new Class[] {Version.class, SimpleInternationalString.class});
+        allowTypes(
+                new Class[] {
+                    Version.class,
+                    SimpleInternationalString.class,
+                    GrowableInternationalString.class
+                });
         // common collection types
         allowTypes(
                 new Class[] {
@@ -182,7 +188,7 @@ public class SecureXStream extends XStream {
                     Map.class,
                     HashMap.class,
                     TreeMap.class,
-                    ConcurrentHashMap.class,
+                    ConcurrentHashMap.class
                 });
 
         // Allow classes from user defined whitelist

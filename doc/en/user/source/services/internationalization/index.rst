@@ -24,6 +24,11 @@ The editor is disabled by default and can be enabled from the i18n checkbox:
 
 .. figure:: img/i18nEditor.png
 
+In the Contact Information page all the fields can be internationalized:
+
+.. figure:: img/contactInfo_i18n.png
+
+
 GetCapabilities
 ===============
 

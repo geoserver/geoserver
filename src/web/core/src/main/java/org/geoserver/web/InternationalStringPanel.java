@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.web.data.resource;
+package org.geoserver.web;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +18,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.IFormSubmitter;
-import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.FormComponentFeedbackBorder;
@@ -30,6 +29,7 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
+import org.geoserver.web.data.resource.LocalesDropdown;
 import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -76,7 +76,8 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
 
     private void setObjectIfMissing(
             IModel<GrowableInternationalString> model, C nonInternationalComponent) {
-        if (model.getObject() == null) {
+        GrowableInternationalString obj = model.getObject();
+        if (obj == null || obj.getLocales().isEmpty()) {
             if (nonInternationalComponent.getModelObject() != null) {
                 model.setObject(
                         new GrowableInternationalString(
@@ -300,15 +301,14 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
     public void updateModel() {
         if (isSaveSubmit()) {
             if (nonInternationalComponent.isVisible()) {
-                growableModel.setObject(new GrowableInternationalString());
+                growableModel.setObject(null);
                 provider.setInternationalEntries(new ArrayList<>());
-                nonInternationalComponent.modelChanged();
             } else {
                 nonInternationalComponent.clearInput();
                 nonInternationalComponent.setConvertedInput(null);
                 nonInternationalComponent.setModelObject(null);
-                nonInternationalComponent.modelChanged();
             }
+            nonInternationalComponent.modelChanged();
         }
         String errorMsg = validateNullLocale();
         if (errorMsg != null) {
@@ -321,8 +321,8 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
     private boolean isSaveSubmit() {
         boolean result = false;
         IFormSubmitter submitBtn = getForm().findSubmittingButton();
-        if (submitBtn != null && submitBtn instanceof SubmitLink) {
-            SubmitLink submitLink = (SubmitLink) submitBtn;
+        if (submitBtn != null && submitBtn instanceof Component) {
+            Component submitLink = (Component) submitBtn;
             String id = submitLink.getId();
             result = id.equals("submit") || id.equals("save");
         }

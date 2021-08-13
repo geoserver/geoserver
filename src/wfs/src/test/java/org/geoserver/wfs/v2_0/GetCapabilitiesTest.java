@@ -26,8 +26,10 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
+import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.impl.ContactInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.MockTestData;
 import org.geoserver.data.test.SystemTestData;
@@ -813,5 +815,90 @@ public class GetCapabilitiesTest extends WFS20TestSupport {
 
         assertXpathEvaluatesTo(
                 "src/test/resources/geoserver/wfs", "//ows:DCP/ows:HTTP/ows:Get/@xlink:href", dom);
+    }
+
+    @Test
+    public void testInternationalContentContact() throws Exception {
+        ContactInfo old = getGeoServer().getSettings().getContact();
+        try {
+            GrowableInternationalString person = new GrowableInternationalString();
+            person.add(Locale.ITALIAN, "I'm an italian person");
+            person.add(Locale.ENGLISH, "I'm an english person");
+            ContactInfo contactInfo = new ContactInfoImpl();
+            contactInfo.setInternationalContactPerson(person);
+
+            GrowableInternationalString org = new GrowableInternationalString();
+            org.add(Locale.ITALIAN, "I'm an italian organization");
+            org.add(Locale.ENGLISH, "I'm an english organization");
+            contactInfo.setInternationalContactOrganization(org);
+
+            GrowableInternationalString email = new GrowableInternationalString();
+            email.add(Locale.ITALIAN, "italian@person.it");
+            email.add(Locale.ENGLISH, "english@person.com");
+            contactInfo.setInternationalContactEmail(email);
+
+            GrowableInternationalString position = new GrowableInternationalString();
+            position.add(Locale.ITALIAN, "Cartografo");
+            position.add(Locale.ENGLISH, "Cartographer");
+            contactInfo.setInternationalContactPosition(position);
+
+            GrowableInternationalString tel = new GrowableInternationalString();
+            tel.add(Locale.ITALIAN, "0558077333");
+            tel.add(Locale.ENGLISH, "02304566607");
+            contactInfo.setInternationalContactVoice(tel);
+
+            GrowableInternationalString fax = new GrowableInternationalString();
+            fax.add(Locale.ITALIAN, "0557777333");
+            fax.add(Locale.ENGLISH, "0023030948");
+            contactInfo.setInternationalContactFacsimile(fax);
+
+            GrowableInternationalString address = new GrowableInternationalString();
+            address.add(Locale.ITALIAN, "indirizzo");
+            address.add(Locale.ENGLISH, "address");
+            contactInfo.setInternationalAddressDeliveryPoint(address);
+
+            GrowableInternationalString country = new GrowableInternationalString();
+            country.add(Locale.ITALIAN, "Italia");
+            country.add(Locale.ENGLISH, "England");
+            contactInfo.setInternationalAddressCountry(country);
+
+            GrowableInternationalString city = new GrowableInternationalString();
+            city.add(Locale.ITALIAN, "Roma");
+            city.add(Locale.ENGLISH, "London");
+            contactInfo.setInternationalAddressCity(city);
+
+            GrowableInternationalString postalCode = new GrowableInternationalString();
+            postalCode.add(Locale.ITALIAN, "50021");
+            postalCode.add(Locale.ENGLISH, "34234");
+            contactInfo.setInternationalAddressPostalCode(postalCode);
+
+            GeoServerInfo global = getGeoServer().getGlobal();
+            global.getSettings().setContact(contactInfo);
+            getGeoServer().save(global);
+
+            Document doc =
+                    getAsDOM(
+                            "wfs?service=WFS&request=getCapabilities&version=2.0.0&AcceptLanguages=en");
+            String serviceProv = "//ows:ServiceProvider";
+            String pers = serviceProv + "/ows:ServiceContact";
+            String contactInf = pers + "/ows:ContactInfo";
+            String addrInfo = contactInf + "/ows:Address";
+            assertXpathEvaluatesTo(
+                    "I'm an english organization", serviceProv + "/ows:ProviderName", doc);
+            assertXpathEvaluatesTo("I'm an english person", pers + "/ows:IndividualName", doc);
+            assertXpathEvaluatesTo("Cartographer", pers + "/ows:PositionName", doc);
+            assertXpathEvaluatesTo("02304566607", contactInf + "/ows:Phone/ows:Voice", doc);
+            assertXpathEvaluatesTo("0023030948", contactInf + "/ows:Phone/ows:Facsimile", doc);
+            assertXpathEvaluatesTo(
+                    "english@person.com", addrInfo + "/ows:ElectronicMailAddress", doc);
+            assertXpathEvaluatesTo("address", addrInfo + "/ows:DeliveryPoint", doc);
+            assertXpathEvaluatesTo("London", addrInfo + "/ows:City", doc);
+            assertXpathEvaluatesTo("England", addrInfo + "/ows:Country", doc);
+            assertXpathEvaluatesTo("34234", addrInfo + "/ows:PostalCode", doc);
+        } finally {
+            GeoServerInfo global = getGeoServer().getGlobal();
+            global.getSettings().setContact(old);
+            getGeoServer().save(global);
+        }
     }
 }

@@ -19,7 +19,7 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ProjectionPolicy;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
-import org.geoserver.util.GeoServerDefaultLocale;
+import org.geoserver.util.InternationalStringUtils;
 import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -167,9 +167,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     @Override
     public String getTitle() {
-        if (title == null && internationalTitle != null) {
-            return internationalTitle.toString(GeoServerDefaultLocale.get());
-        } else return title;
+        return InternationalStringUtils.getOrDefault(title, internationalTitle);
     }
 
     @Override
@@ -189,9 +187,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     @Override
     public String getAbstract() {
-        if (_abstract == null && internationalAbstract != null)
-            return internationalAbstract.toString(GeoServerDefaultLocale.get());
-        else return _abstract;
+        return InternationalStringUtils.getOrDefault(_abstract, internationalAbstract);
     }
 
     @Override
@@ -455,9 +451,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     @Override
     public void setInternationalTitle(InternationalString internationalTitle) {
-        if (internationalTitle != null)
-            this.internationalTitle = new GrowableInternationalString(internationalTitle);
-        else this.internationalTitle = null;
+        this.internationalTitle = InternationalStringUtils.growable(internationalTitle);
     }
 
     @Override
@@ -467,9 +461,7 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
 
     @Override
     public void setInternationalAbstract(InternationalString internationalAbstract) {
-        if (internationalAbstract != null)
-            this.internationalAbstract = new GrowableInternationalString(internationalAbstract);
-        else this.internationalAbstract = null;
+        this.internationalAbstract = InternationalStringUtils.growable(internationalAbstract);
     }
 
     @Override

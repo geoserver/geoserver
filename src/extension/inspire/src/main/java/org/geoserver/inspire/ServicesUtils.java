@@ -10,9 +10,11 @@ import static org.geoserver.inspire.InspireSchema.COMMON_NAMESPACE;
 import static org.geoserver.inspire.InspireSchema.VS_NAMESPACE;
 import static org.geoserver.inspire.LanguagesDispatcherCallback.LANGUAGE_PARAM;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import org.geoserver.ExtendedCapabilitiesProvider;
 import org.geoserver.ExtendedCapabilitiesProvider.Translator;
 import org.geoserver.catalog.MetadataMap;
@@ -109,11 +111,39 @@ public final class ServicesUtils {
         if (kvpDispatcher != null) {
             if (kvpDispatcher.containsKey(LANGUAGE_PARAM)) {
                 Object reqLang = kvpDispatcher.get(LANGUAGE_PARAM);
-                if (reqLang != null && languages.contains(reqLang.toString()))
-                    value = reqLang.toString();
+                value = getIfSupported(reqLang, languages);
             }
         }
         if (value == null) value = defaultLanguage;
         return value;
+    }
+
+    // Check if the requested languages is among the supported ones.
+    private static String getIfSupported(Object reqLang, List<String> inspireLangs) {
+        String value = null;
+        if (reqLang != null) {
+            String inspireLang = mapToInspireLanguage(reqLang.toString());
+            if (inspireLangs.contains(inspireLang)) value = inspireLang;
+        }
+        return value;
+    }
+
+    // Map the provided ISO lang to the corresponding INSPIRE one
+    // If none is matched return the lang parameter.
+    private static String mapToInspireLanguage(String lang) {
+        try {
+            Properties props = InspireDirectoryManager.get().getLanguagesMappings();
+            String result = lang;
+            for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                String key = entry.getKey().toString();
+                if (entry.getValue().equals(lang)) {
+                    result = key;
+                    break;
+                }
+            }
+            return result;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

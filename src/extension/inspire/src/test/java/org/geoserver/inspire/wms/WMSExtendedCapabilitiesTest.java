@@ -17,13 +17,16 @@ import static org.geoserver.inspire.InspireTestSupport.assertSchemaLocationConta
 import static org.geoserver.inspire.InspireTestSupport.clearInspireMetadata;
 import static org.junit.Assert.assertEquals;
 
+import java.util.Locale;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.inspire.ServicesTestSupport;
 import org.geoserver.wms.WMSInfo;
+import org.geotools.util.GrowableInternationalString;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
@@ -123,5 +126,111 @@ public class WMSExtendedCapabilitiesTest extends ServicesTestSupport {
         assertEquals("Number of DefaultLanguage elements", 1, nodeList.getLength());
         nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguage");
         assertEquals("Number of Supported Languages", 2, nodeList.getLength());
+    }
+
+    @Test
+    public void testResponseLanguageMatchesRequested() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
+        try {
+            ServiceInfo wmsInfo = getGeoServer().getService(WMSInfo.class);
+            GrowableInternationalString title = new GrowableInternationalString();
+            title.add(Locale.ITALIAN, "italian title");
+            wmsInfo.setInternationalTitle(title);
+            getGeoServer().save(wmsInfo);
+            final MetadataMap metadata = serviceInfo.getMetadata();
+            clearInspireMetadata(metadata);
+            metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+            metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+            metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+            metadata.put(LANGUAGE.key, "fre");
+            metadata.put(OTHER_LANGUAGES.key, "ita,eng");
+            getGeoServer().save(serviceInfo);
+            final Document dom = getAsDOM(WMS_1_3_0_GETCAPREQUEST + "&LANGUAGE=ita");
+            NodeList nodeList = dom.getElementsByTagNameNS(VS_NAMESPACE, "ExtendedCapabilities");
+            final Element extendedCaps = (Element) nodeList.item(0);
+
+            final Element suppLangs =
+                    (Element)
+                            extendedCaps
+                                    .getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
+                                    .item(0);
+            String language = null;
+            for (int i = 0; i < suppLangs.getChildNodes().getLength(); i++) {
+                Node el = suppLangs.getChildNodes().item(i);
+                if (isLangNode(el)) language = el.getTextContent();
+            }
+            assertEquals("ita", language);
+        } finally {
+            getGeoServer().save(serviceInfo);
+        }
+    }
+
+    @Test
+    public void testResponseLanguageIsDefault() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
+        try {
+            ServiceInfo wmsInfo = getGeoServer().getService(WMSInfo.class);
+            GrowableInternationalString title = new GrowableInternationalString();
+            title.add(Locale.GERMAN, "de title");
+            wmsInfo.setInternationalTitle(title);
+            getGeoServer().save(wmsInfo);
+            final MetadataMap metadata = serviceInfo.getMetadata();
+            clearInspireMetadata(metadata);
+            metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+            metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+            metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+            metadata.put(LANGUAGE.key, "fre");
+            metadata.put(OTHER_LANGUAGES.key, "ita,eng");
+            getGeoServer().save(serviceInfo);
+            final Document dom = getAsDOM(WMS_1_3_0_GETCAPREQUEST + "&LANGUAGE=ger");
+            NodeList nodeList = dom.getElementsByTagNameNS(VS_NAMESPACE, "ExtendedCapabilities");
+            final Element extendedCaps = (Element) nodeList.item(0);
+
+            final Element suppLangs =
+                    (Element)
+                            extendedCaps
+                                    .getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
+                                    .item(0);
+            String language = null;
+            for (int i = 0; i < suppLangs.getChildNodes().getLength(); i++) {
+                Node el = suppLangs.getChildNodes().item(i);
+                if (isLangNode(el)) language = el.getTextContent();
+            }
+            assertEquals("fre", language);
+        } finally {
+            getGeoServer().save(serviceInfo);
+        }
+    }
+
+    @Test
+    public void testResponseLanguageIsDefault2() throws Exception {
+        final ServiceInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
+        final MetadataMap metadata = serviceInfo.getMetadata();
+        clearInspireMetadata(metadata);
+        metadata.put(CREATE_EXTENDED_CAPABILITIES.key, true);
+        metadata.put(SERVICE_METADATA_URL.key, "http://foo.com?bar=baz");
+        metadata.put(SERVICE_METADATA_TYPE.key, "application/vnd.iso.19139+xml");
+        metadata.put(LANGUAGE.key, "fre");
+        metadata.put(OTHER_LANGUAGES.key, "ita,eng");
+        getGeoServer().save(serviceInfo);
+        final Document dom = getAsDOM(WMS_1_3_0_GETCAPREQUEST);
+        NodeList nodeList = dom.getElementsByTagNameNS(VS_NAMESPACE, "ExtendedCapabilities");
+        final Element extendedCaps = (Element) nodeList.item(0);
+
+        final Element suppLangs =
+                (Element)
+                        extendedCaps
+                                .getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
+                                .item(0);
+        String language = null;
+        for (int i = 0; i < suppLangs.getChildNodes().getLength(); i++) {
+            Node el = suppLangs.getChildNodes().item(i);
+            if (isLangNode(el)) language = el.getTextContent();
+        }
+        assertEquals("fre", language);
+    }
+
+    private boolean isLangNode(Node el) {
+        return el != null && el.getLocalName() != null && el.getLocalName().equals("Language");
     }
 }

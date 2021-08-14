@@ -6,6 +6,7 @@ package org.geoserver.wps;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -107,15 +108,7 @@ public class GetExecutionsTransformer extends TransformerBase {
         public void encode(Object o) throws IllegalArgumentException {
             // register namespaces provided by extended capabilities
             NamespaceSupport namespaces = getNamespaceSupport();
-            namespaces.declarePrefix("wps", "http://www.opengis.net/wps/1.0.0");
-            namespaces.declarePrefix("wfs", "http://www.opengis.net/wfs");
-            namespaces.declarePrefix("wcs", "http://www.opengis.net/wcs/1.1.1");
-            namespaces.declarePrefix("ogc", "http://www.opengis.net/ogc");
-            namespaces.declarePrefix("ows", "http://www.opengis.net/ows/1.1");
-            namespaces.declarePrefix("gml", "http://www.opengis.net/gml/3.2");
-            namespaces.declarePrefix("xs", "http://www.w3.org/2001/XMLSchema");
-            namespaces.declarePrefix("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-            namespaces.declarePrefix("xlink", "http://www.w3.org/1999/xlink");
+            declarePrefixes(namespaces);
 
             final AttributesImpl attributes = new AttributesImpl();
             registerNamespaces(getNamespaceSupport(), attributes);
@@ -144,154 +137,150 @@ public class GetExecutionsTransformer extends TransformerBase {
             start("wps:GetExecutionsResponse", getExecutionsAttributes);
             for (ExecutionStatus status : executions) {
                 ExecuteType execute = status.getRequest();
-                try {
-                    if (execute == null) {
-                        execute = resources.getStoredRequestObject(status.getExecutionId());
-                    }
-                    if (execute == null) {
-                        throw new WPSException(
-                                "Could not locate the original request for execution id: "
-                                        + status.getExecutionId());
-                    } else {
-                        ExecuteResponseBuilder builder =
-                                new ExecuteResponseBuilder(execute, ctx, status);
-                        ExecuteResponseType responseType = builder.build();
-
-                        start("wps:ExecuteResponse");
-                        final AttributesImpl processAttributes = new AttributesImpl();
-                        processAttributes.addAttribute(
-                                "",
-                                "wps:processVersion",
-                                "wps:processVersion",
-                                "",
-                                responseType.getProcess().getProcessVersion());
-                        start("wps:Process", processAttributes);
-                        element(
-                                "ows:Identifier",
-                                responseType.getProcess().getIdentifier().getValue());
-                        element("ows:Title", responseType.getProcess().getTitle().getValue());
-                        element("ows:Abstract", responseType.getProcess().getAbstract().getValue());
-                        end("wps:Process");
-
-                        final AttributesImpl statusAttributes = new AttributesImpl();
-                        if (status.getCreationTime() != null) {
-                            statusAttributes.addAttribute(
-                                    "",
-                                    "creationTime",
-                                    "creationTime",
-                                    "",
-                                    responseType.getStatus().getCreationTime().toString());
-                        }
-                        if (status.getCompletionTime() != null) {
-                            statusAttributes.addAttribute(
-                                    "",
-                                    "completionTime",
-                                    "completionTime",
-                                    "",
-                                    Converters.convert(
-                                                    status.getCompletionTime(),
-                                                    XMLGregorianCalendar.class)
-                                            .toString());
-                        }
-                        if (status.getLastUpdated() != null) {
-                            statusAttributes.addAttribute(
-                                    "",
-                                    "lastUpdated",
-                                    "lastUpdated",
-                                    "",
-                                    Converters.convert(
-                                                    status.getLastUpdated(),
-                                                    XMLGregorianCalendar.class)
-                                            .toString());
-                        }
-                        start("wps:Status", statusAttributes);
-                        element("wps:JobID", status.getExecutionId());
-                        element(
-                                "wps:Identifier",
-                                responseType.getProcess().getIdentifier().getValue());
-                        element("wps:Owner", status.getUserName());
-                        element("wps:Status", status.getPhase().name());
-                        if (status.getEstimatedCompletion() != null) {
-                            element(
-                                    "wps:EstimatedCompletion",
-                                    Converters.convert(
-                                                    status.getEstimatedCompletion(),
-                                                    XMLGregorianCalendar.class)
-                                            .toString());
-                        }
-                        element(
-                                "wps:ExpirationDate",
-                                Converters.convert(
-                                                status.getExpirationDate(),
-                                                XMLGregorianCalendar.class)
-                                        .toString());
-                        element(
-                                "wps:NextPoll",
-                                Converters.convert(status.getNextPoll(), XMLGregorianCalendar.class)
-                                        .toString());
-                        element("wps:PercentCompleted", String.valueOf(status.getProgress()));
-                        if (status.getException() != null) {
-                            StringBuffer stackTrace = new StringBuffer();
-                            EList exceptions =
-                                    responseType
-                                            .getStatus()
-                                            .getProcessFailed()
-                                            .getExceptionReport()
-                                            .getException();
-                            for (Object ex : exceptions) {
-                                if (ex instanceof ExceptionType) {
-                                    stackTrace.append(((ExceptionType) ex).getExceptionCode());
-                                    stackTrace.append(": ");
-                                    stackTrace.append(((ExceptionType) ex).getExceptionText());
-                                    stackTrace.append("\n");
-                                }
-                            }
-                            element("wps:ProcessFailed", stackTrace.toString());
-                        } else if (status.getPhase() == ProcessState.QUEUED) {
-                            element(
-                                    "wps:ProcessAccepted",
-                                    responseType.getStatus().getProcessAccepted());
-                        } else if (status.getPhase() == ProcessState.RUNNING) {
-                            element(
-                                    "wps:ProcessStarted",
-                                    responseType.getStatus().getProcessStarted().getValue());
-                        } else {
-                            element(
-                                    "wps:ProcessSucceeded",
-                                    responseType.getStatus().getProcessSucceeded());
-                        }
-
-                        // status location, if asynch
-                        if (responseType.getStatusLocation() != null) {
-                            element("wps:StatusLocation", responseType.getStatusLocation());
-                        }
-
-                        // lineage, should be included only if requested, the response should
-                        // contain it even if the process is not done computing. From the spec:
-                        // * If lineage is "true" the server shall include in the execute response a
-                        // complete copy of the DataInputs and OutputDefinition elements _as
-                        // received in the execute request_.
-                        // *If lineage is "false" then/ these elements shall be omitted from the
-                        // response
-                        if (responseType.getDataInputs() != null
-                                && responseType.getDataInputs().getInput().size() > 0) {
-                            EList inputs = responseType.getDataInputs().getInput();
-                            encodeDataInputs(status, inputs, attributes);
-                        }
-
-                        if (responseType.getOutputDefinitions() != null
-                                && responseType.getOutputDefinitions().getOutput().size() > 0) {
-                            EList outputs = responseType.getOutputDefinitions().getOutput();
-                            encodeDataOutputs(status, outputs, attributes);
-                        }
-                        end("wps:Status");
-                        end("wps:ExecuteResponse");
-                    }
-                } catch (IOException e) {
-                    throw new WPSException(Executions.INTERNAL_SERVER_ERROR_CODE, e);
-                }
+                encodeExecute(attributes, status, execute);
             }
             end("wps:GetExecutionsResponse");
+        }
+
+        private void encodeExecute(
+                AttributesImpl attributes, ExecutionStatus status, ExecuteType execute) {
+            try {
+                if (execute == null) {
+                    execute = resources.getStoredRequestObject(status.getExecutionId());
+                }
+                if (execute == null) {
+                    throw new WPSException(
+                            "Could not locate the original request for execution id: "
+                                    + status.getExecutionId());
+                } else {
+                    ExecuteResponseBuilder builder =
+                            new ExecuteResponseBuilder(execute, ctx, status);
+                    ExecuteResponseType responseType = builder.build();
+
+                    start("wps:ExecuteResponse");
+                    final AttributesImpl processAttributes = new AttributesImpl();
+                    addAttribute(
+                            processAttributes,
+                            "wps:processVersion",
+                            responseType.getProcess().getProcessVersion());
+                    start("wps:Process", processAttributes);
+                    element("ows:Identifier", responseType.getProcess().getIdentifier().getValue());
+                    element("ows:Title", responseType.getProcess().getTitle().getValue());
+                    element("ows:Abstract", responseType.getProcess().getAbstract().getValue());
+                    end("wps:Process");
+
+                    final AttributesImpl statusAttributes = new AttributesImpl();
+                    if (status.getCreationTime() != null) {
+                        addAttribute(
+                                statusAttributes,
+                                "creationTime",
+                                responseType.getStatus().getCreationTime().toString());
+                    }
+                    if (status.getCompletionTime() != null) {
+                        addAttribute(
+                                statusAttributes,
+                                "completionTime",
+                                getISOTme(status.getCompletionTime()));
+                    }
+                    if (status.getLastUpdated() != null) {
+                        addAttribute(
+                                statusAttributes,
+                                "lastUpdated",
+                                getISOTme(status.getLastUpdated()));
+                    }
+                    start("wps:Status", statusAttributes);
+                    element("wps:JobID", status.getExecutionId());
+                    element("wps:Identifier", responseType.getProcess().getIdentifier().getValue());
+                    element("wps:Owner", status.getUserName());
+                    element("wps:Status", status.getPhase().name());
+                    if (status.getEstimatedCompletion() != null) {
+                        element(
+                                "wps:EstimatedCompletion",
+                                getISOTme(status.getEstimatedCompletion()));
+                    }
+                    element("wps:ExpirationDate", getISOTme(status.getExpirationDate()));
+                    element("wps:NextPoll", getISOTme(status.getNextPoll()));
+                    element("wps:PercentCompleted", String.valueOf(status.getProgress()));
+                    if (status.getException() != null) {
+                        StringBuffer stackTrace = new StringBuffer();
+                        EList exceptions =
+                                responseType
+                                        .getStatus()
+                                        .getProcessFailed()
+                                        .getExceptionReport()
+                                        .getException();
+                        for (Object ex : exceptions) {
+                            if (ex instanceof ExceptionType) {
+                                stackTrace.append(((ExceptionType) ex).getExceptionCode());
+                                stackTrace.append(": ");
+                                stackTrace.append(((ExceptionType) ex).getExceptionText());
+                                stackTrace.append("\n");
+                            }
+                        }
+                        element("wps:ProcessFailed", stackTrace.toString());
+                    } else if (status.getPhase() == ProcessState.QUEUED) {
+                        element(
+                                "wps:ProcessAccepted",
+                                responseType.getStatus().getProcessAccepted());
+                    } else if (status.getPhase() == ProcessState.RUNNING) {
+                        element(
+                                "wps:ProcessStarted",
+                                responseType.getStatus().getProcessStarted().getValue());
+                    } else {
+                        element(
+                                "wps:ProcessSucceeded",
+                                responseType.getStatus().getProcessSucceeded());
+                    }
+
+                    // status location, if asynch
+                    if (responseType.getStatusLocation() != null) {
+                        element("wps:StatusLocation", responseType.getStatusLocation());
+                    }
+
+                    // lineage, should be included only if requested, the response should
+                    // contain it even if the process is not done computing. From the spec:
+                    // * If lineage is "true" the server shall include in the execute response a
+                    // complete copy of the DataInputs and OutputDefinition elements _as
+                    // received in the execute request_.
+                    // *If lineage is "false" then/ these elements shall be omitted from the
+                    // response
+                    if (responseType.getDataInputs() != null
+                            && responseType.getDataInputs().getInput().size() > 0) {
+                        EList inputs = responseType.getDataInputs().getInput();
+                        encodeDataInputs(status, inputs, attributes);
+                    }
+
+                    if (responseType.getOutputDefinitions() != null
+                            && responseType.getOutputDefinitions().getOutput().size() > 0) {
+                        EList outputs = responseType.getOutputDefinitions().getOutput();
+                        encodeDataOutputs(status, outputs, attributes);
+                    }
+                    end("wps:Status");
+                    end("wps:ExecuteResponse");
+                }
+            } catch (IOException e) {
+                throw new WPSException(Executions.INTERNAL_SERVER_ERROR_CODE, e);
+            }
+        }
+
+        private void addAttribute(AttributesImpl atts, String name, String value) {
+            atts.addAttribute("", name, name, "", value);
+        }
+
+        private String getISOTme(Date completionTime) {
+            return Converters.convert(completionTime, XMLGregorianCalendar.class).toString();
+        }
+
+        private void declarePrefixes(NamespaceSupport namespaces) {
+            namespaces.declarePrefix("wps", "http://www.opengis.net/wps/1.0.0");
+            namespaces.declarePrefix("wfs", "http://www.opengis.net/wfs");
+            namespaces.declarePrefix("wcs", "http://www.opengis.net/wcs/1.1.1");
+            namespaces.declarePrefix("ogc", "http://www.opengis.net/ogc");
+            namespaces.declarePrefix("ows", "http://www.opengis.net/ows/1.1");
+            namespaces.declarePrefix("gml", "http://www.opengis.net/gml/3.2");
+            namespaces.declarePrefix("xs", "http://www.w3.org/2001/XMLSchema");
+            namespaces.declarePrefix("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+            namespaces.declarePrefix("xlink", "http://www.w3.org/1999/xlink");
         }
 
         /** Encodes {@link ExecuteType} to XML */
@@ -378,156 +367,7 @@ public class GetExecutionsTransformer extends TransformerBase {
 
                     InputReferenceType reference = ii.getReference();
                     if (reference != null) {
-                        final AttributesImpl inputAttributes = new AttributesImpl();
-                        if (reference.getHref() != null) {
-                            inputAttributes.addAttribute(
-                                    "", "xlink:href", "xlink:href", "", reference.getHref());
-                        }
-                        if (reference.getMimeType() != null) {
-                            inputAttributes.addAttribute(
-                                    "", "mimeType", "mimeType", "", reference.getMimeType());
-                        }
-                        if (reference.getSchema() != null) {
-                            inputAttributes.addAttribute(
-                                    "", "schema", "schema", "", reference.getSchema());
-                        }
-                        if (reference.getEncoding() != null) {
-                            inputAttributes.addAttribute(
-                                    "", "encoding", "encoding", "", reference.getSchema());
-                        }
-                        if (reference.getMethod() != null) {
-                            inputAttributes.addAttribute(
-                                    "", "method", "method", "", reference.getMethod().getName());
-                        }
-                        start("wps:Reference", inputAttributes);
-                        if (reference.getBody() != null) {
-                            start("wps:Body");
-                            // get the input descriptors
-                            Name processName = status.getProcessName();
-                            ProcessFactory pf =
-                                    GeoServerProcessors.createProcessFactory(processName, true);
-                            final Map<String, Parameter<?>> parameters =
-                                    pf.getParameterInfo(processName);
-                            String inputId = ii.getIdentifier().getValue();
-                            List<ProcessParameterIO> ppios =
-                                    ProcessParameterIO.findDecoder(parameters.get(inputId), ctx);
-                            if (ppios != null && !ppios.isEmpty()) {
-                                for (ProcessParameterIO ppio : ppios) {
-                                    if (ppio.isComplex(parameters.get(inputId), ctx)) {
-                                        try {
-                                            Object out =
-                                                    ((ComplexPPIO) ppio)
-                                                            .decode(reference.getBody());
-                                            if (out instanceof ExecuteType) {
-                                                ExecuteType exec = (ExecuteType) out;
-                                                start("wps:ComplexData", inputAttributes);
-                                                encodeExecuteRequest(status, exec, attributes);
-                                                end("wps:ComplexData");
-                                            } else if (out instanceof GetFeatureType) {
-                                                GetFeatureType features = (GetFeatureType) out;
-                                                final AttributesImpl getFeatureAttributes =
-                                                        new AttributesImpl(inputAttributes);
-                                                if (features.getService() != null) {
-                                                    getFeatureAttributes.addAttribute(
-                                                            "",
-                                                            "service",
-                                                            "service",
-                                                            "",
-                                                            features.getService());
-                                                }
-                                                if (features.getVersion() != null) {
-                                                    getFeatureAttributes.addAttribute(
-                                                            "",
-                                                            "version",
-                                                            "version",
-                                                            "",
-                                                            features.getVersion());
-                                                }
-                                                if (features.getBaseUrl() != null) {
-                                                    getFeatureAttributes.addAttribute(
-                                                            "",
-                                                            "baseUrl",
-                                                            "baseUrl",
-                                                            "",
-                                                            features.getBaseUrl());
-                                                }
-                                                if (features.getOutputFormat() != null) {
-                                                    getFeatureAttributes.addAttribute(
-                                                            "",
-                                                            "outputFormat",
-                                                            "outputFormat",
-                                                            "",
-                                                            features.getOutputFormat());
-                                                }
-                                                if (features.getMaxFeatures() != null) {
-                                                    getFeatureAttributes.addAttribute(
-                                                            "",
-                                                            "maxFeatures",
-                                                            "maxFeatures",
-                                                            "",
-                                                            String.valueOf(
-                                                                    features.getMaxFeatures()));
-                                                }
-                                                start("wfs:GetFeature", getFeatureAttributes);
-                                                EList queries = features.getQuery();
-                                                if (queries != null && !queries.isEmpty()) {
-                                                    for (Object query : queries) {
-                                                        QueryType qt = (QueryType) query;
-                                                        final AttributesImpl queryTypeAttributes =
-                                                                new AttributesImpl(inputAttributes);
-                                                        if (qt.getTypeName() != null
-                                                                && !qt.getTypeName().isEmpty()) {
-                                                            queryTypeAttributes.addAttribute(
-                                                                    "",
-                                                                    "typeName",
-                                                                    "typeName",
-                                                                    "",
-                                                                    qt.getTypeName()
-                                                                            .get(0)
-                                                                            .toString());
-                                                        }
-                                                        start("wfs:Query", queryTypeAttributes);
-                                                        Filter filter = qt.getFilter();
-                                                        if (filter != null) {
-                                                            FilterPPIO fppio =
-                                                                    new FilterPPIO.Filter11();
-                                                            fppio.encode(filter, contentHandler);
-                                                        }
-                                                        end("wfs:Query");
-                                                    }
-                                                }
-                                                end("wfs:GetFeature");
-                                            } else {
-                                                element(
-                                                        "wps:ComplexData",
-                                                        "<![CDATA[" + out.toString() + "]]",
-                                                        inputAttributes);
-                                            }
-                                        } catch (Exception e) {
-                                            LOGGER.log(Level.WARNING, "", e);
-                                        }
-                                    } else {
-                                        if (ppio instanceof LiteralPPIO) {
-                                            try {
-                                                element(
-                                                        "wps:LiteralData",
-                                                        ((LiteralPPIO) ppio)
-                                                                .encode(reference.getBody()));
-                                            } catch (Exception e) {
-                                                LOGGER.log(Level.WARNING, "", e);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            end("wps:Body");
-                        }
-                        if (reference.getBodyReference() != null) {
-                            element(
-                                    "wps:BodyReference",
-                                    ii.getReference().getBodyReference().getHref());
-                        }
-                        end("wps:Reference");
+                        encodeReference(status, attributes, ii, reference);
                     }
 
                     DataType data = ii.getData();
@@ -600,11 +440,9 @@ public class GetExecutionsTransformer extends TransformerBase {
 
                         if (data.getBoundingBoxData() != null) {
                             if (data.getBoundingBoxData().getDimensions() != null) {
-                                inputAttributes.addAttribute(
-                                        "",
+                                addAttribute(
+                                        inputAttributes,
                                         "dimensions",
-                                        "dimensions",
-                                        "",
                                         data.getBoundingBoxData().getDimensions().toString());
                             }
                             if (data.getBoundingBoxData().getCrs() != null) {
@@ -633,6 +471,140 @@ public class GetExecutionsTransformer extends TransformerBase {
                 }
             }
             end("wps:DataInputs");
+        }
+
+        private void encodeReference(
+                ExecutionStatus status,
+                AttributesImpl attributes,
+                InputType ii,
+                InputReferenceType reference) {
+            final AttributesImpl inputAttributes = new AttributesImpl();
+            if (reference.getHref() != null) {
+                inputAttributes.addAttribute(
+                        "", "xlink:href", "xlink:href", "", reference.getHref());
+            }
+            if (reference.getMimeType() != null) {
+                inputAttributes.addAttribute(
+                        "", "mimeType", "mimeType", "", reference.getMimeType());
+            }
+            if (reference.getSchema() != null) {
+                inputAttributes.addAttribute("", "schema", "schema", "", reference.getSchema());
+            }
+            if (reference.getEncoding() != null) {
+                inputAttributes.addAttribute("", "encoding", "encoding", "", reference.getSchema());
+            }
+            if (reference.getMethod() != null) {
+                inputAttributes.addAttribute(
+                        "", "method", "method", "", reference.getMethod().getName());
+            }
+            start("wps:Reference", inputAttributes);
+            if (reference.getBody() != null) {
+                start("wps:Body");
+                // get the input descriptors
+                Name processName = status.getProcessName();
+                ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, true);
+                final Map<String, Parameter<?>> parameters = pf.getParameterInfo(processName);
+                String inputId = ii.getIdentifier().getValue();
+                List<ProcessParameterIO> ppios =
+                        ProcessParameterIO.findDecoder(parameters.get(inputId), ctx);
+                if (ppios != null && !ppios.isEmpty()) {
+                    for (ProcessParameterIO ppio : ppios) {
+                        if (ppio.isComplex(parameters.get(inputId), ctx)) {
+                            encodeComplexInput(
+                                    status,
+                                    attributes,
+                                    reference,
+                                    inputAttributes,
+                                    (ComplexPPIO) ppio);
+                        } else {
+                            if (ppio instanceof LiteralPPIO) {
+                                try {
+                                    element(
+                                            "wps:LiteralData",
+                                            ((LiteralPPIO) ppio).encode(reference.getBody()));
+                                } catch (Exception e) {
+                                    LOGGER.log(Level.WARNING, "", e);
+                                }
+                            }
+                        }
+                    }
+                }
+                end("wps:Body");
+            }
+            if (reference.getBodyReference() != null) {
+                element("wps:BodyReference", ii.getReference().getBodyReference().getHref());
+            }
+            end("wps:Reference");
+        }
+
+        private void encodeComplexInput(
+                ExecutionStatus status,
+                AttributesImpl attributes,
+                InputReferenceType reference,
+                AttributesImpl inputAttributes,
+                ComplexPPIO ppio) {
+            try {
+                Object out = ppio.decode(reference.getBody());
+                if (out instanceof ExecuteType) {
+                    ExecuteType exec = (ExecuteType) out;
+                    start("wps:ComplexData", inputAttributes);
+                    encodeExecuteRequest(status, exec, attributes);
+                    end("wps:ComplexData");
+                } else if (out instanceof GetFeatureType) {
+                    encodeGetFeatureType(inputAttributes, (GetFeatureType) out);
+                } else {
+                    element(
+                            "wps:ComplexData",
+                            "<![CDATA[" + out.toString() + "]]",
+                            inputAttributes);
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "", e);
+            }
+        }
+
+        private void encodeGetFeatureType(AttributesImpl inputAttributes, GetFeatureType out)
+                throws Exception {
+            GetFeatureType features = out;
+            final AttributesImpl atts = new AttributesImpl(inputAttributes);
+            if (features.getService() != null) {
+                addAttribute(atts, "service", features.getService());
+            }
+            if (features.getVersion() != null) {
+                addAttribute(atts, "version", features.getVersion());
+            }
+            if (features.getBaseUrl() != null) {
+                addAttribute(atts, "baseUrl", features.getBaseUrl());
+            }
+            if (features.getOutputFormat() != null) {
+                addAttribute(atts, "outputFormat", features.getOutputFormat());
+            }
+            if (features.getMaxFeatures() != null) {
+                addAttribute(atts, "maxFeatures", String.valueOf(features.getMaxFeatures()));
+            }
+            start("wfs:GetFeature", atts);
+            EList queries = features.getQuery();
+            if (queries != null && !queries.isEmpty()) {
+                for (Object query : queries) {
+                    QueryType qt = (QueryType) query;
+                    encodeQuery(inputAttributes, qt);
+                }
+            }
+            end("wfs:GetFeature");
+        }
+
+        private void encodeQuery(AttributesImpl inputAttributes, QueryType qt) throws Exception {
+            final AttributesImpl atts = new AttributesImpl(inputAttributes);
+            if (qt.getTypeName() != null && !qt.getTypeName().isEmpty()) {
+                addAttribute(atts, "typeName", qt.getTypeName().get(0).toString());
+            }
+            start("wfs:Query", atts);
+            Filter filter = qt.getFilter();
+            if (filter != null) {
+                FilterPPIO fppio = new FilterPPIO.Filter11();
+                fppio.encode(filter, contentHandler);
+            }
+            end("wfs:Query");
         }
 
         /** Encode Data Outputs from "lineage" as XML */

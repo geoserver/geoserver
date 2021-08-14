@@ -291,23 +291,11 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                     (readParameters != null ? readParameters : new GeneralParameterValue[0]);
 
             // read grid geometry
-            final GridGeometry2D requestedGridGeometry;
-            if (destinationSize != null)
-                // we have been asked to support a specific raster size, we will set the grid2world
-                // accordingly
-                requestedGridGeometry =
-                        new GridGeometry2D(
-                                new GridEnvelope2D(destinationSize),
-                                getHorizontalEnvelope(requestedEnvelope));
-            else
-                // we have been asked to support a specific g2w, we will set the raster size
-                // accordingly
-                requestedGridGeometry =
-                        new GridGeometry2D(
-                                PixelInCell.CELL_CENTER,
-                                destinationG2W,
-                                getHorizontalEnvelope(requestedEnvelope),
-                                null);
+            final GridGeometry2D requestedGridGeometry =
+                    getGridGeometry(
+                            destinationSize,
+                            destinationG2W,
+                            getHorizontalEnvelope(requestedEnvelope));
             // NOTICE that we always have to respect the provided envelope
             final ParameterValue<GeneralGridGeometry> requestedGridGeometryParam =
                     new DefaultParameterDescriptor<>(
@@ -338,46 +326,9 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             DimensionInfo timeDimension =
                     meta.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
             if (timeDimension != null && timeDimension.isEnabled() && dimensions.hasTime()) {
-                final List<Object> timeValues = new ArrayList<>();
-                if (temporalSubset != null && temporalSubset.getTimePosition() != null) {
-                    // grab the time positions
-                    final EList timePosition = temporalSubset.getTimePosition();
-                    for (Object o : timePosition) {
-                        TimePositionType tp = (TimePositionType) o;
-                        Date date = (Date) tp.getValue();
-                        if (date == null) {
-                            date = dimensions.getMaxTime();
-                        }
-                        timeValues.add(date);
-                    }
-                    // grab the time intervals
-                    final EList timePeriods = temporalSubset.getTimePeriod();
-                    for (Object timePeriod : timePeriods) {
-                        TimePeriodType tp = (TimePeriodType) timePeriod;
-                        Date begin = (Date) tp.getBeginPosition().getValue();
-                        Date end = (Date) tp.getEndPosition().getValue();
-                        timeValues.add(new DateRange(begin, end));
-                    }
-                }
-
-                if (timeValues.isEmpty()) {
-                    Date date = dimensions.getMaxTime();
-                    timeValues.add(date);
-                }
-                WCSInfo info = geoServer.getService(WCSInfo.class);
-                int maxValues = info.getMaxRequestedDimensionValues();
-                if (maxValues > 0 && maxValues < timeValues.size()) {
-                    throw new ServiceException(
-                            "More than "
-                                    + maxValues
-                                    + " times specified in the request, bailing out.",
-                            ServiceException.INVALID_PARAMETER_VALUE,
-                            "time");
-                }
-
                 readParameters =
-                        CoverageUtils.mergeParameter(
-                                parameterDescriptors, readParameters, timeValues, "TIME", "Time");
+                        addTimeReadParam(
+                                temporalSubset, readParameters, parameterDescriptors, dimensions);
             }
 
             //
@@ -388,45 +339,9 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             if (elevationDimension != null
                     && elevationDimension.isEnabled()
                     && dimensions.hasElevation()) {
-                List<Object> elevations = new ArrayList<>();
-                // extract elevation values
-                List axisSubset = null;
-                if (request.getRangeSubset() != null) {
-                    axisSubset = request.getRangeSubset().getAxisSubset();
-                    if (!axisSubset.isEmpty()) {
-                        for (Object o : axisSubset) {
-                            AxisSubsetType axis = (AxisSubsetType) o;
-
-                            String axisName = axis.getName();
-                            if (axisName.equalsIgnoreCase(WCSUtils.ELEVATION)) {
-                                // grab the elevation values
-                                for (Object object : axis.getSingleValue()) {
-                                    TypedLiteralType value = (TypedLiteralType) object;
-                                    elevations.add(Double.parseDouble(value.getValue()));
-                                }
-                                // grab the elevation intervals
-                                for (Object object : axis.getInterval()) {
-                                    IntervalType interval = (IntervalType) object;
-                                    double min = Double.parseDouble(interval.getMin().getValue());
-                                    double max = Double.parseDouble(interval.getMax().getValue());
-                                    elevations.add(NumberRange.create(min, max));
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (elevations.isEmpty()) {
-                    elevations.add(dimensions.getMinElevation());
-                }
-
                 readParameters =
-                        CoverageUtils.mergeParameter(
-                                parameterDescriptors,
-                                readParameters,
-                                elevations,
-                                "ELEVATION",
-                                "Elevation");
+                        addElevationReadParam(
+                                request, readParameters, parameterDescriptors, dimensions);
             }
 
             //
@@ -438,37 +353,24 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                 for (int i = 0; i < asCount; i++) {
                     AxisSubsetType axis = (AxisSubsetType) axisSubset.get(i);
                     String axisName = axis.getName();
-                    if (!axisName.equalsIgnoreCase(WCSUtils.ELEVATION)) {
-                        String key = ResourceInfo.CUSTOM_DIMENSION_PREFIX + axisName;
-                        Object dimInfo =
-                                meta.getMetadata()
-                                        .entrySet()
-                                        .stream()
-                                        .filter(e -> e.getKey().equalsIgnoreCase(key))
-                                        .findFirst()
-                                        .map(e -> e.getValue())
-                                        .orElse(null);
-                        axisName = axisName.toUpperCase(); // using uppercase with imagemosaic
-                        if (dimInfo instanceof DimensionInfo && dimensions.hasDomain(axisName)) {
-                            int valueCount = axis.getSingleValue().size();
-                            if (valueCount > 0) {
-                                List<Object> dimValues = new ArrayList<>(valueCount);
-                                for (int s = 0; s < valueCount; s++) {
-                                    dimValues.addAll(
-                                            dimensions.convertDimensionValue(
-                                                    axisName,
-                                                    ((TypedLiteralType)
-                                                                    axis.getSingleValue().get(s))
-                                                            .getValue()));
-                                }
-                                readParameters =
-                                        CoverageUtils.mergeParameter(
-                                                parameterDescriptors,
-                                                readParameters,
-                                                dimValues,
-                                                axisName);
-                            }
-                        }
+                    String key = ResourceInfo.CUSTOM_DIMENSION_PREFIX + axisName;
+                    Object dimInfo =
+                            meta.getMetadata()
+                                    .entrySet()
+                                    .stream()
+                                    .filter(e -> e.getKey().equalsIgnoreCase(key))
+                                    .findFirst()
+                                    .map(e -> e.getValue())
+                                    .orElse(null);
+                    axisName = axisName.toUpperCase(); // using uppercase with imagemosaic
+                    if (dimInfo instanceof DimensionInfo && dimensions.hasDomain(axisName)) {
+                        readParameters =
+                                addCustomDimensionReadParam(
+                                        readParameters,
+                                        parameterDescriptors,
+                                        dimensions,
+                                        axis,
+                                        axisName);
                     }
                 }
             }
@@ -490,19 +392,12 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             // Checking for supported Interpolation Methods
             //
             Interpolation interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
-
             String interpolationType = null;
             if (request.getInterpolationMethod() != null) {
                 interpolationType = request.getInterpolationMethod().getLiteral();
                 if (interpolationType != null) {
 
-                    if (interpolationType.equalsIgnoreCase("bilinear")) {
-                        interpolation = Interpolation.getInstance(Interpolation.INTERP_BILINEAR);
-                    } else if (interpolationType.equalsIgnoreCase("bicubic")) {
-                        interpolation = Interpolation.getInstance(Interpolation.INTERP_BICUBIC);
-                    } else if (interpolationType.equalsIgnoreCase("nearest neighbor")) {
-                        interpolation = Interpolation.getInstance(Interpolation.INTERP_NEAREST);
-                    }
+                    interpolation = parseInterpolation(interpolationType);
                     readParameters =
                             CoverageUtils.mergeParameter(
                                     parameterDescriptors,
@@ -545,59 +440,8 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             // Band Select (works on just one field)
             //
             GridCoverage2D bandSelectedCoverage = coverage;
-            // ImageIOUtilities.visualize(coverage.getRenderedImage());
             if (request.getRangeSubset() != null) {
-                // if (request.getRangeSubset().getAxisSubset().size() > 1) {
-                // throw new WcsException("Multi field coverages are not supported yet");
-                // }
-
-                // extract the band indexes
-                EList axisSubset = request.getRangeSubset().getAxisSubset();
-                if (axisSubset.size() > 0) {
-                    for (Object o : axisSubset) {
-                        AxisSubsetType axis = (AxisSubsetType) o;
-
-                        try {
-                            String axisName = axis.getName();
-                            if (axisName.equalsIgnoreCase("Band")) {
-                                int[] bands = null;
-                                if (axis.getSingleValue().size() > 0) {
-                                    bands = new int[axis.getSingleValue().size()];
-                                    for (int s = 0; s < axis.getSingleValue().size(); s++) {
-                                        bands[s] =
-                                                Integer.parseInt(
-                                                                ((TypedLiteralType)
-                                                                                axis.getSingleValue()
-                                                                                        .get(s))
-                                                                        .getValue())
-                                                        - 1;
-                                    }
-                                } else if (axis.getInterval().size() > 0) {
-                                    IntervalType interval =
-                                            (IntervalType) axis.getInterval().get(0);
-                                    int min = Integer.parseInt(interval.getMin().getValue());
-                                    int max = Integer.parseInt(interval.getMax().getValue());
-                                    int res =
-                                            (interval.getRes() != null
-                                                    ? Integer.parseInt(interval.getRes().getValue())
-                                                    : 1);
-
-                                    bands = new int[(int) (Math.floor(max - min) / res + 1)];
-                                    for (int b = 0; b < bands.length; b++)
-                                        bands[b] = (min + b * res) - 1;
-                                }
-
-                                // finally execute the band select
-                                bandSelectedCoverage =
-                                        (GridCoverage2D) WCSUtils.bandSelect(coverage, bands);
-                            }
-                        } catch (Exception e) {
-                            // Warning: Axis not found!!!
-                            throw new WcsException(
-                                    "Band Select Operation: " + e.getLocalizedMessage());
-                        }
-                    }
-                }
+                bandSelectedCoverage = bandSelection(request, coverage);
             }
 
             //
@@ -605,29 +449,10 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             //
             // compute intersection envelope to be used
             GeneralEnvelope destinationEnvelope =
-                    computeIntersectionEnvelope(requestedEnvelope, nativeEnvelope);
-            if (destinationEnvelope == null) {
-                throw new WcsException(
-                        "The request bbox is outside of the coverage area",
-                        InvalidParameterValue,
-                        "bbox");
-            }
-            destinationEnvelope = (GeneralEnvelope) getHorizontalEnvelope(destinationEnvelope);
-            if (targetCRS != null) {
-                destinationEnvelope = CRS.transform(destinationEnvelope, targetCRS);
-                destinationEnvelope.setCoordinateReferenceSystem(targetCRS);
-            }
+                    getDestinationEnvelope(requestedEnvelope, nativeEnvelope, targetCRS);
 
-            final GridGeometry2D destinationGridGeometry;
-            if (destinationSize != null) {
-                destinationGridGeometry =
-                        new GridGeometry2D(
-                                new GridEnvelope2D(destinationSize), destinationEnvelope);
-            } else {
-                destinationGridGeometry =
-                        new GridGeometry2D(
-                                PixelInCell.CELL_CENTER, destinationG2W, destinationEnvelope, null);
-            }
+            final GridGeometry2D destinationGridGeometry =
+                    getGridGeometry(destinationSize, destinationG2W, destinationEnvelope);
 
             // verify we're not going to build a raster exceeding the output limits
             WCSUtils.checkOutputLimits(
@@ -655,6 +480,215 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                 throw new WcsException(e);
             }
         }
+    }
+
+    private GeneralEnvelope getDestinationEnvelope(
+            GeneralEnvelope requestedEnvelope,
+            GeneralEnvelope nativeEnvelope,
+            CoordinateReferenceSystem targetCRS)
+            throws FactoryException, TransformException {
+        GeneralEnvelope destinationEnvelope =
+                computeIntersectionEnvelope(requestedEnvelope, nativeEnvelope);
+        if (destinationEnvelope == null) {
+            throw new WcsException(
+                    "The request bbox is outside of the coverage area",
+                    InvalidParameterValue,
+                    "bbox");
+        }
+        destinationEnvelope = (GeneralEnvelope) getHorizontalEnvelope(destinationEnvelope);
+        if (targetCRS != null) {
+            destinationEnvelope = CRS.transform(destinationEnvelope, targetCRS);
+            destinationEnvelope.setCoordinateReferenceSystem(targetCRS);
+        }
+        return destinationEnvelope;
+    }
+
+    private GridCoverage2D bandSelection(GetCoverageType request, GridCoverage2D coverage) {
+        // extract the band indexes
+        EList axisSubset = request.getRangeSubset().getAxisSubset();
+        if (axisSubset.size() > 0) {
+            for (Object o : axisSubset) {
+                AxisSubsetType axis = (AxisSubsetType) o;
+
+                try {
+                    String axisName = axis.getName();
+                    if (axisName.equalsIgnoreCase("Band")) {
+                        int[] bands = null;
+                        if (axis.getSingleValue().size() > 0) {
+                            bands = new int[axis.getSingleValue().size()];
+                            for (int s = 0; s < axis.getSingleValue().size(); s++) {
+                                bands[s] =
+                                        Integer.parseInt(
+                                                        ((TypedLiteralType)
+                                                                        axis.getSingleValue()
+                                                                                .get(s))
+                                                                .getValue())
+                                                - 1;
+                            }
+                        } else if (axis.getInterval().size() > 0) {
+                            IntervalType interval = (IntervalType) axis.getInterval().get(0);
+                            int min = Integer.parseInt(interval.getMin().getValue());
+                            int max = Integer.parseInt(interval.getMax().getValue());
+                            int res =
+                                    (interval.getRes() != null
+                                            ? Integer.parseInt(interval.getRes().getValue())
+                                            : 1);
+
+                            bands = new int[(int) (Math.floor(max - min) / res + 1)];
+                            for (int b = 0; b < bands.length; b++) bands[b] = (min + b * res) - 1;
+                        }
+
+                        // finally execute the band select
+                        return (GridCoverage2D) WCSUtils.bandSelect(coverage, bands);
+                    }
+                } catch (Exception e) {
+                    // Warning: Axis not found!!!
+                    throw new WcsException("Band Select Operation: " + e.getLocalizedMessage());
+                }
+            }
+        }
+        return coverage;
+    }
+
+    private Interpolation parseInterpolation(String interpolationType) {
+        if (interpolationType.equalsIgnoreCase("bilinear")) {
+            return Interpolation.getInstance(Interpolation.INTERP_BILINEAR);
+        } else if (interpolationType.equalsIgnoreCase("bicubic")) {
+            return Interpolation.getInstance(Interpolation.INTERP_BICUBIC);
+        }
+        return Interpolation.getInstance(Interpolation.INTERP_NEAREST);
+    }
+
+    private GeneralParameterValue[] addCustomDimensionReadParam(
+            GeneralParameterValue[] readParameters,
+            List<GeneralParameterDescriptor> parameterDescriptors,
+            ReaderDimensionsAccessor dimensions,
+            AxisSubsetType axis,
+            String axisName) {
+        int valueCount = axis.getSingleValue().size();
+        if (valueCount > 0) {
+            List<Object> dimValues = new ArrayList<>(valueCount);
+            for (int s = 0; s < valueCount; s++) {
+                dimValues.addAll(
+                        dimensions.convertDimensionValue(
+                                axisName,
+                                ((TypedLiteralType) axis.getSingleValue().get(s)).getValue()));
+            }
+            readParameters =
+                    CoverageUtils.mergeParameter(
+                            parameterDescriptors, readParameters, dimValues, axisName);
+        }
+        return readParameters;
+    }
+
+    private GeneralParameterValue[] addElevationReadParam(
+            GetCoverageType request,
+            GeneralParameterValue[] readParameters,
+            List<GeneralParameterDescriptor> parameterDescriptors,
+            ReaderDimensionsAccessor dimensions)
+            throws IOException {
+        List<Object> elevations = new ArrayList<>();
+        // extract elevation values
+        List axisSubset = null;
+        if (request.getRangeSubset() != null) {
+            axisSubset = request.getRangeSubset().getAxisSubset();
+            if (!axisSubset.isEmpty()) {
+                for (Object o : axisSubset) {
+                    AxisSubsetType axis = (AxisSubsetType) o;
+
+                    String axisName = axis.getName();
+                    if (axisName.equalsIgnoreCase(WCSUtils.ELEVATION)) {
+                        // grab the elevation values
+                        for (Object object : axis.getSingleValue()) {
+                            TypedLiteralType value = (TypedLiteralType) object;
+                            elevations.add(Double.parseDouble(value.getValue()));
+                        }
+                        // grab the elevation intervals
+                        for (Object object : axis.getInterval()) {
+                            IntervalType interval = (IntervalType) object;
+                            double min = Double.parseDouble(interval.getMin().getValue());
+                            double max = Double.parseDouble(interval.getMax().getValue());
+                            elevations.add(NumberRange.create(min, max));
+                        }
+                    }
+                }
+            }
+        }
+
+        if (elevations.isEmpty()) {
+            elevations.add(dimensions.getMinElevation());
+        }
+
+        readParameters =
+                CoverageUtils.mergeParameter(
+                        parameterDescriptors, readParameters, elevations, "ELEVATION", "Elevation");
+        return readParameters;
+    }
+
+    private GeneralParameterValue[] addTimeReadParam(
+            TimeSequenceType temporalSubset,
+            GeneralParameterValue[] readParameters,
+            List<GeneralParameterDescriptor> parameterDescriptors,
+            ReaderDimensionsAccessor dimensions)
+            throws IOException {
+        final List<Object> timeValues = new ArrayList<>();
+        if (temporalSubset != null && temporalSubset.getTimePosition() != null) {
+            // grab the time positions
+            final EList timePosition = temporalSubset.getTimePosition();
+            for (Object o : timePosition) {
+                TimePositionType tp = (TimePositionType) o;
+                Date date = (Date) tp.getValue();
+                if (date == null) {
+                    date = dimensions.getMaxTime();
+                }
+                timeValues.add(date);
+            }
+            // grab the time intervals
+            final EList timePeriods = temporalSubset.getTimePeriod();
+            for (Object timePeriod : timePeriods) {
+                TimePeriodType tp = (TimePeriodType) timePeriod;
+                Date begin = (Date) tp.getBeginPosition().getValue();
+                Date end = (Date) tp.getEndPosition().getValue();
+                timeValues.add(new DateRange(begin, end));
+            }
+        }
+
+        if (timeValues.isEmpty()) {
+            Date date = dimensions.getMaxTime();
+            timeValues.add(date);
+        }
+        WCSInfo info = geoServer.getService(WCSInfo.class);
+        int maxValues = info.getMaxRequestedDimensionValues();
+        if (maxValues > 0 && maxValues < timeValues.size()) {
+            throw new ServiceException(
+                    "More than " + maxValues + " times specified in the request, bailing out.",
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    "time");
+        }
+
+        readParameters =
+                CoverageUtils.mergeParameter(
+                        parameterDescriptors, readParameters, timeValues, "TIME", "Time");
+        return readParameters;
+    }
+
+    private GridGeometry2D getGridGeometry(
+            Rectangle destinationSize,
+            AffineTransform2D destinationG2W,
+            Envelope horizontalEnvelope) {
+        final GridGeometry2D requestedGridGeometry;
+        if (destinationSize != null)
+            // we have been asked to support a specific raster size, we will set the grid2world
+            // accordingly
+            requestedGridGeometry =
+                    new GridGeometry2D(new GridEnvelope2D(destinationSize), horizontalEnvelope);
+        else
+            // we have been asked to support a specific g2w, we will set the raster size
+            // accordingly
+            requestedGridGeometry =
+                    new GridGeometry2D(
+                            PixelInCell.CELL_CENTER, destinationG2W, horizontalEnvelope, null);
+        return requestedGridGeometry;
     }
 
     private static Envelope getHorizontalEnvelope(GeneralEnvelope originalEnvelope)

@@ -620,7 +620,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     private void setDisableGutter(boolean value)
             throws NoSuchFieldException, SecurityException, IllegalArgumentException,
                     IllegalAccessException {
-        Field field = RenderedImageMapOutputFormat.class.getDeclaredField("DISABLE_GUTTER");
+        Field field = DirectRasterRenderer.class.getDeclaredField("DISABLE_GUTTER");
         field.setAccessible(true);
         field.set(null, value);
     }

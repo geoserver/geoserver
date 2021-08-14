@@ -257,52 +257,9 @@ public class GetFeature {
             expandTypeNames(request, queries, getFeatureById, getCatalog());
         }
 
-        // locking, since WFS 2.0 there is a "some" mode that influences how the features should
-        // be returned: "A value of SOME indicates that the WFS shall lock as many feature in the
-        // result set as possible.
-        // The response document shall only contain those features that were successfully locked
-        // ..."
         String lockId = null;
         if (request.isLockRequest()) {
-            LockFeatureRequest lockRequest = request.createLockRequest();
-            lockRequest.setExpiry(request.getExpiry());
-            lockRequest.setHandle(request.getHandle());
-            if (request.isLockActionSome()) {
-                lockRequest.setLockActionSome();
-            } else {
-                lockRequest.setLockActionAll();
-            }
-
-            for (Query query : queries) {
-                Lock lock = lockRequest.createLock();
-                lock.setFilter(query.getFilter());
-                lock.setHandle(query.getHandle());
-
-                // TODO: joins?
-                List<QName> typeNames = query.getTypeNames();
-                lock.setTypeName(typeNames.get(0));
-                lockRequest.addLock(lock);
-            }
-
-            LockFeature lockFeature = new LockFeature(wfs, catalog);
-            lockFeature.setFilterFactory(filterFactory);
-
-            LockFeatureResponse response = lockFeature.lockFeature(lockRequest);
-            lockId = response.getLockId();
-
-            // in this case we'll modify all queries to only return the locked features
-            if (request.isLockActionSome()) {
-                Filter lockedFeatureFilter = toFeatureIdFilter(response.getLockedFeatures());
-                for (Query query : queries) {
-                    Filter filter = query.getFilter();
-                    if (filter == null || filter == Filter.INCLUDE) {
-                        query.setFilter(lockedFeatureFilter);
-                    } else {
-                        Filter joined = Predicates.and(filter, lockedFeatureFilter);
-                        query.setFilter(joined);
-                    }
-                }
-            }
+            lockId = filterRequestToLocked(request, queries);
         }
 
         // Optimization Idea
@@ -382,17 +339,7 @@ public class GetFeature {
                 Query query = queries.get(i);
                 try {
                     // alias sanity check
-                    if (!query.getAliases().isEmpty()) {
-                        if (query.getAliases().size() != query.getTypeNames().size()) {
-                            throw new WFSException(
-                                    request,
-                                    String.format(
-                                            "Query specifies %d type names and %d "
-                                                    + "aliases, must be equal",
-                                            query.getTypeNames().size(),
-                                            query.getAliases().size()));
-                        }
-                    }
+                    validateQueryAliases(request, query);
 
                     List<FeatureTypeInfo> metas = new ArrayList<>();
                     for (QName typeName : query.getTypeNames()) {
@@ -465,17 +412,7 @@ public class GetFeature {
                                 // validate the filter for each join, as well as the join filter
                                 for (int j = 1; j < metas.size(); j++) {
                                     Join join = joins.get(j - 1);
-                                    if (!isValidJoinFilter(join.getJoinFilter())) {
-                                        throw new WFSException(
-                                                request,
-                                                "Unable to perform join with specified join filter: "
-                                                        + filter);
-                                    }
-
-                                    if (join.getFilter() != null) {
-                                        validateFilter(
-                                                join.getFilter(), query, metas.get(j), request);
-                                    }
+                                    validateJoin(request, query, filter, join, metas.get(j));
                                 }
 
                                 filter = extractor.getPrimaryFilter();
@@ -494,73 +431,8 @@ public class GetFeature {
 
                     List<List<PropertyName>> propNames = new ArrayList<>();
                     List<List<PropertyName>> allPropNames = new ArrayList<>();
-
-                    for (int j = 0; j < metas.size(); j++) {
-                        List<String> propertyNames = reqPropertyNames.get(j);
-                        List<PropertyName> metaPropNames = null;
-                        List<PropertyName> metaAllPropNames = null;
-                        if (!propertyNames.isEmpty()) {
-
-                            metaPropNames = new ArrayList<>();
-
-                            for (String propertyName : propertyNames) {
-                                PropertyName propName = createPropertyName(propertyName, ns);
-
-                                if (propName.evaluate(meta.getFeatureType()) == null) {
-                                    String mesg =
-                                            "Requested property: "
-                                                    + propName
-                                                    + " is "
-                                                    + "not available "
-                                                    + "for "
-                                                    + meta.prefixedName()
-                                                    + ".  ";
-
-                                    if (meta.getFeatureType() instanceof SimpleFeatureType) {
-                                        List<AttributeTypeInfo> atts = meta.attributes();
-                                        List<String> attNames = new ArrayList<>(atts.size());
-                                        for (AttributeTypeInfo att : atts) {
-                                            attNames.add(att.getName());
-                                        }
-                                        mesg += "The possible propertyName values are: " + attNames;
-                                    }
-
-                                    throw new WFSException(request, mesg, "InvalidParameterValue");
-                                }
-
-                                metaPropNames.add(propName);
-                            }
-
-                            // if we need to force feature bounds computation, we have to load
-                            // all of the geometries, but we'll have to remove them in the
-                            // returned feature type
-                            if (wfs.isFeatureBounding()) {
-                                metaAllPropNames = addGeometryProperties(meta, metaPropNames);
-                            } else {
-                                metaAllPropNames = metaPropNames;
-                            }
-
-                            // we must also include any properties that are mandatory ( even if not
-                            // requested ),
-                            // ie. those with minOccurs > 0
-                            // only do this for simple features, complex mandatory features are
-                            // handled by app-schema
-                            if (meta.getFeatureType() instanceof SimpleFeatureType) {
-                                metaAllPropNames =
-                                        DataUtilities.addMandatoryProperties(
-                                                (SimpleFeatureType) meta.getFeatureType(),
-                                                metaAllPropNames);
-                                metaPropNames =
-                                        DataUtilities.addMandatoryProperties(
-                                                (SimpleFeatureType) meta.getFeatureType(),
-                                                metaPropNames);
-                            }
-                            // for complex features, mandatory properties need to be handled by
-                            // datastore.
-                        }
-                        allPropNames.add(metaAllPropNames);
-                        propNames.add(metaPropNames);
-                    }
+                    collectPropertyNames(
+                            request, metas, meta, reqPropertyNames, ns, propNames, allPropNames);
 
                     // validate sortby if present
                     List<SortBy> sortBy = query.getSortBy();
@@ -585,33 +457,12 @@ public class GetFeature {
                         // if wfs-ng datastore is NOT set to use default srs
                         // then find request SRS in OTHER_SRS list
                         if (!Boolean.valueOf(
-                                meta.getStore()
-                                        .getConnectionParameters()
-                                        .get(WFSDataStoreFactory.USEDEFAULTSRS.key)
-                                        .toString())) {
-
-                            if (query.getSrsName() != null) {
-                                String otherSrsStr =
-                                        (String) meta.getMetadata().get(FeatureTypeInfo.OTHER_SRS);
-                                // create list of other srs
-                                List<String> otherSRSList = Arrays.asList(otherSrsStr.split(","));
-                                try {
-                                    CoordinateReferenceSystem requestedCRS =
-                                            CRS.decode(query.getSrsName().toString());
-                                    for (String otherSRS : otherSRSList) {
-                                        if (!CRS.isTransformationRequired(
-                                                CRS.decode(otherSRS), requestedCRS)) {
-                                            // no transformation required, mark to skip
-                                            // re-projection
-                                            if (hints == null) hints = new Hints();
-                                            hints.put(ResourcePool.MAP_CRS, requestedCRS);
-                                            break;
-                                        }
-                                    }
-                                } catch (FactoryException ne) {
-                                    LOGGER.log(Level.SEVERE, ne.getMessage(), ne);
-                                }
-                            }
+                                        meta.getStore()
+                                                .getConnectionParameters()
+                                                .get(WFSDataStoreFactory.USEDEFAULTSRS.key)
+                                                .toString())
+                                && query.getSrsName() != null) {
+                            hints = setWFSCascadingReprojection(query, meta, hints);
                         }
                     }
 
@@ -722,16 +573,14 @@ public class GetFeature {
                     }
 
                     // if offset is present we need to check the size of this returned feature
-                    // collection
-                    // and adjust the offset for the next feature collection accordingly
+                    // collection and adjust the offset for the next feature collection accordingly
                     if (offset > 0) {
                         if (size > 0) {
                             // features returned, offset can be set to zero
                             offset = 0;
                         } else {
                             // no features might have been because of the offset that was specified,
-                            // check
-                            // the size of the same query but with no offset
+                            // check the size of the same query but with no offset
                             org.geotools.data.Query q2 =
                                     toDataQuery(
                                             query,
@@ -762,19 +611,7 @@ public class GetFeature {
                     if (features.getSchema() instanceof SimpleFeatureType
                             && metaPropNames != null
                             && metaPropNames.size() < allPropNames.get(0).size()) {
-                        String[] residualNames = new String[metaPropNames.size()];
-                        Iterator<PropertyName> it = metaPropNames.iterator();
-                        int j = 0;
-                        while (it.hasNext()) {
-                            residualNames[j] = it.next().getPropertyName();
-                            j++;
-                        }
-                        SimpleFeatureType targetType =
-                                DataUtilities.createSubType(
-                                        (SimpleFeatureType) features.getSchema(), residualNames);
-                        features =
-                                new FeatureBoundsFeatureCollection(
-                                        (SimpleFeatureCollection) features, targetType);
+                        features = retypeToRequestedProperties(features, metaPropNames);
                     }
 
                     // allow encoders to grab information about this layer if needs be
@@ -795,36 +632,14 @@ public class GetFeature {
                 }
             }
 
-            // total count represents the total count of the features matched for this query in
-            // cases
-            // where the client has limited the result set size, so we compute it lazily
-            if (isNumberMatchedSkipped) {
-                totalCount = BigInteger.valueOf(-1);
-            } else if (count < maxFeatures && calculateSize && totalOffset == 0) {
-                // optimization: if count < max features then total count == count
-                // can't use this optimization for v2
-                totalCount = BigInteger.valueOf(count);
-            } else if (isPreComputed(totalCountExecutors)) {
-                long total = getTotalCount(totalCountExecutors);
-                totalCount = BigInteger.valueOf(total);
-            } else {
-                // ok, in this case we're forced to run the queries to discover the actual total
-                // count
-                // We do so lazily, not all output formats need it, leveraging the fact that
-                // BigInteger
-                // is not final to wrap it in a lazy loading proxy
-                Enhancer enhancer = new Enhancer();
-                enhancer.setSuperclass(BigInteger.class);
-                enhancer.setCallback(
-                        (LazyLoader)
-                                () -> {
-                                    long totalCount1 = getTotalCount(totalCountExecutors);
-                                    return BigInteger.valueOf(totalCount1);
-                                });
-                totalCount =
-                        (BigInteger)
-                                enhancer.create(new Class[] {String.class}, new Object[] {"0"});
-            }
+            totalCount =
+                    updateTotalCount(
+                            maxFeatures,
+                            isNumberMatchedSkipped,
+                            count,
+                            totalOffset,
+                            calculateSize,
+                            totalCountExecutors);
         } catch (IOException | SchemaException e) {
             throw new WFSException(
                     request, "Error occurred getting features", e, request.getHandle());
@@ -839,6 +654,237 @@ public class GetFeature {
                 results,
                 lockId,
                 getFeatureById);
+    }
+
+    private void validateJoin(
+            GetFeatureRequest request, Query query, Filter filter, Join join, FeatureTypeInfo meta)
+            throws IOException {
+        if (!isValidJoinFilter(join.getJoinFilter())) {
+            throw new WFSException(
+                    request, "Unable to perform join with specified join filter: " + filter);
+        }
+
+        if (join.getFilter() != null) {
+            validateFilter(join.getFilter(), query, meta, request);
+        }
+    }
+
+    private void validateQueryAliases(GetFeatureRequest request, Query query) {
+        if (!query.getAliases().isEmpty()) {
+            if (query.getAliases().size() != query.getTypeNames().size()) {
+                throw new WFSException(
+                        request,
+                        String.format(
+                                "Query specifies %d type names and %d " + "aliases, must be equal",
+                                query.getTypeNames().size(), query.getAliases().size()));
+            }
+        }
+    }
+
+    private BigInteger updateTotalCount(
+            int maxFeatures,
+            boolean isNumberMatchedSkipped,
+            int count,
+            int totalOffset,
+            boolean calculateSize,
+            List<CountExecutor> totalCountExecutors)
+            throws IOException {
+        BigInteger totalCount;
+        // total count represents the total count of the features matched for this query in
+        // cases/ where the client has limited the result set size, so we compute it lazily
+        if (isNumberMatchedSkipped) {
+            totalCount = BigInteger.valueOf(-1);
+        } else if (count < maxFeatures && calculateSize && totalOffset == 0) {
+            // optimization: if count < max features then total count == count
+            // can't use this optimization for v2
+            totalCount = BigInteger.valueOf(count);
+        } else if (isPreComputed(totalCountExecutors)) {
+            long total = getTotalCount(totalCountExecutors);
+            totalCount = BigInteger.valueOf(total);
+        } else {
+            // ok, in this case we're forced to run the queries to discover the actual total
+            // count. We do so lazily, not all output formats need it, leveraging the fact that
+            // BigInteger is not final to wrap it in a lazy loading proxy
+            Enhancer enhancer = new Enhancer();
+            enhancer.setSuperclass(BigInteger.class);
+            enhancer.setCallback(
+                    (LazyLoader)
+                            () -> {
+                                long totalCount1 = getTotalCount(totalCountExecutors);
+                                return BigInteger.valueOf(totalCount1);
+                            });
+            totalCount =
+                    (BigInteger) enhancer.create(new Class[] {String.class}, new Object[] {"0"});
+        }
+        return totalCount;
+    }
+
+    private void collectPropertyNames(
+            GetFeatureRequest request,
+            List<FeatureTypeInfo> metas,
+            FeatureTypeInfo meta,
+            List<List<String>> reqPropertyNames,
+            NamespaceSupport ns,
+            List<List<PropertyName>> propNames,
+            List<List<PropertyName>> allPropNames)
+            throws IOException {
+        for (int j = 0; j < metas.size(); j++) {
+            List<String> propertyNames = reqPropertyNames.get(j);
+            List<PropertyName> metaPropNames = null;
+            List<PropertyName> metaAllPropNames = null;
+            if (!propertyNames.isEmpty()) {
+
+                metaPropNames = new ArrayList<>();
+
+                for (String propertyName : propertyNames) {
+                    PropertyName propName = createPropertyName(propertyName, ns);
+
+                    if (propName.evaluate(meta.getFeatureType()) == null) {
+                        String mesg =
+                                "Requested property: "
+                                        + propName
+                                        + " is "
+                                        + "not available "
+                                        + "for "
+                                        + meta.prefixedName()
+                                        + ".  ";
+
+                        if (meta.getFeatureType() instanceof SimpleFeatureType) {
+                            List<AttributeTypeInfo> atts = meta.attributes();
+                            List<String> attNames = new ArrayList<>(atts.size());
+                            for (AttributeTypeInfo att : atts) {
+                                attNames.add(att.getName());
+                            }
+                            mesg += "The possible propertyName values are: " + attNames;
+                        }
+
+                        throw new WFSException(request, mesg, "InvalidParameterValue");
+                    }
+
+                    metaPropNames.add(propName);
+                }
+
+                // if we need to force feature bounds computation, we have to load
+                // all of the geometries, but we'll have to remove them in the
+                // returned feature type
+                if (wfs.isFeatureBounding()) {
+                    metaAllPropNames = addGeometryProperties(meta, metaPropNames);
+                } else {
+                    metaAllPropNames = metaPropNames;
+                }
+
+                // we must also include any properties that are mandatory ( even if not
+                // requested ),
+                // ie. those with minOccurs > 0
+                // only do this for simple features, complex mandatory features are
+                // handled by app-schema
+                if (meta.getFeatureType() instanceof SimpleFeatureType) {
+                    metaAllPropNames =
+                            DataUtilities.addMandatoryProperties(
+                                    (SimpleFeatureType) meta.getFeatureType(), metaAllPropNames);
+                    metaPropNames =
+                            DataUtilities.addMandatoryProperties(
+                                    (SimpleFeatureType) meta.getFeatureType(), metaPropNames);
+                }
+                // for complex features, mandatory properties need to be handled by
+                // datastore.
+            }
+            allPropNames.add(metaAllPropNames);
+            propNames.add(metaPropNames);
+        }
+    }
+
+    private Hints setWFSCascadingReprojection(Query query, FeatureTypeInfo meta, Hints hints) {
+        String otherSrsStr = (String) meta.getMetadata().get(FeatureTypeInfo.OTHER_SRS);
+        // create list of other srs
+        List<String> otherSRSList = Arrays.asList(otherSrsStr.split(","));
+        try {
+            CoordinateReferenceSystem requestedCRS = CRS.decode(query.getSrsName().toString());
+            for (String otherSRS : otherSRSList) {
+                if (!CRS.isTransformationRequired(CRS.decode(otherSRS), requestedCRS)) {
+                    // no transformation required, mark to skip
+                    // re-projection
+                    if (hints == null) hints = new Hints();
+                    hints.put(ResourcePool.MAP_CRS, requestedCRS);
+                    break;
+                }
+            }
+        } catch (FactoryException ne) {
+            LOGGER.log(Level.SEVERE, ne.getMessage(), ne);
+        }
+        return hints;
+    }
+
+    private FeatureCollection<? extends FeatureType, ? extends Feature> retypeToRequestedProperties(
+            FeatureCollection<? extends FeatureType, ? extends Feature> features,
+            List<PropertyName> metaPropNames)
+            throws SchemaException {
+        String[] residualNames = new String[metaPropNames.size()];
+        Iterator<PropertyName> it = metaPropNames.iterator();
+        int j = 0;
+        while (it.hasNext()) {
+            residualNames[j] = it.next().getPropertyName();
+            j++;
+        }
+        SimpleFeatureType targetType =
+                DataUtilities.createSubType(
+                        (SimpleFeatureType) features.getSchema(), residualNames);
+        features =
+                new FeatureBoundsFeatureCollection((SimpleFeatureCollection) features, targetType);
+        return features;
+    }
+
+    /**
+     * Locking, since WFS 2.0 there is a "some" mode that influences how the features should be
+     * returned: "A value of SOME indicates that the WFS shall lock as many feature in the result
+     * set as possible. The response document shall only contain those features that were
+     * successfully locked ..."·
+     *
+     * <p>Locks the features it can, applies the locked features as a filter on feature retrieval,
+     * and returns the lock id.
+     */
+    private String filterRequestToLocked(GetFeatureRequest request, List<Query> queries) {
+        String lockId;
+        LockFeatureRequest lockRequest = request.createLockRequest();
+        lockRequest.setExpiry(request.getExpiry());
+        lockRequest.setHandle(request.getHandle());
+        if (request.isLockActionSome()) {
+            lockRequest.setLockActionSome();
+        } else {
+            lockRequest.setLockActionAll();
+        }
+
+        for (Query query : queries) {
+            Lock lock = lockRequest.createLock();
+            lock.setFilter(query.getFilter());
+            lock.setHandle(query.getHandle());
+
+            // TODO: joins?
+            List<QName> typeNames = query.getTypeNames();
+            lock.setTypeName(typeNames.get(0));
+            lockRequest.addLock(lock);
+        }
+
+        LockFeature lockFeature = new LockFeature(wfs, catalog);
+        lockFeature.setFilterFactory(filterFactory);
+
+        LockFeatureResponse response = lockFeature.lockFeature(lockRequest);
+        lockId = response.getLockId();
+
+        // in this case we'll modify all queries to only return the locked features
+        if (request.isLockActionSome()) {
+            Filter lockedFeatureFilter = toFeatureIdFilter(response.getLockedFeatures());
+            for (Query query : queries) {
+                Filter filter = query.getFilter();
+                if (filter == null || filter == Filter.INCLUDE) {
+                    query.setFilter(lockedFeatureFilter);
+                } else {
+                    Filter joined = Predicates.and(filter, lockedFeatureFilter);
+                    query.setFilter(joined);
+                }
+            }
+        }
+        return lockId;
     }
 
     /** Returns true if all count executors are given a static count value */

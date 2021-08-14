@@ -233,44 +233,65 @@ public class ImportProcess implements GeoServerProcess {
         }
 
         if (features != null) {
-            // check if the target layer and the target feature type are not
-            // already there (this is a half-assed attempt as we don't have
-            // an API telling us how the feature type name will be changed
-            // by DataStore.createSchema(...), but better than fully importing
-            // the data into the target store to find out we cannot create the layer...)
-            String tentativeTargetName = null;
-            if (name != null) {
-                tentativeTargetName = ws.getName() + ":" + name;
-            } else {
-                tentativeTargetName = ws.getName() + ":" + features.getSchema().getTypeName();
-            }
-            if (catalog.getLayer(tentativeTargetName) != null) {
-                throw new ProcessException(
-                        "Target layer " + tentativeTargetName + " already exists");
-            }
+            checkNameConflict(features, name, ws);
+            return importFeatures(
+                    features, name, srs, srsHandling, listener, cb, storeInfo, targetStyle);
+        } else if (coverage != null) {
+            return importCoverage(
+                    coverage,
+                    workspace,
+                    store,
+                    name,
+                    srs,
+                    styleName,
+                    listener,
+                    cb,
+                    storeInfo,
+                    add,
+                    targetStyle);
+        }
+
+        return null;
+    }
+
+    private String importCoverage(
+            GridCoverage2D coverage,
+            String workspace,
+            String store,
+            String name,
+            CoordinateReferenceSystem srs,
+            String styleName,
+            ProgressListener listener,
+            CatalogBuilder cb,
+            StoreInfo storeInfo,
+            boolean add,
+            StyleInfo targetStyle) {
+        try {
+            final Resource directory =
+                    catalog.getResourceLoader().get(Paths.path("data", workspace, store));
+            final File file = File.createTempFile(store, ".tif", directory.dir());
+            ((CoverageStoreInfo) storeInfo).setURL(URLs.fileToUrl(file).toExternalForm());
+            storeInfo.setType("GeoTIFF");
 
             // check the target crs
-            String targetSRSCode = null;
+            CoordinateReferenceSystem cvCrs = coverage.getCoordinateReferenceSystem();
             if (srs != null) {
                 try {
                     Integer code = CRS.lookupEpsgCode(srs, true);
                     if (code == null) {
                         throw new WPSException("Could not find a EPSG code for " + srs);
                     }
-                    targetSRSCode = "EPSG:" + code;
                 } catch (Exception e) {
                     throw new ProcessException(
                             "Could not lookup the EPSG code for the provided srs", e);
                 }
             } else {
                 // check we can extract a code from the original data
-                GeometryDescriptor gd = features.getSchema().getGeometryDescriptor();
-                if (gd == null) {
+                if (cvCrs == null) {
                     // data is geometryless, we need a fake SRS
-                    targetSRSCode = "EPSG:4326";
-                    srsHandling = ProjectionPolicy.FORCE_DECLARED;
+                    srs = DefaultGeographicCRS.WGS84;
                 } else {
-                    CoordinateReferenceSystem nativeCrs = gd.getCoordinateReferenceSystem();
+                    CoordinateReferenceSystem nativeCrs = cvCrs;
                     if (nativeCrs == null) {
                         throw new ProcessException(
                                 "The original data has no native CRS, "
@@ -284,7 +305,8 @@ public class ImportProcess implements GeoServerProcess {
                                                 + "native spatial reference system: "
                                                 + nativeCrs);
                             } else {
-                                targetSRSCode = "EPSG:" + code;
+                                String targetSRSCode = "EPSG:" + code;
+                                srs = CRS.decode(targetSRSCode, true);
                             }
                         } catch (Exception e) {
                             throw new ProcessException(
@@ -299,266 +321,285 @@ public class ImportProcess implements GeoServerProcess {
 
             checkForCancellation(listener);
 
-            // import the data into the target store
-            SimpleFeatureType targetType;
-            try {
-                targetType =
-                        importDataIntoStore(features, name, (DataStoreInfo) storeInfo, listener);
-            } catch (IOException e) {
-                throw new ProcessException("Failed to import data into the target store", e);
+            MathTransform tx = CRS.findMathTransform(cvCrs, srs);
+
+            if (!tx.isIdentity() || !CRS.equalsIgnoreMetadata(cvCrs, srs)) {
+                coverage =
+                        WCSUtils.resample(
+                                coverage,
+                                cvCrs,
+                                srs,
+                                null,
+                                Interpolation.getInstance(Interpolation.INTERP_NEAREST));
             }
 
-            // now import the newly created layer into GeoServer
+            GeoTiffWriter writer = new GeoTiffWriter(file);
+
+            // setting the write parameters for this geotiff
+            final ParameterValueGroup params = new GeoTiffFormat().getWriteParameters();
+            params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
+                    .setValue(DEFAULT_WRITE_PARAMS);
+            final GeneralParameterValue[] wps =
+                    params.values().toArray(new GeneralParameterValue[1]);
+
             try {
-                cb.setStore(storeInfo);
-
-                // build the typeInfo and set CRS if necessary
-                FeatureTypeInfo typeInfo = cb.buildFeatureType(targetType.getName());
-                if (targetSRSCode != null) {
-                    typeInfo.setSRS(targetSRSCode);
+                writer.write(coverage, wps);
+            } finally {
+                try {
+                    writer.dispose();
+                } catch (Exception e) {
+                    // we tried, no need to fuss around this one
                 }
-                if (srsHandling != null) {
-                    typeInfo.setProjectionPolicy(srsHandling);
-                }
-                // compute the bounds
-                cb.setupBounds(typeInfo);
+            }
 
-                // build the layer and set a style
-                LayerInfo layerInfo = cb.buildLayer(typeInfo);
-                if (targetStyle != null) {
+            checkForCancellation(listener);
+
+            // add or update the datastore info
+            if (add) {
+                catalog.add(storeInfo);
+            } else {
+                catalog.save(storeInfo);
+            }
+
+            cb.setStore(storeInfo);
+
+            GridCoverage2DReader reader = new GeoTiffReader(file);
+            if (reader == null) {
+                throw new ProcessException("Could not aquire reader for coverage.");
+            }
+
+            // coverage read params
+            final Map<String, Serializable> customParameters = new HashMap<>();
+            /*
+             * String useJAIImageReadParam = "USE_JAI_IMAGEREAD"; if (useJAIImageReadParam != null) {
+             * customParameters.put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), Boolean.valueOf(useJAIImageReadParam)); }
+             */
+
+            CoverageInfo cinfo = cb.buildCoverage(reader, customParameters);
+
+            // check if the name of the coverage was specified
+            if (name != null) {
+                cinfo.setName(name);
+            }
+
+            checkForCancellation(listener);
+
+            if (!add) {
+                // update the existing
+                CoverageInfo existing =
+                        catalog.getCoverageByCoverageStore(
+                                (CoverageStoreInfo) storeInfo,
+                                name != null ? name : coverage.getName().toString());
+                if (existing == null) {
+                    // grab the first if there is only one
+                    List<CoverageInfo> coverages =
+                            catalog.getCoveragesByCoverageStore((CoverageStoreInfo) storeInfo);
+                    if (coverages.size() == 1) {
+                        existing = coverages.get(0);
+                    }
+                    if (coverages.isEmpty()) {
+                        // no coverages yet configured, change add flag and continue on
+                        add = true;
+                    } else {
+                        // multiple coverages, and one to configure not specified
+                        throw new ProcessException("Unable to determine coverage to configure.");
+                    }
+                }
+
+                if (existing != null) {
+                    cb.updateCoverage(existing, cinfo);
+                    catalog.save(existing);
+                    cinfo = existing;
+                }
+            }
+
+            // do some post configuration, if srs is not known or unset, transform to 4326
+            if ("UNKNOWN".equals(cinfo.getSRS())) {
+                // CoordinateReferenceSystem sourceCRS =
+                // cinfo.getBoundingBox().getCoordinateReferenceSystem();
+                // CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326", true);
+                // ReferencedEnvelope re = cinfo.getBoundingBox().transform(targetCRS, true);
+                cinfo.setSRS("EPSG:4326");
+                // cinfo.setCRS( targetCRS );
+                // cinfo.setBoundingBox( re );
+            }
+
+            checkForCancellation(listener);
+
+            // add/save
+            LayerInfo layerInfo;
+            if (add) {
+                catalog.add(cinfo);
+
+                layerInfo = cb.buildLayer(cinfo);
+                if (styleName != null && targetStyle != null) {
                     layerInfo.setDefaultStyle(targetStyle);
                 }
+                // JD: commenting this out, these sorts of edits should be handled
+                // with a second PUT request on the created coverage
+                /*
+                 * String styleName = form.getFirstValue("style"); if ( styleName != null ) { StyleInfo style = catalog.getStyleByName( styleName
+                 * ); if ( style != null ) { layerInfo.setDefaultStyle( style ); if ( !layerInfo.getStyles().contains( style ) ) {
+                 * layerInfo.getStyles().add( style ); } } else { LOGGER.warning( "Client specified style '" + styleName +
+                 * "'but no such style exists."); } }
+                 *
+                 * String path = form.getFirstValue( "path"); if ( path != null ) { layerInfo.setPath( path ); }
+                 */
 
-                checkForCancellation(listener);
+                boolean valid = true;
+                try {
+                    if (!catalog.validate(layerInfo, true).isValid()) {
+                        valid = false;
+                    }
+                } catch (Exception e) {
+                    valid = false;
+                }
 
-                catalog.add(typeInfo);
+                layerInfo.setEnabled(valid);
                 catalog.add(layerInfo);
 
-                listener.progress(100);
-                listener.complete();
-
                 return layerInfo.prefixedName();
+            } else {
+                catalog.save(cinfo);
+
+                layerInfo = catalog.getLayerByName(cinfo.getName());
+                if (styleName != null && targetStyle != null) {
+                    layerInfo.setDefaultStyle(targetStyle);
+                }
+            }
+            listener.progress(100);
+            listener.complete();
+            return layerInfo.prefixedName();
+        } catch (MalformedURLException e) {
+            throw new ProcessException("URL Error", e);
+        } catch (IOException e) {
+            throw new ProcessException("I/O Exception", e);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "", e);
+            throw new ProcessException("Exception", e);
+        }
+    }
+
+    private String importFeatures(
+            SimpleFeatureCollection features,
+            String name,
+            CoordinateReferenceSystem srs,
+            ProjectionPolicy srsHandling,
+            ProgressListener listener,
+            CatalogBuilder cb,
+            StoreInfo storeInfo,
+            StyleInfo targetStyle) {
+        // check the target crs
+        String targetSRSCode = null;
+        if (srs != null) {
+            try {
+                Integer code = CRS.lookupEpsgCode(srs, true);
+                if (code == null) {
+                    throw new WPSException("Could not find a EPSG code for " + srs);
+                }
+                targetSRSCode = "EPSG:" + code;
             } catch (Exception e) {
                 throw new ProcessException(
-                        "Failed to complete the import inside the GeoServer catalog", e);
+                        "Could not lookup the EPSG code for the provided srs", e);
             }
-        } else if (coverage != null) {
-            try {
-                final Resource directory =
-                        catalog.getResourceLoader().get(Paths.path("data", workspace, store));
-                final File file = File.createTempFile(store, ".tif", directory.dir());
-                ((CoverageStoreInfo) storeInfo).setURL(URLs.fileToUrl(file).toExternalForm());
-                storeInfo.setType("GeoTIFF");
-
-                // check the target crs
-                CoordinateReferenceSystem cvCrs = coverage.getCoordinateReferenceSystem();
-                if (srs != null) {
+        } else {
+            // check we can extract a code from the original data
+            GeometryDescriptor gd = features.getSchema().getGeometryDescriptor();
+            if (gd == null) {
+                // data is geometryless, we need a fake SRS
+                targetSRSCode = "EPSG:4326";
+                srsHandling = ProjectionPolicy.FORCE_DECLARED;
+            } else {
+                CoordinateReferenceSystem nativeCrs = gd.getCoordinateReferenceSystem();
+                if (nativeCrs == null) {
+                    throw new ProcessException(
+                            "The original data has no native CRS, "
+                                    + "you need to specify the srs parameter");
+                } else {
                     try {
-                        Integer code = CRS.lookupEpsgCode(srs, true);
+                        Integer code = CRS.lookupEpsgCode(nativeCrs, true);
                         if (code == null) {
-                            throw new WPSException("Could not find a EPSG code for " + srs);
+                            throw new ProcessException(
+                                    "Could not find an EPSG code for data "
+                                            + "native spatial reference system: "
+                                            + nativeCrs);
+                        } else {
+                            targetSRSCode = "EPSG:" + code;
                         }
                     } catch (Exception e) {
                         throw new ProcessException(
-                                "Could not lookup the EPSG code for the provided srs", e);
-                    }
-                } else {
-                    // check we can extract a code from the original data
-                    if (cvCrs == null) {
-                        // data is geometryless, we need a fake SRS
-                        srs = DefaultGeographicCRS.WGS84;
-                    } else {
-                        CoordinateReferenceSystem nativeCrs = cvCrs;
-                        if (nativeCrs == null) {
-                            throw new ProcessException(
-                                    "The original data has no native CRS, "
-                                            + "you need to specify the srs parameter");
-                        } else {
-                            try {
-                                Integer code = CRS.lookupEpsgCode(nativeCrs, true);
-                                if (code == null) {
-                                    throw new ProcessException(
-                                            "Could not find an EPSG code for data "
-                                                    + "native spatial reference system: "
-                                                    + nativeCrs);
-                                } else {
-                                    String targetSRSCode = "EPSG:" + code;
-                                    srs = CRS.decode(targetSRSCode, true);
-                                }
-                            } catch (Exception e) {
-                                throw new ProcessException(
-                                        "Failed to loookup an official EPSG code for "
-                                                + "the source data native "
-                                                + "spatial reference system",
-                                        e);
-                            }
-                        }
+                                "Failed to loookup an official EPSG code for "
+                                        + "the source data native "
+                                        + "spatial reference system",
+                                e);
                     }
                 }
-
-                checkForCancellation(listener);
-
-                MathTransform tx = CRS.findMathTransform(cvCrs, srs);
-
-                if (!tx.isIdentity() || !CRS.equalsIgnoreMetadata(cvCrs, srs)) {
-                    coverage =
-                            WCSUtils.resample(
-                                    coverage,
-                                    cvCrs,
-                                    srs,
-                                    null,
-                                    Interpolation.getInstance(Interpolation.INTERP_NEAREST));
-                }
-
-                GeoTiffWriter writer = new GeoTiffWriter(file);
-
-                // setting the write parameters for this geotiff
-                final ParameterValueGroup params = new GeoTiffFormat().getWriteParameters();
-                params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
-                        .setValue(DEFAULT_WRITE_PARAMS);
-                final GeneralParameterValue[] wps =
-                        params.values().toArray(new GeneralParameterValue[1]);
-
-                try {
-                    writer.write(coverage, wps);
-                } finally {
-                    try {
-                        writer.dispose();
-                    } catch (Exception e) {
-                        // we tried, no need to fuss around this one
-                    }
-                }
-
-                checkForCancellation(listener);
-
-                // add or update the datastore info
-                if (add) {
-                    catalog.add(storeInfo);
-                } else {
-                    catalog.save(storeInfo);
-                }
-
-                cb.setStore(storeInfo);
-
-                GridCoverage2DReader reader = new GeoTiffReader(file);
-                if (reader == null) {
-                    throw new ProcessException("Could not aquire reader for coverage.");
-                }
-
-                // coverage read params
-                final Map<String, Serializable> customParameters = new HashMap<>();
-                /*
-                 * String useJAIImageReadParam = "USE_JAI_IMAGEREAD"; if (useJAIImageReadParam != null) {
-                 * customParameters.put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().toString(), Boolean.valueOf(useJAIImageReadParam)); }
-                 */
-
-                CoverageInfo cinfo = cb.buildCoverage(reader, customParameters);
-
-                // check if the name of the coverage was specified
-                if (name != null) {
-                    cinfo.setName(name);
-                }
-
-                checkForCancellation(listener);
-
-                if (!add) {
-                    // update the existing
-                    CoverageInfo existing =
-                            catalog.getCoverageByCoverageStore(
-                                    (CoverageStoreInfo) storeInfo,
-                                    name != null ? name : coverage.getName().toString());
-                    if (existing == null) {
-                        // grab the first if there is only one
-                        List<CoverageInfo> coverages =
-                                catalog.getCoveragesByCoverageStore((CoverageStoreInfo) storeInfo);
-                        if (coverages.size() == 1) {
-                            existing = coverages.get(0);
-                        }
-                        if (coverages.isEmpty()) {
-                            // no coverages yet configured, change add flag and continue on
-                            add = true;
-                        } else {
-                            // multiple coverages, and one to configure not specified
-                            throw new ProcessException(
-                                    "Unable to determine coverage to configure.");
-                        }
-                    }
-
-                    if (existing != null) {
-                        cb.updateCoverage(existing, cinfo);
-                        catalog.save(existing);
-                        cinfo = existing;
-                    }
-                }
-
-                // do some post configuration, if srs is not known or unset, transform to 4326
-                if ("UNKNOWN".equals(cinfo.getSRS())) {
-                    // CoordinateReferenceSystem sourceCRS =
-                    // cinfo.getBoundingBox().getCoordinateReferenceSystem();
-                    // CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:4326", true);
-                    // ReferencedEnvelope re = cinfo.getBoundingBox().transform(targetCRS, true);
-                    cinfo.setSRS("EPSG:4326");
-                    // cinfo.setCRS( targetCRS );
-                    // cinfo.setBoundingBox( re );
-                }
-
-                checkForCancellation(listener);
-
-                // add/save
-                LayerInfo layerInfo;
-                if (add) {
-                    catalog.add(cinfo);
-
-                    layerInfo = cb.buildLayer(cinfo);
-                    if (styleName != null && targetStyle != null) {
-                        layerInfo.setDefaultStyle(targetStyle);
-                    }
-                    // JD: commenting this out, these sorts of edits should be handled
-                    // with a second PUT request on the created coverage
-                    /*
-                     * String styleName = form.getFirstValue("style"); if ( styleName != null ) { StyleInfo style = catalog.getStyleByName( styleName
-                     * ); if ( style != null ) { layerInfo.setDefaultStyle( style ); if ( !layerInfo.getStyles().contains( style ) ) {
-                     * layerInfo.getStyles().add( style ); } } else { LOGGER.warning( "Client specified style '" + styleName +
-                     * "'but no such style exists."); } }
-                     *
-                     * String path = form.getFirstValue( "path"); if ( path != null ) { layerInfo.setPath( path ); }
-                     */
-
-                    boolean valid = true;
-                    try {
-                        if (!catalog.validate(layerInfo, true).isValid()) {
-                            valid = false;
-                        }
-                    } catch (Exception e) {
-                        valid = false;
-                    }
-
-                    layerInfo.setEnabled(valid);
-                    catalog.add(layerInfo);
-
-                    return layerInfo.prefixedName();
-                } else {
-                    catalog.save(cinfo);
-
-                    layerInfo = catalog.getLayerByName(cinfo.getName());
-                    if (styleName != null && targetStyle != null) {
-                        layerInfo.setDefaultStyle(targetStyle);
-                    }
-                }
-                listener.progress(100);
-                listener.complete();
-                return layerInfo.prefixedName();
-            } catch (MalformedURLException e) {
-                throw new ProcessException("URL Error", e);
-            } catch (IOException e) {
-                throw new ProcessException("I/O Exception", e);
-            } catch (Exception e) {
-                LOGGER.log(Level.WARNING, "", e);
-                throw new ProcessException("Exception", e);
             }
         }
 
-        return null;
+        checkForCancellation(listener);
+
+        // import the data into the target store
+        SimpleFeatureType targetType;
+        try {
+            targetType = importDataIntoStore(features, name, (DataStoreInfo) storeInfo, listener);
+        } catch (IOException e) {
+            throw new ProcessException("Failed to import data into the target store", e);
+        }
+
+        // now import the newly created layer into GeoServer
+        try {
+            cb.setStore(storeInfo);
+
+            // build the typeInfo and set CRS if necessary
+            FeatureTypeInfo typeInfo = cb.buildFeatureType(targetType.getName());
+            if (targetSRSCode != null) {
+                typeInfo.setSRS(targetSRSCode);
+            }
+            if (srsHandling != null) {
+                typeInfo.setProjectionPolicy(srsHandling);
+            }
+            // compute the bounds
+            cb.setupBounds(typeInfo);
+
+            // build the layer and set a style
+            LayerInfo layerInfo = cb.buildLayer(typeInfo);
+            if (targetStyle != null) {
+                layerInfo.setDefaultStyle(targetStyle);
+            }
+
+            checkForCancellation(listener);
+
+            catalog.add(typeInfo);
+            catalog.add(layerInfo);
+
+            listener.progress(100);
+            listener.complete();
+
+            return layerInfo.prefixedName();
+        } catch (Exception e) {
+            throw new ProcessException(
+                    "Failed to complete the import inside the GeoServer catalog", e);
+        }
+    }
+
+    /**
+     * check if the target layer and the target feature type are not already there (this is a
+     * half-assed attempt as we don't have an API telling us how the feature type name will be
+     * changed by DataStore.createSchema(...), but better than fully importing the data into the
+     * target store to find out we cannot create the layer...)
+     */
+    private void checkNameConflict(
+            SimpleFeatureCollection features, String name, WorkspaceInfo ws) {
+        String tentativeTargetName;
+        if (name != null) {
+            tentativeTargetName = ws.getName() + ":" + name;
+        } else {
+            tentativeTargetName = ws.getName() + ":" + features.getSchema().getTypeName();
+        }
+        if (catalog.getLayer(tentativeTargetName) != null) {
+            throw new ProcessException("Target layer " + tentativeTargetName + " already exists");
+        }
     }
 
     private SimpleFeatureType importDataIntoStore(

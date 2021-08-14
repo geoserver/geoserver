@@ -284,244 +284,43 @@ public class GetMap {
             final Filter layerFilter = SimplifyingFilterVisitor.simplify(filters[i]);
             final SortBy[] layerSort = sorts != null ? sorts.get(i) : null;
 
-            final org.geotools.map.Layer layer;
-
             int layerType = mapLayerInfo.getType();
             if (layerType == MapLayerInfo.TYPE_REMOTE_VECTOR) {
-
-                final SimpleFeatureSource source = mapLayerInfo.getRemoteFeatureSource();
-                FeatureLayer featureLayer = new FeatureLayer(source, layerStyle);
-                featureLayer.setTitle(
-                        mapLayerInfo.getRemoteFeatureSource().getSchema().getTypeName());
-
-                final Query definitionQuery = new Query(source.getSchema().getTypeName());
-                definitionQuery.setFilter(layerFilter);
-                definitionQuery.setVersion(featureVersion);
-                definitionQuery.setSortBy(layerSort);
-                int maxFeatures =
-                        request.getMaxFeatures() != null
-                                ? request.getMaxFeatures()
-                                : Integer.MAX_VALUE;
-                definitionQuery.setMaxFeatures(maxFeatures);
-                featureLayer.setQuery(definitionQuery);
-
-                mapContent.addLayer(featureLayer);
-
-                layer = featureLayer;
+                addRemoteVectorLayer(
+                        mapContent,
+                        request,
+                        featureVersion,
+                        mapLayerInfo,
+                        layerStyle,
+                        layerFilter,
+                        layerSort);
             } else if (layerType == MapLayerInfo.TYPE_VECTOR) {
-                FeatureSource<? extends FeatureType, ? extends Feature> source;
-                // /////////////////////////////////////////////////////////
-                //
-                // Adding a feature layer
-                //
-                // /////////////////////////////////////////////////////////
-                try {
-                    source = mapLayerInfo.getFeatureSource(true, request.getCrs());
-
-                    if (layerSort != null) {
-                        // filter gets validated down in the renderer, but
-                        // sorting is done without the renderer knowing, perform validation here
-                        validateSort(source, layerSort, mapLayerInfo);
-                    }
-
-                    // NOTE for the feature. Here there was some code that
-                    // sounded like:
-                    // * get the bounding box from feature source
-                    // * eventually reproject it to the actual CRS used for
-                    // map
-                    // * if no intersection, don't bother adding the feature
-                    // source to the map
-                    // This is not an optimization, on the contrary,
-                    // computing the bbox may be
-                    // very expensive depending on the data size. Using
-                    // sigma.openplans.org data
-                    // and a tiled client like OpenLayers, it dragged the
-                    // server to his knees
-                    // and the client simply timed out
-                } catch (IOException exp) {
-                    if (LOGGER.isLoggable(Level.SEVERE)) {
-                        LOGGER.log(
-                                Level.SEVERE,
-                                new StringBuffer("Getting feature source: ")
-                                        .append(exp.getMessage())
-                                        .toString(),
-                                exp);
-                    }
-
-                    throw new ServiceException("Internal error", exp);
-                }
-                FeatureLayer featureLayer = new FeatureLayer(source, layerStyle);
-                featureLayer.setTitle(mapLayerInfo.getFeature().prefixedName());
-                featureLayer.getUserData().put("abstract", mapLayerInfo.getDescription());
-
-                // mix the dimension related filter with the layer filter
-                Filter dimensionFilter =
-                        buildDimensionFilter(times, elevations, mapLayerInfo, request);
-                Filter filter =
-                        SimplifyingFilterVisitor.simplify(
-                                Filters.and(ff, layerFilter, dimensionFilter));
-
-                final Query definitionQuery =
-                        new Query(source.getSchema().getName().getLocalPart());
-                definitionQuery.setVersion(featureVersion);
-                definitionQuery.setFilter(filter);
-                definitionQuery.setSortBy(layerSort);
-                if (viewParams != null) {
-                    definitionQuery.setHints(
-                            new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, viewParams.get(i)));
-                }
-
-                // check for startIndex + offset
-                final Integer startIndex = request.getStartIndex();
-                if (startIndex != null) {
-                    QueryCapabilities queryCapabilities = source.getQueryCapabilities();
-                    if (queryCapabilities.isOffsetSupported()) {
-                        // fsource is required to support
-                        // SortBy.NATURAL_ORDER so we don't bother checking
-                        definitionQuery.setStartIndex(startIndex);
-                    } else {
-                        // source = new PagingFeatureSource(source,
-                        // request.getStartIndex(), limit);
-                        throw new ServiceException(
-                                "startIndex is not supported for the "
-                                        + mapLayerInfo.getName()
-                                        + " layer");
-                    }
-                }
-
-                int maxFeatures =
-                        request.getMaxFeatures() != null
-                                ? request.getMaxFeatures()
-                                : Integer.MAX_VALUE;
-                definitionQuery.setMaxFeatures(maxFeatures);
-
-                featureLayer.setQuery(definitionQuery);
-                mapContent.addLayer(featureLayer);
-
-                layer = featureLayer;
+                addLocalVectorLayer(
+                        mapContent,
+                        request,
+                        times,
+                        elevations,
+                        viewParams,
+                        featureVersion,
+                        i,
+                        mapLayerInfo,
+                        layerStyle,
+                        layerFilter,
+                        layerSort);
             } else if (layerType == MapLayerInfo.TYPE_RASTER) {
-
-                // /////////////////////////////////////////////////////////
-                //
-                // Adding a coverage layer
-                //
-                // /////////////////////////////////////////////////////////
-                final GridCoverage2DReader reader =
-                        (GridCoverage2DReader) mapLayerInfo.getCoverageReader();
-                if (reader != null) {
-
-                    // get the group of parameters tha this reader supports
-                    GeneralParameterValue[] readParameters =
-                            wms.getWMSReadParameters(
-                                    request,
-                                    mapLayerInfo,
-                                    layerFilter,
-                                    layerSort,
-                                    times,
-                                    elevations,
-                                    reader,
-                                    false);
-                    try {
-
-                        try {
-                            layer = new CachedGridReaderLayer(reader, layerStyle, readParameters);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-
-                        layer.setTitle(mapLayerInfo.getCoverage().prefixedName());
-
-                        mapContent.addLayer(layer);
-                    } catch (IllegalArgumentException e) {
-                        if (LOGGER.isLoggable(Level.SEVERE)) {
-                            LOGGER.log(
-                                    Level.SEVERE,
-                                    new StringBuilder("Wrapping GC in feature source: ")
-                                            .append(e.getLocalizedMessage())
-                                            .toString(),
-                                    e);
-                        }
-
-                        throw new ServiceException(
-                                "Internal error : unable to get reader for this coverage layer "
-                                        + mapLayerInfo);
-                    }
-                } else {
-                    throw new ServiceException(
-                            new StringBuffer(
-                                            "Internal error : unable to get reader for this coverage layer ")
-                                    .append(mapLayerInfo.toString())
-                                    .toString());
-                }
+                addRasterLayer(
+                        mapContent,
+                        request,
+                        times,
+                        elevations,
+                        mapLayerInfo,
+                        layerStyle,
+                        layerFilter,
+                        layerSort);
             } else if (layerType == MapLayerInfo.TYPE_WMS) {
-                WMSLayerInfo wmsLayer = (WMSLayerInfo) mapLayerInfo.getResource();
-                if (!checkWMSLayerMinMaxScale(wmsLayer, mapContent.getScaleDenominator())) continue;
-                WebMapServer wms = wmsLayer.getStore().getWebMapServer(null);
-                Layer gt2Layer = wmsLayer.getWMSLayer(null);
-                if (wmsLayer.isMetadataBBoxRespected()) {
-                    boolean isInsideBounnds =
-                            checkEnvelopOverLapWithNativeBounds(
-                                    mapContent.getViewport().getBounds(),
-                                    wmsLayer.getNativeBoundingBox());
-                    if (!isInsideBounnds) {
-                        if (LOGGER.isLoggable(Level.FINE))
-                            LOGGER.fine(
-                                    "Get Map Request BBOX is outside Layer "
-                                            + request.getLayers().get(i).getName()
-                                            + " metada BoundsIgnoring Layer,Ignoring");
-
-                        continue;
-                    }
-                }
-
-                // see if we can merge this layer with the previous one
-                boolean merged = false;
-                if (mapContent.layers().size() > 0) {
-                    org.geotools.map.Layer lastLayer =
-                            mapContent.layers().get(mapContent.layers().size() - 1);
-                    if (lastLayer instanceof WMSLayer) {
-                        WMSLayer lastWMS = (WMSLayer) lastLayer;
-                        WebMapServer otherWMS = lastWMS.getWebMapServer();
-                        if (otherWMS.equals(wms)) {
-                            lastWMS.addLayer(gt2Layer);
-                            merged = true;
-                        }
-                    }
-                }
-                if (!merged) {
-
-                    String style = request.getStyles().get(i).getName();
-                    style = (style == null) ? wmsLayer.getForcedRemoteStyle() : style;
-                    String imageFormat = request.getFormat();
-                    // if passed style does not exist in remote, throw exception
-                    if (!wmsLayer.isSelectedRemoteStyles(style))
-                        throw new IllegalArgumentException(
-                                "Unknown remote style "
-                                        + style
-                                        + " in cascaded layer "
-                                        + wmsLayer.getName()
-                                        + ", , re-configure the layer and WMS Store");
-
-                    // if the format is not selected then fall back to preffered
-                    if (!wmsLayer.isFormatValid(imageFormat))
-                        imageFormat = wmsLayer.getPreferredFormat();
-
-                    WMSLayer Layer = new WMSLayer(wms, gt2Layer, style, imageFormat);
-
-                    Layer.setTitle(wmsLayer.prefixedName());
-                    mapContent.addLayer(Layer);
-                }
+                addWMSLayer(mapContent, request, i, mapLayerInfo);
             } else if (layerType == MapLayerInfo.TYPE_WMTS) {
-                WMTSLayerInfo wmtsLayer = (WMTSLayerInfo) mapLayerInfo.getResource();
-                WebMapTileServer wmts = wmtsLayer.getStore().getWebMapTileServer(null);
-                Layer gt2Layer = wmtsLayer.getWMTSLayer(null);
-
-                WMTSMapLayer mapLayer = new WMTSMapLayer(wmts, gt2Layer);
-                mapLayer.setTitle(wmtsLayer.prefixedName());
-
-                mapLayer.setRawTime((String) Dispatcher.REQUEST.get().getRawKvp().get("time"));
-
-                mapContent.addLayer(mapLayer);
+                addWMTSLayer(mapContent, mapLayerInfo);
 
             } else {
                 throw new IllegalArgumentException("Unknown layer type " + layerType);
@@ -555,6 +354,261 @@ public class GetMap {
         }
 
         return map;
+    }
+
+    private void addWMTSLayer(WMSMapContent mapContent, MapLayerInfo mapLayerInfo)
+            throws IOException {
+        WMTSLayerInfo wmtsLayer = (WMTSLayerInfo) mapLayerInfo.getResource();
+        WebMapTileServer wmts = wmtsLayer.getStore().getWebMapTileServer(null);
+        Layer gt2Layer = wmtsLayer.getWMTSLayer(null);
+
+        WMTSMapLayer mapLayer = new WMTSMapLayer(wmts, gt2Layer);
+        mapLayer.setTitle(wmtsLayer.prefixedName());
+
+        mapLayer.setRawTime((String) Dispatcher.REQUEST.get().getRawKvp().get("time"));
+
+        mapContent.addLayer(mapLayer);
+    }
+
+    private void addWMSLayer(
+            WMSMapContent mapContent, GetMapRequest request, int i, MapLayerInfo mapLayerInfo)
+            throws IOException {
+        WMSLayerInfo wmsLayer = (WMSLayerInfo) mapLayerInfo.getResource();
+        if (!checkWMSLayerMinMaxScale(wmsLayer, mapContent.getScaleDenominator())) return;
+        WebMapServer wms = wmsLayer.getStore().getWebMapServer(null);
+        Layer gt2Layer = wmsLayer.getWMSLayer(null);
+        if (wmsLayer.isMetadataBBoxRespected()) {
+            boolean isInsideBounnds =
+                    checkEnvelopOverLapWithNativeBounds(
+                            mapContent.getViewport().getBounds(), wmsLayer.getNativeBoundingBox());
+            if (!isInsideBounnds) {
+                if (LOGGER.isLoggable(Level.FINE))
+                    LOGGER.fine(
+                            "Get Map Request BBOX is outside Layer "
+                                    + request.getLayers().get(i).getName()
+                                    + " metada BoundsIgnoring Layer,Ignoring");
+
+                return;
+            }
+        }
+
+        // see if we can merge this layer with the previous one
+        boolean merged = false;
+        if (mapContent.layers().size() > 0) {
+            org.geotools.map.Layer lastLayer =
+                    mapContent.layers().get(mapContent.layers().size() - 1);
+            if (lastLayer instanceof WMSLayer) {
+                WMSLayer lastWMS = (WMSLayer) lastLayer;
+                WebMapServer otherWMS = lastWMS.getWebMapServer();
+                if (otherWMS.equals(wms)) {
+                    lastWMS.addLayer(gt2Layer);
+                    merged = true;
+                }
+            }
+        }
+        if (!merged) {
+
+            String style = request.getStyles().get(i).getName();
+            style = (style == null) ? wmsLayer.getForcedRemoteStyle() : style;
+            String imageFormat = request.getFormat();
+            // if passed style does not exist in remote, throw exception
+            if (!wmsLayer.isSelectedRemoteStyles(style))
+                throw new IllegalArgumentException(
+                        "Unknown remote style "
+                                + style
+                                + " in cascaded layer "
+                                + wmsLayer.getName()
+                                + ", , re-configure the layer and WMS Store");
+
+            // if the format is not selected then fall back to preffered
+            if (!wmsLayer.isFormatValid(imageFormat)) imageFormat = wmsLayer.getPreferredFormat();
+
+            WMSLayer Layer = new WMSLayer(wms, gt2Layer, style, imageFormat);
+
+            Layer.setTitle(wmsLayer.prefixedName());
+            mapContent.addLayer(Layer);
+        }
+    }
+
+    private void addRasterLayer(
+            WMSMapContent mapContent,
+            GetMapRequest request,
+            List<Object> times,
+            List<Object> elevations,
+            MapLayerInfo mapLayerInfo,
+            Style layerStyle,
+            Filter layerFilter,
+            SortBy[] layerSort)
+            throws IOException {
+        // /////////////////////////////////////////////////////////
+        //
+        // Adding a coverage layer
+        //
+        // /////////////////////////////////////////////////////////
+        final GridCoverage2DReader reader = (GridCoverage2DReader) mapLayerInfo.getCoverageReader();
+        if (reader != null) {
+
+            // get the group of parameters tha this reader supports
+            GeneralParameterValue[] readParameters =
+                    wms.getWMSReadParameters(
+                            request,
+                            mapLayerInfo,
+                            layerFilter,
+                            layerSort,
+                            times,
+                            elevations,
+                            reader,
+                            false);
+            try {
+
+                try {
+                    CachedGridReaderLayer layer =
+                            new CachedGridReaderLayer(reader, layerStyle, readParameters);
+                    layer.setTitle(mapLayerInfo.getCoverage().prefixedName());
+                    mapContent.addLayer(layer);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } catch (IllegalArgumentException e) {
+                if (LOGGER.isLoggable(Level.SEVERE)) {
+                    LOGGER.log(
+                            Level.SEVERE,
+                            new StringBuilder("Wrapping GC in feature source: ")
+                                    .append(e.getLocalizedMessage())
+                                    .toString(),
+                            e);
+                }
+
+                throw new ServiceException(
+                        "Internal error : unable to get reader for this coverage layer "
+                                + mapLayerInfo);
+            }
+        } else {
+            throw new ServiceException(
+                    new StringBuffer(
+                                    "Internal error : unable to get reader for this coverage layer ")
+                            .append(mapLayerInfo.toString())
+                            .toString());
+        }
+    }
+
+    private void addLocalVectorLayer(
+            WMSMapContent mapContent,
+            GetMapRequest request,
+            List<Object> times,
+            List<Object> elevations,
+            List<Map<String, String>> viewParams,
+            String featureVersion,
+            int i,
+            MapLayerInfo mapLayerInfo,
+            Style layerStyle,
+            Filter layerFilter,
+            SortBy[] layerSort)
+            throws IOException {
+        FeatureSource<? extends FeatureType, ? extends Feature> source;
+        // /////////////////////////////////////////////////////////
+        //
+        // Adding a feature layer
+        //
+        // /////////////////////////////////////////////////////////
+        try {
+            source = mapLayerInfo.getFeatureSource(true, request.getCrs());
+
+            if (layerSort != null) {
+                // filter gets validated down in the renderer, but
+                // sorting is done without the renderer knowing, perform validation here
+                validateSort(source, layerSort, mapLayerInfo);
+            }
+
+            // NOTE for the feature. Here there was some code that
+            // sounded like:
+            // * get the bounding box from feature source
+            // * eventually reproject it to the actual CRS used for
+            // map
+            // * if no intersection, don't bother adding the feature
+            // source to the map
+            // This is not an optimization, on the contrary,
+            // computing the bbox may be
+            // very expensive depending on the data size. Using
+            // sigma.openplans.org data
+            // and a tiled client like OpenLayers, it dragged the
+            // server to his knees
+            // and the client simply timed out
+        } catch (IOException exp) {
+            if (LOGGER.isLoggable(Level.SEVERE)) {
+                LOGGER.log(
+                        Level.SEVERE,
+                        new StringBuffer("Getting feature source: ")
+                                .append(exp.getMessage())
+                                .toString(),
+                        exp);
+            }
+
+            throw new ServiceException("Internal error", exp);
+        }
+        FeatureLayer featureLayer = new FeatureLayer(source, layerStyle);
+        featureLayer.setTitle(mapLayerInfo.getFeature().prefixedName());
+        featureLayer.getUserData().put("abstract", mapLayerInfo.getDescription());
+
+        // mix the dimension related filter with the layer filter
+        Filter dimensionFilter = buildDimensionFilter(times, elevations, mapLayerInfo, request);
+        Filter filter =
+                SimplifyingFilterVisitor.simplify(Filters.and(ff, layerFilter, dimensionFilter));
+
+        final Query definitionQuery = new Query(source.getSchema().getName().getLocalPart());
+        definitionQuery.setVersion(featureVersion);
+        definitionQuery.setFilter(filter);
+        definitionQuery.setSortBy(layerSort);
+        if (viewParams != null) {
+            definitionQuery.setHints(new Hints(Hints.VIRTUAL_TABLE_PARAMETERS, viewParams.get(i)));
+        }
+
+        // check for startIndex + offset
+        final Integer startIndex = request.getStartIndex();
+        if (startIndex != null) {
+            QueryCapabilities queryCapabilities = source.getQueryCapabilities();
+            if (queryCapabilities.isOffsetSupported()) {
+                // fsource is required to support
+                // SortBy.NATURAL_ORDER so we don't bother checking
+                definitionQuery.setStartIndex(startIndex);
+            } else {
+                // source = new PagingFeatureSource(source,
+                // request.getStartIndex(), limit);
+                throw new ServiceException(
+                        "startIndex is not supported for the " + mapLayerInfo.getName() + " layer");
+            }
+        }
+
+        int maxFeatures =
+                request.getMaxFeatures() != null ? request.getMaxFeatures() : Integer.MAX_VALUE;
+        definitionQuery.setMaxFeatures(maxFeatures);
+
+        featureLayer.setQuery(definitionQuery);
+        mapContent.addLayer(featureLayer);
+    }
+
+    private void addRemoteVectorLayer(
+            WMSMapContent mapContent,
+            GetMapRequest request,
+            String featureVersion,
+            MapLayerInfo mapLayerInfo,
+            Style layerStyle,
+            Filter layerFilter,
+            SortBy[] layerSort) {
+        final SimpleFeatureSource source = mapLayerInfo.getRemoteFeatureSource();
+        FeatureLayer featureLayer = new FeatureLayer(source, layerStyle);
+        featureLayer.setTitle(mapLayerInfo.getRemoteFeatureSource().getSchema().getTypeName());
+
+        final Query definitionQuery = new Query(source.getSchema().getTypeName());
+        definitionQuery.setFilter(layerFilter);
+        definitionQuery.setVersion(featureVersion);
+        definitionQuery.setSortBy(layerSort);
+        int maxFeatures =
+                request.getMaxFeatures() != null ? request.getMaxFeatures() : Integer.MAX_VALUE;
+        definitionQuery.setMaxFeatures(maxFeatures);
+        featureLayer.setQuery(definitionQuery);
+
+        mapContent.addLayer(featureLayer);
     }
 
     protected Filter buildDimensionFilter(

@@ -21,6 +21,7 @@
         <include>jackson-databind*</include>
         <include>jackson-annotations*</include>
         <include>spatial4j*</include>
+        <include>gt-geojsondatastore*</include>
       </includes>
       <excludes>
         <exclude>commons-codec*</exclude>

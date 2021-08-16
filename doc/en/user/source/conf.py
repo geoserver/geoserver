@@ -211,7 +211,8 @@ html_context = {
   'github_user': 'geoserver',
   'github_repo': 'geoserver',
   'github_version': 'main',
-  'conf_py_path': 'doc/en/user/source'
+  'conf_py_path': 'doc/en/user/source',
+  'manual': manual,
 }
 
 

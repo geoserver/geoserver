@@ -81,7 +81,7 @@ public class Database extends ImportData {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("Database: ");
         if (parameters.containsKey(JDBCDataStoreFactory.USER.key)) {
             sb.append(parameters.get(JDBCDataStoreFactory.USER.key)).append("@");
         }

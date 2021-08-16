@@ -85,4 +85,9 @@ public class AttributeRemapTransform extends AbstractTransform implements Inline
             throws Exception {
         return feature;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "{" + "field='" + field + '\'' + ", type=" + type + '}';
+    }
 }

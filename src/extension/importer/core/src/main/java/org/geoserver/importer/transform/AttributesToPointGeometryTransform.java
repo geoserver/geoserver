@@ -113,4 +113,19 @@ public class AttributesToPointGeometryTransform extends AbstractTransform
     public String getLngField() {
         return lngField;
     }
+
+    @Override
+    public String toString() {
+        return "AttributesToPointGeometryTransform{"
+                + "latField='"
+                + latField
+                + '\''
+                + ", lngField='"
+                + lngField
+                + '\''
+                + ", pointFieldName='"
+                + pointFieldName
+                + '\''
+                + '}';
+    }
 }

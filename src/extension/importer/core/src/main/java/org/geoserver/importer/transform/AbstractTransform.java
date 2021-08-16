@@ -27,4 +27,10 @@ public abstract class AbstractTransform implements ImportTransform {
     public void init() {
         // do nothing
     }
+
+    @Override
+    public String toString() {
+        // at least provide the name of the transform in logs, if the subclass did not override
+        return getClass().getSimpleName();
+    }
 }

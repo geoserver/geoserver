@@ -11,8 +11,13 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.geotools.util.logging.Logging;
 
 public class MemoryImportStore implements ImportStore {
+
+    static final Logger LOGGER = Logging.getLogger(MemoryImportStore.class);
 
     AtomicLong idseq = new AtomicLong();
 
@@ -33,6 +38,7 @@ public class MemoryImportStore implements ImportStore {
                 return context;
             }
         }
+        LOGGER.log(Level.FINE, "Could not find import context with id: {0}", id);
         return null;
     }
 
@@ -50,12 +56,14 @@ public class MemoryImportStore implements ImportStore {
     public void add(ImportContext context) {
         context.setId(idseq.getAndIncrement());
         imports.add(context);
+        LOGGER.log(Level.FINE, "Added import context {0} ", context);
         if (imports.size() > 100) {
             clearCompletedImports();
         }
     }
 
     void clearCompletedImports() {
+        LOGGER.log(Level.FINE, "Clearing all completed imports from storage");
         List<ImportContext> completed =
                 collect(
                         new ImportCollector() {
@@ -71,15 +79,18 @@ public class MemoryImportStore implements ImportStore {
     public void save(ImportContext context) {
         imports.remove(context);
         imports.add(context);
+        LOGGER.log(Level.FINE, "Saved import context {0}", context);
     }
 
     @Override
     public void remove(ImportContext importContext) {
+        LOGGER.log(Level.FINE, "Removing import context {0}", importContext);
         imports.remove(importContext);
     }
 
     @Override
     public void removeAll() {
+        LOGGER.log(Level.FINE, "Removing all import contexts");
         imports.clear();
     }
 

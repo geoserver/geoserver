@@ -86,4 +86,9 @@ public class PostScriptTransform extends AbstractCommandLineTransform implements
             return scripts;
         }
     }
+
+    @Override
+    public String toString() {
+        return "PostScriptTransform{" + "options=" + options + ", name='" + name + '\'' + '}';
+    }
 }

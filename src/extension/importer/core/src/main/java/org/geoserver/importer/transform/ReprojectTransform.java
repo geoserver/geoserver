@@ -87,4 +87,16 @@ public class ReprojectTransform extends AbstractTransform implements InlineVecto
         }
         return feature;
     }
+
+    @Override
+    public String toString() {
+        return "ReprojectTransform{"
+                + "source="
+                + source
+                + ", target="
+                + target
+                + ", transform="
+                + transform
+                + '}';
+    }
 }

@@ -104,6 +104,6 @@ public class FileData extends ImportData {
 
     @Override
     public String toString() {
-        return file.getPath();
+        return "FileData{" + "file=" + file + '}';
     }
 }

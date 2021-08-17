@@ -9,10 +9,12 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.geoserver.schemalessfeatures.mongodb.MongoSchemalessUtils;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
@@ -41,10 +43,11 @@ public class MongoTypeFinder {
      * @return the type of the attribute
      */
     public Class<?> getAttributeType(String attribute) {
-        Document projection = new Document();
-        projection.put(MongoSchemalessUtils.toMongoPath(attribute), 1);
-        projection.put("_id", 0);
-        Document query = new Document(attribute, new Document("$ne", "null"));
+
+        String mongoPath = MongoSchemalessUtils.toMongoPath(attribute);
+        Bson projection =
+                Projections.fields(Projections.include(mongoPath), Projections.excludeId());
+        Bson query = Filters.ne(mongoPath, null);
         try (MongoCursor<DBObject> cursor =
                 collection.find(query).projection(projection).limit(1).cursor()) {
             Class<?> result = null;

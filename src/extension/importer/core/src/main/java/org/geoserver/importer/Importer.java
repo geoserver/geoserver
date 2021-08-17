@@ -351,6 +351,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         } else {
             contextStore.add(context);
         }
+        LOGGER.log(Level.FINE, "Created new context with id: {0}", context.getId());
         return context;
     }
 
@@ -384,16 +385,14 @@ public class Importer implements DisposableBean, ApplicationListener {
         if (!context.progress().isCanceled()) {
             contextStore.add(context);
         }
-        // JD: don't think we really need to maintain these, and they aren't persisted
-        // else {
-        //    context.setState(ImportContext.State.CANCELLED);
-        // }
+        LOGGER.log(Level.FINE, "Context created: {0}", context);
         return context;
     }
 
     public Long createContextAsync(
             final ImportData data, final WorkspaceInfo targetWorkspace, final StoreInfo targetStore)
             throws IOException {
+        LOGGER.log(Level.FINE, "Asynchronous context creation scheduled");
         return asynchronousJobs.submit(
                 new SecurityContextCopyingJob<ImportContext>() {
                     @Override
@@ -413,6 +412,7 @@ public class Importer implements DisposableBean, ApplicationListener {
      * saves the result in the {@link ImportStore}
      */
     public Long initAsync(final ImportContext context, final boolean prepData) {
+        LOGGER.log(Level.FINE, "Asynchronous context initialization scheduled");
         return asynchronousJobs.submit(
                 new SecurityContextCopyingJob<ImportContext>() {
                     @Override
@@ -437,6 +437,7 @@ public class Importer implements DisposableBean, ApplicationListener {
     }
 
     public void init(ImportContext context, boolean prepData) throws IOException {
+        LOGGER.log(Level.FINE, "Initializing context {0}", context);
         context.reattach(catalog);
 
         try {
@@ -453,6 +454,7 @@ public class Importer implements DisposableBean, ApplicationListener {
 
             // switch from init to pending as needed
             context.setState(ImportContext.State.PENDING);
+            LOGGER.log(Level.FINE, "Context initialized and set to pending: {0}", context);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to init the context ", e);
 
@@ -478,6 +480,11 @@ public class Importer implements DisposableBean, ApplicationListener {
         if (data == null) {
             return Collections.emptyList();
         }
+
+        LOGGER.log(
+                Level.FINE,
+                "Adding tasks for context {0} using data {1}",
+                new Object[] {context.getId(), data});
 
         if (prepData) {
             data.prepare(context.progress());
@@ -523,6 +530,8 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         // flatten out the directory into itself and all sub directories and process in order
         for (Directory dir : data.flatten()) {
+            LOGGER.log(Level.FINE, "Looking for data to import in {0}", dir);
+
             // ignore empty directories
             if (dir.getFiles().isEmpty()) continue;
 
@@ -608,6 +617,11 @@ public class Importer implements DisposableBean, ApplicationListener {
             ImportData data, DataFormat format, ImportContext context, boolean skipNoFormat)
             throws IOException {
 
+        LOGGER.log(
+                Level.FINE,
+                "Creating tasks for context {0}, based on data {1}, using format {2}",
+                new Object[] {context.getId(), data, format});
+
         List<ImportTask> tasks = new ArrayList<>();
 
         boolean direct = false;
@@ -619,12 +633,14 @@ public class Importer implements DisposableBean, ApplicationListener {
 
             if (format != null) {
                 targetStore = format.createStore(data, context.getTargetWorkspace(), catalog);
+                LOGGER.log(Level.FINE, "Created target store {0}", targetStore);
             }
 
             if (targetStore == null) {
                 // format unable to create store, switch to indirect import and use
                 // default store from catalog
                 targetStore = lookupDefaultStore();
+                LOGGER.log(Level.FINE, "Falling back on the default store {0}", targetStore);
 
                 direct = targetStore == null;
             }
@@ -635,6 +651,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         if (targetStore instanceof CoverageStoreInfo
                 && targetStore.getId() != null
                 && isMultiCoverageInput(format, data)) {
+            LOGGER.log(Level.FINE, "Preparing to harvest images into {0}", targetStore);
             CoverageStoreInfo cs = (CoverageStoreInfo) targetStore;
             GridCoverageReader reader = cs.getGridCoverageReader(null, null);
 
@@ -657,12 +674,12 @@ public class Importer implements DisposableBean, ApplicationListener {
             task.setError(null);
             task.setTransform(new RasterTransformChain());
             context.addTask(task);
+            LOGGER.log(Level.FINE, "Import task created {0}", task);
             return Arrays.asList(task);
         }
 
         if (format != null) {
-            // create the set of tasks by having the format list the available items from the input
-            // data
+            // add tasks by having the format list the available items from the input data
             for (ImportTask t : format.list(data, catalog, context.progress())) {
                 // initialize transform chain based on vector vs raster
                 if (t.getTransform() == null) {
@@ -686,6 +703,7 @@ public class Importer implements DisposableBean, ApplicationListener {
                 }
 
                 prep(t);
+                LOGGER.log(Level.FINE, "Import task created {0}", t);
                 tasks.add(t);
             }
         } else if (!skipNoFormat) {
@@ -693,6 +711,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             t.setDirect(direct);
             t.setStore(targetStore);
             prep(t);
+            LOGGER.log(Level.FINE, "Import task created {0}", t);
             tasks.add(t);
         }
 
@@ -713,8 +732,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             if (reader instanceof StructuredGridCoverage2DReader) {
                 StructuredGridCoverage2DReader structured = (StructuredGridCoverage2DReader) reader;
                 // clean up eventual ancillary files (NetCDF case) as the image mosaic might want
-                // them
-                // created in some other way
+                // them created in some other way
                 structured.delete(false);
                 return true;
             } else {
@@ -777,19 +795,22 @@ public class Importer implements DisposableBean, ApplicationListener {
             try {
                 StyleInfo style = null;
 
-                // first check the case of a style file being uploaded via zip along with rest of
-                // files
+                // check the case of a style file being uploaded via zip along with rest of files
                 if (task.getData() instanceof SpatialFile) {
                     SpatialFile file = (SpatialFile) task.getData();
                     if (file.getStyleFile() != null) {
                         style = createStyleFromFile(file.getStyleFile(), task);
+                        LOGGER.log(
+                                Level.FINE,
+                                "Found a style {0} for file {1}",
+                                new Object[] {style, file.getFile()});
                     }
                 }
 
                 if (style == null) {
                     if (r instanceof FeatureTypeInfo) {
                         // since this resource is still detached from the catalog we can't call
-                        // through to get it's underlying resource, so we depend on the "native"
+                        // through to get its underlying resource, so we depend on the "native"
                         // type provided from the format
                         FeatureType featureType =
                                 (FeatureType) task.getMetadata().get(FeatureType.class);
@@ -797,12 +818,19 @@ public class Importer implements DisposableBean, ApplicationListener {
                             style =
                                     styleGen.createStyle(
                                             styleHandler, (FeatureTypeInfo) r, featureType);
+                            LOGGER.log(
+                                    Level.FINE,
+                                    "Generated a style {0} for feature type {1}",
+                                    new Object[] {style, featureType});
                         } else {
                             throw new RuntimeException("Unable to compute style");
                         }
-
                     } else if (r instanceof CoverageInfo) {
                         style = styleGen.createStyle(styleHandler, (CoverageInfo) r);
+                        LOGGER.log(
+                                Level.FINE,
+                                "Generated a style {0} for coverage {1}",
+                                new Object[] {style, r});
                     } else {
                         throw new RuntimeException("Unknown resource type :" + r.getClass());
                     }
@@ -817,6 +845,7 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         // srs
         if (r.getSRS() == null) {
+            LOGGER.log(Level.FINE, "Resource lacks SRS, stopping task preparation: {0}", r);
             task.setState(ImportTask.State.NO_CRS);
             return false;
         } else if (task.getState() == ImportTask.State.NO_CRS) {
@@ -838,11 +867,14 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         // bounds
         if (r.getNativeBoundingBox() == null) {
+            LOGGER.log(
+                    Level.FINE, "Resource lacks bounding box, stopping task preparation: {0}", r);
             task.setState(ImportTask.State.NO_BOUNDS);
             return false;
         }
 
         task.setState(ImportTask.State.READY);
+        LOGGER.log(Level.FINE, "Task preparation complete, marked as READY: {0}", task);
         return true;
     }
 
@@ -907,15 +939,15 @@ public class Importer implements DisposableBean, ApplicationListener {
         context.setProgress(monitor);
         context.setState(ImportContext.State.RUNNING);
 
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("Running import " + context.getId());
-        }
+        LOGGER.log(Level.FINE, "Running import {0}", context.getId());
 
         for (ImportTask task : context.getTasks()) {
             if (!filter.include(task)) {
+                LOGGER.log(Level.FINE, "Filtering out task {0}", task);
                 continue;
             }
             if (!task.readyForImport()) {
+                LOGGER.log(Level.FINE, "Skipping task not ready for import: {0}", task);
                 continue;
             }
 
@@ -925,6 +957,7 @@ public class Importer implements DisposableBean, ApplicationListener {
             run(task);
         }
 
+        LOGGER.log(Level.FINE, "All tasks run for {0}", context);
         context.updated();
         contextStore.save(context);
 
@@ -951,6 +984,7 @@ public class Importer implements DisposableBean, ApplicationListener {
         if (task.getState() == ImportTask.State.COMPLETE) {
             return;
         }
+        LOGGER.log(Level.FINE, "Running task {0}", task);
         task.setState(ImportTask.State.RUNNING);
 
         if (task.isDirect()) {
@@ -1053,6 +1087,7 @@ public class Importer implements DisposableBean, ApplicationListener {
      * an import that involves consuming a data source directly
      */
     void doDirectImport(ImportTask task) throws IOException {
+        LOGGER.log(Level.FINE, "Running direct import for task {0}", task.getId());
         // TODO: this needs to be transactional in case of errors along the way
 
         // add the store, may have been added in a previous iteration of this task
@@ -1075,6 +1110,10 @@ public class Importer implements DisposableBean, ApplicationListener {
                     }
                 }
             }
+            LOGGER.log(
+                    Level.FINE,
+                    "Creating target store {0} for task {1}",
+                    new Object[] {task.getStore(), task.getId()});
             catalog.add(task.getStore());
         }
 
@@ -1629,14 +1668,26 @@ public class Importer implements DisposableBean, ApplicationListener {
         // changed to deal with name clashes
         // resource.setNativeName(name);
         resource.setEnabled(true);
+        LOGGER.log(
+                Level.FINE,
+                "Creating target resource {0} for task {1}",
+                new Object[] {resource, task.getId()});
         catalog.add(resource);
 
         // add the layer (and style)
         if (layer.getDefaultStyle().getId() == null) {
+            LOGGER.log(
+                    Level.FINE,
+                    "Creating default style {0} for task {0}",
+                    new Object[] {layer.getDefaultStyle(), task.getId()});
             catalog.add(layer.getDefaultStyle());
         }
 
         layer.setEnabled(true);
+        LOGGER.log(
+                Level.FINE,
+                "Creating target layer  {0} for task {1}",
+                new Object[] {layer, task.getId()});
         catalog.add(layer);
     }
 

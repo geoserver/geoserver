@@ -70,4 +70,9 @@ public class CreateIndexTransform extends AbstractTransform
             throw new Exception("Error creating index, SQL was : " + sql, error);
         }
     }
+
+    @Override
+    public String toString() {
+        return "CreateIndexTransform{" + "field='" + field + '\'' + '}';
+    }
 }

@@ -467,4 +467,40 @@ public class ImportContext implements Serializable {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    @Override
+    public String toString() {
+        return "ImportContext{"
+                + "id="
+                + id
+                + ", state="
+                + state
+                + ", data="
+                + data
+                + ", targetWorkspace="
+                + targetWorkspace
+                + ", targetStore="
+                + targetStore
+                + ", tasks="
+                + tasks
+                + ", defaultTransforms="
+                + defaultTransforms
+                + ", taskid="
+                + taskid
+                + ", created="
+                + created
+                + ", updated="
+                + updated
+                + ", user='"
+                + user
+                + '\''
+                + ", archive="
+                + archive
+                + ", message='"
+                + message
+                + '\''
+                + ", progress="
+                + progress
+                + '}';
+    }
 }

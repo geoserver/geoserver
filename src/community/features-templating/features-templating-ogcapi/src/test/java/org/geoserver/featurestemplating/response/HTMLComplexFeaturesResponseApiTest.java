@@ -1,31 +1,39 @@
 package org.geoserver.featurestemplating.response;
 
 import java.io.IOException;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
-import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class HTMLComplexFeaturesResponseApiTest extends TemplateComplexTestSupport {
 
-    @Test
-    public void getFilteredMappedFeature() throws IOException {
-        String requestParam = "HTMLGetFilteredMappedFeature";
-        String condition = "requestParam('" + requestParam + "')='true'";
+    private static final String MF_HTML = "HTMLMappedFeatureFilter";
+    private static final String MF_HTML_PARAM = "&" + MF_HTML + "=true";
+
+    @Override
+    public void onSetUp(SystemTestData testData) throws IOException {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo mappedFeature = catalog.getFeatureTypeByName("gsml", "MappedFeature");
+        String templateMappedFeature = "HTMLFilteredMappedFeature.xhtml";
         setUpTemplate(
-                condition,
+                "requestParam('" + MF_HTML + "')='true'",
                 SupportedFormat.HTML,
-                "HTMLFilteredMappedFeature.xhtml",
-                requestParam,
+                templateMappedFeature,
+                MF_HTML,
                 ".xhtml",
                 "gsml",
                 mappedFeature);
+    }
+
+    @Test
+    public void getFilteredMappedFeature() throws IOException {
         Document doc =
                 getAsDOM(
                         "ogc/features/collections/gsml:MappedFeature/items?f=text/html"
-                                + "&"
-                                + requestParam
-                                + "=true");
+                                + MF_HTML_PARAM);
 
         assertXpathCount(1, "//html/head/script", doc);
         assertXpathCount(1, "//html/head/style", doc);
@@ -65,10 +73,5 @@ public class HTMLComplexFeaturesResponseApiTest extends TemplateComplexTestSuppo
                 1,
                 "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li/ul[./li = 'interbedded component']",
                 doc);
-    }
-
-    @Override
-    protected String getTemplateFileName() {
-        return TemplateIdentifier.HTML.getFilename();
     }
 }

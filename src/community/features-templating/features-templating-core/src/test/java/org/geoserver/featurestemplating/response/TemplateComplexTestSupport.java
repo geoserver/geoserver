@@ -13,71 +13,24 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.base.Charsets;
-import java.io.File;
 import java.io.IOException;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
-import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.geoserver.featurestemplating.configuration.TemplateFileManager;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
 import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
-import org.geoserver.featurestemplating.configuration.TemplateLayerConfig;
 import org.geoserver.featurestemplating.configuration.TemplateRule;
+import org.geoserver.featurestemplating.configuration.TemplateRuleService;
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.AbstractAppSchemaTestSupport;
 import org.geoserver.test.FeatureChainingMockData;
-import org.junit.Before;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSupport {
-
-    Catalog catalog;
-    FeatureTypeInfo mappedFeature;
-    FeatureTypeInfo geologicUnit;
-    FeatureTypeInfo parentFeature;
-    GeoServerDataDirectory dd;
-
-    @Before
-    public void before() {
-        catalog = getCatalog();
-
-        mappedFeature = catalog.getFeatureTypeByName("gsml", "MappedFeature");
-        geologicUnit = catalog.getFeatureTypeByName("gsml", "GeologicUnit");
-        parentFeature = catalog.getFeatureTypeByName("ex", "FirstParentFeature");
-        dd = (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
-    }
-
-    protected void setUpMappedFeature() throws IOException {
-        setUpComplex("MappedFeature.json", mappedFeature);
-    }
-
-    protected void setUpMappedFeature(String fileName) throws IOException {
-        setUpComplex(fileName, mappedFeature);
-    }
-
-    protected void setUpComplex(String fileName, FeatureTypeInfo ft) throws IOException {
-        setUpComplex(fileName, "gsml", ft);
-    }
-
-    protected void setUpComplex(
-            String fileName, String workspace, String templateFileName, FeatureTypeInfo ft)
-            throws IOException {
-        String resourceLocation =
-                "workspaces/" + workspace + "/" + ft.getStore().getName() + "/" + ft.getName();
-        File file = dd.get(resourceLocation, templateFileName).file();
-        file.createNewFile();
-        dd.getResourceLoader().copyFromClassPath(fileName, file, getClass());
-    }
-
-    protected void setUpComplex(String fileName, String workspace, FeatureTypeInfo ft)
-            throws IOException {
-        setUpComplex(fileName, workspace, getTemplateFileName(), ft);
-    }
 
     protected JSON getJsonLd(String path) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
@@ -85,8 +38,8 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         return json(response);
     }
 
-    protected JSON postJsonLd(String xml) throws Exception {
-        MockHttpServletResponse response = postAsServletResponse("wfs", xml);
+    protected JSON postJsonLd(String path, String xml) throws Exception {
+        MockHttpServletResponse response = postAsServletResponse(path, xml);
         assertEquals(response.getContentType(), "application/ld+json");
         return json(response);
     }
@@ -108,16 +61,14 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         return json(response);
     }
 
-    protected JSON postJson(String xml) throws Exception {
-        MockHttpServletResponse response = postAsServletResponse("wfs", xml);
+    protected JSON postJson(String path, String xml) throws Exception {
+        MockHttpServletResponse response = postAsServletResponse(path, xml);
         String contentType = response.getContentType();
         // in case of GEOSJSON response with ogcapi, the output format is not
         // set to MockHttpServlet request, so skipping
         if (contentType != null) assertEquals(contentType, "application/json");
         return json(response);
     }
-
-    protected abstract String getTemplateFileName();
 
     protected void checkAdditionalInfo(JSONObject result) {
         assertNotNull(result.get("numberReturned"));
@@ -189,9 +140,197 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         rule.setProfileFilter(profile);
         rule.setOutputFormat(outputFormat);
         rule.setTemplateIdentifier(info.getIdentifier());
-        TemplateLayerConfig config = new TemplateLayerConfig();
-        config.addTemplateRule(rule);
-        ft.getMetadata().put(TemplateLayerConfig.METADATA_KEY, config);
-        getCatalog().save(ft);
+        TemplateRuleService ruleService = new TemplateRuleService(ft);
+        ruleService.saveRule(rule);
+    }
+
+    protected void checkMappedFeatureJSON(JSONObject feature) {
+        assertNotNull(feature);
+        String id = feature.getString("@id");
+        assertNotNull(id);
+        JSONObject geom = (JSONObject) feature.get("geometry");
+        assertNotNull(geom);
+        assertEquals(String.valueOf(geom.get("@type")), "Polygon");
+        assertNotNull(geom.get("wkt"));
+        checkSimpleArrayWithDynamicValues(feature);
+        if ("mf5".equals(id)) return; // this feature lacks the whole setup
+        JSONObject geologicUnit = feature.getJSONObject("gsml:GeologicUnit");
+        String geologicUnitDescr = geologicUnit.getString("description");
+        assertNotNull(geologicUnitDescr);
+        JSONArray composition = geologicUnit.getJSONArray("gsml:composition");
+        assertTrue(composition.size() > 0);
+        for (int i = 0; i < composition.size(); i++) {
+            JSONObject compositionObj = composition.getJSONObject(i);
+
+            String previousContextEl = compositionObj.getString("previousContextValue");
+            // check an ${../xpath} expression to be equal to the one
+            // acquired previously
+            assertEquals(geologicUnitDescr, previousContextEl);
+            JSONArray compositionPart =
+                    (JSONArray) ((JSONObject) composition.get(i)).get("gsml:compositionPart");
+            assertTrue(compositionPart.size() > 0);
+            for (int j = 0; j < compositionPart.size(); j++) {
+                JSONObject role = compositionPart.getJSONObject(j).getJSONObject("gsml:role");
+                assertNotNull(role);
+                JSONObject proportion =
+                        compositionPart.getJSONObject(j).getJSONObject("proportion");
+                assertNotNull(proportion);
+                JSONArray lithology = (JSONArray) compositionPart.getJSONObject(j).get("lithology");
+                assertTrue(lithology.size() > 0);
+            }
+        }
+    }
+
+    protected void checkSimpleArrayWithDynamicValues(JSONObject feature) {
+        JSONArray arrayWithDynamic =
+                feature.getJSONObject("gsml:positionalAccuracy").getJSONArray("valueArray");
+        String value = feature.getJSONObject("gsml:positionalAccuracy").getString("value");
+
+        assertEquals(value, arrayWithDynamic.getString(0));
+        assertEquals("someStaticVal", arrayWithDynamic.getString(1));
+        assertEquals("duplicated value: " + value, arrayWithDynamic.getString(2));
+    }
+
+    protected void checkInspireMappedFeature(JSONObject feature) {
+        assertNotNull(feature);
+        String id = feature.getString("@id");
+        assertNotNull(id);
+        JSONObject geom = (JSONObject) feature.get("geometry");
+        assertNotNull(geom);
+        assertEquals(String.valueOf(geom.get("type")), "Polygon");
+        assertNotNull(geom.get("coordinates"));
+        JSONObject properties = feature.getJSONObject("properties");
+        assertNotNull(properties);
+        assertNotNull(properties.getString("name"));
+        assertNotNull(properties.getString("gsml:GeologicUnit_description"));
+        assertNotNull(properties.getString("gsml:GeologicUnit_gsml:geologicUnitType"));
+        if (id.equals("mf1")) {
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_value"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_@codeSpace"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_@dataType"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_CGI_TermValue_@dataType"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_CGI_TermValue_value"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_name"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_vocabulary"));
+        } else if (id.equals("mf2") || id.equals("mf3")) {
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_gsml:role_value"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_gsml:role_@codeSpace"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_proportion_@dataType"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_proportion_CGI_TermValue_@dataType"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_proportion_CGI_TermValue_value"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_lithology_name"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_lithology_vocabulary"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_gsml:role_value"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_gsml:role_@codeSpace"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_proportion_@dataType"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_proportion_CGI_TermValue_@dataType"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_proportion_CGI_TermValue_value"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_lithology_name"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_lithology_vocabulary"));
+        } else if (id.equals("mf4")) {
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_value"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_@codeSpace"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_@dataType"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_CGI_TermValue_@dataType"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_CGI_TermValue_value"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_name_1"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_name_2"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_name_3"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_vocabulary"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_2_name"));
+            assertNotNull(
+                    properties.getString(
+                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_2_vocabulary"));
+        }
+    }
+
+    protected void checkMappedFeatureGeoJSON(JSONObject feature) {
+        assertNotNull(feature);
+        String id = feature.getString("@id");
+        assertNotNull(id);
+        JSONObject geom = (JSONObject) feature.get("geometry");
+        assertNotNull(geom);
+        assertEquals(String.valueOf(geom.get("type")), "Polygon");
+        assertNotNull(geom.get("coordinates"));
+        if ("mf5".equals(id)) return; // mf5 does not have all the structure expected
+        JSONObject geologicUnit = feature.getJSONObject("gsml:GeologicUnit");
+        JSONArray composition = geologicUnit.getJSONArray("gsml:composition");
+        assertTrue(composition.size() > 0);
+        for (int i = 0; i < composition.size(); i++) {
+            JSONArray compositionPart =
+                    (JSONArray) ((JSONObject) composition.get(i)).get("gsml:compositionPart");
+            assertTrue(compositionPart.size() > 0);
+            for (int j = 0; j < compositionPart.size(); j++) {
+                JSONObject role = compositionPart.getJSONObject(j).getJSONObject("gsml:role");
+                assertNotNull(role);
+                JSONObject proportion =
+                        compositionPart.getJSONObject(j).getJSONObject("proportion");
+                assertNotNull(proportion);
+                JSONArray lithology = (JSONArray) compositionPart.getJSONObject(j).get("lithology");
+                assertTrue(lithology.size() > 0);
+            }
+        }
     }
 }

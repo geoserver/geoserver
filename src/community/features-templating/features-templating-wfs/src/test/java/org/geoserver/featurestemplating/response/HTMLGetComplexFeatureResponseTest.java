@@ -1,32 +1,40 @@
 package org.geoserver.featurestemplating.response;
 
 import java.io.IOException;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
-import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSupport {
 
-    @Test
-    public void getMappedFeature() throws IOException {
-        String requestParam = "HTMLGetMappedFeature";
-        String condition = "requestParam('" + requestParam + "')='true'";
+    private static final String MF_HTML = "HTMLMappedFeature";
+    private static final String MF_HTML_PARAM = "&" + MF_HTML + "=true";
+
+    @Override
+    public void onSetUp(SystemTestData testData) throws IOException {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo mappedFeature = catalog.getFeatureTypeByName("gsml", "MappedFeature");
+        String templateMappedFeature = "HTMLMappedFeature.xhtml";
         setUpTemplate(
-                condition,
+                "requestParam('" + MF_HTML + "')='true'",
                 SupportedFormat.HTML,
-                "HTMLMappedFeature.xhtml",
-                requestParam,
+                templateMappedFeature,
+                MF_HTML,
                 ".xhtml",
                 "gsml",
                 mappedFeature);
+    }
+
+    @Test
+    public void getMappedFeature() {
         Document doc =
                 getAsDOM(
                         "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
                                 + "&outputFormat=text/html"
-                                + "&"
-                                + requestParam
-                                + "=true");
+                                + MF_HTML_PARAM);
 
         assertXpathCount(1, "//html/head/script", doc);
         assertXpathCount(1, "//html/head/style", doc);
@@ -75,10 +83,5 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
                 1,
                 "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li/ul[./li = 'fictitious component']",
                 doc);
-    }
-
-    @Override
-    protected String getTemplateFileName() {
-        return TemplateIdentifier.HTML.getFilename();
     }
 }

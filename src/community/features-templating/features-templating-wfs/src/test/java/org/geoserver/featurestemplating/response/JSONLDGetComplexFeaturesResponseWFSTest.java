@@ -6,23 +6,103 @@ package org.geoserver.featurestemplating.response;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.annotation.DirtiesContext;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class JSONLDGetComplexFeaturesResponseWFSTest extends JSONLDGetComplexFeaturesResponseTest {
+public class JSONLDGetComplexFeaturesResponseWFSTest extends TemplateComplexTestSupport {
+
+    private static final String MF_JSON_LD_TEMPLATE = "MappedFeatureJSONLD";
+
+    private static final String MF_JSON_LD_PARAM = "&" + MF_JSON_LD_TEMPLATE + "=true";
+
+    private static final String MF_JSON_LD_FILTERS = "MappedFeatureJSONLDFilters";
+
+    private static final String MF_JSON_LD_FILTERS_PARAM = "&" + MF_JSON_LD_FILTERS + "=true";
+
+    private static final String GU_JSON_LD_FILTERS = "GeologicFilterJSONLD";
+
+    private static final String GU_JSON_LD_FILTERS_PARAM = "&" + GU_JSON_LD_FILTERS + "=true";
+
+    private static final String INVALID = "InvalidJSONLD";
+    private static final String INVALID_PARAM = "&" + INVALID + "=true";
+
+    private static final String INVALID_GU = "InvalidJSONLDGu";
+    private static final String INVALID_GU_PARAM = "&" + INVALID_GU + "=true";
+
+    @Override
+    public void onSetUp(SystemTestData testData) throws IOException {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo mappedFeature = catalog.getFeatureTypeByName("gsml", "MappedFeature");
+        String templateMappedFeature = "MappedFeature.json";
+        setUpTemplate(
+                "requestParam('" + MF_JSON_LD_TEMPLATE + "')='true'",
+                SupportedFormat.JSONLD,
+                templateMappedFeature,
+                MF_JSON_LD_TEMPLATE,
+                ".json",
+                "gsml",
+                mappedFeature);
+
+        String mappedFeatureFilter = "MappedFeatureIteratingAndCompositeFilter.json";
+        setUpTemplate(
+                "requestParam('" + MF_JSON_LD_FILTERS + "')='true'",
+                SupportedFormat.JSONLD,
+                mappedFeatureFilter,
+                MF_JSON_LD_FILTERS,
+                ".json",
+                "gsml",
+                mappedFeature);
+
+        String geologicUnitFilter = "GeologicUnitDynamicStaticFilter.json";
+        FeatureTypeInfo geologic = getCatalog().getFeatureTypeByName("gsml", "GeologicUnit");
+
+        setUpTemplate(
+                "requestParam('" + GU_JSON_LD_FILTERS + "')='true'",
+                SupportedFormat.JSONLD,
+                geologicUnitFilter,
+                GU_JSON_LD_FILTERS,
+                ".json",
+                "gsml",
+                geologic);
+
+        String invalid = "FirstParentFeature_invalid.json";
+        FeatureTypeInfo parentF = getCatalog().getFeatureTypeByName("ex", "FirstParentFeature");
+        setUpTemplate(
+                "requestParam('" + INVALID + "')='true'",
+                SupportedFormat.JSONLD,
+                invalid,
+                INVALID,
+                ".json",
+                "ex",
+                parentF);
+
+        String invalidGeologic = "GeologicUnit_invalid.json";
+
+        setUpTemplate(
+                "requestParam('" + INVALID_GU + "')='true'",
+                SupportedFormat.JSONLD,
+                invalidGeologic,
+                INVALID_GU,
+                ".json",
+                "gsml",
+                geologic);
+    }
 
     @Test
     public void testJsonLdResponse() throws Exception {
-        setUpMappedFeature();
         StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=gsml:MappedFeature&outputFormat=");
-        sb.append("application%2Fld%2Bjson");
+        sb.append("application%2Fld%2Bjson").append(MF_JSON_LD_PARAM);
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         Object context = result.get("@context");
         checkContext(context);
@@ -46,13 +126,13 @@ public class JSONLDGetComplexFeaturesResponseWFSTest extends JSONLDGetComplexFea
 
     @Test
     public void testJsonLdQueryWithGET() throws Exception {
-        setUpMappedFeature();
         StringBuilder sb =
                 new StringBuilder("wfs?request=GetFeature&version=2.0")
                         .append("&TYPENAME=gsml:MappedFeature&outputFormat=")
                         .append("application%2Fld%2Bjson")
                         .append(
-                                "&cql_filter=features.gsml:GeologicUnit.description = 'Olivine basalt'");
+                                "&cql_filter=features.gsml:GeologicUnit.description = 'Olivine basalt'")
+                        .append(MF_JSON_LD_PARAM);
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         Object context = result.get("@context");
         checkContext(context);
@@ -64,12 +144,12 @@ public class JSONLDGetComplexFeaturesResponseWFSTest extends JSONLDGetComplexFea
 
     @Test
     public void testJsonLdQueryPointingToExpr() throws Exception {
-        setUpMappedFeature();
         StringBuilder sb =
                 new StringBuilder("wfs?request=GetFeature&version=2.0")
                         .append("&TYPENAME=gsml:MappedFeature&outputFormat=")
                         .append("application%2Fld%2Bjson")
-                        .append("&cql_filter= features.geometry.wkt IS NULL");
+                        .append("&cql_filter= features.geometry.wkt IS NULL")
+                        .append(MF_JSON_LD_PARAM);
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         Object context = result.get("@context");
         checkContext(context);
@@ -80,7 +160,6 @@ public class JSONLDGetComplexFeaturesResponseWFSTest extends JSONLDGetComplexFea
 
     @Test
     public void testJsonLdQueryWithPOST() throws Exception {
-        setUpMappedFeature();
         StringBuilder xml =
                 new StringBuilder("<wfs:GetFeature ")
                         .append(" service=\"WFS\" ")
@@ -97,7 +176,9 @@ public class JSONLDGetComplexFeaturesResponseWFSTest extends JSONLDGetComplexFea
                         .append("<ogc:Literal>Olivine basalt</ogc:Literal>")
                         .append("</ogc:PropertyIsEqualTo></ogc:Filter></wfs:Query>")
                         .append("</wfs:GetFeature>");
-        JSONObject result = (JSONObject) postJsonLd(xml.toString());
+        JSONObject result =
+                (JSONObject)
+                        postJsonLd("wfs?" + "&" + MF_JSON_LD_TEMPLATE + "=true", xml.toString());
         Object context = result.get("@context");
         checkContext(context);
         assertNotNull(context);
@@ -108,10 +189,9 @@ public class JSONLDGetComplexFeaturesResponseWFSTest extends JSONLDGetComplexFea
 
     @Test
     public void testInvalidTemplateResponse() throws Exception {
-        setUpComplex("FirstParentFeature_invalid.json", "ex", parentFeature);
         StringBuilder sb = new StringBuilder("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=ex:FirstParentFeature&outputFormat=");
-        sb.append("application%2Fld%2Bjson");
+        sb.append("application%2Fld%2Bjson").append(INVALID_PARAM);
         MockHttpServletResponse response = getAsServletResponse(sb.toString());
         assertTrue(
                 response.getContentAsString()
@@ -124,15 +204,133 @@ public class JSONLDGetComplexFeaturesResponseWFSTest extends JSONLDGetComplexFea
     public void testInvalidTemplateResponse2() throws Exception {
         // check that validation fails for an invalid attribute down in the template
         // the failing attribute also point to a previous context attribute (../)
-        setUpComplex("GeologicUnit_invalid.json", geologicUnit);
         StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=gsml:GeologicUnit&outputFormat=");
-        sb.append("application%2Fld%2Bjson");
+        sb.append("application%2Fld%2Bjson").append(INVALID_GU_PARAM);
         MockHttpServletResponse resp = getAsServletResponse(sb.toString());
         assertTrue(
                 resp.getContentAsString()
                         .contains(
                                 "Failed to validate template for feature type GeologicUnit. "
                                         + "Failing attribute is Key: invalidAttr Value: &amp;quot;gsml:notExisting&amp;quot;"));
+    }
+
+    @Test
+    public void testJsonLdWithFilterOnIteratingAndComposite() throws Exception {
+        // test filter capabilities in json-ld template
+        // filter on composite "$filter": "xpath('gml:description') = 'Olivine basalt'"
+        // filter on iterating "$filter": "xpath('gsml:ControlledConcept/@id') = 'cc.2'"
+        StringBuilder sb =
+                new StringBuilder("wfs?request=GetFeature&version=2.0")
+                        .append("&TYPENAME=gsml:MappedFeature&outputFormat=")
+                        .append("application%2Fld%2Bjson")
+                        .append(MF_JSON_LD_FILTERS_PARAM);
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        Object context = result.get("@context");
+        checkContext(context);
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        int size = features.size();
+        for (int i = 0; i < size; i++) {
+            JSONObject feature = features.getJSONObject(i);
+            if (i + 1 != 4) {
+                assertEquals(5, feature.size());
+                assertNull(feature.get("gsml:GeologicUnit"));
+            } else {
+                // second to last feature is the one having the condition matched
+                // thus GeologicUnit got encoded.
+                assertEquals(6, feature.size());
+                Object geologicUnit = feature.get("gsml:GeologicUnit");
+                assertNotNull(feature.get("gsml:GeologicUnit"));
+
+                JSONArray lithologyAr =
+                        (JSONArray)
+                                ((JSONObject) geologicUnit)
+                                        .getJSONArray("gsml:composition")
+                                        .getJSONObject(0)
+                                        .getJSONArray("gsml:compositionPart")
+                                        .getJSONObject(0)
+                                        .get("lithology");
+                assertEquals(1, lithologyAr.size());
+                JSONObject lithology = lithologyAr.getJSONObject(0);
+                // lithology element with cc2.2 is the one matching the filter
+                assertEquals("cc.2", lithology.getString("@id"));
+                assertEquals("name_2", lithology.getJSONObject("name").getString("value"));
+            }
+        }
+    }
+
+    @Test
+    public void testJsonLdWithFilterOnStaticAndDynamic() throws Exception {
+        // filter on dynamic:
+        // "$filter{xpath('gml:description')='Olivine basalt'},${gml:description}"
+        // filter on static
+        //  "@codeSpace": "$filter{xpath('../../gml:description')='Olivine
+        // basalt'},urn:cgi:classifierScheme:Example:CompositionPartRole"
+        StringBuilder sb =
+                new StringBuilder("wfs?request=GetFeature&version=2.0")
+                        .append("&TYPENAME=gsml:GeologicUnit&outputFormat=")
+                        .append("application%2Fld%2Bjson")
+                        .append(GU_JSON_LD_FILTERS_PARAM);
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        Object context = result.get("@context");
+        checkContext(context);
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        int size = features.size();
+        assertEquals(3, size);
+        for (int i = 0; i < size; i++) {
+            JSONObject geologicUnit = features.getJSONObject(i);
+            Object description = geologicUnit.get("description");
+            // filter on dynamic
+            if (description != null) {
+                assertEquals("Olivine basalt", description);
+            }
+            JSONArray composition = geologicUnit.getJSONArray("gsml:composition");
+            for (int j = 0; j < composition.size(); j++) {
+                JSONArray compositionPart =
+                        (JSONArray) ((JSONObject) composition.get(j)).get("gsml:compositionPart");
+                assertTrue(compositionPart.size() > 0);
+                JSONObject role = compositionPart.getJSONObject(0).getJSONObject("gsml:role");
+                Object codeSpace = role.get("@codeSpace");
+                // check filter on the static value
+                if (description == null) {
+                    assertNull(codeSpace);
+                } else {
+                    assertNotNull(codeSpace);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testJsonLdNotEncodingArrayFilteredOut() throws Exception {
+        // filter on dynamic:
+        // "$filter{xpath('gml:description')='Olivine basalt'},${gml:description}"
+        // filter on static
+        //  "@codeSpace": "$filter{xpath('../../gml:description')='Olivine
+        // basalt'},urn:cgi:classifierScheme:Example:CompositionPartRole"
+        StringBuilder sb =
+                new StringBuilder("wfs?request=GetFeature&version=2.0")
+                        .append("&TYPENAME=gsml:GeologicUnit&outputFormat=")
+                        .append("application%2Fld%2Bjson")
+                        .append(GU_JSON_LD_FILTERS_PARAM);
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        Object context = result.get("@context");
+        checkContext(context);
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        int size = features.size();
+        assertEquals(3, size);
+        for (int i = 0; i < size; i++) {
+            JSONArray composition = features.getJSONObject(i).getJSONArray("gsml:composition");
+            for (int j = 0; j < composition.size(); j++) {
+                JSONArray compositionPart =
+                        (JSONArray) ((JSONObject) composition.get(j)).get("gsml:compositionPart");
+                for (int z = 0; z < compositionPart.size(); z++) {
+                    assertNull(compositionPart.getJSONObject(z).get("lithology"));
+                }
+            }
+        }
     }
 }

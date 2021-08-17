@@ -3,7 +3,10 @@ package org.geoserver.featurestemplating.response;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.FeatureChainingMockData;
 import org.junit.Test;
@@ -11,13 +14,32 @@ import org.w3c.dom.Document;
 
 public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport {
 
+    private static final String MF_GML32_TEMPLATE = "MappedFeatureGML32";
+
+    private static final String MF_GML32_PARAM = "&" + MF_GML32_TEMPLATE + "=true";
+
+    @Override
+    public void onSetUp(SystemTestData testData) throws IOException {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo mappedFeature = catalog.getFeatureTypeByName("gsml", "MappedFeature");
+        String templateMappedFeature = "MappedFeatureGML32.xml";
+        setUpTemplate(
+                "requestParam('" + MF_GML32_TEMPLATE + "')='true'",
+                SupportedFormat.GML,
+                templateMappedFeature,
+                MF_GML32_TEMPLATE,
+                ".xml",
+                "gsml",
+                mappedFeature);
+    }
+
     @Test
     public void getMappedFeature() throws IOException {
-        setUpComplex("MappedFeatureGML32.xml", mappedFeature);
         Document doc =
                 getAsDOM(
                         "ogc/features/collections/gsml:MappedFeature"
-                                + "/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2");
+                                + "/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2&"
+                                + MF_GML32_PARAM);
         assertXpathCount(5, "//gsml:MappedFeature", doc);
         assertXpathCount(5, "//gsml:samplingFrame//@xlink:href", doc);
         assertXpathCount(5, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
@@ -42,31 +64,26 @@ public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport
 
     @Test
     public void getMappedFeatureBackwardsMappingToExpression() throws IOException {
-        setUpComplex("MappedFeatureGML32.xml", mappedFeature);
         Document doc =
                 getAsDOM(
                         "ogc/features/collections/gsml:MappedFeature/items?filter-lang=cql-text&f=application%2Fgml%2Bxml%3Bversion%3D3.2"
                                 + "&filter=wfs:FeatureCollection.wfs:member"
-                                + ".gsml:MappedFeature.gml:name='mf.GUNTHORPE FORMATION'");
+                                + ".gsml:MappedFeature.gml:name='mf.GUNTHORPE FORMATION'&"
+                                + MF_GML32_PARAM);
         assertXpathCount(1, "//gsml:MappedFeature", doc);
         assertXpathEvaluatesTo("mf1", "//gsml:MappedFeature/@gml:id", doc);
     }
 
     @Test
     public void getMappedFeatureBackwardsMappingPointingToExpression2() throws IOException {
-        setUpComplex("MappedFeatureGML32.xml", mappedFeature);
         Document doc =
                 getAsDOM(
                         "ogc/features/collections/gsml:MappedFeature/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2"
                                 + "&filter=wfs:FeatureCollection.wfs:member.gsml:MappedFeature.gsml:specification.gsml:GeologicUnit"
-                                + ".gsml:composition.gsml:CompositionPart.gsml:role='interbedded component'");
+                                + ".gsml:composition.gsml:CompositionPart.gsml:role='interbedded component'&"
+                                + MF_GML32_PARAM);
         assertXpathCount(3, "//gsml:MappedFeature", doc);
         assertXpathCount(0, "gsml:MappedFeature[@gml:id=mf1 or @gml:id=mf5]", doc);
-    }
-
-    @Override
-    protected String getTemplateFileName() {
-        return TemplateIdentifier.GML32.getFilename();
     }
 
     @Override

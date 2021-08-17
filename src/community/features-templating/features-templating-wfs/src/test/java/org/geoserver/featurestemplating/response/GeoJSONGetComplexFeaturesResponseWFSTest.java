@@ -7,66 +7,87 @@ package org.geoserver.featurestemplating.response;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.junit.Test;
 
-public class GeoJSONGetComplexFeaturesResponseWFSTest
-        extends GeoJSONGetComplexFeaturesResponseTest {
+public class GeoJSONGetComplexFeaturesResponseWFSTest extends TemplateComplexTestSupport {
+
+    private static final String GEOJSON_MF_TEMPLATE = "NormalGeoJSONMappedFeature";
+    private static final String GEOJSON_MF_PARAM = "&" + GEOJSON_MF_TEMPLATE + "=true";
+
+    @Override
+    public void onSetUp(SystemTestData testData) throws IOException {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo mappedFeature = catalog.getFeatureTypeByName("gsml", "MappedFeature");
+        String templateMappedFeature = "MappedFeatureGeoJSON.json";
+        setUpTemplate(
+                "requestParam('" + GEOJSON_MF_TEMPLATE + "')='true'",
+                SupportedFormat.GEOJSON,
+                templateMappedFeature,
+                GEOJSON_MF_TEMPLATE,
+                ".json",
+                "gsml",
+                mappedFeature);
+    }
 
     @Test
     public void testGeoJSONResponse() throws Exception {
-        setUpMappedFeature("MappedFeatureGeoJSON.json");
         StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
         sb.append("&TYPENAME=gsml:MappedFeature&outputFormat=");
         sb.append("application/json");
+        sb.append(GEOJSON_MF_PARAM);
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(5, features.size());
         for (int i = 0; i < features.size(); i++) {
             JSONObject feature = (JSONObject) features.get(i);
-            checkMappedFeature(feature);
+            checkMappedFeatureGeoJSON(feature);
         }
         checkAdditionalInfo(result);
     }
 
     @Test
     public void testGeoJSONQueryWithGET() throws Exception {
-        setUpMappedFeature("MappedFeatureGeoJSON.json");
         StringBuilder sb =
                 new StringBuilder("wfs?request=GetFeature&version=2.0")
                         .append("&TYPENAME=gsml:MappedFeature&outputFormat=")
                         .append("application/json")
                         .append(
                                 "&cql_filter=features.gsml:GeologicUnit.description = 'Olivine basalt'");
+        sb.append(GEOJSON_MF_PARAM);
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertTrue(features.size() == 1);
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
-        checkMappedFeature(features.getJSONObject(0));
+        checkMappedFeatureGeoJSON(features.getJSONObject(0));
         checkAdditionalInfo(result);
     }
 
     @Test
     public void testGeoJSONQueryPointingToExpr() throws Exception {
-        setUpMappedFeature("MappedFeatureGeoJSON.json");
         StringBuilder sb =
                 new StringBuilder("wfs?request=GetFeature&version=2.0")
                         .append("&TYPENAME=gsml:MappedFeature&outputFormat=")
                         .append("application/json")
                         .append("&cql_filter= features.name = 'FeatureName: MURRADUC BASALT'");
+        sb.append(GEOJSON_MF_PARAM);
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertTrue(features.size() == 1);
         JSONObject feature = features.getJSONObject(0);
         assertEquals("FeatureName: MURRADUC BASALT", feature.getString("name"));
-        checkMappedFeature(feature);
+        checkMappedFeatureGeoJSON(feature);
         checkAdditionalInfo(result);
     }
 
     @Test
     public void testGeoJSONQueryWithPOST() throws Exception {
-        setUpMappedFeature("MappedFeatureGeoJSON.json");
         StringBuilder xml =
                 new StringBuilder("<wfs:GetFeature ")
                         .append(" service=\"WFS\" ")
@@ -83,11 +104,12 @@ public class GeoJSONGetComplexFeaturesResponseWFSTest
                         .append("<ogc:Literal>Olivine basalt</ogc:Literal>")
                         .append("</ogc:PropertyIsEqualTo></ogc:Filter></wfs:Query>")
                         .append("</wfs:GetFeature>");
-        JSONObject result = (JSONObject) postJson(xml.toString());
+        JSONObject result =
+                (JSONObject) postJson("wfs?" + GEOJSON_MF_TEMPLATE + "=true", xml.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertTrue(features.size() == 1);
         assertEquals(((JSONObject) features.get(0)).get("@id").toString(), "mf4");
-        checkMappedFeature(features.getJSONObject(0));
+        checkMappedFeatureGeoJSON(features.getJSONObject(0));
         checkAdditionalInfo(result);
     }
 }

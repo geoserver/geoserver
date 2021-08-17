@@ -7,32 +7,48 @@ package org.geoserver.featurestemplating.response;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Set;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.junit.Test;
 
-public class FlatGeoJSONComplexFeaturesResponseAPITest
-        extends FlatGeoJSONComplexFeaturesResponseTest {
+public class FlatGeoJSONComplexFeaturesResponseAPITest extends TemplateComplexTestSupport {
 
-    @Test
-    public void testGeoJSONResponseOGCAPI() throws Exception {
-        String requestParam = "testGeoJSONResponseOGCAPI";
-        String condition = "requestParam('" + requestParam + "')='true'";
+    private static final String FLAT_MF_TEMPLATE = "FlatGeoJSONMappedFeature";
+
+    private static final String FLAT_MF_RULE_CQL =
+            "requestParam('" + FLAT_MF_TEMPLATE + "')='true'";
+
+    private static final String FLAT_MF_PARAM = "&FlatGeoJSONMappedFeature=true";
+
+    @Override
+    public void onSetUp(SystemTestData testData) throws IOException {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo mappedFeature = catalog.getFeatureTypeByName("gsml", "MappedFeature");
+        String templateMappedFeature = "FlatGeoJSONMappedFeature.json";
         setUpTemplate(
-                condition,
+                FLAT_MF_RULE_CQL,
                 SupportedFormat.GEOJSON,
-                "FlatGeoJSONMappedFeature.json",
-                requestParam,
+                templateMappedFeature,
+                FLAT_MF_TEMPLATE,
                 ".json",
                 "gsml",
                 mappedFeature);
+    }
+
+    @Test
+    public void testGeoJSONResponseOGCAPI() throws Exception {
+        String condition = "requestParam('" + FLAT_MF_TEMPLATE + "')='true'";
         String path =
                 "ogc/features/collections/"
                         + "gsml:MappedFeature"
                         + "/items?f=application%2Fgeo%2Bjson";
-        path += "&" + requestParam + "=true";
+        path += FLAT_MF_PARAM;
         JSONObject result = (JSONObject) getJson(path);
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(5, features.size());
@@ -45,16 +61,6 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest
 
     @Test
     public void testGeoJSONQueryOGCAPI() throws Exception {
-        String requestParam = "FlatGeoJSONComplexFeaturesResponseAPITestGeoJSONQueryOGCAPI";
-        String condition = "requestParam('" + requestParam + "')='true'";
-        setUpTemplate(
-                condition,
-                SupportedFormat.GEOJSON,
-                "FlatGeoJSONMappedFeature.json",
-                requestParam,
-                ".json",
-                "gsml",
-                mappedFeature);
         StringBuilder sb =
                 new StringBuilder("ogc/features/collections/")
                         .append("gsml:MappedFeature")
@@ -63,9 +69,7 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest
                         .append(
                                 "&filter= features.properties.gsml:GeologicUnit_gsml:composition.gsml:compositionPart.lithology.name")
                         .append(" = 'name_2' ")
-                        .append("&")
-                        .append(requestParam)
-                        .append("=true");
+                        .append(FLAT_MF_PARAM);
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertTrue(features.size() == 1);
@@ -76,21 +80,11 @@ public class FlatGeoJSONComplexFeaturesResponseAPITest
 
     @Test
     public void testGeoJSONResponseWithCustomSeparator() throws Exception {
-        String requestParam = "testGeoJSONResponseWithCustomSeparator";
-        String condition = "requestParam('" + requestParam + "')='true'";
-        setUpTemplate(
-                condition,
-                SupportedFormat.GEOJSON,
-                "FlatGeoJSONMappedFeature.json",
-                requestParam,
-                ".json",
-                "gsml",
-                mappedFeature);
         String path =
                 "ogc/features/collections/"
                         + "gsml:MappedFeature"
                         + "/items?f=application%2Fgeo%2Bjson";
-        path += "&" + requestParam + "=true";
+        path += FLAT_MF_PARAM;
         path += "&separator=.";
         JSONObject result = (JSONObject) getJson(path);
         JSONArray features = (JSONArray) result.get("features");

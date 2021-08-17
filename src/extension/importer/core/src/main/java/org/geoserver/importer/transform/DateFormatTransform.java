@@ -168,4 +168,23 @@ public class DateFormatTransform extends AttributeRemapTransform {
 
         throw new ParseException("Invalid date '" + value + "'", 0);
     }
+
+    @Override
+    public String toString() {
+        return "DateFormatTransform{"
+                + "field='"
+                + field
+                + '\''
+                + ", type="
+                + type
+                + ", datePattern="
+                + datePattern
+                + ", enddate='"
+                + enddate
+                + '\''
+                + ", presentation='"
+                + presentation
+                + '\''
+                + '}';
+    }
 }

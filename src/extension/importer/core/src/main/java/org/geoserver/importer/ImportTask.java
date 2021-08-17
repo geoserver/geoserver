@@ -323,4 +323,47 @@ public class ImportTask implements Serializable {
             typeSpec = DataUtilities.encodeType(featureType);
         }
     }
+
+    @Override
+    public String toString() {
+        return "ImportTask{"
+                + "id="
+                + id
+                + ", data="
+                + data
+                + ", store="
+                + store
+                + ", state="
+                + state
+                + ", itemid="
+                + itemid
+                + ", direct="
+                + direct
+                + ", updateMode="
+                + updateMode
+                + ", originalLayerName='"
+                + originalLayerName
+                + '\''
+                + ", layer="
+                + layer
+                + ", error="
+                + error
+                + ", transform="
+                + transform
+                + ", messages="
+                + messages
+                + ", metadata="
+                + metadata
+                + ", totalToProcess="
+                + totalToProcess
+                + ", numberProcessed="
+                + numberProcessed
+                + ", typeName='"
+                + typeName
+                + '\''
+                + ", typeSpec='"
+                + typeSpec
+                + '\''
+                + '}';
+    }
 }

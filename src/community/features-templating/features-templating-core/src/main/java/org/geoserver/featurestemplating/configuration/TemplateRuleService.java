@@ -69,14 +69,12 @@ public class TemplateRuleService {
      */
     public void saveRule(TemplateRule rule) {
         TemplateLayerConfig config = getTemplateLayerConfig();
-        if (config == null) {
-            config = new TemplateLayerConfig();
-            Set<TemplateRule> rules = config.getTemplateRules();
-            Set<TemplateRule> ruleset = updatePriorities(new ArrayList<>(rules), rule);
-            config.setTemplateRules(ruleset);
-            featureTypeInfo.getMetadata().put(TemplateLayerConfig.METADATA_KEY, config);
-            getCatalog().save(featureTypeInfo);
-        }
+        if (config == null) config = new TemplateLayerConfig();
+        Set<TemplateRule> rules = config.getTemplateRules();
+        Set<TemplateRule> ruleset = updatePriorities(new ArrayList<>(rules), rule);
+        config.setTemplateRules(ruleset);
+        featureTypeInfo.getMetadata().put(TemplateLayerConfig.METADATA_KEY, config);
+        getCatalog().save(featureTypeInfo);
     }
 
     private TemplateLayerConfig getTemplateLayerConfig() {

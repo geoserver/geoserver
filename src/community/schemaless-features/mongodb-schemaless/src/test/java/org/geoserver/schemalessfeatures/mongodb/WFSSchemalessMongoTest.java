@@ -199,4 +199,20 @@ public class WFSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
                     String.format("Error reading resource '%s' content.", resourcePath), exception);
         }
     }
+
+    @Test
+    public void testGetStationFeaturesWithFilterPOSTNotReturnEmptyCollection() throws Exception {
+        String postContent =
+                readResourceContent("./test-data/stations/query/postQueryTimeStamp.xml");
+        JSON json =
+                postAsJSON(
+                        "wfs?request=GetFeature&version=1.1.0&typename=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&outputFormat=application/json",
+                        postContent,
+                        "application/json");
+        JSONObject jsonObject = (JSONObject) json;
+        JSONArray features = jsonObject.getJSONArray("features");
+        assertEquals(9, features.size());
+    }
 }

@@ -41,7 +41,6 @@
       "unit": "km/h",
       "values": [
         {
-          "time": 1482146964,
           "value": 80
         }
       ]
@@ -55,7 +54,7 @@
           "value": 2019
         },
         {
-          "time": 1482147051,
+          "time": null,
           "value": 2015
         }
       ]

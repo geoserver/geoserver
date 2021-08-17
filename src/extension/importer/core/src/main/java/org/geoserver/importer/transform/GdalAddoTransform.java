@@ -106,4 +106,9 @@ public class GdalAddoTransform extends AbstractCommandLinePreTransform implement
     public List<Integer> getLevels() {
         return levels;
     }
+
+    @Override
+    public String toString() {
+        return "GdalAddoTransform{" + "options=" + options + ", levels=" + levels + '}';
+    }
 }

@@ -95,4 +95,20 @@ public class AttributeComputeTransform extends AbstractTransform implements Inli
 
         return feature;
     }
+
+    @Override
+    public String toString() {
+        return "AttributeComputeTransform{"
+                + "field='"
+                + field
+                + '\''
+                + ", type="
+                + type
+                + ", cql='"
+                + cql
+                + '\''
+                + ", expression="
+                + expression
+                + '}';
+    }
 }

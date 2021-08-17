@@ -8,7 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.SystemTestData;
+import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.geoserver.test.AbstractAppSchemaMockData;
 import org.geoserver.test.FeatureChainingMockData;
 import org.junit.Test;
@@ -16,13 +19,62 @@ import org.w3c.dom.Document;
 
 public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport {
 
+    protected static final String SIMPLIFIED_GML_TEMPLATE = "SimplifiedPropertyNamesGML32";
+
+    protected static final String SIMPLIFIED_GML_PARAM = "&" + SIMPLIFIED_GML_TEMPLATE + "=true";
+
+    protected static final String SIMPLIFIED_JSONLD_TEMPLATE = "SimplifiedPropertyNamesJSONLD";
+
+    protected static final String SIMPLIFIED_JSONLD_PARAM =
+            "&" + SIMPLIFIED_JSONLD_TEMPLATE + "=true";
+
+    protected static final String SIMPLIFIED_FLAT_TEMPLATE = "SimplifiedPropertyNamesFlat";
+
+    protected static final String SIMPLIFIED_FLAT_PARAM = "&" + SIMPLIFIED_FLAT_TEMPLATE + "=true";
+
+    @Override
+    public void onSetUp(SystemTestData testData) throws IOException {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo mappedFeature = catalog.getFeatureTypeByName("gsml", "MappedFeature");
+        String simplifiedGML = "SimplifiedPropertyNames.xml";
+        String simplifiedJSONLD = "SimplifiedPropertyNames.json";
+        String simplifiedFlat = "FlatSimplifiedPropertyNames.json";
+
+        setUpTemplate(
+                "requestParam('" + SIMPLIFIED_GML_TEMPLATE + "')='true'",
+                SupportedFormat.GML,
+                simplifiedGML,
+                SIMPLIFIED_GML_TEMPLATE,
+                ".xml",
+                "gsml",
+                mappedFeature);
+
+        setUpTemplate(
+                "requestParam('" + SIMPLIFIED_JSONLD_TEMPLATE + "')='true'",
+                SupportedFormat.JSONLD,
+                simplifiedJSONLD,
+                SIMPLIFIED_JSONLD_TEMPLATE,
+                ".json",
+                "gsml",
+                mappedFeature);
+
+        setUpTemplate(
+                "requestParam('" + SIMPLIFIED_FLAT_TEMPLATE + "')='true'",
+                SupportedFormat.GEOJSON,
+                simplifiedFlat,
+                SIMPLIFIED_FLAT_TEMPLATE,
+                ".json",
+                "gsml",
+                mappedFeature);
+    }
+
     @Test
     public void testGML() throws IOException {
-        setUpComplex("SimplifiedPropertyNames.xml", mappedFeature);
         Document doc =
                 getAsDOM(
                         "ogc/features/collections/gsml:MappedFeature"
-                                + "/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2");
+                                + "/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2&"
+                                + SIMPLIFIED_GML_PARAM);
         assertXpathCount(4, "//gsml:MappedFeature", doc);
         assertXpathCount(4, "//gsml:samplingFrame//@xlink:href", doc);
         assertXpathCount(4, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
@@ -37,15 +89,11 @@ public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport 
 
     @Test
     public void testJsonLd() throws Exception {
-        setUpComplex(
-                "SimplifiedPropertyNames.json",
-                "gsml",
-                TemplateIdentifier.JSONLD.getFilename(),
-                mappedFeature);
         String path =
                 "ogc/features/collections/"
                         + "gsml:MappedFeature"
-                        + "/items?f=application%2Fld%2Bjson";
+                        + "/items?f=application%2Fld%2Bjson&"
+                        + SIMPLIFIED_JSONLD_PARAM;
         JSONObject result = (JSONObject) getJsonLd(path);
         Object context = result.get("@context");
         checkContext(context);
@@ -73,15 +121,11 @@ public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport 
 
     @Test
     public void testFlatGeoJSON() throws Exception {
-        setUpComplex(
-                "FlatSimplifiedPropertyNames.json",
-                "gsml",
-                TemplateIdentifier.GEOJSON.getFilename(),
-                mappedFeature);
         String path =
                 "ogc/features/collections/"
                         + "gsml:MappedFeature"
-                        + "/items?f=application%2Fgeo%2Bjson";
+                        + "/items?f=application%2Fgeo%2Bjson&"
+                        + SIMPLIFIED_FLAT_PARAM;
         JSONObject result = (JSONObject) getJson(path);
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(4, features.size());
@@ -101,11 +145,6 @@ public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport 
                 "name_cc_5",
                 properties.getString(
                         "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_name"));
-    }
-
-    @Override
-    protected String getTemplateFileName() {
-        return TemplateIdentifier.GML32.getFilename();
     }
 
     @Override

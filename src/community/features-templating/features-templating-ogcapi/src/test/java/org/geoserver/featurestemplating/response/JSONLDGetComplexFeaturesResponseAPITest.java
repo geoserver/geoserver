@@ -9,24 +9,59 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.data.test.SystemTestData;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.annotation.DirtiesContext;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFeaturesResponseTest {
+public class JSONLDGetComplexFeaturesResponseAPITest extends TemplateComplexTestSupport {
+
+    protected static final String MF_JSON_LD = "MappedFeatureJSONLD";
+
+    protected static final String MF_JSON_LD_FILTERS = "MappedFeatureJSONLDFilters";
+
+    private static final String MF_JSON_LD_PARAM = "&" + MF_JSON_LD + "=true";
+
+    private static final String MF_JSON_LD_FILTER_PARAM = "&" + MF_JSON_LD_FILTERS + "=true";
+
+    @Override
+    public void onSetUp(SystemTestData testData) throws IOException {
+        Catalog catalog = getCatalog();
+        FeatureTypeInfo mappedFeature = catalog.getFeatureTypeByName("gsml", "MappedFeature");
+        String templateMappedFeature = "MappedFeature.json";
+        setUpTemplate(
+                "requestParam('" + MF_JSON_LD + "')='true'",
+                SupportedFormat.JSONLD,
+                templateMappedFeature,
+                MF_JSON_LD,
+                ".json",
+                "gsml",
+                mappedFeature);
+
+        String mappedFeatureFilter = "MappedFeatureIteratingAndCompositeFilter.json";
+        setUpTemplate(
+                "requestParam('" + MF_JSON_LD_FILTERS + "')='true'",
+                SupportedFormat.JSONLD,
+                mappedFeatureFilter,
+                MF_JSON_LD_FILTERS,
+                ".json",
+                "gsml",
+                mappedFeature);
+    }
 
     @Test
     public void testJsonLdResponseOGCAPI() throws Exception {
-        setUpMappedFeature();
         String path =
                 "ogc/features/collections/"
                         + "gsml:MappedFeature"
-                        + "/items?f=application%2Fld%2Bjson";
+                        + "/items?f=application%2Fld%2Bjson"
+                        + MF_JSON_LD_PARAM;
         JSONObject result = (JSONObject) getJsonLd(path);
         Object context = result.get("@context");
         checkContext(context);
@@ -41,7 +76,6 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
 
     @Test
     public void testJsonLdQueryOGCAPI() throws Exception {
-        setUpMappedFeature();
         StringBuilder sb =
                 new StringBuilder("ogc/features/collections/")
                         .append("gsml:MappedFeature")
@@ -49,7 +83,8 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
                         .append("&filter-lang=cql-text")
                         .append(
                                 "&filter= features.gsml:GeologicUnit.gsml:composition.gsml:compositionPart.lithology.name.value")
-                        .append(" = 'name_2' ");
+                        .append(" = 'name_2' ")
+                        .append(MF_JSON_LD_PARAM);
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         Object context = result.get("@context");
         checkContext(context);
@@ -61,12 +96,12 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
 
     @Test
     public void testJsonLdQueryEnvSubstitutionOnAttributeName() throws Exception {
-        setUpMappedFeature();
         StringBuilder sb =
                 new StringBuilder("ogc/features/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
-                        .append("&env=id:envId");
+                        .append("&env=id:envId")
+                        .append(MF_JSON_LD_PARAM);
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         Object context = result.get("@context");
         checkContext(context);
@@ -80,12 +115,12 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
 
     @Test
     public void testJsonLdQueryEnvSubstitutionOnSource() throws Exception {
-        setUpMappedFeature();
         StringBuilder sb =
                 new StringBuilder("ogc/features/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
-                        .append("&env=source:notComposition");
+                        .append("&env=source:notComposition")
+                        .append(MF_JSON_LD_PARAM);
         MockHttpServletResponse response = getAsServletResponse(sb.toString());
         // source changed validation should fail
         assertTrue(
@@ -97,12 +132,12 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
 
     @Test
     public void testJsonLdQueryEnvSubstitutionOnAttribute() throws Exception {
-        setUpMappedFeature();
         StringBuilder sb =
                 new StringBuilder("ogc/features/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
-                        .append("&env=positionalAccuracyType:CGI_NotNumericValue");
+                        .append("&env=positionalAccuracyType:CGI_NotNumericValue")
+                        .append(MF_JSON_LD_PARAM);
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         Object context = result.get("@context");
         checkContext(context);
@@ -117,12 +152,12 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
 
     @Test
     public void testJsonLdQueryEnvSubstitutionOnXpath() throws Exception {
-        setUpMappedFeature();
         StringBuilder sb =
                 new StringBuilder("ogc/features/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
-                        .append("&env=previous:@id");
+                        .append("&env=previous:@id")
+                        .append(MF_JSON_LD_PARAM);
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         Object context = result.get("@context");
         checkContext(context);
@@ -146,12 +181,12 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
 
     @Test
     public void testJsonLdQueryPointingToArray() throws Exception {
-        setUpMappedFeature();
         StringBuilder sb =
                 new StringBuilder("ogc/features/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
-                        .append("&filter= features.gsml:positionalAccuracy.valueArray1 > 120");
+                        .append("&filter= features.gsml:positionalAccuracy.valueArray1 > 120")
+                        .append(MF_JSON_LD_PARAM);
         JSONObject result = (JSONObject) getJsonLd(sb.toString());
         JSONArray features = result.getJSONArray("features");
         assertEquals(2, features.size());
@@ -165,12 +200,12 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
 
     @Test
     public void testJsonLdContextValidationFails() throws Exception {
-        setUpMappedFeature();
         StringBuilder sb =
                 new StringBuilder("ogc/features/collections/")
                         .append("gsml:MappedFeature")
                         .append("/items?f=application%2Fld%2Bjson")
-                        .append("&validation=true");
+                        .append("&validation=true")
+                        .append(MF_JSON_LD_PARAM);
         MockHttpServletResponse result = getAsServletResponse(sb.toString());
         String strResult = result.getContentAsString();
         assertTrue(
@@ -180,11 +215,11 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
 
     @Test
     public void testJsonLdResponseOGCAPISingleFeature() throws Exception {
-        setUpMappedFeature();
         String path =
                 "ogc/features/collections/"
                         + "gsml:MappedFeature"
-                        + "/items/mf4?f=application%2Fld%2Bjson";
+                        + "/items/mf4?f=application%2Fld%2Bjson"
+                        + MF_JSON_LD_PARAM;
         JSONObject result = (JSONObject) getJsonLd(path);
         Object context = result.get("@context");
         checkContext(context);
@@ -201,6 +236,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
     @Test
     public void testContentNegotiationByProfile() throws Exception {
         String profile = "header('Accept-Profile')='http://my-test-profile/ld+json'";
+        FeatureTypeInfo mappedFeature = getCatalog().getFeatureTypeByName("gsml", "MappedFeature");
         setUpTemplate(
                 null,
                 profile,
@@ -210,7 +246,6 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
                 ".json",
                 "gsml",
                 mappedFeature);
-        setUpMappedFeature();
         String path =
                 "ogc/features/collections/"
                         + "gsml:MappedFeature"
@@ -218,7 +253,7 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("GET");
         request.setContent(new byte[] {});
-        request.addHeader("Accept-Profile", "http://my-test-profile/json");
+        request.addHeader("Accept-Profile", "http://my-test-profile/ld+json");
         MockHttpServletResponse response = dispatch(request, null);
         JSONObject result = (JSONObject) json(response);
         Object context = result.get("@context");
@@ -230,5 +265,47 @@ public class JSONLDGetComplexFeaturesResponseAPITest extends JSONLDGetComplexFea
             JSONObject feature = (JSONObject) features.get(i);
             checkMappedFeatureJSON(feature);
         }
+    }
+
+    @Test
+    public void testJsonLdOgcFilterConcatenation() throws Exception {
+        // test templates filter concatenation with backward mapping
+        // "$filter": "xpath('gml:description') = 'Olivine basalt'",
+
+        String cqlFilter =
+                "features.gsml:GeologicUnit.gsml:composition.gsml:compositionPart.gsml:role.value = ";
+
+        // if querying for fictitious component expecting no result because the And condition
+        // with the template filter
+        JSONArray features =
+                getResultFilterConcatenated(
+                        cqlFilter, "'fictitious component'", MF_JSON_LD_FILTER_PARAM);
+
+        assertEquals(0, features.size());
+
+        // if querying for interbedded component expecting 1 feature as result;
+        // this time the result of template filter has this gms:role value.
+        JSONArray features2 =
+                getResultFilterConcatenated(
+                        cqlFilter, "'interbedded component'", MF_JSON_LD_FILTER_PARAM);
+        assertEquals(1, features2.size());
+    }
+
+    private JSONArray getResultFilterConcatenated(
+            String cql_filter, String equalsTo, String reqParam) throws Exception {
+        StringBuilder sb =
+                new StringBuilder("ogc/features/collections/")
+                        .append("gsml:MappedFeature")
+                        .append("/items?f=application%2Fld%2Bjson")
+                        .append("&filter-lang=cql-text")
+                        .append("&filter= ")
+                        .append(cql_filter)
+                        .append(equalsTo);
+        if (reqParam != null) sb.append(reqParam);
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        Object context = result.get("@context");
+        checkContext(context);
+        assertNotNull(context);
+        return result.getJSONArray("features");
     }
 }

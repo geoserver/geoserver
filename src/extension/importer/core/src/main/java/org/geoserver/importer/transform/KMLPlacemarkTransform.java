@@ -103,4 +103,9 @@ public class KMLPlacemarkTransform extends AbstractTransform implements InlineVe
         feature.setAttributes(newFeature.getAttributes());
         return feature;
     }
+
+    @Override
+    public String toString() {
+        return "KMLPlacemarkTransform{}";
+    }
 }

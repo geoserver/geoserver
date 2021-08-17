@@ -88,6 +88,10 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
     public void pre(ImportTask item, ImportData data) throws Exception {
         for (PreTransform tx : filter(transforms, PreTransform.class)) {
             try {
+                LOGGER.log(
+                        Level.FINE,
+                        "Task {0}, pre-transform {1} running on data {2}",
+                        new Object[] {item, tx, data});
                 tx.apply(item, data);
             } catch (Exception e) {
                 error(tx, e);
@@ -99,6 +103,10 @@ public abstract class TransformChain<T extends ImportTransform> implements Seria
     public void post(ImportTask task, ImportData data) throws Exception {
         for (PostTransform tx : filter(transforms, PostTransform.class)) {
             try {
+                LOGGER.log(
+                        Level.FINE,
+                        "Task {0}, post-transform {1} running using data {2}",
+                        new Object[] {task, tx, data});
                 tx.apply(task, data);
             } catch (Exception e) {
                 error(tx, e);

@@ -30,4 +30,9 @@ public class Table extends ImportData {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return "Table{" + "name='" + name + '\'' + ", db=" + db + '}';
+    }
 }

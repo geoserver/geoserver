@@ -868,7 +868,15 @@ GML output has two :code:`options`: Namespaces and SchemaLocation, that define t
 HTML
 """"
 
-HTML templates can define three :code:`options`: :code:`<script>` to allow defining javascript, :code:`<style>` to allow defining css content and :code:`<link>` to allow linking to external resources. The content of :code:`<script>` and :code:`<style>` needs to be provided as :code:`<![CDATA[`.
+HTML templates can use three :code:`options`: 
+
+* :code:`<script>` allows defining whathever javascript is needed, e.g. to create a tree view (as in the example below) or an openlayers map client.
+
+* :code:`<style>` allows defining css content.
+
+* :code:`<link>` allows linking to external resources.
+
+The content of :code:`<script>` and :code:`<style>` needs to be provided as :code:`<![CDATA[`.
 
 The following is an example of a HTML template that will output the Stations features as a tree view. Also in this example we are using the same filter on :code:`st:meteoObservations` as in the other template examples.:: 
 

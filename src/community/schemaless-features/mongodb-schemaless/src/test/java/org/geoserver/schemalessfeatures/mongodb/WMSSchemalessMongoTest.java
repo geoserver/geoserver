@@ -20,6 +20,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.feature.NameImpl;
 import org.geotools.image.test.ImageAssert;
@@ -312,5 +313,58 @@ public class WMSSchemalessMongoTest extends AbstractMongoDBOnlineTestSupport {
                                 + "&BBOX=96.251220703125,-57.81005859375,103.919677734375,-40.93505859375");
         assertEquals(result.getStatus(), 200);
         assertEquals(result.getContentType(), "image/png");
+    }
+
+    @Test
+    public void testStationsWmsGetFeatureInfoHTMLAllowed() throws Exception {
+        // execute the WMS GetFeatureInfo request
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true&QUERY_LAYERS=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&STYLES&LAYERS=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&INFO_FORMAT=text/html"
+                                + "&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG:4326&WIDTH=101&HEIGHT=101"
+                                + "&BBOX=91.23046875,-58.623046874999986,108.984375,-40.869140624999986");
+        assertEquals(200, response.getStatus());
+    }
+
+    @Test
+    public void testStationsWmsGetFeatureInfoXMLNotAllowed() throws Exception {
+        // execute the WMS GetFeatureInfo request
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wms?SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true&QUERY_LAYERS=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&STYLES&LAYERS=gs:"
+                                + StationsTestSetup.COLLECTION_NAME
+                                + "&INFO_FORMAT=text/xml"
+                                + "&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG:4326&WIDTH=101&HEIGHT=101"
+                                + "&BBOX=91.23046875,-58.623046874999986,108.984375,-40.869140624999986");
+        String respMsg = response.getContentAsString();
+        assertTrue(
+                respMsg.contains(
+                        "Schemaless support for GetFeatureInfo is not available for text/xml"));
+    }
+
+    @Test
+    public void testDispatcherCallbackNotBlockingNonSchemaless() throws Exception {
+        String layerName = getLayerId(MockData.BRIDGES);
+
+        // request a non schemaless feature type
+        String base2d =
+                "wms?version=1.1.1&format=png&info_format=text/xml&request=GetFeatureInfo&layers="
+                        + layerName
+                        + "&query_layers="
+                        + layerName
+                        + "&styles=stacker&bbox=-1,-1,1,1&srs=EPSG:4326&feature_count=10";
+
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        base2d + "&width=" + 100 + "&height=" + 100 + "&x=" + 50 + "&y=" + 50);
+        assertEquals(200, response.getStatus());
     }
 }

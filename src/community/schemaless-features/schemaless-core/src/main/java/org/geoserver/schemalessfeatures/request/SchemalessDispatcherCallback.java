@@ -41,20 +41,13 @@ public class SchemalessDispatcherCallback extends AbstractDispatcherCallback {
     @Override
     public Operation operationDispatched(Request request, Operation operation) {
         String service = request.getService();
-        String outputFormat = null;
-        Object infoRequest = operation.getParameters()[0];
+        String outputFormat = request.getOutputFormat();
+        if (outputFormat == null)
+            outputFormat =
+                    request.getKvp() != null ? (String) request.getKvp().get("INFO_FORMAT") : null;
         boolean allowRequest = true;
-        if (infoRequest instanceof GetFeatureInfoRequest) {
-            GetFeatureInfoRequest getInfoRequest = (GetFeatureInfoRequest) infoRequest;
-            boolean isSchemaless =
-                    isSchemalessTypeBeingRequested((GetFeatureInfoRequest) infoRequest);
-            outputFormat = getInfoRequest.getInfoFormat();
-            allowRequest = !(!isOutputFormatSupported(outputFormat) && isSchemaless);
-        } else if (isGetFeatureRequest(service, request.getRequest())) {
-            boolean isSchemaless = isSchemalessTypeBeingRequested(operation);
-            outputFormat = request.getOutputFormat();
-            allowRequest = !(isSchemaless && !isOutputFormatSupported(outputFormat));
-        }
+        if (outputFormat != null)
+            allowRequest = allowRequest(operation, outputFormat, service, request.getRequest());
         if (!allowRequest)
             throw new UnsupportedOperationException(
                     "Schemaless support for "
@@ -65,8 +58,7 @@ public class SchemalessDispatcherCallback extends AbstractDispatcherCallback {
         return super.operationDispatched(request, operation);
     }
 
-    private boolean isSchemalessTypeBeingRequested(Operation operation) {
-        GetFeatureRequest getFeatureRequest = GetFeatureRequest.adapt(operation.getParameters()[0]);
+    private boolean isSchemalessTypeBeingRequested(GetFeatureRequest getFeatureRequest) {
         List<Query> queries = getFeatureRequest.getQueries();
         if (getFeatureRequest != null && queries != null && !queries.isEmpty()) {
             for (Query q : queries) {
@@ -102,18 +94,46 @@ public class SchemalessDispatcherCallback extends AbstractDispatcherCallback {
         return false;
     }
 
+    private boolean isSchemalessTypeBeingRequested(Object request, String service, String method) {
+        boolean isSchemaless = false;
+        if (request instanceof GetFeatureInfoRequest)
+            isSchemaless = isSchemalessTypeBeingRequested((GetFeatureInfoRequest) request);
+        else if (isGetFeatureRequest(service, method))
+            isSchemaless = isSchemalessTypeBeingRequested(GetFeatureRequest.adapt(request));
+        return isSchemaless;
+    }
+
+    private boolean allowRequest(
+            Operation operation, String outputFormat, String service, String method) {
+        boolean hasParams =
+                operation != null
+                        && operation.getParameters() != null
+                        && operation.getParameters().length > 0;
+        boolean allowRequest = true;
+        boolean isSchemaless = false;
+        if (hasParams) {
+            Object request = operation.getParameters()[0];
+            isSchemaless = isSchemalessTypeBeingRequested(request, service, method);
+        }
+        if (isSchemaless) {
+            allowRequest = isOutputFormatSupported(outputFormat);
+        }
+        return allowRequest;
+    }
+
     private boolean isSchemalessTypeBeingRequested(GetFeatureInfoRequest getFeatureInfoRequest) {
         List<MapLayerInfo> layerInfos = getFeatureInfoRequest.getQueryLayers();
+        boolean result = false;
         for (MapLayerInfo l : layerInfos) {
             FeatureTypeInfo fti = catalog.getFeatureTypeByName(l.getName());
             try {
                 if (fti != null && fti.getFeatureType() instanceof DynamicFeatureType) {
-                    return false;
+                    result = true;
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        return true;
+        return result;
     }
 }

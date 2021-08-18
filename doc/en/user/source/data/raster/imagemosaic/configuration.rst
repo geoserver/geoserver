@@ -70,6 +70,12 @@ The table below describes the various elements in this configuration file.
    * - LocationAttribute
      - Y
      - The name of the attribute path in the shapefile index. Default is ``location``.
+   * - TimeAttribute
+     - N
+     - Specifies the name of the time-variant attribute.
+   * - ElevationAttribute
+     - N
+     - Specifies the name of the elevation attribute.
    * - SuggestedSPI
      - Y
      - Suggested plugin for reading the image files.
@@ -98,6 +104,8 @@ A sample configuration file follows::
   Caching=false
   ExpandToRGB=false
   LocationAttribute=location
+  TimeAttribute=ingestion
+  ElevationAttribute=elevation
   SuggestedSPI=it.geosolutions.imageioimpl.plugins.tiff.TIFFImageReaderSpi
   SuggestedFormat=org.geotools.gce.geotiff.GeoTiffFormat
   CheckAuxiliaryMetadata=false
@@ -201,7 +209,7 @@ Here is a sample :file:`datastore.properties` file for a PostGIS index via JNDI:
 :file:`indexer.properties`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In addition to the required envelope and location attributes, the schema for the index store may expose other custom attributes which can be used later for filtering the ImageMosaic granules on the fly during a WMS or WCS request or to diver WMS and WCS dimensions like TIME, ELEVATION and so on. This is configured by the :file:`indexer.properties` file:
+In addition to the required envelope and location attributes, the schema for the index store may expose other custom attributes which can later be used for filtering the ImageMosaic granules on the fly during a WMS or WCS request.  These include the attributes to support the WMS and WCS dimensions (i.e. TIME and ELEVATION), as optionally specified in the Primary configuration file above.  This is configured by the :file:`indexer.properties` file:
 
 .. list-table::
    :widths: 15 5 80
@@ -217,12 +225,6 @@ In addition to the required envelope and location attributes, the schema for the
    * - PropertyCollectors
      - Y
      - A comma-separated list of PropertyCollectors. Each entry in the list includes the extractor class, the file name (within square brackets ``[ ]`` and not including the ``.properties`` suffix) containing the regular expression needed to extract the attribute value from the granule file name, and the attribute name (within parentheses ``( )``). The instance of the extractor class also indicates the type of object computed by the specific collector, so a ``TimestampFileNameExtractorSPI`` will return ``Timestamps`` while a ``DoubleFileNameExtractorSPI`` will return ``Double`` numbers.
-   * - TimeAttribute
-     - N
-     - Specifies the name of the time-variant attribute.
-   * - ElevationAttribute
-     - N
-     - Specifies the name of the elevation attribute.
    * - AuxiliaryFile
      - N
      - Path to an auxiliary file to be used for internal purposes (For example: when dealing with NetCDF granules, it refers to the NetCDF XML ancillary file.)
@@ -277,8 +279,6 @@ Here is a sample :file:`indexer.properties` file::
 
     Schema=*the_geom:Polygon,location:String,ingestion:java.util.Date,elevation:Double
     PropertyCollectors=TimestampFileNameExtractorSPI[timeregex](ingestion),DoubleFileNameExtractorSPI[elevationregex](elevation)
-    TimeAttribute=ingestion
-    ElevationAttribute=elevation
     Caching=false
     AbsolutePath=false
 

@@ -6,16 +6,19 @@
         <notes><![CDATA[file name: gt-swing]]></notes>
         <gav regex="true">^org\.geotools:gt-swing:.*$</gav>
         <cve>CVE-2015-6737</cve>
+        <cpe>cpe:/a:widgets_project:widgets</cpe>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: gt-coverage.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.geotools/gt\-coverage@.*$</packageUrl>
         <cpe>cpe:/a:image_processing_software:image_processing_software</cpe>
+        <cpe>cpe:/a:processing:processing</cpe>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: gt-http-commons-25-SNAPSHOT.jar]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.geotools/gt\-http\-commons@.*$</packageUrl>
         <cpe>cpe:/a:apache:commons-httpclient</cpe>
+        <cpe>cpe:/a:apache:httpclient</cpe>
     </suppress>
     <suppress>
         <notes><![CDATA[file name: imageio-ext-arcgrid-1.1.24.jar]]></notes>
@@ -34,6 +37,11 @@
         <cpe>cpe:/a:mysql:mysql_server</cpe>
     </suppress>
     <suppress>
+        <notes><![CDATA[file name: jcc-11.5.6.0.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.ibm\.db2/jcc@.*$</packageUrl>
+        <cpe>cpe:/a:ibm:db2_server</cpe>
+    </suppress>
+    <suppress>
         <notes><![CDATA[file name: gt-mongodb.jar]]></notes>
         <gav regex="true">^org\.geotools:gt-mongodb:.*$</gav>
         <cpe>cpe:/a:mongodb:mongodb</cpe>
@@ -49,13 +57,39 @@
         <cpe>cpe:/a:arc:arc</cpe>
     </suppress>
     <suppress>
-        <notes><![CDATA[file name: gt-swing.jar]]></notes>
-        <gav regex="true">^org\.geotools:gt-swing:.*$</gav>
-        <cpe>cpe:/a:widgets_project:widgets</cpe>
-    </suppress>
-    <suppress>
         <notes><![CDATA[file name: gt-app-schema-resolver.jar]]></notes>
         <gav regex="true">^org\.geotools:gt-app-schema-resolver:.*$</gav>
         <cve>CVE-2018-13661</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: log4j-1.2.17.jar. Neither the Log4J SocketServer nor the SMTP appender are used in the project]]></notes>
+        <packageUrl regex="true">^pkg:maven/log4j/log4j@.*$</packageUrl>
+        <cve>CVE-2019-17571</cve>
+        <cve>CVE-2020-9488</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: gt-wps-NNNN.jar ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.geotools/gt\-wps@.*$</packageUrl>
+        <cpe>cpe:/a:processing:processing</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: net.opengis.wps-NNNN.jar]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.geotools\.ogc/net\.opengis\.wps@.*$</packageUrl>
+        <cpe>cpe:/a:processing:processing</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: org.geoserver.extension:gs-wps-cluster-hazelcast:NNNN]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.geoserver\.extension/gs\-wps\-cluster\-hazelcast@.*$</packageUrl>
+        <cpe>cpe:/a:hazelcast:hazelcast</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: org.geoserver.community:gs-sec-oauth2-openid-connect:NNNN]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.geoserver\.community/gs\-sec\-oauth2\-openid\-connect@.*$</packageUrl>
+        <cpe>cpe:/a:openid:openid</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[file name: org.geoserver.community:gs-sec-keycloak:NNNN]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.geoserver\.community/gs\-sec\-keycloak@.*$</packageUrl>
+        <cpe>cpe:/a:keycloak:keycloak</cpe>
     </suppress>
 </suppressions>

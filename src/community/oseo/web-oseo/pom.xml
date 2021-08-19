@@ -63,13 +63,6 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-oseo-core</artifactId>
-      <version>${gs.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
       <artifactId>gs-oseo-service</artifactId>
       <version>${gs.version}</version>
       <classifier>tests</classifier>

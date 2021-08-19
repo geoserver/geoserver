@@ -352,9 +352,9 @@ public class ServiceInfoImpl implements ServiceInfo {
         }
 
         final ServiceInfo other = (ServiceInfo) obj;
-        if (abstrct == null) {
+        if (getAbstract() == null) {
             if (other.getAbstract() != null) return false;
-        } else if (!abstrct.equals(other.getAbstract())) return false;
+        } else if (!getAbstract().equals(other.getAbstract())) return false;
         if (accessConstraints == null) {
             if (other.getAccessConstraints() != null) return false;
         } else if (!accessConstraints.equals(other.getAccessConstraints())) return false;
@@ -390,9 +390,9 @@ public class ServiceInfoImpl implements ServiceInfo {
         if (schemaBaseURL == null) {
             if (other.getSchemaBaseURL() != null) return false;
         } else if (!schemaBaseURL.equals(other.getSchemaBaseURL())) return false;
-        if (title == null) {
+        if (getTitle() == null) {
             if (other.getTitle() != null) return false;
-        } else if (!title.equals(other.getTitle())) return false;
+        } else if (!getTitle().equals(other.getTitle())) return false;
         if (verbose != other.isVerbose()) return false;
         if (versions == null) {
             if (other.getVersions() != null) return false;

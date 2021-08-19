@@ -498,9 +498,9 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         if (id == null) {
             if (other.getId() != null) return false;
         } else if (!id.equals(other.getId())) return false;
-        if (_abstract == null) {
+        if (getAbstract() == null) {
             if (other.getAbstract() != null) return false;
-        } else if (!_abstract.equals(other.getAbstract())) return false;
+        } else if (!getAbstract().equals(other.getAbstract())) return false;
         if (alias == null) {
             if (other.getAlias() != null) return false;
         } else if (!alias.equals(other.getAlias())) return false;
@@ -541,9 +541,9 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         if (store == null) {
             if (other.getStore() != null) return false;
         } else if (!store.equals(other.getStore())) return false;
-        if (title == null) {
+        if (this.getTitle() == null) {
             if (other.getTitle() != null) return false;
-        } else if (!title.equals(other.getTitle())) return false;
+        } else if (!this.getTitle().equals(other.getTitle())) return false;
         return true;
     }
 }

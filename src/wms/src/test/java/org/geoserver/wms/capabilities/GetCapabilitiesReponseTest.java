@@ -58,7 +58,7 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
         Catalog catalog = getCatalog();
         GeoServer geoServer = getGeoServer();
 
-        LayerGroupInfo groupInfo = catalog.getLayerGroupByName("nature");
+        LayerGroupInfo groupInfo = catalog.getLayerGroupByName(NATURE_GROUP);
         GrowableInternationalString title = new GrowableInternationalString();
         title.add(Locale.ENGLISH, "a i18n title for group nature");
         title.add(Locale.ITALIAN, "titolo italiano");
@@ -75,17 +75,25 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
         keywordInfo2.setLanguage(Locale.ITALIAN.getLanguage());
         groupInfo.getKeywords().add(keywordInfo);
         groupInfo.getKeywords().add(keywordInfo2);
+        groupInfo.setMode(LayerGroupInfo.Mode.NAMED);
         catalog.save(groupInfo);
 
-        LayerInfo li = catalog.getLayerByName(getLayerId(MockData.FIFTEEN));
+        LayerInfo fifteen = catalog.getLayerByName(getLayerId(MockData.FIFTEEN));
         title = new GrowableInternationalString();
         title.add(Locale.ENGLISH, "a i18n title for layer fifteen");
         _abstract = new GrowableInternationalString();
         _abstract.add(Locale.ENGLISH, "a i18n abstract for layer fifteen");
-        li.setInternationalTitle(title);
-        li.setInternationalAbstract(_abstract);
+        fifteen.setInternationalTitle(title);
+        fifteen.setInternationalAbstract(_abstract);
+        catalog.save(fifteen);
 
-        catalog.save(li);
+        LayerInfo lakes = catalog.getLayerByName(getLayerId(MockData.LAKES));
+        title = new GrowableInternationalString();
+        title.add(Locale.ENGLISH, "a i18n title for layer lakes");
+        lakes.setTitle(null);
+        lakes.setInternationalTitle(title);
+        lakes.setInternationalAbstract(_abstract);
+        catalog.save(lakes);
 
         WMSInfo info = geoServer.getService(WMSInfo.class);
         title = new GrowableInternationalString();
@@ -117,6 +125,9 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
                 "a i18n abstract for group nature", natureGroup + "/Abstract", result);
 
         assertXpathEvaluatesTo("english keyword", natureGroup + "/KeywordList/Keyword", result);
+
+        // check that lakes is not duplicated (GEOS-10205)
+        assertXpathEvaluatesTo("1", "count(//Layer[Name='cite:Lakes'])", result);
     }
 
     @Test

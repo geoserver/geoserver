@@ -8,9 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.Collections;
+import java.util.Locale;
+import java.util.function.Consumer;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
+import org.geotools.util.GrowableInternationalString;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,5 +62,43 @@ public class FeatureTypeInfoImplTest {
         assertNull(ft1.getInternationalAbstract());
         ft1.setInternationalTitle(null);
         assertNull(ft1.getInternationalTitle());
+    }
+
+    @Test
+    public void testEqualityI18nTitle() throws Exception {
+        FeatureTypeInfoImpl f1 = new FeatureTypeInfoImpl();
+        FeatureTypeInfoImpl f2 = new FeatureTypeInfoImpl();
+
+        // initialize both with the same state, no title but i18n title available
+        Consumer<FeatureTypeInfoImpl> initer =
+                f -> {
+                    GrowableInternationalString title =
+                            new GrowableInternationalString("default language");
+                    title.add(Locale.ITALIAN, "lingua italiana");
+                    f.setInternationalTitle(title);
+                };
+        initer.accept(f1);
+        initer.accept(f2);
+
+        assertEquals(f1, f2);
+    }
+
+    @Test
+    public void testEqualityI18nAbstract() throws Exception {
+        FeatureTypeInfoImpl f1 = new FeatureTypeInfoImpl();
+        FeatureTypeInfoImpl f2 = new FeatureTypeInfoImpl();
+
+        // initialize both with the same state, no abstract but i18n abstract available
+        Consumer<FeatureTypeInfoImpl> initer =
+                f -> {
+                    GrowableInternationalString abs =
+                            new GrowableInternationalString("default language");
+                    abs.add(Locale.ITALIAN, "lingua italiana");
+                    f.setInternationalAbstract(abs);
+                };
+        initer.accept(f1);
+        initer.accept(f2);
+
+        assertEquals(f1, f2);
     }
 }

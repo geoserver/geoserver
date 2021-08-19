@@ -2204,7 +2204,7 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>6.1.1</version>
+            <version>6.2.2</version>
             <executions>
               <execution>
                 <goals>
@@ -2213,7 +2213,7 @@
               </execution>
             </executions>
             <configuration>
-              <failBuildOnCVSS>8</failBuildOnCVSS>
+              <failBuildOnCVSS>7</failBuildOnCVSS>
               <suppressionFile>${geoserverBaseDir}/../build/qa/dependency-check-suppression.xml</suppressionFile>
               <format>ALL</format>
             </configuration>

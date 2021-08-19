@@ -49,7 +49,8 @@ public class InternationalContentHelper {
     // an element that support i18n content
     private Set<Locale> supportedLocales;
 
-    private static final String ERROR_MESSAGE = "DID NOT FIND i18n CONTENT FOR THIS ELEMENT";
+    /** String returned when no matching language and no default language is found for a string */
+    public static final String ERROR_MESSAGE = "DID NOT FIND i18n CONTENT FOR THIS ELEMENT";
 
     public static final String ACCEPTLANGUAGES_PARAM = "ACCEPTLANGUAGES";
 
@@ -234,6 +235,9 @@ public class InternationalContentHelper {
             if (result == null && anyMatch) {
                 result = growable.toString(GeoServerDefaultLocale.get());
             }
+            // see if a default title has been provided
+            if (result == null && growable.getLocales().contains(null))
+                result = growable.toString(null);
         }
         if (result == null && !nullable) result = ERROR_MESSAGE;
         return result;

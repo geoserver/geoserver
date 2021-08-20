@@ -132,6 +132,17 @@ public abstract class LegendGraphicBuilder {
             countProcessor = new FeatureCountProcessor(request);
         }
         layers = request.getLegends();
+
+        // pre-process styles, statically removing rules that cannot match
+        if (Boolean.TRUE.equals(
+                request.getLegendOption(GetLegendGraphicRequest.HIDE_EMPTY_RULES, Boolean.class))) {
+            for (LegendRequest legend : request.getLegends()) {
+                Style style = legend.getStyle();
+                DisabledRulesRemover remover = new DisabledRulesRemover();
+                style.accept(remover);
+                legend.setStyle((Style) remover.getCopy());
+            }
+        }
     }
 
     public Symbolizer rescaleSymbolizer(Symbolizer symbolizer, double size, double newSize) {

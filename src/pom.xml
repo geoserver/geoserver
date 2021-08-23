@@ -1332,7 +1332,7 @@
       <dependency>
         <groupId>com.github.oshi</groupId>
         <artifactId>oshi-core</artifactId>
-        <version>5.5.1</version>
+        <version>5.8.1</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>

@@ -43,6 +43,7 @@ import org.geoserver.wms.GetLegendGraphicRequest;
 import org.geoserver.wms.GetLegendGraphicRequest.LegendRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.capabilities.CapabilityUtil;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -482,18 +483,21 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             if (LOGGER.isLoggable(Level.FINER)) {
                 LOGGER.finer("taking style from STYLE parameter");
             }
-            int pos = 0;
             for (String styleName : styleNames) {
                 // if we have a layer group and no style is specified
                 // use the default one for the layer in the current position
-                if (styleName.equals("") && infoObj instanceof LayerGroupInfo) {
+                if (infoObj instanceof LayerGroupInfo) {
                     LayerGroupInfo layerGroupInfo = (LayerGroupInfo) infoObj;
-                    List<LayerInfo> groupLayers = layerGroupInfo.layers();
-                    if (pos < groupLayers.size()) {
-                        sldStyles.add(getStyleFromLayer(groupLayers.get(pos)));
+                    if (isGroupDefaultStyle(styleName, layerGroupInfo)) {
+                        addLayerGroupStyles(req, layerGroupInfo, sldStyles);
+                    } else {
+                        throwNoSuchStyle(styleName);
                     }
                 } else {
-                    sldStyles.add(wms.getStyleByName(styleName));
+                    Style style = wms.getStyleByName(styleName);
+                    if (style == null) throwNoSuchStyle(styleName);
+
+                    sldStyles.add(style);
                     if (infoObj instanceof LayerInfo) {
                         StyleInfo styleInfo = wms.getCatalog().getStyleByName(styleName);
                         if (styleInfo != null) {
@@ -512,7 +516,6 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                         }
                     }
                 }
-                pos++;
             }
 
         } else {
@@ -532,30 +535,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                     }
                 }
             } else if (infoObj instanceof LayerGroupInfo) {
-                LayerGroupInfo layerGroupInfo = (LayerGroupInfo) infoObj;
-                List<LayerInfo> groupLayers = layerGroupInfo.layers();
-                List<StyleInfo> groupStyles = layerGroupInfo.styles();
-                for (int count = 0; count < groupLayers.size(); count++) {
-                    LayerInfo layerInfo = groupLayers.get(count);
-                    StyleInfo styleInfo = null;
-                    if (count < groupStyles.size() && groupStyles.get(count) != null) {
-                        styleInfo = groupStyles.get(count);
-                        sldStyles.add(styleInfo.getStyle());
-                    } else {
-                        sldStyles.add(getStyleFromLayer(layerInfo));
-                        styleInfo = layerInfo.getDefaultStyle();
-                    }
-                    LegendInfo legend = resolveLegendInfo(styleInfo.getLegend(), req, styleInfo);
-                    if (legend != null) {
-                        Name name = layerInfo.getResource().getQualifiedName();
-                        LegendRequest legendRequest = req.getLegend(name);
-                        if (legendRequest != null) {
-                            configureLegendInfo(req, legendRequest, legend);
-                        } else {
-                            LOGGER.log(Level.FINE, "Unable to set LegendInfo for " + name);
-                        }
-                    }
-                }
+                addLayerGroupStyles(req, (LayerGroupInfo) infoObj, sldStyles);
             }
         }
 
@@ -579,6 +559,47 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 legend.setRule(s.next());
             }
         }
+    }
+
+    private void addLayerGroupStyles(
+            GetLegendGraphicRequest req, LayerGroupInfo infoObj, List<Style> sldStyles)
+            throws IOException {
+        LayerGroupInfo layerGroupInfo = infoObj;
+        List<LayerInfo> groupLayers = layerGroupInfo.layers();
+        List<StyleInfo> groupStyles = layerGroupInfo.styles();
+        for (int count = 0; count < groupLayers.size(); count++) {
+            LayerInfo layerInfo = groupLayers.get(count);
+            StyleInfo styleInfo = null;
+            if (count < groupStyles.size() && groupStyles.get(count) != null) {
+                styleInfo = groupStyles.get(count);
+                sldStyles.add(styleInfo.getStyle());
+            } else {
+                sldStyles.add(getStyleFromLayer(layerInfo));
+                styleInfo = layerInfo.getDefaultStyle();
+            }
+            LegendInfo legend = resolveLegendInfo(styleInfo.getLegend(), req, styleInfo);
+            if (legend != null) {
+                Name name = layerInfo.getResource().getQualifiedName();
+                LegendRequest legendRequest = req.getLegend(name);
+                if (legendRequest != null) {
+                    configureLegendInfo(req, legendRequest, legend);
+                } else {
+                    LOGGER.log(Level.FINE, "Unable to set LegendInfo for " + name);
+                }
+            }
+        }
+    }
+
+    private void throwNoSuchStyle(String styleName) {
+        String msg = "No such style: " + styleName;
+        throw new ServiceException(msg, "StyleNotDefined");
+    }
+
+    private boolean isGroupDefaultStyle(String styleName, LayerGroupInfo layerGroupInfo) {
+        return styleName.equals("")
+                || (CapabilityUtil.encodeGroupDefaultStyle(wms, layerGroupInfo)
+                        && styleName.equals(
+                                CapabilityUtil.getGroupDefaultStyleName(layerGroupInfo)));
     }
 
     /**

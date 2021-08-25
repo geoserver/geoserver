@@ -215,33 +215,6 @@ public class FileSystemResourceStore implements ResourceStore {
                         super.close();
                         lock.release();
                     }
-
-                    @Override
-                    @SuppressWarnings("deprecation") // finalize is deprecated in Java 9
-                    protected void finalize() throws Throwable {
-                        try {
-                            if (!closed) {
-                                String warn =
-                                        "There is code leaving resource input streams open, locks around them might not be cleared! ";
-                                if (!TRACE_ENABLED) {
-                                    warn +=
-                                            "Add -D"
-                                                    + GS_LOCK_TRACE
-                                                    + "=true to your JVM options to get a full stack trace of the code that acquired the input stream";
-                                }
-                                LOGGER.warning(warn);
-
-                                if (TRACE_ENABLED) {
-                                    LOGGER.log(
-                                            Level.WARNING,
-                                            "The unclosed input stream originated on this stack trace",
-                                            tracer);
-                                }
-                            }
-                        } finally {
-                            super.finalize();
-                        }
-                    }
                 };
             } catch (FileNotFoundException e) {
                 lock.release();

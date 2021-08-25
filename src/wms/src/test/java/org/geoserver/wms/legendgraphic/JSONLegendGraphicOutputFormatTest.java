@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.legendgraphic;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -22,6 +23,10 @@ import java.util.Map;
 import javax.xml.transform.TransformerException;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.custommonkey.xmlunit.NamespaceContext;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -60,6 +65,7 @@ import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.w3c.dom.Document;
 
 /**
  * Test the functioning of the abstract legend producer for JSON format,
@@ -82,6 +88,11 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         testData.addStyle("dynamicArrows", this.getClass(), catalog);
         testData.addStyle("multiLanguageVector", this.getClass(), catalog);
         testData.addStyle("multiLanguageRaster", this.getClass(), catalog);
+
+        Map<String, String> namespaces = new HashMap<>();
+        namespaces.put("ogc", "http://www.opengis.net/ogc");
+        NamespaceContext ctx = new SimpleNamespaceContext(namespaces);
+        XMLUnit.setXpathNamespaceContext(ctx);
     }
 
     @Before
@@ -1744,6 +1755,32 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         checkLanguageRule("", base);
         checkLanguageRule("it", base);
         checkLanguageRule("de", base);
+    }
+
+    @Test
+    public void testGroupDefaultStyle() throws Exception {
+        JSONObject json =
+                (JSONObject)
+                        getAsJSON(
+                                "wms?request=GetLegendGraphic&layer=nature&style=default-style-nature&format"
+                                        + "=application/json");
+        JSONArray legend = json.getJSONArray("Legend");
+        assertEquals(2, legend.size());
+        assertEquals("Lakes", legend.getJSONObject(0).getString("layerName"));
+        assertEquals("Forests", legend.getJSONObject(1).getString("layerName"));
+    }
+
+    @Test
+    public void testGroupInvalidStyleName() throws Exception {
+        Document dom =
+                getAsDOM(
+                        "wms?request=GetLegendGraphic&layer=nature&style=notAStyleName&format"
+                                + "=application/json");
+        assertXpathEvaluatesTo(
+                "StyleNotDefined", "/ogc:ServiceExceptionReport/ogc:ServiceException/@code", dom);
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        String exception = xpath.evaluate("/ogc:ServiceExceptionReport/ogc:ServiceException", dom);
+        assertEquals("No such style: notAStyleName", exception.trim());
     }
 
     private void checkLanguageRule(String lang, String base) throws Exception {

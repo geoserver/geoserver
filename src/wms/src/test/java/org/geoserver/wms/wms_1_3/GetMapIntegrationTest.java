@@ -453,6 +453,31 @@ public class GetMapIntegrationTest extends WMSTestSupport {
     }
 
     @Test
+    public void testLayerGroupSingleDefaultStyle() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group =
+                createLakesPlacesLayerGroup(catalog, LayerGroupInfo.Mode.SINGLE, null);
+        try {
+            String name = group.getName();
+            String url =
+                    "wms?LAYERS="
+                            + name
+                            + "&STYLES=default-style-"
+                            + name
+                            + "&FORMAT=image%2Fpng&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&BBOX=0.0000,-0.0020,0.0035,0.0010";
+            BufferedImage image = getAsImage(url, "image/png");
+
+            assertPixel(image, 150, 160, Color.WHITE);
+            // places
+            assertPixel(image, 180, 16, COLOR_PLACES_GRAY);
+            // lakes
+            assertPixel(image, 90, 200, COLOR_LAKES_BLUE);
+        } finally {
+            catalog.remove(group);
+        }
+    }
+
+    @Test
     public void testLayerGroupNamed() throws Exception {
         Catalog catalog = getCatalog();
         LayerGroupInfo group =

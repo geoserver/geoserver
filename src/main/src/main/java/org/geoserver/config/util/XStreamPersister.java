@@ -1207,7 +1207,12 @@ public class XStreamPersister {
                 if (wsName == null && OwsUtils.has(source, "prefixedName")) {
                     prefixedName = (String) OwsUtils.get(source, "prefixedName");
                     if (prefixedName != null && prefixedName.indexOf(":") > 0) {
-                        wsName = prefixedName.substring(0, prefixedName.indexOf(":"));
+                        WorkspaceInfo ws =
+                                catalog.getWorkspaceByName(
+                                        prefixedName.substring(0, prefixedName.indexOf(":")));
+                        if (ws != null) {
+                            wsName = prefixedName.substring(0, prefixedName.indexOf(":"));
+                        }
                     }
                 }
 

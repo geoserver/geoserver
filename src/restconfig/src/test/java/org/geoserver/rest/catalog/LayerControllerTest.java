@@ -17,7 +17,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Objects;
 import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
@@ -399,5 +406,57 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         dom = getAsDOM(ROOT_PATH + "/layers/cite:Buildings.xml", 200);
         assertXpathEvaluatesTo("1", "count(/layer/defaultWMSInterpolationMethod)", dom);
         assertXpathExists("/layer/defaultWMSInterpolationMethod[text() = 'Nearest']", dom);
+    }
+
+    @Test
+    public void testGetLayerWithColonInStyleName() throws Exception {
+
+        LayerInfo roadsLayer = catalog.getLayerByName("RoadSegments");
+        roadsLayer.getStyles().add(catalog.getStyleByName("RoadSegments"));
+        catalog.save(roadsLayer);
+
+        updateStyleNameInXmlFile();
+
+        // reload to get the changes made in file
+        getGeoServer().reload();
+
+        String requestPath = ROOT_PATH + "/layers/RoadSegments.json";
+        MockHttpServletResponse response = getAsServletResponse(requestPath);
+        assertEquals(200, response.getStatus());
+
+        // test whether string before colon is not duplicated
+        assertFalse(response.getContentAsString().contains("demo:demo:RoadSegmentsDup"));
+    }
+
+    public void updateStyleNameInXmlFile() throws IOException {
+
+        File requiredFile =
+                Arrays.stream(
+                                Objects.requireNonNull(
+                                        getDataDirectory().get("styles").dir().listFiles()))
+                        .filter(file -> file.getName().equals("RoadSegments.xml"))
+                        .findFirst()
+                        .get();
+
+        StringBuilder fileContents = new StringBuilder();
+        try (BufferedReader reader =
+                new BufferedReader(new FileReader(requiredFile.getAbsolutePath()))) {
+            String currentLine;
+            while ((currentLine = reader.readLine()) != null) {
+                fileContents.append(currentLine);
+            }
+        }
+
+        try (BufferedWriter writer =
+                new BufferedWriter(new FileWriter(requiredFile.getAbsolutePath()))) {
+            fileContents =
+                    new StringBuilder(
+                            fileContents
+                                    .toString()
+                                    .replace(
+                                            "<name>RoadSegments</name>",
+                                            "<name>demo:RoadSegmentsDup</name>"));
+            writer.write(fileContents.toString());
+        }
     }
 }

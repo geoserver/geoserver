@@ -63,6 +63,7 @@ import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSErrorCode;
 import org.geoserver.wms.WMSInfo;
+import org.geoserver.wms.capabilities.CapabilityUtil;
 import org.geoserver.wms.clip.ClipWMSGetMapCallBack;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.data.DataStore;
@@ -1469,24 +1470,37 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
                 // return null, this should flag request reader to use default for
                 // the associated layer
                 styles.add(null);
-            } else if (isRemoteWMSLayer(requestedLayerInfos.get(i))) {
-                // GEOS-9312
-                // if the style belongs to a remote layer check inside the remote layer capabilities
-                // instead of local WMS
-                WMSLayerInfo remoteWMSLayer =
-                        (WMSLayerInfo) ((LayerInfo) requestedLayerInfos.get(i)).getResource();
-                Optional<Style> remoteStyle = remoteWMSLayer.findRemoteStyleByName(styleName);
-                if (remoteStyle.isPresent()) styles.add(remoteStyle.get());
-                else
-                    throw new ServiceException(
-                            "No such remote style: " + styleName, "StyleNotDefined");
             } else {
-                final Style style = wms.getStyleByName(styleName);
-                if (style == null) {
-                    String msg = "No such style: " + styleName;
-                    throw new ServiceException(msg, "StyleNotDefined");
+                Object layer = requestedLayerInfos.get(i);
+                if (isRemoteWMSLayer(layer)) {
+                    // GEOS-9312
+                    // if the style belongs to a remote layer check inside the remote layer
+                    // capabilities
+                    // instead of local WMS
+                    WMSLayerInfo remoteWMSLayer = (WMSLayerInfo) ((LayerInfo) layer).getResource();
+                    Optional<Style> remoteStyle = remoteWMSLayer.findRemoteStyleByName(styleName);
+                    if (remoteStyle.isPresent()) styles.add(remoteStyle.get());
+                    else
+                        throw new ServiceException(
+                                "No such remote style: " + styleName, "StyleNotDefined");
+                } else {
+                    final Style style = wms.getStyleByName(styleName);
+                    if (style == null) {
+                        // default style for layer groups?
+                        if (layer instanceof LayerGroupInfo
+                                && CapabilityUtil.encodeGroupDefaultStyle(
+                                        wms, (LayerGroupInfo) layer)
+                                && styleName.equals(
+                                        CapabilityUtil.getGroupDefaultStyleName(
+                                                ((LayerGroupInfo) layer)))) {
+                            styles.add(null);
+                        } else {
+                            String msg = "No such style: " + styleName;
+                            throw new ServiceException(msg, "StyleNotDefined");
+                        }
+                    }
+                    styles.add(style);
                 }
-                styles.add(style);
             }
         }
         return styles;

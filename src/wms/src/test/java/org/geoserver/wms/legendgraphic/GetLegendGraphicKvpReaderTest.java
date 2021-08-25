@@ -195,11 +195,9 @@ public class GetLegendGraphicKvpReaderTest extends WMSTestSupport {
 
     @org.junit.Test
     public void testStylesForLayerGroup() throws Exception {
-        GetLegendGraphicRequest request;
-
         requiredParameters.put("LAYER", NATURE_GROUP);
-        requiredParameters.put("STYLE", "style1,style2");
-        request =
+        requiredParameters.put("STYLE", "");
+        GetLegendGraphicRequest request =
                 requestReader.read(
                         new GetLegendGraphicRequest(), requiredParameters, requiredParameters);
         assertEquals(2, request.getLegends().size());

@@ -13,6 +13,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.wms.WMS;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
@@ -26,7 +27,7 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public final class CapabilityUtil {
 
-    protected static final String LAYER_GROUP_STYLE_NAME = "default-style";
+    public static final String LAYER_GROUP_STYLE_NAME = "default-style";
     protected static final String LAYER_GROUP_STYLE_TITLE_PREFIX = "";
     protected static final String LAYER_GROUP_STYLE_TITLE_SUFFIX = " style";
     protected static final String LAYER_GROUP_STYLE_ABSTRACT_PREFIX = "Default style for ";
@@ -206,5 +207,30 @@ public final class CapabilityUtil {
         attrs.addAttribute(XLINK_NS, "href", "xlink:href", "", legendURL);
 
         return attrs;
+    }
+
+    /** Checks if a default style name for layer groups should be used, or not */
+    public static boolean encodeGroupDefaultStyle(WMS wms, LayerGroupInfo lgi) {
+        LayerGroupInfo.Mode mode = lgi.getMode();
+        boolean opaqueOrSingle =
+                mode.equals(LayerGroupInfo.Mode.SINGLE)
+                        || mode.equals(LayerGroupInfo.Mode.OPAQUE_CONTAINER);
+        return opaqueOrSingle || wms.isDefaultGroupStyleEnabled();
+    }
+
+    /**
+     * Returns the layer group default style name (to be used when {@link
+     * #encodeGroupDefaultStyle(WMS, LayerGroupInfo)} returns true)
+     */
+    public static String getGroupDefaultStyleName(String groupName) {
+        return LAYER_GROUP_STYLE_NAME.concat("-").concat(groupName);
+    }
+
+    /**
+     * Returns the layer group default style name (to be used when {@link
+     * #encodeGroupDefaultStyle(WMS, LayerGroupInfo)} returns true)
+     */
+    public static String getGroupDefaultStyleName(LayerGroupInfo groupName) {
+        return getGroupDefaultStyleName(groupName.prefixedName());
     }
 }

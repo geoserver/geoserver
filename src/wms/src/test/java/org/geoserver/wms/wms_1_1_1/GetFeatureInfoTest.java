@@ -905,6 +905,19 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         assertEquals("ServiceExceptionReport", dom.getDocumentElement().getNodeName());
     }
 
+    /** Check the group default style name works */
+    @Test
+    public void testGroupDefaultStyle() throws Exception {
+        String url =
+                "wms?service=wms&version=1.1.1"
+                        + "&layers=nature&style=default-style-nature&width=100&height=100&format=image/png"
+                        + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002&info_format=text/plain"
+                        + "&request=GetFeatureInfo&query_layers=nature&x=50&y=50&feature_count=2";
+        String result = getAsString(url);
+        assertTrue(result.indexOf("Blue Lake") > 0);
+        assertTrue(result.indexOf("Green Forest") > 0);
+    }
+
     @Test
     public void testNonExactVersion() throws Exception {
         String layer = getLayerId(MockData.FORESTS);

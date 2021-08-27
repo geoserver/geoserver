@@ -21,6 +21,8 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
@@ -371,8 +373,71 @@ public class LocalWorkspaceLayersTest extends GeoServerSystemTestSupport {
         catalog.add(localGroup);
     }
 
+    /**
+     * Tests that layers, layer groups and styles nested in a group are getting properly
+     * de-qualified names
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testNestedLayerAndGroups() throws Exception {
+        CatalogFactory factory = catalog.getFactory();
+        WorkspaceInfo citeWs = catalog.getWorkspaceByName("cite");
+
+        // turn a styles to workspace specific, check it's qualified in its normal state
+        LayerInfo bridges = getBridgesLayer();
+        StyleInfo bridgesStyle = bridges.getDefaultStyle();
+        bridgesStyle.setWorkspace(bridges.getResource().getStore().getWorkspace());
+        catalog.save(bridgesStyle);
+        assertEquals("cite:Bridges", bridgesStyle.prefixedName());
+
+        // create the group that's going to be nested
+        LayerGroupInfo nested = factory.createLayerGroup();
+        nested.setMode(Mode.NAMED);
+        final String NESTED_NAME = "nested";
+        nested.setName(NESTED_NAME);
+        nested.setWorkspace(citeWs);
+        nested.getLayers().add(getBuildingsLayer());
+        nested.getLayers().add(bridges);
+        nested.getStyles().add(null);
+        nested.getStyles().add(bridgesStyle);
+        catalog.add(nested);
+
+        // create a top level group
+        LayerGroupInfo top = factory.createLayerGroup();
+        top.setMode(Mode.NAMED);
+        final String TOP_NAME = "top";
+        top.setName(TOP_NAME);
+        top.setWorkspace(citeWs);
+        top.getLayers().add(nested);
+        top.getLayers().add(getForestsLayer());
+        top.getStyles().add(null);
+        top.getStyles().add(null);
+        catalog.add(top);
+
+        // go in local workspace mode, check names have been de-qualified
+        LocalWorkspace.set(citeWs);
+
+        LayerGroupInfo wqTop = catalog.getLayerGroupByName(TOP_NAME);
+        assertEquals(TOP_NAME, wqTop.prefixedName());
+        List<PublishedInfo> topPublished = wqTop.getLayers();
+        LayerGroupInfo wqNested = (LayerGroupInfo) topPublished.get(0);
+        assertEquals(NESTED_NAME, wqNested.prefixedName());
+        assertEquals("Forests", topPublished.get(1).prefixedName());
+
+        // check nested group contents got de-qualified too
+        List<PublishedInfo> nestedLayers = wqNested.getLayers();
+        assertEquals("Buildings", nestedLayers.get(0).prefixedName());
+        assertEquals("Bridges", nestedLayers.get(1).prefixedName());
+        assertEquals("Bridges", wqNested.styles().get(1).prefixedName());
+    }
+
     private LayerInfo getBridgesLayer() {
         return catalog.getLayerByName(getLayerId(SystemTestData.BRIDGES));
+    }
+
+    private LayerInfo getForestsLayer() {
+        return catalog.getLayerByName(getLayerId(SystemTestData.FORESTS));
     }
 
     private LayerInfo getAggregateGeoFeatureLayer() {

@@ -163,6 +163,7 @@ public class CapabilitiesIntegrationTest extends WMSTestSupport {
     @org.junit.Test
     public void testWorkspaceQualified() throws Exception {
         Document dom = dom(get("cite/wms?request=getCapabilities&version=1.3.0"), true);
+        print(dom);
         Element e = dom.getDocumentElement();
         assertEquals("WMS_Capabilities", e.getLocalName());
         XpathEngine xpath = XMLUnit.newXpathEngine();

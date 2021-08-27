@@ -6,8 +6,13 @@
 package org.geoserver.catalog.impl;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
@@ -480,7 +485,52 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
                 return val.split(":")[1];
             }
 
-            return method.invoke(object, args);
+            Object result = method.invoke(object, args);
+            return wrapNested(result);
+        }
+
+        /** Delegate objects might also need to be wrapped */
+        @SuppressWarnings("unchecked") // for collection wrapping, we don't know the type
+        private Object wrapNested(Object result) {
+            // need to test type by type to build the right type of proxy
+            // (would have otherwise tested for CatalogInfo instead)
+            if (result instanceof FeatureTypeInfo) {
+                return create((FeatureTypeInfo) result, FeatureTypeInfo.class);
+            } else if (result instanceof LayerInfo) {
+                return create((LayerInfo) result, LayerInfo.class);
+            } else if (result instanceof StyleInfo) {
+                return create((StyleInfo) result, StyleInfo.class);
+            } else if (result instanceof LayerGroupInfo) {
+                return create((LayerGroupInfo) result, LayerGroupInfo.class);
+            }
+
+            // when grabbing styles from layers, or layers and styles inside a group
+            if (result instanceof Collection) {
+                Collection<?> collection = (Collection<?>) result;
+                if (collection.stream().anyMatch(i -> i instanceof CatalogInfo)) {
+                    return collection
+                            .stream()
+                            .map(i -> wrapNested(i))
+                            .collect(Collectors.toCollection(() -> newCollection(collection)));
+                }
+            }
+            return result;
+        }
+
+        private Collection newCollection(Collection source) {
+            try {
+                return source.getClass().getDeclaredConstructor().newInstance();
+            } catch (InstantiationException
+                    | NoSuchMethodException
+                    | InvocationTargetException
+                    | IllegalAccessException e) {
+                // we'll just pick something
+                if (source instanceof Set) {
+                    return new HashSet<>();
+                } else {
+                    return new ArrayList<>();
+                }
+            }
         }
 
         public static <T> T create(T object, Class<T> clazz) {

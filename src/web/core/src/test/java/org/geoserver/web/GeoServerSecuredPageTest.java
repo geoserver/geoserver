@@ -40,7 +40,7 @@ public class GeoServerSecuredPageTest extends GeoServerWicketTestSupport {
                 (SavedRequest)
                         tester.getHttpSession().getAttribute(GeoServerSecuredPage.SAVED_REQUEST);
         assertNotNull(sr);
-        String redirectUrl = new URLDecoder().decode(sr.getRedirectUrl(), "UTF8");
+        String redirectUrl = URLDecoder.decode(sr.getRedirectUrl(), "UTF8");
         assertTrue(
                 redirectUrl.contains("wicket/bookmarkable/org.geoserver.web.data.layer.LayerPage"));
     }

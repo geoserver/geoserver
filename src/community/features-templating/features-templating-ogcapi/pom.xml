@@ -30,7 +30,7 @@
   <dependencies>
     <dependency>
       <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-features-templating-wfs</artifactId>
+      <artifactId>gs-features-templating-ows</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

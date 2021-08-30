@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.featurestemplating.wfs;
+package org.geoserver.featurestemplating.ows.wfs;
 
 import static org.geoserver.featurestemplating.builders.VendorOptions.LINK;
 import static org.geoserver.featurestemplating.builders.VendorOptions.SCRIPT;
@@ -129,14 +129,16 @@ public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {
                     operation != null
                             && operation.getParameters() != null
                             && operation.getParameters().length > 0;
-            String param = hasParam ? operation.getParameters()[0].toString() : null;
-            Request request = Dispatcher.REQUEST.get();
-            // check it is OGCAPI Features collection request
-            if (isFeaturesRequest(request, param, outputFormat)) {
-                Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
-                FeatureTypeInfo fti = catalog.getFeatureTypeByName(param);
-                // if no template for fti then this response object should not be used.
-                result = hasTemplate(fti);
+            if (hasParam) {
+                String param = hasParam ? operation.getParameters()[0].toString() : null;
+                Request request = Dispatcher.REQUEST.get();
+                // check it is OGCAPI Features collection request
+                if (isFeaturesRequest(request, param, outputFormat)) {
+                    Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
+                    FeatureTypeInfo fti = catalog.getFeatureTypeByName(param);
+                    // if no template for fti then this response object should not be used.
+                    result = hasTemplate(fti);
+                }
             }
         }
         return result;

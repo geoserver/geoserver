@@ -2,20 +2,24 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.featurestemplating.wfs;
+package org.geoserver.featurestemplating.ows.wfs;
 
 import static org.geoserver.featurestemplating.builders.EncodingHints.CONTEXT;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.*;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
-import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.configuration.TemplateLoader;
@@ -27,7 +31,6 @@ import org.geoserver.ows.Request;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.Feature;
@@ -58,18 +61,16 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
 
         JSONLDContextValidation validator = null;
         try {
-            FeatureTypeInfo info =
-                    helper.getFirstFeatureTypeInfo(
-                            GetFeatureRequest.adapt(getFeature.getParameters()[0]));
-            RootBuilder root =
-                    configuration.getTemplate(info, TemplateIdentifier.JSONLD.getOutputFormat());
+            JsonNode context = jsonLdContext(featureCollection);
             boolean validate = isSemanticValidation();
+            EncodingHints encodingHints = new EncodingHints();
+            encodingHints.put(CONTEXT, context);
             // setting it back to false
             if (validate) {
-                validate(featureCollection, root);
+                validate(featureCollection, encodingHints, getFeature);
             }
             try (JSONLDWriter writer = (JSONLDWriter) helper.getOutputWriter(output)) {
-                write(featureCollection, root, writer);
+                write(featureCollection, writer, encodingHints, getFeature);
             } catch (Exception e) {
                 throw new ServiceException(e);
             }
@@ -82,12 +83,72 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
         }
     }
 
-    private void validate(FeatureCollectionResponse featureCollection, RootBuilder root)
-            throws IOException {
+    // retrieve the jsonld context
+    private JsonNode jsonLdContext(FeatureCollectionResponse featureCollection)
+            throws ExecutionException {
+        List<FeatureCollection> collectionList = featureCollection.getFeature();
+        List<JsonNode> allContexts = new ArrayList<>();
+        for (FeatureCollection collection : collectionList) {
+            FeatureTypeInfo fti = helper.getFeatureTypeInfo(collection);
+            RootBuilder rootBuilder = configuration.getTemplate(fti, identifier.getOutputFormat());
+            JsonNode node = rootBuilder.getVendorOptions().get(CONTEXT, JsonNode.class);
+            if (node == null) node = rootBuilder.getEncodingHints().get(CONTEXT, JsonNode.class);
+            if (node != null) allContexts.add(node);
+        }
+        // merge contexts in case we have more then one
+        return nodesUnion(allContexts);
+    }
+
+    private JsonNode nodesUnion(List<JsonNode> contexts) {
+        JsonNode base = null;
+        for (JsonNode node : contexts) {
+            if (base == null) base = node;
+            else base = nodesUnion(base, node);
+        }
+        return base;
+    }
+
+    // union of two JsonNode. By union it is meant that a single @context is created from
+    // two contexts.
+    private JsonNode nodesUnion(JsonNode node1, JsonNode node2) {
+        JsonNode result = node1;
+        if (!node1.equals(node2)) {
+            if (node1.isObject() && node2.isObject()) {
+                ObjectNode copy = node1.deepCopy();
+                copy.setAll((ObjectNode) node2);
+                result = copy;
+            } else if (node1.isArray() && node2.isArray()) {
+                ArrayNode copy = node1.deepCopy();
+                copy.addAll((ArrayNode) node2);
+                result = copy;
+            } else if (node2.isArray()) {
+                ArrayNode copy = node2.deepCopy();
+                copy.add(node1);
+                result = copy;
+            } else if (node1.isArray()) {
+                ArrayNode copy = node1.deepCopy();
+                copy.add(node2);
+                result = copy;
+            } else {
+                // two text fields or one field and one object.
+                ObjectMapper mapper = new ObjectMapper();
+                ArrayNode arrayNode = mapper.createArrayNode();
+                arrayNode.add(node1);
+                arrayNode.add(node2);
+                result = arrayNode;
+            }
+        }
+        return result;
+    }
+
+    private void validate(
+            FeatureCollectionResponse featureCollection,
+            EncodingHints encodingHints,
+            Operation operation) {
         JSONLDContextValidation validator = new JSONLDContextValidation();
         try (JSONLDWriter writer =
                 (JSONLDWriter) helper.getOutputWriter(new FileOutputStream(validator.init()))) {
-            write(featureCollection, root, writer);
+            write(featureCollection, writer, encodingHints, operation);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -95,33 +156,19 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
     }
 
     private void write(
-            FeatureCollectionResponse featureCollection, RootBuilder root, JSONLDWriter writer)
-            throws IOException {
-        EncodingHints encondingHints = new EncodingHints(root.getEncodingHints());
-        if (encondingHints.get(CONTEXT) == null) {
-            JsonNode context = root.getVendorOptions().get(VendorOptions.CONTEXT, JsonNode.class);
-            if (context != null) encondingHints.put(CONTEXT, context);
-        }
-        writer.startTemplateOutput(encondingHints);
-        iterateFeatureCollection(writer, featureCollection, root);
-        writer.endTemplateOutput(encondingHints);
+            FeatureCollectionResponse featureCollection,
+            JSONLDWriter writer,
+            EncodingHints encodingHints,
+            Operation operation)
+            throws IOException, ExecutionException {
+        writer.startTemplateOutput(encodingHints);
+        iterateFeatureCollection(writer, featureCollection, operation);
+        writer.endTemplateOutput(encodingHints);
     }
 
     @Override
     protected void beforeFeatureIteration(
             TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo) {}
-
-    protected void iterateFeatureCollection(
-            TemplateOutputWriter writer,
-            FeatureCollectionResponse featureCollection,
-            RootBuilder root)
-            throws IOException {
-        List<FeatureCollection> collectionList = featureCollection.getFeature();
-
-        for (FeatureCollection collection : collectionList) {
-            iterateFeatures(root, writer, collection);
-        }
-    }
 
     @Override
     protected void beforeEvaluation(

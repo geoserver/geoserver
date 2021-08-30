@@ -46,14 +46,23 @@ public enum TemplateIdentifier {
             identifier = TemplateIdentifier.JSONLD;
         else if (trimOutputFormat.equalsIgnoreCase(TemplateIdentifier.GEOJSON.getOutputFormat()))
             identifier = TemplateIdentifier.GEOJSON;
-        else if (trimOutputFormat.equalsIgnoreCase(TemplateIdentifier.GML32.getOutputFormat()))
-            identifier = TemplateIdentifier.GML32;
-        else if (trimOutputFormat.equalsIgnoreCase(TemplateIdentifier.GML31.getOutputFormat()))
-            identifier = TemplateIdentifier.GML31;
+        else if (isGML32(trimOutputFormat)) identifier = TemplateIdentifier.GML32;
+        else if (isGML31(trimOutputFormat)) identifier = TemplateIdentifier.GML31;
         else if (TemplateIdentifier.GML2.getOutputFormat().contains(trimOutputFormat))
             identifier = TemplateIdentifier.GML2;
         else if (TemplateIdentifier.HTML.getOutputFormat().equals(trimOutputFormat))
             identifier = TemplateIdentifier.HTML;
         return identifier;
+    }
+
+    private static boolean isGML32(String outputFormat) {
+        return TemplateIdentifier.GML32.getOutputFormat().contains(outputFormat)
+                || outputFormat.equalsIgnoreCase("text/xml");
+    }
+
+    private static boolean isGML31(String outputFormat) {
+        return outputFormat.equalsIgnoreCase(TemplateIdentifier.GML31.getOutputFormat())
+                || outputFormat.equalsIgnoreCase("text/xml;subtype=gml/3.1.1")
+                || outputFormat.equalsIgnoreCase("application/vnd.ogc.gml/3.1.1");
     }
 }

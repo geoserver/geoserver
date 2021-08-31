@@ -167,6 +167,11 @@
      -->
    </filter>
 
+    <filter>
+        <filter-name>GeoServerFilter</filter-name>
+        <filter-class>org.geoserver.ows.HTTPHeadersCollector</filter-class>
+    </filter>
+
    <!-- Uncomment following filter to enable CORS in Jetty. Do not forget the second config block further down.
     <filter>
       <filter-name>cross-origin</filter-name>
@@ -272,6 +277,11 @@
     <filter-mapping>
       <filter-name>Thread locals cleanup filter</filter-name>
       <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>GeoServerFilter</filter-name>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
     
     <!-- general initializer, should be first thing to execute -->

@@ -125,6 +125,12 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
         featureBuilder.setNumDecimals(
                 getNumDecimals(
                         featureCollections, wms.getGeoServer(), wms.getGeoServer().getCatalog()));
+        featureBuilder.setForcedDecimal(
+                this.getForcedDecimal(
+                        featureCollections, wms.getGeoServer(), wms.getGeoServer().getCatalog()));
+        featureBuilder.setPadWithZeros(
+                this.getPadWithZeros(
+                        featureCollections, wms.getGeoServer(), wms.getGeoServer().getCatalog()));
         if (!featureCollections.isEmpty()) {
             Iterator<FeatureCollection> fci = featureCollections.iterator();
             while (fci.hasNext()) {
@@ -224,6 +230,50 @@ public class MapMLGetFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat 
     /**
      * Copied from org.geoserver.wfs.WFSGetFeatureOutputFormat
      *
+     * @param featureCollections
+     * @param geoServer
+     * @param catalog
+     * @return
+     */
+    protected boolean getPadWithZeros(
+            List featureCollections, GeoServer geoServer, Catalog catalog) {
+        boolean padWithZeros = false;
+        for (Object featureCollection : featureCollections) {
+            Boolean pad =
+                    getFeatureTypeInfoProperty(
+                            catalog,
+                            (FeatureCollection) featureCollection,
+                            fti -> fti.getPadWithZeros());
+            if (Boolean.TRUE.equals(pad)) {
+                padWithZeros = true;
+            }
+        }
+        return padWithZeros;
+    }
+    /**
+     * Copied from org.geoserver.wfs.WFSGetFeatureOutputFormat
+     *
+     * @param featureCollections
+     * @param geoServer
+     * @param catalog
+     * @return
+     */
+    protected boolean getForcedDecimal(
+            List featureCollections, GeoServer geoServer, Catalog catalog) {
+        boolean forcedDecimal = false;
+        for (Object featureCollection : featureCollections) {
+            Boolean forced =
+                    getFeatureTypeInfoProperty(
+                            catalog,
+                            (FeatureCollection) featureCollection,
+                            fti -> fti.getForcedDecimal());
+            if (Boolean.TRUE.equals(forced)) {
+                forcedDecimal = true;
+            }
+        }
+        return forcedDecimal;
+    }
+    /**
      * @param <T>
      * @param catalog
      * @param features

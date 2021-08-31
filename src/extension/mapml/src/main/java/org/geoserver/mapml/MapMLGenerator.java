@@ -14,7 +14,7 @@ import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.GeometryContent;
 import org.geoserver.mapml.xml.ObjectFactory;
 import org.geoserver.mapml.xml.PropertyContent;
-import org.geoserver.wfs.json.RoundingUtil;
+import org.geotools.gml.producer.CoordinateFormatter;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.opengis.feature.simple.SimpleFeature;
@@ -34,7 +34,8 @@ public class MapMLGenerator {
 
     static ObjectFactory factory = new ObjectFactory();
 
-    private int numDecimals = 6;
+    private int DEFAULT_NUM_DECIMALS = 8;
+    private CoordinateFormatter formatter = new CoordinateFormatter(DEFAULT_NUM_DECIMALS);
 
     /**
      * @param sf a feature
@@ -287,10 +288,7 @@ public class MapMLGenerator {
     private org.geoserver.mapml.xml.Point buildPoint(org.locationtech.jts.geom.Point p) {
         org.geoserver.mapml.xml.Point point = new org.geoserver.mapml.xml.Point();
         point.getCoordinates()
-                .add(
-                        RoundingUtil.round(p.getX(), this.numDecimals)
-                                + " "
-                                + RoundingUtil.round(p.getY(), this.numDecimals));
+                .add(this.formatter.format(p.getX()) + " " + this.formatter.format(p.getY()));
         return point;
     }
     /**
@@ -320,14 +318,27 @@ public class MapMLGenerator {
         }
         for (int i = 0; i < cs.size(); i++) {
             coordList.add(
-                    RoundingUtil.round(cs.getX(i), this.numDecimals)
-                            + " "
-                            + RoundingUtil.round(cs.getY(i), this.numDecimals));
+                    this.formatter.format(cs.getX(i)) + " " + this.formatter.format(cs.getY(i)));
         }
         return coordList;
     }
     /** @param numDecimals */
     public void setNumDecimals(int numDecimals) {
-        this.numDecimals = numDecimals;
+        // make a copy of relevant object state
+        boolean fd = this.formatter.isForcedDecimal();
+        boolean pad = this.formatter.isPadWithZeros();
+        // create new formatter
+        this.formatter = new CoordinateFormatter(numDecimals);
+        // apply state to new formatter
+        this.formatter.setForcedDecimal(fd);
+        this.formatter.setPadWithZeros(pad);
+    }
+    /** @param forcedDecimal */
+    public void setForcedDecimal(boolean forcedDecimal) {
+        this.formatter.setForcedDecimal(forcedDecimal);
+    }
+    /** @param padWithZeros */
+    public void setPadWithZeros(boolean padWithZeros) {
+        this.formatter.setPadWithZeros(padWithZeros);
     }
 }

@@ -179,3 +179,14 @@ Remote styles max request time and connection timeout can be configured in milli
 **Timeout in milliseconds** -The max connection timeout in milliseconds for remote style requests.
 
 **Max request time in milliseconds** -The max request time limit in milliseconds for remote style requests.
+
+Mark Factory Precedence
+----------------------------------------------------
+
+Mark factories can be filtered and ordered during the rendering execution. This makes room to optimize the rendering phase by omitting unused mark factories and prioritizing the fastest ones.
+
+.. figure:: img/service_WMS_markfactory.png
+
+**Enable Mark Factory Precedence** -Enables the mark factory precedence setup.
+
+**Mark Factory Precedence setup** -The allowed mark factories to use and its execution order.

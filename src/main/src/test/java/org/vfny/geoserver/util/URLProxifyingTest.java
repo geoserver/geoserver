@@ -10,18 +10,15 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.ows.HTTPHeadersCollector;
 import org.geoserver.ows.ProxifyingURLMangler;
-import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.junit.After;
@@ -40,8 +37,7 @@ public class URLProxifyingTest {
             String host,
             String forwardedHost,
             String forwardedPath,
-            String forwarded)
-            throws ServletException, IOException {
+            String forwarded) {
 
         Map<String, String> headers = new HashMap<>();
         headers.put(
@@ -57,8 +53,6 @@ public class URLProxifyingTest {
                 ProxifyingURLMangler.Headers.FORWARDED_PATH.asString().toLowerCase(),
                 forwardedPath);
         headers.put(ProxifyingURLMangler.Headers.FORWARDED.asString().toLowerCase(), forwarded);
-
-        Request request = createNiceMock(Request.class);
 
         HttpServletRequest servletRequest = createNiceMock(HttpServletRequest.class);
 

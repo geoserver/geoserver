@@ -6,14 +6,17 @@
 package org.geoserver.wfs.response;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import au.com.bytecode.opencsv.CSVReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.WfsFactory;
@@ -61,7 +64,7 @@ public class CSVOutputFormatTest extends WFSTestSupport {
                 resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines and what not
-        List<String[]> lines = readLines(resp.getContentAsString());
+        List<String[]> lines = readLines(resp.getContentAsString(), ',');
 
         // we should have one header line and then all the features in that feature type
         assertEquals(fs.getCount(Query.ALL) + 1, lines.size());
@@ -155,7 +158,7 @@ public class CSVOutputFormatTest extends WFSTestSupport {
         format.write(fct, bos, op);
 
         // read the response back with a parser that can handle escaping, newlines and what not
-        List<String[]> lines = readLines(bos.toString());
+        List<String[]> lines = readLines(bos.toString(), ',');
 
         // we should have one header line and then all the features in that feature type
         assertEquals(fs.getCount(Query.ALL) + 1, lines.size());
@@ -178,8 +181,8 @@ public class CSVOutputFormatTest extends WFSTestSupport {
     }
 
     /** Convenience to read the csv content and */
-    private List<String[]> readLines(String csvContent) throws IOException {
-        CSVReader reader = new CSVReader(new StringReader(csvContent));
+    private List<String[]> readLines(String csvContent, Character separator) throws IOException {
+        CSVReader reader = new CSVReader(new StringReader(csvContent), separator);
 
         List<String[]> result = new ArrayList<>();
         String[] nextLine;
@@ -187,5 +190,71 @@ public class CSVOutputFormatTest extends WFSTestSupport {
             result.add(nextLine);
         }
         return result;
+    }
+
+    @Test
+    public void testFullRequestWithDynamicCsvSeparator() throws Exception {
+
+        Character separator = '-';
+
+        // Get dash separated csv response
+        MockHttpServletResponse resp =
+                getAsServletResponse(
+                        "wfs?version=1.1.0&request=GetFeature&typeName=sf:PrimitiveGeoFeature&outputFormat=csv&format_options=csvSeparator:"
+                                + separator,
+                        "");
+
+        FeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
+
+        // check the mime type
+        assertEquals("text/csv", resp.getContentType());
+
+        // check the charset encoding
+        assertEquals("UTF-8", resp.getCharacterEncoding());
+
+        // check the content disposition
+        assertEquals(
+                "attachment; filename=PrimitiveGeoFeature.csv",
+                resp.getHeader("Content-Disposition"));
+
+        // read the response back with a parser that can handle escaping, newlines and what not
+        List<String[]> lines = readLines(resp.getContentAsString(), separator);
+
+        // we should have one header line and then all the features in that feature type
+        assertEquals(fs.getCount(Query.ALL) + 1, lines.size());
+
+        for (String[] line : lines) {
+            // check each line has the expected number of elements (num of att + 1 for the id)
+            assertEquals(fs.getSchema().getDescriptors().size() + 1, line.length);
+        }
+    }
+
+    @Test
+    public void testDoubleQuotesAsCsvSeparator() throws Exception {
+
+        // build the request objects and feed the output format
+        GetFeatureType gft = WfsFactory.eINSTANCE.createGetFeatureType();
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("CSVSEPARATOR", "\"");
+        gft.setFormatOptions(hashMap);
+        Operation op =
+                new Operation("GetFeature", getServiceDescriptor10(), null, new Object[] {gft});
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        FeatureCollectionResponse fct =
+                FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
+
+        SimpleFeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
+
+        fct.getFeature().add(fs.getFeatures());
+
+        // write out the results
+        CSVOutputFormat format = new CSVOutputFormat(getGeoServer());
+
+        InvalidParameterException invalidParameterException =
+                assertThrows(InvalidParameterException.class, () -> format.write(fct, bos, op));
+
+        assertEquals(
+                "A double quote is not allowed as a CSV separator",
+                invalidParameterException.getMessage());
     }
 }

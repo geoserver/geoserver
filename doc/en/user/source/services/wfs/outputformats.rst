@@ -135,3 +135,15 @@ JSON output ``format_options``:
 JSON output ``system properties``:
 
 * ``json.maxDepth=<max_value>`` is used to determine the max number of allowed JSON nested objects on encoding phase.  By default the value is 100.
+
+
+CSV output
+----------------
+
+A Default CSV file uses a comma to separate values. Each line of the file is a data record. Each record consists of one or more fields, separated by commas. The separator can be changed using format_options as specified below.
+
+csv file output ``format_options``:
+
+* ``format_option=filename:<file>``: if a file name is provided, the name is used as the output file name. For example, ``format_options=filename:roads.csv``.
+* ``format_option=csvseparator:<csvseparator>`` (default is ```,``` ): if a separator is provided, it is used to separate values in output csv file. For example, ``format_options=csvseparator:-`` is used to get dash separated file.
+

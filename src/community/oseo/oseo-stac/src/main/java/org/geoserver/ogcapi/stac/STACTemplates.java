@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.featurestemplating.builders.TemplateBuilderMaker;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.configuration.Template;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
@@ -44,6 +43,7 @@ public class STACTemplates extends AbstractTemplates {
 
     static final Logger LOGGER = Logging.getLogger(STACTemplates.class);
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    private static final String COLLECTIONS = "collections";
 
     private Template defaultCollectionTemplate;
     private Template defaultItemTemplate;
@@ -121,7 +121,8 @@ public class STACTemplates extends AbstractTemplates {
         // setup the collections template
         Resource collections = dd.get("templates/ogc/stac/collections.json");
         copyDefault(collections, "collections.json");
-        TemplateReaderConfiguration configuration = new CollectionReaderConfiguration(namespaces);
+        TemplateReaderConfiguration configuration =
+                new TemplateReaderConfiguration(namespaces, COLLECTIONS);
         this.defaultCollectionTemplate = new Template(collections, configuration);
     }
 
@@ -138,9 +139,9 @@ public class STACTemplates extends AbstractTemplates {
                 template = collectionTemplates.get(collectionId);
                 if (template == null) {
                     OpenSearchAccess access = accessProvider.getOpenSearchAccess();
-                    CollectionReaderConfiguration configuration =
-                            new CollectionReaderConfiguration(
-                                    getNamespaces(access.getProductSource()));
+                    TemplateReaderConfiguration configuration =
+                            new TemplateReaderConfiguration(
+                                    getNamespaces(access.getProductSource()), COLLECTIONS);
                     template = new Template(resource, configuration);
                     collectionTemplates.put(collectionId, template);
                 }
@@ -247,17 +248,5 @@ public class STACTemplates extends AbstractTemplates {
                     accessProvider.getOpenSearchAccess().getProductSource());
 
         return builder;
-    }
-
-    private static class CollectionReaderConfiguration extends TemplateReaderConfiguration {
-        public CollectionReaderConfiguration(NamespaceSupport namespaces) {
-            super(namespaces);
-        }
-
-        @Override
-        // the collections are not a GeoJSON collection, uses a different structure
-        public TemplateBuilderMaker getBuilderMaker() {
-            return getBuilderMaker("collections");
-        }
     }
 }

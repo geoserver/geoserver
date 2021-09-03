@@ -6,6 +6,7 @@
 package org.geoserver.featurestemplating.writers;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -18,7 +19,6 @@ import java.util.Map;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.util.ISO8601Formatter;
-import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
@@ -69,11 +69,14 @@ public class GeoJSONWriter extends CommonJSONWriter {
 
     @Override
     public void writeGeometry(Object value) throws IOException {
-        GeometryJSON geomJson = new GeometryJSON();
-        String strGeom = geomJson.toString((Geometry) value);
+        JsonNode node = toJsonNode((Geometry) value);
+        writeObjectNode(null, node);
+    }
+
+    private JsonNode toJsonNode(Geometry geometry) throws JsonProcessingException {
+        String jsonGeom = org.geotools.data.geojson.GeoJSONWriter.toGeoJSON(geometry);
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode actualObj = mapper.readTree(strGeom);
-        writeObjectNode(null, actualObj);
+        return mapper.readTree(jsonGeom);
     }
 
     @Override

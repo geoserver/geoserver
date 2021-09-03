@@ -9,7 +9,7 @@
   </parent>
 
   <groupId>org.geoserver.community</groupId>
-  <artifactId>gs-features-templating-wfs</artifactId>
+  <artifactId>gs-features-templating-ows</artifactId>
   <packaging>jar</packaging>
   <name>Features Templating WFS plugin</name>
   <description>Features templating WFS plugin</description>
@@ -40,10 +40,26 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
       <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-referencing</artifactId>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>

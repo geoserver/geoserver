@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.featurestemplating.wfs;
+package org.geoserver.featurestemplating.ows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +17,16 @@ import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.configuration.TemplateLoader;
 import org.geoserver.featurestemplating.request.TemplatePathVisitor;
 import org.geoserver.ows.AbstractDispatcherCallback;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.platform.Operation;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
+import org.geoserver.wms.GetFeatureInfoRequest;
+import org.geoserver.wms.MapLayerInfo;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.text.ecql.ECQL;
@@ -156,21 +160,60 @@ public class TemplateCallback extends AbstractDispatcherCallback {
             Request request, Operation operation, Object result, Response response) {
         Object[] params = operation.getParameters();
         if (params.length > 0) {
-            GetFeatureRequest getFeature = GetFeatureRequest.adapt(params[0]);
+            Object param1 = params[0];
+            Response replacer = findResponse(param1);
+            if (replacer != null) response = replacer;
+        }
+        return super.responseDispatched(request, operation, result, response);
+    }
+
+    private Response findResponse(Object param1) {
+        Response response = null;
+        if (param1 instanceof GetFeatureInfoRequest) {
+            response = getTemplateFeatureInfoResponse((GetFeatureInfoRequest) param1);
+        } else {
+            GetFeatureRequest getFeature = GetFeatureRequest.adapt(param1);
             if (getFeature != null) {
                 List<Query> queries = getFeature.getQueries();
                 for (Query q : queries) {
                     List<FeatureTypeInfo> typeInfos = getFeatureTypeInfoFromQuery(q);
                     Response templateResponse =
-                            getTemplateResponse(typeInfos, request.getOutputFormat());
+                            getTemplateFeatureResponse(typeInfos, getFeature.getOutputFormat());
                     if (templateResponse != null) response = templateResponse;
                 }
             }
         }
-        return super.responseDispatched(request, operation, result, response);
+        return response;
     }
 
-    private Response getTemplateResponse(List<FeatureTypeInfo> typeInfos, String outputFormat) {
+    private Response getTemplateFeatureInfoResponse(GetFeatureInfoRequest request) {
+        List<MapLayerInfo> layerInfos = request.getQueryLayers();
+        String infoFormat = request.getInfoFormat();
+        TemplateIdentifier identifier =
+                TemplateIdentifier.fromOutputFormat(request.getInfoFormat());
+        int nTemplates = 0;
+        for (MapLayerInfo li : layerInfos) {
+            if (li != null) {
+                if (ensureTemplatesExist(li.getFeature(), identifier.getOutputFormat()) != null)
+                    nTemplates++;
+            }
+        }
+        Response result = null;
+        if (nTemplates > 0) {
+            int size = layerInfos.size();
+            if (size != nTemplates)
+                throw new ServiceException(
+                        "To get a features templating getFeatureInfo a template is needed for every FeatureType but "
+                                + (size - nTemplates)
+                                + " among the requested ones are missing a template");
+
+            result = OWSResponseFactory.getInstance().featureInfoResponse(identifier, infoFormat);
+        }
+        return result;
+    }
+
+    private Response getTemplateFeatureResponse(
+            List<FeatureTypeInfo> typeInfos, String outputFormat) {
         Response response = null;
         try {
 
@@ -179,22 +222,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
             if (rootBuilders.size() > 0) {
                 TemplateIdentifier templateIdentifier =
                         TemplateIdentifier.fromOutputFormat(outputFormat);
-                switch (templateIdentifier) {
-                    case JSON:
-                    case GEOJSON:
-                        response =
-                                new GeoJSONTemplateGetFeatureResponse(
-                                        gs, configuration, templateIdentifier);
-                        break;
-                    case GML32:
-                    case GML31:
-                    case GML2:
-                        response = new GMLTemplateResponse(gs, configuration, templateIdentifier);
-                        break;
-                    case HTML:
-                        response = new HTMLTemplateResponse(gs, configuration);
-                        break;
-                }
+                response = OWSResponseFactory.getInstance().getFeatureResponse(templateIdentifier);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -203,22 +231,38 @@ public class TemplateCallback extends AbstractDispatcherCallback {
     }
 
     // get the root builder and eventually throws exception if it is
-    // null and json-ld output is requested
-    private RootBuilder ensureTemplatesExist(FeatureTypeInfo typeInfo, String outputFormat)
-            throws ExecutionException {
-        TemplateIdentifier identifier = TemplateIdentifier.fromOutputFormat(outputFormat);
-        RootBuilder rootBuilder = null;
-        if (identifier != null) {
-            rootBuilder = configuration.getTemplate(typeInfo, identifier.getOutputFormat());
-            if (outputFormat.equals(TemplateIdentifier.JSONLD.getOutputFormat())
-                    && rootBuilder == null) {
-                throw new RuntimeException(
-                        "No template found for feature type "
-                                + typeInfo.getName()
-                                + " for output format "
-                                + outputFormat);
+    // null and output format with mandatory template is requested
+    private RootBuilder ensureTemplatesExist(FeatureTypeInfo typeInfo, String outputFormat) {
+        try {
+            TemplateIdentifier identifier = TemplateIdentifier.fromOutputFormat(outputFormat);
+            RootBuilder rootBuilder = null;
+            if (identifier != null) {
+                rootBuilder = configuration.getTemplate(typeInfo, identifier.getOutputFormat());
+                if (templateIsMandatory(identifier) && rootBuilder == null) {
+                    throw new RuntimeException(
+                            "No template found for feature type "
+                                    + typeInfo.getName()
+                                    + " for output format "
+                                    + outputFormat);
+                }
             }
+            return rootBuilder;
+        } catch (ExecutionException e) {
+            throw new RuntimeException(
+                    "Exception will trying to check the existence of features templates for the requested feature types",
+                    e);
         }
-        return rootBuilder;
+    }
+
+    // Check if a template is mandatory for the requested output format and operation.
+    // A template is mandatory if the operation does not support the output format requested
+    // without a features template. Examples JSON-LD for all operations and HTML for WFS GetFeature.
+    private boolean templateIsMandatory(TemplateIdentifier identifier) {
+        String requestName = Dispatcher.REQUEST.get().getRequest();
+        boolean isFeatureInfo =
+                requestName != null && requestName.equalsIgnoreCase("GetFeatureInfo");
+        boolean mandatoryHTML = !isFeatureInfo && identifier.equals(TemplateIdentifier.HTML);
+        return identifier != null
+                && (mandatoryHTML || identifier.equals(TemplateIdentifier.JSONLD));
     }
 }

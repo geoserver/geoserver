@@ -438,11 +438,6 @@
       </dependency>
       <dependency>
         <groupId>org.geotools</groupId>
-        <artifactId>gt-imagemosaic-jdbc</artifactId>
-        <version>${gt.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.geotools</groupId>
         <artifactId>gt-wfs-ng</artifactId>
         <version>${gt.version}</version>
       </dependency>

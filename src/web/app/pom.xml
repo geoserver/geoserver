@@ -493,16 +493,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>imagemosaic-jdbc</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.extension</groupId>
-          <artifactId>gs-imagemosaic-jdbc</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>feature-pregeneralized</id>
       <dependencies>
         <dependency>

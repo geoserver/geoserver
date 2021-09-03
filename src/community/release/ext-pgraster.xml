@@ -16,7 +16,6 @@
 			<directory>release/target/dependency</directory>
 			<outputDirectory></outputDirectory>
 			<includes>
-        <include>*gt-imagemosaic-jdbc*.jar</include>
 				<include>ant*1.8.4.jar</include>
 				<include>gs-pgraster-*.jar</include>
 			</includes>

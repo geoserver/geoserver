@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean id="jsonCallback" class="org.geoserver.featurestemplating.ows.TemplateCallback">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="templateConfiguration"/>
+    </bean>
+
+    <bean id="JSONLDGetFeatureResponse" class="org.geoserver.featurestemplating.ows.wfs.JSONLDGetFeatureResponse">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="templateConfiguration"/>
+    </bean>
+
+    <bean id="HTMLGetFeatureResponse" class="org.geoserver.featurestemplating.ows.wfs.HTMLTemplateResponse">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="templateConfiguration"/>
+    </bean>
+
+    <bean id="responseFactory" class="org.geoserver.featurestemplating.ows.OWSResponseFactory">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg ref="templateConfiguration"/>
+    </bean>
+
+    <bean id="jsonldFeatureInfo" class="org.geoserver.featurestemplating.ows.wms.JSONLDTemplateFeatureInfo"/>
+
+</beans>

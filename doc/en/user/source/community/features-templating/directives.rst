@@ -827,6 +827,9 @@ The :code:`@context` will show up at the beginning of the JSON-LD output:
  }
 
 
+When dealing with a GetFeatureInfo request over a LayerGroup asking for a JSON-LD output the plug-in will perform a union of the JSON-LD :code:`@context` (when different) defined in the template of each containted layer. This means that in case of conflicting attributes name the attributes name will override each other according to the processing order of the layers.
+The user can prevent this behaviour by taking advantage of the  :code:`include` directive, explained below, defining a single :code:`@context` included in the template of each contained layer. In this way all the layer will share the same context definition.
+
 GML
 """
 

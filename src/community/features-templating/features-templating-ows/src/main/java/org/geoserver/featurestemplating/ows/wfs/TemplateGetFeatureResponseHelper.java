@@ -2,12 +2,13 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.featurestemplating.wfs;
+package org.geoserver.featurestemplating.ows.wfs;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Optional;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -24,6 +25,9 @@ import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.TypeInfoCollectionWrapper;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
+import org.geoserver.wms.GetFeatureInfoRequest;
+import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.featureinfo.FeatureCollectionDecorator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.type.Name;
@@ -85,6 +89,21 @@ public class TemplateGetFeatureResponseHelper {
         return outputWriter;
     }
 
+    FeatureTypeInfo getFirstFeatureTypeInfo(Object request) {
+        FeatureTypeInfo result;
+        if (request instanceof GetFeatureInfoRequest)
+            result = getFirstFeatureTypeInfo((GetFeatureInfoRequest) request);
+        else result = getFirstFeatureTypeInfo(GetFeatureRequest.adapt(request));
+        return result;
+    }
+
+    FeatureTypeInfo getFirstFeatureTypeInfo(GetFeatureInfoRequest request) {
+        Optional<MapLayerInfo> op =
+                request.getQueryLayers().stream().filter(ml -> ml != null).findFirst();
+        if (!op.isPresent()) return null;
+        return op.get().getFeature();
+    }
+
     FeatureTypeInfo getFirstFeatureTypeInfo(GetFeatureRequest request) {
         Query query = request.getQueries().get(0);
         QName typeName = query.getTypeNames().get(0);
@@ -95,6 +114,8 @@ public class TemplateGetFeatureResponseHelper {
     FeatureTypeInfo getFeatureTypeInfo(FeatureCollection collection) {
         if (collection instanceof TypeInfoCollectionWrapper)
             return ((TypeInfoCollectionWrapper) collection).getFeatureTypeInfo();
+        else if (collection instanceof FeatureCollectionDecorator)
+            return getFeatureTypeInfo(((FeatureCollectionDecorator) collection).getName());
         else return getFeatureTypeInfo(collection.getSchema().getName());
     }
 

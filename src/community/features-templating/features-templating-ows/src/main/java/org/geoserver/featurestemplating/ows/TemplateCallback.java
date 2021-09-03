@@ -200,11 +200,11 @@ public class TemplateCallback extends AbstractDispatcherCallback {
         }
         Response result = null;
         if (nTemplates > 0) {
-            int diff = layerInfos.size() - nTemplates;
-            if (diff > 0)
+            int size = layerInfos.size();
+            if (size != nTemplates)
                 throw new ServiceException(
                         "To get a features templating getFeatureInfo a template is needed for every FeatureType but "
-                                + diff
+                                + (size - nTemplates)
                                 + " among the requested ones are missing a template");
 
             result = OWSResponseFactory.getInstance().featureInfoResponse(identifier, infoFormat);
@@ -231,7 +231,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
     }
 
     // get the root builder and eventually throws exception if it is
-    // null and json-ld output is requested
+    // null and output format with mandatory template is requested
     private RootBuilder ensureTemplatesExist(FeatureTypeInfo typeInfo, String outputFormat) {
         try {
             TemplateIdentifier identifier = TemplateIdentifier.fromOutputFormat(outputFormat);
@@ -254,6 +254,9 @@ public class TemplateCallback extends AbstractDispatcherCallback {
         }
     }
 
+    // Check if a template is mandatory for the requested output format and operation.
+    // A template is mandatory if the operation does not support the output format requested
+    // without a features template. Examples JSON-LD for all operations and HTML for WFS GetFeature.
     private boolean templateIsMandatory(TemplateIdentifier identifier) {
         String requestName = Dispatcher.REQUEST.get().getRequest();
         boolean isFeatureInfo =

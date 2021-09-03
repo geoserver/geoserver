@@ -130,7 +130,7 @@ public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {
                             && operation.getParameters() != null
                             && operation.getParameters().length > 0;
             if (hasParam) {
-                String param = hasParam ? operation.getParameters()[0].toString() : null;
+                String param = operation.getParameters()[0].toString();
                 Request request = Dispatcher.REQUEST.get();
                 // check it is OGCAPI Features collection request
                 if (isFeaturesRequest(request, param, outputFormat)) {

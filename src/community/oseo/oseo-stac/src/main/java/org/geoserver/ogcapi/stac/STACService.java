@@ -55,11 +55,11 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
+import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.visitor.UniqueVisitor;
-import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.DateRange;
 import org.geotools.util.logging.Logging;
@@ -482,7 +482,7 @@ public class STACService {
             filters.add(APIBBoxParser.toFilter(bbox, DefaultGeographicCRS.WGS84));
         }
         if (intersects != null) {
-            Geometry geometry = new GeometryJSON().read(intersects);
+            Geometry geometry = GeoJSONReader.parseGeometry(intersects);
             filters.add(FF.intersects(FF.property(""), FF.literal(geometry)));
         }
         if (datetime != null) {

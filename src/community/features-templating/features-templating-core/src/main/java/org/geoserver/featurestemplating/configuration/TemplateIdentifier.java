@@ -5,6 +5,9 @@
 
 package org.geoserver.featurestemplating.configuration;
 
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
+
 /** This enum provides constants which match output formats with template names */
 public enum TemplateIdentifier {
     JSON("application/json", "geojson-template.json"),
@@ -48,16 +51,24 @@ public enum TemplateIdentifier {
             identifier = TemplateIdentifier.GEOJSON;
         else if (isGML32(trimOutputFormat)) identifier = TemplateIdentifier.GML32;
         else if (isGML31(trimOutputFormat)) identifier = TemplateIdentifier.GML31;
-        else if (TemplateIdentifier.GML2.getOutputFormat().contains(trimOutputFormat))
-            identifier = TemplateIdentifier.GML2;
+        else if (isGML2(trimOutputFormat)) identifier = TemplateIdentifier.GML2;
         else if (TemplateIdentifier.HTML.getOutputFormat().equals(trimOutputFormat))
             identifier = TemplateIdentifier.HTML;
         return identifier;
     }
 
+    private static boolean isGML2(String outputFormat) {
+        Request request = Dispatcher.REQUEST.get();
+        boolean isFeatureInfo =
+                request != null && "GetFeatureInfo".equalsIgnoreCase(request.getRequest());
+        boolean result = false;
+        if (TemplateIdentifier.GML2.getOutputFormat().contains(outputFormat)) result = true;
+        else if (isFeatureInfo && "text/xml".equals(outputFormat)) result = true;
+        return result;
+    }
+
     private static boolean isGML32(String outputFormat) {
-        return TemplateIdentifier.GML32.getOutputFormat().contains(outputFormat)
-                || outputFormat.equalsIgnoreCase("text/xml");
+        return TemplateIdentifier.GML32.getOutputFormat().contains(outputFormat);
     }
 
     private static boolean isGML31(String outputFormat) {

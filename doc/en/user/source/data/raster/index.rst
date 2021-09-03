@@ -11,7 +11,6 @@ The standard GeoServer installation supports the loading and serving of the foll
    :maxdepth: 1
 
    geotiff
-   gtopo30
    worldimage
    imagemosaic/index
    geopkg

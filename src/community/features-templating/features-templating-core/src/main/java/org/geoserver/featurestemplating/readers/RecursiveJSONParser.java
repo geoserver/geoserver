@@ -28,15 +28,24 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
     private static final String INCLUDE_FLAT_KEY = "$includeFlat";
 
     private final ObjectMapper mapper;
+    private final String rootCollectionName;
 
     public RecursiveJSONParser(Resource resource) {
         super(resource);
         this.mapper = new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
+        this.rootCollectionName = "features";
+    }
+
+    public RecursiveJSONParser(Resource resource, String rootCollectionName) {
+        super(resource);
+        this.mapper = new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
+        this.rootCollectionName = rootCollectionName;
     }
 
     private RecursiveJSONParser(RecursiveJSONParser parent, Resource resource) {
         super(resource, parent);
         this.mapper = parent.mapper;
+        this.rootCollectionName = parent.rootCollectionName;
     }
 
     public JsonNode parse() throws IOException {
@@ -92,7 +101,7 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
                 // recurse merge
                 JsonNode mergedChild = mergeTrees((ObjectNode) bv, (ObjectNode) ov);
                 merged.set(name, mergedChild);
-            } else if (isFeaturesArray(name, bv, ov)) {
+            } else if (isRootCollectionArray(name, bv, ov)) {
                 // special case for the features array, drill down
                 merged.set(name, bv);
                 JsonNode mergedChild = mergeTrees(bv.get(0), ov.get(0));
@@ -113,8 +122,8 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
         return merged;
     }
 
-    private boolean isFeaturesArray(String name, JsonNode bv, JsonNode ov) {
-        return "features".equals(name)
+    private boolean isRootCollectionArray(String name, JsonNode bv, JsonNode ov) {
+        return rootCollectionName.equals(name)
                 && bv instanceof ArrayNode
                 && ov instanceof ArrayNode
                 && bv.size() == 1

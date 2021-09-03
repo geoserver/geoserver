@@ -15,10 +15,13 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xsd.XSDElementDeclaration;
 import org.eclipse.xsd.impl.XSDElementDeclarationImpl;
 import org.geoserver.config.GeoServer;
@@ -31,6 +34,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.type.DateUtil;
+import org.geotools.xsd.EMFUtils;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
@@ -49,7 +53,7 @@ import org.opengis.feature.type.PropertyDescriptor;
  */
 public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
 
-    static final Pattern CSV_ESCAPES = Pattern.compile("[\"\n,\r]");
+    static Pattern CSV_ESCAPES;
 
     public CSVOutputFormat(GeoServer gs) {
         // this is the name of your output format, it is the string
@@ -84,6 +88,11 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
             throws IOException, ServiceException {
         // write out content here
 
+        Object o = getFeature.getParameters()[0];
+
+        String csvSeparator = getCsvSeparator(o);
+        CSV_ESCAPES = Pattern.compile("[\"\n\r\t" + csvSeparator + "]");
+
         // create a writer
         BufferedWriter w =
                 new BufferedWriter(
@@ -99,25 +108,25 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
 
             // write out the header
             SimpleFeatureType ft = (SimpleFeatureType) fc.getSchema();
-            w.write("FID,");
+            w.write("FID" + csvSeparator);
             for (int i = 0; i < ft.getAttributeCount(); i++) {
                 AttributeDescriptor ad = ft.getDescriptor(i);
                 w.write(prepCSVField(ad.getLocalName()));
 
                 if (i < ft.getAttributeCount() - 1) {
-                    w.write(",");
+                    w.write(csvSeparator);
                 }
             }
         } else {
             // complex features
-            w.write("gml:id,");
+            w.write("gml:id" + csvSeparator);
 
             int i = 0;
             for (PropertyDescriptor att : fc.getSchema().getDescriptors()) {
                 // exclude temporary attributes
                 if (!att.getName().getLocalPart().startsWith("FEATURE_LINK")) {
                     if (i > 0) {
-                        w.write(",");
+                        w.write(csvSeparator);
                     }
                     String elName = att.getName().toString();
                     Object xsd = att.getUserData().get(XSDElementDeclaration.class);
@@ -150,7 +159,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                 Feature f = i.next();
                 // dump fid
                 w.write(prepCSVField(f.getIdentifier().getID()));
-                w.write(",");
+                w.write(csvSeparator);
                 if (f instanceof SimpleFeature) {
                     // dump attributes
                     for (int j = 0; j < ((SimpleFeature) f).getAttributeCount(); j++) {
@@ -160,7 +169,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                             w.write(value);
                         }
                         if (j < ((SimpleFeature) f).getAttributeCount() - 1) {
-                            w.write(",");
+                            w.write(csvSeparator);
                         }
                     }
                 } else {
@@ -178,7 +187,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                             continue;
                         }
                         if (j > 0) {
-                            w.write(",");
+                            w.write(csvSeparator);
                         }
                         j++;
                         // Multi valued properties aren't supported, only for SF0 for now
@@ -205,6 +214,27 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
         }
 
         w.flush();
+    }
+
+    @SuppressWarnings("unchecked")
+    private String getCsvSeparator(Object o) {
+
+        String separator = null;
+        if (EMFUtils.has((EObject) o, "formatOptions")) {
+            HashMap<String, String> hashMap =
+                    (HashMap<String, String>) EMFUtils.get((EObject) o, "formatOptions");
+            separator = hashMap.get("CSVSEPARATOR");
+        }
+
+        if (StringUtils.isEmpty(separator)) {
+            separator = ",";
+        } else if (separator.equalsIgnoreCase("space")) {
+            separator = " ";
+        } else if (separator.equalsIgnoreCase("tab")) {
+            separator = "\t";
+        }
+
+        return separator;
     }
 
     private AttrFormatter[] getFormatters(FeatureType schema) {
@@ -252,6 +282,11 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
 
         @Override
         public String format(Object att) {
+
+            // check for negative numbers
+            if (coordFormatter.format(att).contains("-")) {
+                return prepCSVField(coordFormatter.format(att));
+            }
             return coordFormatter.format(att);
         }
     }

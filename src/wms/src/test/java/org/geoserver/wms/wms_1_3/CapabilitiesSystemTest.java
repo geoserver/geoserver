@@ -28,9 +28,11 @@ import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geotools.xsd.XML;
 import org.junit.Test;
@@ -314,5 +316,22 @@ public class CapabilitiesSystemTest extends WMSTestSupport {
                 "InvalidUpdateSequence",
                 "/ogc:ServiceExceptionReport/ogc:ServiceException/@code",
                 dom);
+    }
+
+    @Test
+    public void testCiteCompliant() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.setCiteCompliant(true);
+        gs.save(wms);
+
+        try {
+            // version not required for GetCapabilities
+            Document dom = getAsDOM("wms?request=GetCapabilities");
+            assertEquals("WMS_Capabilities", dom.getDocumentElement().getNodeName());
+        } finally {
+            wms.setCiteCompliant(false);
+            gs.save(wms);
+        }
     }
 }

@@ -671,11 +671,11 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             assertThat(message, containsString("/this/file/does/not/exist"));
         }
     }
-    
+
     /**
-     * Triggers an exception to check that the file in data catalog is deleted.
-     * The exception occurs because the format is set to null.
-     * 
+     * Triggers an exception to check that the file in data catalog is deleted. The exception occurs
+     * because the format is set to null.
+     *
      * @throws Exception
      */
     @Test
@@ -684,7 +684,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         style.setName("foo");
         style.setFilename("foo.sld");
         style.setFormat(null);
-        
+
         File sldFile =
                 new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "styles/foo.sld");
 
@@ -692,12 +692,11 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         StyledLayerDescriptor sld = styleFactory.createStyledLayerDescriptor();
 
         try {
-        	ResourcePool pool = new ResourcePool(getCatalog());
-        	pool.writeSLD(style, sld);
-        	Assert.fail("Should fail with IOException");
-        }
-        catch (IOException e) {
-        	// writeStyleFile throws an IOException
+            ResourcePool pool = new ResourcePool(getCatalog());
+            pool.writeSLD(style, sld);
+            Assert.fail("Should fail with IOException");
+        } catch (IOException e) {
+            // writeStyleFile throws an IOException
         }
         Assert.assertFalse("foo.sld should not exist on disk after a failure.", sldFile.exists());
     }

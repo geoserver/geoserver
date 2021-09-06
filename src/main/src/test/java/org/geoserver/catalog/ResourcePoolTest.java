@@ -77,6 +77,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.data.wfs.WFSDataStoreFactory;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.collection.DecoratingFeatureCollection;
@@ -92,11 +93,14 @@ import org.geotools.styling.AbstractStyleVisitor;
 import org.geotools.styling.Mark;
 import org.geotools.styling.PolygonSymbolizer;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyleFactory;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.URLs;
 import org.geotools.util.Version;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.factory.Hints;
+import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -666,6 +670,36 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
             assertThat(message, containsString("Entity resolution disallowed"));
             assertThat(message, containsString("/this/file/does/not/exist"));
         }
+    }
+    
+    /**
+     * Triggers an exception to check that the file in data catalog is deleted.
+     * The exception occurs because the format is set to null.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testWriteStyleThatFails() throws Exception {
+        StyleInfo style = getCatalog().getFactory().createStyle();
+        style.setName("foo");
+        style.setFilename("foo.sld");
+        style.setFormat(null);
+        
+        File sldFile =
+                new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "styles/foo.sld");
+
+        final StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory(null);
+        StyledLayerDescriptor sld = styleFactory.createStyledLayerDescriptor();
+
+        try {
+        	ResourcePool pool = new ResourcePool(getCatalog());
+        	pool.writeSLD(style, sld);
+        	Assert.fail("Should fail with IOException");
+        }
+        catch (IOException e) {
+        	// writeStyleFile throws an IOException
+        }
+        Assert.assertFalse("foo.sld should not exist on disk after a failure.", sldFile.exists());
     }
 
     @Test

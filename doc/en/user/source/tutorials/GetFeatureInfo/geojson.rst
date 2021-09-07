@@ -48,11 +48,9 @@ The *content json template*::
   </#if>
   </#list>
   "properties": {
-  <#list feature.attributes as attribute2>
-  <#if !attribute2.isGeometry>
-  "${attribute2.name}": "${attribute2.value}"
-  </#if>
-  <#if attribute2_has_next && !attribute2.isGeometry>
+  <#list feature.attributes?filter(a -> !a.isGeometry) as attribute>
+  "${attribute.name}": "${attribute.value}"
+  <#if attribute_has_next>
   ,
   </#if>
   </#list>

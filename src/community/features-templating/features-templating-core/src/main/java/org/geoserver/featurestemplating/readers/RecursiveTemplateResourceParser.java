@@ -115,6 +115,11 @@ public class RecursiveTemplateResourceParser {
         return watchers;
     }
 
+    /**
+     * A {@link FileWatcher} that is used to check if included templates needs to be reloaded. The
+     * isModified() method makes sure to return false if the FileWatcher never execute a check
+     * still.
+     */
     private class IncludedTemplateWatcher extends FileWatcher<Object> {
 
         private IncludedTemplateWatcher(Resource resource) {

@@ -189,8 +189,9 @@ public class JSONIncludesTest {
         JSONTemplateReader reader =
                 new JSONTemplateReader(parser.parse(), configuration, parser.getWatchers());
         RootBuilder rootBuilder = reader.getRootBuilder();
-        File file = resource.file();
         assertFalse(rootBuilder.needsReload());
+        Resource included = store.get("object.json");
+        File file = included.file();
         file.setLastModified(new Date().getTime());
         Thread.sleep(1000);
 

@@ -32,3 +32,7 @@ build/cite/logs
 
 # https://bugs.openjdk.java.net/browse/JDK-8214300
 .attach_pid*
+
+# Windows installer related stuff
+src/release/installer/win/source/
+src/release/installer/win/target/

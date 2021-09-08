@@ -1,4 +1,4 @@
-; GEOSERVER INSTALLER SCRIPT FOR NSIS
+; GEOSERVER WINDOWS INSTALLER SCRIPT FOR NSIS
 ;
 ;   NOTE: This script requires the following NSIS plugins:
 ;      -> AccessControl (https://nsis.sourceforge.io/AccessControl_plug-in)
@@ -17,7 +17,7 @@
 
 ; Constants (VERSION should be updated by a script!)
 !define APPNAME "GeoServer"                           ; application name
-!define VERSION "2.19.0"                              ; application version
+!define VERSION "2.19.1"                              ; application version
 !define FULLVERSION "${VERSION}.0"                    ; full version (includes subversion)
 !define FULLNAME "${APPNAME} ${VERSION}"              ; app name and version combined
 !define FULLKEY "${APPNAME}-${VERSION}"               ; app name and version combined (delimited)
@@ -36,23 +36,25 @@
 
 ; CODE SIGNING
 ; ----------------------------------------------------------------------------
-; Signing Windows executables on Linux can be done using Mono's Signcode tool.
-; This tool is included in the "mono-devel" package.
-; Signcode manual: https://www.mankier.com/1/signcode
-; About signing:   https://developer.mozilla.org/en-US/docs/Mozilla/Developer_guide/Build_Instructions/Signing_an_executable_with_Authenticode
+; Signing requires Windows SIGNTOOL.EXE (32-bits, because NSIS is 32-bits)
+; This can be installed as a feature of MS Visual Studio (ClickOnce) or as part of the Windows SDK.
 ;
-!define SIGNCOMMAND "signcode -spc $%OSGEO_PUBLISHER_CERT% \
-                              -v $%OSGEO_PRIVATE_KEY% \
-                              -a sha256 \
-                              -n ${APPNAME} \
-                              -i ${HOMEPAGE} \
-                              -t ${TIMESTAMPURL} \
-                              -tr 10"
+; Common directories where the signtool.exe can be found are:
+; C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool
+; C:\Program Files (x86)\Windows Kits\10\bin\<version>\<architecture>
+; C:\Program Files (x86)\Windows Kits\10\App Certification Kit
+;
+; IMPORTANT: the signtool.exe directory MUST be added to the Windows PATH environment variable!!
+!define SIGNCOMMAND "signtool sign /v /d ${APPNAME} /du https://www.osgeo.org /tr http://timestamp.comodoca.com/rfc3161 /td sha256"
 
 ; The sign command will be called after the (un)installer.exe files were build successfully.
-!finalize "sleep 5"     ; Delay next step by 5 seconds to ensure file isn't locked by compiler process
+; Make sure that the private certificate (*.pfx) is installed in the certificate store (for user, not machine).
+; Note: installing the certificate might require a password.
+; Once the certificate is installed, the finalize steps below should run without issues.
+!finalize "PING -n 5 127.0.0.1 >nul"                ; Delay next step to ensure file isn't locked by compiler process
 !ifndef INNER
-  !finalize "${SIGNCOMMAND} ..\target\${INSTNAME}"  ; Sign installer
+  !finalize "${SIGNCOMMAND} ..\target\${INSTNAME}"  ; Sign installer with SHA1
+  !finalize 'DEL /F /Q "wrapper\${APPNAME}.exe"'    ; Remove the signed wrapper
 !endif
 ; ----------------------------------------------------------------------------
 
@@ -116,12 +118,12 @@ VIAddVersionKey Comments "${HOMEPAGE}"
   ; Request application privileges for Windows
   RequestExecutionLevel admin
 
-  ; Setup script to run in 2 phases (to be able to sign the uninstaller)
+  ; Compression options
   !ifdef INNER
     !echo "Inner invocation"
 
     ; Initially write temporary output
-    OutFile "\tmp\tempinstaller.exe"
+    OutFile "$%TEMP%\tempinstaller.exe"
     SetCompress off
 
   !else
@@ -130,23 +132,18 @@ VIAddVersionKey Comments "${HOMEPAGE}"
     ; Call makensis again against current file, defining INNER.  
     ; This writes an installer for us which, when invoked, 
     ; will just write the uninstaller to some location, and then exit.
-    !makensis '-V4 -DINNER "${__FILE__}"' = 0
+    !makensis '/DINNER "${__FILE__}"' = 0
   
     ; Now run that installer we just created as %TEMP%\tempinstaller.exe.
     ; Since it calls quit the return value isn't zero. 
-    ; !system 'set __COMPAT_LAYER=RunAsInvoker&"$%TEMP%\tempinstaller.exe"' = 2
-    ; TODO: RUN THIS USING WINE??
-    !system "chmod a+rwx \tmp\tempinstaller.exe"
-    !system "wine start /unix \tmp\tempinstaller.exe" = 2
-
+    !system 'set __COMPAT_LAYER=RunAsInvoker&"$%TEMP%\tempinstaller.exe"' = 2
+  
     ; That will have written an uninstaller binary for us.
     ; Now we will digitally sign it. 
-    !system "${SIGNCOMMAND} \tmp\${UNINNAME}" = 0
+    !system "${SIGNCOMMAND} $%TEMP%\${UNINNAME}" = 0
 
-    ; Write the actual installer
+    ; Write the real installer
     OutFile "..\target\${INSTNAME}"
-
-    ; Compression options
     SetCompress auto
   !endif
 
@@ -159,6 +156,7 @@ VIAddVersionKey Comments "${HOMEPAGE}"
   !include "nsDialogs.nsh"    ; For Custom page layouts (radio buttons etc.)
   ${StrStr}
   ${StrCase}
+  ${StrLoc}
 
   ; "Are you sure you wish to cancel" popup
   !define MUI_ABORTWARNING
@@ -245,7 +243,7 @@ Function .onInit
     ; the uninstaller.  This is better than processing a command line option as it means
     ; this entire code path is not present in the final (real) installer.
     SetSilent silent
-    WriteUninstaller "\tmp\${UNINNAME}"
+    WriteUninstaller "$%TEMP%\${UNINNAME}"
 
     ; Bail out quickly when running the "inner" installer
     Quit
@@ -300,7 +298,8 @@ Function CheckUserType
 FunctionEnd
 
 ; Remove trailing slash from path
-Function RemoveTrailingSlash
+!macro GlobalRemoveTrailingSlash un
+Function ${un}RemoveTrailingSlash
   ClearErrors
   Pop $6
 
@@ -311,6 +310,11 @@ Function RemoveTrailingSlash
   Push $6
 
 FunctionEnd
+!macroend
+
+; make RemoveTrailingSlash function available both for installer and uninstaller
+!insertmacro GlobalRemoveTrailingSlash ""
+!insertmacro GlobalRemoveTrailingSlash "un."
 
 ; Find the %JAVA_HOME% used on the system and assign it to $JavaHome global
 ; Will check environment variables and the registry (both JRE and JDK)
@@ -363,7 +367,7 @@ Function SetJRE
   nsDialogs::Create 1018
 
   ; ${NSD_Create*} x y width height text
-  ${NSD_CreateLabel} 0 0 100% 56u "Please select the path to your Java Runtime Environment (JRE). \
+  ${NSD_CreateLabel} 0 0 100% 56u "Please select a Java Runtime Environment (JRE) if the path below is invalid or unwanted. \
                                    $\r$\n$\r$\n${APPNAME} requires a 64-Bit Java JRE or JDK (${REQJREVERSIONNAME} \
                                    or ${ALTJREVERSIONNAME}). \
                                    $\r$\n$\r$\nIf you don't have a (valid) JRE installed, you can click on \
@@ -427,22 +431,22 @@ Function ValidateJava
     ${EndIf}
 
   Errors:
-    ${NSD_SetText} $JavaPathCheck "This path does not contain a valid 64-bit JRE (${REQJREVERSIONNAME} \
-                                   or ${ALTJREVERSIONNAME})"
+    ${NSD_SetText} $JavaPathCheck "This path is INVALID: no 64-bit JRE (${REQJREVERSIONNAME} \
+                                   or ${ALTJREVERSIONNAME}) found."
     GetDlgItem $0 $HWNDPARENT 1   ; Next button
     EnableWindow $0 0             ; Disable
     StrCpy $JavaHome ""
     Goto End
 
   ReqVersionFound:
-    ${NSD_SetText} $JavaPathCheck "This path contains a valid 64-bit JRE ${REQJREVERSIONNAME}"
+    ${NSD_SetText} $JavaPathCheck "This path is VALID: 64-bit JRE ${REQJREVERSIONNAME} detected."
     GetDlgItem $0 $HWNDPARENT 1 ; Next button
     EnableWindow $0 1           ; Enable
     StrCpy $JavaHome $JavaHomeTemp
     Goto End
 
   AltVersionFound:
-    ${NSD_SetText} $JavaPathCheck "This path contains a valid 64-bit JRE ${ALTJREVERSIONNAME}"
+    ${NSD_SetText} $JavaPathCheck "This path is VALID: 64-bit JRE ${ALTJREVERSIONNAME} detected."
     GetDlgItem $0 $HWNDPARENT 1 ; Next button
     EnableWindow $0 1           ; Enable
     StrCpy $JavaHome $JavaHomeTemp
@@ -468,13 +472,16 @@ Function BrowseJava
 FunctionEnd
 
 ; Find the %GEOSERVER_DATA_DIR% used on the system and set $DataDir variable
-Function FindDataDir
+!macro GlobalFindDataDir un
+Function ${un}FindDataDir
 
   ClearErrors
   ReadEnvStr $1 GEOSERVER_DATA_DIR
-  Push $1
-  Call RemoveTrailingSlash
-  Pop $1
+  ${IfNot} ${Errors}
+    Push $1
+    Call ${un}RemoveTrailingSlash
+    Pop $1
+  ${EndIf}
 
   ${If} ${Errors}
   ${OrIfNot} ${FileExists} "$1\*.*"
@@ -500,21 +507,54 @@ Function FindDataDir
     StrCpy $1 ""
 
 FunctionEnd
+!macroend
+
+; make FindDataDir function available both for installer and uninstaller
+!insertmacro GlobalFindDataDir ""
+!insertmacro GlobalFindDataDir "un."
+
+; Taken from https://nsis.sourceforge.io/Check_if_dir_is_empty
+Function IsEmptyDir
+  # Stack ->                    # Stack: <directory>
+  Exch $0                       # Stack: $0
+  Push $1                       # Stack: $1, $0
+  FindFirst $0 $1 "$0\*.*"
+  strcmp $1 "." 0 _notempty
+    FindNext $0 $1
+    strcmp $1 ".." 0 _notempty
+      ClearErrors
+      FindNext $0 $1
+      IfErrors 0 _notempty
+        FindClose $0
+        Pop $1                  # Stack: $0
+        StrCpy $0 1
+        Exch $0                 # Stack: 1 (true)
+        goto _end
+     _notempty:
+       FindClose $0
+       ClearErrors
+       Pop $1                   # Stack: $0
+       StrCpy $0 0
+       Exch $0                  # Stack: 0 (false)
+  _end:
+FunctionEnd
 
 ; Data directory config page
 Function SetDataDir
 
   !insertmacro MUI_HEADER_TEXT "$(TEXT_DATADIR_TITLE)" "$(TEXT_DATADIR_SUBTITLE)"
 
+  ${If} $DataDir == ""
+    StrCpy $DataDir $DefaultDataDir
+  ${EndIf}
   StrCpy $DataDirTemp $DataDir
 
   nsDialogs::Create 1018
 
   ; ${NSD_Create*} x y width height text
-  ${NSD_CreateLabel} 0 0 100% 56u "If a valid existing ${APPNAME} data directory path was found on your system, \
-                                   it should be displayed below. \
-                                   $\r$\nIf it was not found, a default directory is suggested. \
-                                   Alternatively, you can specify another (existing) data directory."
+  ${NSD_CreateLabel} 0 0 100% 56u "If a valid existing ${APPNAME} data directory was found on your system, \
+                                   the path should be displayed below. Otherwise, a default directory is suggested. \
+                                   $\r$\nYou can also set another directory, as long as it's empty or non-existing."
 
   ${NSD_CreateDirRequest} 0 90u 240u 13u $DataDirTemp
   Pop $DataDirHWND
@@ -527,8 +567,7 @@ Function SetDataDir
   ${NSD_CreateLabel} 0 106u 100% 12u " "
   Pop $DataDirPathCheck
 
-  Push $DataDirHWND
-  Call ValidateDataDir
+  ${NSD_SetText} $DataDirHWND $DataDirTemp
 
   nsDialogs::Show
 
@@ -541,29 +580,39 @@ Function ValidateDataDir
     Pop $7
     ${NSD_GetText} $7 $DataDirTemp
 
-    ${IfNot} ${FileExists} "$DataDirTemp\*.*"
-      ; The directory does not exist: this is valid (it will be created)
-      ${NSD_SetText} $DataDirPathCheck "The data directory will be created at this path"
-      StrCpy $DataDirType 0
-      Goto IsValid
-    ${EndIf}
-
     ${If} ${FileExists} "$DataDirTemp\global.xml"       ; 2.0+ data dir
     ${OrIf} ${FileExists} "$DataDirTemp\catalog.xml"    ; 1.7 data dir
-      ${NSD_SetText} $DataDirPathCheck "This path contains a valid existing data directory"
+      ${NSD_SetText} $DataDirPathCheck "This path contains a valid existing data directory."
       StrCpy $DataDirType 1
       Goto IsValid
     ${EndIf}
 
-    ${NSD_SetText} $DataDirPathCheck "This path does not contain a valid data directory"
-    GetDlgItem $0 $HWNDPARENT 1     ; Next
-    EnableWindow $0 0               ; Disable
-    StrCpy $DataDir ""
+    ; Directory is not an existing one: check if the path is an empty dir
+    Push "$DataDirTemp\"
+    Call IsEmptyDir
+    Pop $9
+
+    ${If} $9 == 0
+    ${AndIf} ${FileExists} "$DataDirTemp\*.*"
+      ; The directory exists but is not empty: we don't accept this (might raise errors later)
+      ${NSD_SetText} $DataDirPathCheck "This path does not point to a valid empty data directory."
+      GetDlgItem $0 $HWNDPARENT 1     ; Get Next button
+      EnableWindow $0 0               ; Disable the button
+      Goto End        
+    ${EndIf}
+
+    ; The directory is empty or does not exist yet: this is valid (it will be created)
+    ${NSD_SetText} $DataDirPathCheck "The data directory will be created at the given path."
+    StrCpy $DataDirType 0
+    Goto IsValid
 
     IsValid:
-      GetDlgItem $0 $HWNDPARENT 1   ; Next
-      EnableWindow $0 1             ; Enable
+      GetDlgItem $0 $HWNDPARENT 1   ; Get Next button
+      EnableWindow $0 1             ; Enable the button
       StrCpy $DataDir $DataDirTemp  ; Set $DataDir variable to valid path
+      Goto End
+    
+    End:
       ClearErrors
 
 FunctionEnd
@@ -571,7 +620,7 @@ FunctionEnd
 ; Brings up folder dialog for the data directory
 Function BrowseDataDir
 
-  nsDialogs::SelectFolderDialog "Please select a valid data directory..." $ProgramData
+  nsDialogs::SelectFolderDialog "Please select a valid data directory:" $ProgramData
   Pop $1
 
   ${If} $1 != "error"   ; i.e. didn't hit cancel
@@ -634,7 +683,6 @@ Function UsernameCheck
     EnableWindow $0 1 ; Enable
   End:
 
-
 FunctionEnd
 
 ; When password value is changed (realtime)
@@ -656,24 +704,67 @@ Function PasswordCheck
 
 FunctionEnd
 
-; Find Marlin JAR file and write service wrapper configuration to enable the Marlin renderer
-Function SetMarlinRendererService
+; Find Marlin JAR file and write service wrapper configuration
+Function WriteWrapperConfiguration
 
   ClearErrors
-  FindFirst $0 $1 "$INSTDIR\webapps\geoserver\WEB-INF\lib\marlin*.jar"
+  FileOpen $9 "$INSTDIR\wrapper\jsl64.ini" w  ; Opens a empty file in (over)write mode
+
+  ; Service section
+  FileWrite $9 ";GeoServer Java Service Launcher (JSL) configuration$\r$\n$\r$\n"
+  FileWrite $9 "[service]$\r$\n"
+  FileWrite $9 "appname=${APPNAME}$\r$\n"
+  FileWrite $9 "servicename=${APPNAME}$\r$\n"
+  FileWrite $9 "displayname=${FULLNAME}$\r$\n"
+  FileWrite $9 "servicedescription=${APPNAME} is an open source software server written in Java that allows users to share and edit geospatial data.$\r$\n"
+  FileWrite $9 "account=NT Authority\Network Service$\r$\n$\r$\n"  ; (S-1-5-20) can not be used here
+  FileWrite $9 ";Console handling$\r$\n"
+  FileWrite $9 "useconsolehandler=true$\r$\n"
+  FileWrite $9 "stopclass=java/lang/System$\r$\n"
+  FileWrite $9 "stopmethod=exit$\r$\n"
+  FileWrite $9 "stopsignature=(I)V$\r$\n$\r$\n"
+  FileWrite $9 ";Logging$\r$\n"
+  FileWrite $9 'logtimestamp="%%Y-%%m-%%d"$\r$\n'
+  FileWrite $9 "systemout=%GEOSERVER_HOME%\logs\$AppKey.log$\r$\n"
+  FileWrite $9 "systemoutappend=yes$\r$\n"
+  FileWrite $9 "systemerr=%GEOSERVER_HOME%\logs\$AppKey.log$\r$\n"
+  FileWrite $9 "systemerrappend=yes$\r$\n$\r$\n"
+  FileWrite $9 ";Failure handling$\r$\n"
+  FileWrite $9 "failureactions_resetperiod=300000$\r$\n"
+  FileWrite $9 "failureactions_actions=4$\r$\n"
+  FileWrite $9 "action0_type=1$\r$\n"
+  FileWrite $9 "action0_delay=10000$\r$\n"
+  FileWrite $9 "action1_type=1$\r$\n"
+  FileWrite $9 "action1_delay=10000$\r$\n"
+  FileWrite $9 "action2_type=1$\r$\n"
+  FileWrite $9 "action2_delay=10000$\r$\n"
+  FileWrite $9 "action3_type=0$\r$\n"
+  FileWrite $9 "action3_delay=10000$\r$\n$\r$\n"
+
+  ; Java section (part 1)
+  FileWrite $9 "[java]$\r$\n"
+  FileWrite $9 "jrepath=%JAVA_HOME%$\r$\n"
+  FileWrite $9 "jvmsearch=path$\r$\n"
+  FileWrite $9 "wrkdir=%GEOSERVER_HOME%$\r$\n"
+
+  ; Build command line
+  StrCpy $2 "-Djava.awt.headless=true -Djetty.http.port=$StartPort -DSTOP.PORT=$StopPort -DSTOP.KEY=$AppKey"
+
+  ; Find the Marlin renderer JAR
+  FindFirst $0 $1 "$INSTDIR\webapps\$AppKey\WEB-INF\lib\marlin*.jar"
   IfErrors End
 
-  FileOpen $9 "$INSTDIR\wrapper\marlin.conf" w ; Opens a Empty File and fills it
-  FileWrite $9 '# Marlin Renderer$\r$\n'
-  FileWrite $9 'set.default.MARLIN_JAR=$1$\r$\n'
-  FileWrite $9 'set.default.GEOSERVER_HOME=$INSTDIR$\r$\n'
-  FileWrite $9 'wrapper.java.additional.4=-Xbootclasspath/a:"%GEOSERVER_HOME%\webapps\geoserver\WEB-INF\lib\%MARLIN_JAR%"$\r$\n'
-  FileWrite $9 'wrapper.java.additional.5=-Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine'
-  FileClose $9 ; Closes the file
+  ; Add Marlin parameters to the command line
+  StrCpy $2 "$2 -Xbootclasspath/a:./webapps/$AppKey/WEB-INF/lib/$1"
+  StrCpy $2 "$2 -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine"
+  Goto End
 
   End:
-    FindClose $0
+    ; Finish Java section by writing the command line
     ClearErrors
+    FindClose $0
+    FileWrite $9 "cmdline=$2 -jar start.jar$\r$\n"
+    FileClose $9  ; Closes the file    
 
 FunctionEnd
 
@@ -782,25 +873,28 @@ Function ShowSummary
   ${NSD_CreateLabel} 0 0 100% 24u "Please review the settings below and click the Back button if \
                                    changes need to be made. Click the Install button to continue."
 
-  ; Directory
+  ; Directories
   ${NSD_CreateLabel} 10u 25u 35% 24u "Installation directory:"
   ${NSD_CreateLabel} 40% 25u 60% 24u "$INSTDIR"
 
+  ${NSD_CreateLabel} 10u 45u 35% 24u "Data directory:"
+  ${NSD_CreateLabel} 40% 45u 60% 24u "$DataDir"
+
   ; Install type
-  ${NSD_CreateLabel} 10u 45u 35% 24u "Installation type:"
+  ${NSD_CreateLabel} 10u 65u 35% 24u "Installation type:"
   ${If} $IsManual == 1
-    ${NSD_CreateLabel} 40% 45u 60% 24u "Run manually"
+    ${NSD_CreateLabel} 40% 65u 60% 24u "Run manually"
   ${Else}
-    ${NSD_CreateLabel} 40% 45u 60% 24u "Installed as a service"
+    ${NSD_CreateLabel} 40% 65u 60% 24u "Installed as a service"
   ${EndIf}
  
   ; JRE
-  ${NSD_CreateLabel} 10u 65u 35% 24u "Java Runtime Environment:"
-  ${NSD_CreateLabel} 40% 65u 60% 24u "$JavaHome"
+  ${NSD_CreateLabel} 10u 85u 35% 24u "Java Runtime Environment:"
+  ${NSD_CreateLabel} 40% 85u 60% 24u "$JavaHome"
 
   ; Server Port
-  ${NSD_CreateLabel} 10u 85u 35% 24u "Web server port:"
-  ${NSD_CreateLabel} 40% 85u 60% 24u "$StartPort"
+  ${NSD_CreateLabel} 10u 105u 35% 24u "Web server port:"
+  ${NSD_CreateLabel} 40% 105u 60% 24u "$StartPort"
 
   nsDialogs::Show
 
@@ -829,6 +923,29 @@ Function un.DeleteEnvVar
 
 FunctionEnd
 
+; Copy Jetty INI file line by line, but modify start port
+Function CreateNewJettyIni
+
+  FileOpen $0 $INSTDIR\start.default.ini r    ; Open the default ini
+  FileOpen $1 $INSTDIR\start.ini w            ; Create the user ini
+  
+  LOOP:
+    IfErrors exit_loop
+    FileRead $0 $2
+    ${StrLoc} $3 $2 "jetty.http.port=8080" ">"
+    ${If} $3 == "0"
+      FileWrite $1 "jetty.http.port=$StartPort"
+    ${Else}
+      FileWrite $1 $2
+    ${EndIf}
+    Goto LOOP
+  
+  exit_loop:
+    FileClose $0
+    FileClose $1
+
+FunctionEnd
+
 ; ----------------------------------------------------------------------------
 ; SECTIONS
 
@@ -842,16 +959,24 @@ Section "GeoServer" SectionMain
 
   ; Create program folder and copy files only from unzipped binary distribution
   CreateDirectory "$INSTDIR"
-  CopyFiles /SILENT /FILESONLY "source\*.*" "$INSTDIR"
+  ;CopyFiles /SILENT /FILESONLY "..\source\*.*" "$INSTDIR"
 
   ; Copy relevant folders from unzipped binary distribution (recursively)
   SetOutPath "$INSTDIR"
-  File /r "source\etc"
-  File /r "source\modules"
-  File /r "source\lib"
-  File /r "source\logs"
-  File /r "source\resources"
-  File /r "source\webapps"
+  File /r /x "*.sh" "..\source\bin"  ; Copy manual start/stop *.bat files (skip *.sh)
+  File /r "..\source\etc"
+  File /r "..\source\modules"
+  File /r "..\source\lib"
+  File /r "..\source\logs"
+  File /r "..\source\resources"
+  File /r "..\source\webapps"
+  File "..\source\*.txt"
+  File "..\source\*.md"
+
+  ; Copy Jetty files, manipulate .ini
+  File "..\source\start.jar"
+  File "/oname=start.default.ini" "..\source\start.ini"
+  Call CreateNewJettyIni
 
   ; Copy icon files
   CreateDirectory "$INSTDIR\ico"
@@ -860,6 +985,9 @@ Section "GeoServer" SectionMain
   File "img\start.ico"
   File "img\stop.ico"
   File "img\info.ico"
+
+  ; Create Java IO temp dir
+  CreateDirectory "$INSTDIR\work"
 
   ; Special handling of the 'data_dir'
   ${If} $DataDirType == 0
@@ -873,7 +1001,7 @@ Section "GeoServer" SectionMain
       Abort
     ${EndIf}
     SetOutPath $DataDir
-    File /r data_dir
+    File /r "..\source\data_dir\*.*"
   ${EndIf}
 
   DetailPrint "Writing environment variables..."
@@ -891,47 +1019,45 @@ Section "GeoServer" SectionMain
   Push "$DataDir"
   Call WriteEnvVar
 
-  ; Always create the scripts folder
-  CreateDirectory "$INSTDIR\scripts"
-
   ${If} $IsManual == 0 ; install as service
 
     DetailPrint "Setting up Windows service..."
 
-    ; Copy YAJSW java service wrapper folder (recursively)
-    SetOutPath "$INSTDIR"
-    File /r wrapper
-
-    ; Copy geoserver.bat file
-    SetOutPath "$INSTDIR\scripts"
-    File geoserver.bat
-
-    ; Create Java IO temp dir
-    CreateDirectory "$INSTDIR\work"
-
-    Call SetMarlinRendererService
+    ; Create a directory for the wrapper
+    CreateDirectory "$INSTDIR\wrapper"
+    SetOutPath "$INSTDIR\wrapper"
+    File "wrapper\LICENSE.txt"
+    File "wrapper\README.md"
     
-    ; Install the service using YAJSW (but don't start yet)
-    nsExec::Exec "$INSTDIR\scripts\geoserver.bat -i wrapper.app.parameter.4=jetty.port=$StartPort"
+    ; Copy JSL, rename and sign with SHA1, add to output dir
+    !system 'copy /y /b wrapper\jsl64.exe wrapper\${APPNAME}.exe'
+    !system '${SIGNCOMMAND} wrapper\${APPNAME}.exe'
+    File "wrapper\${APPNAME}.exe"
 
-  ${Else}   ; manual install
+    ; Generate JSL configuration ini file
+    Call WriteWrapperConfiguration
 
-    ; Copy start/stop batch files to scripts folder
-    SetOutPath "$INSTDIR\scripts"
-    File /r "source\bin\*.bat"
-
+    ; Install the service using Java Service Launcher and start it
+    ; jsl64.exe -install|configure|remove|run|runapp (<ini file>) (-console hide|attach|new)
+    DetailPrint "Installing Windows service..."
+    nsExec::ExecToLog '"$INSTDIR\wrapper\${APPNAME}.exe" -install "$INSTDIR\wrapper\jsl64.ini" -console hide'
+    Sleep 4000    ; make sure install has finished
+    
   ${EndIf}
 
   ; Grant full access to directories that require them:
   ; - Logging directory
   ; - Data directory
+  ; - Working directory
   ; This requires the NSIS AccessControl plugin at https://nsis.sourceforge.io/AccessControl_plug-in
   ; For more info, see https://nsis.sourceforge.io/How_can_I_install_a_plugin#NSIS_plugin_installation
   DetailPrint "Granting access..."
   ${If} $IsManual == 1      ; manual run -> grant to Users group
+    AccessControl::GrantOnFile "$INSTDIR\work" "(S-1-5-32-545)" "FullAccess"
     AccessControl::GrantOnFile "$INSTDIR\logs" "(S-1-5-32-545)" "FullAccess"
     AccessControl::GrantOnFile "$DataDir" "(S-1-5-32-545)" "FullAccess"
   ${ElseIf} $IsManual == 0  ; run as service -> grant to NT AUTHORITY\Network Service
+    AccessControl::GrantOnFile "$INSTDIR\work" "(S-1-5-20)" "FullAccess"
     AccessControl::GrantOnFile "$INSTDIR\logs" "(S-1-5-20)" "FullAccess"
     AccessControl::GrantOnFile "$DataDir" "(S-1-5-20)" "FullAccess"
   ${EndIf}
@@ -947,19 +1073,22 @@ SectionEnd
 
       DetailPrint "Starting Windows service..."
 
-      ; Start the installed service
-      nsExec::Exec 'net start "${FULLNAME}"'
+      ; Start the installed service using Windows "net" command
+      nsExec::ExecToLog 'net start ${APPNAME}'
+      Sleep 2000
+
+      DetailPrint "Writing batch files..."
 
       ; Add simple start/stop service batch files
-      SetOutPath "$INSTDIR\scripts"
+      SetOutPath "$INSTDIR\bin"
 
-      FileOpen $9 startup.bat w   ; Creates a new bat file and opens it
-      FileWrite $9 'net start "${FULLNAME}"'
-      FileClose $9                ; Closes the file
+      FileOpen $9 startService.bat w  ; Creates a new bat file and opens it
+      FileWrite $9 'net start ${APPNAME}$\r$\n'
+      FileClose $9                    ; Closes the file
 
-      FileOpen $9 shutdown.bat w  ; Creates a new bat file and opens it
-      FileWrite $9 'net stop "${FULLNAME}"'
-      FileClose $9                ; Closes the file
+      FileOpen $9 stopService.bat w   ; Creates a new bat file and opens it
+      FileWrite $9 'net stop ${APPNAME}$\r$\n'
+      FileClose $9                    ; Closes the file
 
     ${EndIf}
     
@@ -979,11 +1108,18 @@ SectionEnd
 
       ; Create batch file shortcuts in appropriate target directory and move them to Start Menu folder
       ; Also make sure that they are executed as administrator (else they won't work)
-      SetOutPath "$INSTDIR\scripts"
-      CreateShortCut "$INSTDIR\scripts\Start ${APPNAME}.lnk" "$INSTDIR\scripts\startup.bat" "" "$INSTDIR\ico\start.ico" 0
-      CreateShortCut "$INSTDIR\scripts\Stop ${APPNAME}.lnk" "$INSTDIR\scripts\shutdown.bat" "" "$INSTDIR\ico\stop.ico" 0
-      Rename "$INSTDIR\scripts\Start ${APPNAME}.lnk" "$SMPROGRAMS\$MenuFolder\Start ${APPNAME}.lnk"
-      Rename "$INSTDIR\scripts\Stop ${APPNAME}.lnk" "$SMPROGRAMS\$MenuFolder\Stop ${APPNAME}.lnk"
+      SetOutPath "$INSTDIR\bin"
+      ${If} $IsManual == 0
+        ; Link to service batch files
+        CreateShortCut "$INSTDIR\bin\Start ${APPNAME}.lnk" "$INSTDIR\bin\startService.bat" "" "$INSTDIR\ico\start.ico" 0
+        CreateShortCut "$INSTDIR\bin\Stop ${APPNAME}.lnk" "$INSTDIR\bin\stopService.bat" "" "$INSTDIR\ico\stop.ico" 0
+      ${Else}
+        ; Link to manual batch files
+        CreateShortCut "$INSTDIR\bin\Start ${APPNAME}.lnk" "$INSTDIR\bin\startup.bat" "" "$INSTDIR\ico\start.ico" 0
+        CreateShortCut "$INSTDIR\bin\Stop ${APPNAME}.lnk" "$INSTDIR\bin\shutdown.bat" "" "$INSTDIR\ico\stop.ico" 0      
+      ${EndIf}
+      Rename "$INSTDIR\bin\Start ${APPNAME}.lnk" "$SMPROGRAMS\$MenuFolder\Start ${APPNAME}.lnk"
+      Rename "$INSTDIR\bin\Stop ${APPNAME}.lnk" "$SMPROGRAMS\$MenuFolder\Stop ${APPNAME}.lnk"
       ShellLink::SetRunAsAdministrator "$SMPROGRAMS\$MenuFolder\Start ${APPNAME}.lnk"
       ShellLink::SetRunAsAdministrator "$SMPROGRAMS\$MenuFolder\Stop ${APPNAME}.lnk"
 
@@ -1006,7 +1142,7 @@ SectionEnd
 
     ; Package the signed uninstaller
     SetOutPath "$INSTDIR"
-    File "\tmp\${UNINNAME}"
+    File "$%TEMP%\${UNINNAME}"
 
   SectionEnd
 
@@ -1015,18 +1151,24 @@ SectionEnd
   ; Uninstall section
   Section Uninstall
 
-    ; Call FindDataDir
+    Call un.FindDataDir
 
     ; Stop GeoServer
     DetailPrint "Stopping ${FULLNAME}..."
-    nsExec::Exec "$INSTDIR\scripts\shutdown.bat"
-    Sleep 4000    ; make sure it's fully stopped
 
-    IfFileExists "$INSTDIR\wrapper\*.*" 0 +5
+    IfFileExists "$INSTDIR\wrapper\*.*" 0 ManualStop
+      nsExec::ExecToLog '"$INSTDIR\bin\stopService.bat"'
+      Sleep 4000    ; make sure it's fully stopped
+      
       DetailPrint "Removing ${FULLNAME} service..."
-      nsExec::Exec "$INSTDIR\scripts\geoserver.bat -r"
-      Sleep 4000  ; make sure it's fully removed
-      RMDir /r "$INSTDIR\wrapper" ; while we're here
+      nsExec::ExecToLog '"$INSTDIR\wrapper\${APPNAME}.exe" -remove "$INSTDIR\wrapper\jsl64.ini" -console hide'
+      Sleep 4000                  ; make sure it's fully removed
+      
+      RMDir /r "$INSTDIR\wrapper" ; remove the wrapper files
+
+    ManualStop:
+      nsExec::ExecToLog '"$INSTDIR\bin\shutdown.bat"'
+      Sleep 4000    ; make sure it's fully stopped    
 
     DetailPrint "Removing environment variables and registry keys..."
 
@@ -1046,40 +1188,55 @@ SectionEnd
     DetailPrint "Removing program files..."
 
     ; Delete files/folders
-    RMDir /r "$INSTDIR\scripts"
+    RMDir /r "$INSTDIR\bin"
     RMDir /r "$INSTDIR\etc"
     RMDir /r "$INSTDIR\modules"
     RMDir /r "$INSTDIR\lib"
     RMDir /r "$INSTDIR\logs"
     RMDir /r "$INSTDIR\resources"
+    RMDir /r "$INSTDIR\ico"
     RMDir /r "$INSTDIR\work"        ; working data
     RMDir /r "$INSTDIR\webapps"
     RMDir /r "$INSTDIR\v*"          ; EPSG DB
-    Delete "$INSTDIR\*.*"
+    Delete "$INSTDIR\*.*"           ; delete root files
 
     RMDir "$INSTDIR" ; no /r!
 
-    IfFileExists "$INSTDIR\*.*" 0 +2
-      MessageBox MB_OK|MB_ICONEXCLAMATION "WARNING - Some files or folders could not be removed from:$\r$\n$INSTDIR"
+    IfFileExists "$INSTDIR\*.*" 0 +3
+      DetailPrint "WARNING: could not completely remove $INSTDIR"
+      MessageBox MB_OK|MB_ICONEXCLAMATION "Some files or folders could not be removed from:$\r$\n$INSTDIR"
 
-    IfFileExists "$DataDir\*.*" 0 Finish
-      ; Ask to also remove the data directory. For silent uninstalls, we will KEEP the data directory.
-      MessageBox MB_YESNO "Would you like to remove all ${APPNAME} data in $DataDir?$\r$\n\
-                           If you ever wish to reinstall ${APPNAME}, this is not recommended." /SD IDNO IDYES RemoveData
+    IfFileExists "$DataDir\*.*" 0 NoDataDir
+      ; Ask to also remove the data directory. For silent uninstalls (/SD IDNO), we will KEEP the data directory.
+      MessageBox MB_YESNO|MB_DEFBUTTON2 "Would you like to remove all ${APPNAME} data in $DataDir?$\r$\n\
+                                         If you ever plan to reinstall ${APPNAME}, this is not recommended." /SD IDNO IDYES RemoveData IDNO KeepData
+
+      KeepData:
+        DetailPrint "Keeping ${APPNAME} data directory at $DataDir"
+        Goto Finish
+
       RemoveData:
+        DetailPrint "Removing ${APPNAME} data directory..."
         RMDir /r "$DataDir\*.*"
         RMDir "$DataDir"
         IfFileExists "$DataDir\*.*" 0 RemoveEnvVar
+          DetailPrint "WARNING: could not completely remove $DataDir"
           MessageBox MB_OK|MB_ICONEXCLAMATION "WARNING - Some files or folders could not be removed from:$\r$\n$DataDir"
+          Goto Finish
 
       RemoveEnvVar:
         ; Delete environment var if data dir was successfully removed
+        DetailPrint "Removed ${APPNAME} data directory $DataDir"
         Push GEOSERVER_DATA_DIR
         Call un.DeleteEnvVar
+        DetailPrint "Removed GEOSERVER_DATA_DIR system environment variable"
         Goto Finish
 
+    NoDataDir:
+      DetailPrint "WARNING: no data directory found"
+
     Finish:
-      DetailPrint "Successfully uninstalled ${FULLNAME}"
+      ; "Completed" is printed automatically
 
   SectionEnd
 

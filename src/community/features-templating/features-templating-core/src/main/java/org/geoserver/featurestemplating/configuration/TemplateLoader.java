@@ -65,12 +65,6 @@ public class TemplateLoader {
         if (template.checkTemplate()) updateCache = true;
 
         RootBuilder root = template.getRootBuilder();
-        // check if reload is needed anyway and eventually reload the template
-        if (root != null && root.needsReload()) {
-            template.reloadTemplate();
-            updateCache = true;
-            root = template.getRootBuilder();
-        }
 
         if (updateCache) {
             replaceSimplifiedPropertiesIfNeeded(key.getResource(), template.getRootBuilder());

@@ -9,15 +9,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
+import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.Resource;
 import org.junit.Before;
 import org.junit.Test;
+import org.xml.sax.helpers.NamespaceSupport;
 
 public class JSONMergesTest {
 
@@ -104,5 +109,22 @@ public class JSONMergesTest {
         ArrayNode instruments = (ArrayNode) properties.get("instruments");
         assertEquals("myMajaInstrument1", instruments.get(0).textValue());
         assertEquals("myMajaInstrument2", instruments.get(1).textValue());
+    }
+
+    @Test
+    public void testMergeModificationsAreDetected() throws IOException, InterruptedException {
+        RecursiveJSONParser parser = new RecursiveJSONParser(store.get("simpleOverride.json"));
+        TemplateReaderConfiguration configuration =
+                new TemplateReaderConfiguration(new NamespaceSupport());
+        JSONTemplateReader reader =
+                new JSONTemplateReader(parser.parse(), configuration, parser.getWatchers());
+        RootBuilder rootBuilder = reader.getRootBuilder();
+        assertFalse(rootBuilder.needsReload());
+        Resource mergeBase = store.get("simpleBase.json");
+        File file = mergeBase.file();
+        file.setLastModified(new Date().getTime());
+        Thread.sleep(1000);
+
+        assertTrue(rootBuilder.needsReload());
     }
 }

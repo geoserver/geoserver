@@ -93,6 +93,7 @@ public abstract class XMLRecursiveTemplateReader extends RecursiveTemplateResour
         } finally {
             close();
         }
+        rootBuilder.setWatchers(getWatchers());
         return rootBuilder;
     }
 

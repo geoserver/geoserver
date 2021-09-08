@@ -38,13 +38,13 @@ public class Template {
 
     /** Check if the template file has benn modified and eventually reload it. */
     public boolean checkTemplate() {
-        if (watcher != null && watcher.isModified()) {
+        if (needsReload()) {
             LOGGER.log(
                     Level.INFO,
                     "Reloading json-ld template for Feature Type {0}",
                     templateFile.name());
             synchronized (this) {
-                if (watcher != null && watcher.isModified()) {
+                if (needsReload()) {
                     try {
                         RootBuilder root = watcher.read();
                         this.builderTree = root;
@@ -56,6 +56,11 @@ public class Template {
             }
         }
         return false;
+    }
+
+    private boolean needsReload() {
+        return watcher != null
+                && (watcher.isModified() || (builderTree != null && builderTree.needsReload()));
     }
 
     public void reloadTemplate() {

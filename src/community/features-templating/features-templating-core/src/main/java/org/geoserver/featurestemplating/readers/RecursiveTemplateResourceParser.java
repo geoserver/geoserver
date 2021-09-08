@@ -108,10 +108,35 @@ public class RecursiveTemplateResourceParser {
 
     private void addFileWatcher(Resource resource) {
         if (this.watchers == null) this.watchers = new ArrayList<>();
-        this.watchers.add(new FileWatcher<>(resource));
+        this.watchers.add(new IncludedTemplateWatcher(resource));
     }
 
     public List<FileWatcher<Object>> getWatchers() {
         return watchers;
+    }
+
+    /**
+     * A {@link FileWatcher} that is used to check if included templates needs to be reloaded. The
+     * isModified() method makes sure to return false if the FileWatcher never execute a check
+     * still.
+     */
+    private class IncludedTemplateWatcher extends FileWatcher<Object> {
+
+        private IncludedTemplateWatcher(Resource resource) {
+            super(resource);
+        }
+
+        @Override
+        public boolean isModified() {
+            boolean result = false;
+            if (lastModified != Long.MIN_VALUE) {
+                result = super.isModified();
+            } else {
+                long lastCheck = System.currentTimeMillis();
+                this.lastCheck = lastCheck;
+                this.lastModified = lastCheck;
+            }
+            return result;
+        }
     }
 }

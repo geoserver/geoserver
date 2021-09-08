@@ -135,6 +135,14 @@ When creating the first release candidate of a series, there are some extra step
      * ``doc/en/docguide/source/conf.py``
      * ``doc/en/user/source/conf.py``
 
+* Add the new version to the documentation index (``doc/en/index.html``) just after line 105, e.g.::
+
+    <tr>
+      <td><strong><a href="http://geoserver.org/release/2.12.x/">2.12.x</a></strong></td>
+      <td><a href="2.12.x/en/user/">User Manual</a></td>
+      <td><a href="2.12.x/en/developer/">Developer Manual</a></td>
+    </tr>
+
 * Commit the changes and push to the the main development branch branch on GitHub::
 
       git commit -am "Updated version to 2.12-SNAPSHOT, updated GeoTools dependency to 18-SNAPSHOT, updated GeoWebCache dependency to 1.12-SNAPSHOT, and related changes"

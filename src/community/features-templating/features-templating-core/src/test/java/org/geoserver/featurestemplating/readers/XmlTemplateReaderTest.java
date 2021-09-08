@@ -3,12 +3,14 @@ package org.geoserver.featurestemplating.readers;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
@@ -84,6 +86,20 @@ public class XmlTemplateReaderTest {
         assertThat(
                 ex.getMessage(),
                 containsString("Went beyond maximum expansion depth (51), chain is: [ping.xml"));
+    }
+
+    @Test
+    public void testIncludedModificationAreDetected() throws IOException, InterruptedException {
+        XMLRecursiveTemplateReader reader =
+                new GMLTemplateReader(
+                        store.get("MappedFeatureIncludeFlat.xml"), new NamespaceSupport());
+        RootBuilder rootBuilder = reader.getRootBuilder();
+        assertFalse(rootBuilder.needsReload());
+        File file = store.get("includedGeologicUnit.xml").file();
+        file.setLastModified(new Date().getTime());
+        Thread.sleep(1000);
+
+        assertTrue(rootBuilder.needsReload());
     }
 
     private RuntimeException checkThrowingTemplate(String s) {

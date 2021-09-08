@@ -66,6 +66,7 @@ public class JSONTemplateReader implements TemplateReader {
         RootBuilder root = (RootBuilder) builderMaker.build();
         builderMaker.namespaces(configuration.getNamespaces());
         getBuilderFromJson(null, template, root, builderMaker);
+        root.setWatchers(watchers);
         return root;
     }
 

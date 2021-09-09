@@ -1,46 +1,23 @@
-FROM suchja/wine:latest
-RUN dpkg --add-architecture i386
+FROM mcr.microsoft.com/windows:20H2
 
-# Install requirements (NSIS 3.0.6 and Mono)
-RUN apt-get update -y && \
-    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y nsis nsis-doc nsis-pluginapi mono-devel --assume-yes wine32 && \
-    rm -rf /var/lib/apt/lists/*
+LABEL maintainer="sander.schaminee@geocat.net"
 
-ENV DISPLAY :0
-ENV WINEDEBUG=fixme-all
+WORKDIR C:/gsbuild
 
-# Add AccessControl and ShellLink NSIS plugins
-ADD nsis_plugins /usr/share/nsis/Plugins
+RUN curl --output C:/gsbuild/nsis.zip --url "https://sourceforge.net/projects/nsis/files/NSIS%203/3.06.1/nsis-3.06.1.zip/download"
 
-# # Create temp directory for plugins
-# RUN mkdir /tmp/nsis_plugins
+RUN powershell -Command "expand-archive -Path 'c:\gsbuild\nsis.zip' -DestinationPath 'c:\gsbuild'"
 
-# # Download and extract AccessControl plugin (amd64)
-# RUN wget https://nsis.sourceforge.io/mediawiki/images/4/4a/AccessControl.zip -P /tmp/nsis_plugins && \
-#     unzip /tmp/nsis_plugins/AccessControl.zip -d /tmp/nsis_plugins && \
-#     mv /tmp/nsis_plugins/Plugins/amd64-unicode/AccessControl.dll /usr/share/nsis/Plugins/amd64-unicode/AccessControl.dll && \
-#     rm -r /tmp/nsis_plugins/*
+# RUN C:/gsbuild/nsis_setup.exe /S
+ENTRYPOINT [ "cmd" ]
 
-# # Download and extract ShellLink plugin (32-bits only)
-# RUN wget https://nsis.sourceforge.io/mediawiki/images/6/6c/Shelllink.zip -P /tmp/nsis_plugins && \
-#     unzip /tmp/nsis_plugins/Shelllink.zip -d /tmp/nsis_plugins && \
-#     mv /tmp/nsis_plugins/Unicode/Plugins/ShellLink.dll /usr/share/nsis/Plugins/x86-unicode/ShellLink.dll && \
-#     rm -r /tmp/*
-
-# Copy source files for NSIS build script
-ADD build /installer
-ADD source /installer/source
-
-# Add certificate files for signing
-ADD OSGeo_DigiCert_Authenticode.pvk /installer
-ADD OSGeo_DigiCert_Authenticode.spc /installer
-
-# Setup a Wine prefix
-ENV WINEPREFIX=/tmp/.wine
-ENV WINEARCH=win32
-# RUN winecfg
-
-WORKDIR /installer
-
-# ENTRYPOINT [ "makensis", "-V4", "geoserver_winsetup.nsi" ]
-ENTRYPOINT [ "/bin/bash" ]
+# RUN powershell.exe -Command \
+#     $ErrorActionPreference = 'Stop'; \
+#     $ProgressPreference = 'SilentlyContinue'; \
+#     $url = "'https://sourceforge.net/projects/nsis/files/NSIS 3/3.06.1/nsis-3.06.1-setup.exe/download'"; \
+#     $outpath = "C:\Windows\Temp\nsis_install.exe"; \
+#     # $wc = New-Object System.Net.WebClient; \
+#     # $wc.DownloadFile($url, $outpath); \
+#     wget $url -OutFile $outpath; \
+#     Start-Process -Filepath $outpath -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1' -Wait ; \
+#     Remove-Item $outpath -Force

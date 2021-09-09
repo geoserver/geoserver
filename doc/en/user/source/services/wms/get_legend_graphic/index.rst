@@ -97,6 +97,7 @@ Here is a description of the various parameters that can be used in ``LEGEND_OPT
     - **countMatched** When set to true, adds at the end of each label the number of features matching that rule in the current map. Requires extra parameters, see details in the :ref:`dedicated section <content-dependent>`.
     - **hideEmptyRules** When set to true hides rules that are not matching any feature.
     - **wrap** When set to true word wraps long legend labels, leading to taller legends but less wide ones.
+    - **wrap_limit** when set, it wraps the legend label with the specified number of pixels.
 
 Here is a sample request sporting most the options::
 

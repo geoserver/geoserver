@@ -2,22 +2,17 @@ FROM mcr.microsoft.com/windows:20H2
 
 LABEL maintainer="sander.schaminee@geocat.net"
 
+# Install Chocolately, NSIS and NSIS plugins
+ENV nsis_dir="C:/Program Files (x86)/NSIS"
+RUN @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+RUN choco install nsis -y
+COPY ["nsis_plugins/x86-unicode/AccessControl.dll", "${nsis_dir}/Plugins/x86-unicode/AccessControl.dll"]
+COPY ["nsis_plugins/x86-unicode/ShellLink.dll", "${nsis_dir}/Plugins/x86-unicode/ShellLink.dll"]
+
+# Copy data and run script
+COPY build C:/gsbuild
 WORKDIR C:/gsbuild
 
-RUN curl --output C:/gsbuild/nsis.zip --url "https://sourceforge.net/projects/nsis/files/NSIS%203/3.06.1/nsis-3.06.1.zip/download"
-
-RUN powershell -Command "expand-archive -Path 'c:\gsbuild\nsis.zip' -DestinationPath 'c:\gsbuild'"
-
-# RUN C:/gsbuild/nsis_setup.exe /S
+# TODO: install OSGeo certificate, push build artifacts
+# ENTRYPOINT [ "${nsis_dir}/makensis.exe", "-V4", "geoserver_winsetup.nsi" ]
 ENTRYPOINT [ "cmd" ]
-
-# RUN powershell.exe -Command \
-#     $ErrorActionPreference = 'Stop'; \
-#     $ProgressPreference = 'SilentlyContinue'; \
-#     $url = "'https://sourceforge.net/projects/nsis/files/NSIS 3/3.06.1/nsis-3.06.1-setup.exe/download'"; \
-#     $outpath = "C:\Windows\Temp\nsis_install.exe"; \
-#     # $wc = New-Object System.Net.WebClient; \
-#     # $wc.DownloadFile($url, $outpath); \
-#     wget $url -OutFile $outpath; \
-#     Start-Process -Filepath $outpath -ArgumentList '/quiet InstallAllUsers=1 PrependPath=1' -Wait ; \
-#     Remove-Item $outpath -Force

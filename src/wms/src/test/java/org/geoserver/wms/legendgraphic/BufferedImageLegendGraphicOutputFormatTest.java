@@ -1283,6 +1283,13 @@ public class BufferedImageLegendGraphicOutputFormatTest
             image = this.legendProducer.buildLegendGraphic(req);
 
             assertTrue("Title didn't wrap", image.getWidth() > absoluteWidth);
+
+            legendOptions.put("wrap", "true");
+            legendOptions.put("wrap_limit", "10");
+            req.setLegendOptions(legendOptions);
+            BufferedImage wrappedLabelImage = this.legendProducer.buildLegendGraphic(req);
+            assertTrue("label wrapped", wrappedLabelImage.getWidth() < image.getWidth());
+
         } finally {
             RenderedImage ri = coverage.getRenderedImage();
             if (coverage instanceof GridCoverage2D) {

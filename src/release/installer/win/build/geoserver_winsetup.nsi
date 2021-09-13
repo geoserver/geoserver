@@ -16,24 +16,24 @@
 !pragma warning disable 6020 ; disable warning about unused uninstaller script code
 
 ; Constants (VERSION should be updated by a script!)
-!define APPNAME "GeoServer"                           ; application name
-!define VERSION "2.19.1"                              ; application version
-!define FULLVERSION "${VERSION}.0"                    ; full version (includes subversion)
-!define FULLNAME "${APPNAME} ${VERSION}"              ; app name and version combined
-!define FULLKEY "${APPNAME}-${VERSION}"               ; app name and version combined (delimited)
-!define INSTNAME "${APPNAME}-install-${VERSION}.exe"  ; installer exe name
-!define UNINNAME "${APPNAME}-uninstall.exe"           ; uninstaller exe name
-!define HOMEPAGE "http://geoserver.org"               ; resource URL
-!define TIMESTAMPURL "http://timestamp.comodoca.com/rfc3161"  ; URL used to timestamp certificates
-!define REQJREVERSION "1.8.0"                         ; required Java runtime version (i.e. 1.8.0)
-!define REQJREVERSIONNAME "8"                         ; required Java runtime display version (i.e. 8)
-!define ALTJREVERSION "11.0"                          ; alternative Java runtime version (i.e. 11.0)
-!define ALTJREVERSIONNAME "11"                        ; alternative Java runtime display version (i.e. 11)
-!define JDKNAME "AdoptOpenJDK"                        ; Name of the OpenJDK provider (e.g. AdoptOpenJDK)
-!define JDKURL "https://adoptopenjdk.net"             ; OpenJDK URL
-!define EMAIL "geoserver-users@lists.sourceforge.net" ; support email address
+!define APPNAME "GeoServer"                                     ; application name
+!searchparse /file ..\source\VERSION.txt `version = ` VERSION   ; Read version from VERSION.txt
+!define FULLVERSION "${VERSION}.0"                              ; full version (includes subversion for EXE properties)
+!define FULLNAME "${APPNAME} ${VERSION}"                        ; app name and version combined
+!define FULLKEY "${APPNAME}-${VERSION}"                         ; app name and version combined (delimited)
+!define INSTNAME "${APPNAME}-install-${VERSION}.exe"            ; installer exe name
+!define UNINNAME "${APPNAME}-uninstall.exe"                     ; uninstaller exe name
+!define HOMEPAGE "http://geoserver.org"                         ; resource URL
+!define TIMESTAMPURL "http://timestamp.comodoca.com/rfc3161"    ; URL used to timestamp certificates
+!define REQJREVERSION "1.8.0"                                   ; required Java runtime version (i.e. 1.8.0)
+!define REQJREVERSIONNAME "8"                                   ; required Java runtime display version (i.e. 8)
+!define ALTJREVERSION "11.0"                                    ; alternative Java runtime version (i.e. 11.0)
+!define ALTJREVERSIONNAME "11"                                  ; alternative Java runtime display version (i.e. 11)
+!define JDKNAME "AdoptOpenJDK"                                  ; Name of the OpenJDK provider (e.g. AdoptOpenJDK)
+!define JDKURL "https://adoptopenjdk.net"                       ; OpenJDK URL
+!define EMAIL "geoserver-users@lists.sourceforge.net"           ; support email address
 !define COPYRIGHT "Copyright (c) 1999-2021 Open Source Geospatial Foundation"
-!define CERT_SUBJECT "The Open Source Geospatial Foundation"
+!define CERT_SUBJECT "The Open Source Geospatial Foundation"    ; Certificate subject
 
 ; CODE SIGNING
 ; ----------------------------------------------------------------------------
@@ -251,6 +251,7 @@ Function .onInit
   !endif
 
   Call CheckIfInstalled                             ; Quit the installer if the application has been installed already
+  Call GetVersion                                   ; Read version from VERSION.txt
   ${StrCase} $AppKey "${APPNAME}" "L"               ; Set AppKey to lowercase application name
   ReadEnvStr $ProgramData PROGRAMDATA               ; Read %PROGRAMDATA% environment variable
   StrCpy $DefaultDataDir "$ProgramData\${APPNAME}"  ; Set default data directory
@@ -274,6 +275,14 @@ Function CheckIfInstalled
   ${EndIf}
 
 FunctionEnd
+
+; Get the semantic version from the VERSION.txt file (from GeoServer build artifacts)
+Function GetVersion
+
+
+
+FunctionEnd
+
 
 ; Check the user type, and quit if it's not an administrator.
 Function CheckUserType

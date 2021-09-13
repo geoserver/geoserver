@@ -251,7 +251,6 @@ Function .onInit
   !endif
 
   Call CheckIfInstalled                             ; Quit the installer if the application has been installed already
-  Call GetVersion                                   ; Read version from VERSION.txt
   ${StrCase} $AppKey "${APPNAME}" "L"               ; Set AppKey to lowercase application name
   ReadEnvStr $ProgramData PROGRAMDATA               ; Read %PROGRAMDATA% environment variable
   StrCpy $DefaultDataDir "$ProgramData\${APPNAME}"  ; Set default data directory
@@ -275,14 +274,6 @@ Function CheckIfInstalled
   ${EndIf}
 
 FunctionEnd
-
-; Get the semantic version from the VERSION.txt file (from GeoServer build artifacts)
-Function GetVersion
-
-
-
-FunctionEnd
-
 
 ; Check the user type, and quit if it's not an administrator.
 Function CheckUserType

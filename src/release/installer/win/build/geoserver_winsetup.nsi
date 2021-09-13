@@ -17,7 +17,9 @@
 
 ; Constants (VERSION should be updated by a script!)
 !define APPNAME "GeoServer"                                     ; application name
-!searchparse /file ..\source\VERSION.txt `version = ` VERSION   ; Read version from VERSION.txt
+!ifndef VERSION
+  !searchparse /file ..\source\VERSION.txt `version = ` VERSION   ; Read version from VERSION.txt
+!endif
 !define FULLVERSION "${VERSION}.0"                              ; full version (includes subversion for EXE properties)
 !define FULLNAME "${APPNAME} ${VERSION}"                        ; app name and version combined
 !define FULLKEY "${APPNAME}-${VERSION}"                         ; app name and version combined (delimited)
@@ -133,7 +135,7 @@ VIAddVersionKey Comments "${HOMEPAGE}"
     ; Call makensis again against current file, defining INNER.  
     ; This writes an installer for us which, when invoked, 
     ; will just write the uninstaller to some location, and then exit.
-    !makensis '/DINNER "${__FILE__}"' = 0
+    !makensis '/DINNER /DVERSION=${VERSION} "${__FILE__}"' = 0
   
     ; Now run that installer we just created as %TEMP%\tempinstaller.exe.
     ; Since it calls quit the return value isn't zero. 

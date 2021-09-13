@@ -42,17 +42,24 @@ import org.opengis.filter.Filter;
 import org.springframework.security.core.Authentication;
 
 /**
- * Home page, shows just the introduction and the capabilities link
+ * Home page, shows introduction for each kind of service along with any service links.
  *
  * <p>This page uses the {@link CapabilitiesHomePageLinkProvider} extension point to enable other
  * modules to contribute links for GetCapabilities documents. The default {@link
  * ServiceInfoCapabilitiesProvider} contributes the capabilities links for all the available {@link
  * ServiceInfo} implementations. Other extension point implementations may contribute service
- * description document links non backed by ServiceInfo objects.
+ * description document links not backed by ServiceInfo objects.
+ *
+ * <p>
+ * This page can change between gloabl service, workspace service and layer service.
+ * </p>
  *
  * @author Andrea Aime - TOPP
  */
 public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnlockablePage {
+
+    /** Display contact name linking to contact URL. */
+    private final ExternalLink contactInfo;
 
     @SuppressWarnings("unchecked")
     public GeoServerHomePage() {
@@ -60,28 +67,32 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
         ContactInfo contact = gs.getGlobal().getSettings().getContact();
 
         // add some contact info
-        add(
-                new ExternalLink("contactURL", contact.getOnlineResource())
-                        .add(new Label("contactName", contact.getContactOrganization())));
+        contactInfo = new ExternalLink("contactURL", contact.getOnlineResource());
+        contactInfo.add(new Label("contactName", contact.getContactOrganization()));
+        add( contactInfo );
+
         {
             String version = String.valueOf(new ResourceModel("version").getObject());
             String contactEmail = contact.getContactEmail();
+
             HashMap<String, String> params = new HashMap<>();
             params.put("version", version);
             params.put(
                     "contactEmail",
                     (contactEmail == null ? "geoserver@example.org" : contactEmail));
-            Label label =
+
+            Label footerMessage =
                     new Label(
                             "footerMessage",
                             new StringResourceModel(
                                     "GeoServerHomePage.footer", this, new Model(params)));
-            label.setEscapeModelStrings(false);
-            add(label);
+            footerMessage.setEscapeModelStrings(false);
+            add(footerMessage);
         }
 
         Authentication auth = getSession().getAuthentication();
         if (isAdmin(auth)) {
+            // show admin some additional details
             Stopwatch sw = Stopwatch.createStarted();
             Fragment f = new Fragment("catalogLinks", "catalogLinksFragment", this);
             Catalog catalog = getCatalog();
@@ -115,11 +126,14 @@ public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnl
 
             sw.stop();
         } else {
+            // add catalogLinks placeholder (even when not admin) to identify this page location
             Label placeHolder = new Label("catalogLinks");
             placeHolder.setVisible(false);
             add(placeHolder);
         }
 
+        // additional content provided by plugins across the geoserver codebase
+        // for example security warnings to admin
         final IModel<List<GeoServerHomePageContentProvider>> contentProviders =
                 getContentProviders(GeoServerHomePageContentProvider.class);
         ListView<GeoServerHomePageContentProvider> contentView =

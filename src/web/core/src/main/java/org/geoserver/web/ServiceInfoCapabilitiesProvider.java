@@ -30,21 +30,21 @@ public class ServiceInfoCapabilitiesProvider implements CapabilitiesHomePageLink
         List<CapsInfo> serviceInfoLinks = new ArrayList<>();
 
         List<Service> extensions = GeoServerExtensions.extensions(Service.class);
-        for (Service si : extensions) {
-            if (si.getCustomCapabilitiesLink() != null) {
-                String serviceId = si.getId();
-                String capsLink = si.getCustomCapabilitiesLink();
-                CapsInfo ci = new CapsInfo(serviceId, si.getVersion(), capsLink);
+        for (Service service : extensions) {
+            if (service.getCustomCapabilitiesLink() != null) {
+                String serviceId = service.getId();
+                String capsLink = service.getCustomCapabilitiesLink();
+                CapsInfo ci = new CapsInfo(serviceId, service.getVersion(), capsLink);
                 serviceInfoLinks.add(ci);
-            } else if (si.getOperations().contains("GetCapabilities")) {
-                String serviceId = si.getId();
+            } else if (service.getOperations().contains("GetCapabilities")) {
+                String serviceId = service.getId();
                 String capsLink =
                         "../ows?service="
                                 + serviceId
                                 + "&version="
-                                + si.getVersion().toString()
+                                + service.getVersion().toString()
                                 + "&request=GetCapabilities";
-                CapsInfo ci = new CapsInfo(serviceId, si.getVersion(), capsLink);
+                CapsInfo ci = new CapsInfo(serviceId, service.getVersion(), capsLink);
                 serviceInfoLinks.add(ci);
             }
         }

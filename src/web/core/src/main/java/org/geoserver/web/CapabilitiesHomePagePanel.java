@@ -34,18 +34,39 @@ public class CapabilitiesHomePagePanel extends Panel {
      * model object to this panel's ListView.
      */
     public static class CapsInfo implements Serializable {
-        private static final long serialVersionUID = 1L;
 
+        /**
+         * Workspace prefix for virtual web service, may be null for global services.
+         */
+        String workspace;
+
+        /**
+         * Layer name for virtual web service, may be null for workspace or global services.
+         */
+        String layer;
+        /**
+         * Service name.
+         */
         String service;
 
+        /** Service version */
         Version version;
 
+        /** GetCapabilities service description */
         String capsLink;
 
         public CapsInfo(String service, Version version, String capsLink) {
+            this(service,version,capsLink,null);
+        }
+        public CapsInfo(String service, Version version, String capsLink, String workspace) {
+            this(service,version,capsLink,workspace,null);
+        }
+        public CapsInfo(String service, Version version, String capsLink, String workspace, String layer) {
             this.service = service;
             this.version = version;
             this.capsLink = capsLink;
+            this.workspace = workspace;
+            this.layer = layer;
         }
 
         public String getService() {
@@ -68,12 +89,14 @@ public class CapabilitiesHomePagePanel extends Panel {
             CapsInfo ci = (CapsInfo) o;
             return service.equals(ci.service)
                     && version.equals(ci.version)
-                    && capsLink.equals(ci.capsLink);
+                    && capsLink.equals(ci.capsLink)
+                    && Objects.equals(workspace, workspace)
+                    && Objects.equals(layer,layer);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(service, version, capsLink);
+            return Objects.hash(service, version, capsLink, workspace, layer);
         }
     }
 
@@ -85,6 +108,7 @@ public class CapabilitiesHomePagePanel extends Panel {
 
         super(id);
 
+        // Group CapInfo by service id
         final Map<String, List<CapsInfo>> byService = new HashMap<>();
         for (CapsInfo c : capsLinks) {
             final String key =
@@ -109,6 +133,7 @@ public class CapabilitiesHomePagePanel extends Panel {
                     protected void populateItem(ListItem<String> item) {
                         final String serviceId = item.getModelObject();
                         item.add(new Label("service", serviceId.toUpperCase()));
+                        item.add(new Label( "title", service)
                         item.add(
                                 new ListView<CapsInfo>("versions", byService.get(serviceId)) {
                                     private static final long serialVersionUID = 1L;

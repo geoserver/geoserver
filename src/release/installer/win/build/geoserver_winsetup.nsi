@@ -24,7 +24,7 @@
 !define INSTNAME "${APPNAME}-install-${VERSION}.exe"  ; installer exe name
 !define UNINNAME "${APPNAME}-uninstall.exe"           ; uninstaller exe name
 !define HOMEPAGE "http://geoserver.org"               ; resource URL
-!define TIMESTAMPURL "http://timestamp.digicert.com"  ; URL used to timestamp certificates
+!define TIMESTAMPURL "http://timestamp.comodoca.com/rfc3161"  ; URL used to timestamp certificates
 !define REQJREVERSION "1.8.0"                         ; required Java runtime version (i.e. 1.8.0)
 !define REQJREVERSIONNAME "8"                         ; required Java runtime display version (i.e. 8)
 !define ALTJREVERSION "11.0"                          ; alternative Java runtime version (i.e. 11.0)
@@ -33,6 +33,7 @@
 !define JDKURL "https://adoptopenjdk.net"             ; OpenJDK URL
 !define EMAIL "geoserver-users@lists.sourceforge.net" ; support email address
 !define COPYRIGHT "Copyright (c) 1999-2021 Open Source Geospatial Foundation"
+!define CERT_SUBJECT "The Open Source Geospatial Foundation"
 
 ; CODE SIGNING
 ; ----------------------------------------------------------------------------
@@ -45,7 +46,7 @@
 ; C:\Program Files (x86)\Windows Kits\10\App Certification Kit
 ;
 ; IMPORTANT: the signtool.exe directory MUST be added to the Windows PATH environment variable!!
-!define SIGNCOMMAND "signtool sign /v /d ${APPNAME} /du https://www.osgeo.org /tr http://timestamp.comodoca.com/rfc3161 /td sha256"
+!define SIGNCOMMAND "signtool sign  /v /n $\"${CERT_SUBJECT}$\" /sm /d ${APPNAME} /du https://www.osgeo.org /tr http://timestamp.comodoca.com/rfc3161 /td sha256"
 
 ; The sign command will be called after the (un)installer.exe files were build successfully.
 ; Make sure that the private certificate (*.pfx) is installed in the certificate store (for user, not machine).

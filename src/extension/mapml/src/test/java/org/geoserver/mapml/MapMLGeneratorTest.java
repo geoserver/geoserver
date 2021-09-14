@@ -62,7 +62,7 @@ public class MapMLGeneratorTest extends GeoServerTestSupport {
                 "Coordinates of 6 digit precision (default numDecimals) should be returned",
                 sw.toString()
                         .contains(
-                                "<multipoint xmlns=\"http://www.w3.org/1999/xhtml\"><coordinates>-75.705338 45.397785 -75.702082 45.397847</coordinates>"));
+                                "<map-multipoint xmlns=\"http://www.w3.org/1999/xhtml\"><map-coordinates>-75.705338 45.397785 -75.702082 45.397847</map-coordinates>"));
     }
 
     @SuppressWarnings("unchecked")
@@ -99,7 +99,7 @@ public class MapMLGeneratorTest extends GeoServerTestSupport {
                 "Coordinates should be rounded to 5 decimal places (non-default numDecimals)",
                 sw.toString()
                         .contains(
-                                "<multipoint xmlns=\"http://www.w3.org/1999/xhtml\"><coordinates>-75.70534 45.39779 -75.70208 45.39785</coordinates>"));
+                                "<map-multipoint xmlns=\"http://www.w3.org/1999/xhtml\"><map-coordinates>-75.70534 45.39779 -75.70208 45.39785</map-coordinates>"));
     }
 
     @SuppressWarnings("unchecked")
@@ -137,7 +137,7 @@ public class MapMLGeneratorTest extends GeoServerTestSupport {
                 "Coordinates should be rounded to 5 decimal places (non-default numDecimals)",
                 sw.toString()
                         .contains(
-                                "<multipoint xmlns=\"http://www.w3.org/1999/xhtml\"><coordinates>-75.7053380000 45.3977853000 -75.7020820000 45.3978472000</coordinates>"));
+                                "<map-multipoint xmlns=\"http://www.w3.org/1999/xhtml\"><map-coordinates>-75.7053380000 45.3977853000 -75.7020820000 45.3978472000</map-coordinates>"));
     }
 
     @SuppressWarnings("unchecked")
@@ -176,7 +176,7 @@ public class MapMLGeneratorTest extends GeoServerTestSupport {
                 "Coordinates should encoded in scientific notation",
                 sw.toString()
                         .contains(
-                                "<multipoint xmlns=\"http://www.w3.org/1999/xhtml\"><coordinates>-1.0000000001E9 1.0000000002E9 -1.0000000013E9 1.0000000014E9</coordinates>"));
+                                "<map-multipoint xmlns=\"http://www.w3.org/1999/xhtml\"><map-coordinates>-1.0000000001E9 1.0000000002E9 -1.0000000013E9 1.0000000014E9</map-coordinates>"));
 
         // when NOT encoded in scientific notation, these parameters are used
         featureBuilder.setForcedDecimal(true);
@@ -201,6 +201,6 @@ public class MapMLGeneratorTest extends GeoServerTestSupport {
                 "Coordinates should encoded in decimal notation",
                 sw.toString()
                         .contains(
-                                "<multipoint xmlns=\"http://www.w3.org/1999/xhtml\"><coordinates>-1000000000.100 1000000000.200 -1000000001.300 1000000001.400</coordinates>"));
+                                "<map-multipoint xmlns=\"http://www.w3.org/1999/xhtml\"><map-coordinates>-1000000000.100 1000000000.200 -1000000001.300 1000000001.400</map-coordinates>"));
     }
 }

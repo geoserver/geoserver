@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "base", namespace = "http://www.w3.org/1999/xhtml")
+@XmlRootElement(name = "map-base", namespace = "http://www.w3.org/1999/xhtml")
 public class Base {
 
     @XmlAttribute(name = "href", required = true)

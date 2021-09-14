@@ -84,12 +84,12 @@ public class MapMLDimensionsTest extends WMSDimensionsTestSupport {
         String path = "mapml/" + getLayerId(V_TIME_ELEVATION) + "/osmtile/";
         org.w3c.dom.Document doc = getMapML(path);
         // assure us it's actually working as a document
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='image'][@tref])", doc);
-        URL url = new URL(xpath.evaluate("//html:link[@rel='image']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
+        URL url = new URL(xpath.evaluate("//html:map-link[@rel='image']/@tref", doc));
         // assert that there's no elevation variable nor URL template variable
         HashMap<String, String> vars = parseQuery(url);
         assertNull(vars.get("elevation"));
-        assertXpathEvaluatesTo("0", "count(//html:select[@name='elevation'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-select[@name='elevation'])", doc);
         // update the layer metadata to indicate the dimension is known to mapml
         // doesn't test the web interface, but the does test the mechanism
         // the web interface uses to signal dimenion for mapml
@@ -99,20 +99,22 @@ public class MapMLDimensionsTest extends WMSDimensionsTestSupport {
         catalog.save(layerMeta);
 
         doc = getMapML(path);
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='image'][@tref])", doc);
-        url = new URL(xpath.evaluate("//html:link[@rel='image']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
+        url = new URL(xpath.evaluate("//html:map-link[@rel='image']/@tref", doc));
         vars = parseQuery(url);
         assertTrue(vars.get("elevation").equalsIgnoreCase("{elevation}"));
 
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='query'][@tref])", doc);
-        url = new URL(xpath.evaluate("//html:link[@rel='query']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
+        url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
         vars = parseQuery(url);
         assertTrue(vars.get("elevation").equalsIgnoreCase("{elevation}"));
 
         assertXpathEvaluatesTo(
-                "1", "count(//html:select[@name='elevation'][@id='elevation'])", doc);
+                "1", "count(//html:map-select[@name='elevation'][@id='elevation'])", doc);
         assertXpathEvaluatesTo(
-                "4", "count(//html:select[@name='elevation'][@id='elevation']/html:option)", doc);
+                "4",
+                "count(//html:map-select[@name='elevation'][@id='elevation']/html:map-option)",
+                doc);
     }
 
     @Test
@@ -139,12 +141,12 @@ public class MapMLDimensionsTest extends WMSDimensionsTestSupport {
         String path = "mapml/" + getLayerId(V_TIME_ELEVATION) + "/osmtile/";
         org.w3c.dom.Document doc = getMapML(path);
         // assure us it's actually working as a document
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='image'][@tref])", doc);
-        URL url = new URL(xpath.evaluate("//html:link[@rel='image']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
+        URL url = new URL(xpath.evaluate("//html:map-link[@rel='image']/@tref", doc));
         // assert that there's no elevation variable nor URL template variable
         HashMap<String, String> vars = parseQuery(url);
         assertNull(vars.get("elevation"));
-        assertXpathEvaluatesTo("0", "count(//html:select[@name='time'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-select[@name='time'])", doc);
         // update the layer metadata to indicate the dimension is known to mapml
         // doesn't test the web interface, but the does test the mechanism
         // the web interface uses to signal dimenion for mapml
@@ -154,19 +156,19 @@ public class MapMLDimensionsTest extends WMSDimensionsTestSupport {
         catalog.save(layerMeta);
 
         doc = getMapML(path);
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='image'][@tref])", doc);
-        url = new URL(xpath.evaluate("//html:link[@rel='image']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
+        url = new URL(xpath.evaluate("//html:map-link[@rel='image']/@tref", doc));
         vars = parseQuery(url);
         assertTrue(vars.get("time").equalsIgnoreCase("{time}"));
 
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='query'][@tref])", doc);
-        url = new URL(xpath.evaluate("//html:link[@rel='query']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
+        url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
         vars = parseQuery(url);
         assertTrue(vars.get("time").equalsIgnoreCase("{time}"));
 
-        assertXpathEvaluatesTo("1", "count(//html:select[@name='time'][@id='time'])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-select[@name='time'][@id='time'])", doc);
         assertXpathEvaluatesTo(
-                "4", "count(//html:select[@name='time'][@id='time']/html:option)", doc);
+                "4", "count(//html:map-select[@name='time'][@id='time']/html:map-option)", doc);
     }
     /**
      * Executes a request using the GET method and returns the result as an MapML document.

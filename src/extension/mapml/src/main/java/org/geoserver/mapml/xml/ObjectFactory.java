@@ -29,30 +29,32 @@ import javax.xml.namespace.QName;
 public class ObjectFactory {
 
     private static final QName _MultiPoint_QNAME =
-            new QName("http://www.w3.org/1999/xhtml", "multipoint");
+            new QName("http://www.w3.org/1999/xhtml", "map-multipoint");
     private static final QName _GeometryContent_QNAME =
-            new QName("http://www.w3.org/1999/xhtml", "geometrycontent");
+            new QName("http://www.w3.org/1999/xhtml", "map-geometrycontent");
     private static final QName _MultiLineString_QNAME =
-            new QName("http://www.w3.org/1999/xhtml", "multilinestring");
-    private static final QName _Bbox_QNAME = new QName("http://www.w3.org/1999/xhtml", "bbox");
-    private static final QName _Point_QNAME = new QName("http://www.w3.org/1999/xhtml", "point");
-    private static final QName _Title_QNAME = new QName("http://www.w3.org/1999/xhtml", "title");
-    private static final QName _Body_QNAME = new QName("http://www.w3.org/1999/xhtml", "body");
-    private static final QName _Head_QNAME = new QName("http://www.w3.org/1999/xhtml", "head");
+            new QName("http://www.w3.org/1999/xhtml", "map-multilinestring");
+    private static final QName _Bbox_QNAME = new QName("http://www.w3.org/1999/xhtml", "map-bbox");
+    private static final QName _Point_QNAME =
+            new QName("http://www.w3.org/1999/xhtml", "map-point");
+    private static final QName _Title_QNAME =
+            new QName("http://www.w3.org/1999/xhtml", "map-title");
+    private static final QName _Body_QNAME = new QName("http://www.w3.org/1999/xhtml", "map-body");
+    private static final QName _Head_QNAME = new QName("http://www.w3.org/1999/xhtml", "map-head");
     private static final QName _GeometryCollection_QNAME =
-            new QName("http://www.w3.org/1999/xhtml", "geometrycollection");
+            new QName("http://www.w3.org/1999/xhtml", "map-geometrycollection");
     private static final QName _LineString_QNAME =
-            new QName("http://www.w3.org/1999/xhtml", "linestring");
+            new QName("http://www.w3.org/1999/xhtml", "map-linestring");
     private static final QName _MultiPolygon_QNAME =
-            new QName("http://www.w3.org/1999/xhtml", "multipolygon");
+            new QName("http://www.w3.org/1999/xhtml", "map-multipolygon");
     private static final QName _Geometry_QNAME =
-            new QName("http://www.w3.org/1999/xhtml", "geometry");
+            new QName("http://www.w3.org/1999/xhtml", "map-geometry");
     private static final QName _Polygon_QNAME =
-            new QName("http://www.w3.org/1999/xhtml", "polygon");
+            new QName("http://www.w3.org/1999/xhtml", "map-polygon");
     private static final QName _Properties_QNAME =
-            new QName("http://www.w3.org/1999/xhtml", "properties");
+            new QName("http://www.w3.org/1999/xhtml", "map-properties");
     private static final QName _MultiPointCoordinates_QNAME =
-            new QName("http://www.w3.org/1999/xhtml", "coordinates");
+            new QName("http://www.w3.org/1999/xhtml", "map-coordinates");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes
@@ -188,7 +190,7 @@ public class ObjectFactory {
     /** Create an instance of {@link JAXBElement }{@code <}{@link MultiPoint }{@code >}} */
     @XmlElementDecl(
         namespace = "http://www.w3.org/1999/xhtml",
-        name = "multipoint",
+        name = "map-multipoint",
         substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
         substitutionHeadName = "GeometryContent"
     )
@@ -205,7 +207,7 @@ public class ObjectFactory {
     /** Create an instance of {@link JAXBElement }{@code <}{@link MultiLineString }{@code >}} */
     @XmlElementDecl(
         namespace = "http://www.w3.org/1999/xhtml",
-        name = "multilinestring",
+        name = "map-multilinestring",
         substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
         substitutionHeadName = "GeometryContent"
     )
@@ -218,7 +220,7 @@ public class ObjectFactory {
      * }{@code >}{@code >}}
      */
     @SuppressWarnings("rawtypes")
-    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "bbox")
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-bbox")
     public JAXBElement<List<String>> createBbox(List<String> value) {
         return new JAXBElement<>(_Bbox_QNAME, ((Class) List.class), null, ((List<String>) value));
     }
@@ -226,7 +228,7 @@ public class ObjectFactory {
     /** Create an instance of {@link JAXBElement }{@code <}{@link Point }{@code >}} */
     @XmlElementDecl(
         namespace = "http://www.w3.org/1999/xhtml",
-        name = "point",
+        name = "map-point",
         substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
         substitutionHeadName = "GeometryContent"
     )
@@ -235,19 +237,19 @@ public class ObjectFactory {
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}} */
-    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "title")
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-title")
     public JAXBElement<String> createTitle(String value) {
         return new JAXBElement<>(_Title_QNAME, String.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link BodyContent }{@code >}} */
-    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "body")
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-body")
     public JAXBElement<BodyContent> createBody(BodyContent value) {
         return new JAXBElement<>(_Body_QNAME, BodyContent.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link HeadContent }{@code >}} */
-    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "head")
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-head")
     public JAXBElement<HeadContent> createHead(HeadContent value) {
         return new JAXBElement<>(_Head_QNAME, HeadContent.class, null, value);
     }
@@ -255,7 +257,7 @@ public class ObjectFactory {
     /** Create an instance of {@link JAXBElement }{@code <}{@link GeometryCollection }{@code >}} */
     @XmlElementDecl(
         namespace = "http://www.w3.org/1999/xhtml",
-        name = "GeometryCollection",
+        name = "map-geometrycollection",
         substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
         substitutionHeadName = "GeometryContent"
     )
@@ -266,7 +268,7 @@ public class ObjectFactory {
     /** Create an instance of {@link JAXBElement }{@code <}{@link LineString }{@code >}} */
     @XmlElementDecl(
         namespace = "http://www.w3.org/1999/xhtml",
-        name = "linestring",
+        name = "map-linestring",
         substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
         substitutionHeadName = "GeometryContent"
     )
@@ -277,7 +279,7 @@ public class ObjectFactory {
     /** Create an instance of {@link JAXBElement }{@code <}{@link MultiPolygon }{@code >}} */
     @XmlElementDecl(
         namespace = "http://www.w3.org/1999/xhtml",
-        name = "multipolygon",
+        name = "map-multipolygon",
         substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
         substitutionHeadName = "GeometryContent"
     )
@@ -286,7 +288,7 @@ public class ObjectFactory {
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link GeometryContent }{@code >}} */
-    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "geometry")
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-geometry")
     public JAXBElement<GeometryContent> createGeometry(GeometryContent value) {
         return new JAXBElement<>(_Geometry_QNAME, GeometryContent.class, null, value);
     }
@@ -294,7 +296,7 @@ public class ObjectFactory {
     /** Create an instance of {@link JAXBElement }{@code <}{@link Polygon }{@code >}} */
     @XmlElementDecl(
         namespace = "http://www.w3.org/1999/xhtml",
-        name = "polygon",
+        name = "map-polygon",
         substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
         substitutionHeadName = "GeometryContent"
     )
@@ -303,7 +305,7 @@ public class ObjectFactory {
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link PropertyContent }{@code >}} */
-    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "properties")
+    @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-properties")
     public JAXBElement<PropertyContent> createProperties(PropertyContent value) {
         return new JAXBElement<>(_Properties_QNAME, PropertyContent.class, null, value);
     }
@@ -315,7 +317,7 @@ public class ObjectFactory {
     @SuppressWarnings("rawtypes")
     @XmlElementDecl(
         namespace = "http://www.w3.org/1999/xhtml",
-        name = "coordinates",
+        name = "map-coordinates",
         scope = MultiPoint.class
     )
     public JAXBElement<List<String>> createMultiPointCoordinates(List<String> value) {
@@ -333,7 +335,7 @@ public class ObjectFactory {
     @SuppressWarnings("rawtypes")
     @XmlElementDecl(
         namespace = "http://www.w3.org/1999/xhtml",
-        name = "coordinates",
+        name = "map-coordinates",
         scope = Polygon.class
     )
     public JAXBElement<List<String>> createPolygonCoordinates(List<String> value) {
@@ -351,7 +353,7 @@ public class ObjectFactory {
     @SuppressWarnings("rawtypes")
     @XmlElementDecl(
         namespace = "http://www.w3.org/1999/xhtml",
-        name = "coordinates",
+        name = "map-coordinates",
         scope = MultiLineString.class
     )
     public JAXBElement<List<String>> createMultiLineStringCoordinates(List<String> value) {

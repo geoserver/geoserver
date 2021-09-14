@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import javax.servlet.Filter;
 import javax.xml.namespace.QName;
 import net.opengis.ows11.BoundingBoxType;
 import org.apache.commons.codec.binary.Base64;
@@ -46,6 +47,7 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
+import org.geoserver.ows.HTTPHeadersCollector;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
@@ -2243,5 +2245,10 @@ public class ExecuteTest extends WPSTestSupport {
                         "//wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Reference/@href",
                         dom);
         assertThat(reference, CoreMatchers.startsWith("https://mycompany.com/geoserver"));
+    }
+
+    @Override
+    protected List<Filter> getFilters() {
+        return Arrays.asList(new HTTPHeadersCollector());
     }
 }

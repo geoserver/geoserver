@@ -37,13 +37,13 @@ import javax.xml.bind.annotation.XmlType;
     name = "",
     propOrder = {"head", "body"}
 )
-@XmlRootElement(name = "mapml", namespace = "http://www.w3.org/1999/xhtml")
+@XmlRootElement(name = "mapml-", namespace = "http://www.w3.org/1999/xhtml")
 public class Mapml {
 
-    @XmlElement(required = true, namespace = "http://www.w3.org/1999/xhtml")
+    @XmlElement(required = true, name = "map-head", namespace = "http://www.w3.org/1999/xhtml")
     protected HeadContent head;
 
-    @XmlElement(required = true, namespace = "http://www.w3.org/1999/xhtml")
+    @XmlElement(required = true, name = "map-body", namespace = "http://www.w3.org/1999/xhtml")
     protected BodyContent body;
 
     /**

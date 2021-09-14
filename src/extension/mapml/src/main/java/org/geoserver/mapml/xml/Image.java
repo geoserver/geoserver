@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "image", namespace = "http://www.w3.org/1999/xhtml")
+@XmlRootElement(name = "map-image", namespace = "http://www.w3.org/1999/xhtml")
 public class Image {
 
     @XmlAttribute(name = "src", required = true)

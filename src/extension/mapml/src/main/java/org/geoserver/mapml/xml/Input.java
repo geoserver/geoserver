@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "input", namespace = "http://www.w3.org/1999/xhtml")
+@XmlRootElement(name = "map-input", namespace = "http://www.w3.org/1999/xhtml")
 public class Input {
 
     @XmlAttribute(name = "name", required = true)

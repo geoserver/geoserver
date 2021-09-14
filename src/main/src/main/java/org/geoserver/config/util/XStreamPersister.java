@@ -1346,8 +1346,8 @@ public class XStreamPersister {
             } else if (writer instanceof JettisonStaxWriter) {
                 /*
                  * GEOS-7771 / GEOS-7873
-                 * Workaround for an array serialization bug in jettison 1.0.1
-                 * Can be removed when we upgrade to jettison 1.2
+                 * Required even with Jettinson 1.4.1
+                 * (at some point we thought an upgrade to 1.2 would have solved it)
                  */
                 writer.setValue("null");
                 try {

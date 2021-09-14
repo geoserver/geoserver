@@ -38,6 +38,7 @@ public class XStreamParserTest extends SecurityRESTTestSupport {
         XStream xstream = new XStream(new JettisonMappedXmlDriver());
         xstream.setMode(XStream.NO_REFERENCES);
         xstream.alias("user", JaxbUser.class);
+        xstream.allowTypes(new Class[] {JaxbUser.class});
 
         JaxbUser user = new JaxbUser();
         user.setUserName("test");

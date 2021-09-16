@@ -36,6 +36,7 @@ import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
+import org.geowebcache.layer.TileJSONProvider;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.layer.meta.LayerMetaInformation;
 import org.geowebcache.layer.meta.TileJSON;
@@ -155,6 +156,13 @@ class TileJSONBuilder {
         tileJSON.setTiles(new String[] {tilesURL});
 
         if (!(tileLayer instanceof GeoServerTileLayer)) {
+            TileJSONProvider tileJSONProvider = (TileJSONProvider) tileLayer;
+            if (tileJSONProvider.supportsTileJSON()) {
+                tileJSON = tileJSONProvider.getTileJSON();
+                tileJSON.setTiles(new String[] {tilesURL});
+                tileJSON.setFormat(tileFormat);
+                return tileJSON;
+            }
             throw new InvalidParameterValueException(
                     "TileJSON metadata is not supported on this layer");
         }

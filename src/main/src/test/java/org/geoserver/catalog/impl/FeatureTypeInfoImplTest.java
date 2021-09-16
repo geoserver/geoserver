@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFactory;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geotools.util.GrowableInternationalString;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +24,7 @@ public class FeatureTypeInfoImplTest {
 
     @Before
     public void setUp() throws Exception {
+        GeoServerExtensionsHelper.setIsSpringContext(false);
         catalog = new CatalogImpl();
     }
 

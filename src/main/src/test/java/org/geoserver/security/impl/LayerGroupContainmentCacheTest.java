@@ -35,6 +35,7 @@ import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.data.test.MockData;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.impl.LayerGroupContainmentCache.LayerGroupSummary;
 import org.geotools.data.property.PropertyDataStore;
@@ -66,6 +67,7 @@ public class LayerGroupContainmentCacheTest {
 
     @BeforeClass
     public static void setupBaseCatalog() throws Exception {
+        GeoServerExtensionsHelper.setIsSpringContext(false);
         catalog = new CatalogImpl();
         catalog.setResourceLoader(new GeoServerResourceLoader());
 

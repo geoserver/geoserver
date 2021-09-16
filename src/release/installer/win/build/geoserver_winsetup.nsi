@@ -20,7 +20,6 @@
 !ifndef VERSION
   !searchparse /file ..\source\VERSION.txt `version = ` VERSION   ; Read version from VERSION.txt
 !endif
-!define FULLVERSION "${VERSION}.0"                              ; full version (includes subversion for EXE properties)
 !define FULLNAME "${APPNAME} ${VERSION}"                        ; app name and version combined
 !define FULLKEY "${APPNAME}-${VERSION}"                         ; app name and version combined (delimited)
 !define INSTNAME "${APPNAME}-install-${VERSION}.exe"            ; installer exe name
@@ -90,18 +89,6 @@ Var GSUser
 Var GSPass
 Var GSUserHWND
 Var GSPassHWND
-
-; Version Information (for EXE properties version tab)
-; In order for this to work, the VIProductVersion only accepts the format "1.2.3.4".
-; A version string like "1.2.3-SNAPSHOT" or "1.2.3" will raise an error!
-; ----------------------------------------------------------------------------
-VIProductVersion "${FULLVERSION}"
-VIAddVersionKey ProductName "${APPNAME}"
-VIAddVersionKey LegalCopyright "${COPYRIGHT}"
-VIAddVersionKey FileDescription "${APPNAME} Installer"
-VIAddVersionKey FileVersion "${VERSION}"
-VIAddVersionKey ProductVersion "${FULLVERSION}"
-VIAddVersionKey Comments "${HOMEPAGE}"
 
 ; ----------------------------------------------------------------------------
 ; General settings

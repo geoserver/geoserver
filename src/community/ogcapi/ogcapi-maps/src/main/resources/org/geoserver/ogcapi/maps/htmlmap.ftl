@@ -212,7 +212,6 @@
     <div id="nodelist">
         <em>Click on the map to get feature info</em>
     </div>
-    <div>Warning: tiled view not functional yet, feature info is not working as expected</div>
     <script type="text/javascript">
       var format = 'image/png';
       var bounds = [${model.bbox.minX?c}, ${model.bbox.minY?c},
@@ -248,9 +247,10 @@
           url: '${url}',
           imageLoadFunction: imageLoadFunction,
           params: {'f': format,
-             <#list model.rawKvp?keys as key>
-                "${key?js_string}": '${model.rawKvp[key]?js_string}',
-             </#list>
+              <#list parameters as param>
+                 "${param.name?js_string}": '${param.value?js_string}',
+              </#list>
+
           }
         })
       });
@@ -261,8 +261,8 @@
           tileLoadFunction: imageLoadFunction,
           params: {'f': format, 
                    tiled: true,
-             <#list model.rawKvp?keys as key>
-                "${key?js_string}": '${model.rawKvp[key]?js_string}',
+             <#list parameters as param>
+                "${param.name?js_string}": '${param.value?js_string}',
              </#list>
              tilesOrigin: ${model.bbox.minX?c} + "," + ${model.bbox.minY?c}
           }

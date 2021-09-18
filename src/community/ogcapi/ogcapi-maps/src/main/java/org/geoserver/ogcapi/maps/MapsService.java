@@ -138,7 +138,7 @@ public class MapsService {
                 String[] split = collectionId.split(":");
                 p = getCatalog().getLayerGroupByName(split[0], split[1]);
             } else {
-                getCatalog().getLayerGroupByName(collectionId);
+                p = getCatalog().getLayerGroupByName(collectionId);
             }
         }
 

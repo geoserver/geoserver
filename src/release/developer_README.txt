@@ -83,13 +83,15 @@ The build process may fail because of several reasons:
 
 * Unavailable dependencies - Maven tries to download dependencies which might not be available on the server side yet.
 
-  Solution: Try again in some minutes.
+  Solution: Try again in a few minutes.
+
 
 * Failing tests - Maven runs existing tests automatically. If some of them fail, the build fails.
 
   Solution: You can tell maven not to run the tests. This is discouraged.
   Bug the developers instead or fix the test and send a patch, thanks!
   
-  If you really just want to disable the test, run maven like so:
+  If you really just want to disable the test, run Maven like so:
+
   
     mvn -DskipTests=true install

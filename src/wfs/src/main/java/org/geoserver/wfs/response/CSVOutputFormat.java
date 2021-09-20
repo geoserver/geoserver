@@ -11,6 +11,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.security.InvalidParameterException;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Collection;
@@ -232,6 +233,8 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
             separator = " ";
         } else if (separator.equalsIgnoreCase("tab")) {
             separator = "\t";
+        } else if (separator.equals("\"")) {
+            throw new InvalidParameterException("A double quote is not allowed as a CSV separator");
         }
 
         return separator;

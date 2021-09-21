@@ -1,8 +1,8 @@
-<#global pagetitle=model.identifier>
+<#global pagetitle=model.id>
 <#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item'><a href='"+serviceLink("tileMatrixSets")+"'>Tile Matrix Sets</a></li><li class='breadcrumb-item active'>"+pagetitle+"</li>">
 <#include "common-header.ftl">
 
-  <h2>${model.identifier}</h2>
+  <h2>${model.id}</h2>
   <p class="my-4">
     Tile matrix set definition for ${model.id}, expressed in ${model.supportedCRS}
     <#if model.title??>${model.title}</#if>

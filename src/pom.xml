@@ -1540,6 +1540,11 @@
         <artifactId>wagon-webdav</artifactId>
         <version>1.0-beta-2</version>
       </extension>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ftp</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
     </extensions>
 
     <!-- TODO: the resources stuff hardcodes paths to source + test directories,
@@ -2545,7 +2550,6 @@
         </plugins>
       </build>
     </profile>
-
     <profile>
       <id>enforcer</id>
       <activation>
@@ -2591,6 +2595,16 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>deploygeosolutions</id>
+       <distributionManagement>
+        <repository>
+         <uniqueVersion>false</uniqueVersion>
+         <id>geosolutions</id>
+         <url>ftp://demo.geo-solutions.it</url>
+        </repository>
+      </distributionManagement>
     </profile>
   </profiles>
 

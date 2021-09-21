@@ -339,7 +339,7 @@ public class TilesService {
 
     @GetMapping(
         path =
-                "/collections/{collectionId}/map/styles/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
+                "/collections/{collectionId}/styles/{styleId}/map/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}",
         name = "getStyledMapTile"
     )
     @ResponseBody
@@ -751,7 +751,7 @@ public class TilesService {
         String id =
                 ResponseUtils.buildURL(
                         APIRequestInfo.get().getBaseURL(),
-                        "ogc/tiels/collections/"
+                        "ogc/tiles/collections/"
                                 + ResponseUtils.urlEncode(collectionId)
                                 + "/queryables",
                         null,
@@ -768,7 +768,21 @@ public class TilesService {
     }
 
     @GetMapping(
-        path = "/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}/metadata",
+        path = "/collections/{collectionId}/map/tiles/{tileMatrixSetId}/metadata",
+        name = "getTilesMetadata"
+    )
+    @ResponseBody
+    public TileJSON getTileJSON(
+            @PathVariable(name = "collectionId") String collectionId,
+            @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId,
+            @RequestParam(name = "tileFormat") String format)
+            throws FactoryException, TransformException, NoSuchAlgorithmException,
+                    GeoWebCacheException, IOException {
+        return getTileJSONInternal(collectionId, null, format, tileMatrixSetId);
+    }
+
+    @GetMapping(
+        path = "/collections/{collectionId}/styles/{styleId}/map/tiles/{tileMatrixSetId}/metadata",
         name = "getTilesMetadata"
     )
     @ResponseBody

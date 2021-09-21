@@ -42,6 +42,8 @@ import org.geowebcache.layer.meta.LayerMetaInformation;
 import org.geowebcache.layer.meta.TileJSON;
 import org.geowebcache.layer.meta.VectorLayerMetadata;
 import org.geowebcache.layer.meta.VectorLayerMetadata.GeometryType;
+import org.geowebcache.mime.MimeException;
+import org.geowebcache.mime.MimeType;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
@@ -128,25 +130,31 @@ class TileJSONBuilder {
         String tilesURL;
         APIRequestInfo requestInfo = APIRequestInfo.get();
         String baseURL = requestInfo.getBaseURL();
+        boolean isVector = (styleId == null) && isVector(tileFormat);
+        // isVector allows controlling if vector_layers metadata should be returned or not,
+        // as well as whether the "map" prefix should be used in tile urls
         if (styleId != null) {
             tilesURL =
                     ResponseUtils.buildURL(
                             baseURL,
                             "ogc/tiles/collections/"
                                     + urlEncode(collectionId)
-                                    + "/map/"
+                                    + "/styles/"
                                     + urlEncode(styleId)
+                                    + "/map"
                                     + "/tiles/"
                                     + tileMatrixSetId
                                     + "/{z}/{y}/{x}",
                             Collections.singletonMap("f", tileFormat),
                             URLMangler.URLType.SERVICE);
         } else {
+            String tilesPrefix = isVector ? "" : "/map";
             tilesURL =
                     ResponseUtils.buildURL(
                             baseURL,
                             "ogc/tiles/collections/"
                                     + urlEncode(collectionId)
+                                    + tilesPrefix
                                     + "/tiles/"
                                     + tileMatrixSetId
                                     + "/{z}/{y}/{x}",
@@ -179,13 +187,25 @@ class TileJSONBuilder {
         tileJSON.setDescription(description);
 
         if (published instanceof LayerInfo) {
-            decorateTileJSON((LayerInfo) published, tileJSON, styleId == null, subset);
+            decorateTileJSON((LayerInfo) published, tileJSON, isVector, subset);
         } else if (published instanceof LayerGroupInfo) {
-            tileJSON =
-                    decorateTileJSON((LayerGroupInfo) published, tileJSON, styleId == null, subset);
+            tileJSON = decorateTileJSON((LayerGroupInfo) published, tileJSON, isVector, subset);
         }
         setTileJSONZoomLevels(tileJSON, subset);
         return tileJSON;
+    }
+
+    private boolean isVector(String tileFormat) {
+        MimeType format = null;
+        if (tileFormat != null) {
+            try {
+                format = MimeType.createFromFormat(tileFormat);
+            } catch (MimeException e) {
+                // Ignore the exception
+                // we will return false if something goes wrong
+            }
+        }
+        return format != null ? format.isVector() : false;
     }
 
     private TileJSON decorateTileJSON(

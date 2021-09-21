@@ -54,7 +54,7 @@ public class GetTileTest extends TilesTestSupport {
                 getAsServletResponse(
                         "ogc/tiles/collections/"
                                 + layerId
-                                + "/map/styles/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
+                                + "/styles/BasicPolygons/map/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         checkRootTileHeaders(sr, "cite:BasicPolygons");
@@ -96,7 +96,7 @@ public class GetTileTest extends TilesTestSupport {
         String path =
                 "ogc/tiles/collections/"
                         + layerId
-                        + "/map/styles/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
+                        + "/styles/BasicPolygons/map/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
 
         // first request, it's a miss, tile was not there
         MockHttpServletResponse sr1 = getAsServletResponse(path);
@@ -119,7 +119,7 @@ public class GetTileTest extends TilesTestSupport {
         String path =
                 "ogc/tiles/collections/"
                         + layerId
-                        + "/map/styles/BasicPolygons/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
+                        + "/styles/BasicPolygons/map/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
 
         // first request, it's a miss, tile was not there
         MockHttpServletResponse sr1 = getAsServletResponse(path);
@@ -217,7 +217,7 @@ public class GetTileTest extends TilesTestSupport {
                 getAsServletResponse(
                         "ogc/tiles/collections/"
                                 + layerId
-                                + "/map/styles/RoadSegments/tiles/EPSG:900913/EPSG:900913:15/16383/16384?f=image/png8");
+                                + "/styles/RoadSegments/map/tiles/EPSG:900913/EPSG:900913:15/16383/16384?f=image/png8");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
 
@@ -416,9 +416,9 @@ public class GetTileTest extends TilesTestSupport {
                 getAsImage(
                         "ogc/tiles/collections/"
                                 + BASIC_STYLE_GROUP
-                                + "/map/styles/"
+                                + "/styles/"
                                 + BASIC_STYLE_GROUP_STYLE
-                                + "/tiles/EPSG:900913/EPSG:900913:16/32768/32768?f=image/png",
+                                + "/map/tiles/EPSG:900913/EPSG:900913:16/32768/32768?f=image/png",
                         "image/png");
         File expected =
                 new File("src/test/resources/org/geoserver/ogcapi/tiles/styleGrup_tile_16.png");
@@ -431,9 +431,9 @@ public class GetTileTest extends TilesTestSupport {
                 getAsJSONPath(
                         "ogc/tiles/collections/"
                                 + BASIC_STYLE_GROUP
-                                + "/map/styles/"
+                                + "/styles/"
                                 + "_"
-                                + "/tiles/EPSG:900913/EPSG:900913:16/32768/32768?f=image/png",
+                                + "/map/tiles/EPSG:900913/EPSG:900913:16/32768/32768?f=image/png",
                         400);
         assertEquals("InvalidParameterValue", json.read("code"));
         assertThat(

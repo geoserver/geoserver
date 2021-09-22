@@ -144,6 +144,21 @@ public class StyleMetadataTest extends StylesTestSupport {
     }
 
     @Test
+    public void testGetMetadataHTML() throws Exception {
+        org.jsoup.nodes.Document doc = getAsJSoup("ogc/styles/styles/polygon/metadata?f=html");
+
+        assertEquals("Title: " + POLYGON_TITLE, doc.select("#title").text());
+        assertEquals("Description: " + POLYGON_ABSTRACT, doc.select("#description").text());
+        assertEquals("Point of contact: " + POLYGON_POC, doc.select("#poc").text());
+
+        assertEquals(
+                "Stylesheet as SLD 1.0.0 (native)", doc.select("#stylesheets>ul>:eq(0)").text());
+        assertEquals(
+                "Default Polygon: polygon.",
+                doc.select("#layers>ul>li").first().textNodes().get(0).text().trim());
+    }
+
+    @Test
     public void testGetMetadataAttributesFromStyle() throws Exception {
         DocumentContext json =
                 getAsJSONPath("ogc/styles/styles/" + BUILDINGS_LABEL_STYLE + "/metadata", 200);

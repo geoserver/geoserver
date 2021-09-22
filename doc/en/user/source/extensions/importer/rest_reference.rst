@@ -412,7 +412,7 @@ The creation response will be the same as the multipart upload.
 Single task resource
 ^^^^^^^^^^^^^^^^^^^^
 
-/imports/<importId>/task/<taskId>
+/imports/<importId>/tasks/<taskId>
 """""""""""""""""""""""""""""""""
 
 .. list-table::
@@ -466,7 +466,7 @@ Directory files representation
 
 The following operations are specific to data objects of type ``directory``.
 
-/imports/<importId>/task/<taskId>/data/files
+/imports/<importId>/tasks/<taskId>/data/files
 """"""""""""""""""""""""""""""""""""""""""""
 
 .. list-table::
@@ -509,7 +509,7 @@ The response to a GET request will be::
 		]
 	}
 
-/imports/<importId>/task/<taskId>/data/files/<fileId>
+/imports/<importId>/tasks/<taskId>/data/files/<fileId>
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 
 .. list-table::

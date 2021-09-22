@@ -5,11 +5,17 @@
 package org.geoserver.wms.map;
 
 import java.awt.RenderingHints;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IteratorUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.ows.LocalWorkspace;
@@ -18,6 +24,7 @@ import org.geotools.renderer.style.DynamicSymbolFactoryFinder;
 import org.geotools.renderer.style.MarkFactory;
 import org.geotools.renderer.style.MarkFactoryListComparator;
 import org.geotools.renderer.style.MarkFactoryListPredicate;
+import org.geotools.util.logging.Logging;
 
 /**
  * Checks current MarkFactory filter and order configuration on GeoServer global and per workspace
@@ -25,6 +32,8 @@ import org.geotools.renderer.style.MarkFactoryListPredicate;
  * RenderingHints} map.
  */
 public class MarkFactoryHintsInjector {
+
+    private static Logger LOGGER = Logging.getLogger(MarkFactoryHintsInjector.class);
 
     public static final String MARK_FACTORY_LIST = "MarkFactoryList";
 
@@ -71,14 +80,39 @@ public class MarkFactoryHintsInjector {
         return new MarkFactoryListComparator(markFactoryList);
     }
 
-    @SuppressWarnings("unchecked")
     private List<String> getMarkFactoryList(WMSInfo wmsInfo) {
         if (wmsInfo.getMetadata().containsKey(MARK_FACTORY_LIST)) {
-            Object factoriesObj = wmsInfo.getMetadata().get(MARK_FACTORY_LIST);
-            if (factoriesObj instanceof List) {
-                return (List<String>) factoriesObj;
+            String factoriesStr = wmsInfo.getMetadata().get(MARK_FACTORY_LIST, String.class);
+            if (StringUtils.isNotBlank(factoriesStr)) {
+                List<String> factoryNames = Arrays.asList(factoriesStr.split(","));
+                if (validateIdentifiers(factoryNames)) {
+                    LOGGER.log(
+                            Level.FINE,
+                            "Configured MarkFactory precedence found: {0}",
+                            factoryNames);
+                    return factoryNames;
+                }
             }
         }
+        LOGGER.log(Level.FINE, "Configured MarkFactory precedence not found");
         return Collections.emptyList();
+    }
+
+    private boolean validateIdentifiers(List<String> identifiers) {
+        List<String> availableFactories =
+                IteratorUtils.toList(DynamicSymbolFactoryFinder.getMarkFactories())
+                        .stream()
+                        .map(mf -> mf.getClass().getSimpleName())
+                        .collect(Collectors.toList());
+        for (String identifier : identifiers) {
+            if (!availableFactories.contains(identifier)) {
+                LOGGER.log(
+                        Level.SEVERE,
+                        "The {0} mark factory class name identifier is not available on the classpath.",
+                        identifier);
+                return false;
+            }
+        }
+        return true;
     }
 }

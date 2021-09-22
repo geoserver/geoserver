@@ -38,6 +38,17 @@ public class MarkFactoryProcessorProviderFactoryTest extends WMSTestSupport {
         assertEquals(expectedFactories, processedFactories);
     }
 
+    private String toListString(List<String> list) {
+        StringBuilder builder = new StringBuilder();
+        boolean started = false;
+        for (String value : list) {
+            if (started) builder.append(",");
+            builder.append(value);
+            started = true;
+        }
+        return builder.toString();
+    }
+
     @Test
     public void testGlobalFilteredResult() throws Exception {
         // create the desired mark factories and order
@@ -46,7 +57,8 @@ public class MarkFactoryProcessorProviderFactoryTest extends WMSTestSupport {
                         Arrays.asList("WKTMarkFactory", "WellKnownMarkFactory", "TTFMarkFactory"));
         // set the filter and order on global wmsInfo
         WMSInfo wmsInfo = getGeoServer().getService(WMSInfo.class);
-        wmsInfo.getMetadata().put(MarkFactoryHintsInjector.MARK_FACTORY_LIST, markFactoryNames);
+        wmsInfo.getMetadata()
+                .put(MarkFactoryHintsInjector.MARK_FACTORY_LIST, toListString(markFactoryNames));
         getGeoServer().save(wmsInfo);
         // test the result
         Hints hints = new Hints();
@@ -78,7 +90,10 @@ public class MarkFactoryProcessorProviderFactoryTest extends WMSTestSupport {
             wmsInfo.setName("WMS");
             wmsInfo.setEnabled(true);
             wmsInfo.setWorkspace(workspaceInfo);
-            wmsInfo.getMetadata().put(MarkFactoryHintsInjector.MARK_FACTORY_LIST, markFactoryNames);
+            wmsInfo.getMetadata()
+                    .put(
+                            MarkFactoryHintsInjector.MARK_FACTORY_LIST,
+                            toListString(markFactoryNames));
             geoServer.add(wmsInfo);
 
             LocalWorkspace.set(workspaceInfo);

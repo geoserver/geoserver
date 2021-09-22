@@ -8,6 +8,7 @@ package org.geoserver.wms.web;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IteratorUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -381,16 +383,34 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     }
 
     /** Adds the MarkFactory performance optimization panel. */
-    protected void addMarkFactoryLoadOptimizationPanel(
+    private void addMarkFactoryLoadOptimizationPanel(
             PropertyModel<Map<String, ?>> metadataModel, Form<?> form) {
         checkAndInitializeMapData(metadataModel);
-        MapModel<List<String>> markFactoryList =
+        final MapModel<String> mapMarkFactoryList =
                 new MapModel<>(metadataModel, MarkFactoryHintsInjector.MARK_FACTORY_LIST);
-        if (markFactoryList.getObject() == null) {
-            markFactoryList.setObject(new ArrayList<>());
+        IModel<List<String>> markFactoryList = buildMarkFactoryListModel(mapMarkFactoryList);
+        Collection<String> liveCollection = new ListModelCollection(markFactoryList);
+        if (mapMarkFactoryList.getObject() == null) {
+            mapMarkFactoryList.setObject("");
         }
+        IModel<Collection<String>> collectionModel =
+                new IModel<Collection<String>>() {
+
+                    @Override
+                    public void detach() {}
+
+                    @Override
+                    public void setObject(Collection<String> object) {
+                        markFactoryList.setObject(new ArrayList<>(object));
+                    }
+
+                    @Override
+                    public Collection<String> getObject() {
+                        return liveCollection;
+                    }
+                };
         LiveCollectionModel<String, List<String>> markFactoriesLiveCollectionModel =
-                LiveCollectionModel.list(markFactoryList);
+                LiveCollectionModel.list(collectionModel);
         Palette<String> factoriesSetupPallete =
                 buildMarkFactoryPalleteComponent(markFactoriesLiveCollectionModel);
         factoriesSetupPallete.setOutputMarkupPlaceholderTag(true);
@@ -416,6 +436,39 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
                 buildMarkFactoryEnableCheck(label, factoriesSetupPallete, enableModel);
         enableCheckBox.setOutputMarkupId(true);
         form.add(enableCheckBox);
+    }
+
+    private IModel<List<String>> buildMarkFactoryListModel(MapModel<String> mapMarkFactoryList) {
+        return new IModel<List<String>>() {
+
+            @Override
+            public void detach() {}
+
+            @Override
+            public List<String> getObject() {
+                String value = mapMarkFactoryList.getObject();
+                if (StringUtils.isNotBlank(value)) {
+                    return new ArrayList<>(Arrays.asList(value.split(",")));
+                }
+                return new ArrayList<>();
+            }
+
+            @Override
+            public void setObject(List<String> object) {
+                if (object == null) {
+                    mapMarkFactoryList.setObject("");
+                    return;
+                }
+                StringBuilder builder = new StringBuilder();
+                boolean started = false;
+                for (String value : object) {
+                    if (started) builder.append(",");
+                    builder.append(value);
+                    started = true;
+                }
+                mapMarkFactoryList.setObject(builder.toString());
+            }
+        };
     }
 
     private AjaxCheckBox buildMarkFactoryEnableCheck(
@@ -496,8 +549,8 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         @SuppressWarnings({"rawtypes", "unchecked"})
         PropertyModel<Map<String, Object>> mapModel = (PropertyModel) metadataModel;
         Object object = mapModel.getObject().get(MarkFactoryHintsInjector.MARK_FACTORY_LIST);
-        if (!(object instanceof List)) {
-            mapModel.getObject().put(MarkFactoryHintsInjector.MARK_FACTORY_LIST, new ArrayList<>());
+        if (!(object instanceof String)) {
+            mapModel.getObject().put(MarkFactoryHintsInjector.MARK_FACTORY_LIST, "");
         }
     }
 

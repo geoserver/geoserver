@@ -905,6 +905,8 @@ public class ConfigDatabase implements ApplicationContextAware {
             if (updateResouceLayersName) {
                 updateResourceLayerProperty(
                         (ResourceInfo) info, "name", ((ResourceInfo) info).getName());
+                updateResourceLayerProperty(
+                        (ResourceInfo) info, "prefixedName", ((ResourceInfo) info).prefixedName());
             }
             if (updateResouceLayersAdvertised) {
                 updateResourceLayerProperty(

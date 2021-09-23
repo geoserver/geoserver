@@ -161,6 +161,46 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
     }
 
     @Test
+    public void testPrefixedName() {
+        final FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+
+        addDataStore();
+        addNamespace();
+
+        FeatureTypeInfo ft1 = newFeatureType("ft1", ds);
+        ft1.setEnabled(false);
+        catalog.add(ft1);
+        StyleInfo s1;
+        catalog.add(s1 = newStyle("s1", "s1Filename"));
+        LayerInfo l1 = newLayer(ft1, s1);
+        catalog.add(l1);
+        CloseableIterator<LayerInfo> it =
+                catalog.list(
+                        LayerInfo.class,
+                        ff.equals(ff.property("prefixedName"), ff.literal("wsName:ft1")));
+        assertTrue(it.hasNext());
+        assertEquals(l1.getName(), it.next().getName());
+
+        ft1 = catalog.getFeatureTypeByName("ft1");
+        ft1.setName("renamed_ft1");
+        catalog.save(ft1);
+
+        l1 = catalog.getLayerByName("renamed_ft1");
+
+        it =
+                catalog.list(
+                        LayerInfo.class,
+                        ff.equals(ff.property("prefixedName"), ff.literal("wsName:renamed_ft1")));
+        assertTrue(it.hasNext());
+        assertEquals(l1.getName(), it.next().getName());
+        it =
+                catalog.list(
+                        LayerInfo.class,
+                        ff.equals(ff.property("prefixedName"), ff.literal("wsName:ft1")));
+        assertFalse(it.hasNext());
+    }
+
+    @Test
     public void testOrderByMultiple() {
         addDataStore();
         addNamespace();

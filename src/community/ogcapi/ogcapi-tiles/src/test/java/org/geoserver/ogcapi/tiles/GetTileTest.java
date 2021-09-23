@@ -69,7 +69,7 @@ public class GetTileTest extends TilesTestSupport {
         assertEquals("-180.0,-90.0,0.0,90.0", sr.getHeader("geowebcache-tile-bounds"));
         assertEquals(layerName, sr.getHeader("geowebcache-layer"));
         assertEquals("MISS", sr.getHeader("geowebcache-cache-result"));
-        assertEquals("no-cache", sr.getHeader("Cache-Control"));
+        assertEquals("no-cache, no-store, must-revalidate", sr.getHeader("Cache-Control"));
         assertNotNull(sr.getHeader("ETag"));
         assertNotNull(sr.getHeader("Last-Modified"));
         assertValidPNGResponse(sr);
@@ -336,7 +336,7 @@ public class GetTileTest extends TilesTestSupport {
                 "0.0,0.0,39135.7584765628,39135.7584765628",
                 sr.getHeader("geowebcache-tile-bounds"));
         assertEquals(layerId, sr.getHeader("geowebcache-layer"));
-        assertEquals("no-cache", sr.getHeader("Cache-Control"));
+        assertEquals("no-cache, no-store, must-revalidate", sr.getHeader("Cache-Control"));
         assertNotNull(sr.getHeader("ETag"));
         assertNotNull(sr.getHeader("Last-Modified"));
     }

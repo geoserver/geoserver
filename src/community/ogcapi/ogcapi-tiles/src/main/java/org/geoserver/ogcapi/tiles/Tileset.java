@@ -78,7 +78,11 @@ public class Tileset extends AbstractDocument {
                         URLMangler.URLType.SERVICE);
         this.tileMatrixSetDefinition = this.tileMatrixSetURI;
 
-        if (!gridSubset.fullGridSetCoverage() && addDetails) {
+        boolean hasLimits =
+                !gridSubset.fullGridSetCoverage()
+                        || (gridSubset.getGridSet().getNumLevels()
+                                != gridSubset.getZoomStop() - gridSubset.getZoomStart() + 1);
+        if (hasLimits && addDetails) {
             String[] levelNames = gridSubset.getGridNames();
             long[][] wmtsLimits = gridSubset.getWMTSCoverages();
 
@@ -90,6 +94,7 @@ public class Tileset extends AbstractDocument {
                                 wmtsLimits[i][3],
                                 wmtsLimits[i][0],
                                 wmtsLimits[i][2]);
+                validateLimits(limit, gridSubset, i);
                 tileMatrixSetLimits.add(limit);
             }
         }
@@ -196,6 +201,16 @@ public class Tileset extends AbstractDocument {
                         "Tiles of this type are not yet supported: " + dataType);
             }
         }
+    }
+
+    private void validateLimits(TileMatrixSetLimit limit, GridSubset gridSubset, int zoomLevel) {
+
+        long numTilesHeight = gridSubset.getGridSet().getGrid(zoomLevel).getNumTilesHigh();
+        long numTilesWide = gridSubset.getGridSet().getGrid(zoomLevel).getNumTilesWide();
+        if (limit.getMinTileRow() < 0) limit.setMinTileRow(0);
+        if (limit.getMinTileCol() < 0) limit.setMinTileCol(0);
+        if (limit.getMaxTileRow() > numTilesHeight - 1) limit.setMaxTileRow(numTilesHeight - 1);
+        if (limit.getMaxTileCol() > numTilesWide - 1) limit.setMaxTileCol(numTilesWide - 1);
     }
 
     public String getTileMatrixSetURI() {

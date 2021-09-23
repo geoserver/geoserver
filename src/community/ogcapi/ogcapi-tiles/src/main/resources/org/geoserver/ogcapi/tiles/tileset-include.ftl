@@ -55,7 +55,7 @@
               <td>${limit.tileMatrix}</td>
               <td>${limit.minTileRow}</td>
               <td>${limit.maxTileRow}</td>
-              <td>${limit.maxTileCol}</td>
+              <td>${limit.minTileCol}</td>
               <td>${limit.maxTileCol}</td>
             </tr>
           </#list>

@@ -168,6 +168,9 @@ public class GetFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
             req.setViewParams(viewParams);
         }
 
+        // support for extra parameters
+        req.setExtendedProperties(kvp);
+
         return request;
     }
 

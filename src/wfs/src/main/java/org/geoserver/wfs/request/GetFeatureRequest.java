@@ -9,6 +9,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.GetFeatureWithLockType;
 import net.opengis.wfs.ResultTypeType;
@@ -24,6 +25,8 @@ import org.geotools.xsd.EMFUtils;
  * @author Justin Deoliveira, OpenGeo
  */
 public abstract class GetFeatureRequest extends RequestObject {
+
+    private final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(this.getClass());
 
     public static GetFeatureRequest adapt(Object request) {
         if (request instanceof GetFeatureType) {
@@ -56,6 +59,11 @@ public abstract class GetFeatureRequest extends RequestObject {
         List<Map<String, String>> l = eGet(adaptee, "viewParams", List.class);
         l.clear();
         l.addAll(viewParams);
+    }
+
+    public void setExtendedProperties(Map<String, Object> vsp) {
+        LOGGER.info("setting extendedProperties" + vsp.toString());
+        eSet(adaptee, "extendedProperties", vsp);
     }
 
     public abstract List<Query> getQueries();

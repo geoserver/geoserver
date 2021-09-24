@@ -2,17 +2,10 @@
   <body>
     <wicket:panel>
       <fieldset>
-        <legend>
-              <span><wicket:message key="layers">Layers</wicket:message></span>
-              <a href="#" wicket:id="layersHelp" class="help-link"></a>
-        </legend>
-      <ul class="action-group">
-       <li><a class="add-link" wicket:id="addLayer"><wicket:message key="addLayer">Add Layer...</wicket:message></a></li>
-       <li><a class="add-link" wicket:id="addLayerGroup"><wicket:message key="addLayerGroup">Add Layer Group...</wicket:message></a></li>
-       <li>
-           <a class="add-link" wicket:id="addStyleGroup"><wicket:message key="addStyleGroup">Add Style Group...</wicket:message></a>
-           <a href="#" wicket:id="styleGroupHelp" class="help-link"></a>
-       </li>
+          <div wicket:id="panelTitle"/>
+          <div wicket:id="addsLayerBtn"/>
+          <br/>
+          <ul>
        <li>
          <div wicket:id="layers"></div>
        </li>
@@ -24,6 +17,52 @@
 
     <wicket:fragment wicket:id="defaultStyle">
         <input type="checkbox" wicket:id="checkbox"/>
+    </wicket:fragment>
+
+    <wicket:fragment wicket:id="addsLayerVertical">
+        <ul>
+            <li><a class="add-link" wicket:id="addLayer"><wicket:message key="addLayer">Add Layer...</wicket:message></a></li>
+            <li><a class="add-link" wicket:id="addLayerGroup"><wicket:message key="addLayerGroup">Add Layer Group...</wicket:message></a></li>
+            <li>
+                <a class="add-link" wicket:id="addStyleGroup"><wicket:message key="addStyleGroup">Add Style Group...</wicket:message></a>
+                <a href="#" wicket:id="styleGroupHelp" class="help-link"></a>
+            </li>
+        </ul>
+    </wicket:fragment>
+
+    <wicket:fragment wicket:id="addsLayerFlat">
+        <ul>
+          <li>
+              <div>
+                  <div style="float:left">
+                      <a class="add-link" wicket:id="addLayer"><wicket:message key="addLayer">Add Layer...</wicket:message></a>
+                  </div>
+                  <div style="float:left">
+                  <a class="add-link" wicket:id="addLayerGroup"><wicket:message key="addLayerGroup">Add Layer Group...</wicket:message></a>
+              </div>
+                  <div style="float:left">
+            <a class="add-link" wicket:id="addStyleGroup"><wicket:message key="addStyleGroup">Add Style Group...</wicket:message></a>
+              </div>
+                  <div  style="float:left">
+                      <a href="#" wicket:id="styleGroupHelp" class="help-link"></a>
+                  </div>
+            </div>
+          </li>
+        </ul>
+    </wicket:fragment>
+
+  <wicket:fragment wicket:id="bigLegend">
+      <legend>
+          <span><wicket:message key="layers">Layers</wicket:message></span>
+          <a href="#" wicket:id="layersHelp" class="help-link"></a>
+      </legend>
+  </wicket:fragment>
+
+    <wicket:fragment wicket:id="smallLegend">
+        <legend style="font: 12px tahoma, arial, helvetica, sans-serif;
+                color: #000000;">
+            <span><wicket:message key="layers">Layers</wicket:message></span>
+        </legend>
     </wicket:fragment>
   </body>
 </html>

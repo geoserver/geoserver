@@ -28,6 +28,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDataProvider.PropertyPlaceholder;
 import org.geoserver.web.wicket.GeoServerDialog;
@@ -40,7 +41,7 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geoserver.web.wicket.UpDownPanel;
 
 /** Allows to edit the list of layers contained in a layer group */
-public class LayerGroupEntryPanel extends Panel {
+public abstract class LayerGroupEntryPanel<T> extends Panel {
 
     private static final long serialVersionUID = -5483938812185582866L;
 
@@ -64,22 +65,88 @@ public class LayerGroupEntryPanel extends Panel {
     List<LayerGroupEntry> items;
     GeoServerDialog dialog;
 
-    public LayerGroupEntryPanel(
-            String id, LayerGroupInfo layerGroup, IModel<WorkspaceInfo> groupWorkspace) {
+    /**
+     * @param id the panel id.
+     * @param tModel the Model.
+     * @param groupWorkspace the LayerGroup workspace to filter published info that can be added.
+     */
+    public LayerGroupEntryPanel(String id, IModel<T> tModel, IModel<WorkspaceInfo> groupWorkspace) {
         super(id);
+        initUI(getLayers(tModel.getObject()), getStyles(tModel.getObject()), groupWorkspace);
+    }
 
+    /**
+     * @param id the panel id.
+     * @param tModel the model.
+     * @param groupWorkspace the LayerGroup workspace to filter published info that can be added.
+     * @param horizontalBtn flag to require the add entry button to be displayed horizontally
+     *     instead of vertically.
+     * @param bigLegendTitle flag to require the panel title to be render as a big fieldset label
+     *     (true) or as a normal field label (false).
+     */
+    public LayerGroupEntryPanel(
+            String id,
+            IModel<T> tModel,
+            IModel<WorkspaceInfo> groupWorkspace,
+            boolean horizontalBtn,
+            boolean bigLegendTitle) {
+        super(id);
+        initUI(
+                getLayers(tModel.getObject()),
+                getStyles(tModel.getObject()),
+                groupWorkspace,
+                horizontalBtn,
+                bigLegendTitle);
+    }
+
+    /**
+     * @param id the panel id.
+     * @param t the container object.
+     * @param groupWorkspace the LayerGroup workspace to filter published info that can be added.
+     */
+    public LayerGroupEntryPanel(String id, T t, IModel<WorkspaceInfo> groupWorkspace) {
+        super(id);
+        initUI(getLayers(t), getStyles(t), groupWorkspace);
+    }
+
+    /**
+     * @param id the panel id.
+     * @param layers the list of PublishedInfo to be added as entries.
+     * @param styles the list of StyleInfo to be added as entries.
+     * @param groupWorkspace the LayerGroup workspace to filter published info that can be added.
+     */
+    public LayerGroupEntryPanel(
+            String id,
+            List<PublishedInfo> layers,
+            List<StyleInfo> styles,
+            IModel<WorkspaceInfo> groupWorkspace) {
+        super(id);
+        initUI(layers, styles, groupWorkspace);
+    }
+
+    private void initUI(
+            List<PublishedInfo> layers,
+            List<StyleInfo> styles,
+            IModel<WorkspaceInfo> groupWorkspace) {
+        initUI(layers, styles, groupWorkspace, false, true);
+    }
+
+    private void initUI(
+            List<PublishedInfo> layers,
+            List<StyleInfo> styles,
+            IModel<WorkspaceInfo> groupWorkspace,
+            boolean horizontal,
+            boolean bigLegendTitle) {
         items = new ArrayList<>();
-        for (int i = 0; i < layerGroup.getLayers().size(); i++) {
-            PublishedInfo layer = layerGroup.getLayers().get(i);
-            StyleInfo style = layerGroup.getStyles().get(i);
+        for (int i = 0; i < layers.size(); i++) {
+            PublishedInfo layer = layers.get(i);
+            StyleInfo style = styles.get(i);
             items.add(new LayerGroupEntry(layer, style));
         }
 
         add(popupWindow = new ModalWindow("popup"));
         add(dialog = new GeoServerDialog("dialog"));
-        add(new HelpLink("layersHelp").setDialog(dialog));
-        add(new HelpLink("styleGroupHelp").setDialog(dialog));
-
+        add(panelTitle(bigLegendTitle));
         // make sure we don't end up serializing the list, but get it fresh from the dataProvider,
         // to avoid serialization issues seen in GEOS-8273
         LoadableDetachableModel<List<Property<LayerGroupEntry>>> propertiesModel =
@@ -124,8 +191,20 @@ public class LayerGroupEntryPanel extends Panel {
         layerTable.setItemReuseStrategy(new DefaultItemReuseStrategy());
         layerTable.setOutputMarkupId(true);
         layerTable.setPageable(false);
+        add(getBtnFragment(horizontal, groupWorkspace));
+    }
 
-        add(
+    private Fragment panelTitle(boolean legendTitle) {
+        String id = legendTitle ? "bigLegend" : "smallLegend";
+        Fragment fragment = new Fragment("panelTitle", id, this);
+        if (legendTitle) fragment.add(new HelpLink("layersHelp").setDialog(dialog));
+        return fragment;
+    }
+
+    private Fragment getBtnFragment(boolean horizontal, IModel<WorkspaceInfo> groupWorkspace) {
+        String id = horizontal ? "addsLayerFlat" : "addsLayerVertical";
+        Fragment fragment = new Fragment("addsLayerBtn", id, this);
+        fragment.add(
                 new AjaxLink<LayerInfo>("addLayer") {
                     private static final long serialVersionUID = -6143440041597461787L;
 
@@ -158,7 +237,7 @@ public class LayerGroupEntryPanel extends Panel {
                     }
                 });
 
-        add(
+        fragment.add(
                 new AjaxLink<LayerGroupInfo>("addLayerGroup") {
                     private static final long serialVersionUID = -6600366636542152188L;
 
@@ -188,7 +267,7 @@ public class LayerGroupEntryPanel extends Panel {
                     }
                 });
 
-        add(
+        fragment.add(
                 new AjaxLink<LayerGroupInfo>("addStyleGroup") {
 
                     @Override
@@ -213,6 +292,8 @@ public class LayerGroupEntryPanel extends Panel {
                         popupWindow.show(target);
                     }
                 });
+        fragment.add(new HelpLink("styleGroupHelp").setDialog(dialog));
+        return fragment;
     }
 
     public List<LayerGroupEntry> getEntries() {
@@ -263,6 +344,10 @@ public class LayerGroupEntryPanel extends Panel {
             if (layer.getDefaultStyle() != null) {
                 styleName = layer.getDefaultStyle().getName();
             }
+        } else if (entry.getLayer() instanceof LayerGroupInfo) {
+            LayerGroupInfo group = (LayerGroupInfo) entry.getLayer();
+            List<LayerGroupStyle> groupStyles = group.getLayerGroupStyles();
+            if (groupStyles != null && !groupStyles.isEmpty()) defaultStyle = false;
         }
 
         // build and returns the link, but disable it if the style is the default
@@ -277,7 +362,9 @@ public class LayerGroupEntryPanel extends Panel {
                         popupWindow.setInitialWidth(525);
                         popupWindow.setTitle(new ParamResourceModel("chooseStyle", this));
                         popupWindow.setContent(
-                                new StyleListPanel(popupWindow.getContentId()) {
+                                new StyleListPanel(
+                                        popupWindow.getContentId(),
+                                        itemModel.getObject().getLayer()) {
                                     private static final long serialVersionUID =
                                             -8463999379475701401L;
 
@@ -330,4 +417,20 @@ public class LayerGroupEntryPanel extends Panel {
         ParamResourceModel downTitle = new ParamResourceModel("moveToBottom", this);
         return new UpDownPanel<>(id, itemModel.getObject(), items, layerTable, upTitle, downTitle);
     }
+
+    /**
+     * Get the PublishedInfo List to be added to the entries list.
+     *
+     * @param object the container from which retrieve the PublishedInfo list.
+     * @return the List of PublishedInfo contained by the object container.
+     */
+    protected abstract List<PublishedInfo> getLayers(T object);
+
+    /**
+     * Get the StyleInfo List to be added to the entries list.
+     *
+     * @param object the container from which retrieve the StyleInfo list.
+     * @return the List of StyleInfo contained by the object container.
+     */
+    protected abstract List<StyleInfo> getStyles(T object);
 }

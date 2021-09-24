@@ -162,12 +162,40 @@ public class ResolvingProxy extends ProxyBase {
                         // still no luck
                         s = catalog.getStyleByName(ref);
                     }
+
                     return (T) s;
                 }
             }
         }
 
         return object;
+    }
+
+    /**
+     * Gets the proxy ref from a StyleInfo instance.
+     *
+     * @param styleInfo the StyleInfo proxy from which retrieve the ref.
+     * @return the ref value if found, null otherwise.
+     */
+    public static final String styleInfoToRef(StyleInfo styleInfo) {
+        String result = null;
+        if (styleInfo == null || styleInfo.getName() == null) {
+            String ref = getRef(styleInfo);
+            if (ref != null && !"".equals(ref)) {
+                result = ref;
+            }
+        }
+        return result;
+    }
+
+    private static String getRef(Object object) {
+        if (object instanceof Proxy) {
+            InvocationHandler h = Proxy.getInvocationHandler(object);
+            if (h instanceof ResolvingProxy) {
+                return ((ResolvingProxy) h).getRef();
+            }
+        }
+        return null;
     }
 
     /** the reference */

@@ -342,31 +342,23 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer {
      */
     public PublishedInfo getPublishedInfo() {
         PublishedInfo publishedInfo = this._publishedInfo.get();
-        if (publishedInfo == null) {
-            publishedInfo =
-                    this._publishedInfo.accumulateAndGet(
-                            null,
-                            (currVal, nullUpdateVal) -> {
-                                if (currVal == null) {
-                                    // see if it's a layer or a layer group
-                                    PublishedInfo catalogLayer = catalog.getLayer(publishedInfoId);
-                                    if (catalogLayer == null) {
-                                        catalogLayer = catalog.getLayerGroup(publishedInfoId);
-                                    }
-                                    if (catalogLayer == null) {
-                                        throw new IllegalStateException(
-                                                "Could not locate a layer or layer group with id "
-                                                        + publishedInfoId
-                                                        + " within GeoServer configuration, the GWC configuration seems to be out of synch");
-                                    } else {
-                                        TileLayerInfoUtil.checkAutomaticStyles(catalogLayer, info);
-                                    }
-                                    return catalogLayer;
-                                }
-                                // returning null when the current value is not null, prevents
-                                // accumulateAndGet from replacing the current reference
-                                return null;
-                            });
+        while (publishedInfo == null) {
+            // see if it's a layer or a layer group
+            PublishedInfo catalogLayer = catalog.getLayer(publishedInfoId);
+            if (catalogLayer == null) {
+                catalogLayer = catalog.getLayerGroup(publishedInfoId);
+            }
+            if (catalogLayer == null) {
+                throw new IllegalStateException(
+                        "Could not locate a layer or layer group with id "
+                                + publishedInfoId
+                                + " within GeoServer configuration, the GWC configuration seems to be out of "
+                                + "synch");
+            } else {
+                TileLayerInfoUtil.checkAutomaticStyles(catalogLayer, info);
+            }
+            this._publishedInfo.compareAndSet(null, catalogLayer);
+            publishedInfo = this._publishedInfo.get();
         }
         return publishedInfo;
     }

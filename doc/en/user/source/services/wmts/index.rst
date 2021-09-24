@@ -3,7 +3,7 @@
 Web Map Tile Service (WMTS)
 ===========================
 
-This section describes the Web Map Service (WMTS).
+This section describes the Web Map Tile Service (WMTS).
 
 .. toctree::
    :maxdepth: 2

@@ -10,12 +10,12 @@ Workspace
 
 Select :guilabel:`workspace` empty to configure global WFS settings.
 
-See section on :ref:`workspace_services` to override settings used WCS :ref:`virtual_services`.
+See the section on :ref:`workspace_services` to override settings used by WFS :ref:`virtual_services`.
 
 Service Metadata
 ----------------
 
-Provide a description of WFS service, see the section on :ref:`service_metadata`.
+For a description of WFS service options, see the section on :ref:`service_metadata`.
 
 Features
 --------
@@ -94,7 +94,7 @@ For each GML type, there is also an "Override GML Attributes" checkbox. Selectin
 Override GML 3.2 MIME type
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The default MIME used for GML 3.2 encoded responses is ``application/gml+xml; version=3.2`` which is the MIME type mandated by OGC WFS 2.0 specification. This MIME type is not identified as XML by most common clients like browsers. 
+The default MIME used for GML 3.2 encoded responses is ``application/gml+xml; version=3.2`` which is the MIME type mandated by OGC WFS 2.0 specification. This MIME type is not identified as XML by most common clients such as browsers. 
 
 Option :guilabel:`Override MIME Type` allows the selection of the MIME type that should be used for the responses encoded in GML 3.2.  
 
@@ -105,9 +105,9 @@ The available MIME types are: ``application/gml+xml; version=3.2``, ``text/xml; 
 Configure XML Entity Expansion limit on WFS XML readers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-By default WFS XML readers sets Entity Expansion limit to ``100``, but it can be configured via the ``org.geoserver.wfs.xml.entityExpansionLimit`` system property, or :file:`web.xml` init parameter, or Environment variable.
+By default, the WFS XML reader sets Entity Expansion limit to ``100``, but it can be configured via the ``org.geoserver.wfs.xml.entityExpansionLimit`` system property, or using the :file:`web.xml` init parameter, or by Environment variable.
 
-For example on command line we can adjust adding parameter:
+For example, using the command line the limit can be adjusted using a parameter:
 
     -Dorg.geoserver.wfs.xml.entityExpansionLimit=50
 

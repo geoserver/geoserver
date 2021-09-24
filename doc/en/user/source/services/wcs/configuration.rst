@@ -76,7 +76,9 @@ Only a few input formats are so badly structure that they force the reader to re
 Limited SRS list
 ----------------
 
-Clients can have problems processing a GetCapabilities document listing the complete list of SRS (projections) that GeoServer supports by default.
+Some clients may have problems processing a GetCapabilities document listing the complete list of SRS (projections) that GeoServer supports by default. You may also find some projections are not appropriate for your data products.
+
+Use this setting to limit the default list of supported SRS (projections) for the service. This list will be used by default, individual coverages define their own list of SRS (projections).
 
 .. figure:: img/wcs_limited_srs_list.png
    

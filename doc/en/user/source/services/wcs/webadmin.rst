@@ -16,20 +16,20 @@ Workspace
 
 Select :guilabel:`workspace` empty to configure global WCS settings.
 
-See section on :ref:`workspace_services` to override settings used WCS :ref:`virtual_services`.
+See section on :ref:`workspace_services` to override settings used by WCS :ref:`virtual_services`.
 
 Service Metadata
 ----------------
 
-Description of WCS service, see the section on :ref:`service_metadata`.
+For a description of WCS settings, see the section on :ref:`service_metadata`.
 
 i18n Settings
 -------------
 
-Select default language for WCS Service.
+Select the default language for the WCS Service.
 
 .. figure:: img/i18n_default_language.png
    
    Default language
 
-See :ref:`internationalization` section for a how this setting is used.
+See the :ref:`internationalization` section for a description of how this setting is used.

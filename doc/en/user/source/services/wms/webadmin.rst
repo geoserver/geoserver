@@ -14,12 +14,12 @@ Workspace
 
 Select :guilabel:`workspace` empty to configure global WMS settings.
 
-See section on :ref:`workspace_services` to override settings used WMTS :ref:`virtual_services`.
+See section on :ref:`workspace_services` to override settings used by WMS :ref:`virtual_services`.
 
 Service Metadata
 ----------------
 
-Description of WMS service, see the section on :ref:`service_metadata`.
+For a description of WMS services, see the section on :ref:`service_metadata`.
 
 .. _services_webadmin_wms_raster_options:
 

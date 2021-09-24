@@ -14,9 +14,9 @@ Workspace
 
 Select :guilabel:`workspace` empty to configure global WMTS settings.
 
-See section on :ref:`workspace_services` to override settings used WMTS :ref:`virtual_services`.
+See the section on :ref:`workspace_services` to override settings used by WMTS :ref:`virtual_services`.
 
 Service Metadata
 ----------------
 
-Description of WMTS service, see the section on :ref:`service_metadata`.
+For a description of the WMTS service, see the section on :ref:`service_metadata`.

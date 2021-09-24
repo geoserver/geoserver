@@ -52,6 +52,7 @@ import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
@@ -1291,7 +1292,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
          *
          * @param layerName the layer name, used to construct the LegendURL block
          */
-        private void handleLayerGroupStyles(String layerName) {
+        private void handleLayerGroupDefaultStyle(String layerName) {
             start("Style");
             element("Name", CapabilityUtil.getGroupDefaultStyleName(layerName));
             element(
@@ -1306,6 +1307,17 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                             .concat(LAYER_GROUP_STYLE_ABSTRACT_SUFFIX));
             handleLegendURL(layerName, null, null, null);
             end("Style");
+        }
+
+        private void handleLayerGroupStyles(String layerName, List<LayerGroupStyle> groupStyles) {
+
+            for (LayerGroupStyle style : groupStyles) {
+                start("Style");
+                element("Name", style.getName().getName());
+                handleTitleAndAbstract(style);
+                handleLegendURL(layerName, null, style.getName(), null);
+                end("Style");
+            }
         }
 
         private void handleCommonStyleElements(StyleInfo defaultStyle) {
@@ -1525,10 +1537,12 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 metadataLinks = aggregatedLinks;
             }
             handleMetadataList(metadataLinks);
-
-            // add the layer group style
-            if (CapabilityUtil.encodeGroupDefaultStyle(wmsConfig, layerGroup))
-                handleLayerGroupStyles(layerName);
+            boolean isOpaqueOrSingle = isOpaqueOrSingle(layerGroup);
+            if (isOpaqueOrSingle || wmsConfig.isDefaultGroupStyleEnabled())
+                handleLayerGroupDefaultStyle(layerName);
+            if (isOpaqueOrSingle)
+                // add the layer group style
+                handleLayerGroupStyles(layerName, layerGroup.getLayerGroupStyles());
 
             // the layer style is not provided since the group does just have
             // one possibility, the lack of styles that will make it use
@@ -1551,6 +1565,11 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
 
             end("Layer");
+        }
+
+        private boolean isOpaqueOrSingle(LayerGroupInfo groupInfo) {
+            return groupInfo.getMode().equals(LayerGroupInfo.Mode.SINGLE)
+                    || groupInfo.getMode().equals(LayerGroupInfo.Mode.OPAQUE_CONTAINER);
         }
 
         protected void handleAttribution(PublishedInfo layer) {
@@ -1866,6 +1885,28 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 atts.clear();
                 atts.addAttribute("", "authority", "authority", "", authority);
                 element("Identifier", id, atts);
+            }
+        }
+
+        private void handleTitleAndAbstract(LayerGroupStyle groupStyle) {
+            if (!i18nRequested) {
+                if (StringUtils.isEmpty(groupStyle.getTitle())) {
+                    element("Title", groupStyle.getName().getName());
+                } else {
+                    element("Title", groupStyle.getTitle());
+                }
+
+                element("Abstract", groupStyle.getAbstract());
+
+            } else {
+                String title =
+                        internationalContentHelper.getString(
+                                groupStyle.getInternationalTitle(), false);
+                String abstrct =
+                        internationalContentHelper.getString(
+                                groupStyle.getInternationalAbstract(), true);
+                element("Title", title);
+                element("Abstract", abstrct);
             }
         }
 

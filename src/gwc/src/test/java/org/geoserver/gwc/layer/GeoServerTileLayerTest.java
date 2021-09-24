@@ -49,6 +49,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.media.jai.RenderedOp;
@@ -62,6 +67,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.LegendInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
@@ -1086,5 +1092,27 @@ public class GeoServerTileLayerTest {
         resource.setLatLonBoundingBox(new ReferencedEnvelope(-180, 0, -90, 0, WGS84));
         GridSubset subset = layer.getGridSubset("EPSG:4326");
         assertArrayEquals(new long[] {0, 1, 0, 0, 1}, subset.getCoverage(1));
+    }
+
+    /** GEOS-10249 */
+    @Test
+    public void testGetPublishedInfoOnRaceCondition() throws Exception {
+        GeoServerTileLayer tileLayer =
+                new GeoServerTileLayer(
+                        catalog,
+                        layerInfo.getId(),
+                        gridSetBroker,
+                        TileLayerInfoUtil.loadOrCreate(layerInfo, defaults));
+        // here, parallelism equals to cpu cores
+        int parallelism = Runtime.getRuntime().availableProcessors();
+        ExecutorService pool = Executors.newFixedThreadPool(parallelism);
+        List<Future<PublishedInfo>> results =
+                IntStream.range(0, parallelism)
+                        .mapToObj(i -> pool.submit(tileLayer::getPublishedInfo))
+                        .collect(Collectors.toList());
+        for (Future<PublishedInfo> result : results) {
+            assertNotNull(result.get());
+        }
+        pool.shutdown();
     }
 }

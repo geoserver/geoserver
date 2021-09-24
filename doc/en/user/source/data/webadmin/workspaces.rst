@@ -9,39 +9,7 @@ This section describes how to view and configure workspaces. Analogous to a name
    
    Workspaces page
 
-Edit a Workspace
-----------------
 
-To view or edit a workspace, click the workspace name. A workspace configuration page will be displayed.
-
-.. figure:: img/data_workspaces_basic_edit.png
-   
-   Workspace named "topp"
-   
-A workspace is defined by a name and a Namespace URI (Uniform Resource Identifier). The workspace name is limited to ten characters and may not contain space. A URI is similar to a URL, except URIs do not need to point to a actual location on the web, and only need to be a unique identifier. For a Workspace URI, we recommend using a URL associated with your project, with perhaps a different trailing identifier. For example, ``http://www.openplans.org/topp`` is the URI for the "topp" workspace. 
-
-The Security tab allows to set data access rules at workspace level.
-
-.. note:: For more information on data access rules, please see the section on :ref:`security_webadmin_data`.
-
-.. figure:: img/data_workspaces_security_edit.png
-
-To create/edit workspace's data access rules simply check/uncheck checkboxes according to the desidered role. 
-The Grant access to any role checkbox grant each role for any access mode.
-
-Root Directory for REST PathMapper 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. figure:: img/data_workspaces_ROOT.png
-   
-   Workspace Root Directory parameter
-   
-This parameter is used by the RESTful API as the `Root Directory` for uploaded files, following the structure::
-
-	${rootDirectory}/workspace/store[/<file>]
-
-.. note:: This parameter is visible only when the **Enabled** parameter of the *Settings* section is checked. 
-   
 Add a Workspace
 ---------------
 
@@ -51,7 +19,7 @@ The buttons for adding and removing a workspace can be found at the top of the W
 
    Buttons to add and remove
    
-To add a workspace, select the :guilabel:`Add new workspace` button. You will be prompted to enter the the workspace name and URI.  
+To add a workspace, select the :guilabel:`Add new workspace` button. You will be prompted to enter the the workspace name and URI (as described in :ref:`data_webadmin_workspaces_edit` below).
    
 .. figure:: img/data_workspaces_medford.png
 
@@ -66,8 +34,78 @@ To remove a workspace, select it by clicking the checkbox next to the workspace.
 
    Workspace removal confirmation
 
+.. _data_webadmin_workspaces_edit:
+
+Edit a Workspace
+----------------
+
+To view or edit a workspace, click the workspace name. A workspace configuration page will be displayed.
+
+.. figure:: img/data_workspaces_basic_edit.png
+   
+   Workspace named "topp"
+   
+A workspace is defined by a name and a Namespace URI (Uniform Resource Identifier). The workspace name is limited to ten characters and may not contain space. A URI is similar to a URL, except URIs do not need to point to a actual location on the web, and only need to be a unique identifier. For a Workspace URI, we recommend using a URL associated with your project, with perhaps a different trailing identifier. For example, ``http://www.openplans.org/topp`` is the URI for the "topp" workspace. 
+
+Root Directory for REST PathMapper 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. figure:: img/data_workspaces_ROOT.png
+   
+   Workspace Root Directory parameter
+   
+This parameter is used by the RESTful API as the `Root Directory` for uploaded files, following the structure::
+
+	${rootDirectory}/workspace/store[/<file>]
+
+.. note:: This parameter is visible only when the **Enabled** parameter of the *Settings* section is checked. 
+
+.. _workspace_settings:
+
+Workspace Settings
+^^^^^^^^^^^^^^^^^^
+
+Use :guilabel:`Enabled` checkbox to override the global contact information for this this workspace.
+
+.. figure:: img/workspace_settings.png
+   
+   Enable workspace settings to provide default contact information
+   
+Clients accessing this workspace as a :ref:`virtual_services` will use the contact information provided here.
+
+.. _workspace_services:
+
+Workspace Services
+^^^^^^^^^^^^^^^^^^
+
+Use the checkbox located next to each serivce to override the global settings for the associated service.
+
+.. figure:: img/workspace_services.png
+   
+   Enable workspace services to provide default service description
+
+Once enabled clicking on the service link will open the settings page for the service, allowing default values for service title, abstract and other details to be supplied.
+
+.. figure:: img/workspace_wms_settings.png
+   
+   Workspace WMS Settings
+
+Clients accessing this workspace as a :ref:`virtual_services` will use the service description provided here.
+
+Security
+^^^^^^^^
+
+The Security tab allows to set data access rules at workspace level.
+
+.. note:: For more information on data access rules, please see the section on :ref:`security_webadmin_data`.
+
+.. figure:: img/data_workspaces_security_edit.png
+
+To create/edit workspace's data access rules simply check/uncheck checkboxes according to the desidered role. 
+The Grant access to any role checkbox grant each role for any access mode.
+
 Isolated Workspaces
--------------------
+^^^^^^^^^^^^^^^^^^^
 
 Isolated workspaces content is only visible and queryable in the context of a virtual service bound to the isolated workspace. This means that isolated workspaces content will not show up in global capabilities documents and global services cannot query isolated workspaces contents. Is worth mentioning that those restrictions don't apply to the REST API.
 

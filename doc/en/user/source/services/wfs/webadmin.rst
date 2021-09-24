@@ -5,10 +5,17 @@ WFS settings
 
 This page details the configuration options for WFS in the web administration interface.
 
+Workspace
+---------
+
+Select :guilabel:`workspace` empty to configure global WFS settings.
+
+See section on :ref:`workspace_services` to override settings used WCS :ref:`virtual_services`.
+
 Service Metadata
 ----------------
 
-See the section on :ref:`service_metadata`.   
+Provide a description of WFS service, see the section on :ref:`service_metadata`.
 
 Features
 --------
@@ -44,8 +51,10 @@ GeoServer is compliant with the full "Transactional Web Feature Server" (WFS-T) 
 
 **Complete** — Includes LockFeature support to the suite of transactional level operations. LockFeature operations help resolve links between related resources by processing lock requests on one or more instances of a feature type. 
 
-Configuring additional SRS
---------------------------
+
+
+Extra SRS codes for WFS capabilities generation
+-----------------------------------------------
 
 WFS 1.1.0 onwards adds the ability to reproject GetFeature output to a user specified target SRS. The list of applicable target SRS is defined on a feature type basis in the capabilities documents, and GeoServer allows reprojection to any supported SRS in its internal database. To declare that GeoServer would have to add 5000+ ``otherSRS/otherCRS`` elements per feature type, which is clearly impractical. As a result, no declaration is made by default.
 
@@ -81,6 +90,30 @@ WFS 2.0.0 request return GML 3.2 as the default format, WFS 1.1.0 requests retur
 **OGC HTTP URI** - Returns a URI that identifies each EPSG code: ``http://www.opengis.net/def/crs/EPSG/0/XXXX`` (e.g. ``http://www.opengis.net/def/crs/EPSG/0/4326``). 
 
 For each GML type, there is also an "Override GML Attributes" checkbox. Selecting this (checking the checkbox) will cause attributes to be redefined in the application schema.
+
+Override GML 3.2 MIME type
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The default MIME used for GML 3.2 encoded responses is ``application/gml+xml; version=3.2`` which is the MIME type mandated by OGC WFS 2.0 specification. This MIME type is not identified as XML by most common clients like browsers. 
+
+Option :guilabel:`Override MIME Type` allows the selection of the MIME type that should be used for the responses encoded in GML 3.2.  
+
+.. figure:: img/services_WFS_mimetype.png
+
+The available MIME types are: ``application/gml+xml; version=3.2``, ``text/xml; subtype=gml/3.2`` and ``text/xml``. 
+
+Configure XML Entity Expansion limit on WFS XML readers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+By default WFS XML readers sets Entity Expansion limit to ``100``, but it can be configured via the ``org.geoserver.wfs.xml.entityExpansionLimit`` system property, or :file:`web.xml` init parameter, or Environment variable.
+
+For example on command line we can adjust adding parameter:
+
+    -Dorg.geoserver.wfs.xml.entityExpansionLimit=50
+
+Or in Tomcat properties file (``{TOMCAT_HOME}/conf/catalina.properties``) adding the line:
+
+    org.geoserver.wfs.xml.entityExpansionLimit=50
 
 Conformance
 -----------
@@ -123,26 +156,13 @@ Stored Queries
 
 Selecting the :guilabel:`Allow Global Stored Queries` checkbox determines if global stored queries will included for usage in workspace virtual services, or not. When disabled, only stored queries created inside the workspace will be visible.
 
-Override GML 3.2 MIME type
---------------------------
+i18n Settings
+-------------
 
-The default MIME used for GML 3.2 encoded responses is ``application/gml+xml; version=3.2`` which is the MIME type mandated by OGC WFS 2.0 specification. This MIME type is not identified as XML by most common clients like browsers. 
+Select default language for WFS Service.
 
-Option :guilabel:`Override MIME Type` allows the selection of the MIME type that should be used for the responses encoded in GML 3.2.  
+.. figure:: img/i18n_default_language.png
+   
+   Default language
 
-.. figure:: img/services_WFS_mimetype.png
-
-The available MIME types are: ``application/gml+xml; version=3.2``, ``text/xml; subtype=gml/3.2`` and ``text/xml``. 
-
-Configure XML Entity Expansion limit on WFS XML readers
--------------------------------------------------------
-
-By default WFS XML readers sets Entity Expansion limit to 100, but it can be configured via the ``org.geoserver.wfs.xml.entityExpansionLimit`` system property / web.xml init parameter / Environment variable.
-
-For example on command line we can adjust adding parameter:
-
-    -Dorg.geoserver.wfs.xml.entityExpansionLimit=50
-	
-Or in Tomcat properties file (``{TOMCAT_HOME}/conf/catalina.properties``) adding the line:
-
-    org.geoserver.wfs.xml.entityExpansionLimit=50
+See :ref:`internationalization` section for a how this setting is used.

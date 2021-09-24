@@ -39,6 +39,8 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.LayerProperty;
@@ -1538,6 +1540,179 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                         .getJSONObject(0)
                         .getJSONObject("properties")
                         .get("jiffle"));
+    }
+
+    @Test
+    public void testLayerGroupStyleSingle() throws Exception {
+        LayerGroupInfo group = null;
+        Catalog catalog = getCatalog();
+        try {
+            createLakesPlacesLayerGroup(
+                    catalog, "lakes_and_places_group", LayerGroupInfo.Mode.SINGLE, null);
+            group = catalog.getLayerGroupByName("lakes_and_places_group");
+            LayerGroupStyle groupStyle = new LayerGroupStyle();
+            StyleInfo styleName = new StyleInfoImpl(getCatalog());
+            styleName.setName("nature-style");
+            groupStyle.setName(styleName);
+            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Forests"));
+            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Lakes"));
+            groupStyle.getStyles().add(null);
+            groupStyle.getStyles().add(null);
+            group.getLayerGroupStyles().add(groupStyle);
+            catalog.save(group);
+            String url =
+                    "wms?version=1.1.1&bbox=0.0000,-0.0020,0.0035,0.0010"
+                            + "&info_format=application/json&request=GetFeatureInfo"
+                            + "&WIDTH=20&HEIGHT=20&x=10&y=10"
+                            + "&layers="
+                            + group.getName()
+                            + "&query_layers="
+                            + group.getName()
+                            + "&SRS=EPSG%3A4326&styles=nature-style&FEATURE_COUNT=2";
+            JSONObject jsonResult = (JSONObject) getAsJSON(url);
+            JSONArray features = jsonResult.getJSONArray("features");
+            JSONObject f1 = features.getJSONObject(0);
+            JSONObject f2 = features.getJSONObject(1);
+            String idForest = f1.getString("id");
+            String idLake = f2.getString("id");
+            assertTrue(idForest.startsWith("Forests"));
+            assertTrue(idLake.startsWith("Lake"));
+
+        } finally {
+            if (group != null) catalog.remove(group);
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyleOpaque() throws Exception {
+        LayerGroupInfo group = null;
+        Catalog catalog = getCatalog();
+        try {
+            createLakesPlacesLayerGroup(
+                    catalog, "lakes_and_places_group", LayerGroupInfo.Mode.OPAQUE_CONTAINER, null);
+            group = catalog.getLayerGroupByName("lakes_and_places_group");
+            LayerGroupStyle groupStyle = new LayerGroupStyle();
+            StyleInfo styleName = new StyleInfoImpl(getCatalog());
+            styleName.setName("nature-style");
+            groupStyle.setName(styleName);
+            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Forests"));
+            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Lakes"));
+            groupStyle.getStyles().add(null);
+            groupStyle.getStyles().add(null);
+            group.getLayerGroupStyles().add(groupStyle);
+            catalog.save(group);
+            String url =
+                    "wms?version=1.1.1&bbox=0.0000,-0.0020,0.0035,0.0010"
+                            + "&info_format=application/json&request=GetFeatureInfo"
+                            + "&WIDTH=20&HEIGHT=20&x=10&y=10"
+                            + "&layers="
+                            + group.getName()
+                            + "&query_layers="
+                            + group.getName()
+                            + "&SRS=EPSG%3A4326&styles=nature-style&FEATURE_COUNT=2";
+            JSONObject jsonResult = (JSONObject) getAsJSON(url);
+            JSONArray features = jsonResult.getJSONArray("features");
+            JSONObject f1 = features.getJSONObject(0);
+            JSONObject f2 = features.getJSONObject(1);
+            String idForest = f1.getString("id");
+            String idLake = f2.getString("id");
+            assertTrue(idForest.startsWith("Forests"));
+            assertTrue(idLake.startsWith("Lakes"));
+
+        } finally {
+            if (group != null) catalog.remove(group);
+        }
+    }
+
+    @Test
+    public void testNestedLayerGroupWithStyle() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo nested = null;
+        LayerGroupInfo container = null;
+        try {
+            createLakesPlacesLayerGroup(
+                    catalog, "nested-lakes_and_places_group", LayerGroupInfo.Mode.SINGLE, null);
+            nested = catalog.getLayerGroupByName("nested-lakes_and_places_group");
+            LayerGroupStyle groupStyle = new LayerGroupStyle();
+            StyleInfo styleName = new StyleInfoImpl(getCatalog());
+            styleName.setName("forest-style");
+            groupStyle.setName(styleName);
+            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Forests"));
+            groupStyle.getStyles().add(null);
+            nested.getLayerGroupStyles().add(groupStyle);
+            catalog.save(nested);
+            createLakesPlacesLayerGroup(
+                    catalog, "lakes-and-place", LayerGroupInfo.Mode.SINGLE, null);
+            container = catalog.getLayerGroupByName("lakes-and-place");
+            container.getLayers().add(0, nested);
+            container.getStyles().add(0, styleName);
+            catalog.save(container);
+            String url =
+                    "wms?version=1.1.1&bbox=0.0000,-0.0020,0.0035,0.0010"
+                            + "&info_format=application/json&request=GetFeatureInfo"
+                            + "&WIDTH=20&HEIGHT=20&x=10&y=10"
+                            + "&layers="
+                            + container.getName()
+                            + "&query_layers="
+                            + container.getName()
+                            + "&SRS=EPSG%3A4326&styles=&FEATURE_COUNT=3";
+            JSONObject jsonResult = (JSONObject) getAsJSON(url);
+            JSONArray features = jsonResult.getJSONArray("features");
+            JSONObject f1 = features.getJSONObject(0);
+            JSONObject f2 = features.getJSONObject(1);
+            JSONObject f3 = features.getJSONObject(2);
+            String idForest = f1.getString("id");
+            String idLake = f2.getString("id");
+            String idPlace = f3.getString("id");
+            assertTrue(idForest.startsWith("Forests"));
+            assertTrue(idLake.startsWith("Lakes"));
+            assertTrue(idPlace.startsWith("NamedPlaces"));
+
+        } finally {
+            if (container != null) catalog.remove(container);
+            if (nested != null) catalog.remove(nested);
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyleIgnoredIfTree() throws Exception {
+        LayerGroupInfo group = null;
+        Catalog catalog = getCatalog();
+        try {
+            createLakesPlacesLayerGroup(
+                    catalog, "lakes_and_places_tree", LayerGroupInfo.Mode.NAMED, null);
+            group = catalog.getLayerGroupByName("lakes_and_places_tree");
+            LayerGroupStyle groupStyle = new LayerGroupStyle();
+            StyleInfo styleName = new StyleInfoImpl(getCatalog());
+            styleName.setName("nature-style");
+            groupStyle.setName(styleName);
+            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Forests"));
+            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Lakes"));
+            groupStyle.getStyles().add(null);
+            groupStyle.getStyles().add(null);
+            group.getLayerGroupStyles().add(groupStyle);
+            catalog.save(group);
+            String url =
+                    "wms?version=1.1.1&bbox=0.0000,-0.0020,0.0035,0.0010"
+                            + "&info_format=application/json&request=GetFeatureInfo"
+                            + "&WIDTH=20&HEIGHT=20&x=10&y=10"
+                            + "&layers="
+                            + group.getName()
+                            + "&query_layers="
+                            + group.getName()
+                            + "&SRS=EPSG%3A4326&styles=nature-style&FEATURE_COUNT=2";
+            JSONObject jsonResult = (JSONObject) getAsJSON(url);
+            JSONArray features = jsonResult.getJSONArray("features");
+            JSONObject f1 = features.getJSONObject(0);
+            JSONObject f2 = features.getJSONObject(1);
+            String idLake = f1.getString("id");
+            String idPlaces = f2.getString("id");
+            assertTrue(idLake.startsWith("Lake"));
+            assertTrue(idPlaces.startsWith("NamedPlaces"));
+
+        } finally {
+            if (group != null) catalog.remove(group);
+        }
     }
 
     @Override

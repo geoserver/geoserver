@@ -11,6 +11,7 @@ It also describes how to view the GeoServer instance status.
 
    status
    contact
+   service-metadata/index
    globalsettings
    image_processing/index
    raster_access
@@ -18,5 +19,6 @@ It also describes how to view the GeoServer instance status.
    logging
    crshandling/index
    virtual-services
+   internationalization/index
    demos/index
    tools/index

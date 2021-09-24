@@ -32,8 +32,8 @@ The overview policy has four possible values:
 While reading coverage data at a resolution lower than the one available on persistent storage its common to use subsampling, that is, read one every N pixels as a way to reduce the resolution of the data read in memory. **Use subsampling** controls wheter subsampling is enabled or not.
 
 
-Request limits
---------------
+Resource consumption limits
+---------------------------
 
 The request limit options allow the administrator to limit the resources consumed by each WCS ``GetCoverage`` request.
 
@@ -73,7 +73,15 @@ Only a few input formats are so badly structure that they force the reader to re
 * JPEG or PNG images with world file
 * Single tiled and JPEG compressed GeoTIFF files
 
+Limited SRS list
+----------------
 
+Some clients may have problems processing a GetCapabilities document listing the complete list of SRS (projections) that GeoServer supports by default. You may also find some projections are not appropriate for your data products.
 
+Use this setting to limit the default list of supported SRS (projections) for the service. This list will be used by default, individual coverages define their own list of SRS (projections).
 
+.. figure:: img/wcs_limited_srs_list.png
+   
+   Limited SRS list
 
+To limit the service to only the required projections use the :guilabel:`Limited SRS List` text box to list the desired EPSG codes separated by commas, e.g. `4326,27700` .

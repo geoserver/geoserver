@@ -301,7 +301,7 @@ public class MapMLControllerTest extends WMSTestSupport {
 
         String result = sw.toString();
         // this tests that the result has had namespaces mapped to minimum possible cruft
-        assertTrue(result.matches("<mapml xmlns=\"http://www.w3.org/1999/xhtml\">.*"));
+        assertTrue(result.matches("<mapml- xmlns=\"http://www.w3.org/1999/xhtml\">.*"));
 
         BodyContent b = mapml.getBody();
         assertNotNull("mapML method must return MapML body in response", b);
@@ -315,9 +315,11 @@ public class MapMLControllerTest extends WMSTestSupport {
         for (Object o : lo) {
             if (o instanceof Link) {
                 Link link = (Link) o;
-                assertNull("extent/link@href unexpected.", link.getHref());
-                assertNotNull("extent/link@href must not be null/empty", link.getTref());
-                assertFalse("extent/link@href must not be null/empty", link.getTref().isEmpty());
+                assertNull("map-extent/map-link@href unexpected.", link.getHref());
+                assertNotNull("map-extent/map-link@href must not be null/empty", link.getTref());
+                assertFalse(
+                        "map-extent/map-link@href must not be null/empty",
+                        link.getTref().isEmpty());
                 assertTrue(
                         "link rel for this layer group must bel image, query or tile",
                         (link.getRel() == RelType.IMAGE
@@ -334,18 +336,18 @@ public class MapMLControllerTest extends WMSTestSupport {
                                 || input.getType() == InputType.HEIGHT);
                 if (input.getType() == InputType.LOCATION && input.getAxis() == AxisType.EASTING) {
                     assertTrue(
-                            "input[type=location/@min must equal -2.0037508342789244E7",
+                            "map-input[type=location/@min must equal -2.0037508342789244E7",
                             "-2.0037508342789244E7".equalsIgnoreCase(input.getMin()));
                     assertTrue(
-                            "input[type=location/@max must equal 2.0037508342789244E7",
+                            "map-input[type=location/@max must equal 2.0037508342789244E7",
                             "2.0037508342789244E7".equalsIgnoreCase(input.getMax()));
                 } else if (input.getType() == InputType.LOCATION
                         && input.getAxis() == AxisType.NORTHING) {
                     assertTrue(
-                            "input[type=location/@min must equal -2.0037508342780735E7",
+                            "map-input[type=location/@min must equal -2.0037508342780735E7",
                             "-2.0037508342780735E7".equalsIgnoreCase(input.getMin()));
                     assertTrue(
-                            "input[type=location/@max must equal 2.003750834278071E7",
+                            "map-input[type=location/@max must equal 2.003750834278071E7",
                             "2.003750834278071E7".equalsIgnoreCase(input.getMax()));
                 }
             } else {
@@ -375,22 +377,25 @@ public class MapMLControllerTest extends WMSTestSupport {
 
         org.w3c.dom.Document doc = getMapML(path);
 
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='image'][@tref])", doc);
-        URL url = new URL(xpath.evaluate("//html:link[@rel='image']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
+        URL url = new URL(xpath.evaluate("//html:map-link[@rel='image']/@tref", doc));
         String host = url.getHost();
         assertTrue(host.equalsIgnoreCase("{s}.example.com"));
-        assertXpathEvaluatesTo("1", "count(//html:datalist[@id='servers'])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-datalist[@id='servers'])", doc);
         assertXpathEvaluatesTo(
                 "1",
-                "count(//html:input[@list='servers'][@type='hidden'][@shard='true'][@name='s'])",
+                "count(//html:map-input[@list='servers'][@type='hidden'][@shard='true'][@name='s'])",
                 doc);
-        assertXpathEvaluatesTo("3", "count(//html:datalist/html:option)", doc);
-        assertXpathEvaluatesTo("1", "count(//html:datalist/html:option[@value='server1'])", doc);
-        assertXpathEvaluatesTo("1", "count(//html:datalist/html:option[@value='server2'])", doc);
-        assertXpathEvaluatesTo("1", "count(//html:datalist/html:option[@value='server3'])", doc);
+        assertXpathEvaluatesTo("3", "count(//html:map-datalist/html:map-option)", doc);
+        assertXpathEvaluatesTo(
+                "1", "count(//html:map-datalist/html:map-option[@value='server1'])", doc);
+        assertXpathEvaluatesTo(
+                "1", "count(//html:map-datalist/html:map-option[@value='server2'])", doc);
+        assertXpathEvaluatesTo(
+                "1", "count(//html:map-datalist/html:map-option[@value='server3'])", doc);
 
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='query'][@tref])", doc);
-        url = new URL(xpath.evaluate("//html:link[@rel='query']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
+        url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
         host = url.getHost();
         assertTrue(host.equalsIgnoreCase("{s}.example.com"));
     }
@@ -406,8 +411,8 @@ public class MapMLControllerTest extends WMSTestSupport {
 
         org.w3c.dom.Document doc = getMapML(path);
 
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='image'][@tref])", doc);
-        URL url = new URL(xpath.evaluate("//html:link[@rel='image']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
+        URL url = new URL(xpath.evaluate("//html:map-link[@rel='image']/@tref", doc));
         HashMap<String, String> vars = parseQuery(url);
 
         assertTrue(vars.get("request").equalsIgnoreCase("GetMap"));
@@ -422,8 +427,8 @@ public class MapMLControllerTest extends WMSTestSupport {
         assertTrue(vars.get("transparent").equalsIgnoreCase("true"));
         assertTrue(vars.get("styles").equalsIgnoreCase(""));
 
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='query'][@tref])", doc);
-        url = new URL(xpath.evaluate("//html:link[@rel='query']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
+        url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
         vars = parseQuery(url);
 
         assertTrue(vars.get("request").equalsIgnoreCase("GetFeatureInfo"));
@@ -444,32 +449,32 @@ public class MapMLControllerTest extends WMSTestSupport {
         // make sure there's an input for each template variable
         assertXpathEvaluatesTo(
                 "1",
-                "count(//html:input[@name='xmin'][@type='location'][@units='pcrs'][@axis='easting'][@min][@max])",
+                "count(//html:map-input[@name='xmin'][@type='location'][@units='pcrs'][@axis='easting'][@min][@max])",
                 doc);
         assertXpathEvaluatesTo(
                 "1",
-                "count(//html:input[@name='ymin'][@type='location'][@units='pcrs'][@axis='northing'][@min][@max])",
+                "count(//html:map-input[@name='ymin'][@type='location'][@units='pcrs'][@axis='northing'][@min][@max])",
                 doc);
         assertXpathEvaluatesTo(
                 "1",
-                "count(//html:input[@name='xmax'][@type='location'][@units='pcrs'][@axis='easting'][@min][@max])",
+                "count(//html:map-input[@name='xmax'][@type='location'][@units='pcrs'][@axis='easting'][@min][@max])",
                 doc);
         assertXpathEvaluatesTo(
                 "1",
-                "count(//html:input[@name='ymax'][@type='location'][@units='pcrs'][@axis='northing'][@min][@max])",
+                "count(//html:map-input[@name='ymax'][@type='location'][@units='pcrs'][@axis='northing'][@min][@max])",
                 doc);
-        assertXpathEvaluatesTo("1", "count(//html:input[@name='w'][@type='width'])", doc);
-        assertXpathEvaluatesTo("1", "count(//html:input[@name='h'][@type='height'])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-input[@name='w'][@type='width'])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-input[@name='h'][@type='height'])", doc);
         assertXpathEvaluatesTo(
-                "1", "count(//html:input[@name='i'][@type='location'][@units='map'])", doc);
+                "1", "count(//html:map-input[@name='i'][@type='location'][@units='map'])", doc);
         assertXpathEvaluatesTo(
-                "1", "count(//html:input[@name='j'][@type='location'][@units='map'])", doc);
+                "1", "count(//html:map-input[@name='j'][@type='location'][@units='map'])", doc);
 
         // this is a weird one, probably should not be necessary, but if we
         // remove the requirement to have it, we will have to specify a
         // requirement to specify a zoom range via a <meta> element
         assertXpathEvaluatesTo(
-                "1", "count(//html:input[@name='z'][@type='zoom'][@min][@max])", doc);
+                "1", "count(//html:map-input[@name='z'][@type='zoom'][@min][@max])", doc);
     }
 
     @Test
@@ -482,7 +487,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                         + "/osmtile/";
 
         org.w3c.dom.Document doc = getMapML(path);
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='image'][@tref])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
 
         // set up mapml layer to useTiles
         Catalog catalog = getCatalog();
@@ -494,8 +499,8 @@ public class MapMLControllerTest extends WMSTestSupport {
 
         doc = getMapML(path);
 
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='tile'][@tref])", doc);
-        URL url = new URL(xpath.evaluate("//html:link[@rel='tile']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='tile'][@tref])", doc);
+        URL url = new URL(xpath.evaluate("//html:map-link[@rel='tile']/@tref", doc));
         HashMap<String, String> vars = parseQuery(url);
 
         assertTrue(vars.get("request").equalsIgnoreCase("GetMap"));
@@ -510,8 +515,8 @@ public class MapMLControllerTest extends WMSTestSupport {
         assertTrue(vars.get("transparent").equalsIgnoreCase("true"));
         assertTrue(vars.get("styles").equalsIgnoreCase(""));
 
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='query'][@tref])", doc);
-        url = new URL(xpath.evaluate("//html:link[@rel='query']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
+        url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
         vars = parseQuery(url);
 
         assertTrue(vars.get("request").equalsIgnoreCase("GetFeatureInfo"));
@@ -531,30 +536,30 @@ public class MapMLControllerTest extends WMSTestSupport {
 
         // make sure there's an input for each template variable
         String xpath =
-                "count(//html:input[@name='txmin'][@type='location'][@units='tilematrix'][@axis='easting'][@min][@max])";
+                "count(//html:map-input[@name='txmin'][@type='location'][@units='tilematrix'][@axis='easting'][@min][@max])";
         assertXpathEvaluatesTo("1", xpath, doc);
         xpath =
-                "count(//html:input[@name='tymin'][@type='location'][@units='tilematrix'][@axis='northing'][@min][@max])";
+                "count(//html:map-input[@name='tymin'][@type='location'][@units='tilematrix'][@axis='northing'][@min][@max])";
         assertXpathEvaluatesTo("1", xpath, doc);
         xpath =
-                "count(//html:input[@name='txmax'][@type='location'][@units='tilematrix'][@axis='easting'][@min][@max])";
+                "count(//html:map-input[@name='txmax'][@type='location'][@units='tilematrix'][@axis='easting'][@min][@max])";
         assertXpathEvaluatesTo("1", xpath, doc);
         xpath =
-                "count(//html:input[@name='tymax'][@type='location'][@units='tilematrix'][@axis='northing'][@min][@max])";
+                "count(//html:map-input[@name='tymax'][@type='location'][@units='tilematrix'][@axis='northing'][@min][@max])";
         assertXpathEvaluatesTo("1", xpath, doc);
-        xpath = "count(//html:input[@name='w'][@type='width'])";
+        xpath = "count(//html:map-input[@name='w'][@type='width'])";
         assertXpathEvaluatesTo("0", xpath, doc);
-        xpath = "count(//html:input[@name='h'][@type='height'])";
+        xpath = "count(//html:map-input[@name='h'][@type='height'])";
         assertXpathEvaluatesTo("0", xpath, doc);
-        xpath = "count(//html:input[@name='i'][@type='location'][@units='tile'])";
+        xpath = "count(//html:map-input[@name='i'][@type='location'][@units='tile'])";
         assertXpathEvaluatesTo("1", xpath, doc);
-        xpath = "count(//html:input[@name='j'][@type='location'][@units='tile'])";
+        xpath = "count(//html:map-input[@name='j'][@type='location'][@units='tile'])";
         assertXpathEvaluatesTo("1", xpath, doc);
 
         // this is a weird one, probably should not be necessary, but if we
         // remove the requirement to have it, we will have to specify a
         // requirement to specify a zoom range via a <meta> element
-        xpath = "count(//html:input[@name='z'][@type='zoom'][@min][@max])";
+        xpath = "count(//html:map-input[@name='z'][@type='zoom'][@min][@max])";
         assertXpathEvaluatesTo("1", xpath, doc);
     }
 
@@ -568,7 +573,7 @@ public class MapMLControllerTest extends WMSTestSupport {
                         + "/osmtile/";
 
         org.w3c.dom.Document doc = getMapML(path);
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='image'][@tref])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
 
         // set up mapml layer to useTiles
         Catalog catalog = getCatalog();
@@ -586,8 +591,8 @@ public class MapMLControllerTest extends WMSTestSupport {
                 MockData.ROAD_SEGMENTS.getPrefix() + ":" + MockData.ROAD_SEGMENTS.getLocalPart();
 
         doc = getMapML(path);
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='tile'][@tref])", doc);
-        URL url = new URL(xpath.evaluate("//html:link[@rel='tile']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='tile'][@tref])", doc);
+        URL url = new URL(xpath.evaluate("//html:map-link[@rel='tile']/@tref", doc));
         HashMap<String, String> vars = parseQuery(url);
         assertTrue(vars.get("request").equalsIgnoreCase("GetTile"));
         assertTrue(vars.get("service").equalsIgnoreCase("WMTS"));
@@ -600,8 +605,8 @@ public class MapMLControllerTest extends WMSTestSupport {
         assertTrue(vars.get("TileCol").equalsIgnoreCase("{x}"));
         assertTrue(vars.get("style").equalsIgnoreCase(""));
 
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='query'][@tref])", doc);
-        url = new URL(xpath.evaluate("//html:link[@rel='query']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
+        url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
         vars = parseQuery(url);
 
         assertTrue(vars.get("request").equalsIgnoreCase("GetFeatureInfo"));
@@ -621,20 +626,20 @@ public class MapMLControllerTest extends WMSTestSupport {
         // make sure there's an input for each template variable
         assertXpathEvaluatesTo(
                 "1",
-                "count(//html:input[@name='x'][@type='location'][@units='tilematrix'][@axis='column'][@min][@max])",
+                "count(//html:map-input[@name='x'][@type='location'][@units='tilematrix'][@axis='column'][@min][@max])",
                 doc);
         assertXpathEvaluatesTo(
                 "1",
-                "count(//html:input[@name='y'][@type='location'][@units='tilematrix'][@axis='row'][@min][@max])",
+                "count(//html:map-input[@name='y'][@type='location'][@units='tilematrix'][@axis='row'][@min][@max])",
                 doc);
-        assertXpathEvaluatesTo("0", "count(//html:input[@name='w'][@type='width'])", doc);
-        assertXpathEvaluatesTo("0", "count(//html:input[@name='h'][@type='height'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-input[@name='w'][@type='width'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-input[@name='h'][@type='height'])", doc);
         assertXpathEvaluatesTo(
-                "1", "count(//html:input[@name='i'][@type='location'][@units='tile'])", doc);
+                "1", "count(//html:map-input[@name='i'][@type='location'][@units='tile'])", doc);
         assertXpathEvaluatesTo(
-                "1", "count(//html:input[@name='j'][@type='location'][@units='tile'])", doc);
+                "1", "count(//html:map-input[@name='j'][@type='location'][@units='tile'])", doc);
         assertXpathEvaluatesTo(
-                "1", "count(//html:input[@name='z'][@type='zoom'][@min][@max])", doc);
+                "1", "count(//html:map-input[@name='z'][@type='zoom'][@min][@max])", doc);
     }
 
     @Test
@@ -669,10 +674,10 @@ public class MapMLControllerTest extends WMSTestSupport {
         vars.put("x", "10");
         vars.put("y", "10");
         org.w3c.dom.Document doc = getMapML("wms", vars);
-        assertXpathEvaluatesTo("1", "count(//html:feature)", doc);
-        assertXpathEvaluatesTo("1", "count(//html:featurecaption)", doc);
-        assertXpathEvaluatesTo("1", "count(//html:geometry)", doc);
-        assertXpathEvaluatesTo("1", "count(//html:properties)", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-feature)", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-featurecaption)", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-geometry)", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-properties)", doc);
     }
 
     @Test
@@ -702,9 +707,9 @@ public class MapMLControllerTest extends WMSTestSupport {
 
         org.w3c.dom.Document doc = getMapML(path);
 
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='image'][@tref])", doc);
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='query'][@tref])", doc);
-        URL url = new URL(xpath.evaluate("//html:link[@rel='query']/@tref", doc));
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='query'][@tref])", doc);
+        URL url = new URL(xpath.evaluate("//html:map-link[@rel='query']/@tref", doc));
         HashMap<String, String> vars = parseQuery(url);
 
         assertTrue(vars.get("request").equalsIgnoreCase("GetFeatureInfo"));
@@ -730,13 +735,13 @@ public class MapMLControllerTest extends WMSTestSupport {
         vars.put("y", "213");
 
         doc = getMapML("wms", vars);
-        assertXpathEvaluatesTo("2", "count(//html:feature)", doc);
+        assertXpathEvaluatesTo("2", "count(//html:map-feature)", doc);
         // empty attributes (such as ID in this case - all empty) won't be used
-        assertXpathEvaluatesTo("0", "count(//html:featurecaption)", doc);
-        assertXpathEvaluatesTo("", "//html:feature/html:geometry/@cs", doc);
-        assertXpathEvaluatesTo("2", "count(//html:feature//html:polygon[1])", doc);
-        assertXpathEvaluatesTo("1", "count(//html:meta[@name='projection'])", doc);
-        assertXpathEvaluatesTo("1", "count(//html:meta[@name='cs'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-featurecaption)", doc);
+        assertXpathEvaluatesTo("", "//html:map-feature/html:map-geometry/@cs", doc);
+        assertXpathEvaluatesTo("2", "count(//html:map-feature//html:map-polygon[1])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-meta[@name='projection'])", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-meta[@name='cs'])", doc);
     }
 
     /**

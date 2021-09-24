@@ -38,10 +38,10 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "datalist", namespace = "http://www.w3.org/1999/xhtml")
+@XmlRootElement(name = "map-datalist", namespace = "http://www.w3.org/1999/xhtml")
 public class Datalist {
 
-    @XmlElement(name = "option", required = true)
+    @XmlElement(name = "map-option", required = true)
     protected List<Option> options;
 
     @XmlAttribute(name = "id")

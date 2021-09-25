@@ -70,7 +70,7 @@ public class MapResponseMessageConverter extends MessageConverterResponseAdapter
     public boolean canWrite(Object value, MediaType mediaType) {
         if (!(value instanceof WebMap)) return false;
         WebMap map = (WebMap) value;
-        return getResponse(mediaType) != null
+        return getResponse(mediaType).isPresent()
                 && (map.getMimeType() == null
                         || MediaType.parseMediaType(map.getMimeType()).isCompatibleWith(mediaType));
     }

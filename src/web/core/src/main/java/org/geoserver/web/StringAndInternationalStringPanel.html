@@ -3,14 +3,15 @@
 <head />
 <body>
 <wicket:panel>
-    <ul>
+    <ul class="i18n-text" >
         <li>
-            <br/>
-            <span wicket:id="labelContainer">
-                  <label style="float:left" wicket:id="stringLabel" />
-                  <input style="float:left" type="checkbox" wicket:id="labelContainer_i18nCheckbox" />
-                  <wicket:message key="i18nCheckBox">i18n</wicket:message>
-               </span>
+            <span wicket:id="labelContainer" class="selfclear">
+                  <label class="leftwise" wicket:id="stringLabel" />
+                  <span class="leftwise" >
+                    <input type="checkbox" wicket:id="labelContainer_i18nCheckbox" />
+                    <wicket:message key="i18nCheckBox">i18n</wicket:message>
+                  </span>
+            </span>
         </li>
         <li>
             <input class="text" type="text" wicket:id="stringField" />

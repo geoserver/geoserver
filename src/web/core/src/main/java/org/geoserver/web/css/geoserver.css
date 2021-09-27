@@ -925,6 +925,19 @@ padding-top: 18px;
 .page-footer {
 padding-top: 1em;
 }
+/* action group above tables */
+.action-group li {
+  display: inline;
+}
+
+/* internationalization */
+.i18n-panel {
+  margin-bottom: 5px;
+}
+
+.i18n-panel td {
+  vertical-align: top;
+}
 
 /* button bar in forms */
 .toolbar-sticky {

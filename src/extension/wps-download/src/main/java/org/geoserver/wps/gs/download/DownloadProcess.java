@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.Interpolation;
 import javax.media.jai.JAI;
+import org.apache.commons.io.FilenameUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -72,6 +73,8 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
 
     private ApplicationContext context;
 
+    private static final String ZIP = "application/zip";
+
     /**
      * Instantiates a new download process.
      *
@@ -128,7 +131,7 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
     @DescribeResult(
         name = "result",
         description = "The produced download",
-        meta = {"mimeTypes=image/tiff, application/zip", "chosenMimeType=resultFormat"}
+        meta = {"mimeTypes=image/tiff, " + ZIP, "chosenMimeType=resultFormat"}
     )
     public RawData execute(
             @DescribeParameter(
@@ -422,15 +425,20 @@ public class DownloadProcess implements GeoServerProcess, ApplicationContextAwar
                                 + internalOutput.path());
             }
             String subType = MimeType.valueOf(mimeType).getSubtype();
-            if (resultFormat != null && !resultFormat.equalsIgnoreCase("application/zip")) {
+            if (!ZIP.equalsIgnoreCase(resultFormat)) {
+                // The PPIO encoding the output should have used the proper file extension.
+                // Let's extract that from there since we don't have access here to the PPIO.
+                String path = internalOutput.path();
+                String extension = FilenameUtils.getExtension(path);
                 ResourceRawData rawData =
-                        new ResourceRawData(internalOutput, resultFormat, subType);
+                        new ResourceRawData(internalOutput, resultFormat, extension);
                 if (progressListener != null) {
                     progressListener.complete();
                 }
                 return rawData;
             } else {
-                resultFormat = "application/zip";
+                resultFormat = ZIP;
+                subType = "zip";
             }
             // adding the style and zipping
             if (LOGGER.isLoggable(Level.FINE)) {

@@ -1,7 +1,4 @@
 {
-  "$options": {
-    "encode_as_string": true
-  },
   "@context": {
     "gsp": "http://www.opengis.net/ont/geosparql#",
     "sf": "http://www.opengis.net/ont/sf#",
@@ -89,10 +86,7 @@
           }
         ]
       },
-      "geometry": {
-        "@type": "Polygon",
-        "wkt": "$${toWKT(xpath('gsml:shape'))}"
-      }
+      "geometry": "${gsml:shape}"
     }
   ]
 }

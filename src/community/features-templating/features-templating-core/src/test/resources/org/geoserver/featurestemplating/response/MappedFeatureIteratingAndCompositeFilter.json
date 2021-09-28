@@ -1,4 +1,7 @@
 {
+  "$options": {
+    "encode_as_string": true
+  },
   "@context":[
     "http://www.opengis.net/url1",
     "http://www.opengis.net/url2",

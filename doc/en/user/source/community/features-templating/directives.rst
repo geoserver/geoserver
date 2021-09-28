@@ -39,8 +39,8 @@ The following are the directives available in JSON based templates.
      - specify it inside the first nested object in arrays (:code:`{"$filter":"condition"}`) or as an attribute in objects (:code:`"$filter":"condition"`) or in an attribute next to the attribute value separated by a :code:`,` (:code:`"attribute":"$filter{condition}, ${property}"`)
    * - defines options to customize the output outside of a feature scope
      - $options
-     - specify it at the top of the JSON template as a JSON object (GeoJSON options: :code:`"$options":{"flat_output":true, "separator":"."}`; JSON-LD options: :code:`"$options":{"@context": "the context json"}`).
-   * - allows to include a template into another
+     - specify it at the top of the JSON template as a JSON object (GeoJSON options: :code:`"$options":{"flat_output":true, "separator":"."}`; JSON-LD options: :code:`"$options":{"@context": "the context json", "encode_as_string": true}`).
+   * - allows including a template into another
      - $include, $includeFlat
      - specify the :code:`$include` option as an attribute value (:code:`"attribute":"$include{subProperty.json}"`) and the :code:`$includeFlat` as an attribute name with the included template path as a value (:code:`"$includeFlat":"included.json"`)
    * - allows a template to extend another template
@@ -711,6 +711,7 @@ To accomplish this requirement it is possible to specify the :code:`@context` as
 
   {
    "$options":{
+      "encode_as_string": true,
       "@context":[
          "https://opengeospatial.github.io/ELFIE/contexts/elfie-2/elf-index.jsonld",
          "https://opengeospatial.github.io/ELFIE/contexts/elfie-2/gwml2.jsonld",
@@ -827,6 +828,7 @@ The :code:`@context` will show up at the beginning of the JSON-LD output:
    ]
  }
 
+The above template defines, along with the :code:`@context`, also the :code:`option` :code:`encode_as_string`. The option is used to request a JSON-LD output where all the attributes are encoded as text. By default attributes are instead encoded as in :code:`GeoJSON` output format.
 
 When dealing with a GetFeatureInfo request over a LayerGroup asking for a JSON-LD output the plug-in will perform a union of the JSON-LD :code:`@context` (when different) defined in the template of each containted layer. This means that in case of conflicting attributes name the attributes name will override each other according to the processing order of the layers.
 The user can prevent this behaviour by taking advantage of the  :code:`include` directive, explained below, defining a single :code:`@context` included in the template of each contained layer. In this way all the layer will share the same context definition.

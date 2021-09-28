@@ -73,6 +73,7 @@ import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
 import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.SecuredResourceNameChangeListener;
@@ -119,6 +120,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
 
     @Before
     public void setUp() throws Exception {
+        GeoServerExtensionsHelper.setIsSpringContext(false);
         catalog = createCatalog();
         catalog.setResourceLoader(new GeoServerResourceLoader());
 

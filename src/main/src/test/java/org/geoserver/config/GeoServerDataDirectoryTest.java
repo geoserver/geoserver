@@ -16,13 +16,16 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogFactoryImpl;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geotools.styling.ExternalGraphic;
 import org.geotools.styling.PointSymbolizer;
 import org.geotools.styling.Style;
 import org.geotools.styling.Symbolizer;
 import org.geotools.util.Version;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.style.GraphicalSymbol;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -32,11 +35,21 @@ public class GeoServerDataDirectoryTest {
     ClassPathXmlApplicationContext ctx;
 
     GeoServerDataDirectory dataDir;
-    CatalogFactory factory = new CatalogFactoryImpl(new CatalogImpl());
+    static CatalogFactory factory;
+
+    @BeforeClass
+    public static void beforeClass() {
+        GeoServerExtensionsHelper.setIsSpringContext(false);
+        factory = new CatalogFactoryImpl(new CatalogImpl());
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        factory = null;
+    }
 
     @Before
     public void setUp() throws Exception {
-
         ctx =
                 new ClassPathXmlApplicationContext(
                         "GeoServerDataDirectoryTest-applicationContext.xml", getClass());

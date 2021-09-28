@@ -66,6 +66,7 @@ import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.WFSPPIO;
 import org.geoserver.wps.ppio.ZipArchivePPIO;
 import org.geoserver.wps.process.RawData;
+import org.geoserver.wps.process.ResourceRawData;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -382,7 +383,7 @@ public class DownloadProcessTest extends WPSTestSupport {
     }
 
     @Test
-    public void testGetFeaturesAsGeoPackage() throws Exception {
+    public void testGetFeaturesAsGeoPackageZipped() throws Exception {
         // Creates the new process for the download
         DownloadProcess downloadProcess = createDefaultTestingDownloadProcess();
 
@@ -404,12 +405,40 @@ public class DownloadProcessTest extends WPSTestSupport {
                         new AutoCloseableResource(getResourceManager(), gpkgZip);
                 InputStream is = new FileInputStream(resource.getFile());
                 GeoPackage geoPackage = decodeGeoPackage(is)) {
+
+            // Making sure the provided file has the expected file extension
+            assertExpectedExtension(gpkgZip, "zip");
+
             FeatureEntry entry = geoPackage.feature("Polygons");
             assertNotNull(entry);
             try (SimpleFeatureReader reader =
                     geoPackage.reader(entry, Filter.INCLUDE, Transaction.AUTO_COMMIT)) {
                 assertEquals(rawSource.size(), DataUtilities.collection(reader).size());
             }
+        }
+    }
+
+    @Test
+    public void testGetFeaturesAsGeoPackageExtension() throws Exception {
+        // Creates the new process for the download
+        DownloadProcess downloadProcess = createDefaultTestingDownloadProcess();
+
+        RawData gpkg =
+                executeVectorDownload(
+                        downloadProcess,
+                        MockData.POLYGONS,
+                        GeopkgVectorPPIO.MIME_TYPE,
+                        GeopkgVectorPPIO.MIME_TYPE,
+                        "EPSG:32615",
+                        roi,
+                        false);
+
+        try (AutoCloseableResource resource =
+                new AutoCloseableResource(getResourceManager(), gpkg)) {
+
+            // Simply check that the output is in the expected format.
+            // No need to validate the data, being done on another test
+            assertExpectedExtension(gpkg, "gpkg");
         }
     }
 
@@ -723,6 +752,8 @@ public class DownloadProcessTest extends WPSTestSupport {
                         new AutoDisposableGeoTiffReader(resource.getFile());
                 AutoDisposableGridCoverage2D gc = reader.read()) {
 
+            assertExpectedExtension(raster, "tiff");
+
             Assert.assertEquals(
                     -130.88669845369998, gc.getEnvelope().getLowerCorner().getOrdinate(0), DELTA);
             Assert.assertEquals(
@@ -892,6 +923,9 @@ public class DownloadProcessTest extends WPSTestSupport {
         try (AutoCloseableResource resource = new AutoCloseableResource(resourceManager, raster);
                 GeoPackage gpkg = new GeoPackage(resource.getFile())) {
 
+            // Making sure the provided file has the expected file extension
+            assertExpectedExtension(raster, "gpkg");
+
             TileEntry entry = gpkg.tile(MockData.USA_WORLDIMG.getLocalPart());
             assertNotNull(entry);
             ReferencedEnvelope bounds = entry.getBounds();
@@ -931,6 +965,49 @@ public class DownloadProcessTest extends WPSTestSupport {
                 assertEquals(256, image.getHeight());
             }
         }
+    }
+
+    @Test
+    public void testDownloadRasterGeoPackageInZippedFormat() throws Exception {
+        final WPSResourceManager resourceManager = getResourceManager();
+
+        // Creates the new process for the download
+        DownloadProcess downloadProcess = createDefaultTestingDownloadProcess(resourceManager);
+
+        // Download the coverage as GeoPackage (Not reprojected)
+        RawData raster =
+                downloadProcess.execute(
+                        getLayerId(MockData.USA_WORLDIMG), // layerName
+                        null, // filter
+                        GeopkgPPIO.MIME_TYPE, // mimeType
+                        "application/zip", // resultFormat
+                        null, // targetCRS
+                        WGS84, // roiCRS
+                        null, // roi
+                        true, // cropToGeometry
+                        null, // interpolation
+                        null, // targetSizeX
+                        null, // targetSizeY
+                        null, // bandSelectIndices
+                        null, // Writing params
+                        false,
+                        false,
+                        0d,
+                        null,
+                        new NullProgressListener() // progressListener
+                        );
+
+        try (AutoCloseableResource resource = new AutoCloseableResource(resourceManager, raster)) {
+            // Simply check that the output is in the expected format.
+            // No need to validate the data, being done on another test
+            assertExpectedExtension(raster, "zip");
+        }
+    }
+
+    private void assertExpectedExtension(RawData raster, String extension) {
+        assertEquals("org.geoserver.wps.process.ResourceRawData", raster.getClass().getName());
+        ResourceRawData rrd = (ResourceRawData) raster;
+        assertEquals(extension, rrd.getFileExtension());
     }
 
     /**

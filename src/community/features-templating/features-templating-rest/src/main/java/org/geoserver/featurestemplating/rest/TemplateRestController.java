@@ -31,6 +31,7 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.featurestemplating.configuration.TemplateFileManager;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
 import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
+import org.geoserver.featurestemplating.configuration.TemplateService;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.ResourceNotFoundException;
 import org.geoserver.rest.RestBaseController;
@@ -347,8 +348,7 @@ public class TemplateRestController extends AbstractCatalogController {
         try {
             byte[] rawData = IOUtils.toByteArray(inputStream);
             String content = new String(rawData, Charset.defaultCharset());
-            TemplateFileManager.get().saveTemplateFile(info, content);
-            TemplateInfoDAO.get().saveOrUpdate(info);
+            new TemplateService().saveOrUpdate(info, content);
         } catch (IOException e) {
             throw new RestException(
                     "Error while writing the template", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -382,8 +382,7 @@ public class TemplateRestController extends AbstractCatalogController {
         String fullName = buildFullName(ws, featureType, templateName);
         TemplateInfoDAO dao = TemplateInfoDAO.get();
         TemplateInfo info = dao.findByFullName(fullName);
-        TemplateFileManager.get().delete(info);
-        dao.delete(info);
+        new TemplateService().delete(info);
         LOGGER.info("Deleted template with name " + info.getFullName());
     }
 

@@ -3,24 +3,33 @@ package org.geoserver.featurestemplating.web;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.commons.httpclient.HttpClient;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.protocol.http.mock.MockHttpServletRequest;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
+import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
+import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.configuration.SupportedFormat;
-import org.geoserver.featurestemplating.configuration.Template;
 import org.geoserver.featurestemplating.configuration.TemplateFileManager;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
 import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
+import org.geoserver.featurestemplating.configuration.TemplateLoader;
+import org.geoserver.featurestemplating.configuration.TemplateRule;
+import org.geoserver.featurestemplating.configuration.TemplateRuleService;
+import org.geoserver.featurestemplating.configuration.TemplateService;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerWicketTestSupport;
@@ -29,9 +38,6 @@ import org.junit.Test;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-
-import java.util.List;
 
 public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
 
@@ -236,7 +242,6 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
                     + "    </li>\n"
                     + "  </ul>\n"
                     + "</gft:Template>";
-
 
     private static final String GML_STATIC_TEMPLATE =
             "<gft:Template>\n"
@@ -498,7 +503,8 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testPreviewRequestCanSendJsessionId() {
         // tests that the http client requesting a wfs preview
-        // is able to send the JSESSIONID cookie to authenticate the wfs request according to the user
+        // is able to send the JSESSIONID cookie to authenticate the wfs request according to the
+        // user
         // preview the template fromUI.
         TemplateInfo info = new TemplateInfo();
         info.setWorkspace("cite");
@@ -508,8 +514,9 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
         TemplateFileManager.get().saveTemplateFile(info, GML_STATIC_TEMPLATE);
         try {
             login();
-            MockHttpServletRequest request=(MockHttpServletRequest) GeoServerApplication.get().servletRequest();
-            RequestAttributes requestAttributes=new ServletRequestAttributes(request);
+            MockHttpServletRequest request =
+                    (MockHttpServletRequest) GeoServerApplication.get().servletRequest();
+            RequestAttributes requestAttributes = new ServletRequestAttributes(request);
             RequestContextHolder.setRequestAttributes(requestAttributes);
             tester.startPage(new TemplateConfigurationPage(new Model<>(info), false));
             tester.assertModelValue("theForm:tabbedPanel:panel:templateName", "testGMLTemplate");
@@ -546,14 +553,21 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
             form2.select("featureTypes", 0);
 
             // checks that the JSESSIONID has been picked up by the HttpClient.
-            TemplatePreviewPanel previewPanel=(TemplatePreviewPanel)tester.getComponentFromLastRenderedPage("theForm:tabbedPanel:panel");
-            List<Cookie> httpCookies=getCookiesFromPreviewRequest(previewPanel);
-            Cookie cookie=httpCookies.stream().filter(c->c.getName().equals("JSESSIONID")).findFirst().get();
+            TemplatePreviewPanel previewPanel =
+                    (TemplatePreviewPanel)
+                            tester.getComponentFromLastRenderedPage("theForm:tabbedPanel:panel");
+            List<Cookie> httpCookies = getCookiesFromPreviewRequest(previewPanel);
+            Cookie cookie =
+                    httpCookies
+                            .stream()
+                            .filter(c -> c.getName().equals("JSESSIONID"))
+                            .findFirst()
+                            .get();
             assertNotNull(cookie);
-            assertEquals(requestAttributes.getSessionId(),cookie.getValue());
-
+            assertEquals(requestAttributes.getSessionId(), cookie.getValue());
 
             tester.newFormTester("theForm").submit("save");
+
             tester.assertNoErrorMessage();
             tester.assertRenderedPage(TemplateInfoPage.class);
         } finally {
@@ -561,9 +575,75 @@ public class TemplateConfigurationPageTest extends GeoServerWicketTestSupport {
         }
     }
 
-    private List<Cookie> getCookiesFromPreviewRequest(TemplatePreviewPanel previewPanel){
-            CookieStore cookieStore=new PropertyModel<CookieStore>(previewPanel.buildHttpClient(),"cookieStore").getObject();
-            return cookieStore.getCookies();
+    private List<Cookie> getCookiesFromPreviewRequest(TemplatePreviewPanel previewPanel) {
+        CookieStore cookieStore =
+                new PropertyModel<CookieStore>(previewPanel.buildHttpClient(), "cookieStore")
+                        .getObject();
+        return cookieStore.getCookies();
+    }
 
+    @Test
+    public void testCacheCleanedOnTemplateUpdate() throws ExecutionException {
+        try {
+            // save a template
+            TemplateInfo info = new TemplateInfo();
+            info.setWorkspace("cite");
+            info.setFeatureType("NamedPlaces");
+            info.setTemplateName("testJsonLDTemplate");
+            info.setExtension("json");
+            TemplateService service = new TemplateService();
+            service.saveOrUpdate(info, JSON_TEMPLATE);
+
+            // create rule and add it to a FeatureType
+            TemplateRule rule = new TemplateRule();
+            rule.setTemplateIdentifier(info.getIdentifier());
+            rule.setTemplateName(info.getFullName());
+            rule.setOutputFormat(SupportedFormat.JSONLD);
+            FeatureTypeInfo fti = getCatalog().getFeatureTypeByName("cite", "NamedPlaces");
+            TemplateRuleService ruleService = new TemplateRuleService(fti);
+            ruleService.saveRule(rule);
+
+            // request the template to make user the cache load it
+            Request request = new Request();
+            request.setOutputFormat(TemplateIdentifier.JSONLD.getOutputFormat());
+            Dispatcher.REQUEST.set(request);
+
+            RootBuilder builder =
+                    TemplateLoader.get()
+                            .getTemplate(fti, TemplateIdentifier.JSONLD.getOutputFormat());
+            assertNotNull(builder);
+            IteratingBuilder iteratingBuilder = (IteratingBuilder) builder.getChildren().get(0);
+            assertNotNull(iteratingBuilder.getStrSource());
+
+            // from UI move the template to the ws folder and change its content
+            login();
+            tester.startPage(new TemplateConfigurationPage(new Model<>(info), false));
+            tester.assertModelValue("theForm:tabbedPanel:panel:templateName", "testJsonLDTemplate");
+            tester.assertModelValue("theForm:tabbedPanel:panel:extension", "json");
+            tester.assertModelValue("theForm:tabbedPanel:panel:workspace", "cite");
+            DropDownChoice dropDownChoice =
+                    (DropDownChoice)
+                            tester.getComponentFromLastRenderedPage(
+                                    "theForm:tabbedPanel:panel:featureTypeInfo");
+            dropDownChoice.setModelObject(null);
+            FormTester ft = tester.newFormTester("theForm");
+            ft.setValue(
+                    "templateEditor:editorContainer:editorParent:editor", "{\"static\":\"value\"}");
+            ft.submit("save");
+            tester.assertNoErrorMessage();
+            tester.assertRenderedPage(TemplateInfoPage.class);
+
+            // retry to get the template. The builder tree should now be modified accordingly to the
+            // new template content.
+            RootBuilder rootBuilder =
+                    TemplateLoader.get()
+                            .getTemplate(fti, TemplateIdentifier.JSONLD.getOutputFormat());
+            assertNotNull(rootBuilder);
+            CompositeBuilder compositeBuilder = (CompositeBuilder) rootBuilder.getChildren().get(0);
+            assertNull(compositeBuilder.getStrSource());
+        } finally {
+            TemplateInfoDAO.get().deleteAll();
+            Dispatcher.REQUEST.set(null);
+        }
     }
 }

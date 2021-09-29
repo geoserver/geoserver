@@ -27,7 +27,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.featurestemplating.configuration.TemplateFileManager;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
-import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
+import org.geoserver.featurestemplating.configuration.TemplateService;
 import org.geoserver.platform.exception.GeoServerException;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.web.GeoServerSecuredPage;
@@ -207,8 +207,7 @@ public class TemplateConfigurationPage extends GeoServerSecuredPage {
     }
 
     void saveTemplateInfo(TemplateInfo templateInfo, String rawTemplate) {
-        TemplateFileManager.get().saveTemplateFile(templateInfo, rawTemplate);
-        TemplateInfoDAO.get().saveOrUpdate(templateInfo);
+        new TemplateService().saveOrUpdate(templateInfo, rawTemplate);
     }
 
     public CodeMirrorEditor getEditor() {

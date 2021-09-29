@@ -14,7 +14,6 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +56,7 @@ import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
 import org.geoserver.featurestemplating.configuration.TemplateLayerConfig;
+import org.geoserver.featurestemplating.configuration.TemplateLoader;
 import org.geoserver.featurestemplating.configuration.TemplateRule;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
@@ -275,7 +275,7 @@ public class TemplatePreviewPanel extends Panel {
         return ResponseUtils.baseURL(req);
     }
 
-    private HttpServletRequest request(){
+    private HttpServletRequest request() {
         return GeoServerApplication.get().servletRequest();
     }
 
@@ -340,8 +340,13 @@ public class TemplatePreviewPanel extends Panel {
                     @Override
                     protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
                         FeatureTypeInfo featureTypeInfo = featureTypesDD.getModelObject();
-                        if (featureTypeInfo != null) removeTemplatePreviewRule(featureTypeInfo);
-
+                        if (featureTypeInfo != null) {
+                            // clean cache
+                            TemplateInfo ti = page.getTemplateInfoModel().getObject();
+                            TemplateLoader.get().cleanCache(featureTypeInfo, ti.getIdentifier());
+                            // remove the rule
+                            removeTemplatePreviewRule(featureTypeInfo);
+                        }
                         if (previewEditor.hasFeedbackMessage()) {
                             target.add(previewFeedback);
                         }
@@ -395,20 +400,27 @@ public class TemplatePreviewPanel extends Panel {
     CloseableHttpClient buildHttpClient() {
         RequestConfig clientConfig =
                 RequestConfig.custom().setConnectTimeout(60000).setSocketTimeout(60000).build();
-        CookieStore cookieStore=new BasicCookieStore();
-        RequestAttributes attributes=RequestContextHolder.getRequestAttributes();
-        if (attributes!=null) {
-            BasicClientCookie cookie = new BasicClientCookie("JSESSIONID", attributes.getSessionId());
+        CookieStore cookieStore = new BasicCookieStore();
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        if (attributes != null) {
+            BasicClientCookie cookie =
+                    new BasicClientCookie("JSESSIONID", attributes.getSessionId());
             HttpServletRequest request = request();
             cookie.setPath(request.getContextPath());
-            Calendar calendar = Calendar.getInstance(); // gets a calendar using the default time zone and locale.
-            int maxInactive=request.getSession().getMaxInactiveInterval();
-            calendar.add(Calendar.SECOND, maxInactive>0?maxInactive:30);
+            // gets a calendar using the default time zone and locale.
+            Calendar calendar = Calendar.getInstance();
+
+            // use the session timeout to set the JSESSIONID cookie timeout
+            int maxInactive = request.getSession().getMaxInactiveInterval();
+            calendar.add(Calendar.SECOND, maxInactive > 0 ? maxInactive : 30);
             cookie.setExpiryDate(calendar.getTime());
             cookie.setDomain(request.getServerName());
             cookieStore.addCookie(cookie);
         }
-        return HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).setDefaultCookieStore(cookieStore).build();
+        return HttpClientBuilder.create()
+                .setDefaultRequestConfig(clientConfig)
+                .setDefaultCookieStore(cookieStore)
+                .build();
     }
 
     private String performWfsRequest(String url) {

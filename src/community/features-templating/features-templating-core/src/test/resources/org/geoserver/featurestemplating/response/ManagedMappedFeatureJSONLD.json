@@ -1,5 +1,6 @@
 {
   "$options": {
+    "encode_as_string": true,
     "@context": {
       "gsp": "http://www.opengis.net/ont/geosparql#",
       "sf": "http://www.opengis.net/ont/sf#",

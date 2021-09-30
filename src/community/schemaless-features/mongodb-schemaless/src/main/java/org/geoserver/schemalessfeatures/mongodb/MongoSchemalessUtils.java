@@ -71,7 +71,7 @@ public class MongoSchemalessUtils {
     public static boolean isGeometry(DBObject object) {
         Set keys = object.keySet();
 
-        if (!keys.contains("type")) {
+        if (!keys.contains("type") || keys.size() != 2) {
             return false;
         }
 

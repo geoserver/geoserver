@@ -57,6 +57,7 @@ import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
+import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WMSLayerInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
@@ -184,6 +185,11 @@ public class ConfigDatabaseTest {
         ws.setName("ws1");
         database.add(ws);
 
+        NamespaceInfoImpl ns = new NamespaceInfoImpl();
+        ns.setId("nsid");
+        ns.setPrefix("ws1");
+        database.add(ns);
+
         Catalog catalog = database.getCatalog();
         DataStoreInfoImpl ds = new DataStoreInfoImpl(catalog);
         ds.setWorkspace(ws);
@@ -198,6 +204,7 @@ public class ConfigDatabaseTest {
 
         ResourceInfo ri = new FeatureTypeInfoImpl(catalog);
         ((FeatureTypeInfoImpl) ri).setId("resourceid");
+        ri.setNamespace(ns);
         ri.setName("ri1");
         ri.setStore(ds);
         ri = database.add(ri);

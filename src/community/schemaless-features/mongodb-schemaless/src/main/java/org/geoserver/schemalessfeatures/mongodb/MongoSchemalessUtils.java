@@ -76,11 +76,9 @@ public class MongoSchemalessUtils {
         }
 
         final String type = (String) object.get("type");
-
+        boolean isColl= "GeometryCollection".equals(type);
         // Geometry object must have 2 attributs: "type" and "coordinates" or "geometries" (for
         // GeometryCollection)
-        return keys.size() == 2
-                && (("GeometryCollection".equals(type) && keys.contains("geometries"))
-                        || (!"GeometryCollection".equals(type) && keys.contains("coordinates")));
+        return (isColl && keys.contains("geometries")) || (!isColl && keys.contains("coordinates")));
     }
 }

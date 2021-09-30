@@ -11,12 +11,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerWicketTestSupport;
+import org.geoserver.wps.ProcessInfo;
+import org.geoserver.wps.WPSInfo;
 import org.junit.Test;
 
 /** @author Martin Davis OpenGeo */
@@ -31,14 +34,19 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
 
         tester.assertComponent("form:requestBuilder:process", DropDownChoice.class);
 
+        // Find out what the first process is called
+        
+        WPSInfo wps = getGeoServer().getService(WPSInfo.class);
+        ProcessInfo proc = wps.getProcessGroups().get(0).getFilteredProcesses().get(0);
         // look for JTS area
         DropDownChoice choice =
                 (DropDownChoice)
                         tester.getComponentFromLastRenderedPage("form:requestBuilder:process");
         int index = -1;
         final List choices = choice.getChoices();
+        String name = proc.getName().toString();// "JTS:area";
         for (Object o : choices) {
-            if (o.equals("JTS:area")) {
+          if (o.equals(name)) {
                 index = 0;
                 break;
             }
@@ -52,7 +60,7 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
         // print(tester.getComponentFromLastRenderedPage("form"), true, true);
 
         // check process description
-        tester.assertModelValue("form:requestBuilder:process", "JTS:area");
+        tester.assertModelValue("form:requestBuilder:process", name);
         Label label =
                 (Label)
                         tester.getComponentFromLastRenderedPage(

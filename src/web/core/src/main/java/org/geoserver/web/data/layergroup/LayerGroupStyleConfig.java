@@ -6,7 +6,9 @@ package org.geoserver.web.data.layergroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
@@ -17,7 +19,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.impl.LayerGroupStyleImpl;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.wicket.LiveCollectionModel;
 
@@ -29,14 +34,15 @@ public class LayerGroupStyleConfig extends PublishedConfigurationPanel<LayerGrou
 
     private ListView<LayerGroupStyle> styleListView;
     private WebMarkupContainer listContainer;
-    private LiveCollectionModel<LayerGroupStyle, List<LayerGroupStyle>> listModel;
     private DropDownChoice<LayerGroupStyle> availableStyles;
+    private IModel<LayerGroupInfo> layerGroupModel;
 
-    @SuppressWarnings("unused")
-    private LayerGroupStyle copySelection;
+    LiveCollectionModel<LayerGroupStyle, List<LayerGroupStyle>> listModel;
+    AjaxLink<LayerGroupStyle> copyLink;
 
     public LayerGroupStyleConfig(String id, IModel<LayerGroupInfo> model) {
         super(id, model);
+        this.layerGroupModel = model;
         PropertyModel<List<LayerGroupStyle>> stylesModel =
                 new PropertyModel<>(model, "layerGroupStyles");
         this.listModel = LiveCollectionModel.list(stylesModel);
@@ -60,7 +66,7 @@ public class LayerGroupStyleConfig extends PublishedConfigurationPanel<LayerGrou
                                         listModel.setObject(styles);
                                         listContainer.modelChanged();
                                         styleListView.modelChanged();
-                                        availableStyles.setChoices(styles);
+                                        availableStyles.setChoices(getAvailableStyles());
                                         target.add(listContainer, availableStyles);
                                         target.addChildren(styleListView, LayerGroupStyle.class);
                                     }
@@ -73,8 +79,8 @@ public class LayerGroupStyleConfig extends PublishedConfigurationPanel<LayerGrou
         styleListView.setOutputMarkupId(true);
         styleListView.setReuseItems(true);
         add(addNewLink());
-        add(availableStyles = availableStyle(stylesModel.getObject()));
-        add(copyLink());
+        add(availableStyles = availableStyle(getAvailableStyles()));
+        add(copyLink = copyLink());
         availableStyles.setOutputMarkupId(true);
         listContainer = new WebMarkupContainer("listContainer");
         listContainer.add(styleListView);
@@ -91,24 +97,38 @@ public class LayerGroupStyleConfig extends PublishedConfigurationPanel<LayerGrou
                 new ChoiceRenderer<LayerGroupStyle>() {
                     @Override
                     public Object getDisplayValue(LayerGroupStyle object) {
-                        return object.getName().getName();
+                        String displayVal;
+                        if (object == null) displayVal = "default";
+                        else displayVal = object.getName().getName();
+                        return displayVal;
                     }
                 };
-        PropertyModel<LayerGroupStyle> model = new PropertyModel<>(this, "copySelection");
         DropDownChoice<LayerGroupStyle> dropDownChoice =
-                new DropDownChoice<LayerGroupStyle>("availableStyles", model, styles, render) {
-
+                new DropDownChoice<>("availableStyles", new Model<>(), styles, render);
+        dropDownChoice.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
                     @Override
-                    protected void onSelectionChanged(LayerGroupStyle newSelection) {
-                        super.onSelectionChanged(newSelection);
-                        this.setModelObject(newSelection);
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        if (availableStyles.getInput() != null) {
+                            LayerGroupStyle groupStyle = availableStyles.getModelObject();
+                            LayerGroupStyle newGroupStyle = new LayerGroupStyleImpl();
+                            if (groupStyle == null) {
+                                LayerGroupInfo groupInfo = layerGroupModel.getObject();
+                                populateStyle(
+                                        newGroupStyle,
+                                        groupInfo.getLayers(),
+                                        groupInfo.getStyles());
+                            } else {
+                                populateStyle(
+                                        newGroupStyle,
+                                        groupStyle.getLayers(),
+                                        groupStyle.getStyles());
+                            }
+                            copyLink.setModelObject(newGroupStyle);
+                            target.add(availableStyles);
+                        }
                     }
-
-                    @Override
-                    protected boolean wantOnSelectionChangedNotifications() {
-                        return true;
-                    }
-                };
+                });
         return dropDownChoice;
     }
 
@@ -119,7 +139,7 @@ public class LayerGroupStyleConfig extends PublishedConfigurationPanel<LayerGrou
             public void onClick(AjaxRequestTarget target) {
                 List<LayerGroupStyle> groupStyles = styleListView.getModelObject();
                 groupStyles = new ArrayList<>(groupStyles);
-                groupStyles.add(new LayerGroupStyle());
+                groupStyles.add(new LayerGroupStyleImpl());
                 styleListView.setModelObject(groupStyles);
                 target.add(listContainer);
                 target.addChildren(styleListView, LayerGroupStyle.class);
@@ -129,27 +149,43 @@ public class LayerGroupStyleConfig extends PublishedConfigurationPanel<LayerGrou
     }
 
     private AjaxLink<LayerGroupStyle> copyLink() {
-        return new AjaxLink<LayerGroupStyle>("copy") {
+        return new AjaxLink<LayerGroupStyle>("copy", new Model<>()) {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                LayerGroupStyle groupStyle = availableStyles.getModelObject();
-                if (groupStyle == null) {
-                    warn("Please select a layer group style");
-                    return;
+                LayerGroupStyle groupStyle = getModelObject();
+                if (groupStyle != null) {
+                    List<LayerGroupStyle> groupStyles = listModel.getObject();
+                    LayerGroupStyle toAdd = new LayerGroupStyleImpl();
+                    toAdd.setLayers(groupStyle.getLayers());
+                    toAdd.setStyles(groupStyle.getStyles());
+                    groupStyles = new ArrayList<>(groupStyles);
+                    groupStyles.add(toAdd);
+                    listModel.setObject(groupStyles);
+                    target.add(listContainer);
+                    target.addChildren(styleListView, LayerGroupStylePanel.class);
+                } else {
+                    availableStyles.warn("Please select a style");
                 }
-                List<LayerGroupStyle> groupStyles = listModel.getObject();
-                groupStyles = new ArrayList<>(groupStyles);
-                LayerGroupStyle newGroupStyle = new LayerGroupStyle();
-                newGroupStyle.setLayers(groupStyle.getLayers());
-                newGroupStyle.setStyles(groupStyle.getStyles());
-                groupStyles.add(newGroupStyle);
-                styleListView.setModelObject(groupStyles);
-                availableStyles.setModel(new Model<>());
-                target.add(listContainer, availableStyles);
-                target.addChildren(styleListView, LayerGroupStyle.class);
-                target.addChildren(styleListView, LayerGroupStylePanel.class);
             }
         };
+    }
+
+    private void populateStyle(
+            LayerGroupStyle lgStyle, List<PublishedInfo> layers, List<StyleInfo> styles) {
+        for (int i = 0; i < layers.size(); i++) {
+            lgStyle.getLayers().add(layers.get(i));
+            lgStyle.getStyles().add(styles.get(i));
+        }
+    }
+
+    private List<LayerGroupStyle> getAvailableStyles() {
+        List<LayerGroupStyle> styles = listModel.getObject();
+        styles =
+                styles.stream()
+                        .filter(s -> s != null && s.getName().getName() != null)
+                        .collect(Collectors.toList());
+        styles.add(0, null);
+        return styles;
     }
 }

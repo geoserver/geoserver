@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.capabilities;
 
+import static org.geoserver.catalog.LayerGroupHelper.isSingleOrOpaque;
 import static org.geoserver.catalog.Predicates.and;
 import static org.geoserver.catalog.Predicates.asc;
 import static org.geoserver.catalog.Predicates.equal;
@@ -1537,10 +1538,9 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 metadataLinks = aggregatedLinks;
             }
             handleMetadataList(metadataLinks);
-            boolean isOpaqueOrSingle = isOpaqueOrSingle(layerGroup);
-            if (isOpaqueOrSingle || wmsConfig.isDefaultGroupStyleEnabled())
+            if (CapabilityUtil.encodeGroupDefaultStyle(wmsConfig, layerGroup))
                 handleLayerGroupDefaultStyle(layerName);
-            if (isOpaqueOrSingle)
+            if (isSingleOrOpaque(layerGroup))
                 // add the layer group style
                 handleLayerGroupStyles(layerName, layerGroup.getLayerGroupStyles());
 
@@ -1565,11 +1565,6 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             }
 
             end("Layer");
-        }
-
-        private boolean isOpaqueOrSingle(LayerGroupInfo groupInfo) {
-            return groupInfo.getMode().equals(LayerGroupInfo.Mode.SINGLE)
-                    || groupInfo.getMode().equals(LayerGroupInfo.Mode.OPAQUE_CONTAINER);
         }
 
         protected void handleAttribution(PublishedInfo layer) {

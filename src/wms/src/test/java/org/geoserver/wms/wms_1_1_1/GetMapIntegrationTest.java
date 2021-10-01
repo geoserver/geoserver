@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -57,9 +58,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.TestHttpClientProvider;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
-import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geoserver.catalog.impl.LegendInfoImpl;
-import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.util.XStreamPersister;
@@ -2540,19 +2539,17 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         LayerGroupInfo group = null;
         Catalog catalog = getCatalog();
         try {
-            createLakesPlacesLayerGroup(
-                    catalog, "lakes_and_places_group", LayerGroupInfo.Mode.SINGLE, null);
-            group = catalog.getLayerGroupByName("lakes_and_places_group");
-            LayerGroupStyle groupStyle = new LayerGroupStyle();
-            StyleInfo styleName = new StyleInfoImpl(getCatalog());
-            styleName.setName("nature-style");
-            groupStyle.setName(styleName);
-            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Forests"));
-            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Lakes"));
-            groupStyle.getStyles().add(null);
-            groupStyle.getStyles().add(null);
-            group.getLayerGroupStyles().add(groupStyle);
-            catalog.save(group);
+            String lgStyleName = "nature-style";
+            String lgName = "single_lakes_and_places";
+            LayerInfo forest = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakes = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.SINGLE,
+                            lgStyleName,
+                            Arrays.asList(forest, lakes),
+                            Arrays.asList(null, null));
             String url =
                     "wms?LAYERS="
                             + group.getName()
@@ -2571,19 +2568,17 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         Catalog catalog = getCatalog();
         LayerGroupInfo group = null;
         try {
-            createLakesPlacesLayerGroup(
-                    catalog, "lakes_and_places_group", LayerGroupInfo.Mode.OPAQUE_CONTAINER, null);
-            group = catalog.getLayerGroupByName("lakes_and_places_group");
-            LayerGroupStyle groupStyle = new LayerGroupStyle();
-            StyleInfo styleName = new StyleInfoImpl(getCatalog());
-            styleName.setName("nature-style");
-            groupStyle.setName(styleName);
-            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Forests"));
-            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Lakes"));
-            groupStyle.getStyles().add(null);
-            groupStyle.getStyles().add(null);
-            group.getLayerGroupStyles().add(groupStyle);
-            catalog.save(group);
+            String lgStyleName = "nature-style";
+            String lgName = "opaque_lakes_and_places";
+            LayerInfo forest = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakes = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.OPAQUE_CONTAINER,
+                            lgStyleName,
+                            Arrays.asList(forest, lakes),
+                            Arrays.asList(null, null));
             String url =
                     "wms?LAYERS="
                             + group.getName()
@@ -2605,22 +2600,23 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         Catalog catalog = getCatalog();
 
         try {
-            createLakesPlacesLayerGroup(
-                    catalog, "nested-lakes_and_places_group", LayerGroupInfo.Mode.SINGLE, null);
-            nested = catalog.getLayerGroupByName("nested-lakes_and_places_group");
-            LayerGroupStyle groupStyle = new LayerGroupStyle();
-            StyleInfo styleName = new StyleInfoImpl(getCatalog());
-            styleName.setName("forest-style");
-            groupStyle.setName(styleName);
-            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Forests"));
-            groupStyle.getStyles().add(null);
-            nested.getLayerGroupStyles().add(groupStyle);
-            catalog.save(nested);
+            String lgName = "nested-lakes_and_places_group";
+            LayerInfo forest = getCatalog().getLayerByName("cite:Forests");
+            List<StyleInfo> styles = new ArrayList<>();
+            styles.add(null);
+            nested =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.SINGLE,
+                            "forest-style",
+                            Arrays.asList(forest),
+                            styles);
+
             createLakesPlacesLayerGroup(
                     catalog, "lakes-and-place", LayerGroupInfo.Mode.SINGLE, null);
             container = catalog.getLayerGroupByName("lakes-and-place");
             container.getLayers().add(0, nested);
-            container.getStyles().add(0, styleName);
+            container.getStyles().add(0, nested.getLayerGroupStyles().get(0).getName());
             catalog.save(container);
             String url =
                     "wms?LAYERS="
@@ -2642,22 +2638,19 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         LayerGroupInfo group = null;
         Catalog catalog = getCatalog();
         try {
-            createLakesPlacesLayerGroup(
-                    catalog, "lakes_and_places_group", LayerGroupInfo.Mode.NAMED, null);
-            group = catalog.getLayerGroupByName("lakes_and_places_group");
-            LayerGroupStyle groupStyle = new LayerGroupStyle();
-            StyleInfo styleName = new StyleInfoImpl(getCatalog());
-            styleName.setName("nature-style");
-            groupStyle.setName(styleName);
-            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Forests"));
-            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Lakes"));
-            groupStyle.getStyles().add(null);
-            groupStyle.getStyles().add(null);
-            group.getLayerGroupStyles().add(groupStyle);
-            catalog.save(group);
+            String lgName = "lakes_and_places_named";
+            LayerInfo forest = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakes = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.NAMED,
+                            "nature-style",
+                            Arrays.asList(forest, lakes),
+                            Arrays.asList(null, null));
             String url =
                     "wms?LAYERS="
-                            + group.getName()
+                            + lgName
                             + "&STYLES=nature-style&FORMAT=image%2Fpng"
                             + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&bbox=-0.002,-0.003,0.005,0.002";
             BufferedImage image = getAsImage(url, "image/png");

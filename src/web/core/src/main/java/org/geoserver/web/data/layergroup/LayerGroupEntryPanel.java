@@ -95,7 +95,6 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
                 getLayers(tModel.getObject()),
                 getStyles(tModel.getObject()),
                 groupWorkspace,
-                horizontalBtn,
                 bigLegendTitle);
     }
 
@@ -128,14 +127,13 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
             List<PublishedInfo> layers,
             List<StyleInfo> styles,
             IModel<WorkspaceInfo> groupWorkspace) {
-        initUI(layers, styles, groupWorkspace, false, true);
+        initUI(layers, styles, groupWorkspace, true);
     }
 
     private void initUI(
             List<PublishedInfo> layers,
             List<StyleInfo> styles,
             IModel<WorkspaceInfo> groupWorkspace,
-            boolean horizontal,
             boolean bigLegendTitle) {
         items = new ArrayList<>();
         for (int i = 0; i < layers.size(); i++) {
@@ -191,7 +189,10 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
         layerTable.setItemReuseStrategy(new DefaultItemReuseStrategy());
         layerTable.setOutputMarkupId(true);
         layerTable.setPageable(false);
-        add(getBtnFragment(horizontal, groupWorkspace));
+        add(addLayer(groupWorkspace));
+        add(addLayerGroup(groupWorkspace));
+        add(addStyleGroup());
+        add(styleGroupHelp());
     }
 
     private Fragment panelTitle(boolean legendTitle) {
@@ -201,99 +202,94 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
         return fragment;
     }
 
-    private Fragment getBtnFragment(boolean horizontal, IModel<WorkspaceInfo> groupWorkspace) {
-        String id = horizontal ? "addsLayerFlat" : "addsLayerVertical";
-        Fragment fragment = new Fragment("addsLayerBtn", id, this);
-        fragment.add(
-                new AjaxLink<LayerInfo>("addLayer") {
-                    private static final long serialVersionUID = -6143440041597461787L;
+    private AjaxLink<LayerInfo> addLayer(IModel<WorkspaceInfo> groupWorkspace) {
+        return new AjaxLink<LayerInfo>("addLayer") {
+            private static final long serialVersionUID = -6143440041597461787L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        popupWindow.setInitialHeight(375);
-                        popupWindow.setInitialWidth(525);
-                        popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
-                        popupWindow.setContent(
-                                new LayerListPanel(
-                                        popupWindow.getContentId(), groupWorkspace.getObject()) {
-                                    private static final long serialVersionUID =
-                                            -47811496174289699L;
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                popupWindow.setInitialHeight(375);
+                popupWindow.setInitialWidth(525);
+                popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
+                popupWindow.setContent(
+                        new LayerListPanel(popupWindow.getContentId(), groupWorkspace.getObject()) {
+                            private static final long serialVersionUID = -47811496174289699L;
 
-                                    @Override
-                                    protected void handleLayer(
-                                            LayerInfo layer, AjaxRequestTarget target) {
-                                        popupWindow.close(target);
+                            @Override
+                            protected void handleLayer(LayerInfo layer, AjaxRequestTarget target) {
+                                popupWindow.close(target);
 
-                                        items.add(
-                                                new LayerGroupEntry(
-                                                        layer, layer.getDefaultStyle()));
+                                items.add(new LayerGroupEntry(layer, layer.getDefaultStyle()));
 
-                                        // getCatalog().save( lg );
-                                        target.add(layerTable);
-                                    }
-                                });
+                                // getCatalog().save( lg );
+                                target.add(layerTable);
+                            }
+                        });
 
-                        popupWindow.show(target);
-                    }
-                });
+                popupWindow.show(target);
+            }
+        };
+    }
 
-        fragment.add(
-                new AjaxLink<LayerGroupInfo>("addLayerGroup") {
-                    private static final long serialVersionUID = -6600366636542152188L;
+    private AjaxLink<LayerGroupInfo> addLayerGroup(IModel<WorkspaceInfo> groupWorkspace) {
+        return new AjaxLink<LayerGroupInfo>("addLayerGroup") {
+            private static final long serialVersionUID = -6600366636542152188L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        popupWindow.setInitialHeight(375);
-                        popupWindow.setInitialWidth(525);
-                        popupWindow.setTitle(new ParamResourceModel("chooseLayerGroup", this));
-                        popupWindow.setContent(
-                                new LayerGroupListPanel(
-                                        popupWindow.getContentId(), groupWorkspace.getObject()) {
-                                    private static final long serialVersionUID =
-                                            4052338807144204692L;
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                popupWindow.setInitialHeight(375);
+                popupWindow.setInitialWidth(525);
+                popupWindow.setTitle(new ParamResourceModel("chooseLayerGroup", this));
+                popupWindow.setContent(
+                        new LayerGroupListPanel(
+                                popupWindow.getContentId(), groupWorkspace.getObject()) {
+                            private static final long serialVersionUID = 4052338807144204692L;
 
-                                    @Override
-                                    protected void handleLayerGroup(
-                                            LayerGroupInfo layerGroup, AjaxRequestTarget target) {
-                                        popupWindow.close(target);
+                            @Override
+                            protected void handleLayerGroup(
+                                    LayerGroupInfo layerGroup, AjaxRequestTarget target) {
+                                popupWindow.close(target);
 
-                                        items.add(new LayerGroupEntry(layerGroup, null));
+                                items.add(new LayerGroupEntry(layerGroup, null));
 
-                                        target.add(layerTable);
-                                    }
-                                });
+                                target.add(layerTable);
+                            }
+                        });
 
-                        popupWindow.show(target);
-                    }
-                });
+                popupWindow.show(target);
+            }
+        };
+    }
 
-        fragment.add(
-                new AjaxLink<LayerGroupInfo>("addStyleGroup") {
+    private AjaxLink<LayerGroupInfo> addStyleGroup() {
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        popupWindow.setInitialHeight(375);
-                        popupWindow.setInitialWidth(525);
-                        popupWindow.setTitle(new ParamResourceModel("chooseStyleGroup", this));
-                        popupWindow.setContent(
-                                new StyleListPanel(
-                                        popupWindow.getContentId(),
-                                        new StyleListPanel.StyleListProvider()) {
+        return new AjaxLink<LayerGroupInfo>("addStyleGroup") {
 
-                                    @Override
-                                    protected void handleStyle(
-                                            StyleInfo style, AjaxRequestTarget target) {
-                                        popupWindow.close(target);
-                                        items.add(new LayerGroupEntry(null, style));
-                                        target.add(layerTable);
-                                    }
-                                });
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                popupWindow.setInitialHeight(375);
+                popupWindow.setInitialWidth(525);
+                popupWindow.setTitle(new ParamResourceModel("chooseStyleGroup", this));
+                popupWindow.setContent(
+                        new StyleListPanel(
+                                popupWindow.getContentId(),
+                                new StyleListPanel.StyleListProvider()) {
 
-                        popupWindow.show(target);
-                    }
-                });
-        fragment.add(new HelpLink("styleGroupHelp").setDialog(dialog));
-        return fragment;
+                            @Override
+                            protected void handleStyle(StyleInfo style, AjaxRequestTarget target) {
+                                popupWindow.close(target);
+                                items.add(new LayerGroupEntry(null, style));
+                                target.add(layerTable);
+                            }
+                        });
+
+                popupWindow.show(target);
+            }
+        };
+    }
+
+    private HelpLink styleGroupHelp() {
+        return new HelpLink("styleGroupHelp").setDialog(dialog);
     }
 
     public List<LayerGroupEntry> getEntries() {

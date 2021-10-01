@@ -14,6 +14,7 @@ import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,9 +32,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.impl.LayerGroupStyle;
-import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wms.GetLegendGraphic;
@@ -1846,23 +1846,21 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
     }
 
     @Test
-    public void testLayerGroupStyleSINGLE() throws Exception {
+    public void testLayerGroupStyleSingle() throws Exception {
         Catalog catalog = getCatalog();
         LayerGroupInfo group = null;
         try {
-            createLakesPlacesLayerGroup(
-                    catalog, "lakes_and_places_group", LayerGroupInfo.Mode.SINGLE, null);
-            group = catalog.getLayerGroupByName("lakes_and_places_group");
-            LayerGroupStyle groupStyle = new LayerGroupStyle();
-            StyleInfo styleName = new StyleInfoImpl(getCatalog());
-            styleName.setName("nature-style");
-            groupStyle.setName(styleName);
-            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Forests"));
-            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Lakes"));
-            groupStyle.getStyles().add(null);
-            groupStyle.getStyles().add(null);
-            group.getLayerGroupStyles().add(groupStyle);
-            catalog.save(group);
+            String lgStyleName = "nature-style";
+            String lgName = "single_lake_and_places";
+            LayerInfo forestL = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakesL = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.SINGLE,
+                            lgStyleName,
+                            Arrays.asList(forestL, lakesL),
+                            Arrays.asList(null, null));
             String url =
                     "wms?LAYER="
                             + group.getName()
@@ -1881,23 +1879,21 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
     }
 
     @Test
-    public void testLayerGroupStyleOPAQUE() throws Exception {
+    public void testLayerGroupStyleOpaque() throws Exception {
         Catalog catalog = getCatalog();
         LayerGroupInfo group = null;
         try {
-            createLakesPlacesLayerGroup(
-                    catalog, "lakes_and_places_group", LayerGroupInfo.Mode.OPAQUE_CONTAINER, null);
-            group = catalog.getLayerGroupByName("lakes_and_places_group");
-            LayerGroupStyle groupStyle = new LayerGroupStyle();
-            StyleInfo styleName = new StyleInfoImpl(getCatalog());
-            styleName.setName("nature-style");
-            groupStyle.setName(styleName);
-            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Forests"));
-            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Lakes"));
-            groupStyle.getStyles().add(null);
-            groupStyle.getStyles().add(null);
-            group.getLayerGroupStyles().add(groupStyle);
-            catalog.save(group);
+            String lgStyleName = "nature-style";
+            String lgName = "opaque_lakes_and_places";
+            LayerInfo forestL = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakesL = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.OPAQUE_CONTAINER,
+                            lgStyleName,
+                            Arrays.asList(forestL, lakesL),
+                            Arrays.asList(null, null));
             String url =
                     "wms?LAYER="
                             + group.getName()
@@ -1920,23 +1916,25 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         Catalog catalog = getCatalog();
 
         try {
-            createLakesPlacesLayerGroup(
-                    catalog, "nested-lakes_and_places_group", LayerGroupInfo.Mode.SINGLE, null);
-            nested = catalog.getLayerGroupByName("nested-lakes_and_places_group");
-            LayerGroupStyle groupStyle = new LayerGroupStyle();
-            StyleInfo styleName = new StyleInfoImpl(getCatalog());
-            styleName.setName("forest-style");
-            groupStyle.setName(styleName);
-            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Forests"));
-            groupStyle.getStyles().add(null);
-            nested.getLayerGroupStyles().add(groupStyle);
-            catalog.save(nested);
+            String lgName = "nested-lakes_and_places_group";
+            LayerInfo forestL = getCatalog().getLayerByName("cite:Forests");
+            List<StyleInfo> styles = new ArrayList<>();
+            styles.add(null);
+            nested =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.SINGLE,
+                            "forest-style",
+                            Arrays.asList(forestL),
+                            styles);
+
             createLakesPlacesLayerGroup(
                     catalog, "lakes-and-place", LayerGroupInfo.Mode.SINGLE, null);
             container = catalog.getLayerGroupByName("lakes-and-place");
             container.getLayers().add(0, nested);
-            container.getStyles().add(0, styleName);
+            container.getStyles().add(0, nested.getLayerGroupStyles().get(0).getName());
             catalog.save(container);
+
             String url =
                     "wms?LAYER="
                             + container.getName()
@@ -1960,19 +1958,16 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         Catalog catalog = getCatalog();
         LayerGroupInfo group = null;
         try {
-            createLakesPlacesLayerGroup(
-                    catalog, "lakes_and_places_tree", LayerGroupInfo.Mode.NAMED, null);
-            group = catalog.getLayerGroupByName("lakes_and_places_tree");
-            LayerGroupStyle groupStyle = new LayerGroupStyle();
-            StyleInfo styleName = new StyleInfoImpl(getCatalog());
-            styleName.setName("nature-style");
-            groupStyle.setName(styleName);
-            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Forests"));
-            groupStyle.getLayers().add(getCatalog().getLayerByName("cite:Lakes"));
-            groupStyle.getStyles().add(null);
-            groupStyle.getStyles().add(null);
-            group.getLayerGroupStyles().add(groupStyle);
-            catalog.save(group);
+            String lgName = "lakes_and_places_named";
+            LayerInfo forestL = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakesL = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.NAMED,
+                            "nature-style",
+                            Arrays.asList(forestL, lakesL),
+                            Arrays.asList(null, null));
             String url =
                     "wms?LAYER="
                             + group.getName()

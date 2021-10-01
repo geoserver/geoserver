@@ -122,7 +122,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
                     // only the name of a LayerGroupStyle thus not present in Catalog.
                     // We take the ref and create a new object
                     // without searching in catalog.
-                    String ref = ResolvingProxy.styleInfoToRef(s);
+                    String ref = ResolvingProxy.getRef(s);
                     if (ref != null) {
                         StyleInfo styleInfo = new StyleInfoImpl(getCatalog());
                         styleInfo.setName(ref);

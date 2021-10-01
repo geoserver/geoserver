@@ -31,6 +31,7 @@ import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CoverageInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.impl.LayerGroupStyleImpl;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.data.test.MockData;
@@ -474,7 +475,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
             createLakesPlacesLayerGroup(
                     catalog, "lakes_and_places_group", LayerGroupInfo.Mode.SINGLE, null);
             group = catalog.getLayerGroupByName("lakes_and_places_group");
-            LayerGroupStyle groupStyle = new LayerGroupStyle();
+            LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
             StyleInfo styleName = new StyleInfoImpl(getCatalog());
             styleName.setName("nature-style");
             groupStyle.setName(styleName);

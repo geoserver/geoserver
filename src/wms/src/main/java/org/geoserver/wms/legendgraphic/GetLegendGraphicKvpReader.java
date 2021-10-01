@@ -245,7 +245,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             if (!defaultStyle && singleOrOpaque) {
                 try {
                     layers = layerGroup.layers(styleName);
-                } catch (NullPointerException e) {
+                } catch (NoSuchElementException e) {
                     throwNoSuchStyle(styleName);
                 }
             }

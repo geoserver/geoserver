@@ -18,6 +18,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.impl.LayerGroupStyleImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.GeoServer;
@@ -357,7 +358,7 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
             String layerGroupName = "test_group_style";
             createLakesPlacesLayerGroup(catalog, layerGroupName, LayerGroupInfo.Mode.SINGLE, null);
             groupInfo = catalog.getLayerGroupByName(layerGroupName);
-            LayerGroupStyle groupStyle = new LayerGroupStyle();
+            LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
             StyleInfo groupStyleName = new StyleInfoImpl(catalog);
             groupStyleName.setName("group-style-name");
             groupStyle.setName(groupStyleName);
@@ -385,7 +386,7 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
             createLakesPlacesLayerGroup(
                     catalog, layerGroupName, LayerGroupInfo.Mode.OPAQUE_CONTAINER, null);
             groupInfo = catalog.getLayerGroupByName(layerGroupName);
-            LayerGroupStyle groupStyle = new LayerGroupStyle();
+            LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
             StyleInfo groupStyleName = new StyleInfoImpl(catalog);
             groupStyleName.setName("group-style-name");
             groupStyle.setName(groupStyleName);
@@ -412,7 +413,7 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
             String layerGroupName = "test_group_style";
             createLakesPlacesLayerGroup(catalog, layerGroupName, LayerGroupInfo.Mode.NAMED, null);
             groupInfo = catalog.getLayerGroupByName(layerGroupName);
-            LayerGroupStyle groupStyle = new LayerGroupStyle();
+            LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
             StyleInfo groupStyleName = new StyleInfoImpl(catalog);
             groupStyleName.setName("group-style-name");
             groupStyle.setName(groupStyleName);

@@ -110,6 +110,7 @@ import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.impl.LayerGroupStyleImpl;
 import org.geoserver.catalog.impl.LayerIdentifier;
 import org.geoserver.catalog.impl.LayerInfoImpl;
 import org.geoserver.catalog.impl.LegendInfoImpl;
@@ -545,13 +546,16 @@ public class XStreamPersister {
                 "internationalAbstract",
                 new GrowableInternationalStringConverter());
         xs.registerLocalConverter(
-                LayerGroupStyle.class,
+                impl(LayerGroupStyle.class),
                 "layers",
                 new ReferenceCollectionConverter(
                         PublishedInfo.class, LayerInfo.class, LayerGroupInfo.class));
         xs.registerLocalConverter(
-                LayerGroupStyle.class, "styles", new ReferenceCollectionConverter(StyleInfo.class));
-        xs.registerLocalConverter(LayerGroupStyle.class, "name", new OnlyStyleNameConverter());
+                impl(LayerGroupStyle.class),
+                "styles",
+                new ReferenceCollectionConverter(StyleInfo.class));
+        xs.registerLocalConverter(
+                impl(LayerGroupStyle.class), "name", new OnlyStyleNameConverter());
         // ServiceInfo
         xs.registerConverter(new ServiceInfoConverter());
         xs.omitField(impl(ServiceInfo.class), "geoServer");
@@ -792,6 +796,8 @@ public class XStreamPersister {
         if (interfce == ResourceInfo.class) {
             return ResourceInfoImpl.class;
         }
+
+        if (interfce == LayerGroupStyle.class) return LayerGroupStyleImpl.class;
 
         Class<?> clazz = getXStream().getMapper().defaultImplementationOf(interfce);
         if (clazz == null) {
@@ -2231,7 +2237,7 @@ public class XStreamPersister {
                         // as usual since is not present in the catalog but
                         // get the ref and create a new StyleInfo object.
                         StyleInfo styleInfo = styles.get(i);
-                        String ref = ResolvingProxy.styleInfoToRef(styleInfo);
+                        String ref = ResolvingProxy.getRef(styleInfo);
                         if (ref != null) {
                             StyleInfo lgStyleName = new StyleInfoImpl(catalog);
                             lgStyleName.setName(ref);
@@ -2749,7 +2755,17 @@ public class XStreamPersister {
         @Override
         @SuppressWarnings("unchecked")
         public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-            return type.isAssignableFrom(LayerGroupStyle.class);
+            return LayerGroupStyle.class.isAssignableFrom(type);
+        }
+
+        @Override
+        protected Object instantiateNewInstance(
+                HierarchicalStreamReader reader, UnmarshallingContext context) {
+            Object object = context.currentObject();
+            if (object == null) {
+                object = new LayerGroupStyleImpl();
+            }
+            return object;
         }
 
         @Override

@@ -436,6 +436,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     @Override
     public List<LayerGroupStyle> getLayerGroupStyles() {
+        if (layerGroupStyles == null) layerGroupStyles = new ArrayList<>();
         return layerGroupStyles;
     }
 

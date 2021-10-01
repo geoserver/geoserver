@@ -9,6 +9,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -32,6 +33,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.impl.LayerGroupStyleImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.web.InternationalStringPanel;
@@ -204,7 +206,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         tester.startPage(page);
         tester.assertRenderedPage(LayerGroupEditPage.class);
         // Click on the link
-        tester.clickLink("publishedinfo:tabs:panel:layers:addsLayerBtn:addLayer");
+        tester.clickLink("publishedinfo:tabs:panel:layers:addLayer");
         tester.assertNoErrorMessage();
         // Ensure that the Layer List page is rendered correctly
         tester.assertComponent(
@@ -230,7 +232,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         tester.startPage(page);
         tester.assertRenderedPage(LayerGroupEditPage.class);
         // Click on the link
-        tester.clickLink("publishedinfo:tabs:panel:layers:addsLayerBtn:addStyleGroup");
+        tester.clickLink("publishedinfo:tabs:panel:layers:addStyleGroup");
         tester.assertNoErrorMessage();
         // Ensure that the Style Group List page is rendered correctly
         tester.assertComponent(
@@ -257,7 +259,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         tester.startPage(page);
         tester.assertRenderedPage(LayerGroupEditPage.class);
         // Click on the link
-        tester.clickLink("publishedinfo:tabs:panel:layers:addsLayerBtn:addLayer");
+        tester.clickLink("publishedinfo:tabs:panel:layers:addLayer");
         tester.assertNoErrorMessage();
         // Ensure that the Layer List page is rendered correctly
         tester.assertComponent(
@@ -291,7 +293,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         tester.startPage(page);
         tester.assertRenderedPage(LayerGroupEditPage.class);
         // Click on the link
-        tester.clickLink("publishedinfo:tabs:panel:layers:addsLayerBtn:addLayerGroup");
+        tester.clickLink("publishedinfo:tabs:panel:layers:addLayerGroup");
         tester.assertNoErrorMessage();
         // Ensure that the Layer List page is rendered correctly
         tester.assertComponent(
@@ -721,13 +723,13 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
             tester.executeAjaxEvent("publishedinfo:tabs:panel:layerGroupStyles:addNew", "click");
             tester.executeAjaxEvent(
-                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addsLayerBtn:addLayer",
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addLayer",
                     "click");
             tester.executeAjaxEvent(
                     "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:content:listContainer:items:1:itemProperties:0:component:link",
                     "click");
             tester.executeAjaxEvent(
-                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addsLayerBtn:addLayerGroup",
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addLayerGroup",
                     "click");
 
             FormTester ft = tester.newFormTester("publishedinfo");
@@ -768,14 +770,14 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
             // add a nested LayerGroup
             tester.executeAjaxEvent(
-                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addsLayerBtn:addLayerGroup",
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addLayerGroup",
                     "click");
             tester.executeAjaxEvent(
                     "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:content:listContainer:items:3:itemProperties:0:component:link",
                     "click");
 
             tester.executeAjaxEvent(
-                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addsLayerBtn:addLayer",
+                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:addLayer",
                     "click");
             tester.executeAjaxEvent(
                     "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:popup:content:listContainer:items:1:itemProperties:0:component:link",
@@ -810,7 +812,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
         // get the a LayerGroup that will be added as an entry and adds two styles.
         LayerGroupInfo nestedGroup = getCatalog().getLayerGroupByName("nestedLayerGroup");
-        LayerGroupStyle nestedGroupStyle = new LayerGroupStyle();
+        LayerGroupStyle nestedGroupStyle = new LayerGroupStyleImpl();
         StyleInfo styleName = new StyleInfoImpl(getCatalog());
         styleName.setName("nestedGroupStyle");
         nestedGroupStyle.setName(styleName);
@@ -818,7 +820,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         nestedGroupStyle.getLayers().add(getCatalog().getLayerByName("cite:BasicPolygons"));
         nestedGroup.getLayerGroupStyles().add(nestedGroupStyle);
 
-        LayerGroupStyle nestedGroupStyle2 = new LayerGroupStyle();
+        LayerGroupStyle nestedGroupStyle2 = new LayerGroupStyleImpl();
         StyleInfo styleName2 = new StyleInfoImpl(getCatalog());
         styleName2.setName("nestedGroupStyle2");
         nestedGroupStyle2.setName(styleName2);
@@ -828,7 +830,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         getCatalog().save(nestedGroup);
 
         // create a style for the containing group
-        LayerGroupStyle groupStyleTest = new LayerGroupStyle();
+        LayerGroupStyle groupStyleTest = new LayerGroupStyleImpl();
         styleName = new StyleInfoImpl(getCatalog());
         styleName.setName("styleWithNestedGroup");
         groupStyleTest.setName(styleName);
@@ -894,7 +896,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
     public void testRemoveStyleBtn() throws Exception {
         // add many LayerGroupStyle form to the UI and then remove  them.
         LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("nestedLayerGroup");
-        LayerGroupStyle groupStyle = new LayerGroupStyle();
+        LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
         StyleInfo styleName = new StyleInfoImpl(getCatalog());
         styleName.setName("nestedGroupStyle");
         groupStyle.setName(styleName);
@@ -939,10 +941,47 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
     }
 
     @Test
+    public void testCopyGroupDefaultStyle() throws Exception {
+        // tests the copy style UI functionality.
+        buildLayerGroup("testLgStylesCopyDef", LayerGroupInfo.Mode.SINGLE);
+        LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("testLgStylesCopyDef");
+        try {
+            LayerGroupEditPage page =
+                    new LayerGroupEditPage(
+                            new PageParameters().add("group", "testLgStylesCopyDef"));
+            // Create the new page
+            tester.startPage(page);
+            tester.assertRenderedPage(LayerGroupEditPage.class);
+            FormTester ft = tester.newFormTester("publishedinfo");
+            ft.select("tabs:panel:layerGroupStyles:availableStyles", 0);
+            tester.executeAjaxEvent(
+                    "publishedinfo:tabs:panel:layerGroupStyles:availableStyles", "change");
+            tester.executeAjaxEvent("publishedinfo:tabs:panel:layerGroupStyles:copy", "click");
+            ft = tester.newFormTester("publishedinfo");
+            ft.setValue(
+                    "tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupStyleName",
+                    "copiedStyleLg");
+            ft.submit("save");
+            tester.assertNoErrorMessage();
+            groupInfo = getCatalog().getLayerGroupByName("testLgStylesCopyDef");
+            List<LayerGroupStyle> styles = groupInfo.getLayerGroupStyles();
+            assertEquals(1, styles.size());
+            LayerGroupStyle groupStyle1 = styles.get(0);
+            assertEquals(groupStyle1.getLayers(), groupInfo.getLayers());
+            assertEquals(groupStyle1.getStyles(), groupInfo.getStyles());
+        } finally {
+            if (groupInfo != null) {
+                groupInfo.setLayerGroupStyles(new ArrayList<>());
+                getCatalog().save(groupInfo);
+            }
+        }
+    }
+
+    @Test
     public void testCopyGroupStyle() throws Exception {
         // tests the copy style UI functionality.
         LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("nestedLayerGroup");
-        LayerGroupStyle groupStyle = new LayerGroupStyle();
+        LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
         StyleInfo styleName = new StyleInfoImpl(getCatalog());
         styleName.setName("nestedGroupStyle");
         groupStyle.setName(styleName);
@@ -957,7 +996,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
             tester.startPage(page);
             tester.assertRenderedPage(LayerGroupEditPage.class);
             FormTester ft = tester.newFormTester("publishedinfo");
-            ft.select("tabs:panel:layerGroupStyles:availableStyles", 0);
+            ft.select("tabs:panel:layerGroupStyles:availableStyles", 1);
             tester.executeAjaxEvent(
                     "publishedinfo:tabs:panel:layerGroupStyles:availableStyles", "change");
             tester.executeAjaxEvent("publishedinfo:tabs:panel:layerGroupStyles:copy", "click");
@@ -1031,5 +1070,47 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         CatalogBuilder builder = new CatalogBuilder(catalog);
         builder.calculateLayerGroupBounds(lg);
         catalog.add(lg);
+    }
+
+    @Test
+    public void testLayerGroupStyleEditingIsolation() throws Exception {
+        buildLayerGroup("testLgStylesEditing", LayerGroupInfo.Mode.OPAQUE_CONTAINER);
+        LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("testLgStylesEditing");
+        LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
+        StyleInfo styleName = new StyleInfoImpl(getCatalog());
+        styleName.setName("editingGroupStyle");
+        groupStyle.setName(styleName);
+        groupStyle.getStyles().add(getCatalog().getStyleByName("BasicPolygons"));
+        groupStyle.getLayers().add(getCatalog().getLayerByName("cite:BasicPolygons"));
+        groupInfo.getLayerGroupStyles().add(groupStyle);
+        getCatalog().save(groupInfo);
+        try {
+            LayerGroupEditPage page =
+                    new LayerGroupEditPage(
+                            new PageParameters().add("group", "testLgStylesEditing"));
+            // Create the new page
+            tester.startPage(page);
+            tester.assertRenderedPage(LayerGroupEditPage.class);
+            // Click on the link
+            FormTester ft = tester.newFormTester("publishedinfo");
+            ft.setValue(
+                    "tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupStyleName",
+                    "changeName");
+
+            groupInfo = getCatalog().getLayerGroupByName(groupInfo.prefixedName());
+            String savedName = groupInfo.getLayerGroupStyles().get(0).getName().getName();
+            assertFalse("changeName".equals(savedName));
+            assertEquals("editingGroupStyle", savedName);
+            ft.submit("save");
+            tester.assertNoErrorMessage();
+            groupInfo = getCatalog().getLayerGroupByName(groupInfo.prefixedName());
+            savedName = groupInfo.getLayerGroupStyles().get(0).getName().getName();
+            assertEquals("changeName", savedName);
+        } finally {
+            if (groupInfo != null) {
+                groupInfo.setLayerGroupStyles(new ArrayList<>());
+                getCatalog().save(groupInfo);
+            }
+        }
     }
 }

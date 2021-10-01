@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -68,11 +69,10 @@ public class LayerGroupHelper {
                 LayerInfo l = (LayerInfo) p;
                 layers.add(l);
             } else if (p instanceof LayerGroupInfo) {
-                if (s != null && s.getName() != null) {
-                    LayerGroupInfo groupInfo = (LayerGroupInfo) p;
-                    LayerGroupStyle lgStyle = getStyleOrThrow(groupInfo, s.getName());
-                    allLayers(groupInfo.getBounds(), lgStyle, layers);
-                } else allLayers((LayerGroupInfo) p, layers);
+                LayerGroupInfo groupInfo = (LayerGroupInfo) p;
+                LayerGroupStyle lgStyle = getStyleOrThrow(groupInfo, s);
+                if (lgStyle != null) allLayers(getCrs(groupInfo.getBounds()), lgStyle, layers);
+                else allLayers(groupInfo, layers);
             } else if (p == null && s != null) {
                 expandStyleGroup(
                         s,
@@ -88,12 +88,13 @@ public class LayerGroupHelper {
     public List<LayerInfo> allLayers(String styleName) {
         LayerGroupStyle lgStyle = getStyleOrThrow(group, styleName);
         List<LayerInfo> layerInfos = new ArrayList<>();
-        allLayers(group.getBounds(), lgStyle, layerInfos);
+        CoordinateReferenceSystem crs = getCrs(group.getBounds());
+        allLayers(crs, lgStyle, layerInfos);
         return layerInfos;
     }
 
     private static void allLayers(
-            ReferencedEnvelope groupBounds, LayerGroupStyle groupStyle, List<LayerInfo> layers) {
+            CoordinateReferenceSystem crs, LayerGroupStyle groupStyle, List<LayerInfo> layers) {
         List<PublishedInfo> published = groupStyle.getLayers();
         List<StyleInfo> styles = groupStyle.getStyles();
         int pSize = published.size();
@@ -112,17 +113,20 @@ public class LayerGroupHelper {
                 LayerInfo l = (LayerInfo) p;
                 layers.add(l);
             } else if (p instanceof LayerGroupInfo) {
-                if (s != null && s.getName() != null) {
-                    LayerGroupInfo groupInfo = (LayerGroupInfo) p;
-                    LayerGroupStyle lgStyle = getStyleOrThrow(groupInfo, s.getName());
-                    allLayers(groupInfo.getBounds(), lgStyle, layers);
-                } else allLayers((LayerGroupInfo) p, layers);
+                LayerGroupInfo groupInfo = (LayerGroupInfo) p;
+                LayerGroupStyle lgStyle = getStyleOrThrow(groupInfo, s);
+                if (lgStyle != null) allLayers(getCrs(groupInfo.getBounds()), lgStyle, layers);
+                else allLayers(groupInfo, layers);
             } else if (p == null && s != null) {
-                CoordinateReferenceSystem crs =
-                        groupBounds == null ? null : groupBounds.getCoordinateReferenceSystem();
                 expandStyleGroup(s, crs, layers, null);
             }
         }
+    }
+
+    private static CoordinateReferenceSystem getCrs(ReferencedEnvelope envelope) {
+        CoordinateReferenceSystem crs = null;
+        if (envelope != null) crs = envelope.getCoordinateReferenceSystem();
+        return crs;
     }
 
     /** Returns top level PublishedInfo, eventually expanding style groups */
@@ -154,13 +158,7 @@ public class LayerGroupHelper {
                 publisheds.add(p);
             } else if (p == null && s != null) {
                 List<LayerInfo> layers = new ArrayList<>();
-                expandStyleGroup(
-                        s,
-                        group.getBounds() == null
-                                ? null
-                                : group.getBounds().getCoordinateReferenceSystem(),
-                        layers,
-                        null);
+                expandStyleGroup(s, getCrs(group.getBounds()), layers, null);
                 publisheds.addAll(layers);
             }
         }
@@ -206,13 +204,7 @@ public class LayerGroupHelper {
             } else if (p instanceof LayerGroupInfo) {
                 allStyles((LayerGroupInfo) p, styles);
             } else if (p == null && s != null) {
-                expandStyleGroup(
-                        s,
-                        group.getBounds() == null
-                                ? null
-                                : group.getBounds().getCoordinateReferenceSystem(),
-                        null,
-                        styles);
+                expandStyleGroup(s, getCrs(group.getBounds()), null, styles);
             }
         }
     }
@@ -233,7 +225,8 @@ public class LayerGroupHelper {
     public List<LayerInfo> allLayersForRendering(String lgStyle) {
         List<LayerInfo> layers = new ArrayList<>();
         LayerGroupStyle groupStyle = getStyleOrThrow(group, lgStyle);
-        allLayers(group.getBounds(), groupStyle, layers);
+        CoordinateReferenceSystem crs = getCrs(group.getBounds());
+        allLayers(crs, groupStyle, layers);
         return layers;
     }
 
@@ -267,28 +260,27 @@ public class LayerGroupHelper {
                     } else if (p instanceof LayerGroupInfo) {
                         LayerGroupStyle gStyle = null;
                         LayerGroupInfo groupInfo = (LayerGroupInfo) p;
-                        if (s != null) {
-                            gStyle = getStyleOrThrow(groupInfo, s.getName());
-                        }
-                        allLayersForRendering((LayerGroupInfo) p, gStyle, layers, false);
+                        gStyle = getStyleOrThrow(groupInfo, s);
+                        allLayersForRendering(groupInfo, gStyle, layers, false);
                     } else if (p == null && s != null) {
-                        expandStyleGroup(
-                                s,
-                                group.getBounds() == null
-                                        ? null
-                                        : group.getBounds().getCoordinateReferenceSystem(),
-                                layers,
-                                null);
+                        expandStyleGroup(s, getCrs(group.getBounds()), layers, null);
                     }
                 }
         }
+    }
+
+    private static LayerGroupStyle getStyleOrThrow(LayerGroupInfo groupInfo, StyleInfo styleName) {
+        LayerGroupStyle groupStyle = null;
+        if (styleName != null && styleName.getName() != null && !"".equals(styleName.getName()))
+            groupStyle = getStyleOrThrow(groupInfo, styleName.getName());
+        return groupStyle;
     }
 
     // Get a style by name or throws exception if it is null.
     private static LayerGroupStyle getStyleOrThrow(LayerGroupInfo groupInfo, String styleName) {
         LayerGroupStyle groupStyle = getGroupStyleByName(groupInfo, styleName);
         if (groupStyle == null) {
-            throw new NullPointerException(
+            throw new NoSuchElementException(
                     "No Style with name "
                             + styleName
                             + " found for LayerGroup "
@@ -340,20 +332,11 @@ public class LayerGroupHelper {
                         }
                         styles.add(s);
                     } else if (p instanceof LayerGroupInfo) {
-                        LayerGroupStyle groupStyle2 = null;
                         LayerGroupInfo groupInfo = (LayerGroupInfo) p;
-                        if (s != null && s.getName() != null) {
-                            groupStyle2 = getStyleOrThrow(groupInfo, s.getName());
-                        }
+                        LayerGroupStyle groupStyle2 = getStyleOrThrow(groupInfo, s);
                         allStylesForRendering(groupInfo, groupStyle2, styles, false);
                     } else if (p == null && s != null) {
-                        expandStyleGroup(
-                                s,
-                                group.getBounds() == null
-                                        ? null
-                                        : group.getBounds().getCoordinateReferenceSystem(),
-                                null,
-                                styles);
+                        expandStyleGroup(s, getCrs(group.getBounds()), null, styles);
                     }
                 }
         }
@@ -368,16 +351,14 @@ public class LayerGroupHelper {
      */
     public List<StyleInfo> allStylesForRendering(String styleName) {
         List<StyleInfo> styles = new ArrayList<>();
-        ReferencedEnvelope bounds = group.getBounds();
+        CoordinateReferenceSystem crs = getCrs(group.getBounds());
         LayerGroupStyle groupStyle = getStyleOrThrow(group, styleName);
-        allStylesForRendering(bounds, groupStyle, styles);
+        allStylesForRendering(crs, groupStyle, styles);
         return styles;
     }
 
     public void allStylesForRendering(
-            ReferencedEnvelope groupBounds,
-            LayerGroupStyle groupStyle,
-            List<StyleInfo> styleInfos) {
+            CoordinateReferenceSystem crs, LayerGroupStyle groupStyle, List<StyleInfo> styleInfos) {
         List<PublishedInfo> publishable = groupStyle.getLayers();
         List<StyleInfo> styles = groupStyle.getStyles();
         int size = publishable.size();
@@ -392,13 +373,9 @@ public class LayerGroupHelper {
                 styleInfos.add(s);
             } else if (p instanceof LayerGroupInfo) {
                 LayerGroupInfo group = (LayerGroupInfo) p;
-                LayerGroupStyle groupStyle2 = null;
-                if (s != null && s.getName() != null)
-                    groupStyle2 = getStyleOrThrow(group, s.getName());
+                LayerGroupStyle groupStyle2 = getStyleOrThrow(group, s);
                 allStylesForRendering((LayerGroupInfo) p, groupStyle2, styleInfos, false);
             } else if (p == null && s != null) {
-                CoordinateReferenceSystem crs =
-                        groupBounds != null ? groupBounds.getCoordinateReferenceSystem() : null;
                 expandStyleGroup(s, crs, null, styleInfos);
             }
         }

@@ -5,6 +5,7 @@
  */
 package org.geoserver.wms.capabilities;
 
+import static org.geoserver.catalog.LayerGroupHelper.isSingleOrOpaque;
 import static org.geoserver.catalog.Predicates.asc;
 import static org.geoserver.catalog.Predicates.equal;
 import static org.geoserver.ows.util.ResponseUtils.appendQueryString;
@@ -1354,21 +1355,15 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     }
                 }
             }
-            boolean opaqueOrSingle = opaqueOrSingle(layerGroup);
-            if (opaqueOrSingle || wmsConfig.isDefaultGroupStyleEnabled())
+            if (CapabilityUtil.encodeGroupDefaultStyle(wmsConfig, layerGroup))
                 handleLayerGroupDefaultStyle(layerName);
 
-            if (opaqueOrSingle) handleLayerGroupStyles(layerName, layerGroup.getLayerGroupStyles());
+            if (isSingleOrOpaque(layerGroup))
+                handleLayerGroupStyles(layerName, layerGroup.getLayerGroupStyles());
 
             handleScaleHint(layerGroup);
 
             end("Layer");
-        }
-
-        private boolean opaqueOrSingle(LayerGroupInfo groupInfo) {
-            LayerGroupInfo.Mode mode = groupInfo.getMode();
-            return mode.equals(LayerGroupInfo.Mode.SINGLE)
-                    || mode.equals(LayerGroupInfo.Mode.OPAQUE_CONTAINER);
         }
 
         protected Set<LayerInfo> getLayersInGroups(List<LayerGroupInfo> layerGroups) {

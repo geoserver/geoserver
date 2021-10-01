@@ -10,17 +10,24 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Locale;
+import java.util.Map;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.GeoServerWicketTestSupport;
-import org.geoserver.wps.ProcessInfo;
+import org.geoserver.wps.ProcessGroupInfo;
 import org.geoserver.wps.WPSInfo;
+import org.geoserver.wps.process.GeoServerProcessors;
+import org.geotools.process.ProcessFactory;
 import org.junit.Test;
+import org.opengis.feature.type.Name;
 
 /** @author Martin Davis OpenGeo */
 public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
@@ -35,18 +42,31 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:requestBuilder:process", DropDownChoice.class);
 
         // Find out what the first process is called
-        
+        List<String> names = new ArrayList<>();
+        Map<String, String> desc = new HashMap<>();
         WPSInfo wps = getGeoServer().getService(WPSInfo.class);
-        ProcessInfo proc = wps.getProcessGroups().get(0).getFilteredProcesses().get(0);
+
+        for (ProcessGroupInfo p : wps.getProcessGroups()) {
+            Class<? extends ProcessFactory> factoryClass = p.getFactoryClass();
+            ProcessFactory pf = GeoServerProcessors.getProcessFactory(factoryClass, false);
+            for (Name n : pf.getNames()) {
+                names.add(n.toString());
+                // the locale is hard coded in to the panel builder
+                desc.put(n.toString(), pf.getDescription(n).toString(Locale.ENGLISH));
+            }
+        }
+        Collections.sort(names);
+        String name = names.get(0); // "JTS:area";
+
+        String description = desc.get(name); // "area";
         // look for JTS area
         DropDownChoice choice =
                 (DropDownChoice)
                         tester.getComponentFromLastRenderedPage("form:requestBuilder:process");
         int index = -1;
         final List choices = choice.getChoices();
-        String name = proc.getName().toString();// "JTS:area";
         for (Object o : choices) {
-          if (o.equals(name)) {
+            if (o.equals(name)) {
                 index = 0;
                 break;
             }
@@ -65,7 +85,9 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
                 (Label)
                         tester.getComponentFromLastRenderedPage(
                                 "form:requestBuilder:descriptionContainer:processDescription");
-        assertTrue(label.getDefaultModelObjectAsString().contains("area"));
+        String observed = label.getDefaultModelObjectAsString();
+
+        assertTrue(observed.contains(description));
 
         tester.assertComponent(
                 "form:requestBuilder:inputContainer:inputs:0:paramValue:editor:mime",

@@ -33,7 +33,7 @@ import org.opengis.feature.type.Name;
 public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
 
     @Test
-    public void testJTSAreaWorkflow() throws Exception {
+    public void testFirstProcessWorkflow() throws Exception {
         login();
 
         // start the page
@@ -51,15 +51,15 @@ public class WPSRequestBuilderTest extends GeoServerWicketTestSupport {
             ProcessFactory pf = GeoServerProcessors.getProcessFactory(factoryClass, false);
             for (Name n : pf.getNames()) {
                 names.add(n.toString());
-                // the locale is hard coded in to the panel builder
+                // the locale is hard coded into the panel builder
                 desc.put(n.toString(), pf.getDescription(n).toString(Locale.ENGLISH));
             }
         }
         Collections.sort(names);
-        String name = names.get(0); // "JTS:area";
+        String name = names.get(0); // e.g. "JTS:area";
 
-        String description = desc.get(name); // "area";
-        // look for JTS area
+        String description = desc.get(name); // e.g. "area";
+        // look for first process
         DropDownChoice choice =
                 (DropDownChoice)
                         tester.getComponentFromLastRenderedPage("form:requestBuilder:process");

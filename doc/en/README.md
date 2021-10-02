@@ -59,3 +59,7 @@ The ant ``build.xml`` can also be called directly with the ``project.version`` n
     ant user -Dproject.version=2.18.0
     ant developer -Dproject.version=2.18.0
     ant docguide -Dproject.version=2.18.0
+
+## index.html
+
+The file `index.html` is the landing page for the [online documentation](https://docs.geoserver.org/index.html). It exists outside of the version hierarchy of the rest of the documentation.

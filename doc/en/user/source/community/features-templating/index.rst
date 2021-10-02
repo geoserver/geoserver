@@ -12,6 +12,8 @@ The Features Templating plug-in works by allowing us to define a What You See Is
      - **Operation**
    * - WFS
      - GetFeature
+   * - WMS
+     - GetFeatureInfo
    * - OGCAPI Features
      - Collection
 

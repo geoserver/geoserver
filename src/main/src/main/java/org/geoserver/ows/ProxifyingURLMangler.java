@@ -145,11 +145,6 @@ public class ProxifyingURLMangler implements URLMangler {
      */
     private StringBuilder mangleURLHeaders(StringBuilder baseURL, String proxyBase) {
 
-        // If the request is not an OWS request, does not proxy the URL
-        if (Dispatcher.REQUEST.get() == null) {
-            return baseURL;
-        }
-
         // If the proxy base URL does not contain templates, fall back to
         // the fixed URL cse
         if (!proxyBase.contains(TEMPLATE_PREFIX)) {

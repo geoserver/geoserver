@@ -58,6 +58,7 @@ public class FeatureTypeTemplateDAOListener implements TemplateDAOListener {
                     TemplateRule r = rule.get();
                     if (!r.getTemplateName().equals(info.getFullName()))
                         r.setTemplateName(info.getFullName());
+                    updateCache(info);
                     rules.removeIf(tr -> tr.getTemplateIdentifier().equals(info.getIdentifier()));
                     rules.add(r);
                     layerConfig.setTemplateRules(rules);
@@ -74,7 +75,7 @@ public class FeatureTypeTemplateDAOListener implements TemplateDAOListener {
     }
 
     private void updateCache(TemplateInfo info) {
-        TemplateLoader loader = GeoServerExtensions.bean(TemplateLoader.class);
+        TemplateLoader loader = TemplateLoader.get();
         loader.cleanCache(fti, info.getIdentifier());
     }
 }

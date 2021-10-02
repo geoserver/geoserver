@@ -350,6 +350,20 @@ public class GetLegendGraphicTest extends WMSTestSupport {
     }
 
     @Test
+    public void testTransparentBelowMinScaleDenominator() throws Exception {
+        BufferedImage image =
+                getAsImage(
+                        "wms?service=WMS&version=1.1.1&request=GetLegendGraphic"
+                                + "&layer="
+                                + getLayerId(MockData.LAKES)
+                                + "&style=scaleDependent"
+                                + "&format=image/png&width=20&height=20&scale=5000"
+                                + "&transparent=true",
+                        "image/png");
+        assertEquals(1, image.getHeight());
+    }
+
+    @Test
     public void testNoLegendAboveMinScaleDenominator() throws Exception {
         BufferedImage image =
                 getAsImage(

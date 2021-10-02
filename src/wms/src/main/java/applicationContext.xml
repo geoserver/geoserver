@@ -402,8 +402,14 @@
 		class="org.geoserver.wms.icons.IconService">
 		<constructor-arg ref="catalog" />
 	</bean>
-  
-	<!-- http url mapping -->
+
+    <!-- cite compliance hack -->
+    <bean id="wmsCiteComplianceHack" class="org.geoserver.ows.CiteComplianceHack">
+        <constructor-arg ref="geoServer"/>
+        <constructor-arg value="org.geoserver.wms.WMSInfo"/>
+    </bean>
+
+    <!-- http url mapping -->
 	<bean id="wmsURLMapping" 
 		class="org.geoserver.ows.OWSHandlerMapping">
 		<constructor-arg ref="catalog"/>
@@ -844,4 +850,7 @@
         <constructor-arg ref="geoServer"/>
     </bean>
 
+    <bean id="wmsCiteComplianceCallback" class="org.geoserver.wms.CiteComplianceCallback">
+        <constructor-arg ref="geoServer"/>
+    </bean>
 </beans>

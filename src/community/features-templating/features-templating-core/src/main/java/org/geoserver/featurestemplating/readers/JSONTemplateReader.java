@@ -5,6 +5,7 @@
 package org.geoserver.featurestemplating.readers;
 
 import static org.geoserver.featurestemplating.builders.VendorOptions.FLAT_OUTPUT;
+import static org.geoserver.featurestemplating.builders.VendorOptions.JSON_LD_STRING_ENCODE;
 import static org.geoserver.featurestemplating.builders.VendorOptions.SEPARATOR;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -66,6 +67,7 @@ public class JSONTemplateReader implements TemplateReader {
         RootBuilder root = (RootBuilder) builderMaker.build();
         builderMaker.namespaces(configuration.getNamespaces());
         getBuilderFromJson(null, template, root, builderMaker);
+        root.setWatchers(watchers);
         return root;
     }
 
@@ -242,6 +244,13 @@ public class JSONTemplateReader implements TemplateReader {
 
         if (node.has(CONTEXTKEY)) {
             builder.addVendorOption(CONTEXTKEY, node.get(CONTEXTKEY));
+        }
+        if (node.has(JSON_LD_STRING_ENCODE)) {
+            JsonNode stringEncodeJSONLD = node.get(JSON_LD_STRING_ENCODE);
+            if (!stringEncodeJSONLD.isBoolean())
+                throw new RuntimeException(
+                        "The option " + JSON_LD_STRING_ENCODE + " can only be a boolean value");
+            builder.addVendorOption(JSON_LD_STRING_ENCODE, stringEncodeJSONLD.booleanValue());
         }
         Expression flatOutput =
                 builder.getVendorOptions()

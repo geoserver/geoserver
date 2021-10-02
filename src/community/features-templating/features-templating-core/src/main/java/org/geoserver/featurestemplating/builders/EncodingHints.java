@@ -70,6 +70,19 @@ public class EncodingHints extends HashMap<String, Object> {
     }
 
     /**
+     * Get the hint value with the requested type.
+     *
+     * @param key the hint name.
+     * @param cast the type requested.
+     * @return the value of the hint if found, otherwise null.
+     */
+    public <T> T get(String key, Class<T> cast, T defaultValue) {
+        T value = cast.cast(get(key));
+        if (value == null) value = defaultValue;
+        return value;
+    }
+
+    /**
      * Check if the current request is an OGCAPI request by feature id.
      *
      * @return true if is a single feature request, false otherwise.

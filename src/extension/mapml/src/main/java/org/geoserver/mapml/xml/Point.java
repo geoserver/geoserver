@@ -39,7 +39,11 @@ import javax.xml.bind.annotation.XmlType;
 public class Point {
 
     @XmlList
-    @XmlElement(required = true, namespace = "http://www.w3.org/1999/xhtml")
+    @XmlElement(
+        required = true,
+        name = "map-coordinates",
+        namespace = "http://www.w3.org/1999/xhtml"
+    )
     protected List<String> coordinates;
 
     /**

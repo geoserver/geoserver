@@ -16,7 +16,6 @@ Images:
 Georeferenced formats:
 
     * GeoTiff - (format=geotiff)
-    * GTopo30 - (format=gtopo30)
     * ArcGrid - (format=ArcGrid)
     * GZipped ArcGrid - (format=ArcGrid-GZIP)
 

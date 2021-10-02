@@ -2429,4 +2429,107 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         URL urlPng = getClass().getResource("multilang_def_result.png");
         ImageAssert.assertEquals(new File(urlPng.toURI()), image, 500);
     }
+
+    @Test
+    public void testMissingVersionCiteOWS() throws Exception {
+        // url at "/ows"
+        checkMissingVersionError(
+                "ows?bbox="
+                        + bbox
+                        + "&styles=&layers="
+                        + layers
+                        + "&Format=image/png"
+                        + "&service=WMS"
+                        + "&request=GetMap"
+                        + "&width=550"
+                        + "&height=250"
+                        + "&srs=EPSG:4326");
+    }
+
+    @Test
+    public void testMissingVersionCiteWMS() throws Exception {
+        // url at "/wms"
+        checkMissingVersionError(
+                "wms?bbox="
+                        + bbox
+                        + "&styles=&layers="
+                        + layers
+                        + "&Format=image/png"
+                        + "&service=WMS"
+                        + "&request=GetMap"
+                        + "&width=550"
+                        + "&height=250"
+                        + "&srs=EPSG:4326");
+    }
+
+    private void checkMissingVersionError(String url) throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.setCiteCompliant(true);
+        gs.save(wms);
+
+        try {
+            Document doc = getAsDOM(url, true);
+            checkOws10Exception(doc, "MissingParameterValue", "version");
+        } finally {
+            wms.setCiteCompliant(false);
+            gs.save(wms);
+        }
+    }
+
+    @Test
+    public void testCiteWMTVer() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.setCiteCompliant(true);
+        gs.save(wms);
+
+        try {
+            // no error expected
+            getAsImage(
+                    "wms?bbox="
+                            + bbox
+                            + "&styles=&layers="
+                            + layers
+                            + "&Format=image/png"
+                            + "&service=WMS"
+                            + "&request=GetMap"
+                            + "&width=550"
+                            + "&height=250"
+                            + "&wmtver=1.1.0"
+                            + "&srs=EPSG:4326",
+                    "image/png");
+        } finally {
+            wms.setCiteCompliant(false);
+            gs.save(wms);
+        }
+    }
+
+    @Test
+    public void testCiteVersion() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.setCiteCompliant(true);
+        gs.save(wms);
+
+        try {
+            // no error expected
+            getAsImage(
+                    "wms?bbox="
+                            + bbox
+                            + "&styles=&layers="
+                            + layers
+                            + "&Format=image/png"
+                            + "&service=WMS"
+                            + "&request=GetMap"
+                            + "&width=550"
+                            + "&height=250"
+                            + "&version=1.1.0"
+                            + "&srs=EPSG:4326",
+                    "image/png");
+        } finally {
+            wms.setCiteCompliant(false);
+            gs.save(wms);
+        }
+    }
 }

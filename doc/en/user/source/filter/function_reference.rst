@@ -109,6 +109,25 @@ This function returns the value of environment variables
 defined in various contexts.
 WMS GetMap automatically defines somes variables :ref:`SLD rendering <sld_variable_substitution>`,
 while others can be provided using the ``env`` request parameter.
+Example usage in e.g. a dynamic symbolizer:
+
+``${env('size', 20)}``
+
+Example usage in a default Symbolizer:
+
+.. code-block:: xml
+
+  <PointSymbolizer uom="http://www.opengeospatial.org/se/units/metre">
+    <Graphic>
+    ...
+      <Size>
+        <ogc:Function name="env">
+          <ogc:Literal>size</ogc:Literal>
+          <ogc:Literal>20</ogc:Literal>
+        </ogc:Function>
+      </Size>
+    </Graphic>
+  </PointSymbolizer>
 
 .. list-table::
    :widths: 20 25 55

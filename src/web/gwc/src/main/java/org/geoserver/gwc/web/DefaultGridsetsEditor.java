@@ -29,6 +29,7 @@ import org.geoserver.web.wicket.GeoServerAjaxFormLink;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.Icon;
 import org.geoserver.web.wicket.ImageAjaxLink;
+import org.geoserver.web.wicket.Select2DropDownChoice;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSetBroker;
 
@@ -151,7 +152,7 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
                 };
 
         availableGridSets =
-                new DropDownChoice<>("availableGridsets", new Model<>(), availableModel);
+                new Select2DropDownChoice<>("availableGridsets", new Model<>(), availableModel);
         availableGridSets.setOutputMarkupId(true);
         add(availableGridSets);
 

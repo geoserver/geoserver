@@ -3,15 +3,21 @@ package org.geoserver.featurestemplating.readers;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
+import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.Resource;
 import org.junit.Before;
 import org.junit.Test;
+import org.xml.sax.helpers.NamespaceSupport;
 
 public class JSONIncludesTest {
 
@@ -172,6 +178,24 @@ public class JSONIncludesTest {
                 ex.getMessage(),
                 containsString("Went beyond maximum expansion depth (51), chain is: [ping.json"));
         assertThat(ex.getMessage(), containsString("pong.json"));
+    }
+
+    @Test
+    public void testIncludedModificationAreDetected() throws IOException, InterruptedException {
+        Resource resource = store.get("includeInObject.json");
+        RecursiveJSONParser parser = new RecursiveJSONParser(resource);
+        TemplateReaderConfiguration configuration =
+                new TemplateReaderConfiguration(new NamespaceSupport());
+        JSONTemplateReader reader =
+                new JSONTemplateReader(parser.parse(), configuration, parser.getWatchers());
+        RootBuilder rootBuilder = reader.getRootBuilder();
+        assertFalse(rootBuilder.needsReload());
+        Resource included = store.get("object.json");
+        File file = included.file();
+        file.setLastModified(new Date().getTime());
+        Thread.sleep(1000);
+
+        assertTrue(rootBuilder.needsReload());
     }
 
     private RuntimeException checkThrowingTemplate(String s) {

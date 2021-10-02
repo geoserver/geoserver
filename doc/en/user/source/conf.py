@@ -48,17 +48,17 @@ copyright = u'{}, Open Source Geospatial Foundation'.format(now.year)
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = '2.20'
+version = '2.21'
 
 # The full version, including alpha/beta/rc tags.
-release = '2.20-SNAPSHOT'
+release = '2.21-SNAPSHOT'
 
 # Used in build and documentation links
 branch = 'main'
 
 # Users don't need to see the "SNAPSHOT" notation when it's there
 if release.find('SNAPSHOT') != -1:
-   release = '2.20.x'
+   release = '2.21.x'
    download_release = 'https://build.geoserver.org/geoserver/'+branch+'/geoserver-'+version+'.x-latest-%s.zip'
    download_extension = 'https://build.geoserver.org/geoserver/'+branch+'/ext-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
    download_community = 'https://build.geoserver.org/geoserver/'+branch+'/community-latest/geoserver-'+version+'-SNAPSHOT-%s-plugin.zip'
@@ -211,7 +211,8 @@ html_context = {
   'github_user': 'geoserver',
   'github_repo': 'geoserver',
   'github_version': 'main',
-  'conf_py_path': 'doc/en/user/source'
+  'conf_py_path': 'doc/en/user/source',
+  'manual': manual,
 }
 
 

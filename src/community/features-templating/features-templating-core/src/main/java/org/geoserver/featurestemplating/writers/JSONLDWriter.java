@@ -20,20 +20,27 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 /** Implements its superclass methods to write a valid json-ld output */
 public class JSONLDWriter extends CommonJSONWriter {
 
+    private boolean encodeAsString;
+
     public JSONLDWriter(JsonGenerator generator) {
         super(generator, TemplateIdentifier.JSONLD);
     }
 
     @Override
     public void writeValue(Object value) throws IOException {
-        generator.writeString(String.valueOf(value));
+        if (!encodeAsString) super.writeValue(value);
+        else generator.writeString(String.valueOf(value));
     }
 
     @Override
     public void writeGeometry(Object value) throws IOException {
-        FilterFunction_toWKT toWKT = new FilterFunction_toWKT();
-        String wkt = (String) toWKT.evaluate(value);
-        generator.writeString(wkt);
+        if (!encodeAsString) {
+            super.writeGeometry(value);
+        } else {
+            FilterFunction_toWKT toWKT = new FilterFunction_toWKT();
+            String wkt = (String) toWKT.evaluate(value);
+            generator.writeString(wkt);
+        }
     }
 
     @Override
@@ -87,5 +94,9 @@ public class JSONLDWriter extends CommonJSONWriter {
     @Override
     public void endObject(String name, EncodingHints encodingHints) throws IOException {
         if (!skipObjectWriting(encodingHints)) super.endObject(name, encodingHints);
+    }
+
+    public void setEncodeAsString(boolean encodeAsString) {
+        this.encodeAsString = encodeAsString;
     }
 }

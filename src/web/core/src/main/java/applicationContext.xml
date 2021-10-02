@@ -352,7 +352,7 @@
   </bean>
 
   <bean id="worldImageStorePanel" class="org.geoserver.web.data.resource.DataStorePanelInfo">
-    <property name="id" value="gtopo30Raster" />
+    <property name="id" value="worldImageRaster" />
     <property name="factoryClass" value="org.geotools.gce.image.WorldImageFormat" />
     <property name="iconBase" value="org.geoserver.web.GeoServerApplication" />
     <property name="icon" value="img/icons/geosilk/page_white_raster.png" />

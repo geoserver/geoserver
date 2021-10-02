@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.geoserver.community</groupId>
+    <artifactId>gs-features-templating</artifactId>
+    <version>2.21-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.geoserver.community</groupId>
+  <artifactId>gs-features-templating-ows</artifactId>
+  <packaging>jar</packaging>
+  <name>Features Templating WFS plugin</name>
+  <description>Features templating WFS plugin</description>
+
+  <developers>
+    <developer>
+      <id>taba90</id>
+      <name>Marco Volpini</name>
+      <email>marco.volpini@geosolutions.it</email>
+      <organization>GeoSolutions S.A.S.</organization>
+      <roles>
+        <role>Java Developer</role>
+        <role>Module Maintainer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-features-templating-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-main</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wms</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-referencing</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-app-schema</artifactId>
+      <version>${gt.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.extension</groupId>
+      <artifactId>gs-app-schema-test</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver.community</groupId>
+      <artifactId>gs-features-templating-core</artifactId>
+      <version>${project.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-app-schema</artifactId>
+      <version>${gt.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-sample-data</artifactId>
+      <version>${gt.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-jdbc</artifactId>
+      <version>${gt.version}</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-jdbc</artifactId>
+      <version>${gt.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools.jdbc</groupId>
+      <artifactId>gt-jdbc-postgis</artifactId>
+      <version>${gt.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+</project>

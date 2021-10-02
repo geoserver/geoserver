@@ -7,22 +7,16 @@ package org.geoserver.featurestemplating.writers;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.util.ISO8601Formatter;
-import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
-import org.geotools.util.Converters;
-import org.locationtech.jts.geom.Geometry;
 
 /** Implements its superclass methods to write a valid GeoJSON output */
 public class GeoJSONWriter extends CommonJSONWriter {
@@ -33,47 +27,6 @@ public class GeoJSONWriter extends CommonJSONWriter {
 
     public GeoJSONWriter(JsonGenerator generator) {
         super(generator, TemplateIdentifier.JSON);
-    }
-
-    @Override
-    public void writeValue(Object value) throws IOException {
-        if (value instanceof String) {
-            generator.writeString((String) value);
-        } else if (value instanceof Integer) {
-            generator.writeNumber((Integer) value);
-        } else if (value instanceof Double) {
-            generator.writeNumber((Double) value);
-        } else if (value instanceof Float) {
-            generator.writeNumber((Float) value);
-        } else if (value instanceof Long) {
-            generator.writeNumber((Long) value);
-        } else if (value instanceof BigInteger) {
-            generator.writeNumber((BigInteger) value);
-        } else if (value instanceof BigDecimal) {
-            generator.writeNumber((BigDecimal) value);
-        } else if (value instanceof Boolean) {
-            generator.writeBoolean((Boolean) value);
-        } else if (value instanceof Date) {
-            generator.writeString(new ISO8601Formatter().format(value));
-        } else if (value.getClass().isArray()) {
-            List list = Converters.convert(value, List.class);
-            generator.writeStartArray();
-            for (Object o : list) {
-                writeValue(o);
-            }
-            generator.writeEndArray();
-        } else {
-            generator.writeString(value.toString());
-        }
-    }
-
-    @Override
-    public void writeGeometry(Object value) throws IOException {
-        GeometryJSON geomJson = new GeometryJSON();
-        String strGeom = geomJson.toString((Geometry) value);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode actualObj = mapper.readTree(strGeom);
-        writeObjectNode(null, actualObj);
     }
 
     @Override

@@ -2134,13 +2134,7 @@ public class ResourcePool {
      */
     public void writeStyle(StyleInfo info, Style style, boolean format) throws IOException {
         synchronized (styleCache) {
-            Resource styleFile = dataDir().style(info);
-
-            try (BufferedOutputStream out = new BufferedOutputStream(styleFile.out())) {
-                Styles.handler(info.getFormat())
-                        .encode(Styles.sld(style), info.getFormatVersion(), format, out);
-                clear(info);
-            }
+            writeStyleFile(info, Styles.sld(style), format);
         }
     }
 
@@ -2164,13 +2158,22 @@ public class ResourcePool {
     public void writeSLD(StyleInfo info, StyledLayerDescriptor style, boolean format)
             throws IOException {
         synchronized (sldCache) {
-            Resource styleFile = dataDir().style(info);
+            writeStyleFile(info, style, format);
+        }
+    }
 
-            try (BufferedOutputStream out = new BufferedOutputStream(styleFile.out())) {
-                Styles.handler(info.getFormat())
-                        .encode(style, info.getFormatVersion(), format, out);
-                clear(info);
-            }
+    private void writeStyleFile(StyleInfo info, StyledLayerDescriptor style, boolean format)
+            throws IOException {
+        Resource styleFile = dataDir().style(info);
+
+        try (BufferedOutputStream out = new BufferedOutputStream(styleFile.out())) {
+            Styles.handler(info.getFormat()).encode(style, info.getFormatVersion(), format, out);
+
+        } catch (Exception e) {
+            deleteStyleFile(styleFile);
+            throw new IOException("Writing style failed.", e);
+        } finally {
+            clear(info);
         }
     }
 
@@ -2211,11 +2214,15 @@ public class ResourcePool {
     public void deleteStyle(StyleInfo style, boolean purgeFile) throws IOException {
         synchronized (styleCache) {
             if (purgeFile) {
-                File styleFile = Resources.file(dataDir().style(style));
-                if (styleFile != null && styleFile.exists()) {
-                    styleFile.delete();
-                }
+                deleteStyleFile(dataDir().style(style));
             }
+        }
+    }
+
+    private void deleteStyleFile(Resource style) {
+        File styleFile = Resources.file(style);
+        if (styleFile != null && styleFile.exists()) {
+            styleFile.delete();
         }
     }
 

@@ -11,23 +11,19 @@ import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletRequest;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerInfoImpl;
-import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.HTTPHeadersCollector;
 import org.geoserver.ows.ProxifyingURLMangler;
-import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
-import org.springframework.mock.web.MockHttpServletRequest;
 
 public class URLProxifyingTest {
 
@@ -58,25 +54,59 @@ public class URLProxifyingTest {
                 forwardedPath);
         headers.put(ProxifyingURLMangler.Headers.FORWARDED.asString().toLowerCase(), forwarded);
 
-        Request request = createNiceMock(Request.class);
-        expect(request.getHttpRequest())
+        HttpServletRequest servletRequest = createNiceMock(HttpServletRequest.class);
+
+        expect(
+                        servletRequest.getHeader(
+                                ProxifyingURLMangler.Headers.FORWARDED.asString().toLowerCase()))
                 .andReturn(
-                        new HttpServletRequestWrapper(new MockHttpServletRequest()) {
-                            @Override
-                            public String getHeader(String name) {
-                                return headers.get(name);
-                            }
-
-                            @Override
-                            public Enumeration<String> getHeaderNames() {
-                                return Collections.enumeration(headers.keySet());
-                            }
-                        })
+                        headers.get(
+                                ProxifyingURLMangler.Headers.FORWARDED.asString().toLowerCase()))
                 .anyTimes();
-        replay(request);
-        Dispatcher.REQUEST.set(request);
-        new HTTPHeadersCollector().init(request);
+        expect(
+                        servletRequest.getHeader(
+                                ProxifyingURLMangler.Headers.FORWARDED_PROTO
+                                        .asString()
+                                        .toLowerCase()))
+                .andReturn(
+                        headers.get(
+                                ProxifyingURLMangler.Headers.FORWARDED_PROTO
+                                        .asString()
+                                        .toLowerCase()))
+                .anyTimes();
+        expect(servletRequest.getHeader(ProxifyingURLMangler.Headers.HOST.asString().toLowerCase()))
+                .andReturn(headers.get(ProxifyingURLMangler.Headers.HOST.asString().toLowerCase()))
+                .anyTimes();
+        expect(
+                        servletRequest.getHeader(
+                                ProxifyingURLMangler.Headers.FORWARDED_HOST
+                                        .asString()
+                                        .toLowerCase()))
+                .andReturn(
+                        headers.get(
+                                ProxifyingURLMangler.Headers.FORWARDED_HOST
+                                        .asString()
+                                        .toLowerCase()))
+                .anyTimes();
+        expect(
+                        servletRequest.getHeader(
+                                ProxifyingURLMangler.Headers.FORWARDED_PATH
+                                        .asString()
+                                        .toLowerCase()))
+                .andReturn(
+                        headers.get(
+                                ProxifyingURLMangler.Headers.FORWARDED_PATH
+                                        .asString()
+                                        .toLowerCase()))
+                .anyTimes();
 
+        expect(servletRequest.getHeaderNames())
+                .andReturn(Collections.enumeration(headers.keySet()))
+                .anyTimes();
+        replay(servletRequest);
+
+        HTTPHeadersCollector filter = new HTTPHeadersCollector();
+        filter.collectHeaders(servletRequest);
         GeoServer geoServer = createNiceMock(GeoServer.class);
         expect(geoServer.getGlobal())
                 .andReturn(

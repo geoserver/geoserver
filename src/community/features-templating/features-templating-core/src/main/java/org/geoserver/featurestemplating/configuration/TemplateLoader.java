@@ -25,6 +25,7 @@ import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.featurestemplating.validation.TemplateValidator;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.complex.AppSchemaDataAccessRegistry;
 import org.geotools.data.complex.DataAccessRegistry;
@@ -65,12 +66,6 @@ public class TemplateLoader {
         if (template.checkTemplate()) updateCache = true;
 
         RootBuilder root = template.getRootBuilder();
-        // check if reload is needed anyway and eventually reload the template
-        if (root != null && root.needsReload()) {
-            template.reloadTemplate();
-            updateCache = true;
-            root = template.getRootBuilder();
-        }
 
         if (updateCache) {
             replaceSimplifiedPropertiesIfNeeded(key.getResource(), template.getRootBuilder());
@@ -119,26 +114,26 @@ public class TemplateLoader {
 
     private class CacheKey {
         private FeatureTypeInfo resource;
-        private String path;
+        private String templateIdentifier;
 
-        public CacheKey(FeatureTypeInfo resource, String path) {
+        public CacheKey(FeatureTypeInfo resource, String templateIdentifier) {
             this.resource = resource;
-            this.path = path;
+            this.templateIdentifier = templateIdentifier;
         }
 
         public FeatureTypeInfo getResource() {
             return resource;
         }
 
-        public String getPath() {
-            return path;
+        public String getTemplateIdentifier() {
+            return templateIdentifier;
         }
 
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof CacheKey)) return false;
             CacheKey other = (CacheKey) o;
-            if (!other.getPath().equals(path)) return false;
+            if (!other.getTemplateIdentifier().equals(templateIdentifier)) return false;
             else if (!(other.getResource().getName().equals(resource.getName()))) return false;
             else if (!(other.getResource().getNamespace().equals(resource.getNamespace())))
                 return false;
@@ -147,7 +142,7 @@ public class TemplateLoader {
 
         @Override
         public int hashCode() {
-            return Objects.hash(resource, path);
+            return Objects.hash(resource, templateIdentifier);
         }
     }
 
@@ -199,9 +194,30 @@ public class TemplateLoader {
         return null;
     }
 
+    /**
+     * Remove from the cache the entry with the specified identifier and Feature Type
+     *
+     * @param fti the FeatureType to which is associated the entry.
+     * @param templateIdentifier the templateIdentifier of the cached template.
+     */
     public void cleanCache(FeatureTypeInfo fti, String templateIdentifier) {
         CacheKey key = new CacheKey(fti, templateIdentifier);
         if (templateCache.getIfPresent(key) != null) this.templateCache.invalidate(key);
+    }
+
+    /**
+     * Remove all the cached entries with the specified templateIdentifier.
+     *
+     * @param templateIdentifier the templateIdentifier used to identify the cache entries to
+     *     remove.
+     */
+    public void removeAllWithIdentifier(String templateIdentifier) {
+        Set<CacheKey> keys = templateCache.asMap().keySet();
+        for (CacheKey key : keys) {
+            if (key.getTemplateIdentifier().equals(templateIdentifier)) {
+                templateCache.invalidate(key);
+            }
+        }
     }
 
     private TemplateFileManager getTemplateFileManager() {
@@ -222,11 +238,11 @@ public class TemplateLoader {
                                 + "Exception is: "
                                 + e.getMessage());
             }
-            TemplateInfo templateInfo = TemplateInfoDAO.get().findById(key.getPath());
+            TemplateInfo templateInfo = TemplateInfoDAO.get().findById(key.getTemplateIdentifier());
             Resource resource;
             if (templateInfo != null)
                 resource = getTemplateFileManager().getTemplateResource(templateInfo);
-            else resource = getDataDirectory().get(key.getResource(), key.getPath());
+            else resource = getDataDirectory().get(key.getResource(), key.getTemplateIdentifier());
             Template template = new Template(resource, new TemplateReaderConfiguration(namespaces));
             RootBuilder builder = template.getRootBuilder();
             if (builder != null) {
@@ -236,7 +252,12 @@ public class TemplateLoader {
         }
     }
 
+    /** Invalidate all the cache entries. */
     public void reset() {
         templateCache.invalidateAll();
+    }
+
+    public static TemplateLoader get() {
+        return GeoServerExtensions.bean(TemplateLoader.class);
     }
 }

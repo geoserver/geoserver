@@ -14,6 +14,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -119,6 +120,7 @@ public class GridSetsPage extends GeoServerSecuredPage {
                         return new ArrayList<>(GWC.get().getGridSetBroker().getGridSets());
                     }
                 };
+        provider.setSort("name", SortOrder.ASCENDING);
         // the table, and wire up selection change
         table = new GridSetsPanel("table", provider);
         table.setOutputMarkupId(true);

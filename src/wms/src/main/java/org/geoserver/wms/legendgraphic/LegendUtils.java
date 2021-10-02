@@ -412,6 +412,20 @@ public class LegendUtils {
     }
 
     /**
+     * Get the wrap limit
+     *
+     * @param req the {@link GetLegendGraphicRequest} from which to extract wrap limit.
+     * @return the wrap limit or -1 if no wrap limit provided
+     */
+    public static int getWrapLimit(final GetLegendGraphicRequest req) {
+        if (req.getLegendOptions().get("wrap_limit") instanceof String) {
+            String wrapVal = (String) req.getLegendOptions().get("wrap_limit");
+            return Integer.parseInt(wrapVal);
+        }
+        return -1;
+    }
+
+    /**
      * Returns the image background color for the given {@link GetLegendGraphicRequest}.
      *
      * @param req a {@link GetLegendGraphicRequest} from which we should extract the background
@@ -626,7 +640,7 @@ public class LegendUtils {
      * @return a {@link BufferedImage} of the properly rendered label.
      */
     public static BufferedImage renderLabel(
-            final String label, final Graphics2D g, final GetLegendGraphicRequest req) {
+            String label, final Graphics2D g, final GetLegendGraphicRequest req) {
 
         ensureNotNull(label);
         ensureNotNull(g);
@@ -636,13 +650,13 @@ public class LegendUtils {
         BufferedImage renderedLabel;
         Color labelColor = getLabelFontColor(req);
         if (LegendUtils.isWrap(req)) {
-            // if label is longer than width, word wrap it.
-            Rectangle2D labelBounds = g.getFontMetrics().getStringBounds(label, g);
-            if (labelBounds.getWidth() > req.getWidth()) {
-                FontMetrics fm = g.getFontMetrics();
-                int widthChars = req.getWidth() / fm.stringWidth("m");
-                WordUtils.wrap(label, widthChars, "\n", true);
+            int width = getWrapLimit(req);
+            if (width == -1) {
+                width = req.getWidth();
             }
+            FontMetrics fm = g.getFontMetrics();
+            int widthChars = width / fm.stringWidth("m");
+            label = WordUtils.wrap(label, widthChars, "\n", true);
         }
         if ((label.indexOf("\n") != -1) || (label.indexOf("\\n") != -1)) {
             // this is a label WITH line-breaks...we need to figure out it's height *and*

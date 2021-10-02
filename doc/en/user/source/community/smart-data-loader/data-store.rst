@@ -6,46 +6,46 @@ Smart Data Loader
 Data Store 
 ----------
 
-In addition to the parameters common to each ``DataStore`` configuration as ``workspace``, ``name`` and ``description``, the page shows the following connection parameters in the dedicated section:
+In addition to the parameters common to each ``DataStore`` configuration such as ``workspace``, ``name`` and ``description``, the page shows the following connection parameters in the dedicated section:
 
-* ``Data store name``: the name of the PostGIS ``DataStore`` already created under the same workspace. It will be used to access the database and build xsd and mappings file based on the databse metadata.
+* ``Data store name``: the name of the PostGIS ``DataStore`` already created under the same workspace. It will be used to access the database and build xsd and mappings file based on the database metadata.
 
 * ``Root entity``: the name of the DB table to be used as the root FeatureType to build the xsd and the mapping file.
 
-Once selected the root entity a diagram of the entities at stake will appear, allowing you to uncheck the attributes that are not meant to be included in the xsd and the mapping file.
+Once selected the root entity a diagram of the entities available will appear. Uncheck the attributes that should not be included in the XSD and the mapping file.
 
 
 Meteo Stations example 
 ----------------------
 
-To show in details how to configure the ``DataStore`` we will use the Meteo Stations use case.
+This section provides an example of configuring the ``DataStore`` with weather station information.
 
-.. warning:: This is an oversimplified use case.
+.. note:: This example is intended to be illustrative of a general approach, and does not reflect a formally defined schema or information model. Also, more complicated scenarios may require significantly more work.
 
-Below a diagram of the entities involved:
+A diagram of the entities involved is shown below:
 
 .. figure:: images/stations-diagram.png
 
-  Entities' diagram
+  Entities diagram
 
 
 
-As it is possible to see, the dataset consists of:
+As shown, the dataset consists of:
 
-* A One to Many relationship between the ``meteo-stations`` and ``meteo-observations`` tables.
+* A One to Many relationship between the ``meteo_stations`` and ``meteo_observations`` tables.
 
-* A Many to Many relationship between the ``meteo-`` the ``meteo-maintainers`` tables, mapped by the relation table meteo-stations-maintainers.
+* A Many to Many relationship between the ``meteo_stations`` and ``meteo_maintainers`` tables, mapped by the relation table ``meteo_stations_maintainers``.
 
-* A Many to One relationship between the ``meteo-observations`` and the ``meteo-parameters`` tables.
+* A Many to One relationship between the ``meteo_observations`` and the ``meteo_parameters`` tables.
 
-Assuming to have a postgis datastore named meteos-simple under the st workspace, by opening the Smart Data Loader page we will have to select the desired workspace and the postgis datastore belonging to the selected workspace, in this case the meteos-postgis one:
+Assuming a PostGIS datastore named meteos-simple under the st workspace, by opening the Smart Data Loader page we will have to select the desired workspace and the postgis datastore belonging to the selected workspace, in this case the meteos-postgis one:
 
 .. figure:: images/store-page.png
 
   Smart Data Loader configuration page
 
 
-After having selected the root entity as meteo-stations, a schema, which will be the one used to generate xsd and mappings file, will appear. Each attribute/entity can be unchecked to avoid it to be included in the generated mappings.
+After having selected the root entity as meteo-stations, a schema, which will be used to generate the XSD and mappings file, will appear. Each attribute/entity can be unchecked to avoid it being included in the generated mappings.
 
 ..figure:: images/store-relations.png
 
@@ -54,7 +54,7 @@ After having selected the root entity as meteo-stations, a schema, which will be
 
 After pressing the save button, the files will be generated automatically in the store data-dir directory under ``app-schema-mappings`` directory.
 
-Below the generated mappings file for the use case explained here.
+The generated mappings file for this example are explained below.
 
 GML schema definition::
 
@@ -151,7 +151,7 @@ GML schema definition::
  </xs:schema>
 
 
-AppSchema mappings file::
+App-Schema mappings file::
 
   <?xml version="1.0" encoding="UTF-8"?><ns3:AppSchemaDataAccess xmlns:ns2="http://www.opengis.net/ogc" xmlns:ns3="http://www.geotools.org/app-schema">
   <namespaces>
@@ -334,7 +334,7 @@ AppSchema mappings file::
           <sourceExpression>
             <linkField>FEATURE_LINK[1]</linkField>
             <linkElement>st:MeteoMaintainersFeature</linkElement>
-            <OCQL>manteiner_id</OCQL>
+            <OCQL>maintainer_id</OCQL>
           </sourceExpression>
         </AttributeMapping>
       </attributeMappings>
@@ -428,13 +428,13 @@ AppSchema mappings file::
 Customize smart-data-loader generated mappings and xsd definition
 ------------------------------------------------------------------
 
-The Smart Data Loader does not allow per se to modify the mappings and xsd type definition. However it can be used as a starting point to generate configuration files that one can then manipulates to customize as preferred.
+The Smart Data Loader does not allow direct modification of the mappings and XSD type definition. However it can be used as a starting point to generate configuration files that can be customized as required.
 This is the suggested workflow for such a use case:
 
-* Create a new smart-data-loader store, select the desired PostGIS store, the root entity and save it.
+* Create a new smart-data-loader store, select the desired PostGIS store, and then the root entity and save it.
 
-* Go in your geoserver datadir and identify the Smart Data Loader store folder under the workspace you chose while configuring it. An ``app-schema-mappings`` directory should be there.
+* Go to the geoserver datadir and identify the Smart Data Loader store folder under the workspace that was selected while configuring it. An ``app-schema-mappings`` directory should be in that store folder.
 
-* Copy and paste the files contained in that directory to a another directory of your preference, and modify them as needed.
+* Copy and paste the files contained in that directory to another directory and modify them as needed.
 
-* Delete the Smart Data Loader store, and create a new App-Schema store with a uri parameter pointing to the folder where you placed the auto-generated files.
+* Delete the Smart Data Loader store, and create a new App-Schema store with a uri parameter pointing to the folder containing the modified files.

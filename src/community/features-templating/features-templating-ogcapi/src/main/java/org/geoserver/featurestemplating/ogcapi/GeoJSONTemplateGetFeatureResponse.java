@@ -29,7 +29,7 @@ import org.springframework.web.context.request.RequestContextHolder;
  * fields in a different way if the response mime type is application/geo+json
  */
 class GeoJSONTemplateGetFeatureResponse
-        extends org.geoserver.featurestemplating.wfs.GeoJSONTemplateGetFeatureResponse {
+        extends org.geoserver.featurestemplating.ows.wfs.GeoJSONTemplateGetFeatureResponse {
 
     public GeoJSONTemplateGetFeatureResponse(
             GeoServer gs, TemplateLoader configuration, TemplateIdentifier identifier) {

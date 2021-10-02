@@ -12,7 +12,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-20.04
-            jdk: 17-ea
+            jdk: 17
     steps:
     - uses: actions/checkout@v2
       with:

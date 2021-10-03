@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.external.impl.FileServiceImpl;
 import org.geoserver.taskmanager.util.LookupService;

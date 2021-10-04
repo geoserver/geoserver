@@ -21,7 +21,7 @@ The buttons for adding and removing a workspace can be found at the top of the W
    
 To add a workspace, select the :guilabel:`Add new workspace` button. You will be prompted to enter the the workspace name and URI (as described in :ref:`data_webadmin_workspaces_edit` below).
    
-.. figure:: img/data_workspaces_medford.png
+.. figure:: img/data_workspaces_sde.png
 
    New Workspace page with example
 

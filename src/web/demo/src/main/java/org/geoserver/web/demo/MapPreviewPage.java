@@ -275,11 +275,18 @@ public class MapPreviewPage extends GeoServerBasePage {
         return f;
     }
 
+    /**
+     * Translate format (if translation available).
+     *
+     * @param prefix protocol
+     * @param format output format
+     * @return format translation (defaults to format if unavailable)
+     */
     private String translateFormat(String prefix, String format) {
         try {
             return getLocalizer().getString(prefix + format, this);
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, e.getMessage());
+            LOGGER.log(Level.FINE, e.getMessage());
             return format;
         }
     }

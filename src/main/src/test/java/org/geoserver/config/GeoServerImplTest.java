@@ -30,6 +30,7 @@ import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.ows.LocalWorkspace;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,6 +40,7 @@ public class GeoServerImplTest {
 
     @Before
     public void setUp() throws Exception {
+        GeoServerExtensionsHelper.setIsSpringContext(false);
         geoServer = createGeoServer();
     }
 

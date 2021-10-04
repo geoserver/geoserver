@@ -39,7 +39,7 @@ import javax.xml.bind.annotation.XmlType;
 public class Polygon {
 
     @XmlElementRef(
-        name = "coordinates",
+        name = "map-coordinates",
         type = JAXBElement.class,
         namespace = "http://www.w3.org/1999/xhtml"
     )

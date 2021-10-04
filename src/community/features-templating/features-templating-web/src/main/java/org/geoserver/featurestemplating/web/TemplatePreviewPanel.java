@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,11 +28,14 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
@@ -52,6 +56,7 @@ import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
 import org.geoserver.featurestemplating.configuration.TemplateLayerConfig;
+import org.geoserver.featurestemplating.configuration.TemplateLoader;
 import org.geoserver.featurestemplating.configuration.TemplateRule;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
@@ -59,6 +64,8 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.exception.GeoServerException;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.CodeMirrorEditor;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 public class TemplatePreviewPanel extends Panel {
 
@@ -264,8 +271,12 @@ public class TemplatePreviewPanel extends Panel {
     }
 
     private String getBaseURL() {
-        HttpServletRequest req = GeoServerApplication.get().servletRequest();
+        HttpServletRequest req = request();
         return ResponseUtils.baseURL(req);
+    }
+
+    private HttpServletRequest request() {
+        return GeoServerApplication.get().servletRequest();
     }
 
     String getPath(String service, boolean useGlobalRef, WorkspaceInfo wi) {
@@ -329,8 +340,13 @@ public class TemplatePreviewPanel extends Panel {
                     @Override
                     protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
                         FeatureTypeInfo featureTypeInfo = featureTypesDD.getModelObject();
-                        if (featureTypeInfo != null) removeTemplatePreviewRule(featureTypeInfo);
-
+                        if (featureTypeInfo != null) {
+                            // clean cache
+                            TemplateInfo ti = page.getTemplateInfoModel().getObject();
+                            TemplateLoader.get().cleanCache(featureTypeInfo, ti.getIdentifier());
+                            // remove the rule
+                            removeTemplatePreviewRule(featureTypeInfo);
+                        }
                         if (previewEditor.hasFeedbackMessage()) {
                             target.add(previewFeedback);
                         }
@@ -381,10 +397,30 @@ public class TemplatePreviewPanel extends Panel {
         return (Catalog) GeoServerExtensions.bean("catalog");
     }
 
-    private CloseableHttpClient buildHttpClient() {
+    CloseableHttpClient buildHttpClient() {
         RequestConfig clientConfig =
                 RequestConfig.custom().setConnectTimeout(60000).setSocketTimeout(60000).build();
-        return HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).build();
+        CookieStore cookieStore = new BasicCookieStore();
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        if (attributes != null) {
+            BasicClientCookie cookie =
+                    new BasicClientCookie("JSESSIONID", attributes.getSessionId());
+            HttpServletRequest request = request();
+            cookie.setPath(request.getContextPath());
+            // gets a calendar using the default time zone and locale.
+            Calendar calendar = Calendar.getInstance();
+
+            // use the session timeout to set the JSESSIONID cookie timeout
+            int maxInactive = request.getSession().getMaxInactiveInterval();
+            calendar.add(Calendar.SECOND, maxInactive > 0 ? maxInactive : 30);
+            cookie.setExpiryDate(calendar.getTime());
+            cookie.setDomain(request.getServerName());
+            cookieStore.addCookie(cookie);
+        }
+        return HttpClientBuilder.create()
+                .setDefaultRequestConfig(clientConfig)
+                .setDefaultCookieStore(cookieStore)
+                .build();
     }
 
     private String performWfsRequest(String url) {

@@ -4,6 +4,7 @@
  */
 package org.geoserver.featurestemplating.web;
 
+import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxCallListener;
@@ -14,9 +15,9 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.geoserver.featurestemplating.configuration.FileTemplateDAOListener;
-import org.geoserver.featurestemplating.configuration.TemplateFileManager;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
 import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
+import org.geoserver.featurestemplating.configuration.TemplateService;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
@@ -96,10 +97,9 @@ public class TemplateInfoPage extends GeoServerSecuredPage {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                TemplateInfoDAO dao = TemplateInfoDAO.get();
-                TemplateFileManager fileManager = TemplateFileManager.get();
-                tablePanel.getSelection().forEach(ti -> fileManager.delete(ti));
-                dao.delete(tablePanel.getSelection());
+                TemplateService service = new TemplateService();
+                List<TemplateInfo> templates = tablePanel.getSelection();
+                templates.forEach(ti -> service.delete(ti));
                 tablePanel.modelChanged();
                 target.add(tablePanel);
                 target.add(TemplateInfoPage.this);

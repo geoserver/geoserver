@@ -175,14 +175,14 @@ public class TilesetDescriptionTest extends TilesTestSupport {
     public void testMapTileJSONSingleLayer() throws Exception {
         DocumentContext doc =
                 getAsJSONPath(
-                        "/ogc/tiles/collections/cite:RoadSegments/map/RoadSegments/tiles/EPSG:4326/metadata?f=application%2Fjson&tileFormat=image%2Fpng8",
+                        "/ogc/tiles/collections/cite:RoadSegments/map/tiles/EPSG:4326/metadata?f=application%2Fjson&tileFormat=image%2Fpng8",
                         200);
         assertThat(doc.read("name"), equalTo("cite:RoadSegments"));
         assertThat(doc.read("scheme"), equalTo("xyz"));
         assertThat(
                 readSingle(doc, "tiles"),
                 equalTo(
-                        "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/map/RoadSegments/tiles/EPSG:4326/{z}/{y}/{x}?f=image%2Fpng8"));
+                        "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ARoadSegments/map/tiles/EPSG:4326/{z}/{y}/{x}?f=image%2Fpng8"));
         assertThat(doc.read("center"), equalTo(Arrays.asList(0d, 0d, 0d)));
         assertThat(doc.read("bounds"), equalTo(Arrays.asList(-0.0042, -0.0024, 0.0042, 0.0024)));
         assertFalse(exists(doc, "vector_layers"));

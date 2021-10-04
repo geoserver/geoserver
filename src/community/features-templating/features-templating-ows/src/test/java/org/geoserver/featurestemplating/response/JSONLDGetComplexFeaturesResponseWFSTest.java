@@ -39,6 +39,10 @@ public class JSONLDGetComplexFeaturesResponseWFSTest extends TemplateComplexTest
     private static final String INVALID_GU = "InvalidJSONLDGu";
     private static final String INVALID_GU_PARAM = "&" + INVALID_GU + "=true";
 
+    private static final String MF_JSON_LD_DEF_ENC = "MfJsonLdDefEncoding";
+
+    private static final String MF_JSON_LD_DEF_ENC_PARAM = "&" + MF_JSON_LD_DEF_ENC + "=true";
+
     @Override
     public void onSetUp(SystemTestData testData) throws IOException {
         Catalog catalog = getCatalog();
@@ -96,6 +100,16 @@ public class JSONLDGetComplexFeaturesResponseWFSTest extends TemplateComplexTest
                 ".json",
                 "gsml",
                 geologic);
+
+        String mappedFeatureDefEncoding = "MfJsonLdDefEncoding.json";
+        setUpTemplate(
+                "requestParam('" + MF_JSON_LD_DEF_ENC + "')='true'",
+                SupportedFormat.JSONLD,
+                mappedFeatureDefEncoding,
+                MF_JSON_LD_DEF_ENC,
+                ".json",
+                "gsml",
+                mappedFeature);
     }
 
     @Test
@@ -332,5 +346,32 @@ public class JSONLDGetComplexFeaturesResponseWFSTest extends TemplateComplexTest
                 }
             }
         }
+    }
+
+    @Test
+    public void testJsonLdResponseNonStringValues() throws Exception {
+        StringBuffer sb = new StringBuffer("wfs?request=GetFeature&version=2.0");
+        sb.append("&TYPENAME=gsml:MappedFeature&outputFormat=");
+        sb.append("application%2Fld%2Bjson").append(MF_JSON_LD_DEF_ENC_PARAM);
+        JSONObject result = (JSONObject) getJsonLd(sb.toString());
+        Object context = result.get("@context");
+        checkContext(context);
+        assertNotNull(context);
+        JSONArray features = (JSONArray) result.get("features");
+        assertEquals(5, features.size());
+
+        // gets the first feature to check if some non string attributes have been encoded with
+        // proper type.
+        JSONObject feature = features.getJSONObject(0);
+        assertTrue(feature.getJSONObject("gsml:positionalAccuracy").get("value") instanceof Double);
+        assertTrue(
+                feature.getJSONObject("gsml:positionalAccuracy").getJSONArray("valueArray").get(0)
+                        instanceof Double);
+        Object geom = feature.get("geometry");
+        // no WKT should be a JSONObject
+        assertTrue(geom instanceof JSONObject);
+        JSONObject geomJSON = (JSONObject) geom;
+        Object coors = geomJSON.get("coordinates");
+        assertTrue(coors instanceof JSONArray);
     }
 }

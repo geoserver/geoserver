@@ -17,9 +17,19 @@ import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.featurestemplating.builders.impl.RootBuilder;
+import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
+import org.geoserver.featurestemplating.configuration.SupportedFormat;
 import org.geoserver.featurestemplating.configuration.TemplateFileManager;
+import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.configuration.TemplateInfo;
 import org.geoserver.featurestemplating.configuration.TemplateInfoDAO;
+import org.geoserver.featurestemplating.configuration.TemplateLoader;
+import org.geoserver.featurestemplating.configuration.TemplateRule;
+import org.geoserver.featurestemplating.configuration.TemplateRuleService;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
@@ -407,7 +417,7 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
         }
     }
 
-    private void newTemplateInfo(
+    private TemplateInfo newTemplateInfo(
             String name,
             String extension,
             String workspace,
@@ -420,5 +430,57 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
         info.setFeatureType(featureType);
         TemplateInfoDAO.get().saveOrUpdate(info);
         TemplateFileManager.get().saveTemplateFile(info, rawTemplate);
+        return info;
+    }
+
+    @Test
+    public void testUpdatedCacheOnPut() throws Exception {
+
+        try {
+            // create template and adds it to the featureType
+            TemplateInfo info =
+                    newTemplateInfo(
+                            "testJsonTemplateCache", "json", null, null, "{\"static\":\"value\"}");
+            FeatureTypeInfo fifteen = getCatalog().getFeatureTypeByName("cite", "NamedPlaces");
+            TemplateRuleService service = new TemplateRuleService(fifteen);
+            TemplateRule templateRule = new TemplateRule();
+            templateRule.setTemplateName(info.getFullName());
+            templateRule.setTemplateIdentifier(info.getIdentifier());
+            templateRule.setOutputFormat(SupportedFormat.GEOJSON);
+            service.saveRule(templateRule);
+
+            // ask the loader for the template to be sure the cache load it.
+            Request request = new Request();
+            request.setOutputFormat(TemplateIdentifier.JSON.getOutputFormat());
+            Dispatcher.REQUEST.set(request);
+            RootBuilder rootBuilder =
+                    TemplateLoader.get()
+                            .getTemplate(fifteen, TemplateIdentifier.JSON.getOutputFormat());
+            StaticBuilder builder =
+                    (StaticBuilder) rootBuilder.getChildren().get(0).getChildren().get(0);
+            String value = builder.getStaticValue().textValue();
+            assertEquals("value", value);
+
+            // replace the template with a new one.
+            putAsServletResponse(
+                    RestBaseController.ROOT_PATH + "/featurestemplates/testJsonTemplateCache",
+                    "{\"differentStatic\":\"differentValue\"}",
+                    MediaType.APPLICATION_JSON_VALUE);
+
+            // reload the template. The new builder tree should represent the new template.
+            rootBuilder =
+                    TemplateLoader.get()
+                            .getTemplate(fifteen, TemplateIdentifier.JSON.getOutputFormat());
+            assertNotNull(rootBuilder);
+            builder = (StaticBuilder) rootBuilder.getChildren().get(0).getChildren().get(0);
+            value = builder.getStaticValue().textValue();
+            assertEquals("differentValue", value);
+
+            // delete the template
+            deleteAsServletResponse(
+                    RestBaseController.ROOT_PATH + "/featurestemplates/testJsonTemplateCache");
+        } finally {
+            Dispatcher.REQUEST.set(null);
+        }
     }
 }

@@ -6,14 +6,17 @@
 package org.geoserver.wfs.response;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import au.com.bytecode.opencsv.CSVReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.WfsFactory;
@@ -224,5 +227,34 @@ public class CSVOutputFormatTest extends WFSTestSupport {
             // check each line has the expected number of elements (num of att + 1 for the id)
             assertEquals(fs.getSchema().getDescriptors().size() + 1, line.length);
         }
+    }
+
+    @Test
+    public void testDoubleQuotesAsCsvSeparator() throws Exception {
+
+        // build the request objects and feed the output format
+        GetFeatureType gft = WfsFactory.eINSTANCE.createGetFeatureType();
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("CSVSEPARATOR", "\"");
+        gft.setFormatOptions(hashMap);
+        Operation op =
+                new Operation("GetFeature", getServiceDescriptor10(), null, new Object[] {gft});
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        FeatureCollectionResponse fct =
+                FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
+
+        SimpleFeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
+
+        fct.getFeature().add(fs.getFeatures());
+
+        // write out the results
+        CSVOutputFormat format = new CSVOutputFormat(getGeoServer());
+
+        InvalidParameterException invalidParameterException =
+                assertThrows(InvalidParameterException.class, () -> format.write(fct, bos, op));
+
+        assertEquals(
+                "A double quote is not allowed as a CSV separator",
+                invalidParameterException.getMessage());
     }
 }

@@ -47,6 +47,7 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.util.IOUtils;
@@ -136,6 +137,7 @@ public class SystemTestData extends CiteTestData {
 
     @Override
     public void setUp() throws Exception {
+        GeoServerExtensionsHelper.setIsSpringContext(false);
         createCatalog();
         createConfig();
     }

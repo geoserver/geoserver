@@ -3,14 +3,13 @@
 <head />
 <body>
 <wicket:panel>
-    <ul>
+    <ul class="i18n-tile-and-abstract">
         <li>
-            <br/>
             <span wicket:id="titleLabel">
-                  <label style="float:left" for="title" wicket:id="titleLabel" />
-                  <input style="float:left" type="checkbox" wicket:id="titleLabel_i18nCheckbox" />
+                  <label class="leftwise" for="title" wicket:id="titleLabel" />
+                  <input class="leftwise" type="checkbox" wicket:id="titleLabel_i18nCheckbox" />
                   <wicket:message key="i18nCheckBox">i18n</wicket:message>
-               </span>
+            </span>
         </li>
         <li>
             <input class="text" type="text" wicket:id="title" />
@@ -19,11 +18,11 @@
             <div wicket:id="internationalTitle" />
         </li>
         <li>
-               <span wicket:id="abstractLabel">
-                  <label style="float:left" for="abstract" wicket:id="abstractLabel" />
-                  <input style="float:left" type="checkbox" wicket:id="abstractLabel_i18nCheckbox" />
-                  <wicket:message key="i18nCheckBox">i18n</wicket:message>
-               </span>
+            <span wicket:id="abstractLabel">
+               <label class="leftwise" for="abstract" wicket:id="abstractLabel" />
+               <input class="leftwise" type="checkbox" wicket:id="abstractLabel_i18nCheckbox" />
+               <wicket:message key="i18nCheckBox">i18n</wicket:message>
+            </span>
         </li>
         <li>
             <textarea wicket:id="abstract" class="field textarea" rows="10" cols="30" />

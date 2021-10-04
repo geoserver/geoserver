@@ -55,6 +55,8 @@ The :ref:`services` section is for configuring the services published by GeoServ
 
 * The :ref:`Web Map Service (WMS) <services_webadmin_wms>` page manages metadata, resource limits, SRS availability, and other data-specific output for WMS.
 
+* The :ref:`Web Processing Service (WPS) <webadmin_wps>` page manages metadata and resource limits for WPS.
+
 Settings
 --------
 

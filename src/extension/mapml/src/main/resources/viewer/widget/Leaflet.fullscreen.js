@@ -35,8 +35,8 @@ ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFT
         options: {
             position: 'topleft',
             title: {
-                'false': 'View Fullscreen',
-                'true': 'Exit Fullscreen'
+                'false': 'View fullscreen',
+                'true': 'Exit fullscreen'
             }
         },
 
@@ -45,6 +45,7 @@ ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFT
 
             this.link = L.DomUtil.create('a', 'leaflet-control-fullscreen-button leaflet-bar-part', container);
             this.link.href = '#';
+            this.link.setAttribute('role', 'button');
 
             this._map = map;
             this._map.on('fullscreenchange', this._toggleTitle, this);

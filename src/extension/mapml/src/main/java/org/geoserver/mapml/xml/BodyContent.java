@@ -42,19 +42,19 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "bodyContent")
 public class BodyContent {
 
-    @XmlElement(name = "extent", namespace = "http://www.w3.org/1999/xhtml")
+    @XmlElement(name = "map-extent", namespace = "http://www.w3.org/1999/xhtml")
     protected Extent extent;
 
-    @XmlElement(name = "link", namespace = "http://www.w3.org/1999/xhtml")
+    @XmlElement(name = "map-link", namespace = "http://www.w3.org/1999/xhtml")
     protected List<Link> links;
 
-    @XmlElement(name = "feature", namespace = "http://www.w3.org/1999/xhtml")
+    @XmlElement(name = "map-feature", namespace = "http://www.w3.org/1999/xhtml")
     protected List<Feature> features;
 
-    @XmlElement(name = "tile", namespace = "http://www.w3.org/1999/xhtml")
+    @XmlElement(name = "map-tile", namespace = "http://www.w3.org/1999/xhtml")
     protected List<Tile> tiles;
 
-    @XmlElement(name = "image", namespace = "http://www.w3.org/1999/xhtml")
+    @XmlElement(name = "map-image", namespace = "http://www.w3.org/1999/xhtml")
     protected List<Image> images;
 
     public Extent getExtent() {

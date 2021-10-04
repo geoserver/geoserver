@@ -20,6 +20,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
+import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.configuration.TemplateLoader;
@@ -168,7 +169,13 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
 
     @Override
     protected void beforeFeatureIteration(
-            TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo) {}
+            TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo) {
+        Boolean encodeAsString =
+                root.getVendorOptions()
+                        .get(VendorOptions.JSON_LD_STRING_ENCODE, Boolean.class, false);
+        JSONLDWriter jsonldWriter = (JSONLDWriter) writer;
+        jsonldWriter.setEncodeAsString(encodeAsString);
+    }
 
     @Override
     protected void beforeEvaluation(

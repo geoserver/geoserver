@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -30,6 +31,7 @@ import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidationError;
@@ -305,7 +307,16 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
                     public void onSubmit() {
                         onSave();
                     }
-                });
+                }.setVisible(newView));
+
+        form.add(
+                new SubmitLink("ok") {
+                    @Override
+                    public void onSubmit() {
+                        onSave();
+                    }
+                }.setVisible(!newView));
+
         form.add(
                 new Link<Void>("cancel") {
 
@@ -314,6 +325,8 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
                         onCancel();
                     }
                 });
+
+        form.add(new Label("notice", new StringResourceModel("ok.notice")).setVisible(!newView));
     }
 
     private GeoServerAjaxFormLink refreshLink() {

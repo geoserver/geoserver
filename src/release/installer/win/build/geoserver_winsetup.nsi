@@ -22,18 +22,19 @@
 !endif
 !define FULLNAME "${APPNAME} ${VERSION}"                        ; app name and version combined
 !define FULLKEY "${APPNAME}-${VERSION}"                         ; app name and version combined (delimited)
-!define INSTNAME "${APPNAME}-install-${VERSION}.exe"            ; installer exe name
+!define INSTNAME "${APPNAME}-${VERSION}-winsetup.exe"           ; installer exe name
 !define UNINNAME "${APPNAME}-uninstall.exe"                     ; uninstaller exe name
-!define HOMEPAGE "http://geoserver.org"                         ; resource URL
+!define HOMEPAGE "https://geoserver.org"                        ; resource URL
 !define TIMESTAMPURL "http://timestamp.comodoca.com/rfc3161"    ; URL used to timestamp certificates
 !define REQJREVERSION "1.8.0"                                   ; required Java runtime version (i.e. 1.8.0)
 !define REQJREVERSIONNAME "8"                                   ; required Java runtime display version (i.e. 8)
 !define ALTJREVERSION "11.0"                                    ; alternative Java runtime version (i.e. 11.0)
 !define ALTJREVERSIONNAME "11"                                  ; alternative Java runtime display version (i.e. 11)
-!define JDKNAME "AdoptOpenJDK"                                  ; Name of the OpenJDK provider (e.g. AdoptOpenJDK)
-!define JDKURL "https://adoptopenjdk.net"                       ; OpenJDK URL
+!define JDKNAME "Adoptium OpenJDK"                              ; Name of the OpenJDK provider (e.g. AdoptOpenJDK)
+!define JDKURL "https://adoptium.net"                           ; OpenJDK URL
 !define EMAIL "geoserver-users@lists.sourceforge.net"           ; support email address
 !define COPYRIGHT "Copyright (c) 1999-2021 Open Source Geospatial Foundation"
+!define CERT_DOMAIN "https://www.osgeo.org"                     ; Certificate domain (URL)
 !define CERT_SUBJECT "The Open Source Geospatial Foundation"    ; Certificate subject
 
 ; CODE SIGNING
@@ -47,7 +48,7 @@
 ; C:\Program Files (x86)\Windows Kits\10\App Certification Kit
 ;
 ; IMPORTANT: the signtool.exe directory MUST be added to the Windows PATH environment variable!!
-!define SIGNCOMMAND "signtool sign  /v /n $\"${CERT_SUBJECT}$\" /sm /d ${APPNAME} /du https://www.osgeo.org /tr http://timestamp.comodoca.com/rfc3161 /td sha256"
+!define SIGNCOMMAND "signtool sign  /v /n $\"${CERT_SUBJECT}$\" /sm /d ${APPNAME} /du ${CERT_DOMAIN} /tr ${TIMESTAMPURL} /td sha256"
 
 ; The sign command will be called after the (un)installer.exe files were build successfully.
 ; Make sure that the private certificate (*.pfx) is installed in the certificate store (for user, not machine).
@@ -108,6 +109,10 @@ Var GSPassHWND
   ; Request application privileges for Windows
   RequestExecutionLevel admin
 
+  ; We would like everyone to see what the (un)installer is doing
+  ShowInstDetails show
+  ShowUninstDetails show
+
   ; Compression options
   !ifdef INNER
     !echo "Inner invocation"
@@ -162,6 +167,13 @@ Var GSPassHWND
                                 $\r$\n$\r$\nIt is recommended that you close all other applications before running this setup. \
                                 This will make it possible to update relevant system files without having to reboot your computer. \
                                 $\r$\n$\r$\nClick Next to continue."
+
+  ; Install location page text
+  !define MUI_DIRECTORYPAGE_TEXT_TOP "${FULLNAME} will be installed in the suggested folder below. \
+                                      This folder is recommended when installing ${APPNAME} as a Windows service. \
+                                      For manual installations, you may want to change the installation directory to a \
+                                      folder that you created yourself. \
+                                      $\r$\n$\r$\nClick Browse to select another folder and/or Next to continue."
 
 ; ----------------------------------------------------------------------------
 ; Registry Settings
@@ -357,11 +369,11 @@ Function SetJRE
   nsDialogs::Create 1018
 
   ; ${NSD_Create*} x y width height text
-  ${NSD_CreateLabel} 0 0 100% 56u "Please select a Java Runtime Environment (JRE) if the path below is invalid or unwanted. \
+  ${NSD_CreateLabel} 0 0 100% 56u "Please select a Java Runtime Environment (JRE) if the suggested path below is incorrect. \
                                    $\r$\n$\r$\n${APPNAME} requires a 64-Bit Java JRE or JDK (${REQJREVERSIONNAME} \
                                    or ${ALTJREVERSIONNAME}). \
-                                   $\r$\n$\r$\nIf you don't have a (valid) JRE installed, you can click on \
-                                   the link below to download and install the correct JRE for your system."
+                                   $\r$\n$\r$\nIf you don't have a (valid) JDK installed, please click on the link below \
+                                   to download and install the correct JDK. Then shut down and restart the installer."
 
   ${NSD_CreateLink} 0 60u 100% 12u "Visit ${JDKNAME} website"
   Pop $LinkHWND
@@ -829,7 +841,7 @@ Function SetInstallType
   ${NSD_CreateLabel} 0 0 100% 24u "Select how you wish to run ${APPNAME}.$\r$\nIf you don't know which option to choose, select the $\"Install as a service$\" option."
   ${NSD_CreateRadioButton} 10u 28u 50% 12u "Install as a service (recommended)"
   Pop $Service
-  ${NSD_CreateLabel} 10u 44u 90% 24u "Installed for all users. Runs as a Windows Service for greater security."
+  ${NSD_CreateLabel} 10u 44u 90% 24u "Installed for all users. Runs as a Windows network service for greater security."
 
   ${NSD_CreateRadioButton} 10u 72u 50% 12u "Run manually"
   Pop $Manual
@@ -1030,7 +1042,12 @@ Section "GeoServer" SectionMain
     ; Install the service using Java Service Launcher and start it
     ; jsl64.exe -install|configure|remove|run|runapp (<ini file>) (-console hide|attach|new)
     DetailPrint "Installing Windows service..."
-    nsExec::ExecToLog '"$INSTDIR\wrapper\${APPNAME}.exe" -install "$INSTDIR\wrapper\jsl64.ini" -console hide'
+    nsExec::ExecToLog '"$INSTDIR\wrapper\${APPNAME}.exe" -install "$INSTDIR\wrapper\jsl64.ini" -console attach'
+    Pop $0
+    ${If} $0 != "0"
+      DetailPrint "Error: $0"
+    ${EndIf}
+    ClearErrors
     Sleep 4000    ; make sure install has finished
     
   ${EndIf}
@@ -1065,6 +1082,11 @@ SectionEnd
 
       ; Start the installed service using Windows "net" command
       nsExec::ExecToLog 'net start ${APPNAME}'
+      Pop $0
+      ${If} $0 != "0"
+        DetailPrint "Error: $0"
+      ${EndIf}
+      ClearErrors
       Sleep 2000
 
       DetailPrint "Writing batch files..."
@@ -1148,17 +1170,32 @@ SectionEnd
 
     IfFileExists "$INSTDIR\wrapper\*.*" 0 ManualStop
       nsExec::ExecToLog '"$INSTDIR\bin\stopService.bat"'
-      Sleep 4000    ; make sure it's fully stopped
+      Pop $0
+      ${If} $0 != "0"
+        DetailPrint "Error: $0"
+      ${EndIf}
+      ClearErrors
+      Sleep 2000    ; make sure it's fully stopped
       
       DetailPrint "Removing ${FULLNAME} service..."
-      nsExec::ExecToLog '"$INSTDIR\wrapper\${APPNAME}.exe" -remove "$INSTDIR\wrapper\jsl64.ini" -console hide'
-      Sleep 4000                  ; make sure it's fully removed
+      nsExec::ExecToLog '"$INSTDIR\wrapper\${APPNAME}.exe" -remove "$INSTDIR\wrapper\jsl64.ini" -console attach'
+      Pop $0
+      ${If} $0 != "0"
+        DetailPrint "Error: $0"
+      ${EndIf}
+      ClearErrors
+      Sleep 2000                  ; make sure it's fully removed
       
       RMDir /r "$INSTDIR\wrapper" ; remove the wrapper files
 
     ManualStop:
       nsExec::ExecToLog '"$INSTDIR\bin\shutdown.bat"'
-      Sleep 4000    ; make sure it's fully stopped    
+      Pop $0
+      ${If} $0 != "0"
+        DetailPrint "Error: $0"
+      ${EndIf}
+      ClearErrors
+      Sleep 2000    ; make sure it's fully stopped
 
     DetailPrint "Removing environment variables and registry keys..."
 

@@ -70,10 +70,15 @@ public class MongoSchemalessUtils {
 
     public static boolean isGeometry(DBObject object) {
         Set keys = object.keySet();
-        if (keys.size() != 2 || !keys.contains("coordinates") || !keys.contains("type")) {
-            // is mongo db object but not a geometry
+
+        if (!keys.contains("type") || keys.size() != 2) {
             return false;
         }
-        return true;
+
+        final String type = (String) object.get("type");
+        boolean isColl = "GeometryCollection".equals(type);
+        // Geometry object must have 2 attributs: "type" and "coordinates" or "geometries" (for
+        // GeometryCollection)
+        return (isColl && keys.contains("geometries")) || (!isColl && keys.contains("coordinates"));
     }
 }

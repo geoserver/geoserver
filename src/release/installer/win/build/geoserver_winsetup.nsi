@@ -719,7 +719,7 @@ Function WriteWrapperConfiguration
   FileWrite $9 "servicename=${APPNAME}$\r$\n"
   FileWrite $9 "displayname=${FULLNAME}$\r$\n"
   FileWrite $9 "servicedescription=${APPNAME} is an open source software server written in Java that allows users to share and edit geospatial data.$\r$\n"
-  FileWrite $9 "account=NT Authority\Network Service$\r$\n$\r$\n"  ; (S-1-5-20) can not be used here
+  FileWrite $9 "account=NT Authority\NetworkService$\r$\n$\r$\n"  ; (S-1-5-20) can not be used here
   FileWrite $9 ";Console handling$\r$\n"
   FileWrite $9 "useconsolehandler=true$\r$\n"
   FileWrite $9 "stopclass=java/lang/System$\r$\n"

@@ -107,7 +107,7 @@ Add a Layer Group
 
 The buttons for adding and removing a layer group can be found at the top of the :guilabel:`Layer Groups` page. 
 
-.. figure:: img/data_layergroups_add.png
+.. figure:: img/data_layergroups_add_remove.png
 
    Buttons to add or remove a layer group
    

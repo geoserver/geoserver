@@ -5,9 +5,19 @@
  */
 package org.geoserver.wfs.request;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import net.opengis.wfs.DeleteElementType;
 import net.opengis.wfs.WfsFactory;
+import net.opengis.wfs.impl.DeleteElementTypeImpl;
+import net.opengis.wfs20.impl.DeleteTypeImpl;
 import org.eclipse.emf.ecore.EObject;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.xsd.EMFUtils;
+import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory;
 
 /**
  * Delete element in a Transaction request.
@@ -20,9 +30,32 @@ public abstract class Delete extends TransactionElement {
         super(adaptee);
     }
 
+    public abstract List<Filter> getFilters();
+
+    public abstract void deleteFilter();
+
+    public abstract void addFilter(List<Filter> features);
+
     public static class WFS11 extends Delete {
         public WFS11(EObject adaptee) {
             super(adaptee);
+        }
+
+        @Override
+        public List<Filter> getFilters() {
+            Filter filter = eGet(adaptee, "filter", Filter.class);
+            return Arrays.asList(filter);
+        }
+
+        @Override
+        public void deleteFilter() {
+            Filter filter = (Filter) EMFUtils.get(adaptee, "filter");
+            eSet(adaptee, "filter", filter);
+        }
+
+        @Override
+        public void addFilter(List<Filter> features) {
+            eAddForDelete(adaptee, "filter", features);
         }
 
         public static DeleteElementType unadapt(Delete delete) {
@@ -37,6 +70,39 @@ public abstract class Delete extends TransactionElement {
     public static class WFS20 extends Delete {
         public WFS20(EObject adaptee) {
             super(adaptee);
+        }
+
+        @Override
+        public List<Filter> getFilters() {
+            Filter filter = eGet(adaptee, "filter", Filter.class);
+            return Arrays.asList(filter);
+        }
+
+        @Override
+        public void deleteFilter() {
+            Filter filter = (Filter) EMFUtils.get(adaptee, "filter");
+            eSet(adaptee, "filter", filter);
+        }
+
+        @Override
+        public void addFilter(List<Filter> features) {
+            eAddForDelete(adaptee, "filter", features);
+        }
+    }
+
+    protected void eAddForDelete(EObject obj, String property, List<Filter> features) {
+        FilterFactory ff = CommonFactoryFinder.getFilterFactory2();
+        Filter filter = (Filter) EMFUtils.get(obj, property);
+
+        List<Filter> collection = new ArrayList<>(Collections.singletonList(filter));
+        for (Filter element : features) {
+            collection.add(element);
+        }
+
+        if (obj instanceof DeleteElementTypeImpl) {
+            ((DeleteElementTypeImpl) obj).setFilter(ff.or(collection));
+        } else if (obj instanceof DeleteTypeImpl) {
+            ((DeleteTypeImpl) obj).setFilter(ff.or(collection));
         }
     }
 }

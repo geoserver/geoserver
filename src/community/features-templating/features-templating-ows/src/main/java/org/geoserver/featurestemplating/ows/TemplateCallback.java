@@ -193,7 +193,7 @@ public class TemplateCallback extends AbstractDispatcherCallback {
                 TemplateIdentifier.fromOutputFormat(request.getInfoFormat());
         int nTemplates = 0;
         for (MapLayerInfo li : layerInfos) {
-            if (li != null) {
+            if (li != null && li.getResource() instanceof FeatureTypeInfo) {
                 if (ensureTemplatesExist(li.getFeature(), identifier.getOutputFormat()) != null)
                     nTemplates++;
             }

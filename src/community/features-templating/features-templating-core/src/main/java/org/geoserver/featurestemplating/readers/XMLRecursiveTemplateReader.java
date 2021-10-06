@@ -114,7 +114,7 @@ public abstract class XMLRecursiveTemplateReader extends RecursiveTemplateResour
                     // a self closing element, that did not start a new iteration.
                     // Builders are then created here and this iteration will not stop
                     while (!elementsStack.isEmpty()) {
-                        templateBuilderFromElement(elementsStack.pop(), builder);
+                        templateBuilderFromElement(elementsStack.pop(), builder, true);
                     }
                     if (!endElement.getName().toString().equals(INCLUDE_FLAT) && stopIteration)
                         break;
@@ -133,7 +133,8 @@ public abstract class XMLRecursiveTemplateReader extends RecursiveTemplateResour
             builderFromIncludedTemplate(resource, data, currentParent);
         } else if (data.startsWith(INCLUDE + "{") && data.endsWith("}")) {
             String path = data.substring(INCLUDE.length() + 1, data.length() - 1);
-            TemplateBuilder parentForIncluded = templateBuilderFromElement(element, currentParent);
+            TemplateBuilder parentForIncluded =
+                    templateBuilderFromElement(element, currentParent, false);
             builderFromIncludedTemplate(resource, path, parentForIncluded);
         } else {
             TemplateBuilder leafBuilder;
@@ -168,13 +169,13 @@ public abstract class XMLRecursiveTemplateReader extends RecursiveTemplateResour
     private TemplateBuilder getBuilderFromLastElInStack(TemplateBuilder currentParent) {
         StartElement previous = !elementsStack.isEmpty() ? elementsStack.pop() : null;
         if (previous != null) {
-            currentParent = templateBuilderFromElement(previous, currentParent);
+            currentParent = templateBuilderFromElement(previous, currentParent, false);
         }
         return currentParent;
     }
 
     private TemplateBuilder templateBuilderFromElement(
-            StartElement startElement, TemplateBuilder currentParent) {
+            StartElement startElement, TemplateBuilder currentParent, boolean emptyNode) {
         if (startElement != null) {
             String isCollection = getAttributeValueIfPresent(startElement, COLLECTION_ATTR);
             String stringName = startElement.getName().toString();
@@ -188,6 +189,9 @@ public abstract class XMLRecursiveTemplateReader extends RecursiveTemplateResour
                     .source(getAttributeValueIfPresent(startElement, SOURCE_ATTR))
                     .hasOwnOutput(hasOwnOutput)
                     .topLevelFeature(isRootOrManaged(currentParent));
+            if (emptyNode) {
+                maker.textContent("");
+            }
             if (collection) {
                 maker.encodingOption(ITERATE_KEY, "true");
             }

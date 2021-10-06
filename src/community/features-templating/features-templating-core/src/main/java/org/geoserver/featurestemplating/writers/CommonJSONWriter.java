@@ -121,11 +121,15 @@ public abstract class CommonJSONWriter extends TemplateOutputWriter {
             generator.writeNumber(valueNode.asInt());
         } else if (valueNode.isBoolean()) {
             generator.writeBoolean(valueNode.asBoolean());
+        } else if (valueNode.isNull()) {
+            generator.writeNull();
         }
     }
 
     public void writeValue(Object value) throws IOException {
-        if (value instanceof String) {
+        if (value == null || value.equals("null")) {
+            generator.writeNull();
+        } else if (value instanceof String) {
             generator.writeString((String) value);
         } else if (value instanceof Integer) {
             generator.writeNumber((Integer) value);

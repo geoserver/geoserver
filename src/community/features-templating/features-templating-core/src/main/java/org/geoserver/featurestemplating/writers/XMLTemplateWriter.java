@@ -161,6 +161,9 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
                         writeElementNameAndValue(key, list.get(i), encodingHints);
                     }
                 }
+            } else if (elementValue == null) {
+                streamWriter.writeCharacters("");
+                canClose = true;
             }
         } catch (XMLStreamException e) {
             throw new IOException(e);

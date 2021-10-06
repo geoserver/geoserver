@@ -418,4 +418,16 @@ public class GetFeatureInfoGroupTest extends WMSTestSupport {
         assertEquals("I'm a lake", lakeAttr);
         assertEquals("I'm a forest", forestAttr);
     }
+
+    @Test
+    public void testGetFeatureInfoCoverageNotFails() throws Exception {
+        String url =
+                "wms?service=wms&version=1.1.1"
+                        + "&layers=wcs:World&width=100&height=100&format=image/png"
+                        + "&srs=epsg:4326&bbox=-180,-90,180,90&info_format=application/json"
+                        + "&request=GetFeatureInfo&query_layers=wcs:World&x=50&y=50";
+        JSONObject result = (JSONObject) getAsJSON(url);
+        assertNotNull(result);
+        assertEquals(6, result.size());
+    }
 }

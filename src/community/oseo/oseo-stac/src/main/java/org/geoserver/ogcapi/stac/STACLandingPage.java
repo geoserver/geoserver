@@ -17,6 +17,7 @@ import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.opensearch.eo.OSEOInfo;
+import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.http.HttpMethod;
 
@@ -64,7 +65,12 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
 
         // link to each collection as a child
         for (String collectionId : collectionIds) {
-            String href = basePath + "/collections/" + ResponseUtils.urlEncode(collectionId);
+            String href =
+                    ResponseUtils.buildURL(
+                            APIRequestInfo.get().getBaseURL(),
+                            basePath + "/collections/" + ResponseUtils.urlEncode(collectionId),
+                            null,
+                            URLMangler.URLType.SERVICE);
             Link link = new Link(href, "child", "application/json", null);
             getLinks().add(link);
         }

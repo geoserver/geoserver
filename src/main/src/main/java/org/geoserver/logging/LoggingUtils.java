@@ -57,7 +57,7 @@ public class LoggingUtils {
             String logFileName)
             throws FileNotFoundException, IOException, ConfigurationException {
         // JD: before we wipe out the logging configuration, save any appenders that are not
-        // console or file based. This allows for other types of appenders to remain in tact
+        // console or file based. This allows for other types of appenders to remain intact
         // when geoserver is reloaded.
         List<Appender> appenders = new ArrayList<>();
         Enumeration a = LogManager.getRootLogger().getAllAppenders();
@@ -71,34 +71,40 @@ public class LoggingUtils {
 
         Properties lprops = new Properties();
         lprops.load(loggingConfigStream);
-        LogManager.resetConfiguration();
-        //        LogLog.setQuietMode(true);
-        PropertyConfigurator.configure(lprops);
-        //        LogLog.setQuietMode(false);
 
-        // configuring the log4j file logger
         if (!suppressFileLogging) {
+            // look up log file location
+            if (logFileName == null) {
+                logFileName = loader.get("logs").get("geoserver.log").file().getAbsolutePath();
+            } else {
+                if (!new File(logFileName).isAbsolute()) {
+                    logFileName =
+                            new File(loader.getBaseDirectory(), logFileName).getAbsolutePath();
+                }
+            }
+            // Add the file location to log4j configuration if needed
+            if (lprops.containsKey("log4j.appender.geoserverlogfile")) {
+                String appenderClass = (String) lprops.get("log4j.appender.geoserverlogfile");
+                if (appenderClass.endsWith("FileAppender")) {
+                    lprops.setProperty("log4j.appender.geoserverlogfile.File", logFileName);
+                }
+            }
+        }
+        LogManager.resetConfiguration();
+        PropertyConfigurator.configure(lprops);
+
+        if (!suppressFileLogging) {
+            // check resulting configuring of log4j file logger
             Appender gslf = org.apache.log4j.Logger.getRootLogger().getAppender("geoserverlogfile");
             if (gslf instanceof org.apache.log4j.FileAppender) {
-                if (logFileName == null) {
-                    logFileName = loader.get("logs").get("geoserver.log").file().getAbsolutePath();
-                } else {
-                    if (!new File(logFileName).isAbsolute()) {
-                        logFileName =
-                                new File(loader.getBaseDirectory(), logFileName).getAbsolutePath();
-                        LoggingInitializer.LOGGER.fine(
-                                "Non-absolute pathname detected for logfile.  Setting logfile relative to data dir.");
-                    }
+                if (!lprops.containsKey("log4j.appender.geoserverlogfile.File")) {
+                    lprops.setProperty("log4j.appender.geoserverlogfile.File", logFileName);
+                    PropertyConfigurator.configure(lprops);
+                    LoggingInitializer.LOGGER.fine("Logging output to file '" + logFileName + "'");
                 }
-                lprops.setProperty("log4j.appender.geoserverlogfile.File", logFileName);
-                PropertyConfigurator.configure(lprops);
-                LoggingInitializer.LOGGER.fine("Logging output to file '" + logFileName + "'");
             } else if (gslf != null) {
                 LoggingInitializer.LOGGER.warning(
                         "'log4j.appender.geoserverlogfile' appender is defined, but isn't a FileAppender.  GeoServer won't control the file-based logging.");
-            } else {
-                LoggingInitializer.LOGGER.warning(
-                        "'log4j.appender.geoserverlogfile' appender isn't defined.  GeoServer won't control the file-based logging.");
             }
         }
 

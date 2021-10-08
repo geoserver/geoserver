@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.namespace.QName;
+import net.opengis.wfs.TransactionType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.ows.Dispatcher;
@@ -70,19 +71,6 @@ public class Transaction {
     protected List<TransactionElementHandler> transactionElementHandlers = new ArrayList<>();
     protected List<TransactionListener> transactionListeners = new ArrayList<>();
     protected List<TransactionCallback> transactionCallbacks = new ArrayList<>();
-
-    enum BatchType {
-        DEFAULT,
-        INSERT,
-        DELETE;
-    }
-
-    private BatchType batchType;
-    private BatchManager batchManager = new BatchManager();
-    private Insert insertElement = null;
-    private Delete deleteElement = null;
-    private TransactionElementHandler insertElementHandler = null;
-    private TransactionElementHandler deleteElementHandler = null;
 
     public Transaction(WFSInfo wfs, Catalog catalog, ApplicationContext context) {
         this.wfs = wfs;
@@ -308,38 +296,16 @@ public class Transaction {
         // Envelope envelope = new Envelope();
         Exception exception = null;
 
-        batchType = BatchType.DEFAULT;
-
-        // transactionType is set to first TransactionElements type found in the collection.
-        Optional<TransactionElement> firstKey = elementHandlers.keySet().stream().findFirst();
-        if (firstKey.isPresent()) {
-            TransactionElement transactionElement = firstKey.get();
-            if (transactionElement instanceof Insert) {
-                insertElement = (Insert) transactionElement;
-                batchType = BatchType.INSERT;
-            } else if (transactionElement instanceof Delete) {
-                deleteElement = (Delete) transactionElement;
-                batchType = BatchType.DELETE;
-            }
-        }
-
         try {
+            BatchManager batchManager =
+                    new BatchManager(request, multiplexer, stores, result, elementHandlers);
             for (Entry<TransactionElement, TransactionElementHandler>
                     transactionElementTransactionElementHandlerEntry : elementHandlers.entrySet()) {
                 Entry entry = transactionElementTransactionElementHandlerEntry;
-                TransactionElementHandler handler = (TransactionElementHandler) entry.getValue();
-                batchManager.addToBatch(entry, handler, request, multiplexer, stores, result);
+                batchManager.addToBatch(entry);
             }
 
-            executeRemainingBatchs(
-                    request,
-                    multiplexer,
-                    stores,
-                    result,
-                    insertElement,
-                    deleteElement,
-                    insertElementHandler,
-                    deleteElementHandler);
+            batchManager.executeRemainingBatch();
         } catch (WFSTransactionException e) {
             LOGGER.log(Level.SEVERE, "Transaction failed", e);
 
@@ -465,126 +431,6 @@ public class Transaction {
         // response = build;
     }
 
-    private void executeRemainingBatchs(
-            TransactionRequest request,
-            TransactionListenerMux multiplexer,
-            Map<QName, FeatureStore> stores,
-            TransactionResponse result,
-            Insert insertElement,
-            Delete deleteElement,
-            TransactionElementHandler insertElementHandler,
-            TransactionElementHandler deleteElementHandler) {
-        // execute remaining elements if anything left uncommitted
-        if (insertElement != null
-                && insertElement.getFeatures() != null
-                && insertElement.getFeatures().size() > 0) {
-            insertElementHandler.execute(insertElement, request, stores, result, multiplexer);
-        }
-        if (deleteElement != null
-                && deleteElement.getFilters() != null
-                && deleteElement.getFilters().size() > 0) {
-            deleteElementHandler.execute(deleteElement, request, stores, result, multiplexer);
-        }
-    }
-
-    private void executeNonBatchedStatements(
-            TransactionRequest request,
-            TransactionListenerMux multiplexer,
-            Map<QName, FeatureStore> stores,
-            TransactionResponse result,
-            Entry entry,
-            TransactionElement element) {
-        if (element instanceof Update || element instanceof Replace || element instanceof Native) {
-            TransactionElementHandler handler = (TransactionElementHandler) entry.getValue();
-            handler.execute(element, request, stores, result, multiplexer);
-        }
-    }
-
-    private Delete executeBulkAndGetDelete(
-            TransactionRequest request,
-            TransactionListenerMux multiplexer,
-            Map<QName, FeatureStore> stores,
-            TransactionResponse result,
-            Insert insertElement,
-            Delete deleteElement,
-            TransactionElementHandler insertElementHandler,
-            TransactionElementHandler deleteElementHandler,
-            Delete element) {
-        // since batching is only enabled for INSERT and DELETE, push batches of INSERT
-        // operations
-        if (batchType != BatchType.DELETE) {
-            executeInsertBulkTransaction(
-                    request, multiplexer, stores, result, insertElement, insertElementHandler);
-        }
-        if (deleteElement != null) {
-            Delete delete = element;
-            deleteElement.addFilter(delete.getFilters());
-            // if DELETE_BATCH_SIZE is reached execute current batch of DELETE
-            if (deleteElement.getFilters() != null
-                    && deleteElement.getFilters().size() == DELETE_BATCH_SIZE) {
-                deleteElementHandler.execute(deleteElement, request, stores, result, multiplexer);
-                deleteElement.deleteFilter();
-            }
-        } else {
-            deleteElement = element;
-        }
-        return deleteElement;
-    }
-
-    private Insert executeBulkAndGetInsert(
-            TransactionRequest request,
-            TransactionListenerMux multiplexer,
-            Map<QName, FeatureStore> stores,
-            TransactionResponse result,
-            Insert insertElement,
-            Delete deleteElement,
-            TransactionElementHandler deleteElementHandler,
-            Insert element) {
-        // since batching is only enabled for INSERT and DELETE, push batches of DELETE
-        // operations
-        if (batchType != BatchType.INSERT) {
-            executeDeleteBulkTransaction(
-                    request, multiplexer, stores, result, deleteElement, deleteElementHandler);
-        }
-        if (insertElement != null) {
-            Insert insert = element;
-            insertElement.addFeature(insert.getFeatures());
-        } else {
-            insertElement = element;
-        }
-        return insertElement;
-    }
-
-    // execute batch inserts then clean the batch
-    private void executeInsertBulkTransaction(
-            TransactionRequest request,
-            TransactionListenerMux multiplexer,
-            Map<QName, FeatureStore> stores,
-            TransactionResponse result,
-            Insert insertElement,
-            TransactionElementHandler insertElementHandler) {
-        if (insertElement != null && batchType == BatchType.INSERT) {
-            insertElementHandler.execute(insertElement, request, stores, result, multiplexer);
-            insertElement.setFeatures(new ArrayList());
-            batchType = BatchType.DELETE;
-        }
-    }
-
-    // execute batch deletes then clean the batch
-    private void executeDeleteBulkTransaction(
-            TransactionRequest request,
-            TransactionListenerMux multiplexer,
-            Map<QName, FeatureStore> stores,
-            TransactionResponse result,
-            Delete deleteElement,
-            TransactionElementHandler deleteElementHandler) {
-        if (deleteElement != null && batchType == BatchType.DELETE) {
-            deleteElementHandler.execute(deleteElement, request, stores, result, multiplexer);
-            deleteElement.deleteFilter();
-            batchType = BatchType.INSERT;
-        }
-    }
-
     private TransactionRequest fireBeforeTransaction(TransactionRequest request) {
         for (TransactionCallback tp : transactionCallbacks) {
             request = tp.beforeTransaction(request);
@@ -670,7 +516,7 @@ public class Transaction {
      * so that they're available to the lower level API.
      *
      * <p>These properties can be provided for example by {@link
-     * TransactionPlugin#beforeTransaction(BatchType)} implementations. A typical example is a
+     * TransactionPlugin#beforeTransaction(TransactionType)} implementations. A typical example is a
      * custom authentication module providing extra user information that upon transaction commit
      * can be used by versioning geotools datastore to complete the information required for its
      * records (such as committer full name, email, etc)
@@ -790,17 +636,61 @@ public class Transaction {
         }
     }
 
-    private class BatchManager {
+    private static class BatchManager {
+        private TransactionRequest request;
+        private TransactionListenerMux multiplexer;
+        private Map<QName, FeatureStore> stores;
+        private TransactionResponse result;
+        private Map<TransactionElement, TransactionElementHandler> elementHandlers;
 
-        private void addToBatch(Entry entry, TransactionElementHandler handler,
-                                TransactionRequest request,
-                                TransactionListenerMux multiplexer,
-                                Map<QName, FeatureStore> stores,
-                                TransactionResponse result) {
+        private Insert insertElement = null;
+        private Delete deleteElement = null;
+        private TransactionElementHandler insertElementHandler = null;
+        private TransactionElementHandler deleteElementHandler = null;
+
+        enum BatchType {
+            DEFAULT,
+            INSERT,
+            DELETE;
+        }
+
+        private BatchType batchType;
+
+        public BatchManager(
+                TransactionRequest request,
+                TransactionListenerMux multiplexer,
+                Map<QName, FeatureStore> stores,
+                TransactionResponse result,
+                Map<TransactionElement, TransactionElementHandler> elementHandlers) {
+            this.request = request;
+            this.multiplexer = multiplexer;
+            this.stores = stores;
+            this.result = result;
+            this.elementHandlers = elementHandlers;
+            batchType = BatchType.DEFAULT;
+            initElementHandlers();
+        }
+
+        private void initElementHandlers() {
+            // transactionType is set to first TransactionElements type found in the collection.
+            Optional<TransactionElement> firstKey = elementHandlers.keySet().stream().findFirst();
+            if (firstKey.isPresent()) {
+                TransactionElement transactionElement = firstKey.get();
+                if (transactionElement instanceof Insert) {
+                    insertElement = (Insert) transactionElement;
+                    batchType = BatchType.INSERT;
+                } else if (transactionElement instanceof Delete) {
+                    deleteElement = (Delete) transactionElement;
+                    batchType = BatchType.DELETE;
+                }
+            }
+        }
+
+        private void addToBatch(Entry entry) {
             /*iterate over the collection until another transactionType is found. When it is found execute
-                the bulk transaction until that point. If it is not found, combine features of the same transaction
-                elements.
-                */
+            the bulk transaction until that point. If it is not found, combine features of the same transaction
+            elements.
+            */
 
             TransactionElement element = (TransactionElement) entry.getKey();
             if (element instanceof Insert) {
@@ -809,10 +699,6 @@ public class Transaction {
                 }
                 insertElement =
                         executeBulkAndGetInsert(
-                                request,
-                                multiplexer,
-                                stores,
-                                result,
                                 insertElement,
                                 deleteElement,
                                 deleteElementHandler,
@@ -823,10 +709,6 @@ public class Transaction {
                 }
                 deleteElement =
                         executeBulkAndGetDelete(
-                                request,
-                                multiplexer,
-                                stores,
-                                result,
                                 insertElement,
                                 deleteElement,
                                 insertElementHandler,
@@ -834,11 +716,101 @@ public class Transaction {
                                 (Delete) element);
             }
 
-                /* Bathing update, replace and native statements will be inefficient since updated target values
-                in those statements should be the same or it will fail. Finding and merging them will not have a
-                great effect.
-                 */
-            executeNonBatchedStatements(request, multiplexer, stores, result, entry, element);
+            /* Bathing update, replace and native statements will be inefficient since updated target values
+            in those statements should be the same or it will fail. Finding and merging them will not have a
+            great effect.
+             */
+            executeNonBatchedStatements(entry, element);
+        }
+
+        private void executeRemainingBatch() {
+            // execute remaining elements if anything left uncommitted
+            if (insertElement != null
+                    && insertElement.getFeatures() != null
+                    && insertElement.getFeatures().size() > 0) {
+                insertElementHandler.execute(insertElement, request, stores, result, multiplexer);
+            }
+
+            if (deleteElement != null
+                    && deleteElement.getFilters() != null
+                    && deleteElement.getFilters().size() > 0) {
+                deleteElementHandler.execute(deleteElement, request, stores, result, multiplexer);
+            }
+        }
+
+        private void executeNonBatchedStatements(Entry entry, TransactionElement element) {
+            if (element instanceof Update
+                    || element instanceof Replace
+                    || element instanceof Native) {
+                TransactionElementHandler handler = (TransactionElementHandler) entry.getValue();
+                handler.execute(element, request, stores, result, multiplexer);
+            }
+        }
+
+        private Delete executeBulkAndGetDelete(
+                Insert insertElement,
+                Delete deleteElement,
+                TransactionElementHandler insertElementHandler,
+                TransactionElementHandler deleteElementHandler,
+                Delete element) {
+            // since batching is only enabled for INSERT and DELETE, push batches of INSERT
+            // operations
+            if (batchType != BatchType.DELETE) {
+                executeInsertBulkTransaction(insertElement, insertElementHandler);
+            }
+            if (deleteElement != null) {
+                Delete delete = element;
+                deleteElement.addFilter(delete.getFilters());
+                // if DELETE_BATCH_SIZE is reached execute current batch of DELETE
+                if (deleteElement.getFilters() != null
+                        && deleteElement.getFilters().size() == DELETE_BATCH_SIZE) {
+                    deleteElementHandler.execute(
+                            deleteElement, request, stores, result, multiplexer);
+                    deleteElement.deleteFilter();
+                }
+            } else {
+                deleteElement = element;
+            }
+            return deleteElement;
+        }
+
+        private Insert executeBulkAndGetInsert(
+                Insert insertElement,
+                Delete deleteElement,
+                TransactionElementHandler deleteElementHandler,
+                Insert element) {
+            // since batching is only enabled for INSERT and DELETE, push batches of DELETE
+            // operations
+            if (batchType != BatchType.INSERT) {
+                executeDeleteBulkTransaction(deleteElement, deleteElementHandler);
+            }
+            if (insertElement != null) {
+                Insert insert = element;
+                insertElement.addFeature(insert.getFeatures());
+            } else {
+                insertElement = element;
+            }
+            return insertElement;
+        }
+
+        // execute batch inserts then clean the batch
+        private void executeInsertBulkTransaction(
+                Insert insertElement, TransactionElementHandler insertElementHandler) {
+            if (insertElement != null && batchType == BatchType.INSERT) {
+                insertElementHandler.execute(insertElement, request, stores, result, multiplexer);
+                insertElement.setFeatures(new ArrayList());
+                batchType = BatchType.DELETE;
+            }
+        }
+
+        // execute batch deletes then clean the batch
+        private void executeDeleteBulkTransaction(
+                Delete deleteElement, TransactionElementHandler deleteElementHandler) {
+            if (deleteElement != null && batchType == BatchType.DELETE) {
+                deleteElementHandler.execute(deleteElement, request, stores, result, multiplexer);
+                deleteElement.deleteFilter();
+                batchType = BatchType.INSERT;
+            }
         }
     }
 }

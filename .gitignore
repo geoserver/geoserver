@@ -34,5 +34,6 @@ build/cite/logs
 .attach_pid*
 
 # Windows installer related stuff
+src/release/installer/win/*.rtf
 src/release/installer/win/source/
 src/release/installer/win/target/

@@ -3,11 +3,14 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2019-amd64
 
 LABEL maintainer="sander.schaminee@geocat.net"
 
-# Install Chocolately, NSIS and NSIS plugins
+# Install Chocolately and NSIS
 RUN @powershell.exe -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
-RUN choco install -y nsis 
+RUN choco install -y nsis
 
-# Install Windows SDK. It provides signtool.exe needed to sign the installer
+# Install Pandoc to convert Markdown to RTF (for installer license page)
+RUN choco install -y pandoc
+
+# Install Windows SDK: it provides signtool.exe needed to sign the installer
 RUN choco install -y windows-sdk-10.1
 
 # Add NSIS and Windows SDK to the PATH

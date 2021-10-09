@@ -17,8 +17,7 @@ RUN choco install -y windows-sdk-10.1
 RUN setx /M PATH "%PATH%;C:/Program Files (x86)/Windows Kits/10/App Certification Kit;C:/Program Files (x86)/NSIS"
 
 # Copy NSIS plugins in place
-COPY ["nsis_plugins/x86-unicode/AccessControl.dll", "C:/Program Files (x86)/NSIS/Plugins/x86-unicode/AccessControl.dll"]
-COPY ["nsis_plugins/x86-unicode/ShellLink.dll", "C:/Program Files (x86)/NSIS/Plugins/x86-unicode/ShellLink.dll"]
+COPY [ "nsis_plugins/x86-unicode/*", "C:/Program Files (x86)/NSIS/Plugins/x86-unicode/" ]
 
 # Copy data, create output folder and set working directory to NSIS script folder
 COPY build C:/geoserver/gsbuild

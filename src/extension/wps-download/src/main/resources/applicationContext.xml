@@ -48,6 +48,7 @@
 	</bean>
 	
 	<bean id="animationMetadataPPIO" class="org.geoserver.wps.gs.download.AnimationMetadataPPIO"/>
+	<bean id="downloadMetadataPPIO" class="org.geoserver.wps.gs.download.DownloadMetadataPPIO"/>
 
 	<!-- The PPIO that need to be registered into SPI because of their dependencies -->
 	<bean id="archiveZipPPIO" class="org.geoserver.wps.ppio.ZipArchivePPIO">

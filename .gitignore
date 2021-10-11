@@ -20,6 +20,7 @@ cucumber-report
 
 # staging release artifacts
 distribution/
+settings.xml
 
 # NSG CITE testst data directory
 data/citensg-1.0/gwc/cite*

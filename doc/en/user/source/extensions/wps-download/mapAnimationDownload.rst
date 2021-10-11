@@ -1,12 +1,12 @@
 .. _community_wpsrendereddownload:
 
 Rendered map/animation download processes
-------------------------------------------
+=========================================
 
 These processes allow download large maps and animations.
 
 The rendered download processes
-+++++++++++++++++++++++++++++++
+-------------------------------
 
 The map and animation downloads work off a set of common parameters:
 
@@ -18,7 +18,7 @@ The map and animation downloads work off a set of common parameters:
  * ``headerheight`` : height size of a header space allocated at top of rendered map. It's an optional parameter, that forces to shrink the maps view height in order to avoid overlapping header over the maps. In combination with the use of layer specification options allows to group decorators at the top of resulting image.
 
 The layer specification
-+++++++++++++++++++++++
+-----------------------
 
 A layer specification is a XML structure made of three parts:
 
@@ -38,12 +38,23 @@ For example:
       </dwn:Layer>
     </wps:ComplexData>
 
-Sample DownloadMap requests
-++++++++++++++++++++++++++++
+Decoration Layout
+-----------------
+
+| The ``decoration`` parameter specifies the file name (without extension) of the layout to be used to decorate the map.
+| The layout is a list of decorators that should draw on top of the requested image.
+| The decorators draw on the image one after the other, so the order of the decorators in the layout file is important: the first decorator output will appear under the others.
+| Decorators are described in detail in the :ref:`wms_decorations` section.
+
+Map Download Process
+--------------------
 
 The map download process has only the basic inputs described above, the ``time`` parameter is optional.
 The map download process uses the WMS machinery to produce the output, but it's not subject to the WMS service
 limits (width and height in this process can be limited using the WPS process security).
+
+Sample DownloadMap requests
+++++++++++++++++++++++++++++
 
 A download map issued against a set of local layers can look as follows:
 
@@ -117,14 +128,100 @@ A download map issued against a set of local layers can look as follows:
 
 For this example the layers could have been a single one, with a "Name" equal to "giantPolygon,watertermp".
 
-Sample DownloadAnimation request
-++++++++++++++++++++++++++++++++
+Secondary output: map metadata
+++++++++++++++++++++++++++++++
+
+The process offers also a secondary output, called ``metadata``, which can be used to determine
+if there were any issue related to the requested times. The warnings are issued when the layer
+has a "nearest match" behavior activated, with an eventual search range.
+
+In case the requested time could not be matched exactly, a warning will be issued that might contain:
+
+- An indication that a nearby time has been used, and which time that is.
+- An indication that no time was found, that was sufficiently close to the requested one, according
+  to the search range specification in the layer "nearest match" configuration.
+
+In order to get both outputs, the following response form is recommended, which requires
+a reference (a link) for the map, while the warnings are included inline:
+
+ .. code-block:: xml
+
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <wps:Execute version="1.0.0" service="WPS"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wps/1.0.0"
+                 xmlns:wfs="http://www.opengis.net/wfs" xmlns:wps="http://www.opengis.net/wps/1.0.0"
+                 xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml"
+                 xmlns:ogc="http://www.opengis.net/ogc" xmlns:wcs="http://www.opengis.net/wcs/1.1.1"
+                 xmlns:xlink="http://www.w3.org/1999/xlink"
+                 xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd">
+      <ows:Identifier>gs:DownloadMap</ows:Identifier>
+      <!-- Inputs section removed for brevity -->
+      <wps:ResponseForm>
+        <wps:ResponseDocument>
+          <wps:Output asReference="true">
+            <ows:Identifier>result</ows:Identifier>
+          </wps:Output>
+          <wps:Output>
+            <ows:Identifier>metadata</ows:Identifier>
+          </wps:Output>
+        </wps:ResponseDocument>
+      </wps:ResponseForm>
+    </wps:Execute>
+
+A sample response, reporting warnings, follows:
+
+ .. code-block:: xml
+
+
+    <?xml version="1.0" encoding="UTF-8"?><wps:ExecuteResponse xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" service="WPS" serviceInstance="http://localhost:8080/geoserver/ows?" version="1.0.0" xml:lang="en">
+      <wps:Process wps:processVersion="1.0.0">
+        <ows:Identifier>gs:DownloadMap</ows:Identifier>
+        <ows:Title>Map Download Process</ows:Title>
+        <ows:Abstract>Builds a large map given a set of layer definitions, area of interest, size and eventual target time.</ows:Abstract>
+      </wps:Process>
+      <wps:Status creationTime="2021-06-07T16:50:47.391Z">
+        <wps:ProcessSucceeded>Process succeeded.</wps:ProcessSucceeded>
+      </wps:Status>
+      <wps:ProcessOutputs>
+        <wps:Output>
+          <ows:Identifier>result</ows:Identifier>
+          <ows:Title>The output map</ows:Title>
+          <wps:Reference href="http://localhost:8080/geoserver/ows?service=WPS&amp;version=1.0.0&amp;request=GetExecutionResult&amp;executionId=5db686ed-8591-4756-8651-4bd26281bf37&amp;outputId=result.png&amp;mimetype=image%2Fpng" mimeType="image/png"/>
+        </wps:Output>
+        <wps:Output>
+          <ows:Identifier>metadata</ows:Identifier>
+          <ows:Title>map metadata, including dimension match warnings</ows:Title>
+          <wps:Data>
+            <wps:ComplexData mimeType="text/xml">
+              <DownloadMetadata>
+                <Warnings>
+                  <DimensionWarning>
+                    <LayerName>sf:bmtime</LayerName>
+                    <DimensionName>time</DimensionName>
+                    <Value class="Date">2004-02-01T00:00:00.000Z</Value>
+                    <WarningType>Nearest</WarningType>
+                  </DimensionWarning>
+                </Warnings>
+                <WarningsFound>true</WarningsFound>
+              </DownloadMetadata>
+            </wps:ComplexData>
+          </wps:Data>
+        </wps:Output>
+      </wps:ProcessOutputs>
+    </wps:ExecuteResponse>
+
+Animation Download Process
+--------------------------
 
 The download animation has all the basic parameters with the following variants/additions:
 
 * time: The time parameter is required and can be provided either as range with periodicity, ``start/stop/period``, or
   as a comma separated list of times,``t1,t2,...,tn`` 
 * fps: Frame per seconds (defaults to one)
+
+Sample DownloadAnimation request
+++++++++++++++++++++++++++++++++
 
 A sample animation request can look as follows:
 
@@ -216,16 +313,6 @@ The ``formattedTimestamper`` decoration ensures the frame time is included in th
     </layout>
 
 
-
-Decoration Layout
-+++++++++++++++++
-
-| The ``decoration`` parameter specifies the file name (without extension) of the layout to be used to decorate the map.
-| The layout is a list of decorators that should draw on top of the requested image.
-| The decorators draw on the image one after the other, so the order of the decorators in the layout file is important: the first decorator output will appear under the others.
-| Decorators are described in detail in the :ref:`wms_decorations` section.
-
-
 Secondary output: animation metadata
 ++++++++++++++++++++++++++++++++++++
 
@@ -295,7 +382,7 @@ A sample response, reporting warnings and the frame count where they happened, f
               <AnimationMetadata>
                 <Warnings>
                   <FrameWarning>
-                    <LayerName>sf:bmtime</LayerName>JNDIDataSourceFactory
+                    <LayerName>sf:bmtime</LayerName>
                     <DimensionName>time</DimensionName>
                     <Value class="Date">2004-02-01T00:00:00.000Z</Value>
                     <WarningType>Nearest</WarningType>

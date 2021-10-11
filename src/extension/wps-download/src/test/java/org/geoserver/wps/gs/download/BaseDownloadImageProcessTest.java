@@ -87,4 +87,9 @@ public class BaseDownloadImageProcessTest extends WPSTestSupport {
         Font font = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("Vera.ttf"));
         FontCache.getDefaultInstance().registerFont(font);
     }
+
+    /** Strips a full URL to a reduced version that works with the test harness */
+    protected String getTestReference(String fullLocation) {
+        return fullLocation.substring(fullLocation.indexOf('?') - 3);
+    }
 }

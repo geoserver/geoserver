@@ -6,6 +6,7 @@ package org.geoserver.catalog.impl;
 
 import java.io.Serializable;
 import java.util.List;
+import org.geoserver.catalog.Info;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geotools.util.GrowableInternationalString;
@@ -15,7 +16,7 @@ import org.opengis.util.InternationalString;
  * A LayerGroupStyle providing is a different named configuration (as a set of {@PublishedInfo} and
  * {@StyleInfo}) for a LayerGroup.
  */
-public interface LayerGroupStyle extends Serializable {
+public interface LayerGroupStyle extends Serializable, Info {
 
     /**
      * Get the Style name
@@ -58,13 +59,6 @@ public interface LayerGroupStyle extends Serializable {
      * @param styles the List of StyleInfo.
      */
     void setStyles(List<StyleInfo> styles);
-
-    /**
-     * Get the id.
-     *
-     * @return the id.
-     */
-    String getId();
 
     /**
      * Set the id.

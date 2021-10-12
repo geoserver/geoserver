@@ -2783,14 +2783,22 @@ public class XStreamPersister {
             if (publishedInfos != null) {
                 for (int i = 0; i < publishedInfos.size(); i++) {
                     PublishedInfo publishedInfo = publishedInfos.get(i);
-                    publishedInfos.set(i, ResolvingProxy.resolve(catalog, publishedInfo));
+                    PublishedInfo unproxied = null;
+                    if (catalog != null) {
+                        unproxied = ResolvingProxy.resolve(catalog, publishedInfo);
+                    }
+                    if (unproxied != null || ResolvingProxy.getRef(publishedInfo) == null)
+                        publishedInfos.set(i, unproxied);
                 }
             }
 
             if (styles != null)
                 for (int i = 0; i < styles.size(); i++) {
                     StyleInfo styleInfo = styles.get(i);
-                    styles.set(i, ResolvingProxy.resolve(catalog, styleInfo));
+                    StyleInfo unproxied = null;
+                    if (catalog != null) unproxied = ResolvingProxy.resolve(catalog, styleInfo);
+                    if (unproxied != null || ResolvingProxy.getRef(styleInfo) == null)
+                        styles.set(i, unproxied);
                 }
             return result;
         }

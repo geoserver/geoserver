@@ -8,10 +8,8 @@ import java.rmi.server.UID;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
-import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.util.InternationalStringUtils;
 import org.geotools.util.GrowableInternationalString;
 import org.opengis.util.InternationalString;
@@ -23,7 +21,7 @@ public class LayerGroupStyleImpl implements LayerGroupStyle {
     // Uses a StyleInfo type for the name in order to be able to reference LayerGroup styles from
     // the default configuration or
     // from other LayerGroupStyle since the contained style are represented as a List of StyleInfo.
-    private StyleInfo name = new StyleInfoImpl((Catalog) GeoServerExtensions.bean("catalog"));
+    private StyleInfo name;
 
     private String title;
 

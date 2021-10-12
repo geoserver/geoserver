@@ -3,12 +3,16 @@
     <wicket:panel>
       <fieldset>
           <div wicket:id="panelTitle"/>
-          <ul class="action-group">
-              <li><a class="add-link" wicket:id="addLayer"><wicket:message key="addLayer">Add Layer...</wicket:message></a></li>
-              <li><a class="add-link" wicket:id="addLayerGroup"><wicket:message key="addLayerGroup">Add Layer Group...</wicket:message></a></li>
+          <ul>
               <li>
-                  <a class="add-link" wicket:id="addStyleGroup"><wicket:message key="addStyleGroup">Add Style Group...</wicket:message></a>
-                  <a href="#" wicket:id="styleGroupHelp" class="help-link"></a>
+                  <ul class="action-group">
+                      <li><a class="add-link" wicket:id="addLayer"><wicket:message key="addLayer">Add Layer...</wicket:message></a></li>
+                      <li><a class="add-link" wicket:id="addLayerGroup"><wicket:message key="addLayerGroup">Add Layer Group...</wicket:message></a></li>
+                      <li>
+                          <a class="add-link" wicket:id="addStyleGroup"><wicket:message key="addStyleGroup">Add Style Group...</wicket:message></a>
+                          <a href="#" wicket:id="styleGroupHelp" class="help-link"></a>
+                      </li>
+                  </ul>
               </li>
               <li>
                   <div wicket:id="layers"></div>

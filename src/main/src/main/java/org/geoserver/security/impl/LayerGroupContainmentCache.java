@@ -28,6 +28,7 @@ import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
 import org.geoserver.catalog.event.CatalogRemoveEvent;
+import org.geoserver.catalog.impl.LayerGroupStyleListener;
 
 /**
  * A cache for layer group containment, it speeds up looking up layer groups containing a particular
@@ -67,6 +68,7 @@ public class LayerGroupContainmentCache {
     public LayerGroupContainmentCache(Catalog catalog) {
         this.catalog = catalog;
         catalog.addListener(new CatalogChangeListener());
+        catalog.addListener(new LayerGroupStyleListener());
         buildLayerGroupCaches();
     }
 

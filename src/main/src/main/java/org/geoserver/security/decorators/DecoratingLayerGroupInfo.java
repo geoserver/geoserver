@@ -21,6 +21,7 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.decorate.AbstractDecorator;
 import org.opengis.util.InternationalString;
@@ -272,5 +273,25 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo>
     @Override
     public void setInternationalAbstract(InternationalString internationalTitle) {
         delegate.setInternationalAbstract(internationalTitle);
+    }
+
+    @Override
+    public List<LayerInfo> layers(String layerGroupStyleName) {
+        return delegate.layers(layerGroupStyleName);
+    }
+
+    @Override
+    public List<StyleInfo> styles(String layerGroupStyleName) {
+        return delegate.styles(layerGroupStyleName);
+    }
+
+    @Override
+    public List<LayerGroupStyle> getLayerGroupStyles() {
+        return delegate.getLayerGroupStyles();
+    }
+
+    @Override
+    public void setLayerGroupStyles(List<LayerGroupStyle> styles) {
+        delegate.setLayerGroupStyles(styles);
     }
 }

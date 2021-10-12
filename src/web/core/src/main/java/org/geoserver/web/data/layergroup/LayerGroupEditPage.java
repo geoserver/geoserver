@@ -27,6 +27,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.data.resource.MetadataLinkEditor;
 import org.geoserver.web.data.resource.TitleAndAbstractPanel;
@@ -49,7 +51,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
     public static final String GROUP = "group";
     public static final String WORKSPACE = "workspace";
 
-    LayerGroupEntryPanel lgEntryPanel;
+    LayerGroupEntryPanel<LayerGroupInfo> lgEntryPanel;
     private CheckBox queryableCheckBox;
 
     protected LayerGroupEditPage(boolean isNew) {
@@ -109,6 +111,7 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
 
         private EnvelopePanel envelopePanel;
         protected RootLayerEntryPanel rootLayerPanel;
+        private LayerGroupStyleConfig groupStyleConfig;
 
         @SuppressWarnings("serial")
         private void initUI() {
@@ -145,7 +148,11 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
                         protected void onUpdate(AjaxRequestTarget target) {
                             LayerGroupInfo.Mode mode = modeChoice.getModelObject();
                             updateRootLayerPanel(mode);
-                            target.add(rootLayerPanelContainer);
+                            if (mode.equals(LayerGroupInfo.Mode.SINGLE)
+                                    || mode.equals(LayerGroupInfo.Mode.OPAQUE_CONTAINER))
+                                groupStyleConfig.setVisible(true);
+                            else groupStyleConfig.setVisible(false);
+                            target.add(rootLayerPanelContainer, groupStyleConfig);
                         }
                     });
 
@@ -245,9 +252,23 @@ public class LayerGroupEditPage extends PublishedConfigurationPage<LayerGroupInf
 
             add(
                     lgEntryPanel =
-                            new LayerGroupEntryPanel(
-                                    "layers", getPublishedInfo(), wsChoice.getModel()));
+                            new LayerGroupEntryPanel<LayerGroupInfo>(
+                                    "layers", getPublishedInfo(), wsChoice.getModel()) {
 
+                                @Override
+                                protected List<PublishedInfo> getLayers(LayerGroupInfo object) {
+                                    return object.getLayers();
+                                }
+
+                                @Override
+                                protected List<StyleInfo> getStyles(LayerGroupInfo object) {
+                                    return object.getStyles();
+                                }
+                            });
+
+            add(groupStyleConfig = new LayerGroupStyleConfig("layerGroupStyles", myModel));
+            groupStyleConfig.setOutputMarkupId(true);
+            groupStyleConfig.setOutputMarkupPlaceholderTag(true);
             add(new MetadataLinkEditor("metadataLinks", myModel));
 
             // add keywords editor

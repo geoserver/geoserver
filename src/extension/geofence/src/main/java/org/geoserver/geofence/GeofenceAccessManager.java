@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
@@ -24,12 +25,12 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.Predicates;
-import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.LocalWorkspaceCatalog;
 import org.geoserver.geofence.config.GeoFenceConfiguration;
 import org.geoserver.geofence.config.GeoFenceConfigurationManager;
 import org.geoserver.geofence.core.model.LayerAttribute;
@@ -41,7 +42,6 @@ import org.geoserver.geofence.services.dto.CatalogModeDTO;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
-import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.Response;
 import org.geoserver.ows.util.KvpUtils;
@@ -134,7 +134,7 @@ public class GeofenceAccessManager
             GeoFenceConfigurationManager configurationManager) {
 
         this.rules = rules;
-        this.catalog = catalog;
+        this.catalog = new LocalWorkspaceCatalog(catalog);
         this.configurationManager = configurationManager;
         this.groupsCache = new LayerGroupContainmentCache(catalog);
     }
@@ -1011,37 +1011,25 @@ public class GeofenceAccessManager
             Authentication user) {
         // get the layer
         String layerName = (String) gsRequest.getKvp().get("LAYER");
+        String reqStyle = (String) gsRequest.getKvp().get("STYLE");
+        List<String> styles = new ArrayList<>();
         List<LayerInfo> layers = new ArrayList<>();
         LayerInfo candidateLayer = catalog.getLayerByName(layerName);
         if (candidateLayer == null) {
-            if (layerName.indexOf(":") == -1) {
-                // add namespace info to candidate layer group name
-                if (LocalWorkspace.get() != null) {
-                    layerName = LocalWorkspace.get().getName() + ":" + layerName;
-                } else if (catalog.getDefaultWorkspace() != null) {
-                    layerName = catalog.getDefaultWorkspace().getName() + ":" + layerName;
-                }
-            }
             LayerGroupInfo layerGroup = catalog.getLayerGroupByName(layerName);
             if (layerGroup != null) {
-                for (PublishedInfo publishedInfo : layerGroup.getLayers()) {
-                    if (publishedInfo instanceof LayerInfo) {
-                        layers.add((LayerInfo) publishedInfo);
-                    } else {
-                        if (LOGGER.isLoggable(Level.FINE)) {
-                            LOGGER.log(Level.FINE, "Skipping publishable " + publishedInfo);
-                        }
-                    }
-                }
+                layers.addAll(layerGroup.layers());
+                addGroupStyles(layerGroup, styles);
             }
         } else {
             layers.add(candidateLayer);
+            styles.add(reqStyle);
         }
 
         // get the request object
         GetLegendGraphicRequest getLegend = (GetLegendGraphicRequest) operation.getParameters()[0];
-
-        for (LayerInfo layer : layers) {
+        for (int i = 0; i < layers.size(); i++) {
+            LayerInfo layer = layers.get(i);
             ResourceInfo resource = layer.getResource();
 
             // get the rule, it contains default and allowed styles
@@ -1058,7 +1046,7 @@ public class GeofenceAccessManager
             AccessInfo rule = rules.getAccessInfo(ruleFilter);
 
             // get the requested style
-            String styleName = (String) gsRequest.getKvp().get("STYLE");
+            String styleName = styles.get(i);
             if (styleName == null) {
                 if (rule.getDefaultStyle() != null) {
                     try {
@@ -1200,22 +1188,19 @@ public class GeofenceAccessManager
 
     /**
      * Returns a list that contains the request styles that will correspond to the
-     * GetMap.getLayers(). Layer groups are expanded in layers and the associated styles are set to
-     * null (layers groups can't use dynamic styles).
+     * GetMap.getLayers().
      */
     private List<String> getRequestedStyles(Request gsRequest, GetMapRequest getMap) {
         List<String> requestedStyles = new ArrayList<>();
         int styleIndex = 0;
         List<String> parsedStyles = parseStylesParameter(gsRequest);
         for (Object layer : parseLayersParameter(gsRequest, getMap)) {
+            boolean outOfBound = styleIndex >= parsedStyles.size();
             if (layer instanceof LayerGroupInfo) {
-                // a LayerGroup don't have styles so we just add null
-                for (int i = 0; i < ((LayerGroupInfo) layer).getLayers().size(); i++) {
-                    requestedStyles.add(null);
-                }
+                addGroupStyles((LayerGroupInfo) layer, requestedStyles);
             } else {
                 // the layer is a LayerInfo or MapLayerInfo (if it is a remote layer)
-                if (styleIndex >= parsedStyles.size()) {
+                if (outOfBound) {
                     requestedStyles.add(null);
                 } else {
                     requestedStyles.add(parsedStyles.get(styleIndex));
@@ -1224,6 +1209,15 @@ public class GeofenceAccessManager
             styleIndex++;
         }
         return requestedStyles;
+    }
+
+    private void addGroupStyles(LayerGroupInfo groupInfo, List<String> requestedStyles) {
+        List<StyleInfo> groupStyles = groupInfo.styles();
+        requestedStyles.addAll(
+                groupStyles
+                        .stream()
+                        .map(s -> s != null ? s.prefixedName() : null)
+                        .collect(Collectors.toList()));
     }
 
     private List<Object> parseLayersParameter(Request gsRequest, GetMapRequest getMap) {

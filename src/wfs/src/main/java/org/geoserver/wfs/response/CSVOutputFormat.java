@@ -233,6 +233,8 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
             separator = " ";
         } else if (separator.equalsIgnoreCase("tab")) {
             separator = "\t";
+        } else if (separator.equalsIgnoreCase("semicolon")) {
+            separator = ";";
         } else if (separator.equals("\"")) {
             throw new InvalidParameterException("A double quote is not allowed as a CSV separator");
         }

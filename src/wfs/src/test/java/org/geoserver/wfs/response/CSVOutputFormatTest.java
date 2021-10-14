@@ -257,4 +257,40 @@ public class CSVOutputFormatTest extends WFSTestSupport {
                 "A double quote is not allowed as a CSV separator",
                 invalidParameterException.getMessage());
     }
+
+    @Test
+    public void testSemicolonAsCsvSeparator() throws Exception {
+
+        String separator = "semicolon";
+
+        // Get semicolon separated csv response
+        MockHttpServletResponse resp =
+                getAsServletResponse(
+                        "wfs?version=1.1.0&request=GetFeature&typeName=sf:PrimitiveGeoFeature&outputFormat=csv&format_options=csvSeparator:"
+                                + separator,
+                        "");
+
+        FeatureSource fs = getFeatureSource(MockData.PRIMITIVEGEOFEATURE);
+
+        // check the mime type
+        assertEquals("text/csv", resp.getContentType());
+
+        // check the charset encoding
+        assertEquals("UTF-8", resp.getCharacterEncoding());
+
+        // check the content disposition
+        assertEquals(
+                "attachment; filename=PrimitiveGeoFeature.csv",
+                resp.getHeader("Content-Disposition"));
+
+        List<String[]> lines = readLines(resp.getContentAsString(), ';');
+
+        // we should have one header line and then all the features in that feature type
+        assertEquals(fs.getCount(Query.ALL) + 1, lines.size());
+
+        for (String[] line : lines) {
+            // check each line has the expected number of elements (num of att + 1 for the id)
+            assertEquals(fs.getSchema().getDescriptors().size() + 1, line.length);
+        }
+    }
 }

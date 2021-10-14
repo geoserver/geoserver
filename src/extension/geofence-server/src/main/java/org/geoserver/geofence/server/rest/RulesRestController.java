@@ -62,9 +62,8 @@ public class RulesRestController extends RestBaseController {
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         XStream xs = persister.getXStream();
-        // configure a local persister avoiding problems of deserialization of request body if some
-        // other modules
-        // has a global persister aliasing with name "Rule"
+        // configure a local persister, avoiding problems of deserialization of request body if some
+        // other module has a global persister aliasing with name "Rule"
         xs.alias("Rule", JaxbRule.class);
         xs.allowTypes(new Class[] {JaxbRule.class, MultiPolygonAdapter.class});
     }

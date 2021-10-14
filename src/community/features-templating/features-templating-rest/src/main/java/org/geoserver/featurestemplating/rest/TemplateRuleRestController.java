@@ -10,6 +10,7 @@ import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -34,10 +35,12 @@ import org.geoserver.rest.wrapper.RestWrapper;
 import org.geotools.feature.NameImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,6 +66,18 @@ public class TemplateRuleRestController extends AbstractCatalogController {
         xstream.registerConverter(new TemplateRuleListConverter());
         xstream.alias("RulesList", TemplateRuleList.class);
         xstream.allowTypes(new Class[] {TemplateRuleList.class});
+        // configure a local persister, avoiding problems of deserialization of request body if some
+        // other module has a global persister aliasing with name "Rule"
+        xstream.alias("Rule", TemplateRule.class);
+        xstream.allowTypes(new Class[] {TemplateRuleList.class, TemplateRule.class});
+    }
+
+    @Override
+    public boolean supports(
+            MethodParameter methodParameter,
+            Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
+        return TemplateRule.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Autowired

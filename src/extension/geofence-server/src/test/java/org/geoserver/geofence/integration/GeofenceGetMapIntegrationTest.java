@@ -10,13 +10,21 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import javax.imageio.ImageIO;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.geofence.core.model.enums.CatalogMode;
 import org.geoserver.geofence.core.model.enums.GrantType;
+import org.geoserver.geofence.core.model.enums.LayerType;
 import org.geoserver.geofence.core.model.enums.SpatialFilterType;
 import org.geotools.image.test.ImageAssert;
 import org.junit.Test;
@@ -322,6 +330,86 @@ public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
             logout();
             removeLayerGroup(group);
             removeLayerGroup(nested);
+        }
+    }
+
+    @Test
+    public void testLayerGroupAndStyleRules() throws Exception {
+
+        Long ruleId1 = null;
+        Long ruleId2 = null;
+        LayerGroupInfo group = null;
+        String layerGroupName = "lakes_and_places_style";
+        try {
+            ruleId1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1, ruleService);
+            ruleId2 =
+                    addRule(
+                            GrantType.ALLOW,
+                            null,
+                            "ROLE_ANONYMOUS",
+                            "WMS",
+                            null,
+                            "cite",
+                            "Forests",
+                            0,
+                            ruleService);
+
+            // setting the allowed styles
+            List<String> allowedStyles = Arrays.asList("Lakes", "NamedPlaces");
+            addLayerDetails(
+                    ruleService,
+                    ruleId2,
+                    new HashSet<>(allowedStyles),
+                    Collections.emptySet(),
+                    CatalogMode.HIDE,
+                    null,
+                    null,
+                    LayerType.VECTOR);
+
+            addLakesPlacesLayerGroup(LayerGroupInfo.Mode.SINGLE, layerGroupName);
+
+            login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+            group = getCatalog().getLayerGroupByName(layerGroupName);
+
+            // polygon is not among the allowed styles
+            StyleInfo polygonStyle = getCatalog().getStyleByName("polygon");
+            LayerInfo forest = getCatalog().getLayerByName(getLayerId(MockData.FORESTS));
+            forest.getStyles().add(polygonStyle);
+            getCatalog().save(forest);
+            List<StyleInfo> styles = new ArrayList<>();
+            styles.add(polygonStyle);
+            // layergroup style containing style not among the allowed ones
+            addLayerGroupStyle(group, "forests_style", Arrays.asList(forest), styles);
+            logout();
+
+            login("anonymousUser", "", "ROLE_ANONYMOUS");
+            String url =
+                    "wms?request=getmap&service=wms"
+                            + "&layers="
+                            + group.getName()
+                            + "&styles="
+                            + "&width=100&height=100&format=image/png"
+                            + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
+            MockHttpServletResponse response = getAsServletResponse(url);
+            // first request default style should work
+            assertEquals(response.getContentType(), "image/png");
+
+            url =
+                    "wms?request=getmap&service=wms"
+                            + "&layers="
+                            + group.getName()
+                            + "&styles=forests_style"
+                            + "&width=100&height=100&format=image/png"
+                            + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
+            response = getAsServletResponse(url);
+            // should get an error since the polygon style is contained in the lg forest_style
+            assertEquals(response.getContentType(), "text/xml");
+            assertTrue(
+                    response.getContentAsString().contains("style is not available on this layer"));
+        } finally {
+            deleteRules(ruleService, ruleId1, ruleId2);
+            logout();
+            removeLayerGroup(group);
         }
     }
 }

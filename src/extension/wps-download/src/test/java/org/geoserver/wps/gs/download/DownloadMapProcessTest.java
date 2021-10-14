@@ -407,4 +407,79 @@ public class DownloadMapProcessTest extends BaseDownloadImageProcessTest {
 
         ImageAssert.assertEquals(new File(SAMPLES + "mapMultiLayerWithLegend.png"), image, 1500);
     }
+
+    @Test
+    public void testMapBmTimeMetadata() throws Exception {
+        String xml =
+                IOUtils.toString(
+                        getClass().getResourceAsStream("mapBlueMarbleMetadata.xml"), UTF_8);
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("application/xml", response.getContentType());
+        Document dom = dom(response, true);
+        print(dom);
+
+        // check the animation is produced as normal, de-referencing the link
+        String fullLocation =
+                XMLUnit.newXpathEngine()
+                        .evaluate("//wps:Output[ows:Identifier='result']/wps:Reference/@href", dom);
+        String testLocation = getTestReference(fullLocation);
+        response = getAsServletResponse(testLocation);
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+
+        // the metadata is in-line and should be
+        assertXpathExists(
+                "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/DownloadMetadata/Warnings",
+                dom);
+        assertXpathEvaluatesTo(
+                "0",
+                "count(//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/DownloadMetadata/Warnings/*)",
+                dom);
+        assertXpathEvaluatesTo(
+                "false",
+                "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/DownloadMetadata/WarningsFound",
+                dom);
+    }
+
+    @Test
+    public void testMapBmTimeMetadataWarnings() throws Exception {
+        String xml =
+                IOUtils.toString(
+                        getClass().getResourceAsStream("mapBlueMarbleMetadataWarnings.xml"), UTF_8);
+        MockHttpServletResponse response = postAsServletResponse("wps", xml);
+        assertEquals("application/xml", response.getContentType());
+        Document dom = dom(response, true);
+        print(dom);
+
+        // check the animation is produced as normal, de-referencing the link
+        String fullLocation =
+                XMLUnit.newXpathEngine()
+                        .evaluate("//wps:Output[ows:Identifier='result']/wps:Reference/@href", dom);
+        String testLocation = getTestReference(fullLocation);
+        response = getAsServletResponse(testLocation);
+
+        assertEquals(200, response.getStatus());
+        assertEquals("image/png", response.getContentType());
+
+        // the metadata is in-line and should be
+        assertXpathExists(
+                "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/DownloadMetadata/Warnings",
+                dom);
+        assertXpathEvaluatesTo(
+                "1",
+                "count(//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/DownloadMetadata/Warnings/*)",
+                dom);
+        String prefix =
+                "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/DownloadMetadata/Warnings/DimensionWarning";
+        // first warning, nearest
+        assertXpathEvaluatesTo("sf:bmtime", prefix + "[1]/LayerName", dom);
+        assertXpathEvaluatesTo("time", prefix + "[1]/DimensionName", dom);
+        assertXpathEvaluatesTo("2004-02-01T00:00:00.000Z", prefix + "[1]/Value", dom);
+        assertXpathEvaluatesTo("Nearest", prefix + "[1]/WarningType", dom);
+        // flag about warnings
+        assertXpathEvaluatesTo(
+                "true",
+                "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/DownloadMetadata/WarningsFound",
+                dom);
+    }
 }

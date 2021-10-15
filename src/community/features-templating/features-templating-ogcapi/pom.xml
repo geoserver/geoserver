@@ -37,6 +37,12 @@
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-ogcapi-features</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>jackson-dataformat-xml</artifactId>
+          <groupId>com.fasterxml.jackson.dataformat</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>

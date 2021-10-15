@@ -4,6 +4,7 @@
  */
 package org.geoserver.geofence.rest;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -14,9 +15,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.UUID;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.geofence.GeofenceBaseTest;
 import org.geoserver.geofence.core.dao.DuplicateKeyException;
 import org.geoserver.geofence.core.model.LayerAttribute;
@@ -28,6 +33,7 @@ import org.geoserver.geofence.server.rest.RulesRestController;
 import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
+import org.geoserver.geoserver.authentication.GeoFenceXStreamPersisterInitializer;
 import org.geoserver.rest.RestBaseController;
 import org.geotools.gml3.bindings.GML3MockData;
 import org.junit.Before;
@@ -723,6 +729,47 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertNotNull(r);
         assertNotNull(r.getLayerDetails());
         assertNull(r.getLayerDetails().getLayerType());
+    }
+
+    @Test
+    public void testLocalPersisterDeserialization() throws IOException {
+        XStreamPersisterFactory xpf = new XStreamPersisterFactory();
+        GeoFenceXStreamPersisterInitializer initializer = new GeoFenceXStreamPersisterInitializer();
+        xpf.addInitializer(initializer);
+
+        XStreamPersister persister = xpf.createXMLPersister();
+        controller.configurePersister(persister, null);
+        String xml =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                        + "<Rule>"
+                        + "<access>LIMIT</access>"
+                        + "<layer>DE_USNG_UTM18</layer>"
+                        + "<limits>"
+                        + "     <allowedArea>SRID=4326;MULTIPOLYGON (((-75 -90, -75 90, 75 90, 75 -90, -75 -90)))</allowedArea>"
+                        + "     <catalogMode>HIDDEN</catalogMode>"
+                        + "</limits>"
+                        + "<priority>1</priority>"
+                        + "<workspace>geonode</workspace>"
+                        + "</Rule>";
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(UTF_8));
+
+        JaxbRule rule = persister.load(bais, JaxbRule.class);
+
+        assertNotNull(rule);
+
+        assertEquals("LIMIT", rule.getAccess());
+        assertEquals("DE_USNG_UTM18", rule.getLayer());
+        assertEquals("geonode", rule.getWorkspace());
+        assertEquals(1, rule.getPriority().intValue());
+
+        assertNotNull(rule.getLimits());
+
+        assertEquals(
+                "SRID=4326;MULTIPOLYGON (((-75 -90, -75 90, 75 90, 75 -90, -75 -90)))",
+                rule.getLimits().getAllowedArea());
+
+        assertEquals("HIDDEN", rule.getLimits().getCatalogMode());
     }
 
     /**

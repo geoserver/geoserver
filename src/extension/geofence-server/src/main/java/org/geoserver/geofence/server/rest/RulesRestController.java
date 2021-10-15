@@ -4,16 +4,20 @@
  */
 package org.geoserver.geofence.server.rest;
 
+import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.rest.xml.JaxbRule;
 import org.geoserver.geofence.rest.xml.JaxbRuleList;
+import org.geoserver.geofence.rest.xml.MultiPolygonAdapter;
 import org.geoserver.geofence.services.RuleAdminService;
 import org.geoserver.geofence.services.dto.RuleFilter;
 import org.geoserver.geofence.services.dto.RuleFilter.IdNameFilter;
@@ -23,12 +27,15 @@ import org.geoserver.geofence.services.dto.ShortRule;
 import org.geoserver.geofence.services.exception.BadRequestServiceEx;
 import org.geoserver.geofence.services.exception.NotFoundServiceEx;
 import org.geoserver.rest.RestBaseController;
+import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.MethodParameter;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,6 +57,23 @@ public class RulesRestController extends RestBaseController {
     @Autowired
     public RulesRestController(RuleAdminService adminService) {
         this.adminService = adminService;
+    }
+
+    @Override
+    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
+        XStream xs = persister.getXStream();
+        // configure a local persister, avoiding problems of deserialization of request body if some
+        // other module has a global persister aliasing with name "Rule"
+        xs.alias("Rule", JaxbRule.class);
+        xs.allowTypes(new Class[] {JaxbRule.class, MultiPolygonAdapter.class});
+    }
+
+    @Override
+    public boolean supports(
+            MethodParameter methodParameter,
+            Type targetType,
+            Class<? extends HttpMessageConverter<?>> converterType) {
+        return JaxbRule.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @ExceptionHandler(NotFoundServiceEx.class)

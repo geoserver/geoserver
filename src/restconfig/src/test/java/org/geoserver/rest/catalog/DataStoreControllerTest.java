@@ -72,6 +72,7 @@ public class DataStoreControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAllAsJSON() throws Exception {
         JSON json = getAsJSON(ROOT_PATH + "/workspaces/sf/datastores.json");
+        print(json);
         assertTrue(json instanceof JSONObject);
 
         Object datastores = ((JSONObject) json).getJSONObject("dataStores").get("dataStore");

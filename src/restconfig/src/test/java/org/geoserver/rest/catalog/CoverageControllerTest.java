@@ -66,6 +66,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         JSONObject json =
                 (JSONObject)
                         getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/wcs/coverages.json");
+        print(json);
         JSONArray coverages = json.getJSONObject("coverages").getJSONArray("coverage");
         assertEquals(
                 catalog.getCoveragesByNamespace(catalog.getNamespaceByPrefix("wcs")).size(),

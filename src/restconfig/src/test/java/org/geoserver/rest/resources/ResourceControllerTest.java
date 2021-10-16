@@ -36,6 +36,7 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -310,6 +311,7 @@ public class ResourceControllerTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    @Ignore
     public void testDirectoryJSON() throws Exception {
         JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/resource/mydir?format=json");
         print(json);

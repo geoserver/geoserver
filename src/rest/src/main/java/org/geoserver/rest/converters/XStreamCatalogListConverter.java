@@ -14,6 +14,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import java.io.IOException;
 import java.util.Collection;
+import org.codehaus.jettison.mapped.Configuration;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.config.util.XStreamPersister;
@@ -216,7 +217,10 @@ public abstract class XStreamCatalogListConverter
 
         @Override
         protected XStream createXStreamInstance() {
-            return new SecureXStream(new JettisonMappedXmlDriver());
+            // needed for Jettison 1.4.1
+            Configuration configuration = new Configuration();
+            configuration.setRootElementArrayWrapper(false);
+            return new SecureXStream(new JettisonMappedXmlDriver(configuration));
         }
 
         @Override

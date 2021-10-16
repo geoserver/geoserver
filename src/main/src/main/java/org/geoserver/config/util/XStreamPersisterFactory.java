@@ -9,6 +9,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamDriver;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import java.util.ArrayList;
 import java.util.List;
+import org.codehaus.jettison.mapped.Configuration;
 import org.geoserver.platform.GeoServerExtensions;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -55,7 +56,10 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
 
     /** Creates an instance configured to persist JSON. */
     public XStreamPersister createJSONPersister() {
-        return buildPersister(new JettisonMappedXmlDriver());
+        // needed for Jettison 1.4.1
+        Configuration configuration = new Configuration();
+        configuration.setRootElementArrayWrapper(false);
+        return buildPersister(new JettisonMappedXmlDriver(configuration));
     }
 
     /** Builds a persister and runs the initializers against it */

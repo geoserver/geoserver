@@ -12,52 +12,37 @@ import java.io.RandomAccessFile;
 
 /**
  * Polls a file watching for modifications.
- * 
+ *
  * @author Justin Deoliveira, OpenGEO
- * 
  */
 public class FileWatcher implements Runnable {
 
-    /**
-     * The file being watched.
-     */
+    /** The file being watched. */
     protected File file;
 
-    /**
-     * last time the file being watched was modified
-     */
+    /** last time the file being watched was modified */
     protected long lastModified;
 
-    /**
-     * last size of the file.
-     */
+    /** last size of the file. */
     protected long lastSize;
 
-    /**
-     * poll / sleep interval
-     */
+    /** poll / sleep interval */
     long interval = 500;
 
-    /**
-     * stop flag
-     */
+    /** stop flag */
     boolean stopped = false;
 
-    /**
-     * buffer for reading content
-     */
+    /** buffer for reading content */
     byte[] buffer = new byte[1024];
 
-    public FileWatcher() {
-        
-    }
-    
+    public FileWatcher() {}
+
     public void setFile(File file) throws IOException {
         this.file = file;
         lastModified = file.lastModified();
         lastSize = size();
-    } 
-    
+    }
+
     public void setInterval(long interval) {
         this.interval = interval;
     }
@@ -122,7 +107,5 @@ public class FileWatcher implements Runnable {
         f.close();
     }
 
-    protected void handleContent(byte[] buffer, int n) throws Exception {
-
-    }
+    protected void handleContent(byte[] buffer, int n) throws Exception {}
 }

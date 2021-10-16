@@ -11,7 +11,7 @@ import org.geoserver.console.GeoServerConsole.ProductionHandler;
 
 /**
  * Entrance point to {@link GeoServerConsole} application.
- * 
+ *
  * @author Justin Deoliveira, OpenGEO
  */
 public class GeoServer {
@@ -20,14 +20,14 @@ public class GeoServer {
         // System.out.println(System.getProperty("user.dir"));
         System.out.println(System.getProperty("java.class.path"));
         Handler h = null;
-        for ( int i = 0; args != null && i < args.length; i++) {
-            if ( "--debug".equalsIgnoreCase( args[i] ) ) {
+        for (int i = 0; args != null && i < args.length; i++) {
+            if ("--debug".equalsIgnoreCase(args[i])) {
                 h = new DebugHandler();
             }
         }
-        if ( h == null ) {
+        if (h == null) {
             h = new ProductionHandler();
         }
-        GeoServerConsole console = new GeoServerConsole( h );
+        GeoServerConsole console = new GeoServerConsole(h);
     }
 }

@@ -9,34 +9,13 @@ import static org.geoserver.featurestemplating.builders.VendorOptions.JSON_LD_ST
 import static org.geoserver.featurestemplating.builders.VendorOptions.SEPARATOR;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
-import org.geoserver.featurestemplating.builders.SourceBuilder;
-import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilderMaker;
-import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
-import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.platform.FileWatcher;
-import org.geotools.filter.LiteralExpressionImpl;
-import org.opengis.filter.expression.Expression;
 
 /** Produce the builder tree starting from the evaluation of json-ld template file * */
 public class JSONTemplateReader implements TemplateReader {
-
-    public static final String SOURCEKEY = "$source";
-
-    public static final String CONTEXTKEY = "@context";
-
-    public static final String FILTERKEY = "$filter";
-
-    public static final String INCLUDEKEY = "$include";
-
-    public static final String EXPRSTART = "${";
-
-    public static final String VENDOROPTION = "$options";
 
     private JsonNode template;
 
@@ -244,13 +223,6 @@ public class JSONTemplateReader implements TemplateReader {
 
         if (node.has(CONTEXTKEY)) {
             builder.addVendorOption(CONTEXTKEY, node.get(CONTEXTKEY));
-        }
-        if (node.has(JSON_LD_STRING_ENCODE)) {
-            JsonNode stringEncodeJSONLD = node.get(JSON_LD_STRING_ENCODE);
-            if (!stringEncodeJSONLD.isBoolean())
-                throw new RuntimeException(
-                        "The option " + JSON_LD_STRING_ENCODE + " can only be a boolean value");
-            builder.addVendorOption(JSON_LD_STRING_ENCODE, stringEncodeJSONLD.booleanValue());
         }
         Expression flatOutput =
                 builder.getVendorOptions()

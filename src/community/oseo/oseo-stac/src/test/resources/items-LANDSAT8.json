@@ -10,6 +10,10 @@
       ],
       "properties": {
         "eo:cloud_cover": "$${opt:cloudCover / 2}",
+        "mergeTest": {
+          "attr1": "3",
+          "attr4": "4"
+        },
         "gsd": 30, 
         "landsat:tier": "pre-collection",
         "landsat:orbit": "${eop:orbitNumber}" // just to have a custom queriable

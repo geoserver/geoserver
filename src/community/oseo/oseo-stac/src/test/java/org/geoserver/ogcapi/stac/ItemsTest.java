@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.HashSet;
@@ -343,5 +344,15 @@ public class ItemsTest extends STACTestSupport {
         DocumentContext link = readSingleContext(item, "links[?(@.rel == 'collection')]");
         assertEquals(
                 "http://localhost:8080/geoserver/ogcapi/stac/collections/SAS1", link.read("href"));
+    }
+
+    @Test
+    public void mergeTestJSON() throws Exception {
+        DocumentContext json = getAsJSONPath("ogc/stac/collections/LANDSAT8/items", 200);
+        String jsonString = json.json().toString();
+
+        assertTrue(
+                jsonString.contains(
+                        "\"mergeTest\":{\"attr1\":\"3\",\"attr2\":\"2\",\"attr4\":\"4\"}"));
     }
 }

@@ -35,6 +35,11 @@ public class TemplateBuilderContext {
         return currentObj;
     }
 
+    /** Set the current object being evaluated */
+    public void setCurrentObj(Object currentObj) {
+        this.currentObj = currentObj;
+    }
+
     /**
      * Get the parent context
      *

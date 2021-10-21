@@ -111,7 +111,7 @@
             <fieldset>
                 <input type="hidden" name="check_keywords" value="yes" />
                 <input type="hidden" name="area" value="default" />
-                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" value="Search {{ manual|e }}&hellip;" size="20" tabindex="3" onblur="if(this.value=='') this.value='Search {{ manual|e }}&hellip;';" onfocus="if(this.value=='Search Documentation&hellip;') this.value='';" />
+                <input id="quick-search-query" type="text" name="q" accessKey="q" name="searchQuery.queryString" size="25" size="20" tabindex="3" placeholder="Search {{ manual|e }}&hellip;" />
                 <input id="quick-search-submit" type="image" value="Search" src="{{ pathto('_static/chrome/search_icon_green.png', 1)}}" />
             </fieldset>
         </form>

@@ -11,6 +11,8 @@ import org.geoserver.config.ConfigurationListenerAdapter;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInitializer;
 import org.geoserver.config.LoggingInfo;
+import org.geoserver.config.impl.GeoServerLifecycleHandler;
+import org.geoserver.config.impl.LoggingInfoImpl;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.util.logging.Logging;
@@ -23,7 +25,98 @@ import org.springframework.context.ApplicationContextAware;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
-public class LoggingInitializer implements GeoServerInitializer, ApplicationContextAware {
+public class LoggingInitializer
+        implements GeoServerInitializer, ApplicationContextAware, GeoServerLifecycleHandler {
+
+    @Override
+    public void onReset() {}
+
+    @Override
+    public void onDispose() {}
+
+    @Override
+    public void beforeReload() {}
+
+    @Override
+    public void onReload() {
+        LoggingInfo previousLogging = listener.getCurrentLogging();
+        LoggingInfo newLogging = geoServer.getLogging();
+        if (previousLogging != null && !previousLogging.equals(newLogging)) {
+            // No need to re-init logging when nothing changed
+            try {
+                LoggingUtils.initLogging(
+                        resourceLoader,
+                        newLogging.getLevel(),
+                        !newLogging.isStdOutLogging(),
+                        newLogging.getLocation());
+                listener.setCurrentLogging(newLogging);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /** A {@link ConfigurationListenerAdapter} taking care of the Logging changes */
+    public static class LoggingListener extends ConfigurationListenerAdapter {
+        private final GeoServerResourceLoader resourceLoader;
+        private final boolean relinquishLoggingControl;
+        private LoggingInfo currentLogging = new LoggingInfoImpl();
+
+        public LoggingListener(
+                GeoServerResourceLoader resourceLoader, boolean relinquishLoggingControl) {
+            super();
+            this.resourceLoader = resourceLoader;
+            this.relinquishLoggingControl = relinquishLoggingControl;
+        }
+
+        public LoggingInfo getCurrentLogging() {
+            return currentLogging;
+        }
+
+        public void setCurrentLogging(LoggingInfo currentLogging) {
+            this.currentLogging = currentLogging;
+        }
+
+        @Override
+        public void handleLoggingChange(
+                LoggingInfo logging,
+                List<String> propertyNames,
+                List<Object> oldValues,
+                List<Object> newValues) {
+            this.currentLogging = logging;
+            // TODO: get rid of this hack checking singleton
+            if (!relinquishLoggingControl) {
+                boolean reload = false;
+                String loggingLevel = logging.getLevel();
+                String loggingLocation = logging.getLocation();
+                Boolean stdOutLogging = logging.isStdOutLogging();
+
+                if (propertyNames.contains("level")) {
+                    loggingLevel = (String) newValues.get(propertyNames.indexOf("level"));
+                    reload = true;
+                }
+                if (propertyNames.contains("location")) {
+                    loggingLocation = (String) newValues.get(propertyNames.indexOf("location"));
+                    reload = true;
+                }
+                if (propertyNames.contains("stdOutLogging")) {
+                    stdOutLogging = (Boolean) newValues.get(propertyNames.indexOf("stdOutLogging"));
+                    reload = true;
+                }
+                // maintain the system variable overlay
+                loggingLocation = LoggingUtils.getLogFileLocation(loggingLocation);
+
+                if (reload) {
+                    try {
+                        LoggingUtils.initLogging(
+                                resourceLoader, loggingLevel, !stdOutLogging, loggingLocation);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+    }
 
     /** logging instance */
     static Logger LOGGER = Logging.getLogger("org.geoserver.logging");
@@ -32,63 +125,22 @@ public class LoggingInitializer implements GeoServerInitializer, ApplicationCont
 
     Boolean relinquishLoggingControl;
 
+    LoggingListener listener;
+
+    GeoServer geoServer;
+
     public void setResourceLoader(GeoServerResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }
 
+    public void setGeoServer(GeoServer geoServer) {
+        this.geoServer = geoServer;
+    }
+
     @Override
     public void initialize(GeoServer geoServer) throws Exception {
-        geoServer.addListener(
-                new ConfigurationListenerAdapter() {
-
-                    @Override
-                    public void handleLoggingChange(
-                            LoggingInfo logging,
-                            List<String> propertyNames,
-                            List<Object> oldValues,
-                            List<Object> newValues) {
-
-                        // TODO: get rid of this hack checking singleton
-                        if (!relinquishLoggingControl) {
-                            boolean reload = false;
-                            String loggingLevel = logging.getLevel();
-                            String loggingLocation = logging.getLocation();
-                            Boolean stdOutLogging = logging.isStdOutLogging();
-
-                            if (propertyNames.contains("level")) {
-                                loggingLevel =
-                                        (String) newValues.get(propertyNames.indexOf("level"));
-                                reload = true;
-                            }
-                            if (propertyNames.contains("location")) {
-                                loggingLocation =
-                                        (String) newValues.get(propertyNames.indexOf("location"));
-                                reload = true;
-                            }
-                            if (propertyNames.contains("stdOutLogging")) {
-                                stdOutLogging =
-                                        (Boolean)
-                                                newValues.get(
-                                                        propertyNames.indexOf("stdOutLogging"));
-                                reload = true;
-                            }
-                            // maintain the system variable overlay
-                            loggingLocation = LoggingUtils.getLogFileLocation(loggingLocation);
-
-                            if (reload) {
-                                try {
-                                    LoggingUtils.initLogging(
-                                            resourceLoader,
-                                            loggingLevel,
-                                            !stdOutLogging,
-                                            loggingLocation);
-                                } catch (Exception e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                        }
-                    }
-                });
+        listener = new LoggingListener(resourceLoader, relinquishLoggingControl);
+        geoServer.addListener(listener);
     }
 
     @Override

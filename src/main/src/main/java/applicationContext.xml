@@ -169,6 +169,7 @@
   <!-- logging initializer -->
   <bean id="loggingInitializer" class="org.geoserver.logging.LoggingInitializer">
     <property name="resourceLoader" ref="resourceLoader"/>
+    <property name="geoServer" ref="geoServer"/>
   </bean>
   
   <!-- resource pool initializer -->

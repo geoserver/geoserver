@@ -44,11 +44,13 @@ public class LoggingInitializer
         if (previousLogging != null && !previousLogging.equals(newLogging)) {
             // No need to re-init logging when nothing changed
             try {
+                String logLocation = LoggingUtils.getLogFileLocation(newLogging.getLocation());
                 LoggingUtils.initLogging(
                         resourceLoader,
                         newLogging.getLevel(),
                         !newLogging.isStdOutLogging(),
-                        newLogging.getLocation());
+                        logLocation);
+                newLogging.setLocation(logLocation);
                 listener.setCurrentLogging(newLogging);
             } catch (Exception e) {
                 throw new RuntimeException(e);

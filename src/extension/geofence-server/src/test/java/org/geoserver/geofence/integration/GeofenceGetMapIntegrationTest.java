@@ -5,6 +5,7 @@
 
 package org.geoserver.geofence.integration;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
@@ -14,35 +15,14 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.data.test.MockData;
-import org.geoserver.data.test.SystemTestData;
-import org.geoserver.geofence.core.model.Rule;
-import org.geoserver.geofence.core.model.RuleLimits;
 import org.geoserver.geofence.core.model.enums.CatalogMode;
 import org.geoserver.geofence.core.model.enums.GrantType;
 import org.geoserver.geofence.core.model.enums.SpatialFilterType;
-import org.geoserver.geofence.services.RuleAdminService;
-import org.geoserver.wms.WMSTestSupport;
 import org.geotools.image.test.ImageAssert;
-import org.junit.Before;
 import org.junit.Test;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
-
-    private RuleAdminService ruleService;
-
-    @Before
-    public void before() {
-        ruleService = (RuleAdminService) applicationContext.getBean("ruleAdminService");
-    }
-
-    @Override
-    protected void setUpTestData(SystemTestData testData) throws Exception {
-        super.setUpTestData(testData);
-    }
+public class GeofenceGetMapIntegrationTest extends GeofenceWMSTestSupport {
 
     @Test
     public void testLimitRuleWithAllowedAreaLayerGroup() throws Exception {
@@ -305,78 +285,43 @@ public class GeofenceGetMapIntegrationTest extends WMSTestSupport {
         }
     }
 
-    static long addRule(
-            GrantType access,
-            String username,
-            String roleName,
-            String service,
-            String request,
-            String workspace,
-            String layer,
-            long priority,
-            RuleAdminService ruleService) {
+    @Test
+    public void testGeofenceAccessManagerNotFailsGetMapNestedGroup() throws Exception {
 
-        Rule rule = new Rule();
-        rule.setAccess(access);
-        rule.setUsername(username);
-        rule.setRolename(roleName);
-        rule.setService(service);
-        rule.setRequest(request);
-        rule.setWorkspace(workspace);
-        rule.setLayer(layer);
-        rule.setPriority(priority);
-        return ruleService.insert(rule);
-    }
+        Long ruleId1 = null;
+        LayerGroupInfo group = null;
+        LayerGroupInfo nested = null;
+        try {
+            ruleId1 = addRule(GrantType.ALLOW, null, null, null, null, null, null, 1, ruleService);
 
-    static void addRuleLimits(
-            long ruleId,
-            CatalogMode mode,
-            String allowedArea,
-            Integer srid,
-            RuleAdminService ruleService)
-            throws ParseException {
-        addRuleLimits(ruleId, mode, allowedArea, srid, null, ruleService);
-    }
+            addLakesPlacesLayerGroup(LayerGroupInfo.Mode.SINGLE, "nested");
 
-    static void addRuleLimits(
-            long ruleId,
-            CatalogMode mode,
-            String allowedArea,
-            Integer srid,
-            SpatialFilterType spatialFilterType,
-            RuleAdminService ruleService)
-            throws org.locationtech.jts.io.ParseException {
-        RuleLimits limits = new RuleLimits();
-        limits.setCatalogMode(mode);
-        MultiPolygon allowedAreaGeom = (MultiPolygon) new WKTReader().read(allowedArea);
-        if (srid != null) allowedAreaGeom.setSRID(srid);
-        limits.setAllowedArea(allowedAreaGeom);
-        if (spatialFilterType == null) spatialFilterType = SpatialFilterType.INTERSECT;
-        limits.setSpatialFilterType(spatialFilterType);
-        ruleService.setLimits(ruleId, limits);
-    }
+            addLakesPlacesLayerGroup(LayerGroupInfo.Mode.OPAQUE_CONTAINER, "container");
 
-    static void deleteRules(RuleAdminService ruleService, Long... ids) {
-        for (Long id : ids) {
-            if (id != null) ruleService.delete(id);
+            login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+            group = getCatalog().getLayerGroupByName("container");
+            nested = getCatalog().getLayerGroupByName("nested");
+            group.getLayers().add(nested);
+            group.getStyles().add(null);
+            getCatalog().save(group);
+            logout();
+
+            login("anonymousUser", "", "ROLE_ANONYMOUS");
+            String url =
+                    "wms?request=getmap&service=wms"
+                            + "&layers="
+                            + group.getName()
+                            + "&styles="
+                            + "&width=100&height=100&format=image/png"
+                            + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002";
+            MockHttpServletResponse response = getAsServletResponse(url);
+            assertEquals(response.getContentType(), "image/png");
+
+        } finally {
+            deleteRules(ruleService, ruleId1);
+            logout();
+            removeLayerGroup(group);
+            removeLayerGroup(nested);
         }
-    }
-
-    private LayerGroupInfo addLakesPlacesLayerGroup(LayerGroupInfo.Mode mode, String name)
-            throws Exception {
-        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
-        LayerGroupInfo group = createLakesPlacesLayerGroup(getCatalog(), name, mode, null);
-        logout();
-        return group;
-    }
-
-    private void removeLayerGroup(LayerGroupInfo... groups) {
-        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
-        for (LayerGroupInfo group : groups) {
-            if (group != null) {
-                getCatalog().remove(group);
-            }
-        }
-        logout();
     }
 }

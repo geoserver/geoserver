@@ -74,11 +74,11 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         vars.put("outputFormat", "MAPML");
 
         Document doc = getMapML("wfs", vars);
-        assertEquals("mapml", doc.getDocumentElement().getNodeName());
-        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
-        assertXpathEvaluatesTo("0", "count(//html:link[@rel='license'])", doc);
-        assertXpathEvaluatesTo("0", "count(//html:link[@rel='license']/@href)", doc);
-        assertXpathEvaluatesTo("0", "count(//html:link[@rel='license']/@title)", doc);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-link[@rel='license'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-link[@rel='license']/@href)", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-link[@rel='license']/@title)", doc);
 
         FeatureTypeInfo layerInfo = getFeatureTypeInfo(SystemTestData.FIFTEEN);
         MetadataMap layerMeta = layerInfo.getMetadata();
@@ -93,11 +93,11 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         assertTrue(layerMeta.get("mapml.licenseTitle").toString().equalsIgnoreCase(licenseTitle));
 
         doc = getMapML("wfs", vars);
-        assertEquals("mapml", doc.getDocumentElement().getNodeName());
-        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='license'])", doc);
-        assertXpathEvaluatesTo(licenseLink, "//html:link[@rel='license']/@href", doc);
-        assertXpathEvaluatesTo(licenseTitle, "//html:link[@rel='license']/@title", doc);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='license'])", doc);
+        assertXpathEvaluatesTo(licenseLink, "//html:map-link[@rel='license']/@href", doc);
+        assertXpathEvaluatesTo(licenseTitle, "//html:map-link[@rel='license']/@title", doc);
 
         layerInfo = getFeatureTypeInfo(SystemTestData.FIFTEEN);
         layerMeta = layerInfo.getMetadata();
@@ -106,11 +106,11 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         getCatalog().save(layerInfo);
 
         doc = getMapML("wfs", vars);
-        assertEquals("mapml", doc.getDocumentElement().getNodeName());
-        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
-        assertXpathEvaluatesTo("1", "count(//html:link[@rel='license'])", doc);
-        assertXpathEvaluatesTo("0", "count(//html:link[@rel='license']/@href)", doc);
-        assertXpathEvaluatesTo(licenseTitle, "//html:link[@rel='license']/@title", doc);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='license'])", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-link[@rel='license']/@href)", doc);
+        assertXpathEvaluatesTo(licenseTitle, "//html:map-link[@rel='license']/@title", doc);
     }
 
     @Test
@@ -154,19 +154,21 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
             for (String code : codes) {
                 vars.replace("srsName", code);
                 doc = getMapML("wfs", vars);
-                assertEquals("mapml", doc.getDocumentElement().getNodeName());
-                assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
+                assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+                assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
                 assertXpathEvaluatesTo(
-                        "1", "count(//html:meta[@name='cs'][@content='" + cs + "'])", doc);
-                assertXpathEvaluatesTo("1", "count(//html:meta[@name='projection'])", doc);
+                        "1", "count(//html:map-meta[@name='cs'][@content='" + cs + "'])", doc);
+                assertXpathEvaluatesTo("1", "count(//html:map-meta[@name='projection'])", doc);
                 TiledCRSParams tcrs = TiledCRSConstants.lookupTCRS(code);
                 CoordinateReferenceSystem crs = CRS.decode(code);
                 String cite = (crs instanceof GeodeticCRS) ? "MapML:" : "";
                 String proj = tcrs == null ? cite + code : tcrs.getName();
                 assertXpathEvaluatesTo(
-                        "1", "count(//html:meta[@name='projection'][@content='" + proj + "')", doc);
-                assertXpathEvaluatesTo("1", "count(//html:meta[@name='extent'])", doc);
-                String extent = xpath.evaluate("//html:meta[@name='extent']/@content", doc);
+                        "1",
+                        "count(//html:map-meta[@name='projection'][@content='" + proj + "')",
+                        doc);
+                assertXpathEvaluatesTo("1", "count(//html:map-meta[@name='extent'])", doc);
+                String extent = xpath.evaluate("//html:map-meta[@name='extent']/@content", doc);
                 String[] positions = extent.split(",");
                 assertSame(
                         "meta extent must have 4 positions, but this one has: " + positions.length,
@@ -207,9 +209,9 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         getCatalog().save(layerInfo);
 
         Document doc = getMapML("wfs", vars);
-        assertEquals("mapml", doc.getDocumentElement().getNodeName());
-        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
-        assertXpathEvaluatesTo("0", "count(//html:featurecaption)", doc);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-featurecaption)", doc);
 
         // test that all features have a caption
         layerInfo = getFeatureTypeInfo(MockData.STREAMS);
@@ -229,9 +231,9 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
                         .equalsIgnoreCase(featureCaptionTemplate));
 
         doc = getMapML("wfs", vars);
-        assertEquals("mapml", doc.getDocumentElement().getNodeName());
-        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
-        assertXpathEvaluatesTo("2", "count(//html:featurecaption)", doc);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
+        assertXpathEvaluatesTo("2", "count(//html:map-featurecaption)", doc);
     }
 
     @Test
@@ -249,9 +251,9 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         getCatalog().save(layerInfo);
 
         Document doc = getMapML("wfs", vars);
-        assertEquals("mapml", doc.getDocumentElement().getNodeName());
-        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
-        assertXpathEvaluatesTo("0", "count(//html:featurecaption)", doc);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-featurecaption)", doc);
 
         // test that SOME features can have a caption while others may not
         layerInfo = getFeatureTypeInfo(MockData.STREAMS);
@@ -269,8 +271,8 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
                         .equalsIgnoreCase(featureCaptionTemplate));
 
         doc = getMapML("wfs", vars);
-        assertEquals("mapml", doc.getDocumentElement().getNodeName());
-        assertXpathEvaluatesTo("1", "count(//html:featurecaption)", doc);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:map-featurecaption)", doc);
     }
 
     @Test
@@ -288,9 +290,9 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         getCatalog().save(layerInfo);
 
         Document doc = getMapML("wfs", vars);
-        assertEquals("mapml", doc.getDocumentElement().getNodeName());
-        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
-        assertXpathEvaluatesTo("0", "count(//html:featurecaption)", doc);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-featurecaption)", doc);
 
         // test that a string with > 1 ${placeholder} can be processed
         layerInfo = getFeatureTypeInfo(MockData.STREAMS);
@@ -306,9 +308,9 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
                         .equalsIgnoreCase(featureCaptionTemplate));
 
         doc = getMapML("wfs", vars);
-        assertEquals("mapml", doc.getDocumentElement().getNodeName());
-        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
-        assertXpathEvaluatesTo("2", "count(//html:featurecaption)", doc);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
+        assertXpathEvaluatesTo("2", "count(//html:map-featurecaption)", doc);
     }
 
     @Test
@@ -329,10 +331,11 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         vars.put("srsName", "urn:x-ogc:def:crs:EPSG:3978");
 
         Document doc = getMapML("wfs", vars);
-        assertEquals("mapml", doc.getDocumentElement().getNodeName());
-        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
         String coords =
-                xpath.evaluate("//html:feature[@id='Fifteen.1']//html:coordinates/text()", doc);
+                xpath.evaluate(
+                        "//html:map-feature[@id='Fifteen.1']//html:map-coordinates/text()", doc);
         assertEquals(
                 "numDecimals unset should return 8 digits of precision",
                 "329290.83733147 -5812472.16880127",
@@ -343,9 +346,11 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         getCatalog().save(layerInfo);
 
         doc = getMapML("wfs", vars);
-        assertEquals("mapml", doc.getDocumentElement().getNodeName());
-        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
-        coords = xpath.evaluate("//html:feature[@id='Fifteen.1']//html:coordinates/text()", doc);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
+        coords =
+                xpath.evaluate(
+                        "//html:map-feature[@id='Fifteen.1']//html:map-coordinates/text()", doc);
         assertEquals(
                 "numDecimals=4 should return 4 digits of precision",
                 "329290.8373 -5812472.1688",
@@ -357,9 +362,11 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         getCatalog().save(layerInfo);
 
         doc = getMapML("wfs", vars);
-        assertEquals("mapml", doc.getDocumentElement().getNodeName());
-        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
-        coords = xpath.evaluate("//html:feature[@id='Fifteen.1']//html:coordinates/text()", doc);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
+        coords =
+                xpath.evaluate(
+                        "//html:map-feature[@id='Fifteen.1']//html:map-coordinates/text()", doc);
         assertEquals(
                 "numDecimals=2 should return 2 digits of precision",
                 "329290.84 -5812472.17",
@@ -375,9 +382,11 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         vars.replace("srsName", "urn:x-ogc:def:crs:EPSG:3857");
 
         doc = getMapML("wfs", vars);
-        assertEquals("mapml", doc.getDocumentElement().getNodeName());
-        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
-        coords = xpath.evaluate("//html:feature[@id='Fifteen.1']//html:coordinates/text()", doc);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
+        coords =
+                xpath.evaluate(
+                        "//html:map-feature[@id='Fifteen.1']//html:map-coordinates/text()", doc);
         assertEquals(
                 "With forcedDecimals=false, very large or very small numbers should be returned as scientific notation",
                 "-1.03526624685E7 504135.1496",
@@ -407,11 +416,11 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
 
         // assure that pad with zeros works
         doc = getMapML("wfs", vars);
-        assertEquals("mapml", doc.getDocumentElement().getNodeName());
-        assertXpathEvaluatesTo("1", "count(//html:mapml)", doc);
+        assertEquals("mapml-", doc.getDocumentElement().getNodeName());
+        assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
         String coords =
                 xpath.evaluate(
-                        "//html:feature[@id='BasicPolygons.1107531493630']//html:coordinates/text()",
+                        "//html:map-feature[@id='BasicPolygons.1107531493630']//html:map-coordinates/text()",
                         doc);
         assertEquals(
                 "numDecimals=4 should return 4 digits of precision including padding with zeros",

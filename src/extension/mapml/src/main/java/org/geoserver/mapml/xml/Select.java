@@ -39,10 +39,10 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "select", namespace = "http://www.w3.org/1999/xhtml")
+@XmlRootElement(name = "map-select", namespace = "http://www.w3.org/1999/xhtml")
 public class Select {
 
-    @XmlElement(name = "option", required = true, namespace = "http://www.w3.org/1999/xhtml")
+    @XmlElement(name = "map-option", required = true, namespace = "http://www.w3.org/1999/xhtml")
     protected List<Option> options;
 
     @XmlAttribute(name = "id", required = true)

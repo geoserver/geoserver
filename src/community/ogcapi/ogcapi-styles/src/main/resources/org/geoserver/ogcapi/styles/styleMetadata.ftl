@@ -8,9 +8,9 @@
       <h2>${model.id}</h2>
     </div>
     <div class="card-body">
-      <uL>
-        <li><b>Title</b>: ${model.title!"N/A"}</li>
-        <li><b>Description</b>: ${model.description!"N/A"}</li>
+      <ul>
+        <li id="title"><b>Title</b>: ${model.title!"N/A"}</li>
+        <li id="description"><b>Description</b>: ${model.description!"N/A"}</li>
         <li><b>Keywords</b>:
           <#if model.keywords?? && model.keywords?size gt 0>
             <ul>
@@ -21,7 +21,7 @@
           <#else>N/A
           </#if>
         </li>
-        <li><b>Point of contact</b>: ${model.pointOfContact!"N/A"}</li>
+        <li id="poc"><b>Point of contact</b>: ${model.pointOfContact!"N/A"}</li>
         <li><b>Access constraints</b>: ${model.accessConstraints!"N/A"}</li>
         <li><b>Dates</b>:
         <#if model.dates??>
@@ -35,19 +35,27 @@
         <#else>N/A
         </#if>
         </li>
-        <li><b>Stylesheets</b>:
+        <li id="stylesheets"><b>Stylesheets</b>:
             <ul>
               <#list model.stylesheets as ss>
             <li><a href="${ss.link.href}">${ss.title}</a> (${ss.native?string('native','converted')})</li>
           </#list>
             </ul>
         </li>
-        <li><b>Layers</b>:
+        <li id="layers"><b>Layers</b>:
           <ul>
             <#list model.layers as layer>
               <li>
                 ${layer.id}: ${layer.type}. 
-                <#if layer.sampleData??><a href="${layer.sampleData.href}">Sample data available</a>.</#if><br/>
+                <#if layer.sampleData??><br/>Sample data available:
+                      <select onchange="window.open(this.options[this.selectedIndex].value);this.selectedIndex=0" >
+                        <option value="none" selected>-- Please choose a format --</option>
+                        <#list layer.sampleData as link>
+                        <option value="${link.href}">${link.type}</option>
+                        </#list>
+                      </select>
+                </#if>
+                <br/>
                 <#if layer.attributes?? && layer.attributes?size gt 0>
                     <b>Attributes used by the style:</b>
                     <ul>

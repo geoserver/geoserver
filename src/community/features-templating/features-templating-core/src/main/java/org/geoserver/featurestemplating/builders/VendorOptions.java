@@ -31,6 +31,9 @@ public class VendorOptions extends HashMap<String, Object> {
 
     public static final String LINK = "link";
 
+    // encoding hint to encode all json-ld attributes as string
+    public static final String JSON_LD_STRING_ENCODE = "encode_as_string";
+
     public <T> T get(String key, Class<T> cast) {
         Object value = get(key);
         T result = null;

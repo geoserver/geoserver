@@ -9,6 +9,33 @@ This section describes how to view and configure workspaces. Analogous to a name
    
    Workspaces page
 
+
+Add a Workspace
+---------------
+
+The buttons for adding and removing a workspace can be found at the top of the Workspaces view page. 
+
+.. figure:: img/data_workspaces_add_remove.png
+
+   Buttons to add and remove
+   
+To add a workspace, select the :guilabel:`Add new workspace` button. You will be prompted to enter the the workspace name and URI (as described in :ref:`data_webadmin_workspaces_edit` below).
+   
+.. figure:: img/data_workspaces_sde.png
+
+   New Workspace page with example
+
+Remove a Workspace
+------------------
+
+To remove a workspace, select it by clicking the checkbox next to the workspace. Multiple workspaces can be selected, or all can be selected by clicking the checkbox in the header.  Click the :guilabel:`Remove selected workspaces(s)` button. You will be asked to confirm or cancel the removal. Clicking :guilabel:`OK` removes the selected workspace(s). 
+
+.. figure:: img/data_workspaces_rename_confirm.png
+
+   Workspace removal confirmation
+
+.. _data_webadmin_workspaces_edit:
+
 Edit a Workspace
 ----------------
 
@@ -19,15 +46,6 @@ To view or edit a workspace, click the workspace name. A workspace configuration
    Workspace named "topp"
    
 A workspace is defined by a name and a Namespace URI (Uniform Resource Identifier). The workspace name is limited to ten characters and may not contain space. A URI is similar to a URL, except URIs do not need to point to a actual location on the web, and only need to be a unique identifier. For a Workspace URI, we recommend using a URL associated with your project, with perhaps a different trailing identifier. For example, ``http://www.openplans.org/topp`` is the URI for the "topp" workspace. 
-
-The Security tab allows to set data access rules at workspace level.
-
-.. note:: For more information on data access rules, please see the section on :ref:`security_webadmin_data`.
-
-.. figure:: img/data_workspaces_security_edit.png
-
-To create/edit workspace's data access rules simply check/uncheck checkboxes according to the desidered role. 
-The Grant access to any role checkbox grant each role for any access mode.
 
 Root Directory for REST PathMapper 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -41,33 +59,53 @@ This parameter is used by the RESTful API as the `Root Directory` for uploaded f
 	${rootDirectory}/workspace/store[/<file>]
 
 .. note:: This parameter is visible only when the **Enabled** parameter of the *Settings* section is checked. 
+
+.. _workspace_settings:
+
+Workspace Settings
+^^^^^^^^^^^^^^^^^^
+
+Use :guilabel:`Enabled` checkbox to override the global contact information for this this workspace.
+
+.. figure:: img/workspace_settings.png
    
-Add a Workspace
----------------
-
-The buttons for adding and removing a workspace can be found at the top of the Workspaces view page. 
-
-.. figure:: img/data_workspaces_add_remove.png
-
-   Buttons to add and remove
+   Enable workspace settings to provide default contact information
    
-To add a workspace, select the :guilabel:`Add new workspace` button. You will be prompted to enter the the workspace name and URI.  
+Clients accessing this workspace as a :ref:`virtual_services` will use the contact information provided here.
+
+.. _workspace_services:
+
+Workspace Services
+^^^^^^^^^^^^^^^^^^
+
+Use the checkbox located next to each serivce to override the global settings for the associated service.
+
+.. figure:: img/workspace_services.png
    
-.. figure:: img/data_workspaces_medford.png
+   Enable workspace services to provide default service description
 
-   New Workspace page with example
+Once enabled clicking on the service link will open the settings page for the service, allowing default values for service title, abstract and other details to be supplied.
 
-Remove a Workspace
-------------------
+.. figure:: img/workspace_wms_settings.png
+   
+   Workspace WMS Settings
 
-To remove a workspace, select it by clicking the checkbox next to the workspace. Multiple workspaces can be selected, or all can be selected by clicking the checkbox in the header.  Click the :guilabel:`Remove selected workspaces(s)` button. You will be asked to confirm or cancel the removal. Clicking :guilabel:`OK` removes the selected workspace(s). 
+Clients accessing this workspace as a :ref:`virtual_services` will use the service description provided here.
 
-.. figure:: img/data_workspaces_rename_confirm.png
+Security
+^^^^^^^^
 
-   Workspace removal confirmation
+The Security tab allows to set data access rules at workspace level.
+
+.. note:: For more information on data access rules, please see the section on :ref:`security_webadmin_data`.
+
+.. figure:: img/data_workspaces_security_edit.png
+
+To create/edit the workspace's data access rules, check/uncheck checkboxes according to the desired role. 
+The Grant access to any role checkbox grant each role for any access mode.
 
 Isolated Workspaces
--------------------
+^^^^^^^^^^^^^^^^^^^
 
 Isolated workspaces content is only visible and queryable in the context of a virtual service bound to the isolated workspace. This means that isolated workspaces content will not show up in global capabilities documents and global services cannot query isolated workspaces contents. Is worth mentioning that those restrictions don't apply to the REST API.
 

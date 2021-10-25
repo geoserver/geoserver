@@ -35,7 +35,14 @@ public class FeaturesSampleDataProvider implements SampleDataProvider {
                             FeaturesResponse.class,
                             resourceId + " items as ",
                             "data",
-                            null,
+                            (media, link) -> {
+                                String href =
+                                        link.getHref()
+                                                + "&limit="
+                                                + service.getService()
+                                                        .getMaxNumberOfFeaturesForPreview();
+                                link.setHref(href);
+                            },
                             "data",
                             false);
         }

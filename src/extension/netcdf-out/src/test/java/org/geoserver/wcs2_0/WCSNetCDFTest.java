@@ -10,8 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
@@ -65,20 +63,6 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
-    }
-
-    private void setFinalStaticField(String fieldName, boolean value)
-            throws NoSuchFieldException, SecurityException, IllegalArgumentException,
-                    IllegalAccessException {
-        // Playing with System.Properties and Static boolean fields can raises issues
-        // when running Junit tests via Maven, due to initialization orders.
-        // So let's change the fields via reflections for these tests
-        Field field = NetCDFCRSUtilities.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(null, value);
     }
 
     @Override
@@ -533,7 +517,7 @@ public class WCSNetCDFTest extends WCSNetCDFBaseTest {
 
     @Test
     public void testKmAxisUnitSupport() throws Exception {
-        setFinalStaticField("CONVERT_AXIS_KM", false);
+        NetCDFCRSUtilities.setConvertAxisKm(false);
         MockHttpServletResponse response =
                 getAsServletResponse(
                         "ows?request=GetCoverage&service=WCS&version=2.0.1"

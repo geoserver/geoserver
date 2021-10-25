@@ -185,6 +185,10 @@ public class ConfigDatabase implements ApplicationContextAware {
 
     private ConcurrentMap<String, Semaphore> locks;
 
+    // transaction management works only if the method
+    // is called from a Spring proxy that processed the annotations,
+    // so we cannot call getId directly, it needs to be done from
+    // "outside"
     /* the bean itself, but with the transactional proxy wrappers around */
     private ConfigDatabase transactionalConfigDatabase;
 
@@ -425,11 +429,7 @@ public class ConfigDatabase implements ApplicationContextAware {
                             @Nullable
                             @Override
                             public T apply(String id) {
-                                // tricky bit... transaction management works only if the method
-                                // is called from a Spring proxy that processed the annotations,
-                                // so we cannot call getId directly, it needs to be done from
-                                // "outside"
-                                return transactionalConfigDatabase.getById(id, of);
+                                return getById(id, of);
                             }
                         });
 
@@ -885,6 +885,8 @@ public class ConfigDatabase implements ApplicationContextAware {
             if (updateResouceLayersName) {
                 updateResourceLayerProperty(
                         (ResourceInfo) info, "name", ((ResourceInfo) info).getName());
+                updateResourceLayerProperty(
+                        (ResourceInfo) info, "prefixedName", ((ResourceInfo) info).prefixedName());
             }
             if (updateResouceLayersAdvertised) {
                 updateResourceLayerProperty(
@@ -1106,12 +1108,6 @@ public class ConfigDatabase implements ApplicationContextAware {
         return propertyTypeIds.iterator().next();
     }
 
-    @Nullable
-    @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
     public <T extends Info> T getById(final String id, final Class<T> type) {
         Assert.notNull(id, "id");
 
@@ -1174,12 +1170,6 @@ public class ConfigDatabase implements ApplicationContextAware {
         return null;
     }
 
-    @Nullable
-    @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
     public <T extends Info> String getIdByIdentity(
             final Class<T> type, final String... identityMappings) {
         Assert.notNull(identityMappings, "id");
@@ -1250,11 +1240,6 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     @Nullable
-    @Transactional(
-        transactionManager = "jdbcConfigTransactionManager",
-        propagation = Propagation.REQUIRED,
-        readOnly = true
-    )
     public <T extends Info> T getByIdentity(final Class<T> type, final String... identityMappings) {
         String id = getIdByIdentity(type, identityMappings);
 
@@ -1323,6 +1308,12 @@ public class ConfigDatabase implements ApplicationContextAware {
     }
 
     /** @return immutable list of results */
+    @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
     public <T extends Info> List<T> getAll(final Class<T> clazz) {
 
         Map<String, ?> params = params("types", typesParam(clazz));
@@ -1412,17 +1403,28 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         @Override
         public CatalogInfo call() throws Exception {
-            CatalogInfo info;
-            try {
-                String sql = "select blob from object where id = :id";
-                Map<String, String> params = ImmutableMap.of("id", id);
-                logStatement(sql, params);
-                info = template.queryForObject(sql, params, catalogRowMapper);
-            } catch (EmptyResultDataAccessException noSuchObject) {
-                return null;
-            }
-            return info;
+            return transactionalConfigDatabase.loadCatalog(id);
         }
+    }
+
+    @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
+    public CatalogInfo loadCatalog(String id) {
+
+        CatalogInfo info;
+        try {
+            String sql = "select blob from object where id = :id";
+            Map<String, String> params = ImmutableMap.of("id", id);
+            logStatement(sql, params);
+            info = template.queryForObject(sql, params, catalogRowMapper);
+        } catch (EmptyResultDataAccessException noSuchObject) {
+            return null;
+        }
+        return info;
     }
 
     private final class IdentityLoader implements Callable<String> {
@@ -1435,23 +1437,31 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         @Override
         public String call() throws Exception {
-            Filter filter = Filter.INCLUDE;
-            for (int i = 0; i < identity.getDescriptor().length; i++) {
-                filter =
-                        and(
-                                filter,
-                                identity.getValues()[i] == null
-                                        ? isNull(identity.getDescriptor()[i])
-                                        : equal(
-                                                identity.getDescriptor()[i],
-                                                identity.getValues()[i]));
-            }
+            return transactionalConfigDatabase.loadIdentity(identity);
+        }
+    }
 
-            try {
-                return getId(identity.getClazz(), filter);
-            } catch (IllegalArgumentException multipleResults) {
-                return null;
-            }
+    @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
+    public String loadIdentity(InfoIdentity identity) {
+        Filter filter = Filter.INCLUDE;
+        for (int i = 0; i < identity.getDescriptor().length; i++) {
+            filter =
+                    and(
+                            filter,
+                            identity.getValues()[i] == null
+                                    ? isNull(identity.getDescriptor()[i])
+                                    : equal(identity.getDescriptor()[i], identity.getValues()[i]));
+        }
+
+        try {
+            return getId(identity.getClazz(), filter);
+        } catch (IllegalArgumentException multipleResults) {
+            return null;
         }
     }
 
@@ -1578,38 +1588,48 @@ public class ConfigDatabase implements ApplicationContextAware {
 
         @Override
         public Info call() throws Exception {
-            Info info;
-            try {
-                String sql = "select blob from object where id = :id";
-                Map<String, String> params = ImmutableMap.of("id", id);
-                logStatement(sql, params);
-                info = template.queryForObject(sql, params, configRowMapper);
-            } catch (EmptyResultDataAccessException noSuchObject) {
-                return null;
-            }
-            OwsUtils.resolveCollections(info);
-            if (info instanceof GeoServerInfo) {
-
-                GeoServerInfoImpl global = (GeoServerInfoImpl) info;
-                if (global.getMetadata() == null) {
-                    global.setMetadata(new MetadataMap());
-                }
-                if (global.getClientProperties() == null) {
-                    global.setClientProperties(new HashMap<Object, Object>());
-                }
-                if (global.getCoverageAccess() == null) {
-                    global.setCoverageAccess(new CoverageAccessInfoImpl());
-                }
-                if (global.getJAI() == null) {
-                    global.setJAI(new JAIInfoImpl());
-                }
-            }
-            if (info instanceof ServiceInfo) {
-                ((ServiceInfo) info).setGeoServer(geoServer);
-            }
-
-            return info;
+            return transactionalConfigDatabase.loadConfig(id);
         }
+    }
+
+    @Nullable
+    @Transactional(
+        transactionManager = "jdbcConfigTransactionManager",
+        propagation = Propagation.REQUIRED,
+        readOnly = true
+    )
+    public Info loadConfig(String id) {
+        Info info;
+        try {
+            String sql = "select blob from object where id = :id";
+            Map<String, String> params = ImmutableMap.of("id", id);
+            logStatement(sql, params);
+            info = template.queryForObject(sql, params, configRowMapper);
+        } catch (EmptyResultDataAccessException noSuchObject) {
+            return null;
+        }
+        OwsUtils.resolveCollections(info);
+        if (info instanceof GeoServerInfo) {
+
+            GeoServerInfoImpl global = (GeoServerInfoImpl) info;
+            if (global.getMetadata() == null) {
+                global.setMetadata(new MetadataMap());
+            }
+            if (global.getClientProperties() == null) {
+                global.setClientProperties(new HashMap<Object, Object>());
+            }
+            if (global.getCoverageAccess() == null) {
+                global.setCoverageAccess(new CoverageAccessInfoImpl());
+            }
+            if (global.getJAI() == null) {
+                global.setJAI(new JAIInfoImpl());
+            }
+        }
+        if (info instanceof ServiceInfo) {
+            ((ServiceInfo) info).setGeoServer(geoServer);
+        }
+
+        return info;
     }
 
     /**

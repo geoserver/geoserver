@@ -1,0 +1,19 @@
+JAVA SERVICE LAUNCHER (JSL) is PUBLIC DOMAIN.
+
+This means the software is FREE. Free means you may use or reuse 
+any part of the software. You may package it with commercial software 
+and use it in commercial and business environments. 
+You may NOT claim copyright for the JSL software and it's source code 
+or any parts of the software and source. 
+Any derived work may retain a copyright or be commercialized as long 
+as the JSL parts of it are not covered by this copyright.
+
+You may distribute derived work in executable form and not include 
+the JSL source code if JSL constitues only a minor part of the 
+intellectual work (in other words, you can take the executable and 
+embed it in a Java application you distribute commercially), but you 
+may not charge in particular for or discriminate against the use of 
+the parts derived from JSL.
+
+Disclaimer: 
+This software is supplied AS IS with no claim of fitness for purpose. 

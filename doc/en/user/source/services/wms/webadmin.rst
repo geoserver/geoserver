@@ -9,10 +9,17 @@ This page details the configuration options for WMS in the web administration in
 
    WMS configuration options
 
+Workspace
+---------
+
+Select :guilabel:`workspace` empty to configure global WMS settings.
+
+See section on :ref:`workspace_services` to override settings used by WMS :ref:`virtual_services`.
+
 Service Metadata
 ----------------
 
-See the section on :ref:`service_metadata`.
+For a description of WMS services, see the section on :ref:`service_metadata`.
 
 .. _services_webadmin_wms_raster_options:
 
@@ -179,3 +186,26 @@ Remote styles max request time and connection timeout can be configured in milli
 **Timeout in milliseconds** -The max connection timeout in milliseconds for remote style requests.
 
 **Max request time in milliseconds** -The max request time limit in milliseconds for remote style requests.
+
+Mark Factory Precedence
+----------------------------------------------------
+
+Mark factories can be filtered and ordered during the rendering execution. This makes room to optimize the rendering phase by omitting unused mark factories and prioritizing the fastest ones.
+
+.. figure:: img/service_WMS_markfactory.png
+
+**Enable Mark Factory Precedence** -Enables the mark factory precedence setup.
+
+**Mark Factory Precedence setup** -The allowed mark factories to use and its execution order.
+
+i18n Settings
+-------------
+
+Select default language for WMS Service.
+
+.. figure:: img/i18n_default_language.png
+   
+   Default language
+
+See :ref:`internationalization` section for a how this setting is used.
+

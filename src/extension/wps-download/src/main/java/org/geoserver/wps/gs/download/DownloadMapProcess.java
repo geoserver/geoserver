@@ -65,6 +65,7 @@ import org.geotools.ows.wms.response.GetMapResponse;
 import org.geotools.process.factory.DescribeParameter;
 import org.geotools.process.factory.DescribeProcess;
 import org.geotools.process.factory.DescribeResult;
+import org.geotools.process.factory.DescribeResults;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.util.Version;
@@ -113,15 +114,24 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
     }
 
     /** This process returns a potentially large map */
-    @DescribeResult(
-        description = "The output map",
-        meta = {
-            "mimeTypes=image/png,image/png8,"
-                    + "image/gif,image/jpeg,image/geotiff,image/geotiff8,image/vnd.jpeg-png,application/vnd.google-earth.kmz",
-            "chosenMimeType=format"
-        }
-    )
-    public RawData execute(
+    @DescribeResults({
+        @DescribeResult(
+            name = "result",
+            description = "The output map",
+            type = RawData.class,
+            meta = {
+                "mimeTypes=image/png,image/png8,"
+                        + "image/gif,image/jpeg,image/geotiff,image/geotiff8,image/vnd.jpeg-png,application/vnd.google-earth.kmz",
+                "chosenMimeType=format"
+            }
+        ),
+        @DescribeResult(
+            name = "metadata",
+            type = DownloadMetadata.class,
+            description = "map metadata, including dimension match warnings"
+        )
+    })
+    public Map<String, Object> execute(
             @DescribeParameter(
                         name = "bbox",
                         min = 1,
@@ -165,8 +175,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             ProgressListener progressListener)
             throws Exception {
         // if kmlOutput, reproject request to WGS84 (test is done indirectly to make the code work
-        // should KML not be
-        // available)
+        // should KML not be available)
         AbstractMapOutputFormat kmlOutputFormat =
                 (AbstractMapOutputFormat) GeoServerExtensions.bean("KMZMapProducer");
         boolean kmlOutput = kmlOutputFormat.getOutputFormatNames().contains(format);
@@ -202,20 +211,30 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             request.setRawKvp(Collections.emptyMap());
             request.setFormat(format);
             WMSMapContent mapContent = new WMSMapContent(request);
+            RawData response = null;
             try {
                 mapContent.getViewport().setBounds(bbox);
                 Operation operation =
                         new Operation("GetMap", service, null, new Object[] {request});
+
                 if (kmlOutput) {
-                    return buildKMLResponse(bbox, result, mapContent, operation);
+                    response = buildKMLResponse(bbox, result, mapContent, operation);
                 } else {
-                    RawData response = buildImageResponse(format, result, mapContent, operation);
-                    if (response != null) {
-                        return response;
-                    }
+                    response = buildImageResponse(format, result, mapContent, operation);
                 }
             } finally {
                 mapContent.dispose();
+            }
+
+            if (response != null) {
+                DownloadMetadata metadata = new DownloadMetadata();
+                metadata.accumulateWarnings();
+                metadata.setWarningsFound(!metadata.getWarnings().isEmpty());
+
+                Map<String, Object> processResult = new HashMap<>();
+                processResult.put("result", response);
+                processResult.put("metadata", metadata);
+                return processResult;
             }
         } finally {
             // avoid accumulation of warnings in the executor thread that run this request

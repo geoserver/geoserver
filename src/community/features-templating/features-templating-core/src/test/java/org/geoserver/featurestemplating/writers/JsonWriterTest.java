@@ -2,6 +2,7 @@ package org.geoserver.featurestemplating.writers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -180,5 +181,32 @@ public class JsonWriterTest {
         JSONArray json = (JSONArray) JSONSerializer.toJSON(jsonString);
         assertEquals("abc", json.get(0));
         assertEquals(Integer.valueOf(5), json.get(1));
+    }
+
+    @Test
+    public void testJsonLDWriterEncodesActualTypesByDefault()
+            throws URISyntaxException, IOException {
+        // test that values of URL types are correctly encoded
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        SimpleFeature f = createSimpleFeature();
+        JSONLDWriter writer =
+                new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+        writer.writeStartObject();
+        for (Property prop : f.getProperties()) {
+            writer.writeElementName(prop.getName().toString(), null);
+            writer.writeValue(prop.getValue());
+        }
+        writer.endObject(null, null);
+        writer.close();
+        String jsonString = new String(baos.toByteArray());
+        JSONObject json = (JSONObject) JSONSerializer.toJSON(jsonString);
+        assertTrue(json.getString("string") instanceof String);
+        assertTrue(json.get("integer") instanceof Integer);
+        assertTrue(json.get("double") instanceof Double);
+        JSONObject object = json.getJSONObject("geometry");
+        JSONArray coordinates = object.getJSONArray("coordinates");
+        for (int i = 0; i < coordinates.size(); i++) {
+            assertTrue(coordinates.get(i) instanceof Double);
+        }
     }
 }

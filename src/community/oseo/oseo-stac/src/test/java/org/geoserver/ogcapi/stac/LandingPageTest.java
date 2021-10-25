@@ -168,10 +168,10 @@ public class LandingPageTest extends STACTestSupport {
         assertThat(
                 json.read("links[?(@.rel == 'child')].href"),
                 Matchers.containsInAnyOrder(
-                        "ogc/stac/collections/LANDSAT8",
-                        "ogc/stac/collections/SENTINEL2",
-                        "ogc/stac/collections/SENTINEL1",
-                        "ogc/stac/collections/GS_TEST",
-                        "ogc/stac/collections/ATMTEST"));
+                        "http://localhost:8080/geoserver/ogc/stac/collections/LANDSAT8",
+                        "http://localhost:8080/geoserver/ogc/stac/collections/SENTINEL2",
+                        "http://localhost:8080/geoserver/ogc/stac/collections/SENTINEL1",
+                        "http://localhost:8080/geoserver/ogc/stac/collections/GS_TEST",
+                        "http://localhost:8080/geoserver/ogc/stac/collections/ATMTEST"));
     }
 }

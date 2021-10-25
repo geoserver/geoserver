@@ -28,7 +28,6 @@ public class GeoFenceXStreamPersisterInitializer implements XStreamPersisterInit
         xs.alias("AdminRule", JaxbAdminRule.class);
         xs.alias("Rules", JaxbRuleList.class);
         xs.alias("AdminRules", JaxbAdminRuleList.class);
-        xs.alias("AdminRule", JaxbAdminRule.class);
 
         xs.allowTypes(
                 new Class[] {

@@ -11,19 +11,26 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateScalarModel;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Logger;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.opensearch.eo.FreemarkerTemplateSupport;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.gml3.v3_2.GMLConfiguration;
 import org.geotools.util.Converters;
+import org.geotools.util.logging.Logging;
 import org.geotools.xsd.Encoder;
+import org.json.simple.parser.JSONParser;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 
@@ -32,6 +39,8 @@ import org.opengis.feature.Feature;
  * used for a single request, as it caches the template and won't react to on disk template changes.
  */
 public class TemplatesProcessor {
+
+    private static final Logger LOGGER = Logging.getLogger(TemplatesProcessor.class);
 
     FreemarkerTemplateSupport support;
     Map<String, Template> templateCache = new HashMap<>();
@@ -157,6 +166,33 @@ public class TemplatesProcessor {
                             } catch (IOException e) {
                                 throw new RuntimeException("Failed to encode geometry", e);
                             }
+                        });
+        model.put(
+                "parseJSON",
+                (TemplateMethodModelEx)
+                        arguments -> {
+                            String filePath = arguments.get(0).toString();
+                            JSONParser parser = new JSONParser();
+                            try {
+                                GeoServerDataDirectory geoServerDataDirectory =
+                                        GeoServerExtensions.bean(GeoServerDataDirectory.class);
+
+                                File file = geoServerDataDirectory.findFile(filePath);
+                                if (file == null) {
+                                    LOGGER.warning("File is outside of data directory");
+                                    throw new RuntimeException(
+                                            "File "
+                                                    + filePath
+                                                    + " is outside of the data directory");
+                                }
+
+                                return parser.parse(new FileReader(file.getPath())).toString();
+                            } catch (Exception e) {
+                                LOGGER.warning(
+                                        "Failed to parse JSON file " + e.getLocalizedMessage());
+                            }
+                            LOGGER.warning("Failed to create a JSON object");
+                            return "Failed to create a JSON object";
                         });
     }
 

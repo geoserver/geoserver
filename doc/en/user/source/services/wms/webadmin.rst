@@ -187,6 +187,16 @@ Remote styles max request time and connection timeout can be configured in milli
 
 **Max request time in milliseconds** -The max request time limit in milliseconds for remote style requests.
 
+Mark Factory Precedence
+----------------------------------------------------
+
+Mark factories can be filtered and ordered during the rendering execution. This makes room to optimize the rendering phase by omitting unused mark factories and prioritizing the fastest ones.
+
+.. figure:: img/service_WMS_markfactory.png
+
+**Enable Mark Factory Precedence** -Enables the mark factory precedence setup.
+
+**Mark Factory Precedence setup** -The allowed mark factories to use and its execution order.
 
 i18n Settings
 -------------
@@ -198,3 +208,4 @@ Select default language for WMS Service.
    Default language
 
 See :ref:`internationalization` section for a how this setting is used.
+

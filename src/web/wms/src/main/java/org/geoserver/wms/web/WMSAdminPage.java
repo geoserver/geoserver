@@ -8,15 +8,24 @@ package org.geoserver.wms.web;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IteratorUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.markup.html.form.palette.Palette;
+import org.apache.wicket.extensions.markup.html.form.palette.theme.DefaultTheme;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -24,8 +33,10 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.model.util.ListModel;
@@ -41,6 +52,7 @@ import org.geoserver.web.wicket.FileExistsValidator;
 import org.geoserver.web.wicket.LiveCollectionModel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.SRSListTextArea;
+import org.geoserver.web.wicket.SimpleChoiceRenderer;
 import org.geoserver.web.wicket.browser.GeoServerFileChooser;
 import org.geoserver.wms.GetMapOutputFormat;
 import org.geoserver.wms.WMS;
@@ -48,7 +60,9 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSInfo.WMSInterpolation;
 import org.geoserver.wms.WatermarkInfo.Position;
 import org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat;
+import org.geoserver.wms.map.MarkFactoryHintsInjector;
 import org.geoserver.wms.web.publish.LayerAuthoritiesAndIdentifiersPanel;
+import org.geotools.renderer.style.DynamicSymbolFactoryFinder;
 
 /** Edits the WMS service details */
 @SuppressWarnings("serial")
@@ -364,6 +378,194 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
         form.add(remoteStylesMaxRequestTime);
         form.add(new CheckBox("defaultGroupStyleEnabled"));
         form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(info, "defaultLocale")));
+        // add mark factory optimization
+        addMarkFactoryLoadOptimizationPanel(metadataModel, form);
+    }
+
+    /** Adds the MarkFactory performance optimization panel. */
+    private void addMarkFactoryLoadOptimizationPanel(
+            PropertyModel<Map<String, ?>> metadataModel, Form<?> form) {
+        checkAndInitializeMapData(metadataModel);
+        final MapModel<String> mapMarkFactoryList =
+                new MapModel<>(metadataModel, MarkFactoryHintsInjector.MARK_FACTORY_LIST);
+        IModel<List<String>> markFactoryList = buildMarkFactoryListModel(mapMarkFactoryList);
+        Collection<String> liveCollection = new ListModelCollection(markFactoryList);
+        if (mapMarkFactoryList.getObject() == null) {
+            mapMarkFactoryList.setObject("");
+        }
+        IModel<Collection<String>> collectionModel =
+                new IModel<Collection<String>>() {
+
+                    @Override
+                    public void detach() {}
+
+                    @Override
+                    public void setObject(Collection<String> object) {
+                        markFactoryList.setObject(new ArrayList<>(object));
+                    }
+
+                    @Override
+                    public Collection<String> getObject() {
+                        return liveCollection;
+                    }
+                };
+        LiveCollectionModel<String, List<String>> markFactoriesLiveCollectionModel =
+                LiveCollectionModel.list(collectionModel);
+        Palette<String> factoriesSetupPallete =
+                buildMarkFactoryPalleteComponent(markFactoriesLiveCollectionModel);
+        factoriesSetupPallete.setOutputMarkupPlaceholderTag(true);
+        factoriesSetupPallete.add(new DefaultTheme());
+        form.add(factoriesSetupPallete);
+        // add the boolean activator
+        IModel<Boolean> enableModel = buildEnableModel(markFactoriesLiveCollectionModel);
+        // add the label
+        Label label =
+                new Label(
+                        "enableMarkFactoryLabel",
+                        new ResourceModel("WMSAdminPage.markFactorySetup").getObject()) {
+                    @Override
+                    public boolean isVisible() {
+                        return enableModel.getObject();
+                    }
+                };
+        label.setOutputMarkupId(true);
+        label.setOutputMarkupPlaceholderTag(true);
+        form.add(label);
+
+        AjaxCheckBox enableCheckBox =
+                buildMarkFactoryEnableCheck(label, factoriesSetupPallete, enableModel);
+        enableCheckBox.setOutputMarkupId(true);
+        form.add(enableCheckBox);
+    }
+
+    private IModel<List<String>> buildMarkFactoryListModel(MapModel<String> mapMarkFactoryList) {
+        return new IModel<List<String>>() {
+
+            @Override
+            public void detach() {}
+
+            @Override
+            public List<String> getObject() {
+                String value = mapMarkFactoryList.getObject();
+                if (StringUtils.isNotBlank(value)) {
+                    return new ArrayList<>(Arrays.asList(value.split(",")));
+                }
+                return new ArrayList<>();
+            }
+
+            @Override
+            public void setObject(List<String> object) {
+                if (object == null) {
+                    mapMarkFactoryList.setObject("");
+                    return;
+                }
+                StringBuilder builder = new StringBuilder();
+                boolean started = false;
+                for (String value : object) {
+                    if (started) builder.append(",");
+                    builder.append(value);
+                    started = true;
+                }
+                mapMarkFactoryList.setObject(builder.toString());
+            }
+        };
+    }
+
+    private AjaxCheckBox buildMarkFactoryEnableCheck(
+            Label label, Palette<String> factoriesSetupPallete, IModel<Boolean> enableModel) {
+        return new AjaxCheckBox("enableMarkFactory", enableModel) {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                if (enableModel.getObject()) {
+                    factoriesSetupPallete.setVisible(true);
+                } else {
+                    factoriesSetupPallete.setVisible(false);
+                }
+                target.add(factoriesSetupPallete);
+                target.add(label);
+            }
+        };
+    }
+
+    private IModel<Boolean> buildEnableModel(
+            LiveCollectionModel<String, List<String>> markFactoriesLiveCollectionModel) {
+        return new IModel<Boolean>() {
+
+            @Override
+            public void detach() {}
+
+            @Override
+            public void setObject(Boolean object) {
+                if (Boolean.TRUE.equals(object)) {
+                    List<String> identifiers = new ArrayList<>(getMarkFactoryModelsIdentifiers());
+                    markFactoriesLiveCollectionModel.setObject(identifiers);
+                } else {
+                    markFactoriesLiveCollectionModel.setObject(new ArrayList<>());
+                }
+            }
+
+            @Override
+            public Boolean getObject() {
+                return CollectionUtils.isNotEmpty(markFactoriesLiveCollectionModel.getObject());
+            }
+        };
+    }
+
+    private Palette<String> buildMarkFactoryPalleteComponent(
+            LiveCollectionModel<String, List<String>> markFactoriesLiveCollectionModel) {
+        return new Palette<String>(
+                "MarkFactoryPalette",
+                markFactoriesLiveCollectionModel,
+                new MarkFactoriesModel(),
+                new SimpleChoiceRenderer<>(),
+                10,
+                true) {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected void onBeforeRender() {
+                if (CollectionUtils.isEmpty(markFactoriesLiveCollectionModel.getObject())) {
+                    this.setVisible(false);
+                }
+                super.onBeforeRender();
+            }
+            /** Override otherwise the header is not i18n'ized */
+            @Override
+            public Component newSelectedHeader(final String componentId) {
+                return new Label(
+                        componentId, new ResourceModel("MarkFactoryPalette.selectedHeader"));
+            }
+
+            /** Override otherwise the header is not i18n'ized */
+            @Override
+            public Component newAvailableHeader(final String componentId) {
+                return new Label(
+                        componentId, new ResourceModel("MarkFactoryPalette.availableHeader"));
+            }
+        };
+    }
+
+    private void checkAndInitializeMapData(PropertyModel<Map<String, ?>> metadataModel) {
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        PropertyModel<Map<String, Object>> mapModel = (PropertyModel) metadataModel;
+        Object object = mapModel.getObject().get(MarkFactoryHintsInjector.MARK_FACTORY_LIST);
+        if (!(object instanceof String)) {
+            mapModel.getObject().put(MarkFactoryHintsInjector.MARK_FACTORY_LIST, "");
+        }
+    }
+
+    private static class MarkFactoriesModel extends LoadableDetachableModel<List<String>> {
+        @Override
+        protected List<String> load() {
+            return getMarkFactoryModelsIdentifiers();
+        }
+    }
+
+    private static List<String> getMarkFactoryModelsIdentifiers() {
+        return IteratorUtils.toList(DynamicSymbolFactoryFinder.getMarkFactories())
+                .stream()
+                .map(mf -> mf.getClass().getSimpleName())
+                .collect(Collectors.toList());
     }
 
     @Override

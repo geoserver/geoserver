@@ -298,6 +298,21 @@
         <select wicket:id="defaultLocale"/>
       </fieldset>
     </li>
+    <li>
+      <fieldset>
+        <legend><span><wicket:message key="markFactoryOptimization">Mark Factory Precedence</wicket:message></span></legend>
+        <ul>
+          <li>
+            <label><wicket:message key="enableMarkFactory">Enable Mark Factory Precedence</wicket:message></label>
+            <input type="checkbox" wicket:id="enableMarkFactory"></input>
+          </li>
+          <li>
+            <label wicket:id="enableMarkFactoryLabel"></label>
+            <span wicket:id="MarkFactoryPalette"></span>
+          </li>
+        </ul>
+      </fieldset>
+    </li>
     <div wicket:id="modal"></div>
   </wicket:extend>
 </body>

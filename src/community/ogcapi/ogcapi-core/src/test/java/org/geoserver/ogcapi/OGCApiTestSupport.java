@@ -16,15 +16,19 @@ import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.internal.JsonContext;
 import com.jayway.jsonpath.internal.JsonFormatter;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import javax.servlet.Filter;
+import javax.servlet.ServletException;
 import net.minidev.json.JSONAware;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.geoserver.data.test.CiteTestData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.filters.SpringDelegatingFilter;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.hamcrest.Matchers;
 import org.jsoup.Jsoup;
@@ -32,6 +36,18 @@ import org.jsoup.nodes.Document;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class OGCApiTestSupport extends GeoServerSystemTestSupport {
+
+    @Override
+    protected List<Filter> getFilters() {
+        // needed for proxy base tests
+        try {
+            SpringDelegatingFilter filter = new SpringDelegatingFilter();
+            filter.init(null);
+            return Collections.singletonList(filter);
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     protected DocumentContext getAsJSONPath(String path, int expectedHttpCode) throws Exception {
         MockHttpServletResponse response = getAsMockHttpServletResponse(path, expectedHttpCode);

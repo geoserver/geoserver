@@ -90,7 +90,9 @@ public class TiledFeatureService {
             throws FactoryException, TransformException, IOException {
         if (!isTiledVectorLayer(collectionId)) {
             throw new APIException(
-                    "NotATileLayer", collectionId + " is not a tiled layer", HttpStatus.NOT_FOUND);
+                    APIException.NOT_FOUND,
+                    collectionId + " is not a tiled layer",
+                    HttpStatus.NOT_FOUND);
         }
         TilesDocument response = delegate.describeTilesets(collectionId);
         rebaseLinks(response);
@@ -117,7 +119,9 @@ public class TiledFeatureService {
             throws FactoryException, TransformException, IOException {
         if (!isTiledVectorLayer(collectionId)) {
             throw new APIException(
-                    "NotATileLayer", collectionId + " is not a tiled layer", HttpStatus.NOT_FOUND);
+                    APIException.NOT_FOUND,
+                    collectionId + " is not a tiled layer",
+                    HttpStatus.NOT_FOUND);
         }
         Tileset tileset = delegate.describeTileset(collectionId, tileMatrixId);
         rebaseLinks(tileset);
@@ -169,7 +173,9 @@ public class TiledFeatureService {
             throws GeoWebCacheException, IOException, NoSuchAlgorithmException {
         if (!isTiledVectorLayer(collectionId)) {
             throw new APIException(
-                    "NotATileLayer", collectionId + " is not a tiled layer", HttpStatus.NOT_FOUND);
+                    APIException.NOT_FOUND,
+                    collectionId + " is not a tiled layer",
+                    HttpStatus.NOT_FOUND);
         }
         return delegate.getRawTile(
                 collectionId,

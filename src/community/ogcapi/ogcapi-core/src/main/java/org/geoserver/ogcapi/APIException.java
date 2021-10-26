@@ -14,6 +14,13 @@ import org.springframework.http.HttpStatus;
  */
 public class APIException extends RuntimeException {
 
+    public static final String NOT_FOUND = "NotFound";
+    public static final String INVALID_PARAMETER = "InvalidParameter";
+    public static final String INVALID_PARAMETER_VALUE = "InvalidParameterValue";
+    public static final String NO_APPLICABLE_CODE = "NoApplicableCode";
+    public static final String NOT_IMPLEMENTED = "NotImplemented";
+    public static final String CONFLICT = "Conflict";
+
     private final HttpStatus status;
     private final String code;
 

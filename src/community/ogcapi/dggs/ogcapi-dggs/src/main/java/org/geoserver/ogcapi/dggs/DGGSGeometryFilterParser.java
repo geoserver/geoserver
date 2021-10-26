@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIException;
-import org.geoserver.platform.ServiceException;
 import org.geotools.dggs.DGGSFilterTransformer;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.Zone;
@@ -72,7 +71,7 @@ class DGGSGeometryFilterParser {
 
             if (geom == null)
                 throw new APIException(
-                        ServiceException.INVALID_PARAMETER_VALUE,
+                        APIException.INVALID_PARAMETER_VALUE,
                         "Geometry specification can be either a WKT, or a point specified as x,y",
                         HttpStatus.BAD_REQUEST);
 

@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.geoserver.ogcapi.APIException;
-import org.geoserver.platform.ServiceException;
 import org.geotools.feature.visitor.Aggregate;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpStatus;
@@ -47,7 +46,7 @@ public class AggregateConverter implements Converter<String, Aggregate[]> {
         Aggregate agg = AGGREGATES.get(name);
         if (agg == null)
             throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE,
+                    APIException.INVALID_PARAMETER_VALUE,
                     "Un-recognized aggregate : " + name,
                     HttpStatus.BAD_REQUEST);
         return agg;

@@ -79,6 +79,9 @@ import org.xml.sax.EntityResolver;
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/styles")
 public class StylesService {
 
+    private static final String INVALID_STYLE = "InvalidStyle";
+    private static final String INVALID_METADATA = "InvalidMetadata";
+
     static enum ValidationMode {
         yes,
         no,
@@ -297,7 +300,7 @@ public class StylesService {
         RenderedImage image = thumbnailBuilder.buildThumbnailFor(styleInfo);
         if (image == null) {
             throw new APIException(
-                    "InternalError",
+                    APIException.NO_APPLICABLE_CODE,
                     "Failed to build thumbnail, WMS returned no image",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -337,7 +340,7 @@ public class StylesService {
             StyleInfo styleInfo = getStyleInfo(styleId, false);
             if (styleInfo != null) {
                 throw new APIException(
-                        "StyleExists",
+                        APIException.CONFLICT,
                         "Style with id " + styleId + " already exists",
                         HttpStatus.CONFLICT);
             }
@@ -457,11 +460,11 @@ public class StylesService {
                     handler.validate(content, handler.versionForMimeType(mimeType), entityResolver);
             if (errors != null && !errors.isEmpty()) {
                 throw new APIException(
-                        "InvalidStyle", "Invalid style:" + errors, HttpStatus.BAD_REQUEST);
+                        INVALID_STYLE, "Invalid style:" + errors, HttpStatus.BAD_REQUEST);
             }
         } catch (Exception invalid) {
             throw new APIException(
-                    "InvalidStyle",
+                    INVALID_STYLE,
                     "Invalid style:" + invalid.getMessage(),
                     HttpStatus.BAD_REQUEST,
                     invalid);
@@ -507,7 +510,7 @@ public class StylesService {
 
         if (metadata.getId() != null && !styleId.equals(metadata.getId())) {
             throw new APIException(
-                    "InvalidMetadata", "Style id must be " + styleId, HttpStatus.BAD_REQUEST);
+                    INVALID_METADATA, "Style id must be " + styleId, HttpStatus.BAD_REQUEST);
         }
 
         // can only update the descriptive metadata, the rest is derived from the style contents

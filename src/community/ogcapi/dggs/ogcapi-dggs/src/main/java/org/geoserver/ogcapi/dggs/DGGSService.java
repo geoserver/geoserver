@@ -311,13 +311,13 @@ public class DGGSService {
             throws Exception {
         if (distance <= 0)
             throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE,
+                    APIException.INVALID_PARAMETER_VALUE,
                     "Neighboring distance must be positive",
                     HttpStatus.BAD_REQUEST);
         int maxNeighborDistance = getService().getMaxNeighborDistance();
         if (maxNeighborDistance > 0 && distance > maxNeighborDistance) {
             throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE,
+                    APIException.INVALID_PARAMETER_VALUE,
                     "Neighboring distance exceeds maximum value: " + maxNeighborDistance,
                     HttpStatus.BAD_REQUEST);
         }
@@ -732,7 +732,7 @@ public class DGGSService {
             String[] split = spec.split("\\s*,\\s*");
             if (split.length != 2) {
                 throw new APIException(
-                        ServiceException.INVALID_PARAMETER_VALUE,
+                        APIException.INVALID_PARAMETER_VALUE,
                         "Invalid point specification, should be a longitude and a latitude separated by a comma",
                         HttpStatus.BAD_REQUEST);
             }

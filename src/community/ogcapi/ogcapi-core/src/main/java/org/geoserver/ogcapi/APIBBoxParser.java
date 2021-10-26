@@ -4,6 +4,8 @@
  */
 package org.geoserver.ogcapi;
 
+import static org.geoserver.ogcapi.APIException.INVALID_PARAMETER_VALUE;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,7 +62,7 @@ public class APIBBoxParser {
                             bbox.length, bbox[0], bbox[1], bbox[2], bbox[3], bbox[4], bbox[5], crs);
         } else {
             throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE,
+                    INVALID_PARAMETER_VALUE,
                     "Bounding box array must have either 4 or 6 ordinates",
                     HttpStatus.BAD_REQUEST);
         }

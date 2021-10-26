@@ -95,7 +95,7 @@ public class ThumbnailBuilder {
             LayerInfo layer = getAssociatedLayer(styleInfo);
             if (layer == null) {
                 throw new APIException(
-                        "InternalError",
+                        APIException.NO_APPLICABLE_CODE,
                         "Could not find a suitable sample layer to build the thumbnail image, please associate a layer to the style",
                         HttpStatus.INTERNAL_SERVER_ERROR);
             }

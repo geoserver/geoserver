@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi.coverages;
 
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
+import static org.geoserver.ogcapi.APIException.INVALID_PARAMETER_VALUE;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import java.io.IOException;
@@ -229,14 +230,14 @@ public class CoveragesService {
         DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null || !time.isEnabled()) {
             throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE,
+                    INVALID_PARAMETER_VALUE,
                     "Time dimension is not enabled in this coverage",
                     HttpStatus.BAD_REQUEST);
         }
         Collection times = timeParser.parse(datetime);
         if (times.isEmpty() || times.size() > 1) {
             throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE,
+                    INVALID_PARAMETER_VALUE,
                     "Invalid datetime specification, must be a single time, or a time range",
                     HttpStatus.BAD_REQUEST);
         }
@@ -263,7 +264,7 @@ public class CoveragesService {
         ReferencedEnvelope[] envelopes = APIBBoxParser.parse(bbox, bcrs);
         if (envelopes.length > 1)
             throw new APIException(
-                    ServiceException.NO_APPLICABLE_CODE,
+                    APIException.NO_APPLICABLE_CODE,
                     "Cannot deal with bounding boxes crossing the dateline yet",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         ReferencedEnvelope envelope = envelopes[0];
@@ -338,7 +339,7 @@ public class CoveragesService {
         CoordinateSystem cs = crs.getCoordinateSystem();
         if (cs.getDimension() > 2)
             throw new APIException(
-                    ServiceException.NO_APPLICABLE_CODE,
+                    APIException.NO_APPLICABLE_CODE,
                     "Too many dimensions, cannot describe domain",
                     HttpStatus.INTERNAL_SERVER_ERROR);
 

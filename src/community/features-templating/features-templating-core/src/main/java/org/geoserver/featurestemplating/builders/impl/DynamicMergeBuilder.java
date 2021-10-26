@@ -1,35 +1,38 @@
 package org.geoserver.featurestemplating.builders.impl;
 
-import static org.geoserver.featurestemplating.readers.JSONMerger.DYNAMIC_MERGE_KEY;
-
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.BaseJsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
-import java.util.logging.Level;
+import java.util.ArrayList;
 import java.util.logging.Logger;
-import org.geoserver.featurestemplating.builders.JSONFieldSupport;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
+import org.geoserver.featurestemplating.builders.TemplateBuilderMaker;
 import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.readers.JSONMerger;
-import org.geoserver.featurestemplating.readers.JSONTemplateReaderUtil;
+import org.geoserver.featurestemplating.readers.JSONTemplateReader;
 import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geotools.util.logging.Logging;
-import org.opengis.filter.expression.Expression;
 import org.xml.sax.helpers.NamespaceSupport;
 
+/** Responsible for merging 2 nodes if one of the evaluates to either ${ or ${{ */
 public class DynamicMergeBuilder extends DynamicValueBuilder {
 
     private static final Logger LOGGER = Logging.getLogger(DynamicMergeBuilder.class);
 
-    private JsonNode base;
+    private JsonNode node;
+
+    private boolean overlayExpression;
 
     public DynamicMergeBuilder(
-            String key, String expression, NamespaceSupport namespaces, JsonNode base) {
+            String key,
+            String expression,
+            NamespaceSupport namespaces,
+            JsonNode node,
+            boolean overlayExpression) {
         super(key, expression, namespaces);
-        this.base = base;
+        this.node = node;
+        this.overlayExpression = overlayExpression;
     }
 
     @Override
@@ -37,66 +40,49 @@ public class DynamicMergeBuilder extends DynamicValueBuilder {
             throws IOException {
         Object evaluate = null;
         if (xpath != null) {
-            evaluate = xpath.evaluate(context.getCurrentObj());
+            evaluate = evaluateXPath(context);
         } else if (cql != null) {
-            evaluate = cql.evaluate(context.getCurrentObj());
+            evaluate = evaluateExpressions(cql, context);
         }
 
-        Object result = null;
-        try {
-            int i = 0;
-            while (i < contextPos) {
-                context = context.getParent();
-                i++;
-            }
-            Object contextObject = context.getCurrentObj();
-            Expression expression = null;
-            if (cql != null) {
-                expression = cql;
-            } else if (xpath != null) {
-                expression = xpath;
-            }
-            result = expression.evaluate(contextObject);
-            result = JSONFieldSupport.parseWhenJSON(expression, contextObject, result);
-        } catch (Exception e) {
-            LOGGER.log(Level.INFO, "Unable to evaluate expression. Exception: {0}", e.getMessage());
-        }
-
-        if (!(result instanceof JsonNode)) {
-            addChildrenEvaluationToEncodingHints(writer, context);
-            writeValue(writer, result, context);
+        if (!(evaluate instanceof JsonNode)) {
+            if (overlayExpression) {
+                addChildrenEvaluationToEncodingHints(writer, context);
+                writeValue(writer, evaluate, context);
+            } else if (hasDynamic(node)) writeFromNestedTree(context, writer, node);
+            else writeValue(writer, node, context);
         } else {
-            BaseJsonNode overlay = null;
-            try {
-                overlay = (BaseJsonNode) new ObjectMapper().readTree(String.valueOf(evaluate));
-            } catch (Exception e) {
-                LOGGER.info("Overlay could not be created :" + e.getLocalizedMessage());
-            }
-
             JSONMerger jsonMerger = new JSONMerger();
-            ObjectNode mergedNodes = jsonMerger.mergeTrees(base, overlay);
+            ObjectNode mergedNodes = jsonMerger.mergeTrees(node, (JsonNode) evaluate);
 
-            if (mergedNodes.toString().contains("${")) {
-                TemplateReaderConfiguration configuration =
-                        new TemplateReaderConfiguration(getNamespaces());
-                JSONTemplateReaderUtil jsonTemplateReaderUtil =
-                        new JSONTemplateReaderUtil(mergedNodes, configuration);
-                TemplateBuilder templateBuilder =
-                        jsonTemplateReaderUtil.getBuilderFromJson(mergedNodes);
-                templateBuilder.evaluate(writer, context);
-
-            } else {
-                context.setCurrentObj(null);
-                StaticBuilder staticBuilder =
-                        new StaticBuilder(DYNAMIC_MERGE_KEY, mergedNodes, getNamespaces());
-                staticBuilder.evaluate(writer, context);
-            }
+            // if the expression contains dynamic content
+            if (hasDynamic(mergedNodes)) writeFromNestedTree(context, writer, mergedNodes);
+            else // contains static content
+            writeValue(writer, mergedNodes, context);
         }
+    }
+
+    private void writeFromNestedTree(
+            TemplateBuilderContext context, TemplateOutputWriter writer, JsonNode node)
+            throws IOException {
+        TemplateReaderConfiguration configuration =
+                new TemplateReaderConfiguration(getNamespaces());
+        JSONTemplateReader jsonTemplateReader =
+                new JSONTemplateReader(node, configuration, new ArrayList<>());
+        TemplateBuilderMaker maker = configuration.getBuilderMaker();
+        maker.namespaces(configuration.getNamespaces());
+        writer.startObject(getKey(context), getEncodingHints());
+        jsonTemplateReader.getBuilderFromJson(getKey(context), node, this, maker);
+        for (TemplateBuilder child : getChildren()) child.evaluate(writer, context);
+        writer.endObject(getKey(context), encodingHints);
+    }
+
+    private boolean hasDynamic(JsonNode node) {
+        return node.toString().contains("${");
     }
 
     @Override
     public Object accept(TemplateVisitor visitor, Object value) {
-        System.out.println();
         return super.accept(visitor, value);
     }
 }

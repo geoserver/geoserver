@@ -7,13 +7,19 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 import org.apache.commons.collections4.IteratorUtils;
 
+/**
+ * This class is responsible for merging 2 JsonNodes, base and overlay. JsonNode overlay contains
+ * keyword $merge. If overlay attributes exists on base node, base node's same attributes will be
+ * replaced with overlay's and others remain.
+ */
 public class JSONMerger {
 
-    public static final String DYNAMIC_MERGE_KEY = "$dynamicMerge";
-    public static final String NODE1 = "node1";
-    public static final String NODE2 = "node2";
+    public static final String DYNAMIC_MERGE_KEY = "$dynamicMerge_";
+    public static final String DYNAMIC_MERGE_OVERLAY = "overlay";
+    public static final String DYNAMIC_MERGE_BASE = "base";
     private String rootCollectionName = "features";
 
     public JSONMerger() {}
@@ -35,6 +41,15 @@ public class JSONMerger {
         return mergeTrees((ObjectNode) base, (ObjectNode) overlay);
     }
 
+    /**
+     * When the overlay as a property interpolation directive or expression (${} or $${}), it puts
+     * "$dynamicMerge" to the root of the merge result. Then assign "node1" to the overlay and
+     * "node2" to the base.
+     *
+     * @param base
+     * @param overlay
+     * @return merge result of base and overlay
+     */
     private ObjectNode mergeTrees(ObjectNode base, ObjectNode overlay) {
         Set<String> baseNames = new LinkedHashSet<>(IteratorUtils.toList(base.fieldNames()));
 
@@ -57,22 +72,10 @@ public class JSONMerger {
                 JsonNode mergedChild = mergeTrees(bv.get(0), ov.get(0));
                 ((ArrayNode) merged.get(name)).set(0, mergedChild);
             } else if (ov.getNodeType() != JsonNodeType.NULL) {
-                boolean check = false;
-                if (ov.asText().startsWith("${") || ov.asText().startsWith("$${")) {
-                    ObjectNode emptyNode = JsonNodeFactory.instance.objectNode();
-                    ObjectNode emptyNode2 = JsonNodeFactory.instance.objectNode();
-
-                    // set empty node to create DYNAMIC_MERGE_KEY as parent
-                    merged.set(DYNAMIC_MERGE_KEY, emptyNode);
-                    merged.with(DYNAMIC_MERGE_KEY).set(name, emptyNode2);
-                    merged.with(DYNAMIC_MERGE_KEY).with(name).set(NODE1, ov);
-                    merged.with(DYNAMIC_MERGE_KEY).with(name).set(NODE2, bv);
-                    check = true;
-                }
-                if (!check) merged.set(name, ov);
+                if (isDynamicMerge(ov, bv)) dynamicMergeDirective(merged, name, bv, ov);
+                else merged.set(name, ov);
             }
         }
-
         // add the extra bits
         Set<String> overlayNames = new LinkedHashSet<>(IteratorUtils.toList(overlay.fieldNames()));
         overlayNames.removeAll(baseNames);
@@ -82,6 +85,28 @@ public class JSONMerger {
         }
 
         return merged;
+    }
+
+    private boolean isDynamicMerge(JsonNode ov, JsonNode bv) {
+        Predicate<JsonNode> isDynamic =
+                node ->
+                        node.isTextual()
+                                && (node.asText().startsWith("${")
+                                        || node.asText().startsWith("$${"));
+        Predicate<JsonNode> isObject = node -> node.getNodeType() == JsonNodeType.OBJECT;
+        return (isDynamic.test(ov) && isObject.test(bv))
+                || (isDynamic.test(bv) && isObject.test(ov));
+    }
+
+    private void dynamicMergeDirective(ObjectNode merged, String name, JsonNode bv, JsonNode ov) {
+        ObjectNode emptyNode = JsonNodeFactory.instance.objectNode();
+        ObjectNode emptyNode2 = JsonNodeFactory.instance.objectNode();
+        String key = DYNAMIC_MERGE_KEY.concat(name);
+        // set empty node to create DYNAMIC_MERGE_KEY as parent
+        merged.set(key, emptyNode);
+        merged.with(key).set(name, emptyNode2);
+        merged.with(key).with(name).set(DYNAMIC_MERGE_OVERLAY, ov);
+        merged.with(key).with(name).set(DYNAMIC_MERGE_BASE, bv);
     }
 
     private boolean isRootCollectionArray(String name, JsonNode bv, JsonNode ov) {

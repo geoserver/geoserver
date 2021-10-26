@@ -11,6 +11,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -126,5 +129,20 @@ public class JSONMergesTest {
         Thread.sleep(1000);
 
         assertTrue(rootBuilder.needsReload());
+    }
+
+    @Test
+    public void testEncodeDynamicMergeKeys() throws JsonProcessingException {
+        String base =
+                "{\"metadata\":{\"metadata_iso_19139\":{\"title\":\"basetext\",\"href\":\"basehref\",\"type\":\"basetype\"}}}";
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode baseNode = mapper.readTree(base);
+        JSONMerger jsonMerger = new JSONMerger();
+        JsonNode overlay = new ObjectMapper().readTree("{\"metadata\":\"${dynamicMetadata}\"}");
+        ObjectNode mergedNode = jsonMerger.mergeTrees(baseNode, overlay);
+        JsonNode dynamicMerge = mergedNode.get("$dynamicMerge_metadata");
+        JsonNode metadataNode = dynamicMerge.get("metadata");
+        assertTrue(metadataNode.has("overlay"));
+        assertTrue(metadataNode.has("base"));
     }
 }

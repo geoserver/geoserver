@@ -8,7 +8,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import com.jayway.jsonpath.DocumentContext;
 import java.util.HashSet;
@@ -347,12 +346,33 @@ public class ItemsTest extends STACTestSupport {
     }
 
     @Test
-    public void mergeTestJSON() throws Exception {
-        DocumentContext json = getAsJSONPath("ogc/stac/collections/LANDSAT8/items", 200);
-        String jsonString = json.json().toString();
+    public void dynamicMergeTest() throws Exception {
+        DocumentContext result = getAsJSONPath("ogc/stac/collections/LANDSAT8/items", 200);
 
-        assertTrue(
-                jsonString.contains(
-                        "\"mergeTest\":{\"attr1\":\"3\",\"attr2\":\"2\",\"attr4\":\"4\"}"));
+        // tests before the dynamic merge with expression on overlay
+        String href = result.read("features[0].properties.mergeThumbnail.href");
+        String title = result.read("features[0].properties.mergeThumbnail.title");
+        String type = result.read("features[0].properties.mergeThumbnail.type");
+        String roles = result.read("features[0].properties.mergeThumbnail.roles[0]");
+        assertEquals(
+                "https://landsat-pds.s3.us-west-2.amazonaws.com/c1/L8/218/077/LC08_L1TP_218077_20210511_20210511_01_T1/LC08_L1TP_218077_20210511_20210511_01_T1_thumb_large.jpg",
+                href);
+        assertEquals("image/jpeg", type);
+        assertEquals("thumbnail", roles);
+        assertEquals("Thumbnail", title);
+
+        // tests the dynamic merge with expression on base
+        href = result.read("features[0].properties.mergeThumbnail2.href");
+        title = result.read("features[0].properties.mergeThumbnail2.title");
+        type = result.read("features[0].properties.mergeThumbnail2.type");
+        roles = result.read("features[0].properties.mergeThumbnail2.roles[0]");
+        Integer additional = result.read("features[0].properties.mergeThumbnail2.additional");
+        assertEquals(
+                "https://landsat-pds.s3.us-west-2.amazonaws.com/c1/L8/218/077/LC08_L1TP_218077_20210511_20210511_01_T1/LC08_L1TP_218077_20210511_20210511_01_T1_thumb_large.jpg",
+                href);
+        assertEquals("image/jpeg", type);
+        assertEquals("thumbnail", roles);
+        assertEquals("Thumbnail", title);
+        assertEquals(0, additional.intValue());
     }
 }

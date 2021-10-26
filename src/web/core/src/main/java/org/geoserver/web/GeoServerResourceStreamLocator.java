@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -61,12 +62,18 @@ public class GeoServerResourceStreamLocator extends ResourceStreamLocator {
                     // build up a single properties file
                     Properties properties = new Properties();
 
+                    // Java .properties files are encoded in ISO-8859-1
+                    Charset charset = StandardCharsets.ISO_8859_1;
                     while (urls.hasMoreElements()) {
                         URL url = urls.nextElement();
 
+                        // Support wicket .utf8.properties convention indicating UTF8 encoding
+                        if(p.endsWith(".utf8.properties")){
+                            charset = StandardCharsets.UTF_8;
+                        }
+
                         try (InputStream in = url.openStream()) {
-                            try (Reader reader =
-                                    new InputStreamReader(in, StandardCharsets.UTF_8)) {
+                            try (Reader reader = new InputStreamReader(in, charset)) {
                                 properties.load(reader);
                             }
                         }

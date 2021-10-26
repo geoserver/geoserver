@@ -23,11 +23,16 @@ import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
+import java.util.HashMap;
+import java.util.List;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import net.sf.json.*;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geoserver.featurestemplating.writers.GMLTemplateWriter;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geotools.data.DataTestCase;
 import org.geotools.factory.CommonFactoryFinder;
@@ -65,6 +70,20 @@ public class DynamicValueBuilderTest extends DataTestCase {
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(schema);
         fb.add(JSON_PAYLOAD);
         jsonFieldSimpleFeature = fb.buildFeature("jsonFieldSimpleType.1");
+    }
+
+    public List<SimpleFeature> setFeaturesWithNullable() {
+        SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
+        tb.add("nullAttribute", String.class);
+        tb.setName("nullType");
+        SimpleFeatureType schema = tb.buildFeatureType();
+
+        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(schema);
+        fb.add(null);
+        SimpleFeature f1 = fb.buildFeature("nullType.1");
+        fb.add("notNullValue");
+        SimpleFeature f2 = fb.buildFeature("nullType.2");
+        return Arrays.asList(f1, f2);
     }
 
     @Before
@@ -117,6 +136,24 @@ public class DynamicValueBuilderTest extends DataTestCase {
     }
 
     @Test
+    public void testJSONXPathEncodeNull() throws Exception {
+        List<SimpleFeature> features = setFeaturesWithNullable();
+        JSONObject json = encodeDynamic("${nullAttribute}!", features.get(0));
+        assertTrue(json.get("key") instanceof JSONNull);
+        json = encodeDynamic("${nullAttribute}!", features.get(1));
+        assertEquals(json.getString("key"), "notNullValue");
+    }
+
+    @Test
+    public void testXMLXPathEncodeNull() throws Exception {
+        List<SimpleFeature> features = setFeaturesWithNullable();
+        String xml = encodeXML("${nullAttribute}!", features.get(0));
+        assertEquals(xml, "<key></key>");
+        xml = encodeXML("${nullAttribute}!", features.get(1));
+        assertEquals(xml, "<key>notNullValue</key>");
+    }
+
+    @Test
     public void testJSONXPathComplexFeature() throws Exception {
         JSONObject json = encodeDynamic("${jf}", jsonFieldComplexFeature);
         JSONObject obj = json.getJSONObject("key");
@@ -156,6 +193,7 @@ public class DynamicValueBuilderTest extends DataTestCase {
 
         DynamicValueBuilder builder =
                 new DynamicValueBuilder("key", expression, new NamespaceSupport());
+
         writer.writeStartObject();
         builder.evaluate(writer, new TemplateBuilderContext(feature));
         writer.writeEndObject();
@@ -164,5 +202,28 @@ public class DynamicValueBuilderTest extends DataTestCase {
         // nothing has been encoded
         String jsonString = new String(baos.toByteArray());
         return (JSONObject) JSONSerializer.toJSON(jsonString);
+    }
+
+    private String encodeXML(String expression, Feature feature) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        GMLTemplateWriter outputWriter = getGmlWriter(TemplateIdentifier.GML31, baos);
+
+        DynamicValueBuilder builder =
+                new DynamicValueBuilder("key", expression, new NamespaceSupport());
+        builder.evaluate(outputWriter, new TemplateBuilderContext(feature));
+        outputWriter.close();
+
+        // nothing has been encoded
+        return new String(baos.toByteArray());
+    }
+
+    private GMLTemplateWriter getGmlWriter(TemplateIdentifier identifier, OutputStream out)
+            throws XMLStreamException {
+        XMLOutputFactory xMLOutputFactory = XMLOutputFactory.newInstance();
+        XMLStreamWriter xMLStreamWriter = xMLOutputFactory.createXMLStreamWriter(out);
+        GMLTemplateWriter outputWriter =
+                new GMLTemplateWriter(xMLStreamWriter, identifier.getOutputFormat());
+        outputWriter.addNamespaces(new HashMap<>());
+        return outputWriter;
     }
 }

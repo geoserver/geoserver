@@ -200,7 +200,7 @@ public class APIDispatcherTest {
 
         checkInternalError(
                 response,
-                "{\"code\":\"NoApplicableCode\",\"description\":\"TestDispatcherCallbackFailInit\"}");
+                "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailInit\"}");
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callbackFail.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
@@ -231,7 +231,7 @@ public class APIDispatcherTest {
 
         checkInternalError(
                 response,
-                "{\"code\":\"NoApplicableCode\",\"description\":\"TestDispatcherCallbackFailServiceDispatched\"}");
+                "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailServiceDispatched\"}");
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
@@ -260,7 +260,7 @@ public class APIDispatcherTest {
         dispatcher.handleRequest(request, response);
         checkInternalError(
                 response,
-                "{\"code\":\"NoApplicableCode\",\"description\":\"TestDispatcherCallbackFailOperationDispatched\"}");
+                "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailOperationDispatched\"}");
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
@@ -291,7 +291,7 @@ public class APIDispatcherTest {
 
         checkInternalError(
                 response,
-                "{\"code\":\"NoApplicableCode\",\"description\":\"TestDispatcherCallbackFailOperationExecuted\"}");
+                "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailOperationExecuted\"}");
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
@@ -325,7 +325,7 @@ public class APIDispatcherTest {
 
         checkInternalError(
                 response,
-                "{\"code\":\"NoApplicableCode\",\"description\":\"TestDispatcherCallbackFailResponseDispatched\"}");
+                "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailResponseDispatched\"}");
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }

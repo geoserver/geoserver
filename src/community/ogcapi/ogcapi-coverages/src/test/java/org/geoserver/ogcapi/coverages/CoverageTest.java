@@ -65,7 +65,7 @@ public class CoverageTest extends CoveragesTestSupport {
         assertEquals(400, response.getStatus());
         assertEquals("application/json", response.getContentType());
         DocumentContext error = getAsJSONPath(response);
-        assertEquals("Invalid axis label provided: CutIt", error.read("description"));
+        assertEquals("Invalid axis label provided: CutIt", error.read("title"));
     }
 
     private void assertBBOXDEM(

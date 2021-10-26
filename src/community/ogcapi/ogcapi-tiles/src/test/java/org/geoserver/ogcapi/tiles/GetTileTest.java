@@ -435,9 +435,9 @@ public class GetTileTest extends TilesTestSupport {
                                 + "_"
                                 + "/map/tiles/EPSG:900913/EPSG:900913:16/32768/32768?f=image/png",
                         400);
-        assertEquals("InvalidParameterValue", json.read("code"));
+        assertEquals("InvalidParameterValue", json.read("type"));
         assertThat(
-                json.read("description"),
+                json.read("title"),
                 CoreMatchers.allOf(
                         containsString("Invalid style name"),
                         containsString("BasicStyleGroupStyle")));

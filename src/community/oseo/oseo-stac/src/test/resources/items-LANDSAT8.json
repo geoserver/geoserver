@@ -10,9 +10,15 @@
       ],
       "properties": {
         "eo:cloud_cover": "$${opt:cloudCover / 2}",
-        "mergeTest": {
-          "attr1": "3",
-          "attr4": "4"
+        "mergeThumbnail": "$${jsonPointer(assets, '/thumbnail')}",
+        "mergeThumbnail2": {
+          "additional": "$${opt:cloudCover}",
+          "href":"will be replaced",
+          "type":"will be replaced",
+          "title":"Thumbnail to be replaced",
+          "roles":[
+            "will be replaced"
+          ]
         },
         "gsd": 30, 
         "landsat:tier": "pre-collection",

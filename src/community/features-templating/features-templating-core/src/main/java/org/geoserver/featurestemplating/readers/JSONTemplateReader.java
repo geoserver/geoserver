@@ -7,15 +7,37 @@ package org.geoserver.featurestemplating.readers;
 import static org.geoserver.featurestemplating.builders.VendorOptions.FLAT_OUTPUT;
 import static org.geoserver.featurestemplating.builders.VendorOptions.JSON_LD_STRING_ENCODE;
 import static org.geoserver.featurestemplating.builders.VendorOptions.SEPARATOR;
+import static org.geoserver.featurestemplating.readers.JSONMerger.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
+import org.geoserver.featurestemplating.builders.SourceBuilder;
+import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilderMaker;
+import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
+import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
 import org.geoserver.platform.FileWatcher;
+import org.geotools.filter.LiteralExpressionImpl;
+import org.opengis.filter.expression.Expression;
 
 /** Produce the builder tree starting from the evaluation of json-ld template file * */
 public class JSONTemplateReader implements TemplateReader {
+
+    public static final String SOURCEKEY = "$source";
+
+    public static final String CONTEXTKEY = "@context";
+
+    public static final String FILTERKEY = "$filter";
+
+    public static final String INCLUDEKEY = "$include";
+
+    public static final String EXPRSTART = "${";
+
+    public static final String VENDOROPTION = "$options";
 
     private JsonNode template;
 
@@ -50,7 +72,7 @@ public class JSONTemplateReader implements TemplateReader {
         return root;
     }
 
-    private void getBuilderFromJson(
+    public void getBuilderFromJson(
             String nodeName,
             JsonNode node,
             TemplateBuilder currentBuilder,
@@ -112,15 +134,31 @@ public class JSONTemplateReader implements TemplateReader {
                     currentBuilder.addChild(maker.build());
                 } else {
                     if (valueNode.isObject()) {
-                        maker.name(entryName);
-                        // if the parent of the template builder being created
-                        // is a root one, in case of simplified template support,
-                        // or hasNotOwnOutput is flagged the CompositeBuilder being produced
-                        // maps the topLevelFeature source.
-                        maker.topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder));
-                        TemplateBuilder compositeBuilder = maker.build();
-                        currentBuilder.addChild(compositeBuilder);
-                        getBuilderFromJsonObject(valueNode, compositeBuilder, maker);
+                        if (entryName.startsWith(DYNAMIC_MERGE_KEY)) {
+                            if (valueNode.fields().hasNext()) {
+                                Map.Entry<String, JsonNode> fieldNode = valueNode.fields().next();
+                                String key = fieldNode.getKey();
+                                JsonNode innerNode = fieldNode.getValue();
+                                JsonNode overlay = innerNode.get(DYNAMIC_MERGE_OVERLAY);
+                                JsonNode baseMergeNode = innerNode.get(DYNAMIC_MERGE_BASE);
+
+                                currentBuilder.addChild(
+                                        maker.overlayMergeNode(overlay)
+                                                .name(key)
+                                                .baseMergeNode(baseMergeNode)
+                                                .build());
+                            }
+                        } else {
+                            maker.name(entryName);
+                            // if the parent of the template builder being created
+                            // is a root one, in case of simplified template support,
+                            // or hasNotOwnOutput is flagged the CompositeBuilder being produced
+                            // maps the topLevelFeature source.
+                            maker.topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder));
+                            TemplateBuilder compositeBuilder = maker.build();
+                            currentBuilder.addChild(compositeBuilder);
+                            getBuilderFromJsonObject(valueNode, compositeBuilder, maker);
+                        }
                     } else if (valueNode.isArray()) {
                         getBuilderFromJsonArray(entryName, valueNode, currentBuilder, maker);
                     } else {
@@ -224,6 +262,13 @@ public class JSONTemplateReader implements TemplateReader {
         if (node.has(CONTEXTKEY)) {
             builder.addVendorOption(CONTEXTKEY, node.get(CONTEXTKEY));
         }
+        if (node.has(JSON_LD_STRING_ENCODE)) {
+            JsonNode stringEncodeJSONLD = node.get(JSON_LD_STRING_ENCODE);
+            if (!stringEncodeJSONLD.isBoolean())
+                throw new RuntimeException(
+                        "The option " + JSON_LD_STRING_ENCODE + " can only be a boolean value");
+            builder.addVendorOption(JSON_LD_STRING_ENCODE, stringEncodeJSONLD.booleanValue());
+        }
         Expression flatOutput =
                 builder.getVendorOptions()
                         .get(FLAT_OUTPUT, Expression.class, new LiteralExpressionImpl(false));
@@ -252,6 +297,7 @@ public class JSONTemplateReader implements TemplateReader {
     }
 
     private boolean isRootOrHasNotOwnOutput(TemplateBuilder parent) {
-        return parent instanceof RootBuilder || !((SourceBuilder) parent).hasOwnOutput();
+        return parent instanceof RootBuilder
+                || (parent instanceof SourceBuilder && !((SourceBuilder) parent).hasOwnOutput());
     }
 }

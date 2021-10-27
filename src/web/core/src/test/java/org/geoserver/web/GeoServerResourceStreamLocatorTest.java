@@ -10,10 +10,37 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Iterators;
 import java.util.Locale;
+import java.util.Properties;
 import org.apache.wicket.core.util.resource.locator.IResourceNameIterator;
+import org.apache.wicket.util.resource.IResourceStream;
 import org.junit.Test;
 
 public class GeoServerResourceStreamLocatorTest {
+    /** Test that the resource locator only returns a name for certain file types. */
+    @Test
+    public void testUTF8EncodingConvention() throws Exception {
+        GeoServerResourceStreamLocator l = new GeoServerResourceStreamLocator();
+
+        try (IResourceStream resourceStream =
+                l.locate(
+                        GeoServerResourceStreamLocatorTest.class,
+                        "./GeoServerApplication.properties")) {
+
+            Properties properties = new Properties();
+            properties.load(resourceStream.getInputStream());
+            assertEquals("welcome", properties.getProperty("StatusPageTest.welcome"));
+        }
+
+        try (IResourceStream resourceStream =
+                l.locate(
+                        GeoServerResourceStreamLocatorTest.class,
+                        "./GeoServerApplication.utf8.properties")) {
+
+            Properties properties = new Properties();
+            properties.load(resourceStream.getInputStream());
+            assertEquals("\u6B22\u8FCE", properties.getProperty("StatusPageTest.welcome"));
+        }
+    }
 
     @Test
     /** Test that the resource locator only returns a name for certain file types. */

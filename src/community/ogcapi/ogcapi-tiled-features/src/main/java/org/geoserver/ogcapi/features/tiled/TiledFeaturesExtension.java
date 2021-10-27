@@ -59,7 +59,7 @@ public class TiledFeaturesExtension
     }
 
     @Override
-    public String getExtension(Request dr, Map model, List htmlExtensionArguments)
+    public String getExtension(Request dr, Map<String, Object> model, List htmlExtensionArguments)
             throws IOException {
         if (dr.getService().equals(FEATURES)) {
             if (dr.getRequest().equals(REQ_LANDING)) {
@@ -67,7 +67,7 @@ public class TiledFeaturesExtension
                         null, "landingPageTileMatrixExtension.ftl", getClass(), model);
             } else if (dr.getRequest().equals(REQ_COLLECTION)) {
                 // get the collection provided by the function call and replace the model
-                Map clonedModel = new HashMap(model);
+                Map<String, Object> clonedModel = new HashMap<>(model);
                 CollectionDocument collection = (CollectionDocument) model.get("model");
                 if (tiledFeatures.isTiledVectorLayer(collection.getId())) {
                     clonedModel.put("collection", collection);
@@ -76,7 +76,7 @@ public class TiledFeaturesExtension
                 }
             } else if (dr.getRequest().equals(REQ_COLLECTIONS)) {
                 // get the collection provided by the function call and replace the model
-                Map clonedModel = new HashMap(model);
+                Map<String, Object> clonedModel = new HashMap<>(model);
                 CollectionDocument collection = (CollectionDocument) htmlExtensionArguments.get(0);
                 if (tiledFeatures.isTiledVectorLayer(collection.getId())) {
                     clonedModel.put("collection", collection);

@@ -31,6 +31,7 @@ public class NeighborFunction extends DGGSSetFunctionBase {
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // DGGSInstance lifecycle managed elsewhere
     public Object evaluate(Object object) {
         // get the zone being tested
         String testedZoneId = (String) getParameterValue(object, 0);
@@ -51,6 +52,7 @@ public class NeighborFunction extends DGGSSetFunctionBase {
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // DGGSInstance lifecycle managed elsewhere
     public Iterator<Zone> getMatchedZones() {
         if (!isStable()) throw new IllegalStateException("Source parameters are not stable");
         String referenceZoneId = (String) getParameterValue(null, 1);
@@ -61,6 +63,7 @@ public class NeighborFunction extends DGGSSetFunctionBase {
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // DGGSInstance lifecycle managed elsewhere
     public long countMatched() {
         if (!isStable()) throw new IllegalStateException("Source parameters are not stable");
         String referenceZoneId = (String) getParameterValue(null, 1);

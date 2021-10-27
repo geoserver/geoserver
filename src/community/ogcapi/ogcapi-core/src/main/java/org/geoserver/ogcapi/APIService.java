@@ -8,6 +8,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.geoserver.config.ServiceInfo;
 import org.springframework.stereotype.Component;
 
 /**
@@ -43,5 +44,5 @@ public @interface APIService {
      * GeoServer {@link org.geoserver.config.ServiceInfo} sublass used to locate the service
      * configuration
      */
-    public Class<?> serviceClass();
+    public Class<? extends ServiceInfo> serviceClass();
 }

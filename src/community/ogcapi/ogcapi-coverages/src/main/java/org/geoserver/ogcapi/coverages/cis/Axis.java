@@ -8,7 +8,6 @@ package org.geoserver.ogcapi.coverages.cis;
 public abstract class Axis {
 
     private String type;
-    private String id;
     private String axisLabel;
 
     public Axis(String type, String axisLabel) {

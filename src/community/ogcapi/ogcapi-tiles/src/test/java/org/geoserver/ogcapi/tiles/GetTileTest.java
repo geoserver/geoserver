@@ -282,11 +282,12 @@ public class GetTileTest extends TilesTestSupport {
                 "CQL_FILTER filter parameter not cached or not condition not matched",
                 resp.getHeader("geowebcache-miss-reason"));
 
-        InputStream is = getBinaryInputStream(resp);
-        RenderedImage filteredImage = ImageIO.read(is);
-        File expectedFilteredFile =
-                new File("src/test/resources/org/geoserver/ogcapi/tiles/streams_filterd.png");
-        ImageAssert.assertEquals(expectedFilteredFile, filteredImage, 100);
+        try (InputStream is = getBinaryInputStream(resp)) {
+            RenderedImage filteredImage = ImageIO.read(is);
+            File expectedFilteredFile =
+                    new File("src/test/resources/org/geoserver/ogcapi/tiles/streams_filterd.png");
+            ImageAssert.assertEquals(expectedFilteredFile, filteredImage, 100);
+        }
     }
 
     @Test

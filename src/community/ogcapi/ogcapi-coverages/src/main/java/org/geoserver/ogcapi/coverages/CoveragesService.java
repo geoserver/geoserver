@@ -394,10 +394,4 @@ public class CoveragesService {
         GridEnvelope range = coverage.getGrid().getGridRange();
         return new IndexAxis(name, range.getLow(axisIndex), range.getHigh(axisIndex));
     }
-
-    private double ensureFinite(double d) {
-        if (Double.isFinite(d)) return d;
-        if (d > 0) return Double.MAX_VALUE;
-        return -Double.MAX_VALUE;
-    }
 }

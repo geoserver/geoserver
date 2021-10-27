@@ -11,6 +11,7 @@ import freemarker.template.TemplateException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -98,7 +99,6 @@ public class FreemarkerTemplateSupport {
         synchronized (configuration) {
             configuration.setTemplateLoader(templateLoader);
             Template t = configuration.getTemplate(templateName);
-            t.setEncoding("UTF-8");
             return t;
         }
     }
@@ -108,6 +108,7 @@ public class FreemarkerTemplateSupport {
                 clazz,
                 k -> {
                     Configuration cfg = TemplateUtils.getSafeConfiguration();
+                    cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
                     cfg.setObjectWrapper(new FeatureWrapper(FC_FACTORY));
                     return cfg;
                 });

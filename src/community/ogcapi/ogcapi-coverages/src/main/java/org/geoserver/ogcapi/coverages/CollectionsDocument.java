@@ -47,7 +47,9 @@ public class CollectionsDocument extends AbstractDocument {
     }
 
     @JacksonXmlProperty(localName = "Collection")
+    @SuppressWarnings("PMD.CloseResource")
     public Iterator<CollectionDocument> getCollections() {
+        @SuppressWarnings("unchecked")
         CloseableIterator<CoverageInfo> coverages =
                 geoServer.getCatalog().list(CoverageInfo.class, Filter.INCLUDE);
         return new Iterator<CollectionDocument>() {

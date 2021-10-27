@@ -65,6 +65,7 @@ public class CollectionsTest extends FeaturesTestSupport {
         testCollectionsJson(json);
     }
 
+    @SuppressWarnings("unchecked") // generic varargs in matcher
     private void testCollectionsJson(DocumentContext json) throws Exception {
         int expected = getCatalog().getFeatureTypes().size();
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));

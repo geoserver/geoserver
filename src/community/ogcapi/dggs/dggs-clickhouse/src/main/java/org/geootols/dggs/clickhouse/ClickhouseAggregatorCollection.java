@@ -203,6 +203,7 @@ public class ClickhouseAggregatorCollection extends DecoratingSimpleFeatureColle
         }
 
         @Override
+        @SuppressWarnings("PMD.UseTryWithResources") // fields, cannot be done
         public void close() throws IOException {
             try {
                 try {

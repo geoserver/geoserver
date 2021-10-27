@@ -127,6 +127,7 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
      * Returns a single element out of an array, checking that there is just one. Works around
      * Workaround for https://github.com/json-path/JsonPath/issues/272
      */
+    @SuppressWarnings("unchecked")
     protected <T> T readSingle(DocumentContext json, String path) {
         List<Object> items = json.read(path);
         assertEquals(
@@ -197,7 +198,7 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     protected boolean exists(DocumentContext json, String path) {
         try {
             List items = json.read(path);
-            return items.size() > 0;
+            return !items.isEmpty();
         } catch (PathNotFoundException e) {
             return false;
         }
@@ -211,6 +212,7 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
      * @param expected The expected list
      * @param <T>
      */
+    @SuppressWarnings("unchecked")
     protected <T> void assertJSONList(DocumentContext json, String path, T... expected) {
         List<T> selfRels = json.read(path);
         assertThat(selfRels, Matchers.containsInAnyOrder(expected));

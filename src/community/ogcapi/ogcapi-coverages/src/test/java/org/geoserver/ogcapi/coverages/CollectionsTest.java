@@ -43,6 +43,7 @@ public class CollectionsTest extends CoveragesTestSupport {
         testCollectionsJson(json);
     }
 
+    @SuppressWarnings("unchecked") // generics varargs creation by hamcrest
     private void testCollectionsJson(DocumentContext json) throws Exception {
         int expected = getCatalog().getCoverages().size();
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));

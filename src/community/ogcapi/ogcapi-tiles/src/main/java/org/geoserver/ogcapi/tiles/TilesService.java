@@ -451,7 +451,7 @@ public class TilesService {
             HttpHeaders headers = new HttpHeaders();
             headers.add("geowebcache-cache-result", MISS.toString());
             headers.add("geowebcache-miss-reason", "unknown");
-            return new ResponseEntity(headers, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
         }
 
         final byte[] tileBytes;
@@ -473,7 +473,7 @@ public class TilesService {
         if (etag.equals(ifNoneMatch)) {
             // Client already has the current version
             LOGGER.finer("ETag matches, returning 304");
-            return new ResponseEntity(HttpStatus.NOT_MODIFIED);
+            return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
         }
 
         LOGGER.finer("No matching ETag, returning cached tile");
@@ -504,7 +504,7 @@ public class TilesService {
                 HttpHeaders.CONTENT_DISPOSITION,
                 getTileFileName(tileMatrixSetId, tileMatrix, tileRow, tileCol, tileLayer, tile));
 
-        return new ResponseEntity(tileBytes, headers, HttpStatus.OK);
+        return new ResponseEntity<>(tileBytes, headers, HttpStatus.OK);
     }
 
     static String getTileLayerId(TileLayer tileLayer) {

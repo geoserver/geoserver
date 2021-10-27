@@ -30,7 +30,7 @@ public class CollectionTest extends ImagesTestSupport {
         // TODO: add ids in the elemnets and check contents using jSoup
     }
 
-    public void testWaterTempCollectionJson(DocumentContext json) {
+    protected void testWaterTempCollectionJson(DocumentContext json) {
         assertEquals("sf:watertemp", json.read("$.id", String.class));
         assertEquals("Water temperature", json.read("$.title", String.class));
         assertEquals(0.23722069, json.read("$.extent.spatial.bbox[0][0]", Double.class), 1e-6d);

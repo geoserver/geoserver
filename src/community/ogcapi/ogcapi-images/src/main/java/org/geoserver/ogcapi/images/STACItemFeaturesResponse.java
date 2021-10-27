@@ -241,10 +241,14 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
     }
 
     private String getParentCollectionId() {
-        return String.valueOf(
-                RequestContextHolder.getRequestAttributes()
-                        .getAttribute(
-                                ImagesService.COLLECTION_ID, RequestAttributes.SCOPE_REQUEST));
+        return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
+                .map(
+                        a ->
+                                a.getAttribute(
+                                        ImagesService.COLLECTION_ID,
+                                        RequestAttributes.SCOPE_REQUEST))
+                .map(String::valueOf)
+                .orElse(null);
     }
 
     @Override

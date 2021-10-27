@@ -9,7 +9,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertEquals;
 
 import com.jayway.jsonpath.DocumentContext;
-import org.geoserver.data.test.MockData;
 import org.geoserver.ogcapi.tiles.TiledCollectionDocument;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
@@ -18,7 +17,6 @@ public class CollectionsTest extends TiledFeaturesTestSupport {
 
     @Test
     public void testCollectionJson() throws Exception {
-        String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         DocumentContext json = getAsJSONPath("ogc/features/collections", 200);
 
         assertEquals(

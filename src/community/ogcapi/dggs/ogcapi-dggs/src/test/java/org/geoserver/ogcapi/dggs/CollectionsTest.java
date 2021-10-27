@@ -4,13 +4,12 @@
  */
 package org.geoserver.ogcapi.dggs;
 
-import com.jayway.jsonpath.DocumentContext;
 import org.junit.Test;
 
 public class CollectionsTest extends DGGSTestSupport {
 
     @Test
     public void testCollectionsJson() throws Exception {
-        DocumentContext json = getAsJSONPath("ogc/dggs/collections", 200);
+        getAsJSONPath("ogc/dggs/collections", 200);
     }
 }

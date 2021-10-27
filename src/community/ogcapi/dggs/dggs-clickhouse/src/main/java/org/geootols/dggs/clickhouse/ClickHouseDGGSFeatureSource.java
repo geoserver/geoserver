@@ -261,11 +261,8 @@ public class ClickHouseDGGSFeatureSource implements DGGSFeatureSource {
                 try {
                     result = new ReprojectingFeatureCollection(result, targetCRS);
                 } catch (Exception e) {
-                    if (e instanceof IOException) throw (IOException) e;
-                    else
-                        throw (IOException)
-                                new IOException("Error occurred trying to reproject data")
-                                        .initCause(e);
+                    throw (IOException)
+                            new IOException("Error occurred trying to reproject data").initCause(e);
                 }
             }
         }

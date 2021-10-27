@@ -37,6 +37,7 @@ public class PolygonFunction extends DGGSSetFunctionBase {
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // DGGSInstance lifecycle managed elsewhere
     public Object evaluate(Object object) {
         // get the zone being tested
         String testedZoneId = (String) getParameterValue(object, 0);
@@ -74,6 +75,7 @@ public class PolygonFunction extends DGGSSetFunctionBase {
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // DGGSInstance lifecycle managed elsewhere
     public Iterator<Zone> getMatchedZones() {
         if (!isStable()) throw new IllegalStateException("Source parameters are not stable");
         Polygon polygon = (Polygon) getParameterValue(null, 1);
@@ -85,11 +87,11 @@ public class PolygonFunction extends DGGSSetFunctionBase {
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // DGGSInstance lifecycle managed elsewhere
     public long countMatched() {
         if (!isStable()) throw new IllegalStateException("Source parameters are not stable");
         Polygon polygon = (Polygon) getParameterValue(null, 1);
         Integer resolution = (Integer) getParameterValue(null, 2);
-        Boolean compact = Optional.of((Boolean) getParameterValue(null, 3)).orElse(false);
         DGGSInstance dggs = (DGGSInstance) getParameterValue(null, 4);
 
         return dggs.countPolygon(polygon, resolution);

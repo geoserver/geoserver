@@ -115,7 +115,6 @@ public class DGGSDAPAExtension {
             throws IOException {
         FeatureTypeInfo info = getFeatureType(collectionId);
         // TODO: eventually make it work for complex features
-        SimpleFeatureType schema = (SimpleFeatureType) info.getFeatureType();
         DAPAVariables result = new DAPAVariables(collectionId, info);
         return result;
     }
@@ -439,6 +438,7 @@ public class DGGSDAPAExtension {
                     )
                     String format)
             throws Exception {
+        @SuppressWarnings("PMD.CloseResource") // managed by the store
         DGGSInstance dggs = service.getDGGSInstance(collectionId);
         zoneId = getPositionZoneId(zoneId, wkt, resolution, dggs);
 
@@ -467,6 +467,7 @@ public class DGGSDAPAExtension {
             @RequestParam(name = "variables", required = false) String variableNames)
             throws Exception {
         FeatureTypeInfo ft = getFeatureType(collectionId);
+        @SuppressWarnings("PMD.CloseResource") // managed by the store
         DGGSInstance dggs = service.getDGGSInstance(collectionId);
         zoneId = getPositionZoneId(zoneId, wkt, resolution, dggs);
 

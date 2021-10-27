@@ -1,3 +1,7 @@
+/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.ogcapi.dggs;
 
 import java.io.IOException;
@@ -94,48 +98,47 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
             MediaType mediaType,
             HttpOutputMessage httpOutputMessage)
             throws IOException, HttpMessageNotWritableException {
-        Writer writer = getWriter(httpOutputMessage);
-        JSONBuilder jsonWriter = new JSONBuilder(writer);
-        jsonWriter.object().key("type").value("FeatureCollection");
-        jsonWriter.key("features");
-        jsonWriter.array();
+        try (Writer writer = getWriter(httpOutputMessage)) {
+            JSONBuilder jsonWriter = new JSONBuilder(writer);
+            jsonWriter.object().key("type").value("FeatureCollection");
+            jsonWriter.key("features");
+            jsonWriter.array();
 
-        // DGGS always generates a single collection in output
-        FeatureCollectionResponse response = featureResponse.getResponse();
-        GetFeatureRequest request = GetFeatureRequest.adapt(featureResponse.getRequest());
-        SimpleFeatureCollection fc = (SimpleFeatureCollection) response.getFeature().get(0);
-        writeCollection(fc, jsonWriter);
+            // DGGS always generates a single collection in output
+            FeatureCollectionResponse response = featureResponse.getResponse();
+            GetFeatureRequest request = GetFeatureRequest.adapt(featureResponse.getRequest());
+            SimpleFeatureCollection fc = (SimpleFeatureCollection) response.getFeature().get(0);
+            writeCollection(fc, jsonWriter);
 
-        jsonWriter.endArray(); // end features
+            jsonWriter.endArray(); // end features
 
-        // write the set of collection wide informations
-        // get feature count for request
-        BigInteger totalNumberOfFeatures =
-                Optional.ofNullable(response.getTotalNumberOfFeatures())
-                        .filter(n -> n.signum() >= 0)
-                        .orElse(null);
-        BigInteger featureCount =
-                Optional.ofNullable(response.getNumberOfFeatures())
-                        .filter(n -> n.signum() >= 0)
-                        .orElse(null);
-        writeCollectionCounts(totalNumberOfFeatures, featureCount, jsonWriter);
-        writeCollectionTimeStamp(jsonWriter);
-        writeLinks(response, request, jsonWriter, null);
+            // write the set of collection wide informations
+            // get feature count for request
+            BigInteger totalNumberOfFeatures =
+                    Optional.ofNullable(response.getTotalNumberOfFeatures())
+                            .filter(n -> n.signum() >= 0)
+                            .orElse(null);
+            BigInteger featureCount =
+                    Optional.ofNullable(response.getNumberOfFeatures())
+                            .filter(n -> n.signum() >= 0)
+                            .orElse(null);
+            writeCollectionCounts(totalNumberOfFeatures, featureCount, jsonWriter);
+            writeCollectionTimeStamp(jsonWriter);
+            writeLinks(response, request, jsonWriter, null);
 
-        jsonWriter.endObject(); // end featurecollection
-        writer.flush();
+            jsonWriter.endObject(); // end featurecollection
+            writer.flush();
+        }
     }
 
     private void writeCollection(SimpleFeatureCollection fc, JSONBuilder jsonWriter) {
         SimpleFeatureType fType = fc.getSchema();
         List<AttributeDescriptor> types = fType.getAttributeDescriptors();
-        long featureCount = 0;
         try (FeatureIterator iterator = fc.features()) {
             // encode each simple feature
             while (iterator.hasNext()) {
                 // get next simple feature
                 SimpleFeature simpleFeature = (SimpleFeature) iterator.next();
-                featureCount++;
                 // start writing the JSON feature object
                 jsonWriter.object();
                 jsonWriter.key("type").value("Feature");
@@ -208,9 +211,10 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
     }
 
     private static Charset getCharset(HttpHeaders headers) {
-        Charset charset =
-                (headers.getContentType() != null ? headers.getContentType().getCharset() : null);
-        return (charset != null ? charset : StandardCharsets.UTF_8);
+        return Optional.ofNullable(headers)
+                .map(h -> headers.getContentType())
+                .map(ct -> ct.getCharset())
+                .orElse(StandardCharsets.UTF_8);
     }
 
     /** Writes a WFS3 compliant timeStamp collection attribute */

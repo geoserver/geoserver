@@ -55,6 +55,7 @@ public class ImageTest extends ImagesTestSupport {
                         "http://localhost:8080/geoserver/ogc/images/collections/sf%3Awatertemp/images/watertemp.4?f=application%2Fstac%2Bjson"));
     }
 
+    @SuppressWarnings("unchecked") // matcher generic varargs creation
     public void checkWaterTemp(DocumentContext json, String basePath, String featureId) {
         assertThat(readSingle(json, basePath + ".properties.size()"), equalTo(2));
         // check mandatory STAC item properties
@@ -131,15 +132,14 @@ public class ImageTest extends ImagesTestSupport {
         assertThat(featureId, startsWith("watertemp."));
 
         // get the single feature now by service call system
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/images/collections/"
-                                + waterTemp
-                                + "/images/"
-                                + featureId
-                                + "?f="
-                                + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
-                        200);
+        getAsJSONPath(
+                "ogc/images/collections/"
+                        + waterTemp
+                        + "/images/"
+                        + featureId
+                        + "?f="
+                        + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
+                200);
     }
 
     @Test

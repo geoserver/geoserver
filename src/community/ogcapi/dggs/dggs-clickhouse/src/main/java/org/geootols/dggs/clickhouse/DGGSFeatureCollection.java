@@ -156,6 +156,7 @@ public class DGGSFeatureCollection implements SimpleFeatureCollection {
     }
 
     @Override
+    @SuppressWarnings("unchecked") // some blind cast necessary
     public <O> O[] toArray(O[] array) {
         int size = size();
         if (array.length < size) {
@@ -192,6 +193,7 @@ public class DGGSFeatureCollection implements SimpleFeatureCollection {
 
     @Override
     public SimpleFeatureIterator features() {
+        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         SimpleFeatureIterator it = delegate.features();
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(getSchema());
         return new SimpleFeatureIterator() {

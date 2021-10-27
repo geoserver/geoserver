@@ -11,14 +11,13 @@ import static org.junit.Assert.assertFalse;
 import com.jayway.jsonpath.DocumentContext;
 import java.util.List;
 import org.hamcrest.Matchers;
-import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 public class StylesTest extends StylesTestSupport {
 
     @Test
     public void testStylesHTML() throws Exception {
-        Document document = getAsJSoup("ogc/styles/styles?f=html");
+        getAsJSoup("ogc/styles/styles?f=html");
     }
 
     @Test
@@ -27,6 +26,7 @@ public class StylesTest extends StylesTestSupport {
         testStylesJson(json);
     }
 
+    @SuppressWarnings("unchecked") // matcher vararg generics
     private void testStylesJson(DocumentContext json) {
         // check the self link
         assertEquals("self", readSingle(json, "links[?(@.type == 'application/json')].rel"));
@@ -34,7 +34,6 @@ public class StylesTest extends StylesTestSupport {
         assertEquals("alternate", readSingle(json, "links[?(@.type == 'application/x-yaml')].rel"));
 
         // check all the styles are there
-        System.out.println(((List<String>) json.read("styles[*].id")));
         assertThat(
                 ((List<String>) json.read("styles[*].id")),
                 Matchers.containsInAnyOrder(

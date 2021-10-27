@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -106,6 +107,7 @@ public class ApiTest extends StylesTestSupport {
         validateApi(api);
     }
 
+    @SuppressWarnings("unchecked") // matcher vararg generics
     private void validateApi(OpenAPI api) {
         // only one server
         List<Server> servers = api.getServers();
@@ -168,6 +170,7 @@ public class ApiTest extends StylesTestSupport {
         OpenAPI api = getOpenAPI("ws/ogc/styles/api");
         Map<String, Parameter> params = api.getComponents().getParameters();
         Parameter styleId = params.get("styleId");
+        @SuppressWarnings("unchecked")
         List<String> styleIdValues = styleId.getSchema().getEnum();
         List<String> expectedStyleIds =
                 getCatalog()
@@ -177,7 +180,7 @@ public class ApiTest extends StylesTestSupport {
                                 s ->
                                         s.getWorkspace() == null
                                                 || "ws".equals(s.getWorkspace().getName()))
-                        .map(s -> s.getName())
+                        .map(StyleInfo::getName)
                         .collect(Collectors.toList());
         // does not work and I cannot fathom why, both lists have the same size and same elements
         // by visual inspection
@@ -193,13 +196,14 @@ public class ApiTest extends StylesTestSupport {
         OpenAPI api = getOpenAPI("cdf/ogc/styles/api");
         Map<String, Parameter> params = api.getComponents().getParameters();
         Parameter collectionId = params.get("styleId");
+        @SuppressWarnings("unchecked")
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedStyleIds =
                 getCatalog()
                         .getStyles()
                         .stream()
                         .filter(s -> s.getWorkspace() == null)
-                        .map(s -> s.getName())
+                        .map(StyleInfo::getName)
                         .collect(Collectors.toList());
         assertThat(collectionIdValues, equalTo(expectedStyleIds));
     }

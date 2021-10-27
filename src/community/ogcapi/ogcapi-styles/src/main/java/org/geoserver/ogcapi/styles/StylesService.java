@@ -365,7 +365,7 @@ public class StylesService {
                             null,
                             URLMangler.URLType.SERVICE);
             headers.set(HttpHeaders.LOCATION, href);
-            return new ResponseEntity(headers, HttpStatus.CREATED);
+            return new ResponseEntity<>(headers, HttpStatus.CREATED);
         }
     }
 

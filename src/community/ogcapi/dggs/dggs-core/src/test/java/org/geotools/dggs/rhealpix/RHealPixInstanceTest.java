@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 import jep.JepException;
 import jep.SharedInterpreter;
 import org.geotools.dggs.DGGSFactory;
@@ -41,6 +42,7 @@ import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.Zone;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geotools.util.logging.Logging;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Assume;
@@ -55,6 +57,8 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 public class RHealPixInstanceTest {
+
+    static final Logger LOGGER = Logging.getLogger(RHealPixInstanceTest.class);
 
     private static final GeometryFactory GF = new GeometryFactory();
     private static final ReferencedEnvelope WORLD =
@@ -170,7 +174,7 @@ public class RHealPixInstanceTest {
             try {
                 assertZoneCount(envelope, resolution);
             } catch (AssertionError e) {
-                System.out.println(envelope + " / " + resolution + " -> " + e.getMessage());
+                LOGGER.severe(envelope + " / " + resolution + " -> " + e.getMessage());
             }
         }
     }
@@ -239,6 +243,7 @@ public class RHealPixInstanceTest {
     }
 
     @Test
+    @SuppressWarnings("PMD.CloseResource") // web runtime lifecycle managed elsewhere, see cleanup()
     public void testChildren() throws Exception {
         String parent = "R";
         SharedInterpreter interpreter = JEPWebRuntime.INTERPRETER.get();
@@ -249,6 +254,7 @@ public class RHealPixInstanceTest {
             RHealPixUtils.setCellId(interpreter, "id", parent);
             interpreter.exec("c = Cell(dggs, id)");
             interpreter.set("resolution", Integer.valueOf(r));
+            @SuppressWarnings("unchecked")
             Set<String> expected =
                     new HashSet<>(interpreter.getValue("list(c.subcells(resolution))", List.class));
             assertEquals(expected, actual);
@@ -259,7 +265,7 @@ public class RHealPixInstanceTest {
     public void testMapPoint() throws Exception {
         Point northPole = GF.createPoint(new Coordinate(0, 90));
         // test few different resolutions
-        String[] expectedIds = new String[] {"N", "N4", "N44"};
+        String[] expectedIds = {"N", "N4", "N44"};
         for (int r = 0; r < expectedIds.length; r++) {
             Zone zone = rpix.point(northPole, r);
             assertEquals(expectedIds[r], zone.getId());

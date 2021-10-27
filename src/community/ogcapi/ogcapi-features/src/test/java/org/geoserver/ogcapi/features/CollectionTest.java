@@ -172,11 +172,10 @@ public class CollectionTest extends FeaturesTestSupport {
 
     @Test
     public void testCollectionYaml() throws Exception {
-        String yaml =
-                getAsString(
-                        "ogc/features/collections/"
-                                + getLayerId(MockData.ROAD_SEGMENTS)
-                                + "?f=application/x-yaml");
+        getAsString(
+                "ogc/features/collections/"
+                        + getLayerId(MockData.ROAD_SEGMENTS)
+                        + "?f=application/x-yaml");
         // System.out.println(yaml);
     }
 

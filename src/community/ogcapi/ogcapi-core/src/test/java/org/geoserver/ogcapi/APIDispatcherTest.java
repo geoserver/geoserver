@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,6 +24,8 @@ import org.geoserver.ows.TestDispatcherCallback;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 import org.geoserver.test.CodeExpectingHttpServletResponse;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -35,6 +37,19 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.servlet.handler.DispatcherServletWebRequest;
 
 public class APIDispatcherTest {
+
+    private FileSystemXmlApplicationContext applicationContext;
+
+    @Before
+    public void setup() {
+        URL url = getClass().getResource("applicationContext.xml");
+        this.applicationContext = new FileSystemXmlApplicationContext(url.toString());
+    }
+
+    @After
+    public void teardown() {
+        this.applicationContext.close();
+    }
 
     @Test
     public void testDefaultFormat() throws Exception {
@@ -110,7 +125,6 @@ public class APIDispatcherTest {
     public void testDeleteRequest() throws Exception {
         APIDispatcher dispatcher = getDispatcher();
 
-        String message = "{\"message\":\"Is there anyone here?\"}";
         MockHttpServletRequest request = setupDeleteRequest();
         request.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -121,18 +135,19 @@ public class APIDispatcherTest {
 
     @Test
     public void testPutRequest() throws Exception {
-        FileSystemXmlApplicationContext context = getApplicationContext();
-        APIDispatcher dispatcher = (APIDispatcher) context.getBean(APIDispatcher.class);
-        HelloController controller = (HelloController) context.getBean(HelloController.class);
+        try (FileSystemXmlApplicationContext context = this.applicationContext) {
+            APIDispatcher dispatcher = context.getBean(APIDispatcher.class);
+            HelloController controller = context.getBean(HelloController.class);
 
-        String newDefault = "ciao";
-        MockHttpServletRequest request = setupPutRequest(newDefault);
-        request.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        dispatcher.handleRequest(request, response);
+            String newDefault = "ciao";
+            MockHttpServletRequest request = setupPutRequest(newDefault);
+            request.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
+            MockHttpServletResponse response = new MockHttpServletResponse();
+            dispatcher.handleRequest(request, response);
 
-        assertEquals(200, response.getStatus());
-        assertEquals(newDefault, controller.defaultValue);
+            assertEquals(200, response.getStatus());
+            assertEquals(newDefault, controller.defaultValue);
+        }
     }
 
     @Test
@@ -332,8 +347,6 @@ public class APIDispatcherTest {
 
     @Test
     public void testDispatcherCallbackFailFinished() throws Exception {
-        URL url = getClass().getResource("applicationContext.xml");
-
         APIDispatcher dispatcher = getDispatcher();
         final AtomicBoolean firedCallback = new AtomicBoolean(false);
         TestDispatcherCallback callback1 = new TestDispatcherCallback();
@@ -413,13 +426,7 @@ public class APIDispatcherTest {
     }
 
     private APIDispatcher getDispatcher() {
-        FileSystemXmlApplicationContext context = getApplicationContext();
-        return (APIDispatcher) context.getBean(APIDispatcher.class);
-    }
-
-    private FileSystemXmlApplicationContext getApplicationContext() {
-        URL url = getClass().getResource("applicationContext.xml");
-        return new FileSystemXmlApplicationContext(url.toString());
+        return applicationContext.getBean(APIDispatcher.class);
     }
 
     private MockHttpServletRequest setupDeleteRequest() {
@@ -437,7 +444,7 @@ public class APIDispatcherTest {
         request.setMethod("PUT");
 
         request.setRequestURI("/geoserver/ogc/default");
-        request.setContent(message.getBytes(Charset.forName("UTF-8")));
+        request.setContent(message.getBytes(StandardCharsets.UTF_8));
 
         return request;
     }
@@ -448,7 +455,7 @@ public class APIDispatcherTest {
         request.setMethod("POST");
 
         request.setRequestURI("/geoserver/ogc/echo");
-        request.setContent(message.getBytes(Charset.forName("UTF-8")));
+        request.setContent(message.getBytes(StandardCharsets.UTF_8));
 
         return request;
     }

@@ -81,6 +81,7 @@ public class FeatureTest extends FeaturesTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // matchers make for generic varargs
     public void testGetLayerAsGeoJsonReproject() throws Exception {
         String roadSegments = ResponseUtils.urlEncode(getLayerId(MockData.ROAD_SEGMENTS));
         MockHttpServletResponse response =
@@ -98,15 +99,15 @@ public class FeatureTest extends FeaturesTestSupport {
         assertEquals("FeatureCollection", json.read("type", String.class));
         assertEquals(5, (int) json.read("features.length()", Integer.class));
         // get ordinates of RoadSegments.1107532045091, returns array[array[array[double]]]
-        List result =
+        List<List<List<Double>>> result =
                 readSingle(
                         json,
                         "features[?(@.id=='RoadSegments.1107532045091')].geometry.coordinates");
         // original feature:
         // RoadSegments.1107532045091=MULTILINESTRING ((-0.0014 -0.0024, -0.0014 0.0002))|
         //                            106|Dirt Road by Green Forest
-        List<Double> ordinate0 = (List) ((List) result.get(0)).get(0);
-        List<Double> ordinate1 = (List) ((List) result.get(0)).get(1);
+        List<Double> ordinate0 = result.get(0).get(0);
+        List<Double> ordinate1 = result.get(0).get(1);
         assertThat(ordinate0, contains(closeTo(-156, 1), closeTo(-267, 1)));
         assertThat(ordinate1, contains(closeTo(-156, 1), closeTo(22, 1)));
     }

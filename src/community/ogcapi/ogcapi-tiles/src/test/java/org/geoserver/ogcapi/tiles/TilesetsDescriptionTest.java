@@ -14,7 +14,6 @@ import static org.junit.Assert.assertEquals;
 import com.jayway.jsonpath.DocumentContext;
 import java.util.Arrays;
 import org.geoserver.data.test.MockData;
-import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 public class TilesetsDescriptionTest extends TilesTestSupport {
@@ -52,11 +51,12 @@ public class TilesetsDescriptionTest extends TilesTestSupport {
 
     @Test
     public void testGetTileMatrixSetsHTML() throws Exception {
-        Document document = getAsJSoup("ogc/tiles/tileMatrixSets?f=html");
+        getAsJSoup("ogc/tiles/tileMatrixSets?f=html");
         // TODO: add ids and actual checks in the generated HTML
     }
 
     @Test
+    @SuppressWarnings("unchecked") // matcher varargs
     public void testGetTileMatrixSet() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/tiles/tileMatrixSets/EPSG:4326", 200);
 
@@ -158,6 +158,7 @@ public class TilesetsDescriptionTest extends TilesTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // matcher varargs
     public void testTileJSONLayerGroup() throws Exception {
         DocumentContext doc =
                 getAsJSONPath(

@@ -46,6 +46,7 @@ import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 import org.opengis.filter.spatial.BBOX;
 
+@SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") // JUnit 3 tests here
 public class ClickHouseRHealPixOnlineTest extends ClickHouseOnlineTestCase {
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
@@ -77,7 +78,7 @@ public class ClickHouseRHealPixOnlineTest extends ClickHouseOnlineTestCase {
                             + "ORDER BY (resolution, zoneId)");
 
             // populate first 3 levels of the zone hierarchy with zones
-            String[] zones = new String[] {"N", "O", "P", "Q", "R", "S"};
+            String[] zones = {"N", "O", "P", "Q", "R", "S"};
             for (int i = 0; i < zones.length; i++) {
                 String zoneId = zones[i];
                 ps.setString(1, zoneId);

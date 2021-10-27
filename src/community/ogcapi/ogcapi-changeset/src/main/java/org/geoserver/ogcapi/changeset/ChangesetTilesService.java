@@ -141,7 +141,10 @@ public class ChangesetTilesService {
         // now we can check the eventual scale denominators in the request
         if (scaleDenominatorSpec != null && !scaleDenominatorSpec.trim().isEmpty()) {
             NumberRange<Double> requestedScaleRange = parseScaleDenominator(scaleDenominatorSpec);
-            scaleRange = (NumberRange<Double>) styleScaleRange.intersect(requestedScaleRange);
+            @SuppressWarnings("unchecked")
+            NumberRange<Double> intersection =
+                    (NumberRange<Double>) styleScaleRange.intersect(requestedScaleRange);
+            scaleRange = intersection;
         }
 
         // finally check with the tile matrix scale ranges, the result of the intersection

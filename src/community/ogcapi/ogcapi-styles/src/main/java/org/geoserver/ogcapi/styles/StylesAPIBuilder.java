@@ -21,6 +21,7 @@ public class StylesAPIBuilder extends OpenAPIBuilder<StylesServiceInfo> {
     }
 
     @Override
+    @SuppressWarnings("unchecked") // getSchema().setEnum(...) not generified
     public OpenAPI build(StylesServiceInfo service) throws IOException {
         OpenAPI api = super.build(service);
 

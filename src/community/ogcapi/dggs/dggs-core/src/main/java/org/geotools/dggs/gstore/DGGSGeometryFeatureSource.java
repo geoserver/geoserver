@@ -140,6 +140,7 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // reader wrapping
     protected FeatureReader<SimpleFeatureType, SimpleFeature> getReaderInternal(Query originalQuery)
             throws IOException {
         SimpleFeatureType readSchema = getReadSchema(query);
@@ -242,7 +243,7 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
                     && ex2 instanceof Literal) {
                 query.setFilter(Filter.INCLUDE); // replaced filter with source iterator
                 Zone zone = store.dggs.getZone(ex2.evaluate(null, String.class));
-                if (zone == null) return new EmptyIterator();
+                if (zone == null) return new EmptyIterator<>();
                 return new SingletonIterator<>(zone);
             }
         }

@@ -22,6 +22,7 @@ public class DGGSAPIBuilder extends OpenAPIBuilder<DGGSInfo> {
     }
 
     @Override
+    @SuppressWarnings("unchecked") // getSchema not generified
     public OpenAPI build(DGGSInfo service) throws IOException {
         OpenAPI api = super.build(service);
 

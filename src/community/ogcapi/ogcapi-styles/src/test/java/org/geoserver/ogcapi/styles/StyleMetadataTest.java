@@ -46,7 +46,6 @@ public class StyleMetadataTest extends StylesTestSupport {
 
     @Before
     public void clearMetadata() {
-        StyleInfo si = getCatalog().getStyleByName("polygon");
         StyleInfo polygon = getCatalog().getStyleByName("polygon");
         StyleMetadataInfo metadata = new StyleMetadataInfo();
         metadata.setTitle(POLYGON_TITLE);
@@ -73,7 +72,7 @@ public class StyleMetadataTest extends StylesTestSupport {
                 getCatalog());
         testData.addVectorLayer(
                 BUILDINGS_LABEL,
-                new HashMap() {
+                new HashMap<SystemTestData.LayerProperty, Object>() {
                     {
                         put(SystemTestData.LayerProperty.STYLE, BUILDINGS_LABEL_ASSOCIATED_STYLE);
                         put(SystemTestData.LayerProperty.NAME, BUILDINGS_LABEL.getLocalPart());

@@ -16,6 +16,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.DispatcherCallback;
 import org.geoserver.ows.Request;
@@ -100,7 +101,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
 
         HTMLResponseBody htmlResponseBody = returnType.getMethodAnnotation(HTMLResponseBody.class);
         MediaType mediaType = getMediaTypeToUse(value, returnType, inputMessage, outputMessage);
-        HttpMessageConverter converter;
+        HttpMessageConverter<T> converter;
         if (htmlResponseBody != null && MediaType.TEXT_HTML.isCompatibleWith(mediaType)) {
             // direct HTML encoding based on annotations
             Class<?> baseClass = htmlResponseBody.baseClass();
@@ -108,7 +109,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
                 baseClass = returnType.getContainingClass();
             }
             converter =
-                    new SimpleHTMLMessageConverter(
+                    new SimpleHTMLMessageConverter<>(
                             value.getClass(),
                             getServiceClass(returnType),
                             baseClass,
@@ -132,9 +133,10 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
                     }
 
                     @Override
+                    @SuppressWarnings("unchecked")
                     public void write(Object value, OutputStream output, Operation operation)
                             throws IOException, ServiceException {
-                        converter.write(value, finalMediaType, outputMessage);
+                        converter.write((T) value, finalMediaType, outputMessage);
                     }
                 };
 
@@ -149,7 +151,7 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         response.write(value, servletResponse.getOutputStream(), dr.getOperation());
     }
 
-    private Class<?> getServiceClass(MethodParameter returnType) {
+    private Class<? extends ServiceInfo> getServiceClass(MethodParameter returnType) {
         APIService apiService =
                 APIDispatcher.getApiServiceAnnotation(returnType.getContainingClass());
         if (apiService != null) {
@@ -358,7 +360,8 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
         }
     }
 
-    protected <T> HttpMessageConverter getMessageConverter(
+    @SuppressWarnings("unchecked")
+    protected <T> HttpMessageConverter<T> getMessageConverter(
             @Nullable T value,
             MethodParameter returnType,
             ServletServerHttpRequest inputMessage,
@@ -389,14 +392,14 @@ public class APIBodyMethodProcessor extends RequestResponseBodyMethodProcessor {
                 if (converter instanceof ResponseMessageConverter
                         && ((ResponseMessageConverter) converter)
                                 .canWrite(value, selectedMediaType)) {
-                    return converter;
+                    return (HttpMessageConverter<T>) converter;
                 }
                 if (converter instanceof GenericHttpMessageConverter
                         && ((GenericHttpMessageConverter) converter)
                                 .canWrite(targetType, valueType, selectedMediaType)) {
-                    return converter;
+                    return (HttpMessageConverter<T>) converter;
                 } else if (converter.canWrite(valueType, selectedMediaType)) {
-                    return converter;
+                    return (HttpMessageConverter<T>) converter;
                 }
             }
         }

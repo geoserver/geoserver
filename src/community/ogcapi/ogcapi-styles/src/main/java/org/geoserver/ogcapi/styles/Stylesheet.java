@@ -1,10 +1,13 @@
+/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.ogcapi.styles;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
@@ -21,7 +24,7 @@ import org.geotools.util.Version;
 
 @JsonInclude(NON_NULL)
 @JsonPropertyOrder({"title", "version", "specification", "native", "tilingScheme", "link"})
-public class Stylesheet extends AbstractDocument implements Serializable {
+public class Stylesheet extends AbstractDocument {
 
     private String title;
     private String version;

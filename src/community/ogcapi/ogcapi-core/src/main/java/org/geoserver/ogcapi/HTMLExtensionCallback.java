@@ -20,7 +20,7 @@ import org.geoserver.ows.Request;
  *
  * @param <T>
  */
-public interface HTMLExtensionCallback<T extends Object> {
+public interface HTMLExtensionCallback {
 
     /**
      * Returns HTML to be embedded in place of the "htmlExtension" call (if multiple callbacks

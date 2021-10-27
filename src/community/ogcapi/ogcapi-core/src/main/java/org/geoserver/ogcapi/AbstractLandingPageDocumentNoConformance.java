@@ -5,7 +5,6 @@
 package org.geoserver.ogcapi;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import java.util.function.BiConsumer;
 import org.springframework.http.MediaType;
 
 /**
@@ -21,41 +20,22 @@ public class AbstractLandingPageDocumentNoConformance extends AbstractDocument {
 
     public AbstractLandingPageDocumentNoConformance(
             String title, String description, String serviceBase) {
-        final APIRequestInfo requestInfo = APIRequestInfo.get();
 
         // self and alternate representations of landing page
-        addLinksFor(
-                serviceBase + "/",
-                AbstractLandingPageDocument.class,
-                "This document as ",
-                "landingPage",
-                new BiConsumer<MediaType, Link>() {
-                    boolean first = true;
-
-                    @Override
-                    public void accept(MediaType mediaType, Link link) {
-                        if ((first
-                                && requestInfo.isFormatRequested(
-                                        mediaType, MediaType.APPLICATION_JSON))) {
-                            link.setRel(Link.REL_SELF);
-                            link.setTitle("This document");
-                            first = false;
-                        }
-                    }
-                },
-                Link.REL_ALTERNATE);
+        addSelfLinks(serviceBase + "/");
         // api
-        addLinksFor(
-                serviceBase + "/api",
-                OpenAPI.class,
-                "API definition for this endpoint as ",
-                "api",
-                (format, link) -> {
-                    if (MediaType.TEXT_HTML.equals(format)) {
-                        link.setRel(Link.REL_SERVICE_DOC);
-                    }
-                },
-                Link.REL_SERVICE_DESC);
+        new LinksBuilder(OpenAPI.class, serviceBase)
+                .segment("/api")
+                .title("API definition for this endpoint as ")
+                .rel(Link.REL_SERVICE_DESC)
+                .classification("api")
+                .updater(
+                        (format, link) -> {
+                            if (MediaType.TEXT_HTML.equals(format)) {
+                                link.setRel(Link.REL_SERVICE_DOC);
+                            }
+                        })
+                .add(this);
         this.title = title;
         this.description = description;
     }

@@ -46,10 +46,10 @@ public class ChangeSetLinkCallback implements DocumentCallback {
                                                     + "/map/{styleId}/{tileMatrixSetId}",
                                             ChangeSet.class,
                                             "Changeset as ",
-                                            null,
-                                            null,
                                             "multitile",
-                                            false);
+                                            false,
+                                            null,
+                                            null);
                     tiles.getLinks().addAll(links);
                 }
             } catch (IOException e) {

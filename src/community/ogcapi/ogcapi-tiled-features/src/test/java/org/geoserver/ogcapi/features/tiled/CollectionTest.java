@@ -33,7 +33,7 @@ public class CollectionTest extends TiledFeaturesTestSupport {
                                 + REL_TILESETS_VECTOR
                                 + "' && @.type=='application/json')].href"),
                 equalTo(
-                        "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/tiles?f=application%2Fjson"));
+                        "http://localhost:8080/geoserver/ogc/features/collections/cite:RoadSegments/tiles?f=application%2Fjson"));
     }
 
     @Test
@@ -41,7 +41,7 @@ public class CollectionTest extends TiledFeaturesTestSupport {
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         Document doc = getAsJSoup("ogc/features/collections/" + roadSegments + "?f=html");
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/tiles?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/ogc/features/collections/cite:RoadSegments/tiles?f=text%2Fhtml",
                 doc.select("#cite__RoadSegments_tiles").attr("href"));
     }
 

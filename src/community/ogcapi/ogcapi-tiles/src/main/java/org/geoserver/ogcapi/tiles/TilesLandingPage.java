@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.tiles;
 
 import org.geoserver.ogcapi.AbstractLandingPageDocument;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.LinksBuilder;
 
 /** Landing page for the tiles service */
 public class TilesLandingPage extends AbstractLandingPageDocument {
@@ -18,21 +19,17 @@ public class TilesLandingPage extends AbstractLandingPageDocument {
         super(title, description, TILES_SERVICE_BASE);
 
         // collections
-        addLinksFor(
-                TILES_SERVICE_BASE + "/collections",
-                TiledCollectionsDocument.class,
-                "Tiled collections metadata as ",
-                "collections",
-                null,
-                Link.REL_DATA_URI);
+        new LinksBuilder(TiledCollectionsDocument.class, TILES_SERVICE_BASE)
+                .segment("collections")
+                .title("Tiled collections metadata as ")
+                .rel(Link.REL_DATA_URI)
+                .add(this);
 
         // tile matrix sets
-        addLinksFor(
-                TILES_SERVICE_BASE + "/tileMatrixSets",
-                TileMatrixSets.class,
-                "Tile matrix set list as ",
-                "tileMatrixSets",
-                null,
-                REL_TILING_SCHEMES);
+        new LinksBuilder(TileMatrixSets.class, TILES_SERVICE_BASE)
+                .segment("tileMatrixSets")
+                .title("Tile matrix set list as ")
+                .rel(REL_TILING_SCHEMES)
+                .add(this);
     }
 }

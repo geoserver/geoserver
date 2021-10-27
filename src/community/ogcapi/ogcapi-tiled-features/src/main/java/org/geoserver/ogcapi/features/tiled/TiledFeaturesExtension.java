@@ -17,6 +17,7 @@ import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.DocumentCallback;
 import org.geoserver.ogcapi.FreemarkerTemplateSupport;
 import org.geoserver.ogcapi.HTMLExtensionCallback;
+import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.ogcapi.OpenAPICallback;
 import org.geoserver.ogcapi.features.CollectionDocument;
 import org.geoserver.ogcapi.features.CollectionsDocument;
@@ -27,7 +28,6 @@ import org.geoserver.ogcapi.tiles.TilesDocument;
 import org.geoserver.ogcapi.tiles.TilesLandingPage;
 import org.geoserver.ogcapi.tiles.TilesService;
 import org.geoserver.ows.Request;
-import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -141,13 +141,10 @@ public class TiledFeaturesExtension
 
     private void extendLandingpage(AbstractDocument landingPage) {
         // tile matrix sets
-        landingPage.addLinksFor(
-                "ogc/features/tileMatrixSets",
-                TileMatrixSets.class,
-                "Tile matrix set list as ",
-                "tileMatrixSets",
-                null,
-                TilesLandingPage.REL_TILING_SCHEMES);
+        new LinksBuilder(TileMatrixSets.class, "ogc/features/tileMatrixSets")
+                .title("Tile matrix set list as ")
+                .rel(TilesLandingPage.REL_TILING_SCHEMES)
+                .add(landingPage);
     }
 
     public void extendConformanceClasses(ConformanceDocument conformance) {
@@ -163,14 +160,12 @@ public class TiledFeaturesExtension
 
     private void extendCollectionDocument(CollectionDocument collection) {
         if (tiledFeatures.isTiledVectorLayer(collection.getId())) {
-            String encodedId = ResponseUtils.urlEncode(collection.getId());
-            collection.addLinksFor(
-                    "ogc/features/collections/" + encodedId + "/tiles",
-                    TilesDocument.class,
-                    "Tiles metadata as ",
-                    "dataTiles",
-                    null,
-                    TiledCollectionDocument.REL_TILESETS_VECTOR);
+            new LinksBuilder(TilesDocument.class, "ogc/features/collections/")
+                    .segment(collection.getId(), true)
+                    .segment("tiles")
+                    .title("Tiles metadata as ")
+                    .rel(TiledCollectionDocument.REL_TILESETS_VECTOR)
+                    .add(collection);
         }
     }
 

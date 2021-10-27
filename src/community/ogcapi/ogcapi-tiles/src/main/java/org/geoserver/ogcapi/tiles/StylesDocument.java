@@ -15,6 +15,7 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ogcapi.AbstractDocument;
+import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.ogcapi.StyleDocument;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geowebcache.layer.TileLayer;
@@ -51,19 +52,17 @@ public class StylesDocument extends AbstractDocument {
 
         // are the map tiles at all?
         if (!tileLayer.getMimeTypes().stream().allMatch(mt -> mt.isVector())) {
-            result.addLinksFor(
-                    "ogc/tiles/collections/"
-                            + ResponseUtils.urlEncode(tileLayerId)
-                            + "/styles/map/tiles",
-                    TilesDocument.class,
-                    "Tilesets list for "
-                            + tileLayerId
-                            + " with style "
-                            + s.getName()
-                            + ", represented as ",
-                    "tilesets",
-                    null,
-                    TiledCollectionDocument.REL_TILESETS_MAP);
+            new LinksBuilder(TilesDocument.class, "ogc/tiles/collections")
+                    .segment(tileLayerId, true)
+                    .segment("styles/map/tiles")
+                    .title(
+                            "Tilesets list for "
+                                    + tileLayerId
+                                    + " with style "
+                                    + s.getName()
+                                    + ", represented as ")
+                    .rel(TiledCollectionDocument.REL_TILESETS_MAP)
+                    .add(result);
         }
 
         return result;

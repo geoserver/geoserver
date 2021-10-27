@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi.styles;
 
 import org.geoserver.ogcapi.AbstractLandingPageDocument;
+import org.geoserver.ogcapi.LinksBuilder;
 
 /** Landing page for the styles service */
 public class StylesLandingPage extends AbstractLandingPageDocument {
@@ -15,12 +16,10 @@ public class StylesLandingPage extends AbstractLandingPageDocument {
         super(title, description, STYLES_SERVICE_BASE);
 
         // collections
-        addLinksFor(
-                STYLES_SERVICE_BASE + "/styles",
-                StylesDocument.class,
-                "Styles Metadata as ",
-                "styles",
-                null,
-                "styles");
+        new LinksBuilder(StylesDocument.class, STYLES_SERVICE_BASE)
+                .segment("/styles")
+                .title("Styles Metadata as ")
+                .rel("styles")
+                .add(this);
     }
 }

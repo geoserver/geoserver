@@ -7,6 +7,7 @@ package org.geoserver.ogcapi.dggs;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ogcapi.AbstractLandingPageDocument;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.LinksBuilder;
 
 public class DGGSLandingPage extends AbstractLandingPageDocument {
 
@@ -17,12 +18,10 @@ public class DGGSLandingPage extends AbstractLandingPageDocument {
                 dggsBase);
 
         // collections
-        addLinksFor(
-                dggsBase + "/collections",
-                CollectionsDocument.class,
-                "Collections Metadata as ",
-                "collections",
-                null,
-                Link.REL_DATA);
+        new LinksBuilder(CollectionsDocument.class, dggsBase)
+                .segment("/collections")
+                .title("Collections Metadata as ")
+                .rel(Link.REL_DATA)
+                .add(this);
     }
 }

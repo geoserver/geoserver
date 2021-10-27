@@ -16,6 +16,7 @@ import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractDocument;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.wms.WMS;
@@ -143,13 +144,16 @@ public class Tileset extends AbstractDocument {
                                                 TILE_REL));
 
                 // tileJSON
-                addLinksFor(
-                        "ogc/tiles/collections/" + id + "/tiles/" + tileMatrixId + "/metadata",
-                        TileJSON.class,
-                        "Tiles metadata as ",
-                        "metadata",
-                        (m, l) -> l.setTemplated(true),
-                        "describedBy");
+                new LinksBuilder(TileJSON.class, "ogc/tiles/collections")
+                        .segment(id, true)
+                        .segment("tiles")
+                        .segment(tileMatrixId, true)
+                        .segment("metadata")
+                        .title("Tiles metadata as ")
+                        .rel("describedBy")
+                        .classification("metadata")
+                        .updater((m, l) -> l.setTemplated(true))
+                        .add(this);
             } else if (dataType == DataType.map) {
                 List<MimeType> imageFormats =
                         tileTypes
@@ -186,16 +190,20 @@ public class Tileset extends AbstractDocument {
                                                 "info"));
 
                 // tileJSON
-                addLinksFor(
-                        "ogc/tiles/collections/" + id + base + tileMatrixId + "/metadata",
-                        TileJSON.class,
-                        "Tiles metadata as ",
-                        "metadata",
-                        (m, l) -> {
-                            l.setTemplated(true);
-                            l.setHref(l.getHref() + "&tileFormat={tileFormat}");
-                        },
-                        "describedBy");
+                new LinksBuilder(TileJSON.class, "ogc/tiles/collections/")
+                        .segment(id, true)
+                        .segment(base)
+                        .segment(tileMatrixId, true)
+                        .segment("metadata")
+                        .title("Tiles metadata as ")
+                        .rel("describedBy")
+                        .classification("metadata")
+                        .updater(
+                                (m, l) -> {
+                                    l.setTemplated(true);
+                                    l.setHref(l.getHref() + "&tileFormat={tileFormat}");
+                                })
+                        .add(this);
             } else {
                 throw new IllegalArgumentException(
                         "Tiles of this type are not yet supported: " + dataType);

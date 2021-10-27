@@ -11,15 +11,21 @@ import java.util.logging.Level;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.config.GeoServer;
+import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractAPIExceptionHandler;
 import org.springframework.stereotype.Component;
 
-/** Handles exception encoding for OGC API - Feautures (not the same as OGC API - Commons) */
+/** Handles exception encoding for OGC API - Features (not the same as OGC API - Commons) */
 @Component
 public class FeaturesExceptionHandler extends AbstractAPIExceptionHandler {
 
     public FeaturesExceptionHandler(GeoServer geoServer) {
         super(geoServer);
+    }
+
+    @Override
+    public boolean canHandle(Throwable t, APIRequestInfo request) {
+        return request.getService().getId().equals("Features");
     }
 
     @Override

@@ -13,7 +13,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.AbstractCollectionDocument;
 import org.geoserver.ogcapi.CollectionExtents;
-import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.platform.ServiceException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -43,15 +43,12 @@ public class CollectionDocument extends AbstractCollectionDocument<PublishedInfo
         addSelfLinks("ogc/maps/collections/" + id);
 
         // queryables
-        addLinksFor(
-                "ogc/maps/collections/"
-                        + ResponseUtils.urlEncode(published.prefixedName())
-                        + "/styles",
-                StylesDocument.class,
-                "Styles as ",
-                "styles",
-                null,
-                "styles");
+        new LinksBuilder(StylesDocument.class, "ogc/maps/collections/")
+                .segment(published.prefixedName(), true)
+                .segment("styles")
+                .title("Styles as ")
+                .rel("styles")
+                .add(this);
     }
 
     private ReferencedEnvelope getExtents(PublishedInfo published) {

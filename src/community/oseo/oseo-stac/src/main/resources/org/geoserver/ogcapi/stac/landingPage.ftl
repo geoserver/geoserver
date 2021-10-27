@@ -54,10 +54,10 @@
       <div class="card h-100">
         <div class="card-body">
           <h2>Collections</h2>
-          <p>The <a id="htmlCollectionsLink" href="${model.getLinkUrl('collections', 'text/html')!}"> collection page</a> provides a list of all the collections available in this service. 
+          <p>The <a id="htmlCollectionsLink" href="${model.getLinkUrl('data', 'text/html')!}"> collection page</a> provides a list of all the collections available in this service. 
           <br/> 
           The collections page is also available as
-          <#list model.getLinksExcept("collections", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
+          <#list model.getLinksExcept("data", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
           </p>
         </div>
       </div>

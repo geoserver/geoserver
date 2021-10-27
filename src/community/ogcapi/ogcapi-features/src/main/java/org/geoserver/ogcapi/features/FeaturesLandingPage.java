@@ -10,6 +10,7 @@ import org.geoserver.ogcapi.AbstractLandingPageDocumentNoConformance;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.FunctionsDocument;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.wfs.WFSInfo;
 
 /** A Features server landing page */
@@ -23,30 +24,24 @@ public class FeaturesLandingPage extends AbstractLandingPageDocumentNoConformanc
                 "ogc/features");
 
         // conformance
-        addLinksFor(
-                "ogc/features" + "/conformance",
-                ConformanceDocument.class,
-                "Conformance declaration as ",
-                "conformance",
-                null,
-                Link.REL_CONFORMANCE);
+        new LinksBuilder(ConformanceDocument.class, featuresBase)
+                .segment("conformance")
+                .title("Conformance declaration as ")
+                .rel(Link.REL_CONFORMANCE)
+                .add(this);
 
         // collections
-        addLinksFor(
-                featuresBase + "/collections",
-                CollectionsDocument.class,
-                "Collections Metadata as ",
-                "collections",
-                null,
-                Link.REL_DATA);
+        new LinksBuilder(CollectionsDocument.class, featuresBase)
+                .segment("collections")
+                .title("Collections Metadata as ")
+                .rel(Link.REL_DATA)
+                .add(this);
 
         // filter capabilities
-        addLinksFor(
-                featuresBase + "/functions",
-                FunctionsDocument.class,
-                "Filter capabilities as ",
-                "filter-capabilities",
-                null,
-                FunctionsDocument.REL);
+        new LinksBuilder(FunctionsDocument.class, featuresBase)
+                .segment("/functions")
+                .title("Filter capabilities as ")
+                .rel(FunctionsDocument.REL)
+                .add(this);
     }
 }

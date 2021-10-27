@@ -28,10 +28,10 @@
       <div class="card h-100">
         <div class="card-body">
           <h2>Tile matrix sets</h2>
-          <p>Tiles are cached on <a id="tileMatrixSetsLink" href="${model.getLinkUrl('tileMatrixSets', 'text/html')!}">tile matrix sets</a>, defining tile layouts and zoom levels.
+          <p>Tiles are cached on <a id="tileMatrixSetsLink" href="${model.getLinkUrl('tiling-schemes', 'text/html')!}">tile matrix sets</a>, defining tile layouts and zoom levels.
           <br/> 
           This page is also available as
-          <#list model.getLinksExcept("tileMatrixSets", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
+          <#list model.getLinksExcept("tiling-schemes", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
           </p> 
         </div>
       </div>
@@ -41,10 +41,10 @@
       <div class="card h-100">
         <div class="card-body">
           <h2>Tiled Collections</h2>
-          <p>The <a id="htmlCollectionsLink" href="${model.getLinkUrl('collections', 'text/html')!}"> collections page</a> provides a list of all the tiled collections available in this service. 
+          <p>The <a id="htmlCollectionsLink" href="${model.getLinkUrl('data', 'text/html')!}"> collections page</a> provides a list of all the tiled collections available in this service. 
           <br/> 
           This tiled collections page is also available as
-          <#list model.getLinksExcept("collections", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
+          <#list model.getLinksExcept("data", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
           </p>
         </div>
       </div>

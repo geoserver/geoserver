@@ -9,6 +9,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.ogcapi.AbstractLandingPageDocumentNoConformance;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.wcs.WCSInfo;
 
 /** A Coverage server landing page */
@@ -22,21 +23,17 @@ public class CoveragesLandingPage extends AbstractLandingPageDocumentNoConforman
                 urlBase);
 
         // conformance
-        addLinksFor(
-                urlBase + "/conformance",
-                ConformanceDocument.class,
-                "Conformance declaration as ",
-                "conformance",
-                null,
-                Link.REL_CONFORMANCE);
+        new LinksBuilder(ConformanceDocument.class, urlBase)
+                .segment("/conformance")
+                .title("Conformance declaration as ")
+                .rel(Link.REL_CONFORMANCE)
+                .add(this);
 
         // collections
-        addLinksFor(
-                urlBase + "/collections",
-                CollectionsDocument.class,
-                "Collections Metadata as ",
-                "collections",
-                null,
-                Link.REL_DATA);
+        new LinksBuilder(CollectionsDocument.class, urlBase)
+                .segment("/collections")
+                .title("Collections Metadata as ")
+                .rel(Link.REL_DATA)
+                .add(this);
     }
 }

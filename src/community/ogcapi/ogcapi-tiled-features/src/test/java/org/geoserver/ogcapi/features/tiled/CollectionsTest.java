@@ -20,7 +20,7 @@ public class CollectionsTest extends TiledFeaturesTestSupport {
         DocumentContext json = getAsJSONPath("ogc/features/collections", 200);
 
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/tiles?f=application%2Fjson",
+                "http://localhost:8080/geoserver/ogc/features/collections/cite:RoadSegments/tiles?f=application%2Fjson",
                 readSingle(
                         json,
                         "$.collections[?(@.id == 'cite:RoadSegments')].links[?(@.rel=='"
@@ -32,10 +32,10 @@ public class CollectionsTest extends TiledFeaturesTestSupport {
     public void testCollectionsHtml() throws Exception {
         Document doc = getAsJSoup("ogc/features/collections/?f=html");
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/tiles?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/ogc/features/collections/cite:RoadSegments/tiles?f=text%2Fhtml",
                 doc.select("#cite__RoadSegments_tiles").attr("href"));
         assertThat(
-                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/tiles?f=text%2Fhtml",
+                "http://localhost:8080/geoserver/ogc/features/collections/cite:RoadSegments/tiles?f=text%2Fhtml",
                 doc.select("#cite__BasicPolygons_tiles"), empty());
     }
 }

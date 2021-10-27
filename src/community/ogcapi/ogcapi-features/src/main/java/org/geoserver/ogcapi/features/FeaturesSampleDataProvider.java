@@ -35,6 +35,8 @@ public class FeaturesSampleDataProvider implements SampleDataProvider {
                             FeaturesResponse.class,
                             resourceId + " items as ",
                             "data",
+                            false,
+                            "data",
                             (media, link) -> {
                                 String href =
                                         link.getHref()
@@ -42,9 +44,7 @@ public class FeaturesSampleDataProvider implements SampleDataProvider {
                                                 + service.getService()
                                                         .getMaxNumberOfFeaturesForPreview();
                                 link.setHref(href);
-                            },
-                            "data",
-                            false);
+                            });
         }
         return Collections.emptyList();
     }

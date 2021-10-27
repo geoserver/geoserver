@@ -82,7 +82,7 @@ public class CollectionTest extends FeaturesTestSupport {
                                 + Queryables.REL
                                 + "' && @.type=='application/schema+json')].href"),
                 equalTo(
-                        "http://localhost:8080/geoserver/ogc/features/collections/cite%3ARoadSegments/queryables?f=application%2Fschema%2Bjson"));
+                        "http://localhost:8080/geoserver/ogc/features/collections/cite:RoadSegments/queryables?f=application%2Fschema%2Bjson"));
 
         // check the CRS list, this feature type shares the top level list
         List<String> crs = json.read("crs");

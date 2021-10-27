@@ -15,6 +15,7 @@ import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractLandingPageDocumentNoConformance;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.ows.URLMangler;
@@ -46,22 +47,18 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
         this.conformsTo = conformsTo;
 
         // conformance
-        addLinksFor(
-                basePath + "/conformance",
-                ConformanceDocument.class,
-                "Conformance declaration as ",
-                "conformance",
-                null,
-                Link.REL_CONFORMANCE);
+        new LinksBuilder(ConformanceDocument.class, basePath)
+                .segment("conformance")
+                .title("Conformance declaration as ")
+                .rel(Link.REL_CONFORMANCE)
+                .add(this);
 
         // collections
-        addLinksFor(
-                basePath + "/collections",
-                CollectionsResponse.class,
-                "Collections Metadata as ",
-                "collections",
-                null,
-                Link.REL_DATA);
+        new LinksBuilder(CollectionsResponse.class, basePath)
+                .segment("collections")
+                .title("Collections Metadata as ")
+                .rel(Link.REL_DATA)
+                .add(this);
 
         // link to each collection as a child
         for (String collectionId : collectionIds) {
@@ -76,28 +73,22 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
         }
 
         // search, GET
-        links.addAll(
-                APIRequestInfo.get()
-                        .getLinksFor(
-                                basePath + "/search",
-                                SearchResponse.class,
-                                "Items as ",
-                                "searchGet",
-                                (t, l) -> l.setMethod(HttpMethod.GET),
-                                REL_SEARCH,
-                                true));
+        new LinksBuilder(SearchResponse.class, basePath)
+                .segment("search")
+                .title("Items as ")
+                .rel(REL_SEARCH)
+                .classification("searchGet")
+                .updater((t1, l2) -> l2.setMethod(HttpMethod.GET))
+                .add(this);
 
         // search, POST
-        links.addAll(
-                APIRequestInfo.get()
-                        .getLinksFor(
-                                basePath + "/search",
-                                SearchResponse.class,
-                                "Items as ",
-                                "searchPost",
-                                (t, l) -> l.setMethod(HttpMethod.POST),
-                                REL_SEARCH,
-                                true));
+        new LinksBuilder(SearchResponse.class, basePath)
+                .segment("search")
+                .title("Items as ")
+                .rel(REL_SEARCH)
+                .classification("searchPost")
+                .updater((t, l1) -> l1.setMethod(HttpMethod.POST))
+                .add(this);
 
         // queryables
         links.addAll(
@@ -106,10 +97,10 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
                                 basePath + "/queryables",
                                 Queryables.class,
                                 "Queryables as ",
-                                "queryables",
-                                null,
                                 Queryables.REL,
-                                true)
+                                true,
+                                "queryables",
+                                null)
                         .stream()
                         .filter(
                                 l ->

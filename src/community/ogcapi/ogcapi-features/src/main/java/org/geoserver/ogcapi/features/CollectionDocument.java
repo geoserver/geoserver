@@ -22,6 +22,7 @@ import org.geoserver.ogcapi.APIRequestInfo;
 import org.geoserver.ogcapi.AbstractCollectionDocument;
 import org.geoserver.ogcapi.CollectionExtents;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.TimeExtentCalculator;
 import org.geoserver.ows.URLMangler;
@@ -96,15 +97,12 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         addLink(describedBy);
 
         // queryables
-        addLinksFor(
-                "ogc/features/collections/"
-                        + ResponseUtils.urlEncode(featureType.prefixedName())
-                        + "/queryables",
-                Queryables.class,
-                "Queryable attributes as ",
-                "queryables",
-                null,
-                Queryables.REL);
+        new LinksBuilder(Queryables.class, "ogc/features/collections")
+                .segment(featureType.prefixedName(), true)
+                .segment("queryables")
+                .title("Queryable attributes as ")
+                .rel(Queryables.REL)
+                .add(this);
 
         // map preview
         if (isWMSAvailable(geoServer)) {

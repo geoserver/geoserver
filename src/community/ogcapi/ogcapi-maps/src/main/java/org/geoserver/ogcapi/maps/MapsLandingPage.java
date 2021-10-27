@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.ogcapi.AbstractLandingPageDocument;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.wms.WMSInfo;
 
 /** A Maps server landing page */
@@ -21,12 +22,10 @@ public class MapsLandingPage extends AbstractLandingPageDocument {
                 "ogc/maps");
 
         // collections
-        addLinksFor(
-                base + "/collections",
-                CollectionsDocument.class,
-                "Collections Metadata as ",
-                "collections",
-                null,
-                Link.REL_DATA_URI);
+        new LinksBuilder(CollectionsDocument.class, base)
+                .segment("/collections")
+                .title("Collections Metadata as ")
+                .rel(Link.REL_DATA_URI)
+                .add(this);
     }
 }

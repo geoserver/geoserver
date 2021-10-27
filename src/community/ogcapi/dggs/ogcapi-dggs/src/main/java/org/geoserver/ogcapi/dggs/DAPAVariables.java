@@ -13,6 +13,7 @@ import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ogcapi.AbstractDocument;
+import org.geoserver.ogcapi.LinksBuilder;
 import org.geotools.dggs.gstore.DGGSStore;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
@@ -37,13 +38,11 @@ public class DAPAVariables extends AbstractDocument {
                         .map(ad -> new DAPAVariable(ad))
                         .collect(Collectors.toList());
         addSelfLinks("ogc/dggs/collections/" + collectionId + "/dapa/variables");
-        addLinksFor(
-                "ogc/dggs/collections/" + collectionId,
-                CollectionDocument.class,
-                "foobar",
-                "collection",
-                null,
-                "collection");
+        new LinksBuilder(CollectionDocument.class, "ogc/dggs/collections/")
+                .segment(collectionId, true)
+                .title("foobar")
+                .rel("collection")
+                .add(this);
     }
 
     public Set<String> getExcludedAttributes(FeatureTypeInfo info) {

@@ -18,10 +18,10 @@
        </p>
        
        <h2>Image Collections</h2>
-       <p>The <a id="htmlCollectionsLink" href="${model.getLinkUrl('collections', 'text/html')!}"> collections page</a> provides a list of all the image collections available in this service. 
+       <p>The <a id="htmlCollectionsLink" href="${model.getLinkUrl('data', 'text/html')!}"> collections page</a> provides a list of all the image collections available in this service. 
        <br/> 
        This image collections page is also available as
-       <#list model.getLinksExcept("collections", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
+       <#list model.getLinksExcept("data", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
        </p>
 
        <#include "landingpage-conformance.ftl">

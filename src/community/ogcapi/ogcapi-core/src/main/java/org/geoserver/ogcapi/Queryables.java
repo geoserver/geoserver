@@ -7,7 +7,10 @@ package org.geoserver.ogcapi;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import io.swagger.v3.oas.models.media.Schema;
+import java.util.List;
 
 /*
  * A Queryables document is a schema, with a couple of additional properties
@@ -22,6 +25,8 @@ public class Queryables extends Schema<Object> {
     private String id;
 
     private String collectionId;
+
+    private AbstractDocument linksHolder = new AbstractDocument();
 
     public Queryables(String id) {
         this.id = id;
@@ -44,5 +49,32 @@ public class Queryables extends Schema<Object> {
 
     public void setCollectionId(String collectionId) {
         this.collectionId = collectionId;
+    }
+
+    public void addLink(Link link) {
+        linksHolder.addLink(link);
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JacksonXmlElementWrapper(useWrapping = false)
+    @JacksonXmlProperty(namespace = Link.ATOM_NS, localName = "link")
+    public List<Link> getLinks() {
+        return linksHolder.getLinks();
+    }
+
+    public String getLinkUrl(String classification, String type) {
+        return linksHolder.getLinkUrl(classification, type);
+    }
+
+    public List<Link> getLinksFor(String classification) {
+        return linksHolder.getLinksFor(classification);
+    }
+
+    public List<Link> getLinksExcept(String classification, String excludedType) {
+        return linksHolder.getLinksExcept(classification, excludedType);
+    }
+
+    public void addSelfLinks(String path) {
+        linksHolder.addSelfLinks(path);
     }
 }

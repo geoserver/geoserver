@@ -45,7 +45,19 @@ p {
 }
 header {
   border-bottom: 2px solid var(--bs-green);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 8px;
+  flex-wrap: wrap;
 }
+
+header #fetch {
+  display: flex;
+  white-space: nowrap;
+  align-items: center;
+}
+
 header a {
   height: 67px;
   width: 220px;

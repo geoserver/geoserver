@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import java.util.ArrayList;
 import java.util.List;
+import org.geoserver.ows.util.ResponseUtils;
 
 /** Represents the conformance response, responses will encode in the desired formats */
 public class ConformanceDocument extends AbstractDocument {
@@ -19,6 +20,10 @@ public class ConformanceDocument extends AbstractDocument {
         this.apiName = apiName;
         // keep it editable, regardless of how the source has been provided
         this.conformsTo = new ArrayList<>(conformsTo);
+
+        addSelfLinks(
+                ResponseUtils.appendPath(
+                        APIRequestInfo.get().getServiceLandingPage(), "conformance"));
     }
 
     /**

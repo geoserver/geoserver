@@ -23,7 +23,7 @@ public class ConformanceTest extends CoveragesTestSupport {
     }
 
     private void checkConformance(DocumentContext json) {
-        assertEquals(1, (int) json.read("$.length()", Integer.class));
+        assertEquals(2, (int) json.read("$.length()", Integer.class));
         assertThat(json.read("$.conformsTo"), containsInAnyOrder(getExpectedConformanceClasses()));
     }
 

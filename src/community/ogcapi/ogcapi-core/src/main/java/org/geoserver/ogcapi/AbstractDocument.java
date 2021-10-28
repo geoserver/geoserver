@@ -47,6 +47,12 @@ public class AbstractDocument {
                 .orElse(null);
     }
 
+    public List<Link> getLinksFor(String classification) {
+        return links.stream()
+                .filter(l -> Objects.equals(classification, l.getClassification()))
+                .collect(Collectors.toList());
+    }
+
     /** Returns all links except the ones matching both classification and type provided */
     public List<Link> getLinksExcept(String classification, String excludedType) {
         return links.stream()
@@ -80,8 +86,7 @@ public class AbstractDocument {
                 .title("This document as ")
                 .updater(
                         (mt, l) -> {
-                            if (requestInfo.isFormatRequested(
-                                    MediaType.parseMediaType(l.getType()), defaultFormat)) {
+                            if (requestInfo.isFormatRequested(mt, defaultFormat)) {
                                 l.setRel(Link.REL_SELF);
                                 l.setClassification(Link.REL_SELF);
                                 l.setTitle("This document");

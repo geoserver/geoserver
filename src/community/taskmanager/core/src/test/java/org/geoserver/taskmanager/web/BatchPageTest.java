@@ -240,13 +240,13 @@ public class BatchPageTest extends AbstractWicketTaskManagerTest {
                 ((CheckBox)
                         tester.getComponentFromLastRenderedPage(
                                 "batchForm:tasksPanel:listContainer:items:7:selectItemContainer:selectItem"));
-        tester.getRequest().setParameter(selector.getInputName(), "true");
+        tester.getRequest().getPostParameters().addParameterValue(selector.getInputName(), "true");
         tester.executeAjaxEvent(selector, "click");
         selector =
                 ((CheckBox)
                         tester.getComponentFromLastRenderedPage(
                                 "batchForm:tasksPanel:listContainer:items:9:selectItemContainer:selectItem"));
-        tester.getRequest().setParameter(selector.getInputName(), "true");
+        tester.getRequest().getPostParameters().addParameterValue(selector.getInputName(), "true");
         tester.executeAjaxEvent(selector, "click");
         tester.clickLink("batchForm:removeSelected");
         tester.executeAjaxEvent("dialog:dialog:content:form:submit", "click");

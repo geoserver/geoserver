@@ -6,22 +6,23 @@ package org.geoserver.taskmanager.tasks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.collect.Sets;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
-import it.geosolutions.geoserver.rest.encoder.GSCachedLayerEncoder;
-import java.net.MalformedURLException;
+import it.geosolutions.geoserver.rest.decoder.RESTDataRules;
+import it.geosolutions.geoserver.rest.manager.GeoServerRESTSecurityManager.RuleType;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collections;
-import org.geoserver.gwc.GWC;
-import org.geoserver.gwc.config.GWCConfig;
-import org.geoserver.gwc.layer.GeoServerTileLayer;
+import org.geoserver.security.AccessMode;
+import org.geoserver.security.impl.DataAccessRule;
+import org.geoserver.security.impl.DataAccessRuleDAO;
+import org.geoserver.security.impl.GeoServerRole;
 import org.geoserver.taskmanager.AbstractTaskManagerTest;
 import org.geoserver.taskmanager.data.Batch;
 import org.geoserver.taskmanager.data.Configuration;
-import org.geoserver.taskmanager.data.Run;
 import org.geoserver.taskmanager.data.Task;
 import org.geoserver.taskmanager.data.TaskManagerDao;
 import org.geoserver.taskmanager.data.TaskManagerFactory;
@@ -40,8 +41,10 @@ import org.quartz.Trigger;
 import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-public class ClearCachedLayerTaskTest extends AbstractTaskManagerTest {
+public class LayerSecuritySyncTaskTest extends AbstractTaskManagerTest {
 
     private static final String ATT_LAYER = "layer";
     private static final String ATT_EXT_GS = "geoserver";
@@ -61,22 +64,15 @@ public class ClearCachedLayerTaskTest extends AbstractTaskManagerTest {
 
     @Autowired private Scheduler scheduler;
 
+    @Autowired protected DataAccessRuleDAO dataAccessDao;
+
     private Configuration config;
 
     private Batch batch;
 
-    private Batch batchUpdate;
-
-    private Batch batchClear;
-
     @Override
     public boolean setupDataDirectory() throws Exception {
-        GWCConfig config = GWC.get().getConfig();
-        config.setCacheLayersByDefault(false);
-        GWC.get().saveConfig(config);
-
         DATA_DIRECTORY.addWcs11Coverages();
-
         return true;
     }
 
@@ -101,48 +97,24 @@ public class ClearCachedLayerTaskTest extends AbstractTaskManagerTest {
 
         Task task2 = fac.createTask();
         task2.setName("task2");
-        task2.setType(ConfigureCachedLayerTaskTypeImpl.NAME);
+        task2.setType(LayerSecuritySyncTaskTypeImpl.NAME);
         dataUtil.setTaskParameterToAttribute(
                 task2, ConfigureCachedLayerTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
         dataUtil.setTaskParameterToAttribute(
                 task2, ConfigureCachedLayerTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
         dataUtil.addTaskToConfiguration(config, task2);
 
-        Task task3 = fac.createTask();
-        task3.setName("task3");
-        task3.setType(ClearCachedLayerTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task3, ClearCachedLayerTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
-        dataUtil.setTaskParameterToAttribute(
-                task3, ClearCachedLayerTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
-        dataUtil.addTaskToConfiguration(config, task3);
-
         config = dao.save(config);
         task1 = config.getTasks().get("task1");
         task2 = config.getTasks().get("task2");
-        task3 = config.getTasks().get("task3");
 
         batch = fac.createBatch();
 
         batch.setName("my_batch");
         dataUtil.addBatchElement(batch, task1);
         dataUtil.addBatchElement(batch, task2);
+
         batch = bjService.saveAndSchedule(batch);
-
-        batchUpdate = fac.createBatch();
-        batchUpdate.setName("batchUpdate");
-        dataUtil.addBatchElement(batchUpdate, task2);
-        batchUpdate = bjService.saveAndSchedule(batchUpdate);
-
-        batchClear = fac.createBatch();
-        batchClear.setName("batchClear");
-        dataUtil.addBatchElement(batchClear, task3);
-        batchClear = bjService.saveAndSchedule(batchClear);
-
-        config = dao.init(config);
-        task1 = config.getTasks().get("task1");
-        task2 = config.getTasks().get("task2");
-        task3 = config.getTasks().get("task3");
     }
 
     @After
@@ -150,28 +122,28 @@ public class ClearCachedLayerTaskTest extends AbstractTaskManagerTest {
         if (batch != null) {
             dao.delete(batch);
         }
-        if (batchUpdate != null) {
-            dao.delete(batchUpdate);
-        }
-        if (batchClear != null) {
-            dao.delete(batchClear);
-        }
         if (config != null) {
             dao.delete(config);
         }
     }
 
     @Test
-    public void testConfigureClearAndDelete()
-            throws SchedulerException, SQLException, MalformedURLException {
-        // configure caching
-        GWC gwc = GWC.get();
-        final GeoServerTileLayer tileLayer =
-                new GeoServerTileLayer(
-                        gwc.getLayerInfoByName("DEM"), gwc.getConfig(), gwc.getGridSetBroker());
-        tileLayer.getInfo().setEnabled(true);
-        tileLayer.getInfo().setInMemoryCached(false);
-        gwc.add(tileLayer);
+    public void testSyncAndCleanup() throws SchedulerException, SQLException, IOException {
+        // run with admin rights
+        SecurityContextHolder.getContext()
+                .setAuthentication(
+                        new UsernamePasswordAuthenticationToken(
+                                "admin",
+                                null,
+                                Collections.singletonList(GeoServerRole.ADMIN_ROLE)));
+
+        // configure security
+        dataAccessDao.addRule(
+                new DataAccessRule("wcs", "DEM", AccessMode.READ, Collections.emptySet()));
+        dataAccessDao.addRule(
+                new DataAccessRule(
+                        "wcs", "DEM", AccessMode.WRITE, Sets.newHashSet("ROLE_1", "ROLE_2")));
+        dataAccessDao.storeRules();
 
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, "DEM");
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
@@ -189,36 +161,10 @@ public class ClearCachedLayerTaskTest extends AbstractTaskManagerTest {
         assertTrue(restManager.getReader().existsCoverage("wcs", "DEM", "DEM"));
         assertTrue(restManager.getReader().existsLayer("wcs", "DEM", true));
 
-        GSCachedLayerEncoder enc = restManager.getGeoWebCacheRest().getLayer("wcs:DEM");
-        assertNotNull(enc);
-
-        // clear caching configuration
-        trigger =
-                TriggerBuilder.newTrigger()
-                        .forJob(batchClear.getId().toString())
-                        .startNow()
-                        .build();
-        scheduler.scheduleJob(trigger);
-
-        while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
-
-        // the only way to really verify is that we didn't get any errors back
-        batchClear = dao.initHistory(batchClear);
-        assertEquals(Run.Status.COMMITTED, batchClear.getBatchRuns().get(0).getStatus());
-
-        // delete caching configuration
-        gwc.removeTileLayers(Collections.singletonList("wcs:DEM"));
-
-        trigger =
-                TriggerBuilder.newTrigger()
-                        .forJob(batchUpdate.getId().toString())
-                        .startNow()
-                        .build();
-        scheduler.scheduleJob(trigger);
-
-        while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
-
-        assertNull(null, restManager.getGeoWebCacheRest().getLayer("wcs:DEM"));
+        RESTDataRules dataRules = restManager.getSecurityManager().getDataRules();
+        assertTrue(dataRules.getRule("wcs", "DEM", RuleType.R).isEmpty());
+        assertEquals(
+                Sets.newHashSet("ROLE_1", "ROLE_2"), dataRules.getRule("wcs", "DEM", RuleType.W));
 
         // clean-up layer
         assertTrue(taskUtil.cleanup(config));
@@ -226,5 +172,8 @@ public class ClearCachedLayerTaskTest extends AbstractTaskManagerTest {
         assertFalse(restManager.getReader().existsCoveragestore("wcs", "DEM"));
         assertFalse(restManager.getReader().existsCoverage("wcs", "DEM", "DEM"));
         assertFalse(restManager.getReader().existsLayer("wcs", "DEM", true));
+        dataRules = restManager.getSecurityManager().getDataRules();
+        assertNull(dataRules.getRule("wcs", "DEM", RuleType.R));
+        assertNull(dataRules.getRule("wcs", "DEM", RuleType.W));
     }
 }

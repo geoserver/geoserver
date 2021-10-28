@@ -47,10 +47,8 @@ configuration.
 TaskManager uses `Quartz Scheduler <http://www.quartz-scheduler.org>`__.
 If you are running Task Manager in a clustered environment, you must
 configure Quartz to use a database as well as Task Manager. See the
-commented block in the Spring configuration and the `Quartz
-documentation <http://www.quartz-scheduler.org/documentation/quartz-2.x/configuration/ConfigJDBCJobStoreClustering.html>`__
-for further instructions. The database used by Quartz may be the same as
-the Task Manager configuration database.
+commented block in the Spring configuration and the `Quartz documentation <http://www.quartz-scheduler.org/documentation/quartz-2.3.0/configuration/ConfigJDBCJobStoreClustering.html>`__
+for further instructions. SQL Scripts to create the required database structures for Quartz can be found `here <https://github.com/quartz-scheduler/quartz/tree/quartz-2.3.x/quartz-core/src/main/resources/org/quartz/impl/jdbcjobstore>`__. Task Manager can create its database automatically, or alternatively :download:`this script <taskmanager.sql>` can be used (note: the script was made for postgresql. For any other DBMS, the script might need to be modified, or alternatively, the database could be automatically created in a development environment and then copied for a production environment). It is fine to use a single database both for Quartz and Task Manager.
 
 Furthermore, a property should be added to the
 ``taskmanager.properties`` file each of the nodes except for one:
@@ -472,6 +470,9 @@ Task Types
    * Multiple mapping files may be provided for a single layer (when the layer mapping uses included types), in the
      form of a ZIP file. The main mapping file and the ZIP file must have the same name before the extension.
 
+- ``LayerSecuritySync`` this task will synchronise all :ref:`data access security rules <security_layer>` associated with a layer to the external geoserver. Warning: the task assumes that the same roles exist on both geoservers. Does not support commit/rollback.
+
+- ``WorkspaceSecuritySync`` this task will synchronise all :ref:`data access security rules <security_layer>` associated with a workspace to the external geoserver. Warning: the task assumes that the same roles exist on both geoservers. Does not support commit/rollback.
 
 -  ``TimeStamp`` update a time stamp in a layer's metadata that represents
    the last time a layer's data has been updated. Since the data timestamp
@@ -485,6 +486,7 @@ Task Types
 -  ``MetadataTemplateSync`` this task requires the :ref:`Metadata Community Module <community_metadata>` 
    and the ``taskmanager-metadata`` submodule. It will synchronize all metadata linked to a specific metadata template. 
    Useful when you change the template.
+
 
 Bulk Operations
 ---------------

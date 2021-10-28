@@ -187,11 +187,11 @@ public class ExtTypes {
                             layers.add(resource.getName());
                         }
                     } else {
+                        NamespaceInfo defaultNamespace =
+                                geoServer.getCatalog().getDefaultNamespace();
                         for (LayerInfo layer : geoServer.getCatalog().getLayers()) {
                             layers.add(layer.prefixedName());
-                            if (layer.getResource()
-                                    .getNamespace()
-                                    .equals(geoServer.getCatalog().getDefaultNamespace())) {
+                            if (layer.getResource().getNamespace().equals(defaultNamespace)) {
                                 layers.add(layer.getName());
                             }
                         }

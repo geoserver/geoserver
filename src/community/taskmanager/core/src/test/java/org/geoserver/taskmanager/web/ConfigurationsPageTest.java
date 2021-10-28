@@ -206,7 +206,7 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
                 ((CheckBox)
                         tester.getComponentFromLastRenderedPage(
                                 "configurationsPanel:listContainer:items:3:selectItemContainer:selectItem"));
-        tester.getRequest().setParameter(selector.getInputName(), "true");
+        tester.getRequest().getPostParameters().addParameterValue(selector.getInputName(), "true");
         tester.executeAjaxEvent(selector, "click");
 
         assertEquals(dummy1.getId(), table.getSelection().get(0).getId());
@@ -248,7 +248,7 @@ public class ConfigurationsPageTest extends AbstractWicketTaskManagerTest {
                 ((CheckBox)
                         tester.getComponentFromLastRenderedPage(
                                 "configurationsPanel:listContainer:items:1:selectItemContainer:selectItem"));
-        tester.getRequest().setParameter(selector.getInputName(), "true");
+        tester.getRequest().getPostParameters().addParameterValue(selector.getInputName(), "true");
         tester.executeAjaxEvent(selector, "click");
 
         // click copy

@@ -19,7 +19,7 @@ import org.geotools.data.shapefile.ShapefileDirectoryFactory;
 import org.junit.Test;
 
 /**
- * Test for the shapefile directory ppanel
+ * Test for the shapefile directory panel
  *
  * @author Andrea Aime
  */
@@ -45,7 +45,6 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
     @Test
     public void testChangeWorkspaceNamespace() throws Exception {
         startPage();
-
         WorkspaceInfo defaultWs = getCatalog().getDefaultWorkspace();
 
         tester.assertModelValue(
@@ -66,6 +65,11 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
                 "parametersPanel:url:fileInput:border:border_body:paramValue",
                 "file://" + new File("./target").getCanonicalPath());
         ft.select("workspacePanel:border:border_body:paramValue", 2);
+
+        // By default, skipScan is false. Let's set it to true
+        ft.setValue("parametersPanel:skipScan:paramValue", true);
+        tester.executeAjaxEvent("dataStoreForm:parametersPanel:skipScan:paramValue", "change");
+
         ft.submit();
         tester.executeAjaxEvent("dataStoreForm:save", "click");
 
@@ -79,5 +83,6 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
         assertEquals(
                 getCatalog().getNamespaceByPrefix(ws.getName()).getURI(),
                 store.getConnectionParameters().get("namespace"));
+        assertEquals(true, store.getConnectionParameters().get("skipScan"));
     }
 }

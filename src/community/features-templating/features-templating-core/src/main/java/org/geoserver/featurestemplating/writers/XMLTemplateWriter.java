@@ -123,7 +123,14 @@ public abstract class XMLTemplateWriter extends TemplateOutputWriter {
             evaluateChildren(encodingHints);
         }
         try {
-            if (elementValue instanceof String
+            if (isNull(elementValue)) {
+                String value = "";
+                if (encodeAsAttribute) writeAsAttribute(key, value, encodingHints);
+                else {
+                    streamWriter.writeCharacters(value);
+                    canClose = true;
+                }
+            } else if (elementValue instanceof String
                     || elementValue instanceof Number
                     || elementValue instanceof Boolean
                     || elementValue instanceof URI

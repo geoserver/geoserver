@@ -258,7 +258,6 @@ public class JSONTemplateReader implements TemplateReader {
                     new TemplateCQLManager(node.get(SEPARATOR).asText(), null);
             builder.addVendorOption(VendorOptions.SEPARATOR, cqlManager.getExpressionFromString());
         }
-
         if (node.has(CONTEXTKEY)) {
             builder.addVendorOption(CONTEXTKEY, node.get(CONTEXTKEY));
         }

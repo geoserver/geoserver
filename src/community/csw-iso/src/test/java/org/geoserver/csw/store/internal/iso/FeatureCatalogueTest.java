@@ -84,6 +84,19 @@ public class FeatureCatalogueTest extends MDTestSupport {
     }
 
     @Test
+    public void testGetRecordsSummary() throws Exception {
+        String request =
+                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
+                        + "&resultType=results&elementSetName=summary&outputSchema=http://www.isotc211.org/2005/gmd"
+                        + "&maxRecords=100";
+
+        Document d = getAsDOM(request);
+        // print(d);
+
+        assertXpathEvaluatesTo(uuid, "//gfc:FC_FeatureCatalogue/@uuid", d);
+    }
+
+    @Test
     public void testGetRecordsPaged() throws Exception {
         String request =
                 "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"

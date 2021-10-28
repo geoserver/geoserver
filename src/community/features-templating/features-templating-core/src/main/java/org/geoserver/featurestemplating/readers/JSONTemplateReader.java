@@ -7,6 +7,7 @@ package org.geoserver.featurestemplating.readers;
 import static org.geoserver.featurestemplating.builders.VendorOptions.FLAT_OUTPUT;
 import static org.geoserver.featurestemplating.builders.VendorOptions.JSON_LD_STRING_ENCODE;
 import static org.geoserver.featurestemplating.builders.VendorOptions.SEPARATOR;
+import static org.geoserver.featurestemplating.readers.JSONMerger.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Iterator;
@@ -71,7 +72,7 @@ public class JSONTemplateReader implements TemplateReader {
         return root;
     }
 
-    private void getBuilderFromJson(
+    public void getBuilderFromJson(
             String nodeName,
             JsonNode node,
             TemplateBuilder currentBuilder,
@@ -133,15 +134,31 @@ public class JSONTemplateReader implements TemplateReader {
                     currentBuilder.addChild(maker.build());
                 } else {
                     if (valueNode.isObject()) {
-                        maker.name(entryName);
-                        // if the parent of the template builder being created
-                        // is a root one, in case of simplified template support,
-                        // or hasNotOwnOutput is flagged the CompositeBuilder being produced
-                        // maps the topLevelFeature source.
-                        maker.topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder));
-                        TemplateBuilder compositeBuilder = maker.build();
-                        currentBuilder.addChild(compositeBuilder);
-                        getBuilderFromJsonObject(valueNode, compositeBuilder, maker);
+                        if (entryName.startsWith(DYNAMIC_MERGE_KEY)) {
+                            if (valueNode.fields().hasNext()) {
+                                Map.Entry<String, JsonNode> fieldNode = valueNode.fields().next();
+                                String key = fieldNode.getKey();
+                                JsonNode innerNode = fieldNode.getValue();
+                                JsonNode overlay = innerNode.get(DYNAMIC_MERGE_OVERLAY);
+                                JsonNode baseMergeNode = innerNode.get(DYNAMIC_MERGE_BASE);
+
+                                currentBuilder.addChild(
+                                        maker.overlayMergeNode(overlay)
+                                                .name(key)
+                                                .baseMergeNode(baseMergeNode)
+                                                .build());
+                            }
+                        } else {
+                            maker.name(entryName);
+                            // if the parent of the template builder being created
+                            // is a root one, in case of simplified template support,
+                            // or hasNotOwnOutput is flagged the CompositeBuilder being produced
+                            // maps the topLevelFeature source.
+                            maker.topLevelFeature(isRootOrHasNotOwnOutput(currentBuilder));
+                            TemplateBuilder compositeBuilder = maker.build();
+                            currentBuilder.addChild(compositeBuilder);
+                            getBuilderFromJsonObject(valueNode, compositeBuilder, maker);
+                        }
                     } else if (valueNode.isArray()) {
                         getBuilderFromJsonArray(entryName, valueNode, currentBuilder, maker);
                     } else {
@@ -280,6 +297,7 @@ public class JSONTemplateReader implements TemplateReader {
     }
 
     private boolean isRootOrHasNotOwnOutput(TemplateBuilder parent) {
-        return parent instanceof RootBuilder || !((SourceBuilder) parent).hasOwnOutput();
+        return parent instanceof RootBuilder
+                || (parent instanceof SourceBuilder && !((SourceBuilder) parent).hasOwnOutput());
     }
 }

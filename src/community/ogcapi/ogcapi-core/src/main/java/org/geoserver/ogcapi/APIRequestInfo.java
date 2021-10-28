@@ -159,7 +159,7 @@ public class APIRequestInfo {
 
         return requestedMediaTypes
                 .stream()
-                .filter(mt -> !mt.equals(MediaType.ALL))
+                .filter(mt -> !mt.equalsTypeAndSubtype(MediaType.ALL))
                 .anyMatch(curr -> mediaType.isCompatibleWith(curr));
     }
 

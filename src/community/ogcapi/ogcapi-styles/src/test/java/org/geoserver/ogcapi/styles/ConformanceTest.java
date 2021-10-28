@@ -18,7 +18,7 @@ public class ConformanceTest extends StylesTestSupport {
     }
 
     private void checkConformance(DocumentContext json) {
-        assertEquals(1, (int) json.read("$.length()", Integer.class));
+        assertEquals(2, (int) json.read("$.length()", Integer.class));
         assertEquals(6, (int) json.read("$.conformsTo.length()", Integer.class));
         assertEquals(StylesService.CORE, json.read("$.conformsTo[0]", String.class));
         assertEquals(StylesService.HTML, json.read("$.conformsTo[1]", String.class));

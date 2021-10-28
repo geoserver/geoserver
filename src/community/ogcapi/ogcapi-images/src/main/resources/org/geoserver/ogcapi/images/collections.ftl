@@ -1,8 +1,7 @@
 <#global pagecrumbs="<li class='breadcrumb-item'><a href='"+serviceLink("")+"'>Home</a></li><li class='breadcrumb-item active'>Collections</li>">
 <#include "common-header.ftl">
        <h2>GeoServer Image Mosaics Collections</h2>
-       <p>This document lists all the image collections available in the Images service.<br/>
-       This document is also available as <#list model.getLinksExcept(null, "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.</p>
+       <p>This document lists all the image collections available in the Images service.</p>
        
        <#list model.collections as collection>
        <h2><a id="html_${collection.htmlId}_link" href="${serviceLink("collections/${collection.encodedId}", "text/html")}">${collection.id}</a></h2>

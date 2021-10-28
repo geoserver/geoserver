@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi.stac;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import org.geoserver.ogcapi.AbstractDocument;
 import org.opengis.feature.Feature;
 
 /**
@@ -12,7 +13,7 @@ import org.opengis.feature.Feature;
  * because Spring MVC response binding is driven by the response type.
  */
 @JsonIgnoreType
-public class CollectionResponse {
+public class CollectionResponse extends AbstractDocument {
 
     Feature collection;
 

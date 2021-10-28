@@ -19,7 +19,7 @@ public class ConformanceTest extends ImagesTestSupport {
     }
 
     private void checkConformance(DocumentContext json) {
-        assertEquals(1, (int) json.read("$.length()", Integer.class));
+        assertEquals(2, (int) json.read("$.length()", Integer.class));
         assertEquals(4, (int) json.read("$.conformsTo.length()", Integer.class));
         assertEquals(ConformanceClass.CORE, json.read("$.conformsTo[0]", String.class));
         assertEquals(ConformanceClass.COLLECTIONS, json.read("$.conformsTo[1]", String.class));

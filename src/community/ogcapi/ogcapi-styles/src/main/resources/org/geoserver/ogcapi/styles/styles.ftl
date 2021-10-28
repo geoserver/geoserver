@@ -2,8 +2,7 @@
 <#include "common-header.ftl">
   <h1>GeoServer Styles</h1>
   <p class="my-4">
-    This document lists all the styles available in the Styles service.<br/>
-    This document is also available as <#list model.getLinksExcept(null, "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
+    This document lists all the styles available in the Styles service.
   </p>
   
   <ul>

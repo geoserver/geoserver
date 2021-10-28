@@ -5,8 +5,6 @@
   <p class="my-4">
     ${service.abstract!""}<br/>
     This is the landing page of the Coverages 1.0 service, providing links to the service API and its contents.<br/>
-    This document is also available as
-    <#list model.getLinksExcept("landingPage", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
   </p>
       
   <div class="row my-3">
@@ -29,8 +27,6 @@
           <h2>Collections</h2>
           <p>The <a id="htmlCollectionsLink" href="${model.getLinkUrl('data', 'text/html')!}"> collection page</a> provides a list of all the collections available in this service. 
           <br/> 
-          This collection page is also available as
-          <#list model.getLinksExcept("data", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
           </p>
         </div>
       </div>

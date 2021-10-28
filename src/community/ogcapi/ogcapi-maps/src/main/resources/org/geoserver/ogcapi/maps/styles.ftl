@@ -11,6 +11,4 @@
        <hr/>
        </#list>
        </ul>
-       <p>
-      This document is also available as <#list model.getLinksExcept("alternate", "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.</p>
 <#include "common-footer.ftl">

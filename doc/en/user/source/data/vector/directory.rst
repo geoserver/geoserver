@@ -34,6 +34,8 @@ To begin, navigate to :menuselection:`Stores --> Add a new store --> Directory o
      - Location of the directory. Can be an absolute path (such as :file:`file:C:\\Data\\shapefile_directory`) or a path relative to the data directory (such as :file:`file:data/shapefile_directory`.
    * - :guilabel:`namespace`
      - Namespace to be associated with the store.  This field is altered by changing the workspace name.
+   * - :guilabel:`skip scan`
+     - Skip scan of alternative shapefile extensions (i.e. .SHP, .shp.XML, .CPG, ...) on Not-Windows systems. This can be useful when you have a directory containing several thousands of shapefiles. By Default, the shapefile plugin will look for all the shapefile extensions (.shp, .dbf, .shx, .prj, .qix, .fix, .shp.xml, .cpg). As soon as one of these is missing, it will do a search on the directory for the missing file, ignoring the case. This might be time consuming on directories with a huge number of files.
 
 When finished, click :guilabel:`Save`.
 

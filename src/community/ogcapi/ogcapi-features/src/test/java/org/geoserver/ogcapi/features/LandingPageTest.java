@@ -4,11 +4,13 @@
  */
 package org.geoserver.ogcapi.features;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.jayway.jsonpath.DocumentContext;
+import java.util.List;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.platform.Service;
@@ -17,6 +19,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class LandingPageTest extends FeaturesTestSupport {
@@ -167,5 +170,16 @@ public class LandingPageTest extends FeaturesTestSupport {
         assertEquals("Features 1.0 server", json.read("title"));
         // check description
         assertEquals("", json.read("description"));
+    }
+
+    @Test
+    public void testLandingPageHeaders() throws Exception {
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/features", 200);
+        List<String> link = response.getHeaders("Link");
+        assertThat(
+                link,
+                hasItems(
+                        "<http://localhost:8080/geoserver/ogc/features/?f=application%2Fx-yaml>; rel=\"alternate\"; type=\"application/x-yaml\"; title=\"This document as application/x-yaml\"",
+                        "<http://localhost:8080/geoserver/ogc/features/?f=application%2Fjson>; rel=\"self\"; type=\"application/json\"; title=\"This document\""));
     }
 }

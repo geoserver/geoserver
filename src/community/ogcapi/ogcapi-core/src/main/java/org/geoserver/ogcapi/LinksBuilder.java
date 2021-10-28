@@ -25,6 +25,7 @@ public class LinksBuilder {
     private boolean includeHTML = true;
     private String classification;
     private BiConsumer<MediaType, Link> updater;
+    private boolean appendToHead = true;
 
     public LinksBuilder(Class<?> responseType) {
         this.responseType = responseType;
@@ -90,6 +91,15 @@ public class LinksBuilder {
         return this;
     }
 
+    /**
+     * Sets whether the links should be automatically appended to the current HTTP response header.
+     * Defaults to true.
+     */
+    public LinksBuilder appendToHead(boolean append) {
+        this.appendToHead = append;
+        return this;
+    }
+
     /** Builds the list of links for all formats, and returns it */
     public List<Link> build() {
         List<Link> result = new ArrayList<>();
@@ -110,6 +120,9 @@ public class LinksBuilder {
                 updater.accept(mediaType, link);
             }
             result.add(link);
+        }
+        if (appendToHead) {
+            result.forEach(l -> HttpHeaderLinksAppender.addLink(l));
         }
         return result;
     }

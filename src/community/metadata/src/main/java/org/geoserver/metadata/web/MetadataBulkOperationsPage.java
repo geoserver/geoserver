@@ -38,6 +38,8 @@ import org.geoserver.web.ComponentAuthorizer;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /** @author Niels Charlier */
 public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
@@ -100,11 +102,19 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
                                                             .getApplicationContext()
                                                             .getBean(MetaDataBulkService.class);
 
+                                            Authentication auth =
+                                                    SecurityContextHolder.getContext()
+                                                            .getAuthentication();
+
                                             Executors.newSingleThreadExecutor()
                                                     .execute(
                                                             new Runnable() {
                                                                 @Override
                                                                 public void run() {
+                                                                    SecurityContextHolder
+                                                                            .getContext()
+                                                                            .setAuthentication(
+                                                                                    auth);
                                                                     service.fixAll(
                                                                             progressModel.getKey());
                                                                 }
@@ -184,11 +194,19 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
                                                                     MetadataBulkOperationsPage.this)
                                                             .getString();
 
+                                            Authentication auth =
+                                                    SecurityContextHolder.getContext()
+                                                            .getAuthentication();
+
                                             Executors.newSingleThreadExecutor()
                                                     .execute(
                                                             new Runnable() {
                                                                 @Override
                                                                 public void run() {
+                                                                    SecurityContextHolder
+                                                                            .getContext()
+                                                                            .setAuthentication(
+                                                                                    auth);
                                                                     if (!service.importAndLink(
                                                                             geonetworkName
                                                                                     .getDefaultModelObject()
@@ -295,11 +313,19 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
                                                                     MetadataBulkOperationsPage.this)
                                                             .getString();
 
+                                            Authentication auth =
+                                                    SecurityContextHolder.getContext()
+                                                            .getAuthentication();
+
                                             Executors.newSingleThreadExecutor()
                                                     .execute(
                                                             new Runnable() {
                                                                 @Override
                                                                 public void run() {
+                                                                    SecurityContextHolder
+                                                                            .getContext()
+                                                                            .setAuthentication(
+                                                                                    auth);
                                                                     if (csvData == null) {
                                                                         service.nativeToCustom(
                                                                                 indexes,
@@ -380,11 +406,19 @@ public class MetadataBulkOperationsPage extends GeoServerSecuredPage {
                                                             .getApplicationContext()
                                                             .getBean(GlobalModelService.class);
 
+                                            Authentication auth =
+                                                    SecurityContextHolder.getContext()
+                                                            .getAuthentication();
+
                                             Executors.newSingleThreadExecutor()
                                                     .execute(
                                                             new Runnable() {
                                                                 @Override
                                                                 public void run() {
+                                                                    SecurityContextHolder
+                                                                            .getContext()
+                                                                            .setAuthentication(
+                                                                                    auth);
                                                                     try {
                                                                         service.clearAll(
                                                                                 clearTemplates

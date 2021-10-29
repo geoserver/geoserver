@@ -43,10 +43,9 @@ public class AttributesTablePanel extends Panel {
 
         GeoServerTablePanel<AttributeConfiguration> tablePanel =
                 createAttributesTablePanel(dataProvider, derivedAtts);
+        tablePanel.setPageable(false);
         tablePanel.setFilterVisible(false);
         tablePanel.setFilterable(false);
-        tablePanel.getTopPager().setVisible(false);
-        tablePanel.getBottomPager().setVisible(false);
         tablePanel.setOutputMarkupId(false);
         tablePanel.setItemReuseStrategy(ReuseIfModelsEqualStrategy.getInstance());
         tablePanel.setSelectable(false);

@@ -177,7 +177,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
         AjaxSubmitLink applyButton = saveOrApplyButton("apply", false);
         form.add(applyButton);
 
-        form.add(exportButton());
+        form.add(exportButton().setVisible(!initMode));
 
         form.add(
                 new TextField<String>(

@@ -104,8 +104,13 @@ public class CoverageAccessInitializer implements GeoServerInitializer, Extensio
                 // If the queue type is the same, I can simply override the parameter settings.
                 if ((queue instanceof LinkedBlockingQueue && queueType == QueueType.UNBOUNDED)
                         || (queue instanceof SynchronousQueue && queueType == QueueType.DIRECT)) {
-                    executor.setCorePoolSize(coverageAccess.getCorePoolSize());
+                    // avoid IllegalArgumentException happening because the max pool size
+                    // is temporarily lower than core, or vice-versa. Unfortunately it's not
+                    // possible to set the both at the same time
+                    executor.setCorePoolSize(1);
+                    // now reconfigure
                     executor.setMaximumPoolSize(coverageAccess.getMaxPoolSize());
+                    executor.setCorePoolSize(coverageAccess.getCorePoolSize());
                     executor.setKeepAliveTime(
                             coverageAccess.getKeepAliveTime(), TimeUnit.MILLISECONDS);
                     coverageAccess.setThreadPoolExecutor(executor);

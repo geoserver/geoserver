@@ -160,6 +160,15 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
+        // add WCS field
+        if (configuration.isWcsField()) {
+            try (InputStream in =
+                    getClass().getResourceAsStream(MetadataConstants.WCS_FIELD_CONFIG_FILE)) {
+                readConfiguration(in, mapper);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
 
         // process csv imports
         processCsvImports(configuration);
@@ -221,6 +230,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         for (String csvImport : config.getCsvImports()) {
             configuration.getCsvImports().add(csvImport);
         }
+
+        configuration.setWcsField(configuration.isWcsField() || config.isWcsField());
     }
 
     private void readMapping(InputStream in, ObjectMapper mapper) throws IOException {

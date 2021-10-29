@@ -85,34 +85,41 @@ public class MetaDataBulkServiceImpl implements MetaDataBulkService {
         int counter = 0;
         List<ResourceInfo> resources = catalog.getResources(ResourceInfo.class);
         for (ResourceInfo info : catalog.getResources(ResourceInfo.class)) {
-            Serializable custom = info.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
-            if (custom instanceof HashMap<?, ?>) {
-                @SuppressWarnings("unchecked")
-                ComplexMetadataMapImpl complex =
-                        new ComplexMetadataMapImpl((Map<String, Serializable>) custom);
-                metadataService.clean(complex);
-                metadataService.init(complex);
-                metadataService.derive(complex);
+            try {
+                Serializable custom = info.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
+                if (custom instanceof HashMap<?, ?>) {
+                    @SuppressWarnings("unchecked")
+                    ComplexMetadataMapImpl complex =
+                            new ComplexMetadataMapImpl((Map<String, Serializable>) custom);
+                    metadataService.clean(complex);
+                    metadataService.init(complex);
+                    metadataService.derive(complex);
 
-                // custom-to-native mapping
-                for (LayerInfo layer : catalog.getLayers(info)) {
-                    layer.setResource(info);
-                    nativeToCustomService.mapCustomToNative(layer);
-                    catalog.save(layer);
+                    // custom-to-native mapping
+                    for (LayerInfo layer : catalog.getLayers(info)) {
+                        layer.setResource(info);
+                        nativeToCustomService.mapCustomToNative(layer);
+                        catalog.save(layer);
+                    }
+
+                    // save timestamp
+                    complex.get(Date.class, MetadataConstants.TIMESTAMP_KEY).setValue(new Date());
                 }
 
-                // save timestamp
-                complex.get(Date.class, MetadataConstants.TIMESTAMP_KEY).setValue(new Date());
-            }
+                catalog.save(info);
+                if (progressKey != null) {
+                    globalModelService.put(progressKey, ((float) counter++) / resources.size());
+                }
 
-            catalog.save(info);
-            if (progressKey != null) {
-                globalModelService.put(progressKey, ((float) counter++) / resources.size());
+                LOGGER.log(Level.INFO, "Fixed layer " + info.getName() + " succesfully.");
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Failed to fix layer: " + info.getName(), e);
             }
         }
         if (progressKey != null) {
             globalModelService.put(progressKey, 1.0f);
         }
+        LOGGER.log(Level.INFO, "Finished fixing all " + counter + "layers succesfully.");
     }
 
     @Override

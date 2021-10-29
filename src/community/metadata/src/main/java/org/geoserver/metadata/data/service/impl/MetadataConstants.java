@@ -21,6 +21,10 @@ public final class MetadataConstants {
 
     public static final String FEATURE_CATALOG_CONFIG_FILE = "featureCatalog.yaml";
 
+    public static final String WCS_FIELD_CONFIG_FILE = "wcsField.yaml";
+
+    public static final String WCS_FIELD_ATTRIBUTE = "wcs-metadata-xml";
+
     public static final String FEATURE_ATTRIBUTE_TYPENAME = "featureAttribute";
 
     public static final String FEATURE_ATTRIBUTE_NAME = "name";

@@ -1,0 +1,5 @@
+attributes:
+  - key: wcs-metadata-xml
+    label: WCS Metadata XML
+    fieldType: TEXT_AREA
+    condition: equalTo(typeOf("."), 'CoverageInfo')

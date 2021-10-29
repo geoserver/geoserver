@@ -32,6 +32,8 @@ public class MetadataConfigurationImpl implements MetadataConfiguration {
 
     List<String> csvImports = new ArrayList<>();
 
+    Boolean wcsField;
+
     @Override
     public List<AttributeConfiguration> getAttributes() {
         return attributes;
@@ -70,5 +72,15 @@ public class MetadataConfigurationImpl implements MetadataConfiguration {
     @Override
     public List<String> getCsvImports() {
         return csvImports;
+    }
+
+    @Override
+    public boolean isWcsField() {
+        return wcsField != null && wcsField;
+    }
+
+    @Override
+    public void setWcsField(boolean wcsField) {
+        this.wcsField = wcsField;
     }
 }

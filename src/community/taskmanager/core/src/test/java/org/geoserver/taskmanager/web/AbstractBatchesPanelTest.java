@@ -168,7 +168,7 @@ public abstract class AbstractBatchesPanelTest<T extends Page>
                         tester.getComponentFromLastRenderedPage(
                                 prefix()
                                         + "batchesPanel:form:batchesPanel:listContainer:items:5:selectItemContainer:selectItem"));
-        tester.getRequest().setParameter(selector.getInputName(), "true");
+        tester.getRequest().getPostParameters().addParameterValue(selector.getInputName(), "true");
         tester.executeAjaxEvent(selector, "click");
 
         assertEquals(1, table.getSelection().size());

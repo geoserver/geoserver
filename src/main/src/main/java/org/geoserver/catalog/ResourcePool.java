@@ -414,14 +414,16 @@ public class ResourcePool {
     }
 
     /**
-     * Sets the size of the feature type cache.
-     *
-     * <p>A warning that calling this method will blow away the existing cache.
+     * Sets the coverage executor used for concurrent processing of files (e.g. in image mosaic,
+     * when multi-threaded loading is enabled)
      */
-    public void setCoverageExecutor(ThreadPoolExecutor coverageExecutor) {
-        synchronized (this) {
-            this.coverageExecutor = coverageExecutor;
-        }
+    public synchronized void setCoverageExecutor(ThreadPoolExecutor coverageExecutor) {
+        this.coverageExecutor = coverageExecutor;
+    }
+
+    /** Returns the coverage executor. See also {@link #setCoverageExecutor(ThreadPoolExecutor)}. */
+    public synchronized ThreadPoolExecutor getCoverageExecutor() {
+        return this.coverageExecutor;
     }
 
     /** Adds a pool listener. */

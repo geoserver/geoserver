@@ -158,7 +158,7 @@ public class DownloadAnimationProcess implements GeoServerProcess {
 
         // avoid NPE on progress listener, make it effectively final for lambda to use below
         ProgressListener listener =
-                Optional.of(progressListener).orElse(new DefaultProgressListener());
+                Optional.ofNullable(progressListener).orElse(new DefaultProgressListener());
 
         // if height and width are an odd number fix them, cannot encode videos otherwise
         if (width % 2 != 0) {

@@ -277,8 +277,6 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             remoteLegendGraphicRequest =
                     new CascadedLegendRequest.GetLegendGraphicRequestV1_3_0(
                             wmsServer.createGetMapRequest().getFinalURL(), "1.3.0");
-            remoteLegendGraphicRequest.toString();
-
         } else {
             // other than 1.3.0
             remoteLegendGraphicRequest = wmsServer.createGetLegendGraphicRequest();

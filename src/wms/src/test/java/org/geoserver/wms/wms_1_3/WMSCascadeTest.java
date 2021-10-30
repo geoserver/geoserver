@@ -216,8 +216,6 @@ public class WMSCascadeTest extends WMSCascadeTestSupport {
 
         LayerInfo info = getCatalog().getLayerByName("roads_wms_130");
 
-        info.toString();
-
         String getMapRequest =
                 "wms?bbox=589434.85646865,4914006.33783702,609527.21021496,4928063.39801461"
                         + "&styles=line1&layers="

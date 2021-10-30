@@ -2653,7 +2653,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
                 checkSLD(resultXml.replace("<Rules>", sldPrefix).replace("</Rules>", sldPostfix));
         assertEquals(2, rules.length);
         for (Rule r : rules) {
-            r.getDescription().getTitle().toString().contains("(0.0%)");
+            assertTrue(r.getDescription().getTitle().toString().contains("(0.0%)"));
         }
     }
 

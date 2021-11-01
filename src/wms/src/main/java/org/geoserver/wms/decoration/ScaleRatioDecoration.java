@@ -49,7 +49,8 @@ public class ScaleRatioDecoration implements MapDecoration {
     public String getScaleText(WMSMapContent mapContent) {
         final double scale = getScale(mapContent);
         if (format == null) {
-            return String.format("1 : %0$1.0f", scale);
+            // by spec, the first argument is 1, that is, 1$ (1 based, not zero based)
+            return String.format("1 : %1$1.0f", scale);
         } else {
             DecimalFormatSymbols decimalFormatSymbols;
             if (formatLanguage != null) {

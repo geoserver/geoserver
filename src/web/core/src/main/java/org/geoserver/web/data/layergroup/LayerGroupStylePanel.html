@@ -1,0 +1,33 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<body>
+<wicket:panel>
+    <br/>
+    <div>
+        <fieldset>
+            <legend style="font: bold 12px tahoma, arial, helvetica, sans-serif;
+                color: #00000=;">
+                <span><wicket:message key="groupStyle">Layer Group Style</wicket:message></span>
+            </legend>
+            <ul>
+                <li><label for="layerGroupStyleName"><wicket:message key="layerGroupStyleName">Style Name</wicket:message></label></li>
+                <li>
+                    <div>
+                        <input id="layerGroupStyleName" wicket:id="layerGroupStyleName" type="text">
+                        <a class="remove-link" wicket:id="remove"><wicket:message key="removeStyle">Remove Style</wicket:message></a>
+                    </div>
+                </li>
+                <li>
+                    <div wicket:id="titleAndAbstract"/>
+                </li>
+                <li>
+                    <br/>
+                </li>
+                <li>
+                    <div wicket:id="layerGroupEntryPanel"></div>
+                </li>
+            </ul>
+        </fieldset>
+    </div>
+</wicket:panel>
+</body>
+</html>

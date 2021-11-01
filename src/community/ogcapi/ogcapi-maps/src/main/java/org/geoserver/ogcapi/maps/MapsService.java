@@ -218,7 +218,7 @@ public class MapsService {
         }
         // in any other case, the style was not recognized
         throw new APIException(
-                ServiceException.INVALID_PARAMETER_VALUE,
+                APIException.INVALID_PARAMETER_VALUE,
                 "Invalid style identifier: " + styleId,
                 HttpStatus.BAD_REQUEST);
     }
@@ -291,7 +291,7 @@ public class MapsService {
             ReferencedEnvelope[] parsed = APIBBoxParser.parse(bbox, crs);
             if (parsed.length > 1)
                 throw new APIException(
-                        ServiceException.INVALID_PARAMETER_VALUE,
+                        APIException.INVALID_PARAMETER_VALUE,
                         "Cannot handle dateline crossing requests",
                         HttpStatus.BAD_REQUEST);
             ReferencedEnvelope envelope = parsed[0];

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -163,8 +164,9 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
     public int[] getResolutions() throws IOException {
         UniqueVisitor visitor = new UniqueVisitor(DGGSStore.RESOLUTION);
         fs.getFeatures(Query.ALL).accepts(visitor, null);
-        int[] resolutions =
-                visitor.getResult().toList().stream().mapToInt(v -> (Integer) v).toArray();
+        @SuppressWarnings("unchecked")
+        List<Integer> list = visitor.getResult().toList();
+        int[] resolutions = list.stream().mapToInt(v -> v).toArray();
         return resolutions;
     }
 

@@ -229,7 +229,7 @@ public class ImagesService implements ApplicationContextAware {
                             .findFirst();
             if (!timeDescriptor.isPresent()) {
                 throw new APIException(
-                        "InvalidParameter",
+                        APIException.INVALID_PARAMETER,
                         "Time not supported for this image collection",
                         HttpStatus.BAD_REQUEST);
             }
@@ -313,7 +313,7 @@ public class ImagesService implements ApplicationContextAware {
         }
         if (!asset.isPresent()) {
             throw new APIException(
-                    "NotFound",
+                    APIException.NOT_FOUND,
                     "Cannot find asset with id "
                             + assetId
                             + " in image  "
@@ -337,7 +337,7 @@ public class ImagesService implements ApplicationContextAware {
         ImagesResponse ir = images(collectionId, 0, null, null, null, imageId);
         SimpleFeatureCollection granules =
                 (SimpleFeatureCollection) ir.getResponse().getFeatures().get(0);
-        return (SimpleFeature) DataUtilities.first(granules);
+        return DataUtilities.first(granules);
     }
 
     private SimpleFeatureCollection remapGranules(
@@ -468,8 +468,9 @@ public class ImagesService implements ApplicationContextAware {
     }
 
     private Filter buildTimeFilter(DimensionDescriptor descriptor, String time)
-            throws ParseException, IOException {
-        List times = new ArrayList(timeParser.parse(time));
+            throws ParseException {
+        @SuppressWarnings("unchecked")
+        List<Object> times = new ArrayList<>(timeParser.parse(time));
         if (times.isEmpty() || times.size() > 1) {
             throw new ServiceException(
                     "Invalid time specification, must be a single time, or a time range",
@@ -548,7 +549,7 @@ public class ImagesService implements ApplicationContextAware {
                 sr.harvest(null, uploadedFiles, GeoTools.getDefaultHints());
         if (harvested == null || harvested.isEmpty() || !harvested.get(0).success()) {
             throw new APIException(
-                    "InternalServerError",
+                    APIException.NO_APPLICABLE_CODE,
                     "Resources could not be harvested (is the image posted in a format that GeoServer can understand?)",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -573,8 +574,7 @@ public class ImagesService implements ApplicationContextAware {
                 coverageInfo,
                 sr.getGranules(coverageInfo.getNativeCoverageName(), true),
                 featureId);
-        ResponseEntity response = new ResponseEntity("", headers, HttpStatus.CREATED);
-        return response;
+        return new ResponseEntity<>("", headers, HttpStatus.CREATED);
     }
 
     /**
@@ -628,7 +628,7 @@ public class ImagesService implements ApplicationContextAware {
             @PathVariable(name = "imageId") String imageId)
             throws Exception {
         throw new APIException(
-                "Unsupported",
+                APIException.NOT_IMPLEMENTED,
                 "PUT on single images is not supported yet",
                 HttpStatus.NOT_IMPLEMENTED);
     }
@@ -645,7 +645,7 @@ public class ImagesService implements ApplicationContextAware {
         GranuleSource source = reader.getGranules(info.getNativeCoverageName(), false);
         if (!(source instanceof GranuleStore)) {
             throw new APIException(
-                    "UnsupportedOperation",
+                    APIException.NOT_IMPLEMENTED,
                     "Write not supported on this reader",
                     HttpStatus.NOT_IMPLEMENTED);
         }

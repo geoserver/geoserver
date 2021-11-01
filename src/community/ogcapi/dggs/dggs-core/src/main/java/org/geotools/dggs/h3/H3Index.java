@@ -38,8 +38,6 @@ class H3Index {
     public long lowestIdChild(int targetResolution) {
         int resolution = getResolution();
         if (resolution > 14) throw new IllegalArgumentException("This H3 cell has no children");
-        if (resolution > 15)
-            throw new IllegalArgumentException("Maximum allowed resolution value is 15");
         // switch the resolution up
         long childId =
                 (id & (8l << (64 - 8)))

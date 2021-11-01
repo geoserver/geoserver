@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -2530,6 +2531,133 @@ public class GetMapIntegrationTest extends WMSTestSupport {
         } finally {
             wms.setCiteCompliant(false);
             gs.save(wms);
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyleSingle() throws Exception {
+        LayerGroupInfo group = null;
+        Catalog catalog = getCatalog();
+        try {
+            String lgStyleName = "nature-style";
+            String lgName = "single_lakes_and_places";
+            LayerInfo forest = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakes = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.SINGLE,
+                            lgStyleName,
+                            Arrays.asList(forest, lakes),
+                            Arrays.asList(null, null));
+            String url =
+                    "wms?LAYERS="
+                            + group.getName()
+                            + "&STYLES=nature-style&FORMAT=image%2Fpng"
+                            + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&bbox=-0.002,-0.003,0.005,0.002";
+            BufferedImage image = getAsImage(url, "image/png");
+            File expected = new File(getClass().getResource("nature.png").toURI());
+            ImageAssert.assertEquals(expected, image, 250);
+        } finally {
+            if (group != null) catalog.remove(group);
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyleOpaque() throws Exception {
+        Catalog catalog = getCatalog();
+        LayerGroupInfo group = null;
+        try {
+            String lgStyleName = "nature-style";
+            String lgName = "opaque_lakes_and_places";
+            LayerInfo forest = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakes = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.OPAQUE_CONTAINER,
+                            lgStyleName,
+                            Arrays.asList(forest, lakes),
+                            Arrays.asList(null, null));
+            String url =
+                    "wms?LAYERS="
+                            + group.getName()
+                            + "&STYLES=nature-style&FORMAT=image%2Fpng"
+                            + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&bbox=-0.002,-0.003,0.005,0.002";
+            BufferedImage image = getAsImage(url, "image/png");
+
+            File expected = new File(getClass().getResource("nature.png").toURI());
+            ImageAssert.assertEquals(expected, image, 250);
+        } finally {
+            if (group != null) catalog.remove(group);
+        }
+    }
+
+    @Test
+    public void testNestedGroupWithStyle() throws Exception {
+        LayerGroupInfo nested = null;
+        LayerGroupInfo container = null;
+        Catalog catalog = getCatalog();
+
+        try {
+            String lgName = "nested-lakes_and_places_group";
+            LayerInfo forest = getCatalog().getLayerByName("cite:Forests");
+            List<StyleInfo> styles = new ArrayList<>();
+            styles.add(null);
+            nested =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.SINGLE,
+                            "forest-style",
+                            Arrays.asList(forest),
+                            styles);
+
+            createLakesPlacesLayerGroup(
+                    catalog, "lakes-and-place", LayerGroupInfo.Mode.SINGLE, null);
+            container = catalog.getLayerGroupByName("lakes-and-place");
+            container.getLayers().add(0, nested);
+            container.getStyles().add(0, nested.getLayerGroupStyles().get(0).getName());
+            catalog.save(container);
+            String url =
+                    "wms?LAYERS="
+                            + container.getName()
+                            + "&STYLES=&FORMAT=image%2Fpng"
+                            + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&bbox=-0.002,-0.003,0.005,0.002";
+            BufferedImage image = getAsImage(url, "image/png");
+
+            File expected = new File(getClass().getResource("lakes_place_forests.png").toURI());
+            ImageAssert.assertEquals(expected, image, 250);
+        } finally {
+            if (container != null) catalog.remove(container);
+            if (nested != null) catalog.remove(nested);
+        }
+    }
+
+    @Test
+    public void testLayerGroupStyleIgnoredIfTree() throws Exception {
+        LayerGroupInfo group = null;
+        Catalog catalog = getCatalog();
+        try {
+            String lgName = "lakes_and_places_named";
+            LayerInfo forest = getCatalog().getLayerByName("cite:Forests");
+            LayerInfo lakes = getCatalog().getLayerByName("cite:Lakes");
+            group =
+                    lakesAndPlacesWithGroupStyle(
+                            lgName,
+                            LayerGroupInfo.Mode.NAMED,
+                            "nature-style",
+                            Arrays.asList(forest, lakes),
+                            Arrays.asList(null, null));
+            String url =
+                    "wms?LAYERS="
+                            + lgName
+                            + "&STYLES=nature-style&FORMAT=image%2Fpng"
+                            + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&bbox=-0.002,-0.003,0.005,0.002";
+            BufferedImage image = getAsImage(url, "image/png");
+            File expected = new File(getClass().getResource("lakes_and_places.png").toURI());
+            ImageAssert.assertEquals(expected, image, 250);
+        } finally {
+            if (group != null) catalog.remove(group);
         }
     }
 }

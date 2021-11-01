@@ -181,6 +181,7 @@ public class ClickHouseDGGSDataStore implements DGGSStore {
     }
 
     @Override
+    @SuppressWarnings("PMD.UseTryWithResources") // cannot be done on a long lived field
     public void dispose() {
         try {
             delegate.dispose();
@@ -194,6 +195,7 @@ public class ClickHouseDGGSDataStore implements DGGSStore {
             Query query, Transaction transaction) throws IOException {
         // just delegating to the FeatureSource machinery
         DGGSFeatureSource source = getFeatureSource(query.getTypeName());
+        @SuppressWarnings("PMD.CloseResource") // wrapped and returned
         SimpleFeatureIterator features = source.getFeatures(query).features();
         return new FeatureReader<SimpleFeatureType, SimpleFeature>() {
             @Override

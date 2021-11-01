@@ -156,6 +156,7 @@ public class ApiTest extends ImagesTestSupport {
         OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
         Map<String, Parameter> params = api.getComponents().getParameters();
         Parameter collectionId = params.get("collectionId");
+        @SuppressWarnings("unchecked") // getSchema is not generified
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
                 getStructuredCoverages()

@@ -123,6 +123,7 @@ public class RHealPixZone implements Zone {
                     si -> {
                         setCellId(si, "id", id);
                         si.exec("c = Cell(dggs, id)");
+                        @SuppressWarnings("unchecked")
                         List<Number> definition = si.getValue("c.color()", List.class);
                         int red = (int) Math.round(definition.get(0).doubleValue() * 255);
                         int green = (int) Math.round(definition.get(1).doubleValue() * 255);

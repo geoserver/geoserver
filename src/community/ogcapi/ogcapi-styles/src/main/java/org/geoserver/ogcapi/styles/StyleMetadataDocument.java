@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,7 +36,7 @@ import org.geotools.util.Version;
 
 /** Style metadadata information */
 @JsonInclude(NON_NULL)
-public class StyleMetadataDocument extends AbstractDocument implements Serializable {
+public class StyleMetadataDocument extends AbstractDocument {
 
     String id;
     String title;

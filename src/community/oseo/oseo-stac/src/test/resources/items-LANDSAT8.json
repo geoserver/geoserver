@@ -10,6 +10,16 @@
       ],
       "properties": {
         "eo:cloud_cover": "$${opt:cloudCover / 2}",
+        "mergeThumbnail": "$${jsonPointer(assets, '/thumbnail')}",
+        "mergeThumbnail2": {
+          "additional": "$${opt:cloudCover}",
+          "href":"will be replaced",
+          "type":"will be replaced",
+          "title":"Thumbnail to be replaced",
+          "roles":[
+            "will be replaced"
+          ]
+        },
         "gsd": 30, 
         "landsat:tier": "pre-collection",
         "landsat:orbit": "${eop:orbitNumber}" // just to have a custom queriable

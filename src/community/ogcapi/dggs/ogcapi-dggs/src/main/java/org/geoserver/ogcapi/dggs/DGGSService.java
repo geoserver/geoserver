@@ -311,18 +311,16 @@ public class DGGSService {
             throws Exception {
         if (distance <= 0)
             throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE,
+                    APIException.INVALID_PARAMETER_VALUE,
                     "Neighboring distance must be positive",
                     HttpStatus.BAD_REQUEST);
         int maxNeighborDistance = getService().getMaxNeighborDistance();
         if (maxNeighborDistance > 0 && distance > maxNeighborDistance) {
             throw new APIException(
-                    ServiceException.INVALID_PARAMETER_VALUE,
+                    APIException.INVALID_PARAMETER_VALUE,
                     "Neighboring distance exceeds maximum value: " + maxNeighborDistance,
                     HttpStatus.BAD_REQUEST);
         }
-        DGGSInstance dggs = getDGGSInstance(collectionId);
-        int resolution = dggs.getZone(zoneId).getResolution();
         PropertyIsEqualTo neighborFilter =
                 FF.equals(
                         FF.function(
@@ -363,7 +361,6 @@ public class DGGSService {
                     )
                     String format)
             throws Exception {
-        DGGSInstance ddgs = getDGGSInstance(collectionId);
         FeaturesResponse response =
                 runGetFeature(
                         collectionId,
@@ -480,8 +477,6 @@ public class DGGSService {
                     )
                     String format)
             throws Exception {
-        DGGSInstance dggs = getDGGSInstance(collectionId);
-        Zone zone = dggs.getZone(zoneId);
         PropertyIsEqualTo childFilter =
                 FF.equals(
                         FF.function(
@@ -524,13 +519,11 @@ public class DGGSService {
                     )
                     String format)
             throws Exception {
-        DGGSInstance dggs = getDGGSInstance(collectionId);
         PropertyIsEqualTo parentFilter =
                 FF.equals(
                         FF.function("parents", FF.property("zoneId"), FF.literal(zoneId)),
                         FF.literal(true));
         // another filter to help implementation that cannot optimize out the above call
-        Zone zone = dggs.getZone(zoneId);
         return runGetFeature(
                 collectionId,
                 datetime,
@@ -626,6 +619,7 @@ public class DGGSService {
                     String format)
             throws Exception {
         Point point = getPoint(pointSpec);
+        @SuppressWarnings("PMD.CloseResource") // managed by the store
         DGGSInstance dggs = getDGGSInstance(collectionId);
         Zone zone = dggs.point(point, resolution);
         String zoneId = zone.getId();
@@ -639,7 +633,6 @@ public class DGGSService {
                         null,
                         format,
                         request -> {
-                            Query query = request.getQueries().get(0);
                             mixFilter(
                                     request,
                                     FF.equals(FF.property("zoneId"), FF.literal(zone.getId())));
@@ -732,7 +725,7 @@ public class DGGSService {
             String[] split = spec.split("\\s*,\\s*");
             if (split.length != 2) {
                 throw new APIException(
-                        ServiceException.INVALID_PARAMETER_VALUE,
+                        APIException.INVALID_PARAMETER_VALUE,
                         "Invalid point specification, should be a longitude and a latitude separated by a comma",
                         HttpStatus.BAD_REQUEST);
             }

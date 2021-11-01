@@ -23,7 +23,6 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.wms.WMS;
 import org.geotools.feature.NameImpl;
-import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 public class TilesetDescriptionTest extends TilesTestSupport {
@@ -91,6 +90,7 @@ public class TilesetDescriptionTest extends TilesTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testTileJSONLayerGroup() throws Exception {
         DocumentContext doc =
                 getAsJSONPath(
@@ -125,7 +125,7 @@ public class TilesetDescriptionTest extends TilesTestSupport {
     @Test
     public void getDataTilesMetadataHTML() throws Exception {
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
-        Document doc = getAsJSoup("ogc/tiles/collections/" + roadSegments + "/tiles?f=text/html");
+        getAsJSoup("ogc/tiles/collections/" + roadSegments + "/tiles?f=text/html");
         // TODO: add ids in the elemnets and check contents using jSoup
     }
 

@@ -6,6 +6,7 @@ package org.geoserver.web.data.store.dggs;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
@@ -22,7 +23,6 @@ import org.geotools.dggs.gstore.DGGSGeometryStoreFactory;
  *
  * @author Andrea Aime - GeoSolution
  */
-@SuppressWarnings("serial")
 public class DGGSGeometryStoreEditPanel extends StoreEditPanel {
 
     public DGGSGeometryStoreEditPanel(final String componentId, final Form storeEditForm) {
@@ -31,10 +31,11 @@ public class DGGSGeometryStoreEditPanel extends StoreEditPanel {
         final IModel model = storeEditForm.getModel();
         setDefaultModel(model);
 
-        final IModel paramsModel = new PropertyModel(model, "connectionParameters");
+        final IModel<Map<String, ?>> paramsModel =
+                new PropertyModel<>(model, "connectionParameters");
 
         IModel<Serializable> valueModel =
-                new MapModel(paramsModel, DGGSGeometryStoreFactory.DGGS_FACTORY_ID.key);
+                new MapModel<>(paramsModel, DGGSGeometryStoreFactory.DGGS_FACTORY_ID.key);
         IModel<String> labelModel = new ParamResourceModel("DGGSFactoryId", this);
         DropDownChoiceParamPanel parameterPanel =
                 new DropDownChoiceParamPanel(

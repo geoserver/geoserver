@@ -127,6 +127,7 @@ public class RHealPixDGGSInstance implements DGGSInstance {
                     interpreter.set("p", Arrays.asList(lat, lon));
                     interpreter.set("r", (Integer) resolution);
                     interpreter.exec("c = dggs.cell_from_point(r, p, False)");
+                    @SuppressWarnings("unchecked")
                     List<Object> idList = interpreter.getValue("c.suid", List.class);
                     String id = toZoneId(idList);
                     return new RHealPixZone(this, id);
@@ -157,7 +158,7 @@ public class RHealPixDGGSInstance implements DGGSInstance {
         //                });
         Envelope intersection = envelope.intersection(WORLD);
         if (intersection.isNull()) {
-            return new EmptyIterator();
+            return new EmptyIterator<>();
         }
         if (compact) {
             // makes the representation more compact, and yet not as compact as it could be,
@@ -289,6 +290,7 @@ public class RHealPixDGGSInstance implements DGGSInstance {
 
         double offset = -360;
         if (minX < -180) offset = 360;
+        @SuppressWarnings("unchecked")
         T otherSide = (T) g.copy();
         otherSide.apply(new FilterFunction_offset.OffsetOrdinateFilter(offset, 0));
         return otherSide;
@@ -386,6 +388,7 @@ public class RHealPixDGGSInstance implements DGGSInstance {
                         for (String cell : toExplore) {
                             setCellId(interpreter, "id", cell);
                             // find the neighbors of the cell
+                            @SuppressWarnings("unchecked")
                             List<String> neighbors =
                                     interpreter.getValue(
                                             "list(Cell(dggs, id).neighbors(False).values())",
@@ -411,7 +414,7 @@ public class RHealPixDGGSInstance implements DGGSInstance {
     @Override
     public Iterator<Zone> children(String zoneId, int resolution) {
         Zone parent = getZone(zoneId);
-        if (parent.getResolution() >= resolution) return new EmptyIterator();
+        if (parent.getResolution() >= resolution) return new EmptyIterator<>();
 
         // all the children of the given cell
         return new RHealPixZoneIterator<>(
@@ -435,10 +438,11 @@ public class RHealPixDGGSInstance implements DGGSInstance {
                 interpreter -> {
                     interpreter.set("p", Arrays.asList(point.getX(), point.getY()));
                     interpreter.set("r", Integer.valueOf(resolution));
+                    @SuppressWarnings("unchecked")
                     List<Object> idList =
                             interpreter.getValue(
                                     "dggs.cell_from_point(r, p, False).suid", List.class);
-                    return new RHealPixZone(RHealPixDGGSInstance.this, toZoneId(idList));
+                    return new RHealPixZone(this, toZoneId(idList));
                 });
     }
 
@@ -448,7 +452,7 @@ public class RHealPixDGGSInstance implements DGGSInstance {
         Envelope envelope = polygon.getEnvelopeInternal();
         Envelope intersection = envelope.intersection(WORLD);
         if (intersection.isNull()) {
-            return new EmptyIterator();
+            return new EmptyIterator<>();
         }
 
         // return each cells that is either fully contained (at possibly a lower resolution) and

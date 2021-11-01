@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -53,7 +52,7 @@ public class ChangesetCustomDBTest extends ChangesetTest {
     }
 
     @AfterClass
-    public static void testDatabaseUsage() throws Exception {
+    public static void checkDatabaseUsage() throws Exception {
         assertThat(DATA_DIRECTORY.listFiles().length, greaterThan(1));
 
         Properties props = new Properties();
@@ -65,7 +64,6 @@ public class ChangesetCustomDBTest extends ChangesetTest {
                 DataStoreFinder.getDataStore(DataUtilities.toConnectionParameters(props));
         try {
             assertThat(datastore, notNullValue());
-            System.out.println(Arrays.toString(datastore.getTypeNames()));
             // if the cleanup has worked correctly, we expect only one residual table
             assertThat(datastore.getTypeNames().length, equalTo(1));
             assertThat(datastore.getTypeNames()[0], startsWith("CoverageInfoImpl-"));

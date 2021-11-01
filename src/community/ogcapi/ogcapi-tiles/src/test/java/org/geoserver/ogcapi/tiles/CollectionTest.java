@@ -63,7 +63,7 @@ public class CollectionTest extends TilesTestSupport {
                                 + "' && @.type=='application/json')].href"));
     }
 
-    public void testRoadsCollectionJson(DocumentContext json) {
+    private void testRoadsCollectionJson(DocumentContext json) {
         assertEquals("cite:RoadSegments", json.read("$.id", String.class));
         assertEquals("RoadSegments", json.read("$.title", String.class));
         assertEquals(-0.0042, json.read("$.extent.spatial.bbox[0][0]", Double.class), 0d);

@@ -37,6 +37,7 @@ public class ImagesCollectionsDocument extends AbstractDocument {
         addSelfLinks("ogc/images/collections/");
     }
 
+    @SuppressWarnings("PMD.CloseResource")
     public Iterator<ImagesCollectionDocument> getCollections() {
 
         CloseableIterator<CoverageInfo> coverages =

@@ -35,6 +35,7 @@ public class ImagesAPIBuilder extends OpenAPIBuilder<ImagesServiceInfo> {
     }
 
     @Override
+    @SuppressWarnings("unchecked") // getSchema() not generified
     public OpenAPI build(ImagesServiceInfo service) throws IOException {
         OpenAPI api = super.build(service);
 

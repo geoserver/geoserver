@@ -25,6 +25,7 @@ public class StylesDocument extends AbstractDocument {
         addSelfLinks("ogc/styles/styles");
     }
 
+    @SuppressWarnings("PMD.CloseResource") // hopefully closed as it gets iterated
     public Iterator<StyleDocument> getStyles() {
         // full scan (we might add paging/filtering later)
         CloseableIterator<StyleInfo> styles = catalog.list(StyleInfo.class, Filter.INCLUDE);

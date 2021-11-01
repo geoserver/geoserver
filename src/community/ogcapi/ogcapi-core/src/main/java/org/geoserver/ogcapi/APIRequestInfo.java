@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.Service;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.accept.ContentNegotiationManager;
@@ -211,6 +212,19 @@ public class APIRequestInfo {
                 .map(s -> s.getClass())
                 .map(c -> APIDispatcher.getApiServiceAnnotation(c))
                 .map(a -> a.landingPage())
+                .orElseThrow(
+                        () ->
+                                new RuntimeException(
+                                        "Could not find a service base URL at this stage, maybe the service has not been dispatched yet"));
+    }
+
+    /**
+     * Returns the landing page for the current service. Can be called only after the service has
+     * been looked up, will otherwise throw a descriptive exception.
+     */
+    public Service getService() {
+        return Optional.ofNullable(Dispatcher.REQUEST.get())
+                .map(r -> r.getServiceDescriptor())
                 .orElseThrow(
                         () ->
                                 new RuntimeException(

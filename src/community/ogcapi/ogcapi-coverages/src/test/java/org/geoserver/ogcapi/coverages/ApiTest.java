@@ -107,6 +107,7 @@ public class ApiTest extends CoveragesTestSupport {
         validateApi(api);
     }
 
+    @SuppressWarnings("unchecked") // getSchema not generified
     private void validateApi(OpenAPI api) {
         // only one server
         List<Server> servers = api.getServers();
@@ -171,6 +172,7 @@ public class ApiTest extends CoveragesTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // getSchema not generified
     public void testWorkspaceQualifiedAPI() throws Exception {
         MockHttpServletRequest request = createRequest("cdf/ogc/coverages/api");
         request.setMethod("GET");

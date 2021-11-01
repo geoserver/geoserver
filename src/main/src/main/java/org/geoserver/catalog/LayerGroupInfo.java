@@ -7,6 +7,7 @@ package org.geoserver.catalog;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /**
@@ -153,6 +154,38 @@ public interface LayerGroupInfo extends PublishedInfo {
 
     /** */
     List<StyleInfo> styles();
+
+    /**
+     * Retrieves all the contained LayerInfo, resolving also nested LayerGroups, according to the
+     * specified LayerGroup style name.
+     *
+     * @param layerGroupStyleName
+     * @return the list of all the contained LayerInfo instances.
+     */
+    List<LayerInfo> layers(String layerGroupStyleName);
+
+    /**
+     * Retrieves all the contained StyleInfo, resolving also the nested LayerGroups, according to
+     * the specified LayerGroup style name.
+     *
+     * @param layerGroupStyleName
+     * @return the list of all the contained StyleInfo instances.
+     */
+    List<StyleInfo> styles(String layerGroupStyleName);
+
+    /**
+     * Get the List of LayerGroupStyle defined for this LayerGroup.
+     *
+     * @return
+     */
+    List<LayerGroupStyle> getLayerGroupStyles();
+
+    /**
+     * Set the LayerGroupStyle List to the LayerGroup.
+     *
+     * @param styles
+     */
+    void setLayerGroupStyles(List<LayerGroupStyle> styles);
 
     /** The bounds for the base map. */
     ReferencedEnvelope getBounds();

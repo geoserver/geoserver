@@ -5,9 +5,6 @@
 package org.geoserver.ogcapi.styles;
 
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.geoserver.data.test.MockData.BUILDINGS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNull;
@@ -26,7 +23,6 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.IOUtils;
 import org.geowebcache.mime.ApplicationMime;
 import org.hamcrest.Matchers;
@@ -34,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.w3c.dom.Document;
 
 public class StyleMetadataTest extends StylesTestSupport {
 
@@ -51,7 +46,6 @@ public class StyleMetadataTest extends StylesTestSupport {
 
     @Before
     public void clearMetadata() {
-        StyleInfo si = getCatalog().getStyleByName("polygon");
         StyleInfo polygon = getCatalog().getStyleByName("polygon");
         StyleMetadataInfo metadata = new StyleMetadataInfo();
         metadata.setTitle(POLYGON_TITLE);
@@ -78,7 +72,7 @@ public class StyleMetadataTest extends StylesTestSupport {
                 getCatalog());
         testData.addVectorLayer(
                 BUILDINGS_LABEL,
-                new HashMap() {
+                new HashMap<SystemTestData.LayerProperty, Object>() {
                     {
                         put(SystemTestData.LayerProperty.STYLE, BUILDINGS_LABEL_ASSOCIATED_STYLE);
                         put(SystemTestData.LayerProperty.NAME, BUILDINGS_LABEL.getLocalPart());
@@ -190,7 +184,7 @@ public class StyleMetadataTest extends StylesTestSupport {
 
         // sample data, vector items
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ABuildingsLabels/items?f=application%2Fgeo%2Bjson",
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ABuildingsLabels/items?f=application%2Fgeo%2Bjson&limit=50",
                 readSingle(
                         json,
                         "layers[?(@.id == 'Buildings')].sampleData[?(@.rel == 'data' && @.type == 'application/geo+json')].href"));
@@ -255,42 +249,15 @@ public class StyleMetadataTest extends StylesTestSupport {
         // ... check the sample data link, make sure there is only one (there used to be extra
         // layers)
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ALakes/items?f=application%2Fgeo%2Bjson",
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ALakes/items?f=application%2Fgeo%2Bjson&limit=50",
                 readSingle(json, "layers[0].sampleData[?(@.type=='application/geo+json')].href"));
 
         // BasicPolygons
         assertEquals("Buildings", json.read("layers[1].id"));
         assertEquals("polygon", json.read("layers[1].type"));
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ABuildings/items?f=application%2Fgeo%2Bjson",
+                "http://localhost:8080/geoserver/ogc/features/collections/cite%3ABuildings/items?f=application%2Fgeo%2Bjson&limit=50",
                 readSingle(json, "layers[1].sampleData[?(@.type=='application/geo+json')].href"));
-    }
-
-    @Test
-    public void testMetadataSerialization() throws Exception {
-        Resource styleResource = getDataDirectory().getStyles("polygon.xml");
-        Document dom = dom(styleResource.in(), true);
-        String metadataPath =
-                "//metadata/entry[@key='" + StyleMetadataInfo.METADATA_KEY + "']/styleMetadata";
-        assertXpathExists(metadataPath, dom);
-        assertXpathEvaluatesTo(POLYGON_TITLE, metadataPath + "/title", dom);
-        assertXpathEvaluatesTo(POLYGON_ABSTRACT, metadataPath + "/abstract", dom);
-        assertXpathEvaluatesTo("polygon", metadataPath + "/keywords/string[1]", dom);
-        assertXpathEvaluatesTo("test", metadataPath + "/keywords/string[2]", dom);
-
-        // force reload to ensure proper white-listing
-        getGeoServer().reload();
-        StyleInfo polygonInfo = getCatalog().getStyleByName("polygon");
-        assertNotNull(polygonInfo);
-        StyleMetadataInfo metadata =
-                polygonInfo
-                        .getMetadata()
-                        .get(StyleMetadataInfo.METADATA_KEY, StyleMetadataInfo.class);
-        assertNotNull("metadata");
-        assertEquals(POLYGON_TITLE, metadata.getTitle());
-        assertEquals(POLYGON_ABSTRACT, metadata.getAbstract());
-        assertEquals("polygon", metadata.getKeywords().get(0));
-        assertEquals("test", metadata.getKeywords().get(1));
     }
 
     @Test

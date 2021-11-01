@@ -42,6 +42,7 @@ class RHealPixZoneIterator<R> implements Iterator<R> {
     Stack<String> candidates = new Stack<>();
     R next = null;
 
+    @SuppressWarnings("unchecked")
     public RHealPixZoneIterator(
             RHealPixDGGSInstance rpix,
             Function<RHealPixZone, Boolean> drill,
@@ -69,6 +70,7 @@ class RHealPixZoneIterator<R> implements Iterator<R> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public boolean hasNext() {
         // look for the next item, or drill down through children
         while (next == null && !candidates.isEmpty()) {

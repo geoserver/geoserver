@@ -6,7 +6,6 @@ package org.geoserver.ogcapi.styles;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.IOException;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -50,7 +49,7 @@ import org.opengis.geometry.coordinate.Polygon;
 import org.opengis.style.Symbolizer;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StyleLayer implements Serializable {
+public class StyleLayer {
 
     static final Logger LOGGER = Logging.getLogger(StyleLayer.class);
 

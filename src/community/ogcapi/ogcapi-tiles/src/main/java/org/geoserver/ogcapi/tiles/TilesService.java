@@ -451,7 +451,7 @@ public class TilesService {
             HttpHeaders headers = new HttpHeaders();
             headers.add("geowebcache-cache-result", MISS.toString());
             headers.add("geowebcache-miss-reason", "unknown");
-            return new ResponseEntity(headers, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
         }
 
         final byte[] tileBytes;
@@ -473,7 +473,7 @@ public class TilesService {
         if (etag.equals(ifNoneMatch)) {
             // Client already has the current version
             LOGGER.finer("ETag matches, returning 304");
-            return new ResponseEntity(HttpStatus.NOT_MODIFIED);
+            return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
         }
 
         LOGGER.finer("No matching ETag, returning cached tile");
@@ -504,7 +504,7 @@ public class TilesService {
                 HttpHeaders.CONTENT_DISPOSITION,
                 getTileFileName(tileMatrixSetId, tileMatrix, tileRow, tileCol, tileLayer, tile));
 
-        return new ResponseEntity(tileBytes, headers, HttpStatus.OK);
+        return new ResponseEntity<>(tileBytes, headers, HttpStatus.OK);
     }
 
     static String getTileLayerId(TileLayer tileLayer) {
@@ -667,7 +667,7 @@ public class TilesService {
         long[] gridCov = gridSubset.getCoverage((int) z);
         if (x < gridCov[0] || x > gridCov[2]) {
             throw new APIException(
-                    "TileOutOfRange",
+                    APIException.NOT_FOUND,
                     "Column " + x + " is out of range, min: " + gridCov[0] + " max:" + gridCov[2],
                     HttpStatus.NOT_FOUND);
         }
@@ -676,7 +676,7 @@ public class TilesService {
             long maxRow = tilesHigh - gridCov[1] - 1;
 
             throw new APIException(
-                    "TileOutOfRange",
+                    APIException.NOT_FOUND,
                     "Row " + tileRow + " is out of range, min: " + minRow + " max:" + maxRow,
                     HttpStatus.NOT_FOUND);
         }
@@ -726,7 +726,7 @@ public class TilesService {
 
         // could not find a match? The request did not follow the advertised formats then
         throw new APIException(
-                "InvalidParameter",
+                APIException.INVALID_PARAMETER_VALUE,
                 "Could not find a tile media type matching the requested resource (either invalid format, or not supported on this resource)",
                 HttpStatus.BAD_REQUEST);
     }

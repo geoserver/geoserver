@@ -299,8 +299,7 @@ public class TilesIteratorTest {
 
     private void assertIterator(TileIterator iterator, long[]... positions) {
         if (positions != null) {
-            for (int i = 0; i < positions.length; i++) {
-                long[] position = positions[i];
+            for (long[] position : positions) {
                 assertTrue(
                         "Was expecting "
                                 + Arrays.toString(position)

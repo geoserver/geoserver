@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -76,8 +77,6 @@ public class APIDispatcher extends AbstractController {
     static final String RESPONSE_OBJECT = "ResponseObject";
 
     public static final String ROOT_PATH = "ogc";
-
-    static final Charset UTF8 = Charset.forName("UTF-8");
 
     static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.geoserver.ogcapi");
@@ -213,6 +212,7 @@ public class APIDispatcher extends AbstractController {
                         }));
     }
 
+    @SuppressWarnings("unchecked")
     private void addToListBackwards(List source, List target) {
         // add them in reverse order to the head, so that they will have the same order as extension
         // priority commands
@@ -228,7 +228,7 @@ public class APIDispatcher extends AbstractController {
         Charset charSet = null;
 
         // TODO: make this server settable
-        charSet = UTF8;
+        charSet = StandardCharsets.UTF_8;
         if (request.getCharacterEncoding() != null)
             try {
                 charSet = Charset.forName(request.getCharacterEncoding());
@@ -477,7 +477,7 @@ public class APIDispatcher extends AbstractController {
         } else {
             // track parsed kvp and unparsd
             Map<String, Object> parsedKvp = KvpUtils.normalize(kvp);
-            Map rawKvp = new KvpMap(parsedKvp);
+            Map<String, Object> rawKvp = new KvpMap<>(parsedKvp);
 
             request.setKvp(parsedKvp);
             request.setRawKvp(rawKvp);

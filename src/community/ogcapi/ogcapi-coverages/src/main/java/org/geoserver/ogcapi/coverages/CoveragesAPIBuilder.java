@@ -29,6 +29,7 @@ public class CoveragesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WCS
      * @param wcs The WCS configuration
      */
     @Override
+    @SuppressWarnings("unchecked") // getSchema not generified
     public OpenAPI build(WCSInfo wcs) throws IOException {
         OpenAPI api = super.build(wcs);
 

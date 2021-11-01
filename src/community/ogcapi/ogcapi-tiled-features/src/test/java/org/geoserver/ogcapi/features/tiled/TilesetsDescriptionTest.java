@@ -12,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 import com.jayway.jsonpath.DocumentContext;
 import org.geoserver.data.test.MockData;
 import org.geoserver.ogcapi.tiles.Tileset;
-import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 public class TilesetsDescriptionTest extends TiledFeaturesTestSupport {
@@ -50,11 +49,12 @@ public class TilesetsDescriptionTest extends TiledFeaturesTestSupport {
 
     @Test
     public void testGetTileMatrixSetsHTML() throws Exception {
-        Document document = getAsJSoup("ogc/features/tileMatrixSets?f=html");
+        getAsJSoup("ogc/features/tileMatrixSets?f=html");
         // TODO: add ids and actual checks in the generated HTML
     }
 
     @Test
+    @SuppressWarnings("unchecked") // varargs generic in matcher
     public void testGetTileMatrixSet() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/features/tileMatrixSets/EPSG:4326", 200);
 
@@ -89,6 +89,7 @@ public class TilesetsDescriptionTest extends TiledFeaturesTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // varargs generic in matcher
     public void getDataTilesMetadata() throws Exception {
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         DocumentContext json =
@@ -121,8 +122,7 @@ public class TilesetsDescriptionTest extends TiledFeaturesTestSupport {
     @Test
     public void getDataTilesMetadataHTML() throws Exception {
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
-        Document doc =
-                getAsJSoup("ogc/features/collections/" + roadSegments + "/tiles?f=text/html");
-        // TODO: add ids in the elemnets and check contents using jSoup
+        getAsJSoup("ogc/features/collections/" + roadSegments + "/tiles?f=text/html");
+        // TODO: add ids in the elements and check contents using jSoup
     }
 }

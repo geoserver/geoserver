@@ -69,13 +69,19 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
     }
 
     private List<XStreamPersisterInitializer> getInitializers() {
-        if (initializers == null) {
-            initializers =
-                    new ArrayList<>(
-                            GeoServerExtensions.extensions(
-                                    XStreamPersisterInitializer.class, applicationContext));
+        if (initializers == null || initializers.isEmpty()) {
+            // the factory is created also programmatically, and without
+            if (applicationContext == null) {
+                initializers =
+                        new ArrayList<>(
+                                GeoServerExtensions.extensions(XStreamPersisterInitializer.class));
+            } else {
+                initializers =
+                        new ArrayList<>(
+                                GeoServerExtensions.extensions(
+                                        XStreamPersisterInitializer.class, applicationContext));
+            }
         }
-
         return initializers;
     }
 

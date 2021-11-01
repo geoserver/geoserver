@@ -40,7 +40,7 @@ public class WCS20ExceptionHandler extends DefaultAPIExceptionHandler {
         }
         response.setContentType("application/json");
 
-        writeResponse(response, wc.getCode(), getDescription(t));
+        writeResponse(response, t, wc.getCode(), getDescription(t));
     }
 
     @Override

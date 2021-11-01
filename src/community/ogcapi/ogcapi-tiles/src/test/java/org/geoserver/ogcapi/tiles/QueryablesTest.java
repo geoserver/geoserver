@@ -21,7 +21,7 @@ public class QueryablesTest extends TilesTestSupport {
                         "ogc/tiles/collections/" + getLayerId(TASMANIA_BM) + "/queryables", 404);
         assertEquals(
                 "Collection 'wcs:BlueMarble' cannot be filtered, no queryables available",
-                json.read("description"));
+                json.read("title"));
     }
 
     @Test
@@ -31,7 +31,7 @@ public class QueryablesTest extends TilesTestSupport {
                 getAsJSONPath("ogc/tiles/collections/" + NATURE_GROUP + "/queryables", 404);
         assertEquals(
                 "Collection '" + NATURE_GROUP + "' cannot be filtered, no queryables available",
-                json.read("description"));
+                json.read("title"));
     }
 
     @Test

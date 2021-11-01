@@ -1,3 +1,7 @@
+/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.ogcapi.features.tiled;
 
 import io.swagger.v3.oas.models.OpenAPI;
@@ -90,7 +94,9 @@ public class TiledFeatureService {
             throws FactoryException, TransformException, IOException {
         if (!isTiledVectorLayer(collectionId)) {
             throw new APIException(
-                    "NotATileLayer", collectionId + " is not a tiled layer", HttpStatus.NOT_FOUND);
+                    APIException.NOT_FOUND,
+                    collectionId + " is not a tiled layer",
+                    HttpStatus.NOT_FOUND);
         }
         TilesDocument response = delegate.describeTilesets(collectionId);
         rebaseLinks(response);
@@ -117,7 +123,9 @@ public class TiledFeatureService {
             throws FactoryException, TransformException, IOException {
         if (!isTiledVectorLayer(collectionId)) {
             throw new APIException(
-                    "NotATileLayer", collectionId + " is not a tiled layer", HttpStatus.NOT_FOUND);
+                    APIException.NOT_FOUND,
+                    collectionId + " is not a tiled layer",
+                    HttpStatus.NOT_FOUND);
         }
         Tileset tileset = delegate.describeTileset(collectionId, tileMatrixId);
         rebaseLinks(tileset);
@@ -169,7 +177,9 @@ public class TiledFeatureService {
             throws GeoWebCacheException, IOException, NoSuchAlgorithmException {
         if (!isTiledVectorLayer(collectionId)) {
             throw new APIException(
-                    "NotATileLayer", collectionId + " is not a tiled layer", HttpStatus.NOT_FOUND);
+                    APIException.NOT_FOUND,
+                    collectionId + " is not a tiled layer",
+                    HttpStatus.NOT_FOUND);
         }
         return delegate.getRawTile(
                 collectionId,

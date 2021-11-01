@@ -18,8 +18,10 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.util.tester.TagTester;
+import org.apache.wicket.util.visit.IVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -240,6 +242,20 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
                     assertEquals(
                             kmlLink.getDefaultModelObjectAsString(),
                             "http://localhost/context/cite/wms/kml?layers=cite%3ALakes%20%2B%20a%20plus");
+
+                    // check formats
+                    RepeatingView wmsFormats =
+                            (RepeatingView) c.get("itemProperties:4:component:menu:wms:wmsFormats");
+                    if (wmsFormats != null) {
+                        assertFormat(wmsFormats, "JPEG-PNG", true);
+                    }
+
+                    RepeatingView wfsFormats =
+                            (RepeatingView) c.get("itemProperties:4:component:menu:wfs:wfsFormats");
+                    if (wfsFormats != null) {
+                        assertFormat(wfsFormats, "CSV", true);
+                        assertFormat(wfsFormats, "text/csv", true);
+                    }
                 }
             }
             assertTrue("Could not find layer with expected name", exists);
@@ -263,6 +279,19 @@ public class MapPreviewPageTest extends GeoServerWicketTestSupport {
             ft.setName("Lines");
             catalog.save(ft);
         }
+    }
+
+    private void assertFormat(RepeatingView view, String format, boolean expected) {
+        Boolean found =
+                view.visitChildren(
+                        Label.class,
+                        (IVisitor<Label, Boolean>)
+                                (label, visit) -> {
+                                    if (label.getDefaultModelObjectAsString().contains(format)) {
+                                        visit.stop(true);
+                                    }
+                                });
+        assertEquals(format, expected, found == null ? false : found);
     }
 
     /** Test for layer group service support check */

@@ -53,7 +53,7 @@ public class ClickHouseJDBCDataStoreFactory extends JDBCDataStoreFactory {
     }
 
     @Override
-    public BasicDataSource createDataSource(Map params) throws IOException {
+    public BasicDataSource createDataSource(Map<String, ?> params) throws IOException {
         BasicDataSource ds = super.createDataSource(params);
         ds.addConnectionProperty("max_query_size", "1000000");
         ds.addConnectionProperty("socket_timeout", "300000");

@@ -105,7 +105,7 @@ public class H3DGGSInstance implements DGGSInstance {
             Envelope envelope, int targetResolution, boolean compact) {
         Envelope intersection = envelope.intersection(WORLD);
         if (intersection.isNull()) {
-            return new EmptyIterator();
+            return new EmptyIterator<>();
         }
         // When crossing the dateline, the parent and child are not always sitting on the
         // same side of the dateline, need to drill down.
@@ -302,7 +302,7 @@ public class H3DGGSInstance implements DGGSInstance {
     @Override
     public Iterator<Zone> children(String zoneId, int resolution) {
         Zone zone = getZone(zoneId);
-        if (zone.getResolution() >= resolution) return new EmptyIterator();
+        if (zone.getResolution() >= resolution) return new EmptyIterator<>();
 
         // all the children of the given cell
         return new H3ZoneIterator<>(
@@ -356,25 +356,11 @@ public class H3DGGSInstance implements DGGSInstance {
         long highest = idx.highestIdChild(resolution);
         String lowestId = h3.h3ToString(lowest);
         String highestId = h3.h3ToString(highest);
-        String prefix = getPrefix(lowestId, highestId);
-        Filter prefixFilter =
-                ff.like(ff.property(DGGSStore.ZONE_ID), prefix + "%", "%", "?", "\\", true);
         Filter matchFilter =
                 ff.between(
                         ff.property(DGGSStore.ZONE_ID),
                         ff.literal(lowestId),
                         ff.literal(highestId));
-        // return ff.and(prefixFilter, matchFilter);
         return matchFilter;
-    }
-
-    private String getPrefix(String a, String b) {
-        int length = a.length();
-        for (int i = 0; i < length; i++) {
-            if (a.charAt(i) != b.charAt(i)) {
-                return a.substring(0, i);
-            }
-        }
-        return a;
     }
 }

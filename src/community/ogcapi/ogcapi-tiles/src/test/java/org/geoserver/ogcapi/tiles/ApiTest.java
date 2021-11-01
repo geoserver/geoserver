@@ -146,6 +146,7 @@ public class ApiTest extends TilesTestSupport {
     }
 
     @Test
+    @SuppressWarnings("unchecked") // getSchema().getEnum() not fully generified
     public void testWorkspaceQualifiedAPI() throws Exception {
         MockHttpServletRequest request = createRequest("cdf/ogc/tiles/api");
         request.setMethod("GET");

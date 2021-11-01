@@ -42,7 +42,7 @@ public class StyleDocumentCallback implements DocumentCallback {
     @Override
     public void apply(Request dr, AbstractDocument document) {
         if (document instanceof AbstractCollectionDocument) {
-            AbstractCollectionDocument collection = (AbstractCollectionDocument) document;
+            AbstractCollectionDocument<?> collection = (AbstractCollectionDocument) document;
             Object subject = collection.getSubject();
             if (subject instanceof ResourceInfo) {
                 addResourceStyles(collection);
@@ -54,7 +54,7 @@ public class StyleDocumentCallback implements DocumentCallback {
         }
     }
 
-    private void addResourceStyles(AbstractCollectionDocument collection) {
+    private void addResourceStyles(AbstractCollectionDocument<?> collection) {
         ResourceInfo ri = (ResourceInfo) collection.getSubject();
         for (LayerInfo layer : catalog.getLayers(ri)) {
             Set<StyleInfo> styles = new LinkedHashSet<>();

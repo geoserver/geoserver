@@ -60,13 +60,7 @@ public class QueryablesBuilder {
         return getSchema(binding);
     }
 
-    /**
-     * Returns the schema for a given
-     *
-     * @param type
-     * @param binding
-     * @return
-     */
+    /** Returns the schema for a given data type */
     public static Schema<?> getSchema(Class<?> binding) {
         if (Geometry.class.isAssignableFrom(binding)) return getGeometrySchema(binding);
         else return getAlphanumericSchema(binding);

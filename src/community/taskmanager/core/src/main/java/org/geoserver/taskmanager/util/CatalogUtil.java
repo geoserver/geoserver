@@ -32,6 +32,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.wicket.util.io.IOUtils;
 import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageView;
 import org.geoserver.catalog.KeywordInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -57,7 +58,8 @@ public class CatalogUtil {
     private static final Logger LOGGER = Logging.getLogger(CatalogUtil.class);
 
     private static final String[] IGNORE_METADATA = {
-        "custom-derived-attributes" // metadata module
+        "custom-derived-attributes", // metadata module
+        CoverageView.COVERAGE_VIEW // coverage view
     };
 
     @Autowired protected GeoServerDataDirectory geoServerDataDirectory;

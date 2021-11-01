@@ -37,10 +37,7 @@ public abstract class RequestObject {
         return adaptee.eClass().getEPackage().getEFactoryInstance();
     }
 
-    //
     // Some common properties that many request objects share
-    //
-
     public String getBaseURL() {
         return getBaseUrl();
     }
@@ -126,9 +123,7 @@ public abstract class RequestObject {
         eSet(adaptee, "outputFormat", outputFormat);
     }
 
-    //
     // helpers
-    //
     protected <T> T eGet(Object obj, String property, Class<T> type) {
         String[] props = property.split("\\.");
         for (String prop : props) {

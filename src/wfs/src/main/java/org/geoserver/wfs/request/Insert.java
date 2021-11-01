@@ -26,6 +26,8 @@ public abstract class Insert extends TransactionElement {
 
     public abstract void setFeatures(List features);
 
+    public abstract void addFeature(List features);
+
     public boolean isIdGenUseExisting() {
         return false;
     }
@@ -44,6 +46,11 @@ public abstract class Insert extends TransactionElement {
         @Override
         public void setFeatures(List features) {
             eSet(adaptee, "feature", features);
+        }
+
+        @Override
+        public void addFeature(List features) {
+            eAdd(adaptee, "feature", features);
         }
 
         @Override
@@ -80,6 +87,11 @@ public abstract class Insert extends TransactionElement {
         @Override
         public void setFeatures(List features) {
             eSet(adaptee, "any", features);
+        }
+
+        @Override
+        public void addFeature(List features) {
+            eAdd(adaptee, "any", features);
         }
     }
 }

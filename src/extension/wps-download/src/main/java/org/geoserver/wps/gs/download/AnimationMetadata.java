@@ -4,34 +4,13 @@
  */
 package org.geoserver.wps.gs.download;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.geoserver.util.HTTPWarningAppender;
 
 /**
  * Secondary result of the animation process, collects time related WMS warnings (default, failed
  * match, nearest match)
  */
-public class AnimationMetadata {
-
-    List<FrameWarning> warnings;
-    boolean warningsFound;
-
-    public AnimationMetadata() {
-        this.warnings = new ArrayList<>();
-    }
-
-    public List<FrameWarning> getWarnings() {
-        return warnings;
-    }
-
-    public boolean isWarningsFound() {
-        return warningsFound;
-    }
-
-    public void setWarningsFound(boolean warningsFound) {
-        this.warningsFound = warningsFound;
-    }
+public class AnimationMetadata extends DownloadMetadata {
 
     public void accumulateWarnings(int frameCounter) {
         HTTPWarningAppender.getWarnings()

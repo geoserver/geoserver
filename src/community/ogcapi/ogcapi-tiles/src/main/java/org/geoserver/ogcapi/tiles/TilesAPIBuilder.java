@@ -27,6 +27,7 @@ public class TilesAPIBuilder extends OpenAPIBuilder<TilesServiceInfo> {
     }
 
     @Override
+    @SuppressWarnings("unchecked") // getSchema not generified
     public OpenAPI build(TilesServiceInfo service) throws IOException {
         OpenAPI api = super.build(service);
 

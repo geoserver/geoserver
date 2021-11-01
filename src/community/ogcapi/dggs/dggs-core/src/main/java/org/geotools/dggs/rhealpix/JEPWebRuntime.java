@@ -55,8 +55,8 @@ public class JEPWebRuntime implements JEPRuntime {
     }
 
     @Override
+    @SuppressWarnings("PMD.CloseResource") // closed in closeThreadInterpreter
     public SharedInterpreter getInterpreter() throws JepException {
-        @SuppressWarnings("PMD.CloseResource")
         SharedInterpreter interpreter = INTERPRETER.get();
         if (interpreter == null) {
             interpreter = new SharedInterpreter();

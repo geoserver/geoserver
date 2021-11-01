@@ -22,7 +22,6 @@ import org.geowebcache.layer.TileLayer;
 /** Contains the list of styles for a given collection */
 @JsonPropertyOrder({"styles", "links"})
 public class StylesDocument extends AbstractDocument {
-    private static final String REL_MAP = "map";
     private final TileLayer tileLayer;
 
     private final String tileLayerId;

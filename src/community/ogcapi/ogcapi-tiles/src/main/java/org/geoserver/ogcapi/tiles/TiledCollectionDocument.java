@@ -183,7 +183,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                         .collect(Collectors.toSet());
         if (srsSet.isEmpty()) {
             throw new APIException(
-                    "IllegalState",
+                    APIException.NO_APPLICABLE_CODE,
                     "Could not compute the extent for layer "
                             + tileLayer.getName()
                             + ", no gridsets are configured",
@@ -201,7 +201,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                 return getExtentsFromGridSubset(subset);
             } catch (GeoWebCacheException ex) {
                 throw new APIException(
-                        "IllegalState",
+                        APIException.NO_APPLICABLE_CODE,
                         "Could not convert " + srs + " value: " + ex.getMessage(),
                         HttpStatus.INTERNAL_SERVER_ERROR);
             }

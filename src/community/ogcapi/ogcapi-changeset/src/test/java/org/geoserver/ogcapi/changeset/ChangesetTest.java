@@ -213,7 +213,6 @@ public class ChangesetTest extends OGCApiTestSupport {
         uploadImage("g2.tif", S2);
 
         Map<String, byte[]> contents = getChangesAsZip(S2_LAYER, "EPSG:900913", null, RASTER_STYLE);
-        System.out.println(contents.keySet());
 
         assertEquals(17, contents.size());
         assertThat(contents.keySet(), hasItem("changeset.json"));
@@ -234,10 +233,8 @@ public class ChangesetTest extends OGCApiTestSupport {
         assertThat(contents, hasKey("EPSG:900913/EPSG:900913:10/357/545.png"));
 
         // check that all files are actually PNGs, can be read, are not empty
-        int countPNGs = 0;
         for (Map.Entry<String, byte[]> file : contents.entrySet()) {
             if (file.getKey().endsWith(".png")) {
-                countPNGs++;
                 BufferedImage image = ImageIO.read(new ByteArrayInputStream(file.getValue()));
                 assertNotNull(image);
             }
@@ -261,7 +258,6 @@ public class ChangesetTest extends OGCApiTestSupport {
 
         Map<String, byte[]> contents =
                 getChangesAsZip(S2_SCALES_LAYER, "EPSG:900913", null, RASTER_SCALES_STYLE);
-        System.out.println(contents.keySet());
 
         assertEquals(14, contents.size());
         assertThat(contents.keySet(), hasItem("changeset.json"));
@@ -284,10 +280,8 @@ public class ChangesetTest extends OGCApiTestSupport {
         assertThat(contents, hasKey("EPSG:900913/EPSG:900913:11/714/1091.png"));
 
         // check that all files are actually PNGs, can be read, are not empty
-        int countPNGs = 0;
         for (Map.Entry<String, byte[]> file : contents.entrySet()) {
             if (file.getKey().endsWith(".png")) {
-                countPNGs++;
                 BufferedImage image = ImageIO.read(new ByteArrayInputStream(file.getValue()));
                 assertNotNull(image);
             }

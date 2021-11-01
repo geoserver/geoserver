@@ -34,12 +34,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.Logger;
 import jep.JepException;
 import org.geotools.dggs.DGGSFactory;
 import org.geotools.dggs.DGGSFactoryFinder;
 import org.geotools.dggs.DGGSInstance;
 import org.geotools.dggs.Zone;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.logging.Logging;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -52,6 +54,8 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 public class H3DGGSInstanceTest {
+
+    static final Logger LOGGER = Logging.getLogger(H3DGGSInstanceTest.class);
 
     private static final ReferencedEnvelope WORLD =
             new ReferencedEnvelope(-180, 180, -90, 90, WGS84);
@@ -142,7 +146,7 @@ public class H3DGGSInstanceTest {
             try {
                 assertZoneCount(envelope, resolution);
             } catch (AssertionError e) {
-                System.out.println(envelope + " / " + resolution + " -> " + e.getMessage());
+                LOGGER.severe(envelope + " / " + resolution + " -> " + e.getMessage());
             }
         }
     }
@@ -238,8 +242,7 @@ public class H3DGGSInstanceTest {
     public void testMapPoint() throws Exception {
         Point northPole = GF.createPoint(new Coordinate(0, 90));
         // test few different resolutions
-        String[] expectedIds =
-                new String[] {"8001fffffffffff", "81033ffffffffff", "820327fffffffff"};
+        String[] expectedIds = {"8001fffffffffff", "81033ffffffffff", "820327fffffffff"};
         for (int r = 0; r < expectedIds.length; r++) {
             Zone zone = h3i.point(northPole, r);
             assertEquals(expectedIds[r], zone.getId());
@@ -271,7 +274,6 @@ public class H3DGGSInstanceTest {
                 h3i.zonesFromEnvelope(new ReferencedEnvelope(-14, 4, -6, 11.7, WGS84), 1, true);
         Set<String> zones = new HashSet<>();
         zonesIterator.forEachRemaining(z -> zones.add(z.getId()));
-        System.out.println(zones);
         // should have collected the central pentagon plus 11 smaller zones around it
         assertEquals(12, zones.size());
         assertThat(zones, CoreMatchers.hasItem("8075fffffffffff"));

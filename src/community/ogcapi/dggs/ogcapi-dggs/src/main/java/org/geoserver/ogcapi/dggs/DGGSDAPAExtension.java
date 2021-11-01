@@ -5,7 +5,7 @@
 package org.geoserver.ogcapi.dggs;
 
 import static java.util.Collections.singletonMap;
-import static org.geoserver.platform.ServiceException.INVALID_PARAMETER_VALUE;
+import static org.geoserver.ogcapi.APIException.INVALID_PARAMETER_VALUE;
 import static org.geotools.dggs.gstore.DGGSStore.VP_RESOLUTION;
 import static org.geotools.util.factory.Hints.VIRTUAL_TABLE_PARAMETERS;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -33,7 +33,6 @@ import org.geoserver.ogcapi.DefaultContentType;
 import org.geoserver.ogcapi.HTMLResponseBody;
 import org.geoserver.ogcapi.OGCAPIMediaTypes;
 import org.geoserver.ogcapi.features.FeaturesResponse;
-import org.geoserver.platform.ServiceException;
 import org.geoserver.util.ISO8601Formatter;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
@@ -103,7 +102,7 @@ public class DGGSDAPAExtension {
         DimensionInfo time = ft.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null)
             throw new APIException(
-                    ServiceException.NO_APPLICABLE_CODE,
+                    APIException.NO_APPLICABLE_CODE,
                     "This colleection does not support DAPA",
                     HttpStatus.NOT_FOUND);
         return ft;
@@ -116,7 +115,6 @@ public class DGGSDAPAExtension {
             throws IOException {
         FeatureTypeInfo info = getFeatureType(collectionId);
         // TODO: eventually make it work for complex features
-        SimpleFeatureType schema = (SimpleFeatureType) info.getFeatureType();
         DAPAVariables result = new DAPAVariables(collectionId, info);
         return result;
     }
@@ -440,6 +438,7 @@ public class DGGSDAPAExtension {
                     )
                     String format)
             throws Exception {
+        @SuppressWarnings("PMD.CloseResource") // managed by the store
         DGGSInstance dggs = service.getDGGSInstance(collectionId);
         zoneId = getPositionZoneId(zoneId, wkt, resolution, dggs);
 
@@ -468,6 +467,7 @@ public class DGGSDAPAExtension {
             @RequestParam(name = "variables", required = false) String variableNames)
             throws Exception {
         FeatureTypeInfo ft = getFeatureType(collectionId);
+        @SuppressWarnings("PMD.CloseResource") // managed by the store
         DGGSInstance dggs = service.getDGGSInstance(collectionId);
         zoneId = getPositionZoneId(zoneId, wkt, resolution, dggs);
 

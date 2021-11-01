@@ -5,7 +5,6 @@
 
 package org.geoserver.ogcapi;
 
-import freemarker.template.TemplateMethodModel;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
@@ -105,70 +104,66 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
      * Adds the <code>serviceLink</code>, <code>serviceLink</code> and <code>externalLinks</code>
      * functions to the model, for usage in the tempalte
      */
+    @SuppressWarnings("unchecked") // TemplateMethodModelEx is not generified
     protected void addLinkFunctions(String baseURL, Map<String, Object> model) {
         model.put(
                 "serviceLink",
-                (TemplateMethodModel)
+                (TemplateMethodModelEx)
                         arguments -> {
                             APIRequestInfo requestInfo = APIRequestInfo.get();
                             return ResponseUtils.buildURL(
                                     requestInfo.getBaseURL(),
                                     ResponseUtils.appendPath(
                                             requestInfo.getServiceLandingPage(),
-                                            (String) arguments.get(0)),
+                                            (String) unwrapArgument(arguments.get(0))),
                                     arguments.size() > 1
                                             ? Collections.singletonMap(
-                                                    "f", arguments.get(1).toString())
+                                                    "f", (String) unwrapArgument(arguments.get(1)))
                                             : null,
                                     URLMangler.URLType.SERVICE);
                         });
         model.put(
                 "resourceLink",
-                (TemplateMethodModel)
+                (TemplateMethodModelEx)
                         arguments ->
                                 ResponseUtils.buildURL(
                                         baseURL,
-                                        (String) arguments.get(0),
+                                        (String) unwrapArgument(arguments.get(0)),
                                         null,
                                         URLMangler.URLType.RESOURCE));
         model.put(
                 "externalLink",
-                (TemplateMethodModel)
+                (TemplateMethodModelEx)
                         arguments ->
                                 ResponseUtils.buildURL(
                                         baseURL,
-                                        (String) arguments.get(0),
+                                        (String) unwrapArgument(arguments.get(0)),
                                         null,
                                         URLMangler.URLType.EXTERNAL));
-        // TemplateMethodModelEx accepts generic object arguments instead of just string arguments
         model.put(
                 "htmlExtensions",
-                new TemplateMethodModelEx() {
-                    @Override
-                    public Object exec(List arguments) throws TemplateModelException {
-                        if (arguments != null) {
-                            arguments = unwrapArguments(arguments);
-                        }
-                        return processHtmlExtensions(model, arguments);
-                    }
-                });
+                (TemplateMethodModelEx)
+                        arguments -> {
+                            if (arguments != null) {
+                                arguments = unwrapArguments(arguments);
+                            }
+                            return processHtmlExtensions(model, arguments);
+                        });
     }
 
     public List<Object> unwrapArguments(List<Object> arguments) {
-        return arguments
-                .stream()
-                .map(
-                        v -> {
-                            if (v instanceof TemplateModel) {
-                                try {
-                                    return DeepUnwrap.permissiveUnwrap((TemplateModel) v);
-                                } catch (TemplateModelException e) {
-                                    LOGGER.log(Level.WARNING, "", e);
-                                }
-                            }
-                            return v;
-                        })
-                .collect(Collectors.toList());
+        return arguments.stream().map(v -> unwrapArgument(v)).collect(Collectors.toList());
+    }
+
+    private Object unwrapArgument(Object v) {
+        if (v instanceof TemplateModel) {
+            try {
+                return DeepUnwrap.permissiveUnwrap((TemplateModel) v);
+            } catch (TemplateModelException e) {
+                LOGGER.log(Level.WARNING, "", e);
+            }
+        }
+        return v;
     }
 
     private String processHtmlExtensions(Map<String, Object> model, List arguments) {

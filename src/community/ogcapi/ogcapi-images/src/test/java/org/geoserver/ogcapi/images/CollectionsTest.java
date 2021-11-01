@@ -77,7 +77,7 @@ public class CollectionsTest extends ImagesTestSupport {
         getStructuredCoverages()
                 .map(c -> c.prefixedName())
                 .forEach(
-                        id -> {;
+                        id -> {
                             String htmlId = id.replace(":", "__");
                             assertNotNull(document.select("#html_" + htmlId + "_link"));
                             assertEquals(

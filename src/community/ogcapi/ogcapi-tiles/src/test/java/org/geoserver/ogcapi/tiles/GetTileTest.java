@@ -282,11 +282,12 @@ public class GetTileTest extends TilesTestSupport {
                 "CQL_FILTER filter parameter not cached or not condition not matched",
                 resp.getHeader("geowebcache-miss-reason"));
 
-        InputStream is = getBinaryInputStream(resp);
-        RenderedImage filteredImage = ImageIO.read(is);
-        File expectedFilteredFile =
-                new File("src/test/resources/org/geoserver/ogcapi/tiles/streams_filterd.png");
-        ImageAssert.assertEquals(expectedFilteredFile, filteredImage, 100);
+        try (InputStream is = getBinaryInputStream(resp)) {
+            RenderedImage filteredImage = ImageIO.read(is);
+            File expectedFilteredFile =
+                    new File("src/test/resources/org/geoserver/ogcapi/tiles/streams_filterd.png");
+            ImageAssert.assertEquals(expectedFilteredFile, filteredImage, 100);
+        }
     }
 
     @Test
@@ -435,9 +436,9 @@ public class GetTileTest extends TilesTestSupport {
                                 + "_"
                                 + "/map/tiles/EPSG:900913/EPSG:900913:16/32768/32768?f=image/png",
                         400);
-        assertEquals("InvalidParameterValue", json.read("code"));
+        assertEquals("InvalidParameterValue", json.read("type"));
         assertThat(
-                json.read("description"),
+                json.read("title"),
                 CoreMatchers.allOf(
                         containsString("Invalid style name"),
                         containsString("BasicStyleGroupStyle")));

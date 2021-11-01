@@ -170,6 +170,7 @@ public class ApiTest extends FeaturesTestSupport {
         // check collectionId parameter
         Map<String, Parameter> params = api.getComponents().getParameters();
         Parameter collectionId = params.get("collectionId");
+        @SuppressWarnings("unchecked")
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
                 getCatalog()
@@ -205,6 +206,7 @@ public class ApiTest extends FeaturesTestSupport {
         OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
         Map<String, Parameter> params = api.getComponents().getParameters();
         Parameter collectionId = params.get("collectionId");
+        @SuppressWarnings("unchecked")
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
                 getCatalog()

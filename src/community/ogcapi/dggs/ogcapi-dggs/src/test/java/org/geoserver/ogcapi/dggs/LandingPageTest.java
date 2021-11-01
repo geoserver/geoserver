@@ -29,7 +29,6 @@ public class LandingPageTest extends OGCApiTestSupport {
         assertEquals("DGGS", service.getId());
         assertEquals(new Version("1.0"), service.getVersion());
         assertThat(service.getService(), CoreMatchers.instanceOf(DGGSService.class));
-        System.out.println(service.getOperations());
         assertThat(
                 service.getOperations(),
                 Matchers.containsInAnyOrder(

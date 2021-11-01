@@ -198,7 +198,6 @@ public class MonitorCallbackTest {
         q = WfsFactory.eINSTANCE.createQueryType();
         q.setTypeName(Arrays.asList(new QName("http://acme.org", "bar", "acme")));
         gf.getQuery().add(q);
-        getClass();
         q.setFilter(f2);
 
         Operation op = op("GetFeature", "WFS", "1.0.0", gf);

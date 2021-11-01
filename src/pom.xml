@@ -150,7 +150,7 @@
     <pom.fmt.action>sort</pom.fmt.action>
     <pom.fmt.skip>${fmt.skip}</pom.fmt.skip>
     <errorProneFlags></errorProneFlags>
-    <errorProne.version>2.3.4</errorProne.version>
+    <errorProne.version>2.9.0</errorProne.version>
     <javac.version>9+181-r4173-1</javac.version>
     <pmd.version>6.35.0</pmd.version>
     <checkstyle.skip>false</checkstyle.skip>

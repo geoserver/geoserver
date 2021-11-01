@@ -116,7 +116,7 @@ public class AboutControllerTest extends GeoServerSystemTestSupport {
     private void checkHTMLModel(Document dom) {
         // make assertions
         Node resource = getFirstElementByTagName(dom, "h2");
-        resource.getTextContent().equalsIgnoreCase("About:");
+        assertTrue(resource.getTextContent().equalsIgnoreCase("About:"));
         assertNotNull(resource);
         try {
             serializeXML(dom);

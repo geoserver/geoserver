@@ -1581,7 +1581,12 @@
           <printSummary>true</printSummary>
           <testFailureIgnore>${allow.test.failure.ignore}</testFailureIgnore>
           <excludedGroups>${test.excludedGroups}</excludedGroups>
-          <argLine>@{argLine} -XX:+IgnoreUnrecognizedVMOptions -Dfile.encoding=UTF-8 --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED</argLine>
+          <!-- Adding opens for build to work.
+	Needed for mock frameworks: java.base/java.lang
+		Additional needs for XStream:  java.base/java.util, java.base/java.lang.reflect, java.base/java.text, java.desktop/java.awt.font
+		Additional needs for JAI: java.desktop/sun.awt.image  
+	-->
+          <argLine>@{argLine} -XX:+IgnoreUnrecognizedVMOptions -Dfile.encoding=UTF-8 --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED  --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED</argLine>
         </configuration>
       </plugin>
 

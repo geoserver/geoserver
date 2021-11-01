@@ -26,6 +26,7 @@ import net.opengis.wfs.XlinkPropertyNameType;
 import net.opengis.wfs20.QueryType;
 import net.opengis.wfs20.ResultTypeType;
 import net.opengis.wfs20.StoredQueryType;
+import org.apache.commons.lang3.SystemUtils;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -702,19 +703,27 @@ public class GetFeature {
             long total = getTotalCount(totalCountExecutors);
             totalCount = BigInteger.valueOf(total);
         } else {
-            // ok, in this case we're forced to run the queries to discover the actual total
-            // count. We do so lazily, not all output formats need it, leveraging the fact that
-            // BigInteger is not final to wrap it in a lazy loading proxy
-            Enhancer enhancer = new Enhancer();
-            enhancer.setSuperclass(BigInteger.class);
-            enhancer.setCallback(
-                    (LazyLoader)
-                            () -> {
-                                long totalCount1 = getTotalCount(totalCountExecutors);
-                                return BigInteger.valueOf(totalCount1);
-                            });
-            totalCount =
-                    (BigInteger) enhancer.create(new Class[] {String.class}, new Object[] {"0"});
+            if (SystemUtils.IS_JAVA_11 || SystemUtils.IS_JAVA_1_8) {
+                // ok, in this case we're forced to run the queries to discover the actual total
+                // count. We do so lazily, not all output formats need it, leveraging the fact that
+                // BigInteger is not final to wrap it in a lazy loading proxy
+                Enhancer enhancer = new Enhancer();
+                enhancer.setSuperclass(BigInteger.class);
+                enhancer.setCallback(
+                        (LazyLoader)
+                                () -> {
+                                    long totalCount1 = getTotalCount(totalCountExecutors);
+                                    return BigInteger.valueOf(totalCount1);
+                                });
+                totalCount =
+                        (BigInteger)
+                                enhancer.create(new Class[] {String.class}, new Object[] {"0"});
+            } else {
+                // Spring asm does not work with newer versions of Java, skip lazy loading for now
+                // we might want to revisit with a different approach later, e..g, when upgrading
+                // Spring and its internal ASM library
+                totalCount = BigInteger.valueOf(getTotalCount(totalCountExecutors));
+            }
         }
         return totalCount;
     }

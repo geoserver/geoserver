@@ -63,14 +63,3 @@ For example, if the collection is named ``SENTINEL2``:
 
 * The collections specific template for it is named ``collections-SENTINEL2.json``
 * The items template specific for it is named ``items-SENTINEL2.json``
-
-FTL Functions
-
-* parseJSON
-
-It takes json file location and parse that json file in the free marker templates. Usage of the function like as below
-
-:code:`<#assign loadedJSON = "${parseJSON('readAndEval.json')}">`
-:code:`<#assign evalJSON = loadedJSON?eval_json>`
-
-More information about writing templates can be found in the :ref:`templates guide <oseotemplates>`.

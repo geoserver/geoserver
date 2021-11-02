@@ -167,33 +167,32 @@ public class TemplatesProcessor {
                                 throw new RuntimeException("Failed to encode geometry", e);
                             }
                         });
-        model.put(
-                "parseJSON",
-                (TemplateMethodModelEx)
-                        arguments -> {
-                            String filePath = arguments.get(0).toString();
-                            JSONParser parser = new JSONParser();
-                            try {
-                                GeoServerDataDirectory geoServerDataDirectory =
-                                        GeoServerExtensions.bean(GeoServerDataDirectory.class);
+        model.put("loadJSON", parseJSON());
+    }
 
-                                File file = geoServerDataDirectory.findFile(filePath);
-                                if (file == null) {
-                                    LOGGER.warning("File is outside of data directory");
-                                    throw new RuntimeException(
-                                            "File "
-                                                    + filePath
-                                                    + " is outside of the data directory");
-                                }
+    private TemplateMethodModelEx parseJSON() {
+        return arguments -> loadJSON(arguments.get(0).toString());
+    }
 
-                                return parser.parse(new FileReader(file.getPath())).toString();
-                            } catch (Exception e) {
-                                LOGGER.warning(
-                                        "Failed to parse JSON file " + e.getLocalizedMessage());
-                            }
-                            LOGGER.warning("Failed to create a JSON object");
-                            return "Failed to create a JSON object";
-                        });
+    private String loadJSON(String filePath) {
+        JSONParser parser = new JSONParser();
+        try {
+            GeoServerDataDirectory geoServerDataDirectory =
+                    GeoServerExtensions.bean(GeoServerDataDirectory.class);
+
+            File file = geoServerDataDirectory.findFile(filePath);
+            if (file == null) {
+                LOGGER.warning("File is outside of data directory");
+                throw new RuntimeException(
+                        "File " + filePath + " is outside of the data directory");
+            }
+
+            return parser.parse(new FileReader(file.getPath())).toString();
+        } catch (Exception e) {
+            LOGGER.warning("Failed to parse JSON file " + e.getLocalizedMessage());
+        }
+        LOGGER.warning("Failed to create a JSON object");
+        return "Failed to create a JSON object";
     }
 
     private String encodeToGML(Geometry g) throws IOException {

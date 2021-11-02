@@ -53,8 +53,12 @@ public class SearchTest extends OSEOTestSupport {
 
         GeoServerDataDirectory dd =
                 (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
-        File file = dd.getResourceLoader().createFile("readAndEval.json");
+        File file = dd.getResourceLoader().createFile("/readAndEval.json");
+        File nestedFile =
+                dd.getResourceLoader().createFile("/workspaces/readAndEvalNestedDir.json");
         dd.getResourceLoader().copyFromClassPath("readAndEval.json", file, getClass());
+        dd.getResourceLoader()
+                .copyFromClassPath("readAndEvalNestedDir.json", nestedFile, getClass());
     }
 
     @Test
@@ -1087,6 +1091,16 @@ public class SearchTest extends OSEOTestSupport {
                 hasXPath(
                         "/at:feed/at:entry[1]/at:summary",
                         containsString("<h2>attribute2 => 2</h2>")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString("<h3>attribute4 => 4</h3>")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString("<h3>attribute3 => 3</h3>")));
     }
 
     private void summaryHasLink(Document dom, String link) {

@@ -1,10 +1,15 @@
 <#assign a = model.attributes />
-<#assign loadedJSON = "${parseJSON('readAndEval.json')}">
+<#assign loadedJSON = "${loadJSON('readAndEval.json')}">
+<#assign nestedLoadedJSON = "${loadJSON('workspaces/readAndEvalNestedDir.json')}">
 <#assign evalJSON = loadedJSON?eval_json>
+<#assign nestedEvalJSON = nestedLoadedJSON?eval_json>
 
 <h1>This is a LANDSAT product!</h1>
 <#list evalJSON as k, v>
     <h2>${k} => ${v}</h2>
+</#list>
+<#list nestedEvalJSON as k, v>
+    <h3>${k} => ${v}</h3>
 </#list>
 <table>
 <tr>

@@ -58,7 +58,8 @@ public class GMLTemplateReader extends XMLRecursiveTemplateReader {
 
     @Override
     protected void addVendorOption(StartElement element, RootBuilder builder) {
-        if (element.getName().toString().equals(NAME_SPACES_EL)) {
+        String elementName = element.getName().toString();
+        if (elementName.equals(NAME_SPACES_EL)) {
             Iterator<Attribute> attributeIterator = element.getAttributes();
             Map<String, String> namespaces = new HashMap<>();
             while (attributeIterator.hasNext()) {
@@ -67,15 +68,14 @@ public class GMLTemplateReader extends XMLRecursiveTemplateReader {
                 if (isNamespace(name)) namespaces.put(localPart(name), attr.getValue());
             }
             if (!namespaces.isEmpty())
-                ((RootBuilder) builder).addVendorOption(VendorOptions.NAMESPACES, namespaces);
-        } else if (element.getName().toString().equals(SCHEMA_LOCATION_EL)) {
+                builder.addVendorOption(VendorOptions.NAMESPACES, namespaces);
+        } else if (elementName.equals(SCHEMA_LOCATION_EL)) {
             Iterator<Attribute> attributeIterator = element.getAttributes();
             if (attributeIterator.hasNext()) {
                 Attribute attribute = attributeIterator.next();
                 QName name = attribute.getName();
                 if (isSchemaLocation(name)) {
-                    ((RootBuilder) builder)
-                            .addVendorOption(VendorOptions.SCHEMA_LOCATION, attribute.getValue());
+                    builder.addVendorOption(VendorOptions.SCHEMA_LOCATION, attribute.getValue());
                 }
             }
         }

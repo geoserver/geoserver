@@ -45,7 +45,10 @@ The following are the directives available in JSON based templates.
      - specify the :code:`$include` option as an attribute value (:code:`"attribute":"$include{subProperty.json}"`) and the :code:`$includeFlat` as an attribute name with the included template path as a value (:code:`"$includeFlat":"included.json"`)
    * - allows a template to extend another template
      - $merge
-     - specify the :code:`$merge` directive as an attribute name containing the path to the extended template (:code: `"$merged":"base_template.json"`)
+     - specify the :code:`$merge` directive as an attribute name containing the path to the extended template (:code: `"$merged":"base_template.json"`).
+   * - allows null values to be encoded. default is not encoded.
+     - ${property}! or $${expression}!
+     - ! at the end of a property interpolation or cql directive (:code:`"attribute":"${property}!"` or :code:`"attribute":"$${expression}!"`).
 
 
 XML based templates
@@ -80,6 +83,9 @@ The following are the directives available in XML based templates.
    * - allows including a template into another
      - $include, gft:includeFlat
      - specify the :code:`$include` option as an element value (:code:`<element>$include{included.xml}</element>`) and the :code:`gft:includeFlat` as an element having the included template as text content (:code:`<gft:includeFlat>included.xml</gft:includeFlat>`)
+   * - allows null values to be encoded. default is not encoded.
+     - ${property}!
+     - specify it either as an element value (:code:`<element>${property}!</element>`) or as an xml attribute value (:code:`<element attribute:"${property}!"/>`)
 
 A step by step introduction to features-templating syntax
 ---------------------------------------------------------
@@ -1146,6 +1152,7 @@ The general rules for object merging are:
 * While order of the keys is not important in JSON, the merge is processed so that the base 
   property names are included first in the merged result, and the new ones included in the override 
   are added after them.
+* If in the overalay JSON template, are present attributes with a property interpolation directive or an expression that in turn returns a JSON, the JSON attribute tree will be merged too with the corresponding one in the base JSON tree.
 
 The ``$merge`` directive can be used in any object, making it the root for the merge operation.
 This could be used as an alternative to inclusion when local customizations are needed.

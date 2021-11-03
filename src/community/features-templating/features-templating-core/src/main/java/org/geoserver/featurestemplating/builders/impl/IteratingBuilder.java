@@ -60,7 +60,7 @@ public class IteratingBuilder extends SourceBuilder {
             boolean isArray = o != null && o.getClass().isArray();
             // if this is not a context as list and we don't have
             // iterate key hint we start the array and encode the key once here
-            if (!iterateKey && hasOwnOutput()) writer.startArray(key, encodingHints);
+            if (!iterateKey && hasOwnOutput()) writer.startArray(key, this.encodingHints);
 
             if (isList) {
                 evaluateCollection(
@@ -72,7 +72,7 @@ public class IteratingBuilder extends SourceBuilder {
                 evaluateInternal(writer, context, iterateKey);
             }
 
-            if (!iterateKey && hasOwnOutput()) writer.endArray(key, encodingHints);
+            if (!iterateKey && hasOwnOutput()) writer.endArray(key, this.encodingHints);
         }
     }
 

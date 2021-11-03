@@ -65,5 +65,7 @@
   "geometry": {
     "@type": "Polygon",
     "wkt": "$${toWKT(xpath('gsml:shape'))}"
-  }
+  },
+  "nullObject": null,
+  "nullText": null
 }

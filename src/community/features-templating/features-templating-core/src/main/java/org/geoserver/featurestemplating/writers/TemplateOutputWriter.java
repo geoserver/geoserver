@@ -7,10 +7,12 @@ package org.geoserver.featurestemplating.writers;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.List;
 import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.referencing.CRS;
+import org.geotools.util.Converters;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -212,6 +214,18 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
         } catch (FactoryException e) {
             throw new IOException(e);
         }
+    }
+
+    protected boolean isNull(Object value) {
+        boolean isNull = false;
+        if (value == null || value.equals("null") || "".equals(value)) isNull = true;
+        else if (value instanceof List) {
+            isNull = ((List) value).isEmpty();
+        } else if (value.getClass().isArray()) {
+            List list = Converters.convert(value, List.class);
+            isNull = list.isEmpty();
+        }
+        return isNull;
     }
 
     protected <T> T getEncodingHintIfPresent(

@@ -58,6 +58,9 @@ public enum AttributeType {
      * better match {@link AttributeType#STRING} is returned.
      */
     public static AttributeType fromClass(Class<?> binding) {
+        // some funtions fail to declare their return type, assume the most generic
+        if (binding == null) return AttributeType.STRING;
+
         // some functions use primitive return types, go to the wrapper
         if (PRIMITIVES_TO_WRAPPERS.containsKey(binding)) {
             binding = PRIMITIVES_TO_WRAPPERS.get(binding);

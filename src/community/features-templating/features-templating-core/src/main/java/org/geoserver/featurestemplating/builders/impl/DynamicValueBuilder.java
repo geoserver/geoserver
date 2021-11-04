@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
+import org.geoserver.featurestemplating.builders.EncodingHints;
 import org.geoserver.featurestemplating.builders.JSONFieldSupport;
 import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
@@ -32,11 +33,19 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
 
     protected NamespaceSupport namespaces;
 
+    private boolean encodeNull = false;
+
     private static final Logger LOGGER = Logging.getLogger(DynamicValueBuilder.class);
 
     public DynamicValueBuilder(String key, String expression, NamespaceSupport namespaces) {
         super(key, namespaces);
         this.namespaces = namespaces;
+
+        if (expression.endsWith("!")) {
+            this.encodeNull = true;
+            expression = expression.substring(0, expression.length() - 1);
+        }
+
         TemplateCQLManager cqlManager = new TemplateCQLManager(expression, namespaces);
         if (expression.startsWith("$${")) {
             this.cql = cqlManager.getExpressionFromString();
@@ -76,8 +85,9 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
     protected void writeValue(
             TemplateOutputWriter writer, Object value, TemplateBuilderContext context)
             throws IOException {
-        if (canWriteValue(value)) {
-            writer.writeElementNameAndValue(getKey(context), value, getEncodingHints());
+        if (encodeNull || canWriteValue(value)) {
+            EncodingHints encodingHints = getEncodingHints();
+            writer.writeElementNameAndValue(getKey(context), value, encodingHints);
         }
     }
 
@@ -154,7 +164,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
         } else if (value instanceof List && ((List) value).size() == 0) {
             if (((List) value).size() == 0) return false;
             else return true;
-        } else if (value == null) {
+        } else if (value == null || value.equals("null") || "".equals(value)) {
             return false;
         } else {
             return true;
@@ -170,11 +180,10 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
     }
 
     public boolean checkNotNullValue(TemplateBuilderContext context) {
+        if (encodeNull) return true;
         Object o = null;
         if (xpath != null) {
-
             o = evaluateXPath(context);
-
         } else if (cql != null) {
             o = evaluateExpressions(cql, context);
         }

@@ -7,13 +7,13 @@ This part of the documentation is an introduction explaining the different templ
 Examples will be provided for both Simple Features and Complex Features.
 The syntax of the directives varies slightly between XML based templates and JSON based templates.
 
-The examples will be provided mainly for GeoJSON and GML. Anyway the syntax defined for GeoJSON output, unless otherwise specified, will works as well for JSON-LD templates.
+The examples will be provided mainly for GeoJSON and GML. However the syntax defined for GeoJSON output, unless otherwise specified, is valid for JSON-LD templates
 
 
 Template directive summary
 --------------------------
 
-The following constitues a summary of all the template directives and it is meant to be used for quick reference. Each directive is explained in details in the sections below.
+The following constitutes a summary of all the template directives and it is meant to be used for quick reference. Each directive is explained in detail in the sections below.
 
 JSON based templates
 ^^^^^^^^^^^^^^^^^^^^
@@ -46,6 +46,9 @@ The following are the directives available in JSON based templates.
    * - allows a template to extend another template
      - $merge
      - specify the :code:`$merge` directive as an attribute name containing the path to the extended template (:code: `"$merged":"base_template.json"`).
+   * - allows null values to be encoded. default is not encoded.
+     - ${property}! or $${expression}!
+     - ! at the end of a property interpolation or cql directive (:code:`"attribute":"${property}!"` or :code:`"attribute":"$${expression}!"`).
 
 
 XML based templates
@@ -79,13 +82,15 @@ The following are the directives available in XML based templates.
      - specify it as an element at the beggining of the xml document after the :code:`<gft:Template>` one (:code:`<gft:Options></gft:Options>`). GML options: :code:`<gtf:Namespaces>`,:code:`<gtf:SchemaLocation>`. HTML options: :code:`<script>`,:code:`<style>`, :code: `<link>`.
    * - allows including a template into another
      - $include, gft:includeFlat
-     - specify the :code:`$include` option as an element value (:code:`<element>$include{included.xml}</element>`) and the :code:`gft:includeFlat` as an element having the included tempalte as text content (:code:`<gft:includeFlat>included.xml</gft:includeFlat>`)
+     - specify the :code:`$include` option as an element value (:code:`<element>$include{included.xml}</element>`) and the :code:`gft:includeFlat` as an element having the included template as text content (:code:`<gft:includeFlat>included.xml</gft:includeFlat>`)
+   * - allows null values to be encoded. default is not encoded.
+     - ${property}!
+     - specify it either as an element value (:code:`<element>${property}!</element>`) or as an xml attribute value (:code:`<element attribute:"${property}!"/>`)
 
 A step by step introduction to features-templating syntax
 ---------------------------------------------------------
-This introduction is meant to illustrates the different directives that can be used in a template. 
-For clarity the documentation will go before through a ``Simple Feature`` example and then through a ``Complex Feature`` one. However all the directives that will be showed are available for both Simple and Complex Features. 
-``GeoJSON`` and ``GML`` examples will be used mostly. For ``JSON-LD`` output format the rules to define a template are the same of the ``GeoJSON`` template with two exceptions:
+This introduction is meant to illustrate the different directives that can be used in a template. 
+For clarity the documentation will start with a ``Simple Feature`` example and then progress through a ``Complex Feature`` example. However all the directives that will be shown are available for both Simple and Complex Features. ``GeoJSON`` and ``GML`` examples will be used mostly. For ``JSON-LD`` output format the rules to define a template are the same as the ``GeoJSON`` template with two exceptions:
 
 * A ``@context`` needs to be specified (see the ``options`` section below).
 * The standard mandates that attributes' values are all strings.
@@ -221,15 +226,15 @@ And this is how a feature will appear:
       <topp:wkt_geom>MULTIPOLYGON (([....])))</topp:wkt_geom>
     </topp:states>
 
-As it is possible to see the geometry is being encoded only as a wkt, moreover the STATE_ATTR value is now present as an xml attribute of the element :code:`topp:states`. Finally elements that were not defined in the template did not showed up.
+As it is possible to see the geometry is being encoded only as a wkt, moreover the STATE_ATTR value is now present as an xml attribute of the element :code:`topp:states`. Finally elements that were not defined in the template did not show up.
 
-Looking at these examples it is possible to see that few more directives to customize the output:
+Looking at these examples it is possible to see additional directives that can customize the output:
 
 * Property interpolation can be invoked using the directive :code:`${property_name}`.
 * In case complex operation are needed a CQL expression can be used throught a :code:`$${cql}` syntax (all CQL functions are supported).
 * Simple text values are reproduced in the final output as they are.
-* Finally the gml template needs the actual template content to be wrapped into a :code:`gft:Template` element. The :code:`gft` doesn't needs to be bound to a namespaces. It is used just as marker of features-templating related element and will not be present in the final output.
-* There is also another element, the :code:`gft:Options`, with two more elements inside. It will be explained in below dedicated section.
+* Finally the GML template needs the actual template content to be wrapped into a :code:`gft:Template` element. The :code:`gft` doesn't needs to be bound to a namespace. It is used just as marker of a features-templating related element and will not be present in the final output.
+* There is also another element, the :code:`gft:Options`, with two more elements inside. It will be explained in a later dedicated section.
 
 Source and filter (Complex Feature example)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -331,7 +336,7 @@ The above JSON has a data structure where:
 * Each Observation has a an array of parameter that describe the type of Observation.
 
 Now let's assume that a different output needs to be produced where instead of having a generic array of observation nested into the root object, arrays are provided separately for each type of parameter e.g. Temperatures, Pressures and Winds_speed observations. In other words instead of having the Observation type defined inside a nested Parameter object that information should be provided directly in the attribute name.
-The pursued output looks like the following:
+The desired output looks like the following:
 
 .. code-block:: json
 
@@ -441,12 +446,12 @@ A template like this will allow to produce such an output:
 
 In addition to the :code:`${property}` and :code:`$${cql}` directives seen before, there are two more:
 
-* In the example above the :code:`xpath('xpath')` function is used to reference property. When dealing with Complex Features it must be used when referencing properties inside a :code:`$filter` or a :code:`$${cql}` directives.
+* In the example above the :code:`xpath('xpath')` function is used to reference property. When dealing with Complex Features it must be used when referencing properties inside a :code:`$filter` or a :code:`$${cql}` directive.
 * :code:`$source` which is meant to provide the context against which evaluated nested element properties and xpaths. In this case the :code:`"$source":"st:meteoObservations/st:MeteoObservationsFeature"` provides the context for the nested attributes angainst which the directives will be evaluated. When defining a :code:`$source` for a JSON array it should be provided in a JSONObject separated from the JSON Object mapping the nested feature attributes as in the example above. When defining the :code:`$source` for a JSONObject it can be simply added as an object attribute (see below examples).
 * When using :code:`${property}` directive or an :code:`xpath('xpath')` function it is possible to reference a property bounded to an upper :code:`$source` using a ``../`` notation eg. ``${../previousContextValue}``.
-* :code:`$filter` provides the possibility to filter the value that will be included in the element to which is applied, in this case a json array. For instance the filter :code:`$filter":"xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'wind speed'` in the :code:`Winds_speed` array allows to filter the element that will be included in this array according to the :code:`param_name value`.
+* :code:`$filter` provides the possibility to filter the value that will be included in the element to which is applied, in this case a json array. For instance the filter :code:`$filter":"xpath('st:meteoParameters/st:MeteoParametersFeature/st:param_name') = 'wind speed'` in the :code:`Winds_speed` array allows filtering the element that will be included in this array according to the :code:`param_name value`.
 
-One note aboute the Source. It is strictly needed only when referencing a nested features. This means that in the GeoJSON template example the :code:`"$source":"st:MeteoStationsFeature"` coudl have been omitted. This not apply for nested elements definition where the :code:`"$source":"st:meteoObservations/st:MeteoObservationsFeature"` is mandatory.
+One note aboute the Source. It is strictly needed only when referencing a nested feature. This means that in the GeoJSON template example the :code:`"$source":"st:MeteoStationsFeature"` could have been omitted. This not apply for nested elements definition where the :code:`"$source":"st:meteoObservations/st:MeteoObservationsFeature"` is mandatory.
 
 Follows a list of JSON template bits showing  :code:`filters` definition in context different from a JSON array, as well as :code:`$source` definition for a JSONObject.
 
@@ -495,14 +500,14 @@ Follows a list of JSON template bits showing  :code:`filters` definition in cont
   }
 
 
-As it is possible to see from the previous example in the array and object cases the filter sintax expected a :code:`"$filter"` key followed by an attribute with the filter to evaluate. In the attribute case, instead, the filter is being specified inside the value as :code:`"$filter{...}"`, followed by  the cql expression, or by the static content, with a comma separating the two.
+As it is possible to see from the previous example in the array and object cases the filter syntax expected a :code:`"$filter"` key followed by an attribute with the filter to evaluate. In the attribute case, instead, the filter is being specified inside the value as :code:`"$filter{...}"`, followed by  the CQL expression, or by the static content, with a comma separating the two.
 
 
 
 GML
 """
 
-:code:`filter` and :code:`source` are available as well in GML template. Assuming that the desired output is the correspective GML output of the GeoJSON output above e.g.:
+:code:`filter` and :code:`source` are available as well in GML templates. Assuming that the desired output is the corresponding GML equivalent of the GeoJSON output above e.g.:
 
 .. code-block:: xml
 
@@ -596,7 +601,7 @@ In the GML case :code:`filter` and :code:`source` directives are defined in a sl
 
 * The filter needs to be defined as an attribute :code:`gft:filter` in the element that is meant to be filtered.
 * The source needs to be defined as an attribute :code:`gft:source` in the element that will set the source for its child elements.
-* The attribute :code:`gft:isCollection="true"` define a directive meant to be used in GML templates to mark collection elements: this directive is needed since xml doesn't have the array concept and the template mechanism needs to be informed if an element should be repeated because it represent a collection element. 
+* The attribute :code:`gft:isCollection="true"` defines a directive meant to be used in GML templates to mark collection elements: this directive is needed since XML doesn't have the array concept and the template mechanism needs to be informed if an element should be repeated because it represent a collection element. 
 
 As for the GeoJSON case the source is not needed for the top level feature. In this case we indeed omitted it for the st:MeteoStations element. Instead, as stated above, it is mandatory for nested elements like :code:`Temperature`, :code:`Pressure` and :code:`Winds_speed`. All of them show indeed a :code:`gft:source="st:meteoObservations/st:MeteoObservationsFeature"`.
 
@@ -632,18 +637,18 @@ In the :code:`Temperatures` array a :code:`StillCode` attribute has been defined
 The same can be achieved with the property interpolation directive if a cql function evaluation is not needed: :code:`"StillCode":"$${strConcat('STATION-', xpath('../st:code'))}"`.
 
 
-.. warning:: the :code:`xpath('some xpath)` cql function is meant to be used in the scope of this plugin. For general usage please refers to the :geotools:`property function <library/main/function_list.html#property-propertyname-returns-propertyvalue>`.
+.. warning:: the :code:`xpath('some xpath)` cql function is meant to be used in the scope of this plugin. For general usage please refer to the :geotools:`property function <library/main/function_list.html#property-propertyname-returns-propertyvalue>`.
 
 
 Template Options
 ^^^^^^^^^^^^^^^^
 
-The directives seen so far allow to control the output in the scope of a Feature element. 
-The :code:`options` directive, instead, allows to customize the output for piece of the output outside the Feature scope or to define general modifications to the overall output. The available options vary according to the output format.
+The directives seen so far allow control of the output in the scope of a Feature element. 
+The :code:`options` directive, instead, allows customizing the output for part of the output outside the Feature scope or to define general modifications to the overall output. The available options vary according to the output format.
 
 GeoJSON
 """""""
-In the context of a GeoJSON template are available two options: :code:`flat_output` and :code:`separator`. These options are meant to provide a GeoJSON output encoded following INSPIRE rule for `alternative feature GeoJSON encoding <https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/ads/simple-addresses.md>`_ (`see also <https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/efs/simple-environmental-monitoring-facilities.md>`_).
+In the context of a GeoJSON template two options ara available: :code:`flat_output` and :code:`separator`. These options are meant to provide a GeoJSON output encoded following INSPIRE rule for `alternative feature GeoJSON encoding <https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/ads/simple-addresses.md>`_ (`see also <https://github.com/INSPIRE-MIF/2017.2/blob/master/GeoJSON/efs/simple-environmental-monitoring-facilities.md>`_).
 To use the functionality an :code:`"$options"` JSON object can be added on top of a JSON template, like in the following example:
 
 .. code-block:: json
@@ -696,7 +701,7 @@ To use the functionality an :code:`"$options"` JSON object can be added on top o
 The :code:`flat_output` will act in the following way:
 
  * The encoding of nested arrays and objects will be skipped, by encoding only their attributes.
- * Objects' attribute names will be concatenated with the ones of their json attributes.
+ * Object attribute names will be concatenated with the names of their json attributes.
  * Arrays' attribute names will be concatenated as well with the one of the json attributes of their inner object. In addition an index value will be added after the array's attribute name for each nested object.
  * The :code:`separator` specifies the separator of the attributes' names. Default is :code:`_`.
  * The final output will have a flat list of attributes with names produced by the concatenation, like the following.
@@ -836,7 +841,7 @@ The user can prevent this behaviour by taking advantage of the  :code:`include` 
 GML
 """
 
-GML output has two :code:`options`: Namespaces and SchemaLocation, that define the namspaces and the SchemaLocation attribute that will be included in the FeatureCollection element in the resulting output. These options needs to be specified inside a :code:`gft:Options` element at the beggining of the template right after the :code:`gft:Template` element, e.g.
+GML output has two :code:`options`: Namespaces and SchemaLocation, that define the namespaces and the SchemaLocation attribute that will be included in the FeatureCollection element in the resulting output. These options needs to be specified inside a :code:`gft:Options` element at the beginning of the template right after the :code:`gft:Template` element, e.g.
 
 .. code-block:: xml
 
@@ -1020,13 +1025,13 @@ Including other templates
 -------------------------
 
 While developing a group of templates, it's possible to notice sections that repeat across 
-different template instances. Template inclusion allows to share the common parts, extracting them
+different template instances. Template inclusion allows sharing the common parts, extracting them
 in a re-usable building block.
 
 Inclusion can be performed using two directives:
 
-* :code:`include` allows to include a separate template as is.
-* :code:`includeFlat` allows to include a separate template, stripping the top-most container. 
+* :code:`include` allows including a separate template as is.
+* :code:`includeFlat` allows including a separate template, stripping the top-most container. 
 
 As for other directives the syntax varies slightly between JSON based template and XML based ones.
 
@@ -1094,8 +1099,8 @@ In the first case the included template will replace the :code:`<gft:includeFlat
 Extending other templates via merge (JSON based templates only)
 ---------------------------------------------------------------
 
-Templates inclusion, described above, allows to import a block into another template, as is.
-The ``$merge`` directive instead allows to get an object and use it as a base, that will be
+Templates inclusion, described above, allows importing a block into another template, as is.
+The ``$merge`` directive instead allows getting an object and use it as a base, that will be
 overridden by the properties of the object it is merged into.
 
 For example, let's assume this is a base JSON template:

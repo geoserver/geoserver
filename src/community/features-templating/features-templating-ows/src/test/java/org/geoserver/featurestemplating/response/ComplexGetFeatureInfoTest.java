@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -135,6 +136,10 @@ public class ComplexGetFeatureInfoTest extends TemplateComplexTestSupport {
         assertEquals(1, features.size());
         JSONObject feature = (JSONObject) features.get(0);
         checkMappedFeatureJSON(feature);
+        assertEquals(feature.get("nullObject").toString(), "null");
+        assertEquals(feature.get("nullText").toString(), "null");
+        assertEquals(JSONNull.class, feature.get("nullObject").getClass());
+        assertEquals(JSONNull.class, feature.get("nullText").getClass());
     }
 
     @Test
@@ -147,6 +152,8 @@ public class ComplexGetFeatureInfoTest extends TemplateComplexTestSupport {
         assertEquals(1, features.size());
         JSONObject feature = (JSONObject) features.get(0);
         checkMappedFeatureJSON(feature);
+        assertEquals(feature.get("nullObject").toString(), "null");
+        assertEquals(feature.get("nullText").toString(), "null");
     }
 
     @Test
@@ -175,6 +182,8 @@ public class ComplexGetFeatureInfoTest extends TemplateComplexTestSupport {
 
         // filter on array element lithology
         assertXpathCount(1, "//gsml:lithology", doc);
+        assertXpathCount(1, "//gml:emptyText", doc);
+        assertXpathEvaluatesTo("", "//gml:emptyText", doc);
     }
 
     protected AbstractAppSchemaMockData createTestData() {

@@ -46,6 +46,9 @@ The following are the directives available in JSON based templates.
    * - allows a template to extend another template
      - $merge
      - specify the :code:`$merge` directive as an attribute name containing the path to the extended template (:code: `"$merged":"base_template.json"`).
+   * - allows null values to be encoded. default is not encoded.
+     - ${property}! or $${expression}!
+     - ! at the end of a property interpolation or cql directive (:code:`"attribute":"${property}!"` or :code:`"attribute":"$${expression}!"`).
 
 
 XML based templates
@@ -80,6 +83,9 @@ The following are the directives available in XML based templates.
    * - allows including a template into another
      - $include, gft:includeFlat
      - specify the :code:`$include` option as an element value (:code:`<element>$include{included.xml}</element>`) and the :code:`gft:includeFlat` as an element having the included template as text content (:code:`<gft:includeFlat>included.xml</gft:includeFlat>`)
+   * - allows null values to be encoded. default is not encoded.
+     - ${property}!
+     - specify it either as an element value (:code:`<element>${property}!</element>`) or as an xml attribute value (:code:`<element attribute:"${property}!"/>`)
 
 A step by step introduction to features-templating syntax
 ---------------------------------------------------------

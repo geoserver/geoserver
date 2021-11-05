@@ -115,9 +115,9 @@ public class DynamicMergeBuilderTest extends DataTestCase {
                 json.getJSONObject("dynamicMergeBuilder")
                         .getJSONObject("metadata")
                         .getJSONObject("metadata_iso_19139");
-        assertEquals("metadata_iso_19139", metadata19139.getString("title"));
-        assertEquals("http://metadata_iso_19139.org", metadata19139.getString("href"));
-        assertEquals("metadata", metadata19139.getString("type"));
+        assertEquals("basetext", metadata19139.getString("title"));
+        assertEquals("basehref", metadata19139.getString("href"));
+        assertEquals("basetype", metadata19139.getString("type"));
         assertEquals("dynamic value result", metadata19139.getString("dynamicValue"));
     }
 
@@ -128,9 +128,9 @@ public class DynamicMergeBuilderTest extends DataTestCase {
                 json.getJSONObject("dynamicMergeBuilder")
                         .getJSONObject("metadata")
                         .getJSONObject("metadata_iso_19139");
-        assertEquals("metadata_iso_19139", metadata19139.getString("title"));
-        assertEquals("http://metadata_iso_19139.org", metadata19139.getString("href"));
-        assertEquals("metadata", metadata19139.getString("type"));
+        assertEquals("basetext", metadata19139.getString("title"));
+        assertEquals("basehref", metadata19139.getString("href"));
+        assertEquals("basetype", metadata19139.getString("type"));
     }
 
     @Test

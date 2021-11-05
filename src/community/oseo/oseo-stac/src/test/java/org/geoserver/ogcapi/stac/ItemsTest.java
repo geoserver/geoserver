@@ -350,30 +350,15 @@ public class ItemsTest extends STACTestSupport {
         DocumentContext result = getAsJSONPath("ogc/stac/collections/LANDSAT8/items", 200);
 
         // tests before the dynamic merge with expression on overlay
-        String href = result.read("features[0].properties.mergeThumbnail.href");
-        String title = result.read("features[0].properties.mergeThumbnail.title");
-        String type = result.read("features[0].properties.mergeThumbnail.type");
-        String roles = result.read("features[0].properties.mergeThumbnail.roles[0]");
-        assertEquals(
-                "https://landsat-pds.s3.us-west-2.amazonaws.com/c1/L8/218/077/LC08_L1TP_218077_20210511_20210511_01_T1/LC08_L1TP_218077_20210511_20210511_01_T1_thumb_large.jpg",
-                href);
-        assertEquals("image/jpeg", type);
-        assertEquals("thumbnail", roles);
-        assertEquals("Thumbnail", title);
+        String href = result.read("features[0].assets.thumbnail.href");
+        String title = result.read("features[0].assets.thumbnail.title");
+        String type = result.read("features[0].assets.thumbnail.type");
+        int additional = result.read("features[0].assets.thumbnail.additional");
 
-        // tests the dynamic merge with expression on base
-        href = result.read("features[0].properties.mergeThumbnail2.href");
-        title = result.read("features[0].properties.mergeThumbnail2.title");
-        type = result.read("features[0].properties.mergeThumbnail2.type");
-        roles = result.read("features[0].properties.mergeThumbnail2.roles[0]");
-        Integer additional = result.read("features[0].properties.mergeThumbnail2.additional");
-        assertEquals(
-                "https://landsat-pds.s3.us-west-2.amazonaws.com/c1/L8/218/077/LC08_L1TP_218077_20210511_20210511_01_T1/LC08_L1TP_218077_20210511_20210511_01_T1_thumb_large.jpg",
-                href);
-        assertEquals("image/jpeg", type);
-        assertEquals("thumbnail", roles);
+        assertEquals("will replace", href);
+        assertEquals("will replace", type);
         assertEquals("Thumbnail", title);
-        assertEquals(0, additional.intValue());
+        assertEquals(0, additional);
     }
 
     @Test

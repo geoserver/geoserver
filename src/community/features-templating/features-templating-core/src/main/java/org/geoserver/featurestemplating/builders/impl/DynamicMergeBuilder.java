@@ -31,6 +31,28 @@ public class DynamicMergeBuilder extends DynamicValueBuilder {
     }
 
     @Override
+    protected boolean canWriteValue(Object value) {
+        if (overlayExpression) {
+            return super.canWriteValue(value);
+        } else if (node != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean checkNotNullValue(TemplateBuilderContext context) {
+        if (overlayExpression) {
+            return super.checkNotNullValue(context);
+        } else if (node != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
         Object evaluate = null;
@@ -48,7 +70,12 @@ public class DynamicMergeBuilder extends DynamicValueBuilder {
             else writeValue(writer, node, context);
         } else {
             JSONMerger jsonMerger = new JSONMerger();
-            ObjectNode mergedNodes = jsonMerger.mergeTrees(node, (JsonNode) evaluate);
+            ObjectNode mergedNodes;
+            if (overlayExpression) {
+                mergedNodes = jsonMerger.mergeTrees(node, (JsonNode) evaluate);
+            } else {
+                mergedNodes = jsonMerger.mergeTrees((JsonNode) evaluate, node);
+            }
 
             // if the expression contains dynamic content
             if (hasDynamic(mergedNodes)) writeFromNestedTree(context, writer, mergedNodes);

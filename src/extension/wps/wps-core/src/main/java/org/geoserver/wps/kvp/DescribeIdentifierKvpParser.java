@@ -28,7 +28,6 @@ public class DescribeIdentifierKvpParser extends KvpParser {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Object parse(String value) throws Exception {
 
         List<CodeType> values = new ArrayList<>();

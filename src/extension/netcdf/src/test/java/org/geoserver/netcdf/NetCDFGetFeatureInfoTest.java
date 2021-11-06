@@ -17,7 +17,7 @@ import org.junit.Test;
 /** Tests for WMS GetFeatureInfo on a layer sourced from NetCDF. */
 public class NetCDFGetFeatureInfoTest extends WMSTestSupport {
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         testData.addRasterLayer(

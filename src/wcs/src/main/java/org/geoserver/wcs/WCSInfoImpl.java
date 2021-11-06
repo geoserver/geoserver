@@ -16,7 +16,6 @@ import org.geotools.coverage.grid.io.OverviewPolicy;
  *
  * @author Simone Giannecchini, GeoSolutions SAS
  */
-@SuppressWarnings("unchecked")
 public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
 
     private static final long serialVersionUID = 3721044439071286273L;

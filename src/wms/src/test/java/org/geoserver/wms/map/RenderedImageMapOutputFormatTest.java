@@ -1218,7 +1218,6 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     /**
      * Checks {@link RenderedImageMapOutputFormat} makes good use of {@link RenderExceptionStrategy}
      */
-    @SuppressWarnings("deprecation")
     @Test
     public void testRenderingErrorsHandling() throws Exception {
 

@@ -157,7 +157,6 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
      * Returns the requested page of layer objects after applying any keyword filtering set on the
      * page
      */
-    @SuppressWarnings("resource")
     private CloseableIterator<PreviewLayer> filteredItems(long first, long count) {
         final Catalog catalog = getCatalog();
 

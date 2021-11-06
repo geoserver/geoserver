@@ -83,7 +83,7 @@ public class CapabilitiesController extends BaseSLDServiceController {
         }
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class aClass) {
+        public boolean canConvert(Class aClass) {
             return SldServiceCapabilities.class.isAssignableFrom(aClass);
         }
     }

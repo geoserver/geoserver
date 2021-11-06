@@ -179,7 +179,6 @@ public class GridCoverage2DRIA extends GeometricOpImage {
                 new double[] {nodata});
     }
 
-    @SuppressWarnings("rawtypes")
     protected GridCoverage2DRIA(
             final GridCoverage2D src,
             final GridGeometry2D dstGridGeometry,

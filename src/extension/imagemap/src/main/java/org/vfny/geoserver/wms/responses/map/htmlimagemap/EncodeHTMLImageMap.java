@@ -240,7 +240,6 @@ public class EncodeHTMLImageMap extends WebMap {
      * @throws AbortedException if the encoding is aborted
      * @task TODO: respect layer filtering given by their Styles
      */
-    @SuppressWarnings("unchecked")
     private void writeLayers() throws IOException, AbortedException {
         for (Layer layer : mapContent.layers()) {
             SimpleFeatureSource fSource = (SimpleFeatureSource) layer.getFeatureSource();

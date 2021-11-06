@@ -31,7 +31,6 @@ import org.opengis.filter.identity.FeatureId;
  *
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
-@SuppressWarnings("deprecation")
 public class AppSchemaTestOracleSetup extends ReferenceDataOracleSetup {
 
     /** Mapping file database parameters */

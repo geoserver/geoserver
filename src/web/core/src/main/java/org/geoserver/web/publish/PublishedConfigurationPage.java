@@ -102,7 +102,6 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
     }
 
     /** Initialize components including tabpanels via PublishedEditTabPanelInfo extensions */
-    @SuppressWarnings("rawtypes")
     private void initComponents() {
         this.tabPanelCustomModels = new LinkedHashMap<>();
 
@@ -343,7 +342,6 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         }
     }
 
-    @SuppressWarnings("rawtypes")
     private Link<?> cancelLink() {
         return new Link("cancel") {
             private static final long serialVersionUID = -9007727127569731882L;
@@ -355,7 +353,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         };
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     private List<PublishedConfigurationPanelInfo<T>> filterPublishedPanels(
             List<PublishedConfigurationPanelInfo> list) {
         List<PublishedConfigurationPanelInfo<T>> result = new ArrayList<>();

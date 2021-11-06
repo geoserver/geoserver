@@ -237,7 +237,7 @@ class GridSubsetsEditor extends FormComponentPanel<Set<XMLGridSubset>> {
                         final IModel<Integer> maxCachedLevelModel =
                                 new PropertyModel<>(item.getModel(), "maxCachedLevel");
 
-                        @SuppressWarnings({"rawtypes", "unchecked"})
+                        @SuppressWarnings("unchecked")
                         final IModel<List<Integer>> allLevels = new Model(zoomLevels);
 
                         final ZoomLevelDropDownChoice zoomStart =

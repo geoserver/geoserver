@@ -334,8 +334,7 @@ public class LayerGroupController extends AbstractCatalogController {
             }
 
             @Override
-            protected void wrapInternal(
-                    SimpleHash model, @SuppressWarnings("rawtypes") Collection object) {
+            protected void wrapInternal(SimpleHash model, Collection object) {
                 for (Object l : object) {
                     LayerGroupInfo lg = (LayerGroupInfo) l;
                     wrapInternal(null, model, lg);

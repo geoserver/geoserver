@@ -30,7 +30,6 @@ import org.opengis.style.ColorMap;
  *
  * @author Simone Giannecchini, GeoSolutions SAS
  */
-@SuppressWarnings("deprecation")
 public abstract class Cell {
     protected final Color bkgColor;
 
@@ -169,7 +168,6 @@ public abstract class Cell {
 
     public static class SingleColorMapEntryLegendBuilder extends ColorMapEntryLegendBuilder {
 
-        @SuppressWarnings("deprecation")
         public SingleColorMapEntryLegendBuilder(
                 final List<ColorMapEntry> cMapEntries,
                 final HAlign hAlign,
@@ -245,7 +243,6 @@ public abstract class Cell {
             } else super.add(null);
         }
 
-        @SuppressWarnings("deprecation")
         public SingleColorMapEntryLegendBuilder(
                 final List<ColorMapEntry> cMapEntries,
                 final HAlign hAlign,
@@ -277,7 +274,6 @@ public abstract class Cell {
                     wrap);
         }
 
-        @SuppressWarnings("deprecation")
         public SingleColorMapEntryLegendBuilder(
                 final List<ColorMapEntry> cMapEntries,
                 final HAlign hAlign,
@@ -316,7 +312,6 @@ public abstract class Cell {
 
         private TextManager lastRuleManager;
 
-        @SuppressWarnings("deprecation")
         public RampColorMapEntryLegendBuilder(
                 final List<ColorMapEntry> mapEntries,
                 final HAlign hAlign,
@@ -348,7 +343,6 @@ public abstract class Cell {
                     wrap);
         }
 
-        @SuppressWarnings("deprecation")
         public RampColorMapEntryLegendBuilder(
                 final List<ColorMapEntry> mapEntries,
                 final HAlign hAlign,
@@ -382,7 +376,6 @@ public abstract class Cell {
                     wrap);
         }
 
-        @SuppressWarnings("deprecation")
         public RampColorMapEntryLegendBuilder(
                 final List<ColorMapEntry> mapEntries,
                 final HAlign hAlign,
@@ -518,7 +511,6 @@ public abstract class Cell {
 
     public static class ClassesEntryLegendBuilder extends ColorMapEntryLegendBuilder {
 
-        @SuppressWarnings("deprecation")
         public ClassesEntryLegendBuilder(
                 final List<ColorMapEntry> mapEntries,
                 final HAlign hAlign,
@@ -550,7 +542,6 @@ public abstract class Cell {
                     wrap);
         }
 
-        @SuppressWarnings("deprecation")
         public ClassesEntryLegendBuilder(
                 final List<ColorMapEntry> mapEntries,
                 final HAlign hAlign,
@@ -584,7 +575,6 @@ public abstract class Cell {
                     wrap);
         }
 
-        @SuppressWarnings("deprecation")
         public ClassesEntryLegendBuilder(
                 final List<ColorMapEntry> mapEntries,
                 final HAlign hAlign,

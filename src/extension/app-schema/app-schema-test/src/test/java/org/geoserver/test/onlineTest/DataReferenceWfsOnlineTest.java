@@ -2002,7 +2002,6 @@ public abstract class DataReferenceWfsOnlineTest extends AbstractDataReferenceWf
         }
     }
 
-    @SuppressWarnings("unchecked")
     public FeatureSource<FeatureType, Feature> getFeatureSource(Name feature) throws IOException {
         DataAccess<FeatureType, Feature> mfDataAccess =
                 AppSchemaDataAccessRegistry.getDataAccess(feature);

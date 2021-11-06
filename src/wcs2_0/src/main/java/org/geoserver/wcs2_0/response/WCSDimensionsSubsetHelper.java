@@ -1033,7 +1033,7 @@ public class WCSDimensionsSubsetHelper {
     }
 
     // used when the range class is not known at compile time
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     private NumberRange<? extends Number> newGenericNumberRange(
             Class<?> numberClass, Number start, Number end) {
         return new NumberRange(numberClass, start, end);

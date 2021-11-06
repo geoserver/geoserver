@@ -230,7 +230,6 @@ public class WMSRequests {
     }
 
     /** Helper method for encoding GetMap request parameters. */
-    @SuppressWarnings({"rawtypes", "unchecked"})
     static LinkedHashMap<String, String> getGetMapParams(
             GetMapRequest req,
             String layer,
@@ -486,7 +485,6 @@ public class WMSRequests {
      * @return the layer index in the raw layers list
      * @throws IllegalArgumentException if unable to determine the raw layer index
      */
-    @SuppressWarnings("unchecked")
     private static int getRawLayerIndex(GetMapRequest req, int layerIndex) {
         List<String> names = KvpUtils.readFlat(req.getRawKvp().get("layers"));
         if (names.size() == 1) {

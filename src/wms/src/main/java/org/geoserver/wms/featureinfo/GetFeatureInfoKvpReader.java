@@ -112,7 +112,7 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
         return wms;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     @Override
     public Object read(Object req, Map kvp, Map rawKvp) throws Exception {
         GetFeatureInfoRequest request = (GetFeatureInfoRequest) super.read(req, kvp, rawKvp);

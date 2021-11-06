@@ -173,7 +173,6 @@ public class CatalogStyleChangeListenerTest {
         verify(mockMediator, times(1)).save(same(mockTileLayer));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testLayerInfoDefaultOrAlternateStyleChanged() throws Exception {
         when(mockMediator.getLayerInfosFor(same(mockStyle)))
@@ -188,7 +187,6 @@ public class CatalogStyleChangeListenerTest {
                 .truncateByLayerAndStyle(eq(PREFIXED_RESOURCE_NAME), eq(STYLE_NAME));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testLayerGroupInfoImplicitOrExplicitStyleChanged() throws Exception {
         LayerGroupInfo mockGroup = mock(LayerGroupInfo.class);

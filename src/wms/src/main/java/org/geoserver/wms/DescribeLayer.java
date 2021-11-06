@@ -17,7 +17,6 @@ public class DescribeLayer {
 
     public DescribeLayer() {}
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public static DescribeLayerModel run(final DescribeLayerRequest request)
             throws ServiceException {
 

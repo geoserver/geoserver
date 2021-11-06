@@ -692,7 +692,6 @@ public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog>
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
     public void fireModified(
             CatalogInfo object,
             List<String> propertyNames,

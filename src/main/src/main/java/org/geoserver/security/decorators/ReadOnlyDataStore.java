@@ -52,7 +52,6 @@ public class ReadOnlyDataStore extends org.geotools.data.store.DecoratingDataSto
         return wrapFeatureSource(fs);
     }
 
-    @SuppressWarnings("unchecked")
     SimpleFeatureSource wrapFeatureSource(final SimpleFeatureSource fs) {
         if (fs == null) return null;
 

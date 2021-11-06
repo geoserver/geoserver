@@ -287,8 +287,7 @@ public class CoverageStoreController extends AbstractCatalogController {
             }
 
             @Override
-            protected void wrapInternal(
-                    SimpleHash model, @SuppressWarnings("rawtypes") Collection object) {
+            protected void wrapInternal(SimpleHash model, Collection object) {
                 for (Object w : object) {
                     CoverageStoreInfo wk = (CoverageStoreInfo) w;
                     wrapInternal(null, model, wk);

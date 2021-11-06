@@ -191,7 +191,6 @@ public class LayerController extends AbstractCatalogController {
 
                     @Override
                     protected CatalogInfo getCatalogObject() {
-                        @SuppressWarnings("unchecked")
                         Map<String, String> uriTemplateVars = getURITemplateVariables();
                         String layerName = uriTemplateVars.get("layerName");
                         if (layerName == null) {

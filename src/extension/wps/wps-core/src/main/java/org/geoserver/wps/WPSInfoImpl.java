@@ -16,7 +16,6 @@ import org.geoserver.security.CatalogMode;
  *
  * @author Lucas Reed, Refractions Research Inc
  */
-@SuppressWarnings("unchecked")
 public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
 
     static final String KEY_CONNECTION_TIMEOUT = "connectionTimeout";

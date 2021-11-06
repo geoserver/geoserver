@@ -35,7 +35,7 @@ public class DescribeLayerKvpRequestReader extends KvpRequestReader {
      *     not exists on this server instance, or the version parameter was not provided.
      * @see org.geoserver.ows.KvpRequestReader#read(java.lang.Object, java.util.Map, java.util.Map)
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     @Override
     public Object read(Object req, Map kvp, Map rawKvp) throws Exception {
 

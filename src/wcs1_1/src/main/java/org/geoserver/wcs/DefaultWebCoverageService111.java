@@ -142,7 +142,7 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
     }
 
     @Override
-    @SuppressWarnings({"deprecation", "unchecked"})
+    @SuppressWarnings("unchecked")
     public GridCoverage[] getCoverage(GetCoverageType request) {
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest(

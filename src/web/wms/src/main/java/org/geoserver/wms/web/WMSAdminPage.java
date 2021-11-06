@@ -546,7 +546,7 @@ public class WMSAdminPage extends BaseServiceAdminPage<WMSInfo> {
     }
 
     private void checkAndInitializeMapData(PropertyModel<Map<String, ?>> metadataModel) {
-        @SuppressWarnings({"rawtypes", "unchecked"})
+        @SuppressWarnings("unchecked")
         PropertyModel<Map<String, Object>> mapModel = (PropertyModel) metadataModel;
         Object object = mapModel.getObject().get(MarkFactoryHintsInjector.MARK_FACTORY_LIST);
         if (!(object instanceof String)) {

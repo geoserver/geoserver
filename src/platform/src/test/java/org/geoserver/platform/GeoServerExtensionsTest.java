@@ -238,7 +238,7 @@ public class GeoServerExtensionsTest {
         verify(appContext);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     @Test
     public void testExtensionProvider() {
         ApplicationContext appContext = createMock(ApplicationContext.class);

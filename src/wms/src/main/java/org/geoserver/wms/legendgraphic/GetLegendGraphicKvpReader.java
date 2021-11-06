@@ -108,7 +108,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         this.wms = wms;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     @Override
     public GetLegendGraphicRequest read(Object req, Map kvp, Map rawKvp) throws Exception {
 

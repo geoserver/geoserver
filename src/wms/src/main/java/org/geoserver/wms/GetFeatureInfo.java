@@ -35,7 +35,6 @@ import org.opengis.feature.type.Name;
 public class GetFeatureInfo {
     static final Logger LOGGER = Logging.getLogger(GetFeatureInfo.class);
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public FeatureCollectionType run(final GetFeatureInfoRequest request) throws ServiceException {
         List<FeatureCollection> results;
         try {
@@ -50,7 +49,7 @@ public class GetFeatureInfo {
         return buildResults(results);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     private FeatureCollectionType buildResults(List<FeatureCollection> results) {
 
         FeatureCollectionType result = WfsFactory.eINSTANCE.createFeatureCollectionType();
@@ -60,7 +59,6 @@ public class GetFeatureInfo {
         return result;
     }
 
-    @SuppressWarnings("rawtypes")
     private List<FeatureCollection> execute(GetFeatureInfoRequest request) throws Exception {
         final List<MapLayerInfo> requestedLayers = request.getQueryLayers();
         FeatureInfoRequestParameters requestParams = new FeatureInfoRequestParameters(request);

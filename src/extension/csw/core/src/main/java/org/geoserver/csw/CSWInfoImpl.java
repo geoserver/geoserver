@@ -13,7 +13,6 @@ import org.geoserver.config.impl.ServiceInfoImpl;
  *
  * @author Andrea Aime, GeoSolutions
  */
-@SuppressWarnings("unchecked")
 public class CSWInfoImpl extends ServiceInfoImpl implements CSWInfo {
 
     /** */

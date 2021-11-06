@@ -827,7 +827,6 @@ public class XStreamPersister {
             }
 
             @Override
-            @SuppressWarnings("rawtypes")
             public void visit(String name, Class type, Class definedIn, Object value) {
 
                 // skip empty collections + maps
@@ -860,7 +859,7 @@ public class XStreamPersister {
         }
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             // handle all types of maps
             return Map.class.isAssignableFrom(type);
         }
@@ -1044,7 +1043,7 @@ public class XStreamPersister {
         }
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return super.canConvert(type);
         }
 
@@ -1105,7 +1104,7 @@ public class XStreamPersister {
     class MetadataMapConverter extends BreifMapConverter {
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return MetadataMap.class.equals(type) || super.canConvert(type);
         }
 
@@ -1139,7 +1138,7 @@ public class XStreamPersister {
         }
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class clazz) {
+        public boolean canConvert(Class clazz) {
             return Multimap.class.isAssignableFrom(clazz);
         }
 
@@ -1195,7 +1194,7 @@ public class XStreamPersister {
         }
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return clazz.isAssignableFrom(type);
         }
 
@@ -1404,7 +1403,7 @@ public class XStreamPersister {
     public static class SRSConverter extends AbstractSingleValueConverter {
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return CoordinateReferenceSystem.class.isAssignableFrom(type);
         }
 
@@ -1447,7 +1446,7 @@ public class XStreamPersister {
     public static class CRSConverter extends AbstractSingleValueConverter {
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return CoordinateReferenceSystem.class.isAssignableFrom(type);
         }
 
@@ -1610,7 +1609,7 @@ public class XStreamPersister {
     class NumberRangeConverter extends AbstractReflectionConverter {
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class clazz) {
+        public boolean canConvert(Class clazz) {
             return NumberRange.class.isAssignableFrom(clazz);
         }
 
@@ -1678,7 +1677,7 @@ public class XStreamPersister {
         }
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return clazz.isAssignableFrom(type);
         }
 
@@ -1696,7 +1695,7 @@ public class XStreamPersister {
     /** Converter for workspaces and namespaces. */
     public class SpaceInfoConverter extends AbstractReflectionConverter {
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return WorkspaceInfo.class.isAssignableFrom(type)
                     || NamespaceInfo.class.isAssignableFrom(type);
         }
@@ -1878,7 +1877,7 @@ public class XStreamPersister {
     /** Converter for multi hash maps containing coverage stores and data stores. */
     static class StoreMultiValueMapConverter implements Converter {
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return MultiValuedMap.class.equals(type);
         }
 
@@ -1932,7 +1931,7 @@ public class XStreamPersister {
         }
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return Map.class.isAssignableFrom(type);
         }
 
@@ -2346,7 +2345,6 @@ public class XStreamPersister {
         }
 
         @Override
-        @SuppressWarnings("rawtypes")
         public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
             String name = null;
             String sql = null;
@@ -2430,7 +2428,7 @@ public class XStreamPersister {
         }
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return VirtualTable.class.isAssignableFrom(type);
         }
     }
@@ -2442,7 +2440,7 @@ public class XStreamPersister {
                         "([^\\\\]+)(?:\\\\@language=([^\\\\]+)\\\\;)?(?:\\\\@vocabulary=([^\\\\]+)\\\\;)?");
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return Keyword.class.isAssignableFrom(type);
         }
 
@@ -2488,7 +2486,7 @@ public class XStreamPersister {
                 new MeasureConverterFactory().createConverter(Measure.class, String.class, null);
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return Measure.class.isAssignableFrom(type);
         }
 
@@ -2612,7 +2610,7 @@ public class XStreamPersister {
     class EncryptedFieldConverter extends AbstractSingleValueConverter {
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return String.class.equals(type);
         }
 
@@ -2676,7 +2674,7 @@ public class XStreamPersister {
 
         @Override
         @SuppressWarnings("unchecked")
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class aClass) {
+        public boolean canConvert(Class aClass) {
             return aClass.isAssignableFrom(GrowableInternationalString.class);
         }
 
@@ -2754,7 +2752,7 @@ public class XStreamPersister {
     class LayerGroupStyleConverter extends AbstractReflectionConverter {
         @Override
         @SuppressWarnings("unchecked")
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return LayerGroupStyle.class.isAssignableFrom(type);
         }
 

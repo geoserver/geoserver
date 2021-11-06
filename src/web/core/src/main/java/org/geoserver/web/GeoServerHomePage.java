@@ -54,7 +54,7 @@ import org.springframework.security.core.Authentication;
  */
 public class GeoServerHomePage extends GeoServerBasePage implements GeoServerUnlockablePage {
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     public GeoServerHomePage() {
         GeoServer gs = getGeoServer();
         ContactInfo contact = gs.getGlobal().getSettings().getContact();

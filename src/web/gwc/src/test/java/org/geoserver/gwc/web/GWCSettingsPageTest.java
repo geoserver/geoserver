@@ -530,7 +530,6 @@ public class GWCSettingsPageTest extends GeoServerWicketTestSupport {
         assertTrue(config.isInnerCachingEnabled());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testMemoryCachePanelOpen() throws IOException {
         // enable in memory caching

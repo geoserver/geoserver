@@ -30,7 +30,6 @@ public class ElevationKvpParser extends KvpParser {
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public Object parse(String value) throws ParseException {
         ElevationParser parser = getElevationParser();
         return parser.parse(value);

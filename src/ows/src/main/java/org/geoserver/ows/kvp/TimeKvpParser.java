@@ -33,7 +33,6 @@ public class TimeKvpParser extends KvpParser {
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public Object parse(String value) throws ParseException {
         TimeParser parser = getTimeParser();
         return parser.parse(value);

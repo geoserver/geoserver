@@ -24,7 +24,7 @@ import org.geotools.xsd.EMFUtils;
  *
  * @author Emanuele Tajariol (etj) - GeoSolutions
  */
-@SuppressWarnings(value = {"rawtypes", "unchecked"})
+@SuppressWarnings("unchecked")
 public class WCS20GetCapabilitiesRequestReader extends EMFKvpRequestReader {
     public WCS20GetCapabilitiesRequestReader() {
         super(GetCapabilitiesType.class, Wcs20Factory.eINSTANCE);

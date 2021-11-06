@@ -41,7 +41,6 @@ public class BlobStorePage extends GeoServerSecuredPage {
 
     private static final long serialVersionUID = -59024268194792891L;
 
-    @SuppressWarnings("rawtypes")
     private DropDownChoice<BlobStoreType> typeOfBlobStore;
 
     private WebMarkupContainer blobConfigContainer;
@@ -58,7 +57,7 @@ public class BlobStorePage extends GeoServerSecuredPage {
         this(null);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     public BlobStorePage(final BlobStoreInfo originalStore) {
 
         final List<String> assignedLayers = new ArrayList<>();

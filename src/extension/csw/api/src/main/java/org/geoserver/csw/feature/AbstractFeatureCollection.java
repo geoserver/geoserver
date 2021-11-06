@@ -216,7 +216,6 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
     //
     //
     /** Set of open resource iterators */
-    @SuppressWarnings("unchecked")
     protected final Set open = new HashSet<>();
 
     /**
@@ -224,7 +223,6 @@ public abstract class AbstractFeatureCollection<T extends FeatureType, F extends
      *
      * <p>Contents are a mix of Iterator<F> and FeatureIterator
      */
-    @SuppressWarnings("unchecked")
     public final Set getOpenIterators() {
         return open;
     }

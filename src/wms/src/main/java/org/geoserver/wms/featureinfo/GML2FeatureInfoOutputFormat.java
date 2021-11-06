@@ -60,7 +60,7 @@ public class GML2FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      *
      * @see AbstractFeatureInfoResponse#writeTo(OutputStream)
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     @Override
     public void write(
             FeatureCollectionType results, GetFeatureInfoRequest fInfoReq, OutputStream out)

@@ -482,7 +482,6 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void applyDecorations(GetMapRequest request, String decoration, String time) {
         Map<String, Object> aMap = new HashMap<>();
         aMap.put("layout", decoration);

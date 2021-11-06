@@ -192,7 +192,6 @@ public abstract class ProcessParameterIO {
         return matches;
     }
 
-    @SuppressWarnings("unchecked")
     private static boolean typeCompatible(Parameter<?> p, ProcessParameterIO ppio) {
         return ppio.getType().isAssignableFrom(p.type);
     }

@@ -68,8 +68,7 @@ public class GWCSettingsPage extends GeoServerSecuredPage {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected void onClick(
-                            AjaxRequestTarget target, @SuppressWarnings("rawtypes") Form form) {
+                    protected void onClick(AjaxRequestTarget target, Form form) {
                         doReturn();
                     }
                 });

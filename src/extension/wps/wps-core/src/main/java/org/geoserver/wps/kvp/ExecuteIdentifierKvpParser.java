@@ -24,7 +24,6 @@ public class ExecuteIdentifierKvpParser extends KvpParser {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Object parse(String value) throws Exception {
         return Ows11Util.code(value);
     }

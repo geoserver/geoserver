@@ -98,6 +98,7 @@ public class XStreamPPIO extends XMLPPIO {
         }
 
         @Override
+        @SuppressWarnings("ReturnValueIgnored")
         public String realMember(@SuppressWarnings("rawtypes") Class type, String serialized) {
             String fieldName = super.realMember(type, serialized);
             try {

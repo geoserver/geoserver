@@ -257,7 +257,6 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         assertEquals("10", root.getAttribute("updateSequence"));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testServiceSection() throws Exception {
         wmsInfo.setTitle("title");

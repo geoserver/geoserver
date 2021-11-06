@@ -61,7 +61,7 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
     protected final WebMarkupContainer container;
     protected final ListView<NetCDFExtensionPanelInfo> extensionPanels;
 
-    @SuppressWarnings({"rawtypes", "serial", "unchecked"})
+    @SuppressWarnings({"serial", "unchecked"})
     public NetCDFPanel(String id, IModel<T> netcdfModel) {
         super(id, netcdfModel);
         container = new WebMarkupContainer("container");

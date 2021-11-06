@@ -50,7 +50,6 @@ public abstract class AbstractMapOutputFormat implements GetMapOutputFormat {
         this(mime, new String[] {mime});
     }
 
-    @SuppressWarnings("unchecked")
     protected AbstractMapOutputFormat(final String mime, final String... outputFormats) {
         this(
                 mime,

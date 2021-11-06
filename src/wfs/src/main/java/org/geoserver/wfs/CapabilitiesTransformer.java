@@ -1057,7 +1057,6 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                                     schemaLocation.toString()
                                 });
 
-                @SuppressWarnings("rawtypes")
                 Enumeration prefixes = getNamespaceSupport().getPrefixes();
                 while (prefixes.hasMoreElements()) {
                     String prefix = (String) prefixes.nextElement();
@@ -2362,7 +2361,6 @@ public abstract class CapabilitiesTransformer extends TransformerBase {
                                     schemaLocation.toString()
                                 });
 
-                @SuppressWarnings("rawtypes")
                 Enumeration prefixes = getNamespaceSupport().getPrefixes();
                 while (prefixes.hasMoreElements()) {
                     String prefix = (String) prefixes.nextElement();

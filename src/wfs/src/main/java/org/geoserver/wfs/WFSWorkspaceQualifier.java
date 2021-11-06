@@ -116,13 +116,11 @@ public class WFSWorkspaceQualifier extends WorkspaceQualifyingCallback {
      * @param typeName the typeName created by a KVP parser
      */
     private QName checkOriginallyUnqualified(Request request, NamespaceInfo ns, QName typeName) {
-        @SuppressWarnings("unchecked")
         Map<String, ?> rawKvp = request.getRawKvp(); // keys are case insensitive
         String rawNames = (String) rawKvp.get("TYPENAME");
         if (rawNames == null) {
             rawNames = (String) rawKvp.get("TYPENAMES");
         }
-        @SuppressWarnings("unchecked")
         List<String> rawTypeNames = KvpUtils.readFlat(rawNames);
         for (String rawTypeName : rawTypeNames) {
             if (rawTypeName.equals(typeName.getLocalPart())) {

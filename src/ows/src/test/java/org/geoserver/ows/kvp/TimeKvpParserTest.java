@@ -246,7 +246,7 @@ public class TimeKvpParserTest {
     }
 
     @Test
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     public void testContinuousRelativeInterval() throws ParseException {
         final int millisInDay = (int) TimeParser.MILLIS_IN_DAY;
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");

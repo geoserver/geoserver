@@ -314,7 +314,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         return this.getLayerLegend(g2d, mapContext, null);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     private List<LayerLegend> getLayerLegend(
             Graphics2D g2d, WMSMapContent mapContext, Rectangle size) {
         List<LayerLegend> legendLayers = new ArrayList<>();

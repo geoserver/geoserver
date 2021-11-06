@@ -53,7 +53,6 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
         Form form = new Form("form");
         add(form);
 
-        @SuppressWarnings("unchecked")
         ReprojectTransform reprojectTx = item.getTransform().get(ReprojectTransform.class);
 
         reprojectCheckBox = new CheckBox("enableReprojection", new Model<>(reprojectTx != null));

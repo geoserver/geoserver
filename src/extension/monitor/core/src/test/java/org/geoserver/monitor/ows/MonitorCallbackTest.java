@@ -413,7 +413,6 @@ public class MonitorCallbackTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWCS11GetCoverage() throws Exception {
         net.opengis.wcs11.GetCoverageType gc = Wcs11Factory.eINSTANCE.createGetCoverageType();
 

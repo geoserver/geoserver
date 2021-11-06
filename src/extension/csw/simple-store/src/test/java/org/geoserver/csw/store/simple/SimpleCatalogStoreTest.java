@@ -96,7 +96,6 @@ public class SimpleCatalogStoreTest {
 
     @Test
     public void testReadAllRecords() throws IOException {
-        @SuppressWarnings("unchecked")
         FeatureCollection<FeatureType, Feature> records =
                 store.getRecords(Query.ALL, Transaction.AUTO_COMMIT);
         int fileCount = root.list(new RegexFileFilter("Record_.*\\.xml")).length;

@@ -181,7 +181,7 @@ public class WMSLayerTest extends CatalogRESTTestSupport {
         assertXpathNotExists("/list/wmsLayerName[text() = 'topp:states']", dom);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     @Test
     public void testGetAllAvailableJSON() throws Exception {
         MockHttpServletResponse response =

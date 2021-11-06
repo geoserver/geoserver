@@ -84,7 +84,6 @@ public class LanguagesEditor extends FormComponentPanel<String> {
                     @Override
                     public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                         Collection<String> selection = languages.getModelObject();
-                        @SuppressWarnings("unchecked")
                         List<String> languagesList = new ArrayList<>(languages.getChoices());
                         for (String selected : selection) {
                             languagesList.remove(selected);

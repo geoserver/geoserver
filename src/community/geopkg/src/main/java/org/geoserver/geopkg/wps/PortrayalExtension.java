@@ -59,8 +59,7 @@ public class PortrayalExtension extends GeoPkgExtension {
         }
 
         @Override
-        public GeoPkgExtension getExtension(
-                @SuppressWarnings("rawtypes") Class extensionClass, GeoPackage geoPackage) {
+        public GeoPkgExtension getExtension(Class extensionClass, GeoPackage geoPackage) {
             if (PortrayalExtension.class.equals(extensionClass)) {
                 try {
                     return new PortrayalExtension(geoPackage);

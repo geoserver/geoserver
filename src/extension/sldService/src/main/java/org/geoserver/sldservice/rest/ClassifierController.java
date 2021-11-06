@@ -773,7 +773,7 @@ public class ClassifierController extends BaseSLDServiceController {
          * @see com.thoughtworks.xstream.converters.ConverterMatcher#canConvert(java .lang.Class)
          */
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class clazz) {
+        public boolean canConvert(Class clazz) {
             return RulesList.class.isAssignableFrom(clazz)
                     || JSONObject.class.isAssignableFrom(clazz);
         }

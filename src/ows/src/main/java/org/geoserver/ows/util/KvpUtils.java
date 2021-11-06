@@ -122,7 +122,6 @@ public class KvpUtils {
      *     kvpPairs.get("FEATUREID") in this class or one of its children
      * @return A list of typenames, made from the featureId filters.
      */
-    @SuppressWarnings("rawtypes")
     public static List getTypesFromFids(String rawFidList) {
         List<String> typeList = new ArrayList<>();
         List<List<String>> unparsed = readNested(rawFidList);

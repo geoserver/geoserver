@@ -49,7 +49,7 @@ public class GeofenceRulesModel extends GeoServerDataProvider<ShortRule> {
         }
 
         @Override
-        @SuppressWarnings({"unchecked", "rawtypes"})
+        @SuppressWarnings("unchecked")
         public IModel getModel(IModel<T> itemModel) { // replace null by *
             return new PropertyModel<Object>(itemModel, getPropertyPath()) {
                 private static final long serialVersionUID = 1L;

@@ -703,7 +703,6 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
         }
 
         private Set<CoverageInfo> getCoverages() {
-            @SuppressWarnings("unchecked")
             final Set<CoverageInfo> coverages = new TreeSet<>(new CoverageInfoLabelComparator());
             coverages.addAll(wcs.getGeoServer().getCatalog().getCoverages());
 

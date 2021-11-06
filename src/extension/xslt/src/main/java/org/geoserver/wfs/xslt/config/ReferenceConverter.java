@@ -31,7 +31,7 @@ class ReferenceConverter implements Converter {
     }
 
     @Override
-    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+    public boolean canConvert(Class type) {
         return clazz.isAssignableFrom(type);
     }
 

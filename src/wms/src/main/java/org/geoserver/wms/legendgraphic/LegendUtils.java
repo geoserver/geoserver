@@ -57,7 +57,6 @@ import org.opengis.util.InternationalString;
  *
  * @author Simone Giannecchini, GeoSolutions SAS
  */
-@SuppressWarnings({"deprecation", "unchecked"})
 public class LegendUtils {
     /**
      * Ensures that the provided argument is not <code>null</code>.

@@ -260,7 +260,6 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
     }
 
     /** Validates a document against the */
-    @SuppressWarnings("rawtypes")
     protected void checkValidationErrors(Document dom) throws Exception {
         Parser p = new Parser(new WCSConfiguration());
         p.setValidating(true);

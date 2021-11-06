@@ -59,7 +59,7 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
     }
 
     @Override
-    @SuppressWarnings({"rawtypes", "unchecked", "serial"})
+    @SuppressWarnings({"unchecked", "serial"})
     protected void build(final IModel info, Form form) {
         this.model = info;
         OSEOInfo oseo = (OSEOInfo) info.getObject();

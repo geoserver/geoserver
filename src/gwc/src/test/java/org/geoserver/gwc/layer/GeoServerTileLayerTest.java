@@ -172,7 +172,6 @@ public class GeoServerTileLayerTest {
     }
 
     @Before
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public void setUp() throws Exception {
         mockGWC = mock(GWC.class);
         MemoryLockProvider lockProvider = new MemoryLockProvider();
@@ -562,7 +561,7 @@ public class GeoServerTileLayerTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     public void testGetFeatureInfo() throws Exception {
 
         layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);
@@ -612,7 +611,7 @@ public class GeoServerTileLayerTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     public void testGetTileJSON() throws Exception {
 
         layerInfoTileLayer =
@@ -648,7 +647,7 @@ public class GeoServerTileLayerTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     public void testGetTileJSONLayerGroup() throws Exception {
         WorkspaceInfo workspaceInfo = new WorkspaceInfoImpl();
         workspaceInfo.setName("workspace");
@@ -711,7 +710,7 @@ public class GeoServerTileLayerTest {
     }
 
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     public void testGetTileJSONLayerGroupMixed() throws Exception {
         WorkspaceInfo workspaceInfo = new WorkspaceInfoImpl();
         workspaceInfo.setName("workspace");
@@ -871,7 +870,7 @@ public class GeoServerTileLayerTest {
         }
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     protected class GetTileMockTester {
 
         protected MimeType mimeType;

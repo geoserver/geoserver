@@ -622,7 +622,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
 
         // otherwise we are in a mixed case where the user can read but not write, or
         // cannot read but is allowed by the operation mode to access the metadata
-        @SuppressWarnings("unchecked")
         T result = SecuredObjects.secure(info, policy);
         return result;
     }
@@ -669,7 +668,6 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
                 || store instanceof CoverageStoreInfo
                 || store instanceof WMSStoreInfo
                 || store instanceof WMTSStoreInfo) {
-            @SuppressWarnings("unchecked")
             T result = SecuredObjects.secure(store, policy);
             return result;
         } else {

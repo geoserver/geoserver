@@ -367,7 +367,6 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      *
      * @param typeName The qualified type name of the feature source.
      */
-    @SuppressWarnings("unchecked")
     protected SimpleFeatureSource getFeatureSource(QName typeName) throws IOException {
         // TODO: expand test support to DataAccess FeatureSource
         FeatureTypeInfo ft = getFeatureTypeInfo(typeName);

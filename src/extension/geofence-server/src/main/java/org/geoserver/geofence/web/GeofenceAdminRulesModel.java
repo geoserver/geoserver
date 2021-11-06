@@ -37,7 +37,7 @@ public class GeofenceAdminRulesModel extends GeoServerDataProvider<ShortAdminRul
         }
 
         @Override
-        @SuppressWarnings({"unchecked", "rawtypes"})
+        @SuppressWarnings("unchecked")
         public IModel getModel(IModel<T> itemModel) {
             return new PropertyModel<Object>(itemModel, getPropertyPath()) {
                 private static final long serialVersionUID = -3213885135907358752L;

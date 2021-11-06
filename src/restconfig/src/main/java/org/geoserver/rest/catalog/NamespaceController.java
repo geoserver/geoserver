@@ -220,8 +220,7 @@ public class NamespaceController extends AbstractCatalogController {
             }
 
             @Override
-            protected void wrapInternal(
-                    SimpleHash model, @SuppressWarnings("rawtypes") Collection object) {
+            protected void wrapInternal(SimpleHash model, Collection object) {
 
                 for (Object w : object) {
                     NamespaceInfo ns = (NamespaceInfo) w;

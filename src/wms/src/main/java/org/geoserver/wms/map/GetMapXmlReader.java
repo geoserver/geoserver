@@ -96,7 +96,6 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
     }
 
     /** Reads the GetMap XML request into a GetMap Request object. */
-    @SuppressWarnings("rawtypes")
     @Override
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
 

@@ -37,7 +37,6 @@ public class WcsXmlReader extends XmlRequestReader {
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         // create the parser instance
         Parser parser = new Parser(configuration);

@@ -202,7 +202,6 @@ public class VFSWorker {
         manager.closeFileSystem(source.getFileSystem());
     }
 
-    @SuppressWarnings("unchecked")
     public Collection<File> listFilesInFolder(
             final File targetFolder, final FilenameFilter fileNameFilter) {
         IOFileFilter fileFilter =

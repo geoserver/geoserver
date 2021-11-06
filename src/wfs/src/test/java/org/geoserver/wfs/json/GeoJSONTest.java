@@ -60,7 +60,6 @@ public class GeoJSONTest extends WFSTestSupport {
             new QName(SystemTestData.CITE_URI, "NanInfinite", SystemTestData.CITE_PREFIX);
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void setUpInternal(SystemTestData data) throws Exception {
         super.setUpInternal(data);
         File security = new File(getTestData().getDataDirectoryRoot(), "security");

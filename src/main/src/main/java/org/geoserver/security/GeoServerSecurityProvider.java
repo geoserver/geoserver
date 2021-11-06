@@ -77,7 +77,7 @@ public abstract class GeoServerSecurityProvider {
             new SingleValueConverter() {
 
                 @Override
-                public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+                public boolean canConvert(Class type) {
                     return type.equals(String.class);
                 }
 

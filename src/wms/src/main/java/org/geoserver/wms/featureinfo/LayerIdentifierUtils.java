@@ -35,7 +35,6 @@ public final class LayerIdentifierUtils {
      * @param targetCrs reprojection target CRS, can be NULL
      * @return feature collections, some may not have been reprojected
      */
-    @SuppressWarnings("unchecked")
     public static List<FeatureCollection> reproject(
             List<FeatureCollection> featureCollections, CoordinateReferenceSystem targetCrs) {
         if (targetCrs == null) {

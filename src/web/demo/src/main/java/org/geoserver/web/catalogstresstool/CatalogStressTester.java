@@ -64,7 +64,7 @@ import org.geoserver.web.ToolPage;
 import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings("unchecked")
 public class CatalogStressTester extends GeoServerSecuredPage {
 
     static final Logger LOGGER = Logging.getLogger(CatalogStressTester.class);

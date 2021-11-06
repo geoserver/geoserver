@@ -45,7 +45,6 @@ public class WFSURIHandlerTest {
     private GeoServerInfo config;
     private SettingsInfo settings;
 
-    @SuppressWarnings("deprecation")
     @Before
     public void setUp() {
         WFSURIHandler.ADDITIONAL_HOSTNAMES.clear();

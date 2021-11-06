@@ -174,7 +174,6 @@ public abstract class FeatureTypeSchemaBuilder {
 
         for (FeatureTypeInfo typeInfo : featureTypeInfos) {
             String prefix = typeInfo.getNamespace().getPrefix();
-            @SuppressWarnings("unchecked")
             List<FeatureTypeInfo> l = ns2featureTypeInfos.get(prefix);
 
             if (l == null) {

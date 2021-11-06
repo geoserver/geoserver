@@ -219,7 +219,6 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link List }{@code <}{@link String
      * }{@code >}{@code >}}
      */
-    @SuppressWarnings("rawtypes")
     @XmlElementDecl(namespace = "http://www.w3.org/1999/xhtml", name = "map-bbox")
     public JAXBElement<List<String>> createBbox(List<String> value) {
         return new JAXBElement<>(_Bbox_QNAME, ((Class) List.class), null, ((List<String>) value));
@@ -314,7 +313,6 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link List }{@code <}{@link String
      * }{@code >}{@code >}}
      */
-    @SuppressWarnings("rawtypes")
     @XmlElementDecl(
         namespace = "http://www.w3.org/1999/xhtml",
         name = "map-coordinates",
@@ -332,7 +330,6 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link List }{@code <}{@link String
      * }{@code >}{@code >}}
      */
-    @SuppressWarnings("rawtypes")
     @XmlElementDecl(
         namespace = "http://www.w3.org/1999/xhtml",
         name = "map-coordinates",
@@ -350,7 +347,6 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link List }{@code <}{@link String
      * }{@code >}{@code >}}
      */
-    @SuppressWarnings("rawtypes")
     @XmlElementDecl(
         namespace = "http://www.w3.org/1999/xhtml",
         name = "map-coordinates",

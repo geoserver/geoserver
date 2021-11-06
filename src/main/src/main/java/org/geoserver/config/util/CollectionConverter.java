@@ -30,7 +30,7 @@ public class CollectionConverter
     }
 
     @Override
-    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+    public boolean canConvert(Class type) {
         if (type != null) {
             String typeName = type.getName();
             if (typeName.equals(ARRAY_LIST)

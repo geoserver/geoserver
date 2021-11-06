@@ -41,7 +41,6 @@ public class WpsXmlReader extends XmlRequestReader {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         Parser parser = new Parser(configuration);
         parser.setValidating(true);

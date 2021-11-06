@@ -63,7 +63,6 @@ public class DemoRequestsPageTest extends GeoServerWicketTestSupport {
         tester.assertComponent("responseWindow", ModalWindow.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testDemoListLoaded() {
         // print(tester.getLastRenderedPage(), true, true);

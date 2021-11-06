@@ -32,7 +32,7 @@ import javax.servlet.http.Part;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-@SuppressWarnings({"rawtypes", "deprecation"})
+@SuppressWarnings("deprecation")
 class FakeHttpServletRequest implements HttpServletRequest {
 
     private String workspace;

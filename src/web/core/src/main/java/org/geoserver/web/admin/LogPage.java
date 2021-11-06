@@ -52,7 +52,6 @@ public class LogPage extends GeoServerSecuredPage {
 
     @SuppressWarnings("serial")
     public LogPage(PageParameters params) {
-        @SuppressWarnings("rawtypes")
         Form<?> form = new Form("form");
         add(form);
 

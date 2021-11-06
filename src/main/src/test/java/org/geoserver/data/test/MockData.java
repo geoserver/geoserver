@@ -50,7 +50,6 @@ import org.opengis.referencing.cs.CoordinateSystem;
  * @author Justin Deoliveira, The Open Planning Project
  */
 @SuppressWarnings({
-    "rawtypes",
     "unchecked",
     "PMD.JUnit4TestShouldUseBeforeAnnotation",
     "PMD.JUnit4TestShouldUseAfterAnnotation"

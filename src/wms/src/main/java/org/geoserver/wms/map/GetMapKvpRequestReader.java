@@ -225,7 +225,6 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         this.parseStyles = styleRequired;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public GetMapRequest createRequest() throws Exception {
         GetMapRequest request = new GetMapRequest();
@@ -251,7 +250,6 @@ public class GetMapKvpRequestReader extends KvpRequestReader implements Disposab
         return false;
     }
 
-    @SuppressWarnings({"rawtypes"})
     @Override
     public GetMapRequest read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
             throws Exception {

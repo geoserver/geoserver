@@ -65,7 +65,6 @@ public class ZipArchivePPIO extends BinaryPPIO {
      * @param os the os
      * @throws Exception the exception
      */
-    @SuppressWarnings("rawtypes")
     @Override
     public void encode(final Object output, OutputStream os) throws Exception {
         // avoid double zipping

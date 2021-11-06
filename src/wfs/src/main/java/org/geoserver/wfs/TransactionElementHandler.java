@@ -51,7 +51,6 @@ public interface TransactionElementHandler {
      * @param listener a transaction listener that will be called before and after each change
      *     performed against the data stores
      */
-    @SuppressWarnings("rawtypes")
     void execute(
             TransactionElement element,
             TransactionRequest request,

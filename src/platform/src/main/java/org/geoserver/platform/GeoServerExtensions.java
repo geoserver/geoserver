@@ -117,7 +117,6 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
      * @param context The context in which to perform the lookup.
      * @return A collection of the extensions, or an empty collection.
      */
-    @SuppressWarnings("unchecked")
     public static final <T> List<T> extensions(
             Class<T> extensionPoint, ApplicationContext context) {
         return extensions(extensionPoint, context, false);

@@ -1630,7 +1630,6 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
      * @return A Response object that can encode the request (typically a {@link
      *     RenderedImageMapResponse})
      */
-    @SuppressWarnings("unchecked")
     public Response getResponseEncoder(MimeType responseFormat, RenderedImageMap metaTileMap) {
         final String format = responseFormat.getFormat();
         final String mimeType = responseFormat.getMimeType();

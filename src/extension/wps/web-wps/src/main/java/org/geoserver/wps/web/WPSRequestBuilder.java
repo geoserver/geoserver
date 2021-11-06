@@ -36,7 +36,7 @@ import org.geoserver.web.demo.PlainCodePage;
  * @author Andrea Aime - OpenGeo
  * @author Martin Davis - OpenGeo
  */
-@SuppressWarnings({"serial", "rawtypes"})
+@SuppressWarnings("serial")
 public class WPSRequestBuilder extends GeoServerBasePage {
 
     public static final String PARAM_NAME = "name";

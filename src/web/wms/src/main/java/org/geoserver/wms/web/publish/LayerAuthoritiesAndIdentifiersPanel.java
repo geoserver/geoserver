@@ -20,7 +20,6 @@ public class LayerAuthoritiesAndIdentifiersPanel extends Panel {
 
     private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("unchecked")
     public LayerAuthoritiesAndIdentifiersPanel(
             final String id,
             final boolean isRootLayer,

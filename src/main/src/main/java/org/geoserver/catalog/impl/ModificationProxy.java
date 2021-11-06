@@ -165,7 +165,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         return properties();
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     public void commit() {
         synchronized (proxyObject) {
             // commit changes to the proxy object

@@ -199,7 +199,6 @@ public class GWCTest {
     private BlobStoreAggregator blobStoreAggregator;
 
     @Before
-    @SuppressWarnings("deprecation")
     public void setUp() throws Exception {
 
         System.setProperty("ALLOW_ENV_PARAMETRIZATION", "true");

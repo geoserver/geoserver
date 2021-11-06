@@ -175,7 +175,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
     public static class NameConverter extends AbstractSingleValueConverter {
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return Name.class.isAssignableFrom(type);
         }
 
@@ -210,7 +210,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         }
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class clazz) {
+        public boolean canConvert(Class clazz) {
             return ProcessGroupInfoImpl.class == clazz;
         }
 
@@ -261,7 +261,7 @@ public class WPSXStreamLoader extends XStreamServiceLoader<WPSInfo> {
         }
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return NumberRange.class.isAssignableFrom(type);
         }
 

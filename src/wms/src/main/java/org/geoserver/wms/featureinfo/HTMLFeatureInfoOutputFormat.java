@@ -48,7 +48,6 @@ public class HTMLFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      * @throws ServiceException For problems with geoserver
      * @throws java.io.IOException For problems writing the output.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public void write(
             FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)

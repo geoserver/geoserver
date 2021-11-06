@@ -130,7 +130,7 @@ public class YsldHandler extends StyleHandler {
         Ysld.encode(sld, output, uomMapper);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     @Override
     public List<Exception> validate(Object input, Version version, EntityResolver entityResolver)
             throws IOException {

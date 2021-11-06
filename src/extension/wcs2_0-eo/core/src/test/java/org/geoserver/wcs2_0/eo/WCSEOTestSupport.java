@@ -40,7 +40,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
  *
  * @author Andrea Aime, GeoSolutions
  */
-@SuppressWarnings("serial")
 public abstract class WCSEOTestSupport extends GeoServerSystemTestSupport {
     protected static QName TIMERANGES =
             new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);

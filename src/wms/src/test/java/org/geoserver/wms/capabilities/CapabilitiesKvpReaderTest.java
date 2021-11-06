@@ -17,7 +17,6 @@ import org.geoserver.wms.WMS;
 import org.junit.Before;
 import org.junit.Test;
 
-@SuppressWarnings("rawtypes")
 public class CapabilitiesKvpReaderTest {
 
     private CapabilitiesKvpReader reader;
@@ -86,7 +85,6 @@ public class CapabilitiesKvpReaderTest {
         assertEquals("1000", read.getUpdateSequence());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testRootLayerDefault() throws Exception {
         GetCapabilitiesRequest read = reader.read(reader.createRequest(), kvp, rawKvp);

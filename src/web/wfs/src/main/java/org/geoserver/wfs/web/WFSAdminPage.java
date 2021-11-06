@@ -67,7 +67,7 @@ public class WFSAdminPage extends BaseServiceAdminPage<WFSInfo> {
     }
 
     @Override
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     protected void build(final IModel info, Form form) {
         // max features
         form.add(new TextField<Integer>("maxFeatures").add(RangeValidator.minimum(0)));

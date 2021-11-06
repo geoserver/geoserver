@@ -849,6 +849,15 @@ public class ImportJSONWriter {
         return new RestException(errorResponse.toString(), HttpStatus.BAD_REQUEST);
     }
 
+    public static RestException badRequest(Throwable t) {
+        JSONObject errorResponse = new JSONObject();
+        JSONArray errors = new JSONArray();
+        errors.add(t.getMessage());
+        errorResponse.put("errors", errors);
+
+        return new RestException(errorResponse.toString(), HttpStatus.BAD_REQUEST, t);
+    }
+
     public static class FlushableJSONBuilder extends JSONBuilder {
 
         public FlushableJSONBuilder(Writer w) {

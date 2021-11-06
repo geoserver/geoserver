@@ -293,7 +293,7 @@ public class ImportTaskController extends ImportBaseController {
         try {
             newTasks = importer.update(context, data);
         } catch (ValidationException ve) {
-            throw ImportJSONWriter.badRequest(ve.getMessage());
+            throw ImportJSONWriter.badRequest(ve);
         } catch (IOException e) {
             throw new RestException("Error updating context", HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
@@ -408,7 +408,7 @@ public class ImportTaskController extends ImportBaseController {
             // ImportContextJSONConverterReader(importer,request.getInputStream()).task();
         } catch (ValidationException | IOException ve) {
             LOGGER.log(Level.WARNING, null, ve);
-            throw converter.badRequest(ve.getMessage());
+            throw converter.badRequest(ve);
         }
 
         boolean change = false;

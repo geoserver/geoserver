@@ -50,19 +50,19 @@ public class ImportContextHTMLMessageConverter extends BaseMessageConverter<Impo
     // writing
     //
     @Override
+    @SuppressWarnings("PMD.CloseResource") // OS is managed by servlet container
     protected void writeInternal(ImportContext context, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
 
-        try (OutputStreamWriter output = new OutputStreamWriter(outputMessage.getBody())) {
-            output.write("<html><body><pre>");
+        OutputStreamWriter output = new OutputStreamWriter(outputMessage.getBody());
+        output.write("<html><body><pre>");
 
-            FlushableJSONBuilder json = new FlushableJSONBuilder(output);
-            ImportJSONWriter writer = new ImportJSONWriter(importer);
+        FlushableJSONBuilder json = new FlushableJSONBuilder(output);
+        ImportJSONWriter writer = new ImportJSONWriter(importer);
 
-            writer.context(json, context, true, writer.expand(1));
+        writer.context(json, context, true, writer.expand(1));
 
-            output.write("</pre></body></html>");
-            output.flush();
-        }
+        output.write("</pre></body></html>");
+        output.flush();
     }
 }

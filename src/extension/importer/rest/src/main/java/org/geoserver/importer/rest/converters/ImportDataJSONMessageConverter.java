@@ -66,17 +66,16 @@ public class ImportDataJSONMessageConverter extends BaseMessageConverter<ImportD
     protected void writeInternal(ImportData data, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
 
-        try (OutputStreamWriter outputStream = new OutputStreamWriter(outputMessage.getBody())) {
+        OutputStreamWriter outputStream = new OutputStreamWriter(outputMessage.getBody());
 
-            FlushableJSONBuilder json = new FlushableJSONBuilder(outputStream);
-            ImportJSONWriter writer = new ImportJSONWriter(importer);
+        FlushableJSONBuilder json = new FlushableJSONBuilder(outputStream);
+        ImportJSONWriter writer = new ImportJSONWriter(importer);
 
-            Object parent = data.getParent();
-            int expand = writer.expand(1);
+        Object parent = data.getParent();
+        int expand = writer.expand(1);
 
-            writer.data(json, data, parent, expand);
+        writer.data(json, data, parent, expand);
 
-            outputStream.flush();
-        }
+        outputStream.flush();
     }
 }

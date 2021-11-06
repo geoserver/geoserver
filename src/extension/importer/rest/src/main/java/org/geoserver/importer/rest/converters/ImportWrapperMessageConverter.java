@@ -56,17 +56,17 @@ public class ImportWrapperMessageConverter extends BaseMessageConverter<ImportWr
     // writing
     //
     @Override
+    @SuppressWarnings("PMD.CloseResource") // OS is managed by servlet container
     protected void writeInternal(ImportWrapper wrapper, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         MediaType contentType = outputMessage.getHeaders().getContentType();
-        try (OutputStreamWriter outputWriter = new OutputStreamWriter(outputMessage.getBody())) {
-            if (MediaType.TEXT_HTML.isCompatibleWith(contentType)) {
-                writeHTML(wrapper, outputWriter);
-            } else {
-                writeJSON(wrapper, outputWriter);
-            }
-            outputWriter.flush();
+        OutputStreamWriter outputWriter = new OutputStreamWriter(outputMessage.getBody());
+        if (MediaType.TEXT_HTML.isCompatibleWith(contentType)) {
+            writeHTML(wrapper, outputWriter);
+        } else {
+            writeJSON(wrapper, outputWriter);
         }
+        outputWriter.flush();
     }
 
     private void writeHTML(ImportWrapper wrapper, OutputStreamWriter outputWriter)

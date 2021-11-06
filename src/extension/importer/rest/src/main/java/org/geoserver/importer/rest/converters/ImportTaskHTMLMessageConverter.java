@@ -50,22 +50,22 @@ public class ImportTaskHTMLMessageConverter extends BaseMessageConverter<ImportT
     // writing
     //
     @Override
+    @SuppressWarnings("PMD.CloseResource") // OS is managed by servlet container
     protected void writeInternal(ImportTask task, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
 
-        try (OutputStreamWriter outputStream = new OutputStreamWriter(outputMessage.getBody())) {
+        OutputStreamWriter outputStream = new OutputStreamWriter(outputMessage.getBody());
 
-            outputStream.write("<html><body><pre>");
+        outputStream.write("<html><body><pre>");
 
-            FlushableJSONBuilder json = new FlushableJSONBuilder(outputStream);
-            ImportJSONWriter writer = new ImportJSONWriter(importer);
+        FlushableJSONBuilder json = new FlushableJSONBuilder(outputStream);
+        ImportJSONWriter writer = new ImportJSONWriter(importer);
 
-            int expand = writer.expand(1);
+        int expand = writer.expand(1);
 
-            writer.task(json, task, true, expand);
+        writer.task(json, task, true, expand);
 
-            outputStream.write("</pre></body></html>");
-            outputStream.flush();
-        }
+        outputStream.write("</pre></body></html>");
+        outputStream.flush();
     }
 }

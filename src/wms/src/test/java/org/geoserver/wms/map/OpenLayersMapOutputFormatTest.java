@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
@@ -17,7 +18,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -52,12 +57,13 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
 
-    Pattern lookForEscapedParam =
-            Pattern.compile(
-                    Pattern.quote(
-                            "\"</script><script>alert('x-scripted');</script><script>\": 'foo'"));
-
     @Rule public TestHttpClientRule clientMocker = new TestHttpClientRule();
+
+    @Override
+    protected String getLogConfiguration() {
+        // needed for a test on logging capabilities
+        return "/OL_LOGGING.properties";
+    }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -459,5 +465,56 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
                         .replace("\\r", "")
                         .indexOf("\"25064;ALERT(1)//419\": '1'");
         assertTrue(index > -1);
+    }
+
+    @Test
+    public void testAutoCodeLogsErrors() throws Exception {
+        final TestAppender appender = new TestAppender();
+        final Logger logger = Logger.getRootLogger();
+        logger.addAppender(appender);
+        try {
+
+            GetMapRequest request = createGetMapRequest(MockData.BASIC_POLYGONS);
+            CoordinateReferenceSystem crs = CRS.decode("AUTO:42003,9001,-20,-45");
+            request.setCrs(crs);
+            request.setBbox(new Envelope(-3_000_000, 3_000_000, -3_000_000, 3_000_000));
+
+            final WMSMapContent map = new WMSMapContent();
+            map.setRequest(request);
+            request.setFormat("application/openlayers");
+
+            String htmlDoc = getAsHTML(map);
+            int index = htmlDoc.indexOf("yx : {'EPSG:4326' : false}");
+            assertTrue(index > -1);
+
+            for (LoggingEvent event : appender.getLog()) {
+                assertFalse(
+                        "Error was logged",
+                        event.getRenderedMessage().contains("Failed to determine CRS axis order"));
+            }
+        } finally {
+            logger.removeAppender(appender);
+        }
+    }
+
+    class TestAppender extends AppenderSkeleton {
+        private final List<LoggingEvent> log = new ArrayList<>();
+
+        @Override
+        public boolean requiresLayout() {
+            return false;
+        }
+
+        @Override
+        protected void append(final LoggingEvent loggingEvent) {
+            log.add(loggingEvent);
+        }
+
+        @Override
+        public void close() {}
+
+        public List<LoggingEvent> getLog() {
+            return new ArrayList<>(log);
+        }
     }
 }

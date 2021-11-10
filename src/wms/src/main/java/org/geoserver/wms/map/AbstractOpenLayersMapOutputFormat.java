@@ -213,6 +213,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
     private boolean isWms13FlippedCRS(CoordinateReferenceSystem crs) {
         try {
             String code = CRS.lookupIdentifier(crs, false);
+            if (code == null) return false;
             if (!code.contains("EPSG:")) {
                 code = "EPGS:" + code;
             }

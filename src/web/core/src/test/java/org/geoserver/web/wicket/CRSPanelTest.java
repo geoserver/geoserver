@@ -183,6 +183,20 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         assertEquals(CRS.decode("EPSG:3005"), foo.crs);
     }
 
+    @Test
+    public void testAutoCode() throws Exception {
+        // create a test page that will check the updated SRS is the AUTO one
+        final String AUTO = "AUTO:42003,9001,-20,-45";
+        tester.startPage(new CRSPanelTestPage(AUTO));
+        // write try out an AUTO code case
+        FormTester ft = tester.newFormTester("form");
+        ft.setValue("crs:srs", AUTO);
+        ft.submit();
+        tester.assertNoErrorMessage();
+        CRSPanel crsPanel = (CRSPanel) tester.getComponentFromLastRenderedPage("form:crs");
+        assertTrue(CRS.equalsIgnoreMetadata(CRS.decode(AUTO), crsPanel.getCRS()));
+    }
+
     static class Foo implements Serializable {
         public CoordinateReferenceSystem crs;
 

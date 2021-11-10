@@ -178,7 +178,9 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
                         }
                         target.add(wktLink);
 
-                        onSRSUpdated(toSRS(crs), target);
+                        String srs = toSRS(crs);
+                        if (srs == null && crs != null) srs = srsTextField.getInput();
+                        onSRSUpdated(srs, target);
                     }
                 });
 

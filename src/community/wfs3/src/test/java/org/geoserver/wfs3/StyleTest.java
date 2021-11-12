@@ -140,7 +140,7 @@ public class StyleTest extends WFS3TestSupport {
         assertEquals(SLDHandler.MIMETYPE_10, response.getContentType());
         final Document dom = dom(response, true);
         // print(dom);
-        assertXpathEvaluatesTo("A boring default style", "//sld:UserStyle/sld:Title", dom);
+        assertXpathEvaluatesTo("Blue Line", "//sld:UserStyle/sld:Title", dom);
         assertXpathEvaluatesTo("1", "count(//sld:Rule)", dom);
         assertXpathEvaluatesTo("1", "count(//sld:LineSymbolizer)", dom);
         assertXpathEvaluatesTo(

@@ -1138,6 +1138,12 @@
         <artifactId>jackson-databind</artifactId>
         <version>${jackson2.databind.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.fasterxml.woodstox</groupId>
+        <artifactId>woodstox-core</artifactId>
+        <version>6.2.6</version>
+        <!-- match with jackson2.databind.version above -->
+      </dependency>
 
       <dependency>
         <groupId>javax.mail</groupId>
@@ -1194,6 +1200,12 @@
         <groupId>com.noelios.restlet</groupId>
         <artifactId>com.noelios.restlet.ext.servlet</artifactId>
         <version>1.0.8</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-core</artifactId>
+        <version>2.0.2</version>
+        <!-- exclude: javax.xml.bind, org.slf4j, swagger-annotations -->
       </dependency>
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>

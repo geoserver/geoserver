@@ -693,16 +693,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>qos</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-qos</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>querylayer</id>
       <dependencies>
         <dependency>

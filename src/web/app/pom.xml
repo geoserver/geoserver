@@ -1646,16 +1646,6 @@
       </dependencies>
     </profile>
     <profile>
-      <id>importer-bdb</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-importer-bdb</artifactId>
-          <version>${project.version}</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
       <id>mbtiles-store</id>
       <dependencies>
         <dependency>

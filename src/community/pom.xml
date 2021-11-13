@@ -82,7 +82,6 @@
             <descriptor>release/ext-taskmanager-s3.xml</descriptor>
             <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
             <descriptor>release/ext-cog.xml</descriptor>
-            <descriptor>release/ext-wfs3.xml</descriptor>
             <descriptor>release/ext-qos.xml</descriptor>
             <descriptor>release/ext-s3-geotiff.xml</descriptor>
             <descriptor>release/ext-wmts-styles.xml</descriptor>
@@ -254,7 +253,6 @@
         <module>nsg-profiles</module>
         <module>netcdf-ghrsst</module>
         <module>taskmanager</module>
-        <module>wfs3</module>
         <module>qos</module>
         <module>web-ogr</module>
         <module>ogcapi</module>
@@ -635,12 +633,6 @@
       <id>metadata</id>
       <modules>
         <module>metadata</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>wfs3</id>
-      <modules>
-        <module>wfs3</module>
       </modules>
     </profile>
     <profile>

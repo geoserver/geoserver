@@ -220,7 +220,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
         return featuresInfo;
     }
 
-    /** Writes a WFS3 compliant timeStamp collection attribute */
+    /** Writes a OGC API - Features compliant timeStamp collection attribute */
     protected void writeCollectionTimeStamp(GeoJSONBuilder jw) {
         jw.key("timeStamp").value(new ISO8601Formatter().format(new Date()));
     }
@@ -239,11 +239,11 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
         // counts
         if (featureCount != null) {
             jsonWriter.key("totalFeatures").value(featureCount);
-            // WFS3 suggested name for the same concept as totalFeatures
+            // OGC API - Features suggested name for the same concept as totalFeatures
             jsonWriter.key("numberMatched").value(featureCount);
         } else {
             jsonWriter.key("totalFeatures").value("unknown");
-            // in WFS3 the suggestion is not to include the element
+            // in OGC API - Features the suggestion is not to include the element
         }
         jsonWriter.key("numberReturned").value(numberReturned);
     }
@@ -291,7 +291,7 @@ public class GeoJSONGetFeatureResponse extends WFSGetFeatureOutputFormat
         }
     }
 
-    /** Writes WFS3 compliant paging links */
+    /** Writes OGC API - Features compliant paging links */
     protected void writePagingLinks(
             FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw) {
 

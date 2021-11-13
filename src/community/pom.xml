@@ -242,7 +242,6 @@
         <module>importer-jdbc</module>
         <module>features-templating</module>
         <module>gsr</module>
-        <module>importer-bdb</module>
         <module>cog</module>
         <module>cov-json</module>
         <module>smart-data-loader</module>
@@ -652,12 +651,6 @@
       <id>gsr</id>
       <modules>
         <module>gsr</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>importer-bdb</id>
-      <modules>
-        <module>importer-bdb</module>
       </modules>
     </profile>
     <profile>

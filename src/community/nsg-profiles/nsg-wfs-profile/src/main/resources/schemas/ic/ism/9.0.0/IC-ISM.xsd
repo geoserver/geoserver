@@ -1,0 +1,1486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen SCHSchema="../../Schematron/ISM/ISM_XML.sch"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:us:gov:ic:ism"
+	xmlns:ism="urn:us:gov:ic:ism" xmlns:iccve="urn:us:gov:ic:ism-cvenum"
+	xmlns:common="urn:us:gov:ic:common" xmlns:ism25x="urn:us:gov:ic:cvenum:ism:25x"
+	xmlns:ismdissem="urn:us:gov:ic:cvenum:ism:dissem"
+	xmlns:ismfgio="urn:us:gov:ic:cvenum:ism:fgiopen"
+	xmlns:ismfgip="urn:us:gov:ic:cvenum:ism:fgiprotected"
+	xmlns:ismnonic="urn:us:gov:ic:cvenum:ism:nonic"
+	xmlns:ismnotice="urn:us:gov:ic:cvenum:ism:notice"
+	xmlns:ismownpro="urn:us:gov:ic:cvenum:ism:ownerproducer"
+	xmlns:ismrelto="urn:us:gov:ic:cvenum:ism:relto"
+	xmlns:ismscicon="urn:us:gov:ic:cvenum:ism:scicontrols"
+	xmlns:ismclassall="urn:us:gov:ic:cvenum:ism:classification:all"
+	xmlns:ismcomplies="urn:us:gov:ic:cvenum:ism:complieswith"
+	xmlns:ismsar="urn:us:gov:ic:cvenum:ism:sar"
+	xmlns:ismnonus="urn:us:gov:ic:cvenum:ism:nonuscontrols"
+	xmlns:ismatomic="urn:us:gov:ic:cvenum:ism:atomicEnergyMarkings"
+	xmlns:ismpoctyp="urn:us:gov:ic:cvenum:ism:pocType" xmlns:xhtml="http://www.w3.org/1999/xhtml"
+	targetNamespace="urn:us:gov:ic:ism" elementFormDefault="qualified"
+	attributeFormDefault="qualified" xml:lang="en" ism:resourceElement="true"
+	ism:createDate="2011-12-01" ism:DESVersion="9" ism:classification="U" ism:ownerProducer="USA"
+	version="9">
+	<xsd:annotation>
+		<xsd:documentation>
+			<xhtml:h1 ism:ownerProducer="USA" ism:classification="U">Intelligence Community
+				Technical Specification XML Data Encoding Specification for Information Security
+				Marking Metadata (ISM.XML)</xhtml:h1>
+		</xsd:documentation>
+		<xsd:documentation>
+			<xhtml:h2 ism:ownerProducer="USA" ism:classification="U">Notices</xhtml:h2>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U"> Distribution Notice: 
+           This document has been approved for Public Release and is available for use without restriction.
+       
+			</xhtml:p>
+		</xsd:documentation>
+		<xsd:documentation>
+			<xhtml:h2 ism:ownerProducer="USA" ism:classification="U">Description</xhtml:h2>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U"> W3C XML Schema for the XML Data
+				Encoding Specification Intelligence Community Metadata Standard for Information
+				Security Marking (ISM.XML). </xhtml:p>
+		</xsd:documentation>
+		<xsd:documentation>
+			<xhtml:h2 ism:ownerProducer="USA" ism:classification="U">Introduction</xhtml:h2>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This XML Schema file is one
+				component of the XML Data Encoding Specification (DES). Please see the document
+				titled <xhtml:i>
+					<xhtml:a href="../../DES/ISM/DesIsmXml.pdf">XML Data Encoding Specification for
+						Information Security Marking Metadata</xhtml:a>
+				</xhtml:i> for a complete description of the encoding as well as list of all
+				components. </xhtml:p>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U"> It is envisioned that this
+				schema or its components, as well as other parts of the DES may be overridden for
+				localized implementations. Therefore, permission to use, copy, modify and distribute
+				this XML Schema and the other parts of the DES for any purpose is hereby granted in
+				perpetuity. </xhtml:p>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U"> Please reference the preceding
+				two paragraphs in all copies or variations. The developers make no representation
+				about the suitability of the schema or DES for any purpose. It is provided "as is"
+				without expressed or implied warranty. </xhtml:p>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U"> If you modify this XML Schema
+				in any way label your schema as a variant of ISM.XML. </xhtml:p>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U"> Please direct all questions,
+				bug reports,or suggestions for changes to the points of contact identified in the
+				document referenced above. </xhtml:p>
+		</xsd:documentation>
+		<xsd:documentation>
+			<xhtml:h2 ism:ownerProducer="USA" ism:classification="U">Implementation Notes</xhtml:h2>
+			<xhtml:ul>
+				<xhtml:li ism:ownerProducer="USA" ism:classification="U">The IC ISM schema is not a
+					standalone construct; it should be imported into a parent XML schema.</xhtml:li>
+				<xhtml:li ism:ownerProducer="USA" ism:classification="U">Refer to the <xhtml:i>
+						<xhtml:a href="../../DES/ISM/DesIsmXml.pdf">XML Data Encoding Specification for
+							Information Security Marking Metadata</xhtml:a>
+					</xhtml:i> Data Encoding Specification (ISM.XML DES) for an explanation of the
+					relationships of the IC ISM attributes and the associated controlled
+					vocabularies. The CAPCO Register and CAPCO Implementation Manual provide
+					additional business rules (that may be classified) not provided in this schema
+					or the associated documentation.</xhtml:li>
+				<xhtml:li ism:ownerProducer="USA" ism:classification="U">The IC ISM attributes are
+					intended to support all CAPCO security markings. However, the attribute values
+					are NOT intended to be verbatim pieces of portionmarks and banners. Instead, the
+					values should be interpreted by XSLT stylesheets or other formatting speci-
+					fications to produce the required portionmarks and banners.</xhtml:li>
+				<xhtml:li ism:ownerProducer="USA" ism:classification="U">The controlled vocabularies
+					containing the required values for popu- lating the attributes are described in
+					the ISM.XML DES.</xhtml:li>
+				<xhtml:li ism:ownerProducer="USA" ism:classification="U">Attribute group
+					"SecurityAttributesGroup" should be referenced in the attribute definition list
+					of any element that REQUIRES security metadata.</xhtml:li>
+				<xhtml:li ism:ownerProducer="USA" ism:classification="U">Attribute group
+					"SecurityAttributesOptionGroup" may be referenced in the attribute definition
+					list of any element for which security metadata may be appropriate but is not
+					required (such as, an individual cell of a table).</xhtml:li>
+				<xhtml:li ism:ownerProducer="USA" ism:classification="U"> Elements declared in this
+					specification are conveniences to developers of Schema. Their use is not
+					required but was determined to be helpful for many Schemas that would otherwise
+					have to declare these simple elements. Schema developers are free to implement
+					their own versions of these elements. </xhtml:li>
+				<xhtml:li ism:ownerProducer="USA" ism:classification="U"> This file provides an
+					XML-based schema for specification of metadata for classification and controls
+					markings. The goal of the IC ISM XML Schema is to provide a common set of XML
+					attributes for implementing security-based metadata throughout the IC. The IC
+					ISM XML Schema provides markup for the tokens that are used to format the CAPCO
+					markings. </xhtml:li>
+				<xhtml:li ism:ownerProducer="USA" ism:classification="U"> The IC ISM XML Schema may
+					be incorporated into organizational XML-based schemas by (a) declaring the IC
+					ISM namespace and (b) inserting an "import" statement: <code xmlns="">
+						&lt;xsd:schema xmlns="...my namespace name..." targetNamespace="...my
+						namespace name..." xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+						xmlns:ism="urn:us:gov:ic:ism"&gt; ... &lt;xsd:import
+						namespace="urn:us:gov:ic:ism schemaLocation="IC-ISM.xsd" /&gt; </code>
+				</xhtml:li>
+			</xhtml:ul>
+		</xsd:documentation>
+		<xsd:documentation>
+			<xhtml:h2 ism:ownerProducer="USA" ism:classification="U">Creators</xhtml:h2>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U">Office of the Director of
+				National Intelligence Intelligence Community Chief Information Officer</xhtml:p>
+		</xsd:documentation>
+	</xsd:annotation>
+	<!--***************************************************-->
+	<!--Start Import Statements-->
+	<!--***************************************************-->
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:25x"
+		schemaLocation="./CVEGenerated/CVEnumISM25X.xsd"/>
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:atomicEnergyMarkings"
+		schemaLocation="./CVEGenerated/CVEnumISMAtomicEnergyMarkings.xsd"/>
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:classification:all"
+		schemaLocation="./CVEGenerated/CVEnumISMClassificationAll.xsd"/>
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:complieswith"
+		schemaLocation="./CVEGenerated/CVEnumISMCompliesWith.xsd"/>
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:dissem"
+		schemaLocation="./CVEGenerated/CVEnumISMDissem.xsd"/>
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:fgiopen"
+		schemaLocation="./CVEGenerated/CVEnumISMFGIOpen.xsd"/>
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:fgiprotected"
+		schemaLocation="./CVEGenerated/CVEnumISMFGIProtected.xsd"/>
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:nonic"
+		schemaLocation="./CVEGenerated/CVEnumISMNonIC.xsd"/>
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:nonuscontrols"
+		schemaLocation="./CVEGenerated/CVEnumISMNonUSControls.xsd"/>
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:notice"
+		schemaLocation="./CVEGenerated/CVEnumISMNotice.xsd"/>
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:ownerproducer"
+		schemaLocation="./CVEGenerated/CVEnumISMOwnerProducer.xsd"/>
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:pocType"
+		schemaLocation="./CVEGenerated/CVEnumISMPocType.xsd"/>
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:relto"
+		schemaLocation="./CVEGenerated/CVEnumISMRelTo.xsd"/>
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:sar"
+		schemaLocation="./CVEGenerated/CVEnumISMSAR.xsd"/>
+	<xsd:import namespace="urn:us:gov:ic:cvenum:ism:scicontrols"
+		schemaLocation="./CVEGenerated/CVEnumISMSCIControls.xsd"/>
+	<!--***************************************************-->
+	<!--End Import Statements-->
+	<!--***************************************************-->
+	<!--***************************************************-->
+	<!--Start All case-insensitive alphabetically-->
+	<!--***************************************************-->
+
+	<xsd:attribute name="atomicEnergyMarkings" type="ismatomic:CVEnumISMatomicEnergyMarkings">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used at
+					both the resource and the portion levels. One or more indicators identifying DoE
+					markings. It is manifested in portion marks and security banners. The
+					permissible values for this simple type are defined in the Controlled Value
+					Enumeration: CVEnumISMAtomicEnergyMarkings.xml </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attribute name="classification" type="ismclassall:CVEnumISMClassificationAll">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used at
+					both the resource and the portion levels. A single indicator of the highest
+					level of classification applicable to an information resource or portion within
+					the domain of classified national security information. The Classification
+					element is always used in conjunction with the Owner Producer element. Taken
+					together, the two elements specify the classification category and the type of
+					classification (US, non-US, or Joint). It is manifested in portion marks and
+					security banners. PERMISSIBLE VALUES The permissible values for this simple type
+					are defined in the Controlled Value Enumeration: CVEnumISMClassificationAll.xml
+				</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attribute name="classificationReason">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used
+					primarily at the resource level. One or more reason indicators or explanatory
+					text describing the basis for an original classification decision. It is
+					manifested only in the 'Reason' line of a resource's classification authority
+					block. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:maxLength value="4096"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>
+
+	<xsd:attribute name="classifiedBy">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used
+					primarily at the resource level. The identity, by name or personal identifier,
+					and position title of the original classification authority for a resource. It
+					is manifested only in the 'Classified By' line of a resource's classification
+					authority block. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:maxLength value="1024"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>
+
+	<xsd:attribute name="compilationReason">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> A description of the
+					reasons that the classification of this element is more restrictive than a
+					simple roll-up of the sub elements would result in. This acts as an indicator to
+					rule engines that there is not accidental over classification going on and to
+					users that special care beyond what the portion marks reveal must be taken when
+					using this data. Use of this mark does not replace the need for the compilation
+					reason being defined in the prose in accordance with ISOO Directive 1. For
+					example this would document why 3 Unclassified bullet items form a Secret List.
+					Without this reason being noted the above described document would be considered
+					to be miss-marked and overclassified. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:maxLength value="1024"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>
+
+	<xsd:attribute name="compliesWith" type="ismcomplies:CVEnumISMCompliesWith">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used at
+					the resource level. An indicator of what optional ISM rule sets the documents
+					complies with. This allows systems to know that the document claims compliance
+					with these rule sets and they should be enforced. PERMISSIBLE VALUES The
+					permissible values for this simple type are defined in the Controlled Value
+					Enumeration: CVEnumISMcompliesWith.xml </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attribute name="createDate">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used to
+					designate what date the document was produced on. This is the date that will be
+					used by various constraint rules to determine if the document meets all the
+					business rules. It must be on the element where resourceElement is true.
+				</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:date"/>
+		</xsd:simpleType>
+	</xsd:attribute>
+
+	<xsd:attribute name="declassDate">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used
+					primarily at the resource level. A specific year, month, and day upon which the
+					information shall be automatically declassified if not properly exempted from
+					automatic declassification. It is manifested in the 'Declassify On' line of a
+					resource's classification authority block. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:date"/>
+		</xsd:simpleType>
+	</xsd:attribute>
+
+	<xsd:attribute name="declassEvent">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used
+					primarily at the resource level. A description of an event upon which the
+					information shall be automatically declassified if not properly exempted from
+					automatic declassification. It is manifested only in the 'Declassify On' line of
+					a resource's classification authority block. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:maxLength value="1024"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>
+
+	<xsd:attribute name="declassException" type="ism25x:CVEnumISM25X">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used
+					primarily at the resource level. A single indicator describing an exemption to
+					the nominal 25-year point for automatic declassification. This element is used
+					in conjunction with the Declassification Date or Declassification Event. It is
+					manifested in the 'Declassify On' line of a resource's classification authority
+					block. ISOO has stated it should be a SINGLE value giving the longest
+					protection. </xhtml:p>
+			</xsd:documentation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> PERMISSIBLE VALUE: The
+					permissible value for this attribute is defined in the Controlled Value
+					Enumeration: CVEnumISMN25X.xml </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attribute name="derivativelyClassifiedBy">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used
+					primarily at the resource level. The identity, by name or personal identifier,
+					of the derivative classification authority. It is manifested only in the
+					'Classified By' line of a resource's classification authority block. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:maxLength value="1024"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>
+
+	<xsd:attribute name="derivedFrom">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used
+					primarily at the resource level. A citation of the authoritative source or
+					reference to multiple sources of the classification markings used in a
+					classified resource. It is manifested only in the 'Derived From' line of a
+					document's classification authority block. ISOO's guidance is: Source of
+					derivative classification. (1) The derivative classifier shall concisely
+					identify the source document or the classification guide on the ‘‘Derived From’’
+					line, including the agency and, where available, the office of origin, and the
+					date of the source or guide. An example might appear as: Derived From: Memo,
+					‘‘Funding Problems,’’ October 20, 2008, Office of Administration, Department of
+					Good Works or Derived From: CG No. 1, Department of Good Works, dated October
+					20, 2008 (i) When a document is classified derivatively on the basis of more
+					than one source document or classification guide, the ‘‘Derived From’’ line
+					shall appear as: Derived From: Multiple Sources (ii) The derivative classifier
+					shall include a listing of the source materials on, or attached to, each
+					derivatively classified document. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:maxLength value="1024"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>
+
+	<xsd:attribute name="DESVersion" type="ShortStringType" fixed="9">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> The version number of the
+					DES. Should there be multiple specified in an instance document the first
+					one found is the one that will apply to the entire document. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attribute name="displayOnlyTo" type="ismrelto:CVEnumISMRelTo">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used at
+					both the resource and the portion levels. One or more indicators identifying the
+					country or countries and/or international organization(s) to which classified
+					information may be displayed but NOT released based on the determination of an
+					originator in accordance with established foreign disclosure procedures. This
+					element is used in conjunction with the DisplayOnly Dissemination Controls
+					value. It is manifested in portion marks and security banners. PERMISSIBLE
+					VALUES The permissible values for this attribute are defined in the Controlled
+					Value Enumeration: CVEnumISMRelTo.xml </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attribute name="disseminationControls" type="ismdissem:CVEnumISMDissem">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used at
+					both the resource and the portion levels. One or more indicators identifying the
+					expansion or limitation on the distribution of information. It is manifested in
+					portion marks and security banners. PERMISSIBLE VALUES The permissible values
+					for this attribute are defined in the Controlled Value Enumeration:
+					CVEnumISMDissem.xml </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attribute name="excludeFromRollup">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used to
+					designate that an element's ISM attributes should not be used in a rollup.
+					Generally this is because the element is defining the security attributes of a
+					remote object NOT indicating security constraints for data in this document.
+					This allows an Unclassified document to assert that some document not included
+					has a Top Secret classification without the TS attribute value causing rollup to
+					make the document TS. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:boolean"/>
+		</xsd:simpleType>
+	</xsd:attribute>
+
+	<xsd:attribute name="FGIsourceOpen" type="ismfgio:CVEnumISMFGIOpen">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used at
+					both the resource and the portion levels. One or more indicators identifying
+					information which qualifies as foreign government information for which the
+					source(s) of the information is not concealed. The attribute can indicate that
+					the source of information of foreign origin is unknown. It is manifested in
+					portion marks and security banners. PERMISSIBLE VALUES 1) The value "UNKNOWN" is
+					permitted under the circumstances described above. 2) The full set of values are
+					defined in the Controlled Value Enumeration: CVEnumISMFGIOpen.xml </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attribute name="FGIsourceProtected" type="ismfgip:CVEnumISMFGIProtected">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used at
+					both the resource and the portion levels. This attribute has unique specific
+					rules concerning its usage. A single indicator that information qualifies as
+					foreign government information for which the source(s) of the information must
+					be concealed. Within protected internal organizational spaces this element may
+					be used to maintain a record of the one or more indicators identifying
+					information which qualifies as foreign government information for which the
+					source(s) of the information must be concealed. Measures must be taken prior to
+					dissemination of the information to conceal the source(s) of the foreign
+					government information. An indication that information qualifies as foreign
+					government information according to CAPCO guidelines for which the source(s) of
+					the information must be concealed when the information is disseminated in shared
+					spaces This data element has a dual purpose. Within shared spaces, the data
+					element serves only to indicate the presence of information which is categorized
+					as foreign government information according to CAPCO guidelines for which the
+					source(s) of the information is concealed, in which case, this data element's
+					value will always be "FGI". The data element may also be employed in this manner
+					within protected internal organizational spaces. However, within protected
+					internal organizational spaces this data element may alternatively be used to
+					maintain a formal record of the foreign country or countries and/or registered
+					international organization(s) that are the non-disclosable owner(s) and/or
+					producer(s) of information which is categorized as foreign government
+					information according to CAPCO guidelines for which the source(s) of the
+					information must be concealed when the resource is disseminated to shared
+					spaces. If the data element is employed in this manner, then additional measures
+					must be taken prior to dissemination of the resource to shared spaces so that
+					any indications of the non-disclosable owner(s) and/or producer(s) of
+					information within the resource are eliminated. In all cases, the corresponding
+					portion marking or banner marking should be compliant with CAPCO guidelines for
+					FGI when the source must be concealed. In other words, even if the data element
+					is being employed within protected internal organizational spaces to maintain a
+					formal record of the non-disclosable owner(s) and/or producer(s) within an XML
+					resource, if the resource is rendered for display within the protected internal
+					organizational spaces in any format by a stylesheet or as a result of any other
+					transformation process, then the non-disclosable owner(s) and/or producer(s)
+					should not be included in the corresponding portion marking or banner marking.
+					PERMISSIBLE VALUES 1) The value "FGI" is permitted under the circumstances
+					described above. 2) The full set of values are defined in the Controlled Value
+					Enumeration: CVEnumISMFGIProtected.xml </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attributeGroup name="ISMNoticeBaseAttributeGroup">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">The group of Information
+					Security Marking attributes for use on a notice element without externalNotice</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute ref="noticeType" use="optional"/>
+		<xsd:attribute ref="noticeReason" use="optional"/>
+		<xsd:attribute ref="noticeDate" use="optional"/>
+		<xsd:attribute ref="unregisteredNoticeType" use="optional"/>
+	</xsd:attributeGroup>
+
+	<xsd:attributeGroup name="ISMNoticeAttributeGroup">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">The group of Information
+					Security Marking attributes for use on a notice element adding optional externalNotice</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attributeGroup ref="ISMNoticeBaseAttributeGroup"/>
+		<xsd:attribute ref="externalNotice" use="optional"/>
+	</xsd:attributeGroup>
+	
+	<xsd:attributeGroup name="ISMNoticeExternalAttributeGroup">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">The group of Information
+					Security Marking attributes for use on a notice element adding required externalNotice=true</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attributeGroup ref="ISMNoticeBaseAttributeGroup"/>
+		<xsd:attribute ref="externalNotice" use="required" fixed="true"/>
+	</xsd:attributeGroup>
+	
+	
+	<xsd:attributeGroup name="ISMResourceAttributeGroup">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">An attribute group to be
+					used on the element that represents the resource node of an instance
+					document.</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute ref="resourceElement" use="required"/>
+		<xsd:attribute ref="createDate" use="required"/>
+		<xsd:attribute ref="compliesWith" use="optional"/>
+	</xsd:attributeGroup>
+
+	<xsd:attributeGroup name="ISMResourceAttributeOptionGroup">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">An attribute group to be
+					used on the element that represents the resource node of an instance
+					document.</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute ref="resourceElement" use="optional"/>
+		<xsd:attribute ref="createDate" use="optional"/>
+		<xsd:attribute ref="compliesWith" use="optional"/>
+	</xsd:attributeGroup>
+
+	<xsd:attributeGroup name="ISMRootNodeAttributeGroup">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">An attribute group to be
+					used on the root node of a schema implementing ISM. ISM being entirely
+					attributes based groups such as this are the only way to specify required use.
+				</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute ref="DESVersion" use="required"/>
+	</xsd:attributeGroup>
+
+	<xsd:attributeGroup name="ISMRootNodeAttributeOptionGroup">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">An attribute group to be
+					used on the root node of a schema implementing ISM. ISM being entirely
+					attributes based groups such as this are the only way to specify required use.
+					This group has all the attributes as optional.This group could be used in a
+					schema where many element may be the root node. When the element is acting as
+					the root element it should have attributes used similar to
+					ISMRootNodeAttributeGroup. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute ref="DESVersion" use="optional"/>
+	</xsd:attributeGroup>
+
+	<xsd:simpleType name="LongStringType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">A long string, less than
+					32000 characters.</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="32000"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:complexType name="LongStringWithSecurityType">
+		<xsd:simpleContent>
+			<xsd:extension base="LongStringType">
+				<xsd:attributeGroup ref="SecurityAttributesGroup"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+
+	<xsd:attribute name="nonICmarkings" type="ismnonic:CVEnumISMNonIC">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used at
+					both the resource and the portion levels. One or more indicators of the
+					expansion or limitation on the distribution of an information resource or
+					portion within the domain of information originating from non-intelligence
+					components. It is manifested in portion marks and security banners. PERMISSIBLE
+					VALUES The permissible values for this attribute are defined in the Controlled
+					Value Enumeration: CVEnumISMNonIC.xml </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attribute name="nonUSControls" type="ismnonus:CVEnumISMNonUSControls">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used at
+					both the resource and the portion levels. One or more indicators of the
+					expansion or limitation on the distribution of an information resource or
+					portion within the domain of information originating from non-US components. It
+					is manifested in portion marks and security banners. PERMISSIBLE VALUES The
+					permissible values for this attribute are defined in the Controlled Value
+					Enumeration: CVEnumISMNonUSControls.xml </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:complexType name="NoticeBaseType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">Base type for Notices. Does not include any attributes.</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence minOccurs="1" maxOccurs="1">
+			<xsd:element ref="NoticeText" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="NoticeType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">A single Notice that may
+					consist of 1 or more NoticeText</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="NoticeBaseType">
+				<xsd:attributeGroup ref="NoticeAttributesOptionGroup"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="NoticeExternalType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">A single Notice that may
+					consist of 1 or more NoticeText for use when the notice refers to something external.</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="NoticeBaseType">
+				<xsd:attributeGroup ref="NoticeExternalAttributesOptionGroup"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:element name="Notice" type="NoticeType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">A single Notice that may
+					consist of 1 or more NoticeText</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+
+	<xsd:element name="NoticeExternal" type="NoticeExternalType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">A single Notice that may
+					consist of 1 or more NoticeText for use when the notice refers to something external.</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<xsd:attributeGroup name="NoticeAttributesGroup">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> The group of Information
+					Security Marking attributes for use on a notice element in which the use of
+					attributes 'classification' and 'ownerProducer' is required. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attributeGroup ref="ISMNoticeAttributeGroup"/>
+		<xsd:attributeGroup ref="SecurityAttributesGroup"/>
+	</xsd:attributeGroup>
+
+	<xsd:attributeGroup name="NoticeAttributesOptionGroup">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> The group of Information
+					Security Marking attributes for use on a notice element in which the use of
+					Security on the notice is optional. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attributeGroup ref="ISMNoticeAttributeGroup"/>
+		<xsd:attributeGroup ref="SecurityAttributesOptionGroup"/>
+	</xsd:attributeGroup>
+
+	<xsd:attributeGroup name="NoticeExternalAttributesGroup">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> The group of Information
+					Security Marking attributes for use on a notice element in which the use of
+					attributes 'classification' and 'ownerProducer' is required and the notice is for something external to the object. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attributeGroup ref="ISMNoticeExternalAttributeGroup"/>
+		<xsd:attributeGroup ref="SecurityAttributesGroup"/>
+	</xsd:attributeGroup>
+	
+	<xsd:attributeGroup name="NoticeExternalAttributesOptionGroup">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> The group of Information
+					Security Marking attributes for use on a notice element in which the use of
+					Security on the notice is optional and the notice is for something external to the object. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attributeGroup ref="ISMNoticeExternalAttributeGroup"/>
+		<xsd:attributeGroup ref="SecurityAttributesOptionGroup"/>
+	</xsd:attributeGroup>
+	
+	
+	<xsd:attribute name="noticeDate">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> A Date associated with a
+					notice such as the DoD Distribution notice date. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:date"/>
+		</xsd:simpleType>
+	</xsd:attribute>
+
+	<xsd:element name="NoticeList" type="ism:NoticeListType"/>
+
+	<xsd:complexType name="NoticeListType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">A list of Notices</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence minOccurs="1" maxOccurs="1">
+			<xsd:element ref="Notice" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="SecurityAttributesGroup"/>
+	</xsd:complexType>
+
+	<xsd:element name="NoticeExternalList" type="ism:NoticeExternalListType"/>
+	
+	<xsd:complexType name="NoticeExternalListType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">A list of Notices</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence minOccurs="1" maxOccurs="1">
+			<xsd:element ref="NoticeExternal" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="SecurityAttributesGroup"/>
+	</xsd:complexType>
+	
+	
+	<xsd:attribute name="noticeReason">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> A Reason (less than 2048
+					chars) associated with a notice such as the DoD Distribution reason. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:maxLength value="2048"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>
+
+	<xsd:element name="NoticeText">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">The actual text of a
+					notice.</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="LongStringWithSecurityType">
+					<xsd:attributeGroup ref="POCAttributeGroup"/>
+				</xsd:extension>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:attribute name="noticeType" type="ismnotice:CVEnumISMNotice">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is an
+					indicator that the element contains a security-related notice and is used to
+					categorize which of the required notices is specified in the element. These
+					categories include those described in the CAPCO Register, as well as additional
+					well-defined and formally recognized security notice types described in other
+					directives, such as US-Person and DoD Distribution. The element could contain
+					any structure that the implementing schema defines, and details of the rendering
+					would be relegated to the implementing schema. The permissible value for this
+					attribute are defined in the Controlled Value Enumeration: CVEnumISMNotice.xml
+				</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attribute name="externalNotice">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is an
+					indicator that the element contains a security-related notice NOT in this document. This flag allows
+					for a notice to exist in a document without the data that would normally require the notice. Example a 
+					FISA notice when there is no FISA data present.
+					A common use case is source citations where the notice if for the sourced document and should
+					not impact the requirements for that type of data in this document.
+					
+				</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:boolean"/>
+		</xsd:simpleType>
+	</xsd:attribute>
+
+	<xsd:attribute name="ownerProducer" type="ismownpro:CVEnumISMOwnerProducer">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used at
+					both the resource and the portion levels. One or more indicators identifying the
+					national government or international organization that have purview over the
+					classification marking of an information resource or portion therein. This
+					element is always used in conjunction with the Classification element. Taken
+					together, the two elements specify the classification category and the type of
+					classification (US, non-US, or Joint). Within protected internal organizational
+					spaces this element may include one or more indicators identifying information
+					which qualifies as foreign government information for which the source(s) of the
+					information must be concealed. Measures must be taken prior to dissemination of
+					the information to conceal the source(s) of the foreign government information.
+					Specifically, under these specific circumstances, when data are moved to the
+					shared spaces, the non-disclosable owner(s) and/or producer(s) listed in this
+					data element's value should be removed and replaced with "FGI". The attribute
+					value may be manifested in portion marks or security banners. PERMISSIBLE VALUES
+					1) The value "FGI" is permitted under the circumstances described above. 2) The
+					full set of values are defined in the Controlled Value Enumeration:
+					CVEnumISMOwnerProducer.xml </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attributeGroup name="POCAttributeGroup">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> An attribute group to be
+					used on the element that represents an entity that can be designated as a
+					point-of-contact. This node may be a single person or an organization.
+				</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute ref="ism:pocType"/>
+	</xsd:attributeGroup>
+
+	<xsd:attribute name="pocType" type="ismpoctyp:CVEnumISMPocType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> Indicates that the element
+					specifies a point-of-contact (POC) and the methods with which to contact that
+					individual. As certain POCs are required for different reasons (ICD-710
+					compliance, DoD Distribution statements, etc), the values for this attribute
+					specify the reason(s) why the POC is provided. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attribute name="releasableTo" type="ismrelto:CVEnumISMRelTo">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used at
+					both the resource and the portion levels. One or more indicators identifying the
+					country or countries and/or international organization(s) to which classified
+					information may be released based on the determination of an originator in
+					accordance with established foreign disclosure procedures. This element is used
+					in conjunction with the Dissemination Controls element. It is manifested in
+					portion marks and security banners. PERMISSIBLE VALUES The permissible values
+					for this attribute are defined in the Controlled Value Enumeration:
+					CVEnumISMRelTo.xml </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attribute name="resourceElement">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used to
+					designate which element has the ISM attributes representing the classification
+					for the entire resource. Every document must have at least one element with this
+					indicator as true. It should be rare that a document has more than one. Mainly
+					this would occur in some sort of aggregator schema. In that unusual case the
+					first one encountered in XML document order is the one used for all constraint
+					rules. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:boolean"/>
+		</xsd:simpleType>
+	</xsd:attribute>
+
+	<xsd:attributeGroup name="ResourceNodeAttributeGroup">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> An attribute group to be
+					used on the element that represents the resource node of an instance document.
+					This node's ISM attributes would be used to generate banner marks and the E.O.
+					13526 classification authority block. Implementing Schemas might use this on the
+					Root node or any other node. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attributeGroup ref="ISMResourceAttributeGroup"/>
+		<xsd:attributeGroup ref="SecurityAttributesGroup"/>
+		<xsd:attributeGroup ref="ISMNoticeAttributeGroup"/>
+	</xsd:attributeGroup>
+
+	<xsd:attributeGroup name="ResourceNodeAttributeOptionGroup">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> An attribute group to be
+					used on the element that represents the resource node of an instance document.
+					This node's ISM attributes would be used to generate banner marks and the E.O.
+					13526 classification authority block. Implementing Schemas might use this on the
+					Root node or any other node. This group has all the attributes as optional. It
+					could be used in a schema where many nodes may be the resource element. When the
+					element is acting as the resource element it should have attributes used similar
+					to ResourceNodeAttributeGroup. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attributeGroup ref="ISMResourceAttributeOptionGroup"/>
+		<xsd:attributeGroup ref="SecurityAttributesOptionGroup"/>
+		<xsd:attributeGroup ref="ISMNoticeAttributeGroup"/>
+	</xsd:attributeGroup>
+
+	<xsd:attribute name="SARIdentifier" type="ismsar:CVEnumISMSAR">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used at
+					both the resource and the portion levels. One or more indicators identifying the
+					defense or intelligence programs for which special access is required. It is
+					manifested in portion marks and security banners. PERMISSIBLE VALUES The
+					permissible values for this attribute are defined in the Controlled Value
+					Enumeration: CVEnumISMSAR.xml </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attribute name="SCIcontrols" type="ismscicon:CVEnumISMSCIControls">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This attribute is used at
+					both the resource and the portion levels. One or more indicators identifying
+					sensitive compartmented information control system(s). It is manifested in
+					portion marks and security banners. PERMISSIBLE VALUES The permissible values
+					for this attribute are defined in the Controlled Value Enumeration:
+					CVEnumISMSCIControls.xml </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+
+	<xsd:attributeGroup name="SecurityAttributesGroup">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">The group of Information
+					Security Marking attributes in which the use of attributes 'classification' and
+					'ownerProducer' is required.</xhtml:p>
+			</xsd:documentation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">This group is to be
+					contrasted with group 'SecurityAttributesOptionGroup' in which use of those
+					attributes is optional. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute ref="classification" use="required"/>
+		<xsd:attribute ref="ownerProducer" use="required"/>
+		<xsd:attribute ref="SCIcontrols" use="optional"/>
+		<xsd:attribute ref="SARIdentifier" use="optional"/>
+		<xsd:attribute ref="atomicEnergyMarkings" use="optional"/>
+		<xsd:attribute ref="disseminationControls" use="optional"/>
+		<xsd:attribute ref="displayOnlyTo" use="optional"/>
+		<xsd:attribute ref="FGIsourceOpen" use="optional"/>
+		<xsd:attribute ref="FGIsourceProtected" use="optional"/>
+		<xsd:attribute ref="releasableTo" use="optional"/>
+		<xsd:attribute ref="nonICmarkings" use="optional"/>
+		<xsd:attribute ref="classifiedBy" use="optional"/>
+		<xsd:attribute ref="compilationReason" use="optional"/>
+		<xsd:attribute ref="derivativelyClassifiedBy" use="optional"/>
+		<xsd:attribute ref="classificationReason" use="optional"/>
+		<xsd:attribute ref="nonUSControls" use="optional"/>
+		<xsd:attribute ref="derivedFrom" use="optional"/>
+		<xsd:attribute ref="declassDate" use="optional"/>
+		<xsd:attribute ref="declassEvent" use="optional"/>
+		<xsd:attribute ref="declassException" use="optional"/>
+	</xsd:attributeGroup>
+
+	<xsd:attributeGroup name="SecurityAttributesOptionGroup">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> The group of Information
+					Security Marking attributes in which the use of attributes 'classification' and
+					'ownerProducer' is optional. This group is to be contrasted with group
+					'SecurityAttributesGroup' in which use of these attributes is required.
+				</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute ref="classification" use="optional"/>
+		<xsd:attribute ref="ownerProducer" use="optional"/>
+		<xsd:attribute ref="SCIcontrols" use="optional"/>
+		<xsd:attribute ref="SARIdentifier" use="optional"/>
+		<xsd:attribute ref="atomicEnergyMarkings" use="optional"/>
+		<xsd:attribute ref="disseminationControls" use="optional"/>
+		<xsd:attribute ref="displayOnlyTo" use="optional"/>
+		<xsd:attribute ref="FGIsourceOpen" use="optional"/>
+		<xsd:attribute ref="FGIsourceProtected" use="optional"/>
+		<xsd:attribute ref="releasableTo" use="optional"/>
+		<xsd:attribute ref="nonICmarkings" use="optional"/>
+		<xsd:attribute ref="classifiedBy" use="optional"/>
+		<xsd:attribute ref="compilationReason" use="optional"/>
+		<xsd:attribute ref="derivativelyClassifiedBy" use="optional"/>
+		<xsd:attribute ref="classificationReason" use="optional"/>
+		<xsd:attribute ref="nonUSControls" use="optional"/>
+		<xsd:attribute ref="derivedFrom" use="optional"/>
+		<xsd:attribute ref="declassDate" use="optional"/>
+		<xsd:attribute ref="declassEvent" use="optional"/>
+		<xsd:attribute ref="declassException" use="optional"/>
+	</xsd:attributeGroup>
+
+	<xsd:simpleType name="ShortStringType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">A short string, less than
+					256 characters.</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="256"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:complexType name="ShortStringWithSecurityType">
+		<xsd:simpleContent>
+			<xsd:extension base="ShortStringType">
+				<xsd:attributeGroup ref="SecurityAttributesGroup"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+
+	<xsd:attribute name="unregisteredNoticeType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> A notice that is of a
+					category that is not described in the CAPCO Register and/or is not sufficiently
+					defined to be represented in the Controlled Value Enumeration
+					CVEnumISMNotice.xml. This attribute can be used by specifications that import
+					ISM to represent a wider variety of security-related notices. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+				<xsd:maxLength value="2048"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:attribute>
+	<!--***************************************************-->
+	<!--End All case-insensitive alphabetically-->
+	<!--***************************************************-->
+	<xsd:annotation>
+		<xsd:documentation>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U">Include all of the generated CVE
+				types applicable.</xhtml:p>
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:annotation>
+		<xsd:documentation>
+			<xhtml:h2 ism:ownerProducer="USA" ism:classification="U">Formal Change List</xhtml:h2>
+			<xhtml:table ism:ownerProducer="USA" ism:classification="U">
+				<xhtml:caption>Change History</xhtml:caption>
+				<xhtml:thead>
+					<xhtml:tr>
+						<th xmlns="">Version</th>
+						<xhtml:td>Date</xhtml:td>
+						<xhtml:td>By</xhtml:td>
+						<xhtml:td>Description</xhtml:td>
+					</xhtml:tr>
+				</xhtml:thead>
+				<xhtml:tbody>
+					<xhtml:tr>
+						<xhtml:td>9</xhtml:td>
+						<xhtml:td>2012-3-19</xhtml:td>
+						<xhtml:td>ODNI/OCIO/ME/D&amp;I</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Changed
+									DESVersion attribute from xsd:int to ShortStringType. </xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Changed
+									declaration of NoticeText to be simple content.
+									[artf12153].</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>8</xhtml:td>
+						<xhtml:td>2011-12-22</xhtml:td>
+						<xhtml:td>Sun, ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Added
+									unique namespaces to generated CVE schema fragments. </xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Removed
+									CVEGenerated schema import from and moved schema fragment
+									imports directly to the base ISM schema.</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>7</xhtml:td>
+						<xhtml:td>2011-08-10</xhtml:td>
+						<xhtml:td>Colbert, ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Added a
+									complex type for NoticeList</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>7</xhtml:td>
+						<xhtml:td>2011-07-14</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Colbert,
+									ODNI/OCIO/ICEA</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Gilsenan,
+									ODNI/OCIO/ICEA</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Renamed
+									@ism:notice to @ism:noticeType</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Removed
+									@ism:ORCONPOC and @ism:noticePOC. They're replaced with the new
+									@ism:pocType attribute which indicates that an element specifies
+									a point-of-contact's name and contact method.</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>7</xhtml:td>
+						<xhtml:td>2011-07-07</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Colbert,
+									ODNI/OCIO/ICEA</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Gilsenan,
+									ODNI/OCIO/ICEA</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Added
+									version information to the header</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Removed
+									ACCM attribute</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>7</xhtml:td>
+						<xhtml:td>2011-06-10</xhtml:td>
+						<xhtml:td>Hansen, ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Removed
+									@fixed="true" from the resourceElement attribute definition in
+									the ISMResourceNodeAttributeGroup and
+									ISMResourceNodeAttributeOptionGroup</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>7</xhtml:td>
+						<xhtml:td>2011-05-11</xhtml:td>
+						<xhtml:td>Colbert, ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Added
+									ORCONPOC attribute and POCAttributeGroup</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>7</xhtml:td>
+						<xhtml:td>2011-04-26</xhtml:td>
+						<xhtml:td>Colbert, ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Added
+									String types LongStringType, ShortStringType,
+									LongStringWithSecurityType, and
+									ShortStringWithSecurityType</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Added
+									attribute unregisteredNoticeType and included it in
+									ISMNoticeAttributeGroup</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>7</xhtml:td>
+						<xhtml:td>2011-04-22</xhtml:td>
+						<xhtml:td>Colbert, ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Explicitly
+									declared minOccurs and maxOccurs where appropriate.</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>7</xhtml:td>
+						<xhtml:td>2011-04-19</xhtml:td>
+						<xhtml:td>Hodges, ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">(CR 2010-4)
+									Add ISMNoticeAttributeGroup to hold the Notice specific
+									attributes and changed the NoticeAttribute groups to reference
+									it. ISMResourceAttributeGroup also added and Resource specific
+									attributes have been removed from the ResourceAttribute groups
+									and the new group added.</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>7</xhtml:td>
+						<xhtml:td>2011-04-15</xhtml:td>
+						<xhtml:td>Colbert, ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Add
+									elements NoticeList, Notice, and NoticeText</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>6</xhtml:td>
+						<xhtml:td>2011-01-27</xhtml:td>
+						<xhtml:td>ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Add
+									ACCM</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>5</xhtml:td>
+						<xhtml:td>2010-09-25</xhtml:td>
+						<xhtml:td>ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Add
+									atomicEnergyMarkings</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Remove
+									typeOfExemptedSource and dateOfExemptedSource</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Add
+									ResourceNodeAttributeOptionGroup</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Add
+									ISMRootNodeAttributeOptionGroup</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>4</xhtml:td>
+						<xhtml:td>2010-06-01</xhtml:td>
+						<xhtml:td>ODNI OCIO ICIS</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Add DoD
+									Distro statements</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Add NATO
+									refactor</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Add Use of
+									Generated CVE schema types</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>3</xhtml:td>
+						<xhtml:td>2010-01-22</xhtml:td>
+						<xhtml:td>ODNI OCIO ICIS</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">(CR
+									2010-02) Add notice attribute, NoticeAttributesGroup and
+									NoticeAttributesOptionGroup</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Final
+									review before signature 2010-06-06 <xhtml:ul>
+										<xhtml:li ism:ownerProducer="USA" ism:classification="U">Remove comment about LES not being in the Register
+											since it is now in the register.</xhtml:li>
+										<xhtml:li ism:ownerProducer="USA" ism:classification="U">Correct NoticeAttributesOptionGroup to have
+											SecurityAttributesOptionGroup so that NoteInline in PUBS
+											works correctly. </xhtml:li>
+									</xhtml:ul>
+								</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>2</xhtml:td>
+						<xhtml:td>2009-12-01</xhtml:td>
+						<xhtml:td>ODNI OCIO ICIS</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">(CR
+									2009-09) Added "compilationReason" to allow capturing
+									information about the reason that the document or portion bears
+									a more restrictive classification than the data would appear to
+									support.</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">(CR
+									2009-07) Point to CVE files for enumeration values.</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">(CR
+									2009-22) Change declassException and typeOfExemptedSource to
+									NMTOKEN.</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">(CR
+									2009-16) Add ability to specify DES Version.</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">(CR
+									2009-05) Add createDate, excludeFromRollup, resourceElement to
+									allow ISM rules to be independent of implementing
+									schema.</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">(CR
+									2009-05) Add ISMRootNodeAttributeGroup and
+									ResourceNodeAttributeGroup.</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>2.1</xhtml:td>
+						<xhtml:td>2008-08-19</xhtml:td>
+						<xhtml:td>ODNI OCIO ICIS</xhtml:td>
+						<xhtml:td>Updated to support IC Standard for Information Security Marking
+							Metadata (2007-500-2) <xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Added
+									"DerivativelyClassifiedBy" to allow capturing information about
+									a derivative classifier separate from an original
+									classifier</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>2.0</xhtml:td>
+						<xhtml:td>2004-04-30</xhtml:td>
+						<xhtml:td>IC MWG</xhtml:td>
+						<xhtml:td>Updated to support changes to the CAPCO Register and
+							Implementation Manual. <xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Added
+									"ownerProducer" as a required attribute for entity
+									"SecurityAttributes" and as an optional attribute for entity
+									"SecurityAttributesOption." Purpose is to provide a single
+									method for specification of US, non-US, and joint
+									classifications.</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Changed the
+									enumerated list that is the declared value of attribute
+									"classification" in order to accommodate non-US
+									classifications.</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Added
+									optional attribute "SARIdentifier" as a separate container for
+									DoD/DoE special-access-required nicknames, codewords, or
+									trigraph/ digraph to support elevation of SAR to the same level
+									as SCI controls.</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Added
+									optional attributes "classifiedBy" and "classificationReason" to
+									support generation of EO 12958 classification/declassification
+									blocks.</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Changed the
+									declared value of "derivedFrom" to CDATA to allow the titles and
+									dates of source documents or classification guides to be
+									specified.</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Replaced
+									the single attribute "declassification" with distinct attri-
+									butes for date-determined and event-determined declassification
+									and for the 25X declassification exceptions.</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Added
+									attributes "typeOfExemptedSource" and "dateOfExemptedSource" for
+									use in specifying that one or more sources was marked OADR, X1
+									through X8, or X-Foreign Relations.</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Added
+									attribute "declassManualReview" for use in forcing "MR" to
+									appear in header and footer banners (regardless of whether any
+									caveats in the portions would necessitate manual
+									review).</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>1.0</xhtml:td>
+						<xhtml:td>2002-07-05</xhtml:td>
+						<xhtml:td>IC MWG</xhtml:td>
+						<xhtml:td>Released as a registered, production XML entity set</xhtml:td>
+					</xhtml:tr>
+				</xhtml:tbody>
+			</xhtml:table>
+		</xsd:documentation>
+	</xsd:annotation>
+	<xsd:annotation>
+		<xsd:documentation>
+			<xhtml:h2 ism:ownerProducer="USA" ism:classification="U">Formal CVE Change
+				List</xhtml:h2>
+			<xhtml:table ism:ownerProducer="USA" ism:classification="U">
+				<xhtml:caption>Change History</xhtml:caption>
+				<xhtml:thead>
+					<xhtml:tr>
+						<th xmlns="">Version</th>
+						<xhtml:td>Date</xhtml:td>
+						<xhtml:td>By</xhtml:td>
+						<xhtml:td>Description</xhtml:td>
+					</xhtml:tr>
+				</xhtml:thead>
+				<xhtml:tbody>
+					<xhtml:tr>
+						<xhtml:td>7</xhtml:td>
+						<xhtml:td>2011-07-18</xhtml:td>
+						<xhtml:td>Colbert, ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Added
+									pocType</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>7</xhtml:td>
+						<xhtml:td>2011-01-27</xhtml:td>
+						<xhtml:td>ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Remove ACCM
+									as attribute and move its values to nonICmarkings</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>6</xhtml:td>
+						<xhtml:td>2011-01-27</xhtml:td>
+						<xhtml:td>ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Add
+									ACCM</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>5</xhtml:td>
+						<xhtml:td>2010-09-25</xhtml:td>
+						<xhtml:td>ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Add
+									atomicEnergyMarkings</xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Remove
+									typeOfExemptedSource</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+				</xhtml:tbody>
+			</xhtml:table>
+		</xsd:documentation>
+	</xsd:annotation>
+</xsd:schema>

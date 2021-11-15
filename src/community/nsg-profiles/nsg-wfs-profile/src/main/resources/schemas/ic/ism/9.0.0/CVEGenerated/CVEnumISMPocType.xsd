@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ismpoctype="urn:us:gov:ic:cvenum:ism:pocType"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            xml:lang="en"
+            targetNamespace="urn:us:gov:ic:cvenum:ism:pocType">
+   <xsd:annotation>
+      <xsd:documentation>
+                    The W3C XML Schema fragment encoding types for CVEnumISMPocType Version 1 controlled vocabulary enumerations. This file is generated, so edits should be made to the CVEnumISMPocType.xml CVE it is based on, instead of here.
+                </xsd:documentation>
+   </xsd:annotation>
+   <!--*************************************************************-->
+<!--Generated TYPE DEFINITIONS ..................................-->
+<!--*************************************************************-->
+<xsd:simpleType name="CVEnumISMPocTypeValues">
+      <xsd:annotation>
+         <xsd:documentation>(U) All currently authorized types for ISM-related points-of-contact.
+                         PERMISSIBLE VALUES
+                         
+                         The permissible values for this simple type are defined in the Controlled Value Enumeration:
+                         
+                         CVEnumISMPocType.xml
+                         
+                     </xsd:documentation>
+      </xsd:annotation>
+      <xsd:restriction base="xsd:token">
+         <xsd:enumeration value="ICD-710">
+            <xsd:annotation>
+               <xsd:documentation>Point-of-contact for an ICD-710 notice.</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="DoD-Dist-B">
+            <xsd:annotation>
+               <xsd:documentation>DoD Distribution statement B from DoD Directive 5230.24</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="DoD-Dist-C">
+            <xsd:annotation>
+               <xsd:documentation>DoD Distribution statement C from DoD Directive 5230.24</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="DoD-Dist-D">
+            <xsd:annotation>
+               <xsd:documentation>DoD Distribution statement D from DoD Directive 5230.24</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="DoD-Dist-E">
+            <xsd:annotation>
+               <xsd:documentation>DoD Distribution statement E from DoD Directive 5230.24</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="DoD-Dist-F">
+            <xsd:annotation>
+               <xsd:documentation>DoD Distribution statement F from DoD Directive 5230.24</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="DoD-Dist-X">
+            <xsd:annotation>
+               <xsd:documentation>DoD Distribution statement X from DoD Directive 5230.24</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="ORCON">
+            <xsd:annotation>
+               <xsd:documentation>Point-of-contact to whom questions about ORIGINATOR CONTROLLED information should be directed.</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="CVEnumISMPocType">
+      <xsd:restriction>
+         <xsd:simpleType>
+            <xsd:list itemType="ismpoctype:CVEnumISMPocTypeValues"/>
+         </xsd:simpleType>
+         <xsd:maxLength value="8"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+</xsd:schema>

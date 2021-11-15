@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen SCHSchema="../../Schematron/ISM/ISM_XML.sch"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ntk="urn:us:gov:ic:ntk" xmlns:ism="urn:us:gov:ic:ism" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xhtml="http://www.w3.org/1999/xhtml" targetNamespace="urn:us:gov:ic:ntk" elementFormDefault="qualified" attributeFormDefault="qualified" version="7" xml:lang="en" ism:resourceElement="true" ism:createDate="2011-12-01" ism:DESVersion="9" ism:classification="U" ism:ownerProducer="USA">
+	<xsd:annotation>
+		<xsd:documentation>
+			<xhtml:h1 ism:ownerProducer="USA" ism:classification="U">Intelligence Community Technical Specification XML Data Encoding Specification for
+                Need-To-Know Metadata (NTK.XML)</xhtml:h1>
+		</xsd:documentation>
+		<xsd:documentation>
+			<xhtml:h2 ism:ownerProducer="USA" ism:classification="U">Notices</xhtml:h2>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U">
+               Distribution Notice: 
+           This document has been approved for Public Release and is available for use without restriction.
+       				
+           </xhtml:p>
+		</xsd:documentation>
+		<xsd:documentation>
+			<xhtml:h2 ism:ownerProducer="USA" ism:classification="U">Description</xhtml:h2>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U"> W3C XML Schema for the XML Data Encoding Specification for intelligence Need-To-Know
+                metadata (NTK.XML). </xhtml:p>
+		</xsd:documentation>
+		<xsd:documentation>
+			<xhtml:h2 ism:ownerProducer="USA" ism:classification="U">Introduction</xhtml:h2>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U"> This XML Schema file is one component of the XML Data Encoding Specification (DES).
+                Please see the document titled <xhtml:i>
+					<xhtml:a href="../../DES/NTK/DesNtkXml.pdf">XML Data
+                        Encoding Specification For Need-To-Know Metadata</xhtml:a>
+				</xhtml:i> for a complete
+                description of the encoding as well as list of all components. </xhtml:p>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U"> It is envisioned that this schema or its components, as well as other parts of the
+                DES may be overridden for localized implementations. Therefore, permission to use,
+                copy, modify and distribute this XML Schema and the other parts of the DES for any
+                purpose is hereby granted in perpetuity. </xhtml:p>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U"> Please reference the preceding two paragraphs in all copies or variations. The
+                developers make no representation about the suitability of the schema or DES for any
+                purpose. It is provided "as is" without expressed or implied warranty. </xhtml:p>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U"> If you modify this XML Schema in any way label your schema as a variant of NTK.XML. </xhtml:p>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U"> Please direct all questions, bug reports,or suggestions for changes to the points of
+                contact identified in the document referenced above. </xhtml:p>
+		</xsd:documentation>
+		<xsd:documentation>
+			<xhtml:h2 ism:ownerProducer="USA" ism:classification="U">Implementation Notes</xhtml:h2>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U"> The document element for NTK is <xhtml:a href="IC-NTK_xsd_Element_ntk_Access.html">ntk:Access</xhtml:a>. However, the NTK schema is not a standalone construct; it
+                should be imported into a parent XML schema. </xhtml:p>
+		</xsd:documentation>
+		<xsd:documentation>
+			<xhtml:h2 ism:ownerProducer="USA" ism:classification="U">Creators</xhtml:h2>
+			<xhtml:p ism:ownerProducer="USA" ism:classification="U">Office of the Director of National Intelligence Intelligence Community Chief
+                Information Officer</xhtml:p>
+		</xsd:documentation>
+	</xsd:annotation>
+	<!--***************************************************-->
+	<!--Start Import Statements-->
+	<!--***************************************************-->
+	<xsd:import namespace="urn:us:gov:ic:ism" schemaLocation="../../../ic/ism/9.0.0/IC-ISM.xsd"/>
+	<!--***************************************************-->
+	<!--End Import Statements-->
+	<!--***************************************************-->
+	<!--***************************************************-->
+	<!--Start All case-insensitive alphabetically-->
+	<!--***************************************************-->
+	<xsd:element name="Access" type="ntk:AccessType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">A way of describing a formalized Need to Know required for a
+                document. NTK requires being inside a schema that implements ISM therefore some
+                element in the implementing schema MUST have ism:ISMRootNodeAttributeGroup and
+                ism:ResourceNodeAttributeGroup since both of those are required for a valid ISM
+                implementation. In addition the root node of the implementing schema must have
+                ntk:NTKRootNodeAttributeGroup specified.</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ExternalAccess" type="ntk:AccessType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">
+                    A way of describing a formalized Need to Know required for an EXTERNAL
+                    document. NTK requires being inside a schema that implements ISM therefore some
+                    element in the implementing schema MUST have ism:ISMRootNodeAttributeGroup and
+                    ism:ResourceNodeAttributeGroup since both of those are required for a valid ISM
+                    implementation. In addition the root node of the implementing schema must have
+                    ntk:NTKRootNodeAttributeGroup specified.</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="AccessAuthorizationList" type="ntk:AccessAuthorizationListType"/>
+	<xsd:complexType name="AccessAuthorizationListType">
+		<xsd:all minOccurs="1" maxOccurs="1">
+			<xsd:element ref="ntk:AccessIndividualList" minOccurs="0" maxOccurs="1"/>
+			<xsd:element ref="ntk:AccessGroupList" minOccurs="0" maxOccurs="1"/>
+		</xsd:all>
+		<xsd:attributeGroup ref="ism:SecurityAttributesGroup"/>
+	</xsd:complexType>
+	<xsd:element name="AccessGroup" type="ntk:AccessGroupType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> A system name followed by 1 or more group values representing the
+                groups that a user wanting access to the document must be a member of. Logic for the
+                group list being boolean AND vs OR is System defined. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="AccessGroupList" type="ntk:AccessGroupListType"/>
+	<xsd:complexType name="AccessGroupListType">
+		<xsd:sequence minOccurs="1" maxOccurs="1">
+			<xsd:element ref="ntk:AccessGroup" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="AccessGroupType">
+		<xsd:sequence minOccurs="1" maxOccurs="1">
+			<xsd:element ref="ntk:AccessSystemName" minOccurs="1" maxOccurs="1"/>
+			<xsd:element ref="ntk:AccessGroupValue" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="ism:SecurityAttributesGroup"/>
+	</xsd:complexType>
+	<xsd:element name="AccessGroupValue" type="ntk:StringWithSecurityType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">A string representing a group, the string must be portion marked.
+               </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="AccessIndividual" type="ntk:AccessIndividualType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">A system name followed by 1 or more Individual values representing
+                the people that a user wanting access to the document must be a member of.
+            </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="AccessIndividualList" type="ntk:AccessIndividualListType"/>
+	<xsd:complexType name="AccessIndividualListType">
+		<xsd:sequence minOccurs="1" maxOccurs="unbounded">
+			<xsd:element ref="ntk:AccessIndividual" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="AccessIndividualType">
+		<xsd:sequence minOccurs="1" maxOccurs="1">
+			<xsd:element ref="ntk:AccessSystemName" minOccurs="1" maxOccurs="1"/>
+			<xsd:element ref="ntk:AccessIndividualValue" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="ism:SecurityAttributesGroup"/>
+	</xsd:complexType>
+	<xsd:element name="AccessIndividualValue" type="ntk:StringWithSecurityType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">A string representing a person, the string must be portion marked.
+               </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="AccessProfile" type="ntk:AccessProfileType">
+		<xsd:annotation>
+			<xsd:documentation>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> A system name followed by 1 or more values representing a profile
+                that a user wanting access to the document must meet. Logic for the profile list
+                being boolean AND vs OR is System defined. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="AccessProfileList" type="ntk:AccessProfileListType"/>
+	<xsd:complexType name="AccessProfileListType">
+		<xsd:sequence minOccurs="1" maxOccurs="1">
+			<xsd:element ref="ntk:AccessProfile" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="ism:SecurityAttributesGroup"/>
+	</xsd:complexType>
+	<xsd:complexType name="AccessProfileType">
+		<xsd:sequence minOccurs="1" maxOccurs="1">
+			<xsd:element ref="ntk:AccessSystemName" minOccurs="1" maxOccurs="1"/>
+			<xsd:element ref="ntk:AccessProfileValue" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		<xsd:attributeGroup ref="ism:SecurityAttributesGroup"/>
+	</xsd:complexType>
+	<xsd:element name="AccessProfileValue" type="ntk:AccessProfileValueType"/>
+	<xsd:complexType name="AccessProfileValueType">
+		<xsd:simpleContent>
+			<xsd:extension base="ntk:StringWithSecurityType">
+				<xsd:attribute name="vocabulary" type="xsd:NMTOKEN" use="required">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">
+							<xhtml:p ism:ownerProducer="USA" ism:classification="U"> A list of words, codes and/or phrases: a
+                            lexicon. </xhtml:p>
+						</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:element name="AccessSystemName" type="ntk:TokenWithSecurityType"/>
+	<xsd:complexType name="AccessType">
+		<xsd:all minOccurs="1" maxOccurs="1">
+			<xsd:element ref="ntk:AccessIndividualList" minOccurs="0" maxOccurs="1"/>
+			<xsd:element ref="ntk:AccessGroupList" minOccurs="0" maxOccurs="1"/>
+			<xsd:element ref="ntk:AccessProfileList" minOccurs="0" maxOccurs="1"/>
+		</xsd:all>
+		<xsd:attributeGroup ref="ism:SecurityAttributesGroup"/>
+		<xsd:attribute name="externalReference" use="optional">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:boolean"/>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:attributeGroup name="CommonAttributesGroup">
+		<xsd:attribute ref="ntk:id" use="optional"/>
+		<xsd:attribute ref="ntk:IDReference" use="optional"/>
+		<xsd:attribute ref="ntk:qualifier" use="optional"/>
+	</xsd:attributeGroup>
+	<xsd:attribute name="DESVersion" type="ism:ShortStringType" fixed="7">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> The version number of the DES </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+	<xsd:attribute name="id" type="xsd:ID">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> A unique XML identifier used to assign an XML
+                unique identifier to an element, such as a paragraph, note or table.
+            </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+	<xsd:attribute name="IDReference" type="xsd:IDREFS">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> A cross-reference to a unique identifier used to
+                point from one element to one or more other elements. The value of the attribute
+                must be one or more XML unique identifiers that are the value(s) of id
+                attribute(s) elsewhere in the document. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+	<xsd:attributeGroup name="NTKRootNodeAttributeGroup">
+		<xsd:attribute ref="ntk:DESVersion" use="required"/>
+	</xsd:attributeGroup>
+	<xsd:attributeGroup name="NTKRootNodeOptionAttributeGroup">
+		<xsd:attribute ref="ntk:DESVersion"/>
+	</xsd:attributeGroup>
+	<xsd:attribute name="qualifier" type="xsd:string">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> A user-defined property within an element for
+                general purpose processing used with block objects to provide supplemental
+                information over and above that conveyed by the element name. This attribute is
+                analogous to HTML's "class" attribute. </xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+	<xsd:complexType name="StringWithSecurityType">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attributeGroup ref="ism:SecurityAttributesGroup"/>
+				<xsd:attributeGroup ref="ntk:CommonAttributesGroup"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:complexType name="TokenWithSecurityType">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:NMTOKEN">
+				<xsd:attributeGroup ref="ism:SecurityAttributesGroup"/>
+				<xsd:attributeGroup ref="ntk:CommonAttributesGroup"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!-- Portion marking NTK -->
+	<xsd:attribute name="access" type="ntk:NtkPortionAccessType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U"> 
+                    Used for portion marking access requirements with a format of a 
+                    namespace-prefix followed by sets of key-value pairs. The '|' 
+                    character is used to separate the key-value pairs and the '^' 
+                    character is used to join keys with their values. Multiple 
+                    namespace-prefixed sets can be used.
+                </xhtml:p>
+				<xhtml:p ism:ownerProducer="USA" ism:classification="U">
+                    For example:
+                    <xhtml:ul>
+						<xhtml:li>ntk:access="namespace1|key1^value1|key2^value1|key2^value2"</xhtml:li>
+						<xhtml:li>ntk:access="namespace1|key1^value1 namespace2|key1^value1|key2^value2"</xhtml:li>
+						<xhtml:li>ntk:access="namespace1|key1^value1|key2^val2 namespace1|key1^value3"</xhtml:li>
+					</xhtml:ul>
+				</xhtml:p>
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:attribute>
+	<xsd:simpleType name="NtkPortionAccessType">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="([!-\]_-\{\}~]+(\|[!-\]_-\{\}~]+^[!-\]_-\{\}~]+)+)(\s[!-\]_-\{\}~]+(\|[!-\]_-\{\}~]+^[!-\]_-\{\}~]+)+)*"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:attributeGroup name="NtkPortionAccessGroup">
+		<xsd:attribute ref="ntk:access"/>
+	</xsd:attributeGroup>
+	<!--***************************************************-->
+	<!--End All case-insensitive alphabetically-->
+	<!--***************************************************-->
+	<xsd:annotation>
+		<xsd:documentation>
+			<xhtml:h2 ism:ownerProducer="USA" ism:classification="U">Formal Change List</xhtml:h2>
+			<xhtml:table ism:ownerProducer="USA" ism:classification="U">
+				<xhtml:caption>Change History</xhtml:caption>
+				<xhtml:thead>
+					<xhtml:tr>
+						<th>Version</th>
+						<xhtml:td>Date</xhtml:td>
+						<xhtml:td>By</xhtml:td>
+						<xhtml:td>Description</xhtml:td>
+					</xhtml:tr>
+				</xhtml:thead>
+				<xhtml:tbody>
+					<xhtml:tr>
+						<xhtml:td>7</xhtml:td>
+						<xhtml:td>2012-5-28</xhtml:td>
+						<xhtml:td>ODNI/OCIO/ME/D&amp;I</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Updated NTK attribute to use a schema restriction regex instead of schematron rule NTK-ID-00005 [artf12287].</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>7</xhtml:td>
+						<xhtml:td>2012-4-06</xhtml:td>
+						<xhtml:td>ODNI/OCIO/ME/D&amp;I</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Add NTK attribute for use on portions [artf12287].</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>7</xhtml:td>
+						<xhtml:td>2012-3-19</xhtml:td>
+						<xhtml:td>ODNI/OCIO/ME/D&amp;I</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Changed DESVersion
+                                    attribute from xsd:int to ism:ShortStringType. </xhtml:li>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Changed declaration of AccessProfileValueType to be simple content. [artf12153].</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>6</xhtml:td>
+						<xhtml:td>2011-12-13</xhtml:td>
+						<xhtml:td>Hodges, ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Extracting out attributes and elements to move towards NIEM
+                                    compliance</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>5</xhtml:td>
+						<xhtml:td>2011-07-07</xhtml:td>
+						<xhtml:td>Colbert, ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Added version information to header</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>4</xhtml:td>
+						<xhtml:td>2011-04-22</xhtml:td>
+						<xhtml:td>Colbert, ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">Explicitly declared minOccurs and maxOccurs where
+                                    appropriate.</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+					<xhtml:tr>
+						<xhtml:td>3</xhtml:td>
+						<xhtml:td>2011-01-31</xhtml:td>
+						<xhtml:td>Sun, ODNI/OCIO/ICEA</xhtml:td>
+						<xhtml:td>
+							<xhtml:ul>
+								<xhtml:li ism:ownerProducer="USA" ism:classification="U">(CR 2011-01) Remove unused ddms namespace declaration</xhtml:li>
+							</xhtml:ul>
+						</xhtml:td>
+					</xhtml:tr>
+				</xhtml:tbody>
+			</xhtml:table>
+		</xsd:documentation>
+	</xsd:annotation>
+</xsd:schema>

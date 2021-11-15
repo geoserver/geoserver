@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ismatomic="urn:us:gov:ic:cvenum:ism:atomicEnergyMarkings"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            xml:lang="en"
+            targetNamespace="urn:us:gov:ic:cvenum:ism:atomicEnergyMarkings">
+   <xsd:annotation>
+      <xsd:documentation>
+                    The W3C XML Schema fragment encoding types for CVEnumISMatomicEnergyMarkings Version 1 controlled vocabulary enumerations. This file is generated, so edits should be made to the CVEnumISMatomicEnergyMarkings.xml CVE it is based on, instead of here.
+                </xsd:documentation>
+   </xsd:annotation>
+   <!--*************************************************************-->
+<!--Generated TYPE DEFINITIONS ..................................-->
+<!--*************************************************************-->
+<xsd:simpleType name="CVEnumISMatomicEnergyMarkingsValues">
+      <xsd:annotation>
+         <xsd:documentation>(U) All currently valid Atomic Energy information markings from the published register
+                         PERMISSIBLE VALUES
+                         
+                         The permissible values for this simple type are defined in the Controlled Value Enumeration:
+                         
+                         CVEnumISMatomicEnergyMarkings.xml
+                         
+                     </xsd:documentation>
+      </xsd:annotation>
+      <xsd:union>
+         <xsd:simpleType>
+            <xsd:restriction base="xsd:token">
+               <xsd:pattern value="RD-SG-((14)|(15)|(18)|(20))">
+                  <xsd:annotation>
+                     <xsd:documentation>RD-SIGMA-#, # represents the SIGMA number which may be 14, 15, 18, or 20.</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:pattern>
+               <xsd:pattern value="FRD-SG-((14)|(15)|(18)|(20))">
+                  <xsd:annotation>
+                     <xsd:documentation>FRD-SIGMA-#, # represents the SIGMA number which may be 14, 15, 18, or 20.</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:pattern>
+            </xsd:restriction>
+         </xsd:simpleType>
+         <xsd:simpleType>
+            <xsd:restriction base="xsd:token">
+               <xsd:enumeration value="RD">
+                  <xsd:annotation>
+                     <xsd:documentation>RESTRICTED DATA</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:enumeration>
+               <xsd:enumeration value="RD-CNWDI">
+                  <xsd:annotation>
+                     <xsd:documentation>RD-CRITICAL NUCLEAR WEAPON DESIGN INFORMATION</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:enumeration>
+               <xsd:enumeration value="FRD">
+                  <xsd:annotation>
+                     <xsd:documentation>FORMERLY RESTRICTED DATA</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:enumeration>
+               <xsd:enumeration value="DCNI">
+                  <xsd:annotation>
+                     <xsd:documentation>DoD CONTROLLED NUCLEAR INFORMATION</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:enumeration>
+               <xsd:enumeration value="UCNI">
+                  <xsd:annotation>
+                     <xsd:documentation>DoE CONTROLLED NUCLEAR INFORMATION</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:enumeration>
+               <xsd:enumeration value="TFNI">
+                  <xsd:annotation>
+                     <xsd:documentation>TRANSCLASSIFIED FOREIGN NUCLEAR INFORMATION</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:enumeration>
+            </xsd:restriction>
+         </xsd:simpleType>
+      </xsd:union>
+   </xsd:simpleType>
+   <xsd:simpleType name="CVEnumISMatomicEnergyMarkings">
+      <xsd:restriction>
+         <xsd:simpleType>
+            <xsd:list itemType="ismatomic:CVEnumISMatomicEnergyMarkingsValues"/>
+         </xsd:simpleType>
+         <xsd:maxLength value="1000"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+</xsd:schema>

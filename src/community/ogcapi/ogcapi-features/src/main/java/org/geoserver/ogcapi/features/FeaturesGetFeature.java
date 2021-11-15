@@ -63,8 +63,8 @@ public class FeaturesGetFeature extends org.geoserver.wfs.GetFeature {
         String collectionName = typeInfo.prefixedName();
         String itemsPath = getItemsPath(collectionName);
 
-        // in WFS3 params are normally lowercase (and are case sensitive)...
-        // TODO: we might need a list of parameters and their "normalized case" for WFS3, we'll
+        // in OGC API params are normally lowercase (and are case sensitive)...
+        // TODO: we might need a list of parameters and their "normalized case" for Features, we'll
         // wait for the filtering/crs extensions to show up before deciding exactly what exactly to
         // do
         kvp = APIRequestInfo.get().getSimpleQueryMap();

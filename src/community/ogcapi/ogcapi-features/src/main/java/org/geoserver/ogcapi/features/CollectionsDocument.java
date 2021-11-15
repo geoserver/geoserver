@@ -21,7 +21,7 @@ import org.geoserver.platform.ServiceException;
 import org.opengis.filter.Filter;
 
 /**
- * A class representing the WFS3 server "collections" in a way that Jackson can easily translate to
+ * A class representing the OGC API for Features server "collections" in a way that Jackson can easily translate to
  * JSON/YAML (and can be used as a Freemarker template model)
  */
 @JacksonXmlRootElement(localName = "Collections", namespace = "http://www.opengis.net/wfs/3.0")

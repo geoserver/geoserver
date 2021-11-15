@@ -13,15 +13,6 @@
   <description>NSG Profile introduces aWFS 2.0.2 operation PageResults</description>
   <profiles>
     <profile>
-      <id>nsg-wfs-profile</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
-        <module>nsg-wfs-profile</module>
-      </modules>
-    </profile>
-    <profile>
       <id>nsg-wmts-profile</id>
       <activation>
         <activeByDefault>true</activeByDefault>

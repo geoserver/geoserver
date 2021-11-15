@@ -68,6 +68,8 @@
             <descriptor>release/ext-ows-simulate.xml</descriptor>
             <descriptor>release/ext-jdbc-metrics.xml</descriptor>
             <descriptor>release/ext-opensearch-eo.xml</descriptor>
+            <descriptor>release/ext-nsg-wmts-profile.xml</descriptor>
+            <descriptor>release/ext-nsg-wfs-profile.xml</descriptor>
             <descriptor>release/ext-taskmanager-core.xml</descriptor>
             <descriptor>release/ext-taskmanager-s3.xml</descriptor>
             <descriptor>release/ext-netcdf-ghrsst.xml</descriptor>
@@ -233,6 +235,7 @@
         <module>jdbc-metrics</module>
         <module>oseo</module>
         <module>s3-geotiff</module>
+        <module>nsg-profiles</module>
         <module>netcdf-ghrsst</module>
         <module>taskmanager</module>
         <module>web-ogr</module>
@@ -554,6 +557,18 @@
       <id>s3-geotiff</id>
       <modules>
         <module>s3-geotiff</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>nsg-wfs-profile</id>
+      <modules>
+        <module>nsg-profiles</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>nsg-wmts-profile</id>
+      <modules>
+        <module>nsg-profiles</module>
       </modules>
     </profile>
     <profile>

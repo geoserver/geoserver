@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ismclassall="urn:us:gov:ic:cvenum:ism:classification:all"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            xml:lang="en"
+            targetNamespace="urn:us:gov:ic:cvenum:ism:classification:all">
+   <xsd:annotation>
+      <xsd:documentation>
+                    The W3C XML Schema fragment encoding types for CVEnumISMClassificationAll Version 1 controlled vocabulary enumerations. This file is generated, so edits should be made to the CVEnumISMClassificationAll.xml CVE it is based on, instead of here.
+                </xsd:documentation>
+   </xsd:annotation>
+   <!--*************************************************************-->
+<!--Generated TYPE DEFINITIONS ..................................-->
+<!--*************************************************************-->
+<xsd:simpleType name="CVEnumISMClassificationAll">
+      <xsd:annotation>
+         <xsd:documentation>(U) All currently valid classification marks
+                         PERMISSIBLE VALUES
+                         
+                         The permissible values for this simple type are defined in the Controlled Value Enumeration:
+                         
+                         CVEnumISMClassificationAll.xml
+                         
+                     </xsd:documentation>
+      </xsd:annotation>
+      <xsd:restriction base="xsd:token">
+         <xsd:enumeration value="R">
+            <xsd:annotation>
+               <xsd:documentation>RESTRICTED</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="C">
+            <xsd:annotation>
+               <xsd:documentation>CONFIDENTIAL</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="S">
+            <xsd:annotation>
+               <xsd:documentation>SECRET</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="TS">
+            <xsd:annotation>
+               <xsd:documentation>TOP SECRET</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="U">
+            <xsd:annotation>
+               <xsd:documentation>UNCLASSIFIED</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+      </xsd:restriction>
+   </xsd:simpleType>
+</xsd:schema>

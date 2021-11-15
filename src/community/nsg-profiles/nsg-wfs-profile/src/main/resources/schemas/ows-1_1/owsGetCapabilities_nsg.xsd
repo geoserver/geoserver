@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.opengis.net/nsg/2.0" 
+    xmlns:nsg="http://www.opengis.net/nsg/2.0"
+    xmlns:ows="http://www.opengis.net/ows/1.1"
+    xmlns:xlink="http://www.w3.org/1999/xlink" 
+    xmlns:xml="http://www.w3.org/XML/1998/namespace" 
+    xmlns:ism="urn:us:gov:ic:ism"
+    elementFormDefault="qualified">
+    <xsd:annotation>
+        <xsd:appinfo>owsGetCapabilties_nsg.xsd</xsd:appinfo>      
+        <xsd:documentation>
+            This XML Schema Document is a Profile of the owsGetCapabilities.xsd schema document from the OGC OWS Common 1.1 Standard.  
+            This profile defines additional elements and values required by OGC Web Services deployed in the National System of Geospatial-Intelligence (NSG).
+            
+            OWS Common 1.1 schema documents encode parameters and parameter types that can be used in OWS operation requests and responses.
+            
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/  
+            
+            This Schema Profile document was created by Charles Heazel in support of the NGA Standards Program, March 31, 2017
+        </xsd:documentation>
+    </xsd:annotation>
+    <!-- ==============================================================
+        Includes and Imports
+        ============================================================== -->
+    <xsd:import namespace="http://www.opengis.net/ows/1.1"
+        schemaLocation="../ows-1_1_0_3/ows/1.1.0/owsAll.xsd"/>
+    <xsd:import namespace="urn:us:gov:ic:ism"
+        schemaLocation="../ic/ism/9.0.0/IC-ISM.xsd"/>
+    <xsd:include schemaLocation="./owsServiceIdentification_nsg.xsd"/>
+    <!-- ==============================================================
+        elements and types
+        ============================================================== -->
+    <xsd:complexType name="CapabilitiesBaseType">
+        <xsd:annotation>
+            <xsd:documentation>
+                XML encoded GetCapabilities operation response. This document provides clients with service metadata about a specific service instance, 
+                usually including metadata about the tightly-coupled data served. If the server does not implement the updateSequence parameter, the server 
+                shall always return the complete Capabilities document, without the updateSequence parameter. When the server implements the updateSequence 
+                parameter and the GetCapabilities operation request included the updateSequence parameter with the current value, the server shall return 
+                this element with only the "version" and "updateSequence" attributes. Otherwise, all optional elements shall be included or not depending on 
+                the actual value of the Contents parameter in the GetCapabilities operation request. This base type shall be extended by each specific OWS to 
+                include the additional contents needed. 
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element ref="nsg:ServiceIdentification" minOccurs="0"/>
+            <xsd:element ref="ows:ServiceProvider" minOccurs="0"/>
+            <xsd:element ref="ows:OperationsMetadata" minOccurs="0"/>
+        </xsd:sequence>
+        <xsd:attribute name="version" type="ows:VersionType" use="required"/>
+        <xsd:attribute name="updateSequence" type="ows:UpdateSequenceType" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>
+                    Service metadata document version, having values that are "increased" whenever any change is made in service metadata document. Values are 
+                    selected by each server, and are always opaque to clients. When not supported by server, server shall not return this attribute. 
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.opengis.net/nsg/2.0" 
+    xmlns:nsg="http://www.opengis.net/nsg/2.0"
+    xmlns:ows="http://www.opengis.net/ows/1.1"
+    xmlns:xlink="http://www.w3.org/1999/xlink" 
+    xmlns:xml="http://www.w3.org/XML/1998/namespace" 
+    xmlns:ism="urn:us:gov:ic:ism"
+    elementFormDefault="qualified">
+    <xsd:annotation>
+        <xsd:appinfo>owsServiceIdentification_nsg.xsd</xsd:appinfo>
+        <xsd:documentation>
+            This XML Schema Document is a Profile of the owsServiceIdentification.xsd schema document from the OGC OWS Common 1.1 Standard.  
+            This profile defines additional elements and values required by OGC Web Services deployed in the National System of Geospatial-Intelligence (NSG).
+            
+            This XML Schema Document encodes the common "ServiceIdentification" section of the GetCapabilities operation response, known as the Capabilities XML 
+            document. This section encodes the SV_ServiceIdentification class of ISO 19119 (OGC Abstract Specification Topic 12). 
+            
+            OWS is an OGC Standard.
+            Copyright (c) 2006,2010 Open Geospatial Consortium.
+            To obtain additional rights of use, visit http://www.opengeospatial.org/legal/
+            
+            This Schema Profile document was created by Charles Heazel in support of the NGA Standards Program, March 31, 2017         
+        </xsd:documentation>
+    </xsd:annotation>
+    <!-- ==============================================================
+        Includes and Imports
+        ============================================================== -->
+    <xsd:import namespace="http://www.opengis.net/ows/1.1"
+        schemaLocation="../ows-1_1_0_3/ows/1.1.0/owsAll.xsd"/>
+    <xsd:import namespace="urn:us:gov:ic:ism"
+        schemaLocation="../ic/ism/9.0.0/IC-ISM.xsd"/>
+    <!-- ==============================================================
+        elements and types
+        ============================================================== -->
+    <xsd:element name="ServiceIdentification">
+        <xsd:annotation>
+            <xsd:documentation>
+                General metadata for this specific server. This XML Schema of this section shall be the same for all OWS.
+                
+                This content was copied from the OWS Common 1.1 owsServiceIdentification.xsd XML Schema Document.  It has been extended by the addition of the
+                ISM_AccessConstraints element.  The IC-ISM standard encodes security markings as attributes on an XML element.  Since AccessConstraints is a simple
+                type, it cannot carry attributes.  
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="ows:DescriptionType">
+                    <xsd:sequence>
+                        <xsd:element name="ServiceType" type="ows:CodeType">
+                            <xsd:annotation>
+                                <xsd:documentation>A service type name from a registry of services. For example, the values of the codeSpace URI and name and code string may be "OGC" and "catalogue." This type name is normally used for machine-to-machine communication. </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element name="ServiceTypeVersion" type="ows:VersionType" maxOccurs="unbounded">
+                            <xsd:annotation>
+                                <xsd:documentation>Unordered list of one or more versions of this service type implemented by this server. This information is not adequate for version negotiation, and shall not be used for that purpose. </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element name="Profile" type="xsd:anyURI" minOccurs="0" maxOccurs="unbounded">
+                            <xsd:annotation>
+                                <xsd:documentation>Unordered list of identifiers of Application Profiles that are implemented by this server. This element should be included for each specified application profile implemented by this server. The identifier value should be specified by each Application Profile. If this element is omitted, no meaning is implied. </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element ref="ows:Fees" minOccurs="0">
+                            <xsd:annotation>
+                                <xsd:documentation>If this element is omitted, no meaning is implied. </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element ref="ows:AccessConstraints" minOccurs="0" maxOccurs="unbounded">
+                            <xsd:annotation>
+                                <xsd:documentation>Unordered list of access constraints applied to assure the protection of privacy or intellectual property, and any other restrictions on retrieving or using data from or otherwise using this server. The reserved value NONE (case insensitive) shall be used to mean no access constraints are imposed. When this element is omitted, no meaning is implied. </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element ref="nsg:ISM_AccessConstraints" minOccurs="0" maxOccurs="unbounded">
+                            <xsd:annotation>
+                                <xsd:documentation>Unordered list of access constraints applied to assure the protection of privacy or intellectual property, and any other restrictions on retrieving or using data from or otherwise using this server. The reserved value NONE (case insensitive) shall be used to mean no access constraints are imposed. When this element is omitted, no meaning is implied. </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    <!-- =========================================================== -->    
+    <xsd:element name="ISM_AccessConstraints">
+        <xsd:annotation>
+            <xsd:documentation>
+                Access constraint applied to assure the protection of privacy or intellectual property, or any other restrictions on retrieving or using data from or 
+                otherwise using this server. The reserved value NONE (case insensitive) shall be used to mean no access constraints are imposed. 
+                
+                ISM Access Constraints are access constraints encoded in comformance with the ODNI Information Security Marking Metadata standards.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:attributeGroup ref="ism:SecurityAttributesGroup"/>
+        </xsd:complexType>
+    </xsd:element>  
+</xsd:schema>

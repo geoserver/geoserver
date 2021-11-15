@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ismattrib="urn:us:gov:ic:cvenum:ism:attributes"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            xml:lang="en"
+            targetNamespace="urn:us:gov:ic:cvenum:ism:attributes">
+   <xsd:annotation>
+      <xsd:documentation>
+                    The W3C XML Schema fragment encoding types for CVEnumISMAttributes Version 1 controlled vocabulary enumerations. This file is generated, so edits should be made to the CVEnumISMAttributes.xml CVE it is based on, instead of here.
+                </xsd:documentation>
+   </xsd:annotation>
+   <!--*************************************************************-->
+<!--Generated TYPE DEFINITIONS ..................................-->
+<!--*************************************************************-->
+<xsd:simpleType name="CVEnumISMAttributes">
+      <xsd:annotation>
+         <xsd:documentation>(U) All currently authorized ISM attribute names
+                         PERMISSIBLE VALUES
+                         
+                         The permissible values for this simple type are defined in the Controlled Value Enumeration:
+                         
+                         CVEnumISMAttributes.xml
+                         
+                     </xsd:documentation>
+      </xsd:annotation>
+      <xsd:restriction base="xsd:token">
+         <xsd:enumeration value="classification">
+            <xsd:annotation>
+               <xsd:documentation>classification attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="ownerProducer">
+            <xsd:annotation>
+               <xsd:documentation>ownerProducer attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="SCIcontrols">
+            <xsd:annotation>
+               <xsd:documentation>SCIcontrols attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="SARIdentifier">
+            <xsd:annotation>
+               <xsd:documentation>SARIdentifier attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="atomicEnergyMarkings">
+            <xsd:annotation>
+               <xsd:documentation>atomicEnergyMarkings attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="disseminationControls">
+            <xsd:annotation>
+               <xsd:documentation>disseminationControls attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="FGIsourceOpen">
+            <xsd:annotation>
+               <xsd:documentation>FGIsourceOpen attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="FGIsourceProtected">
+            <xsd:annotation>
+               <xsd:documentation>FGIsourceProtected attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="releasableTo">
+            <xsd:annotation>
+               <xsd:documentation>releasableTo attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="displayOnlyTo">
+            <xsd:annotation>
+               <xsd:documentation>displayOnlyTo attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="nonICmarkings">
+            <xsd:annotation>
+               <xsd:documentation>nonICmarkings attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="classifiedBy">
+            <xsd:annotation>
+               <xsd:documentation>classifiedBy attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="derivativelyClassifiedBy">
+            <xsd:annotation>
+               <xsd:documentation>derivativelyClassifiedBy attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="classificationReason">
+            <xsd:annotation>
+               <xsd:documentation>classificationReason attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="nonUSControls">
+            <xsd:annotation>
+               <xsd:documentation>nonUSControls attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="derivedFrom">
+            <xsd:annotation>
+               <xsd:documentation>derivedFrom attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="declassDate">
+            <xsd:annotation>
+               <xsd:documentation>declassDate attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="declassEvent">
+            <xsd:annotation>
+               <xsd:documentation>declassEvent attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="declassException">
+            <xsd:annotation>
+               <xsd:documentation>declassException attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="resourceElement">
+            <xsd:annotation>
+               <xsd:documentation>resourceElement attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="excludeFromRollup">
+            <xsd:annotation>
+               <xsd:documentation>excludeFromRollup attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="createDate">
+            <xsd:annotation>
+               <xsd:documentation>createDate attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="compilationReason">
+            <xsd:annotation>
+               <xsd:documentation>compilationReason attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="noticeType">
+            <xsd:annotation>
+               <xsd:documentation>noticeType attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="externalNotice">
+            <xsd:annotation>
+               <xsd:documentation>externalNotice attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="DESVersion">
+            <xsd:annotation>
+               <xsd:documentation>DESVersion attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="noticeDate">
+            <xsd:annotation>
+               <xsd:documentation>notice date attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="noticeReason">
+            <xsd:annotation>
+               <xsd:documentation>notice Reason attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="compliesWith">
+            <xsd:annotation>
+               <xsd:documentation>compliesWith attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="unregisteredNoticeType">
+            <xsd:annotation>
+               <xsd:documentation>unregisteredNoticeType attribute</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+         <xsd:enumeration value="pocType">
+            <xsd:annotation>
+               <xsd:documentation>Specifies a point-of contact for a security-related requirement.</xsd:documentation>
+            </xsd:annotation>
+         </xsd:enumeration>
+      </xsd:restriction>
+   </xsd:simpleType>
+</xsd:schema>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ismscicon="urn:us:gov:ic:cvenum:ism:scicontrols"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="qualified"
+            xml:lang="en"
+            targetNamespace="urn:us:gov:ic:cvenum:ism:scicontrols">
+   <xsd:annotation>
+      <xsd:documentation>
+                    The W3C XML Schema fragment encoding types for CVEnumISMSCIControls Version 2 controlled vocabulary enumerations. This file is generated, so edits should be made to the CVEnumISMSCIControls.xml CVE it is based on, instead of here.
+                </xsd:documentation>
+   </xsd:annotation>
+   <!--*************************************************************-->
+<!--Generated TYPE DEFINITIONS ..................................-->
+<!--*************************************************************-->
+<xsd:simpleType name="CVEnumISMSCIControlsValues">
+      <xsd:annotation>
+         <xsd:documentation>(U) All currently valid SCI controls from the published register
+                         PERMISSIBLE VALUES
+                         
+                         The permissible values for this simple type are defined in the Controlled Value Enumeration:
+                         
+                         CVEnumISMSCIControls.xml
+                         
+                     </xsd:documentation>
+      </xsd:annotation>
+      <xsd:union>
+         <xsd:simpleType>
+            <xsd:restriction base="xsd:token">
+               <xsd:pattern value="KDK-[A-Z0-9]{1,6}">
+                  <xsd:annotation>
+                     <xsd:documentation>KDK-xxxxxx, xxxxxx represents up to 6 alpha numeric characters indicating a sub KDK compartment</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:pattern>
+               <xsd:pattern value="RSV-[A-Z0-9]{3}">
+                  <xsd:annotation>
+                     <xsd:documentation>RSV-XXX, XXX represents 3 alpha numeric characters to indicate sub Reserve compartments</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:pattern>
+               <xsd:pattern value="SI-G-[A-Z]{4}">
+                  <xsd:annotation>
+                     <xsd:documentation>G-AAAA, AAAA represents 4 alpha characters to indicate sub Gamma compartments</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:pattern>
+               <xsd:pattern value="SI-[A-Z]{3}">
+                  <xsd:annotation>
+                     <xsd:documentation>SPECIAL INTELLIGENCE compartment</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:pattern>
+               <xsd:pattern value="SI-[A-Z]{3}-[A-Z]{4}">
+                  <xsd:annotation>
+                     <xsd:documentation>SPECIAL INTELLIGENCE sub-compartment</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:pattern>
+            </xsd:restriction>
+         </xsd:simpleType>
+         <xsd:simpleType>
+            <xsd:restriction base="xsd:token">
+               <xsd:enumeration value="HCS">
+                  <xsd:annotation>
+                     <xsd:documentation>HCS</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:enumeration>
+               <xsd:enumeration value="KDK">
+                  <xsd:annotation>
+                     <xsd:documentation>KLONDIKE</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:enumeration>
+               <xsd:enumeration value="RSV">
+                  <xsd:annotation>
+                     <xsd:documentation>RESERVE</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:enumeration>
+               <xsd:enumeration value="SI">
+                  <xsd:annotation>
+                     <xsd:documentation>SPECIAL INTELLIGENCE</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:enumeration>
+               <xsd:enumeration value="SI-G">
+                  <xsd:annotation>
+                     <xsd:documentation>SI-GAMMA</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:enumeration>
+               <xsd:enumeration value="TK">
+                  <xsd:annotation>
+                     <xsd:documentation>TALENT KEYHOLE</xsd:documentation>
+                  </xsd:annotation>
+               </xsd:enumeration>
+            </xsd:restriction>
+         </xsd:simpleType>
+      </xsd:union>
+   </xsd:simpleType>
+   <xsd:simpleType name="CVEnumISMSCIControls">
+      <xsd:restriction>
+         <xsd:simpleType>
+            <xsd:list itemType="ismscicon:CVEnumISMSCIControlsValues"/>
+         </xsd:simpleType>
+         <xsd:maxLength value="1000"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+</xsd:schema>

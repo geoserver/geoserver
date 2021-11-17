@@ -4,6 +4,7 @@
  */
 package org.geoserver.opensearch.eo.response;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.ext.beans.BeanModel;
 import freemarker.ext.beans.SimpleMapModel;
 import freemarker.template.Template;
@@ -12,7 +13,6 @@ import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateScalarModel;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -30,7 +30,6 @@ import org.geotools.gml3.v3_2.GMLConfiguration;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.Encoder;
-import org.json.simple.parser.JSONParser;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 
@@ -175,7 +174,6 @@ public class TemplatesProcessor {
     }
 
     private String loadJSON(String filePath) {
-        JSONParser parser = new JSONParser();
         try {
             GeoServerDataDirectory geoServerDataDirectory =
                     GeoServerExtensions.bean(GeoServerDataDirectory.class);
@@ -187,7 +185,8 @@ public class TemplatesProcessor {
                         "File " + filePath + " is outside of the data directory");
             }
 
-            return parser.parse(new FileReader(file.getPath())).toString();
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readTree(file).toString();
         } catch (Exception e) {
             LOGGER.warning("Failed to parse JSON file " + e.getLocalizedMessage());
         }

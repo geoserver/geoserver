@@ -5,10 +5,12 @@
 
 package org.geoserver.ogcapi;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import freemarker.template.utility.DeepUnwrap;
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
@@ -149,6 +152,32 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
                             }
                             return processHtmlExtensions(model, arguments);
                         });
+        model.put("loadJSON", parseJSON());
+    }
+
+    private TemplateMethodModelEx parseJSON() {
+        return arguments -> loadJSON(arguments.get(0).toString());
+    }
+
+    private String loadJSON(String filePath) {
+        try {
+            GeoServerDataDirectory geoServerDataDirectory =
+                    GeoServerExtensions.bean(GeoServerDataDirectory.class);
+
+            File file = geoServerDataDirectory.findFile(filePath);
+            if (file == null) {
+                LOGGER.warning("File is outside of data directory");
+                throw new RuntimeException(
+                        "File " + filePath + " is outside of the data directory");
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readTree(file).toString();
+        } catch (Exception e) {
+            LOGGER.warning("Failed to parse JSON file " + e.getLocalizedMessage());
+        }
+        LOGGER.warning("Failed to create a JSON object");
+        return "Failed to create a JSON object";
     }
 
     public List<Object> unwrapArguments(List<Object> arguments) {

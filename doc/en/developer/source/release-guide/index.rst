@@ -258,7 +258,7 @@ Publish JIRA markdown release notes to github tag:
 
    Use :guilabel:`Copy to clipboard` to obtain the markdown, similar to the following:
    
-   .. code-block:: markdown
+   .. code-block:: text
    
       # Release notes
 

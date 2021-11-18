@@ -51,10 +51,13 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.TestHttpClientProvider;
+import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.FeatureTypeInfoImpl;
+import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.catalog.impl.WMTSStoreInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -626,16 +629,14 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         Component epsgComponent2 =
                 tester.getComponentFromLastRenderedPage(
                         "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:2:itemProperties:0:component:link:label");
-
         Component epsgComponent3 =
                 tester.getComponentFromLastRenderedPage(
                         "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:3:itemProperties:0:component:link:label");
 
         // checks that they have been properly displayed with not urn format being cut
-
         assertEquals("3857", epsgComponent1.getDefaultModel().getObject());
-        assertEquals("urn:ogc:def:crs:EPSG::900913", epsgComponent2.getDefaultModel().getObject());
-        assertEquals("urn:ogc:def:crs:EPSG::3857", epsgComponent3.getDefaultModel().getObject());
+        assertEquals("urn:ogc:def:crs:EPSG::3857", epsgComponent2.getDefaultModel().getObject());
+        assertEquals("urn:ogc:def:crs:EPSG::900913", epsgComponent3.getDefaultModel().getObject());
     }
 
     @Test
@@ -769,5 +770,40 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         form.submit("save");
         tester.assertErrorMessages(
                 "There are more than one entries for the same language in one of the i18n fields. Duplicate language is empty");
+    }
+
+    @Test
+    public void testUrnOgcDefaultSRID() throws Exception {
+        String baseURL = TestHttpClientProvider.MOCKSERVER;
+        MockHttpClient client = new MockHttpClient();
+        Catalog catalog = getCatalog();
+        URL descURL = new URL(baseURL + "/wmts?REQUEST=GetCapabilities&VERSION=1.1.0&SERVICE=WMS");
+        client.expectGet(
+                descURL,
+                new MockHttpResponse(getClass().getResource("/wms_getCaps_CRS.xml"), "text/xml"));
+
+        TestHttpClientProvider.bind(client, descURL);
+        WMSStoreInfo storeInfo = new WMSStoreInfoImpl(getCatalog());
+        storeInfo.setName("Another Mock WMS Store");
+        storeInfo.setCapabilitiesURL(descURL.toString());
+        storeInfo.setConnectTimeout(60);
+        storeInfo.setMaxConnections(10);
+        storeInfo.setDateCreated(new Date());
+        storeInfo.setDateModified(new Date());
+        catalog.add(storeInfo);
+        CatalogBuilder builder = new CatalogBuilder(catalog);
+        builder.setStore(storeInfo);
+        WMSLayerInfo wmtsLayerInfo = builder.buildWMSLayer("world4326");
+        LayerInfo layerInfo = builder.buildLayer(wmtsLayerInfo);
+
+        // page should show expected EPSG:3395 default SRS in WMS cap document
+        login();
+        tester.startPage(new ResourceConfigurationPage(layerInfo, true));
+
+        String nativeSRSTextFieldValue =
+                tester.getComponentFromLastRenderedPage(
+                                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:srs")
+                        .getDefaultModelObjectAsString();
+        assertEquals("EPSG:3395", nativeSRSTextFieldValue);
     }
 }

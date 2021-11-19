@@ -18,14 +18,16 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
@@ -58,6 +60,7 @@ import org.geotools.geopkg.GeoPkgExtension;
 import org.geotools.geopkg.GeoPkgMetadata;
 import org.geotools.geopkg.GeoPkgMetadataExtension;
 import org.geotools.geopkg.GeoPkgMetadataReference;
+import org.geotools.geopkg.Tile;
 import org.geotools.geopkg.TileEntry;
 import org.geotools.geopkg.TileMatrix;
 import org.geotools.geopkg.TileReader;
@@ -93,6 +96,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         try (InputStream is = this.getClass().getResourceAsStream("burg02.svg")) {
             testData.copyTo(is, "styles/burg02.svg");
         }
+        testData.addStyle("fillenv", "fillenv.sld", this.getClass(), catalog);
 
         Catalog catalog = getCatalog();
         StyleInfo burgStyle = catalog.getStyleByName("burg");
@@ -142,6 +146,17 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         lg2.getStyles().add(polygonStyle);
         cb.calculateLayerGroupBounds(lg2);
         catalog.add(lg2);
+        // A group with a parametric style
+        StyleInfo fillenv = catalog.getStyleByName("fillenv");
+        LayerInfo forestsLayer = catalog.getLayerByName(getLayerId(MockData.FORESTS));
+        LayerGroupInfo groupenv = catalog.getFactory().createLayerGroup();
+        groupenv.setName("groupenv");
+        groupenv.getLayers().add(forestsLayer);
+        groupenv.getStyles().add(polygonStyle);
+        groupenv.getLayers().add(lakesLayer);
+        groupenv.getStyles().add(fillenv);
+        cb.calculateLayerGroupBounds(groupenv);
+        catalog.add(groupenv);
     }
 
     @Before
@@ -991,12 +1006,67 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         JDBCDataStore store = GeoPackageProcess.getStoreFromPackage(gpkg, true);
         ContentFeatureCollection fc = store.getFeatureSource("RoadSegments").getFeatures();
         SimpleFeature[] features = fc.toArray(new SimpleFeature[fc.size()]);
-        Arrays.stream(features).forEach(f -> System.out.println(f));
         assertEquals("106", features[0].getAttribute("FID")); // 7zzzzzycx6un (vertical line)
         assertEquals("102", features[1].getAttribute("FID")); // ebpbpbn
         assertEquals("105", features[2].getAttribute("FID")); // s000001, Main Street
         assertEquals("103", features[3].getAttribute("FID")); // s000001, Route 5
         assertEquals("104", features[4].getAttribute("FID")); // s000006
+    }
+
+    @Test
+    public void testGeoPackageParametersGroups() throws Exception {
+        String xml = getXml(getXMLInnerRequestParametersGroups());
+        String urlPath = string(post("wps", xml)).trim();
+        String resourceUrl = urlPath.substring("http://localhost:8080/geoserver/".length());
+        MockHttpServletResponse response = getAsServletResponse(resourceUrl);
+        File file = new File(getDataDirectory().findOrCreateDir("tmp"), "test.gpkg");
+        FileUtils.writeByteArrayToFile(file, getBinary(response));
+        assertNotNull(file);
+        assertEquals("test.gpkg", file.getName());
+        assertTrue(file.exists());
+
+        GeoPackage gpkg = new GeoPackage(file);
+
+        List<TileEntry> tiles = gpkg.tiles();
+        assertEquals(1, tiles.size());
+
+        TileEntry te = tiles.get(0);
+        assertEquals("groupenv", te.getTableName());
+        assertEquals("A group, and a style with env params", te.getDescription());
+        assertEquals("ge", te.getIdentifier());
+        assertEquals(4326, te.getSrid().intValue());
+        assertEquals(-0.0014, te.getBounds().getMinX(), 0.0001);
+        assertEquals(-0.0024, te.getBounds().getMinY(), 0.0001);
+        assertEquals(0.004, te.getBounds().getMaxX(), 0.0001);
+        assertEquals(0.0016, te.getBounds().getMaxY(), 0.0001);
+
+        List<TileMatrix> matrices = te.getTileMatricies();
+        assertEquals(1, matrices.size());
+        TileMatrix matrix = matrices.get(0);
+        assertEquals(16, matrix.getZoomLevel().intValue());
+        assertEquals(256, matrix.getTileWidth().intValue());
+        assertEquals(256, matrix.getTileHeight().intValue());
+        assertEquals(131072, matrix.getMatrixWidth().intValue());
+        assertEquals(65536, matrix.getMatrixHeight().intValue());
+
+        TileReader tr = gpkg.reader(te, null, null, null, null, null, null);
+        assertTrue(tr.hasNext());
+        Tile candidate = null;
+        while (tr.hasNext()) {
+            Tile tile = tr.next();
+            assertEquals(16, tile.getZoom().intValue());
+            if (tile.getRow() == 32768 && tile.getColumn() == 65536) {
+                candidate = tile;
+            }
+        }
+        tr.close();
+        gpkg.close();
+
+        // this tile is in the middle of the dataset, has red fill due to the env variable
+        assertNotNull(candidate);
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(candidate.getData()));
+        assertEquals(Color.RED, new Color(image.getRGB(128, 128))); // lake with env
+        assertEquals(new Color(170, 170, 170), new Color(image.getRGB(128, 192))); // forest
     }
 
     public String getXml(String xmlInnerRequest) {
@@ -1106,6 +1176,33 @@ public class GeoPackageProcessTest extends WPSTestSupport {
                 + "      <minZoom>10</minZoom>"
                 + "      <maxZoom>11</maxZoom>"
                 + "    </coverage>"
+                + "  </tiles>"
+                + "</geopackage>";
+    }
+
+    private String getXMLInnerRequestParametersGroups() {
+        return "<geopackage name=\"test\" xmlns=\"http://www.opengis.net/gpkg\">"
+                + "  <tiles name=\"groupenv\" identifier=\"ge\">"
+                + "    <description>A group, and a style with env params</description>  "
+                + "    <srs>EPSG:4326</srs>"
+                + "    <bbox>"
+                + "      <minx>-0.0014</minx>"
+                + "      <maxx>0.004</maxx>"
+                + "      <miny>-0.0024</miny>"
+                + "      <maxy>0.0016</maxy>"
+                + "    </bbox>"
+                + "    <layers>groupenv</layers>"
+                + "    <styles></styles>"
+                + "    <format>png</format>"
+                + "    <bgcolor>222222</bgcolor>"
+                + "    <transparent>false</transparent>"
+                + "    <coverage>"
+                + "      <minZoom>16</minZoom>"
+                + "      <maxZoom>17</maxZoom>"
+                + "    </coverage>"
+                + "    <parameters>"
+                + "      <parameter name=\"env\">fill:#FF0000</parameter>"
+                + "    </parameters>"
                 + "  </tiles>"
                 + "</geopackage>";
     }

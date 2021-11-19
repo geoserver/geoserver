@@ -17,13 +17,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.xml.namespace.QName;
 import net.opengis.wps10.ExecuteType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -33,11 +38,13 @@ import org.geoserver.geopkg.GeoPackageGetMapOutputFormat;
 import org.geoserver.geopkg.GeoPkg;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.URLMangler;
+import org.geoserver.ows.util.KvpMap;
+import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.util.EntityResolverProvider;
 import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.DefaultTransaction;
@@ -50,6 +57,7 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.collection.SortedSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.filter.function.EnvFunction;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
 import org.geotools.filter.spatial.ReprojectingFilterVisitor;
 import org.geotools.filter.text.ecql.ECQL;
@@ -72,6 +80,7 @@ import org.geotools.process.factory.DescribeResult;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.util.Converters;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
@@ -96,6 +105,7 @@ public class GeoPackageProcess implements GeoServerProcess {
     private final GeoServerDataDirectory dataDirectory;
     private final EntityResolverProvider resolverProvider;
     private final GeoServer geoServer;
+    private final GetMapKvpRequestReader getMapReader;
 
     private Catalog catalog;
 
@@ -111,7 +121,8 @@ public class GeoPackageProcess implements GeoServerProcess {
             WPSResourceManager resources,
             FilterFactory2 filterFactory,
             GeoServerDataDirectory dataDirectory,
-            EntityResolverProvider resolverProvider) {
+            EntityResolverProvider resolverProvider,
+            GetMapKvpRequestReader getMapReader) {
         this.resources = resources;
         this.mapOutput = mapOutput;
         this.filterFactory = filterFactory;
@@ -119,6 +130,7 @@ public class GeoPackageProcess implements GeoServerProcess {
         this.resolverProvider = resolverProvider;
         this.geoServer = geoServer;
         this.catalog = geoServer.getCatalog();
+        this.getMapReader = getMapReader;
     }
 
     private static final int TEMP_DIR_ATTEMPTS = 10000;
@@ -207,104 +219,8 @@ public class GeoPackageProcess implements GeoServerProcess {
 
     private void addTilesEntry(GeoPackage gpkg, Layer layer) throws IOException {
         TilesLayer tiles = (TilesLayer) layer;
-        GetMapRequest request = new GetMapRequest();
+        GetMapRequest request = buildGetMapRequest(tiles);
 
-        request.setLayers(new ArrayList<>());
-        for (QName layerQName : tiles.getLayers()) {
-            LayerInfo layerInfo = null;
-            if ("".equals(layerQName.getNamespaceURI())) {
-                layerInfo = catalog.getLayerByName(layerQName.getLocalPart());
-            } else {
-                layerInfo =
-                        catalog.getLayerByName(
-                                new NameImpl(
-                                        layerQName.getNamespaceURI(), layerQName.getLocalPart()));
-            }
-            if (layerInfo == null) {
-                throw new ServiceException("Layer not found: " + layerQName);
-            }
-            request.getLayers().add(new MapLayerInfo(layerInfo));
-        }
-
-        if (tiles.getBbox() == null) {
-            try {
-                // generate one from requests layers
-                CoordinateReferenceSystem crs =
-                        tiles.getSrs() != null ? CRS.decode(tiles.getSrs().toString()) : null;
-
-                ReferencedEnvelope bbox = null;
-                for (MapLayerInfo l : request.getLayers()) {
-                    ResourceInfo r = l.getResource();
-                    ReferencedEnvelope b = null;
-                    if (crs != null) {
-                        // transform from lat lon bbox
-                        b = r.getLatLonBoundingBox().transform(crs, true);
-                    } else {
-                        // use native bbox
-                        b = r.getNativeBoundingBox();
-                        if (bbox != null) {
-                            // transform
-                            b = b.transform(bbox.getCoordinateReferenceSystem(), true);
-                        }
-                    }
-
-                    if (bbox != null) {
-                        bbox.include(b);
-                    } else {
-                        bbox = b;
-                    }
-                }
-
-                request.setBbox(bbox);
-            } catch (Exception e) {
-                String msg = "Must specify bbox, unable to derive from requested layers";
-                throw new RuntimeException(msg, e);
-            }
-        } else {
-            request.setBbox(tiles.getBbox());
-        }
-
-        if (tiles.getSrs() == null) {
-            // use srs of first layer
-            ResourceInfo r = request.getLayers().iterator().next().getResource();
-            request.setSRS(r.getSRS());
-        } else {
-            request.setSRS(tiles.getSrs().toString());
-        }
-
-        // Get the request SRS defined and set is as the request CRS
-        String srs = request.getSRS();
-        if (srs != null && !srs.isEmpty()) {
-            try {
-                request.setCrs(CRS.decode(srs));
-            } catch (FactoryException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        request.setBgColor(tiles.getBgColor());
-        request.setTransparent(tiles.isTransparent());
-        request.setStyleBody(tiles.getSldBody());
-        if (tiles.getSld() != null) {
-            request.setStyleUrl(tiles.getSld().toURL());
-        } else if (tiles.getSldBody() != null) {
-            request.setStyleBody(tiles.getSldBody());
-        } else {
-            request.setStyles(new ArrayList<>());
-            if (tiles.getStyles() != null) {
-                for (String styleName : tiles.getStyles()) {
-                    StyleInfo info = catalog.getStyleByName(styleName);
-                    if (info != null) {
-                        request.getStyles().add(info.getStyle());
-                    }
-                }
-            }
-            if (request.getStyles().isEmpty()) {
-                for (MapLayerInfo layerInfo : request.getLayers()) {
-                    request.getStyles().add(layerInfo.getDefaultStyle());
-                }
-            }
-        }
         request.setFormat("none");
         Map formatOptions = new HashMap();
         formatOptions.put("flipy", "true");
@@ -343,6 +259,166 @@ public class GeoPackageProcess implements GeoServerProcess {
             mapOutput.addTiles(gpkg, e, request, tiles.getGrids(), layer.getName());
         } else {
             mapOutput.addTiles(gpkg, e, request, layer.getName());
+        }
+    }
+
+    /**
+     * Simulates the parsing of a GetMap in WMS to get full benefit of existing and future vendor
+     * options support. Yes we had some information alreay in parsed form, but we cannot do a
+     * partial parse, it has to start back straight from the strings.
+     *
+     * @param tiles
+     * @return
+     */
+    private GetMapRequest buildGetMapRequest(TilesLayer tiles) {
+        try {
+            Map<String, Object> kvp = new KvpMap<>();
+            Map<String, Object> rawKvp = new KvpMap<>();
+
+            // generic params first, so that they cannot override the built-in ones
+            if (tiles.getParameters() != null) {
+                tiles.getParameters().forEach(p -> rawKvp.put(p.getName(), p.getValue()));
+            }
+
+            List<PublishedInfo> layers = getLayers(tiles);
+
+            rawKvp.put(
+                    "layers",
+                    layers.stream().map(l -> l.prefixedName()).collect(Collectors.joining(",")));
+
+            Envelope bbox = tiles.getBbox();
+            if (bbox == null) bbox = getBoundsFromLayers(tiles, layers);
+            rawKvp.put("bbox", getCommaSeparated(bbox));
+
+            String srs =
+                    Optional.ofNullable(tiles.getSrs())
+                            .map(s -> s.toString())
+                            .orElseGet(() -> getFirstCRS(layers));
+            rawKvp.put("srs", srs);
+
+            if (tiles.getBgColor() != null) {
+                rawKvp.put("bgcolor", Converters.convert(tiles.getBgColor(), String.class));
+            }
+            rawKvp.put("transparent", String.valueOf(tiles.isTransparent()));
+
+            if (tiles.getSldBody() != null) {
+                rawKvp.put("sld_body", tiles.getSldBody());
+            } else if (tiles.getSld() != null) {
+                rawKvp.put("sld", tiles.getSld().toString());
+            } else if (tiles.getStyles() != null) {
+                rawKvp.put("styles", tiles.getStyles().stream().collect(Collectors.joining(",")));
+            }
+            rawKvp.put("format", "none");
+            rawKvp.put("service", "WMS");
+            rawKvp.put("request", "GetMap");
+            rawKvp.put("version", "1.1.0");
+
+            GetMapRequest request = getMapReader.createRequest();
+            kvp.putAll(rawKvp);
+            List<Throwable> errors = KvpUtils.parse(kvp);
+            if (!errors.isEmpty())
+                throw new ServiceException("Failed to parse KVPs", errors.get(0));
+            GetMapRequest getMap = getMapReader.read(request, kvp, rawKvp);
+
+            // env is normally setup by a dispatcher callback, doing it manually here
+            Map<String, Object> env = getMap.getEnv();
+            if (env != null && !env.isEmpty()) {
+                EnvFunction.setLocalValues(env);
+            }
+
+            return getMap;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to build GetMap request for tile construction", e);
+        }
+    }
+
+    private Object getCommaSeparated(Envelope bbox) {
+        return bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + "," + bbox.getMaxY();
+    }
+
+    private String getFirstCRS(List<PublishedInfo> layers) {
+        try {
+            return CRS.lookupIdentifier(getCRS(layers.get(0)), false);
+        } catch (FactoryException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private List<PublishedInfo> getLayers(TilesLayer tiles) {
+        List<PublishedInfo> layers = new ArrayList<>();
+        for (QName layerQName : tiles.getLayers()) {
+            PublishedInfo publishable;
+            String namespaceURI = layerQName.getNamespaceURI();
+            String localPart = layerQName.getLocalPart();
+            if ("".equals(namespaceURI)) {
+                publishable = catalog.getLayerByName(localPart);
+                if (publishable == null) publishable = catalog.getLayerGroupByName(localPart);
+            } else {
+                // the association with a NS URI is weird for layer groups, trying to do
+                // a bunch of different lookups
+                publishable = catalog.getLayerByName(new NameImpl(namespaceURI, localPart));
+                if (publishable == null) {
+                    NamespaceInfo ns = catalog.getNamespaceByURI(namespaceURI);
+                    if (ns != null) {
+                        publishable = catalog.getLayerGroupByName(ns.getPrefix(), localPart);
+                    } else if (layerQName.getPrefix() != null) {
+                        publishable =
+                                catalog.getLayerGroupByName(layerQName.getPrefix(), localPart);
+                    }
+                }
+                if (publishable == null) {
+                    publishable = catalog.getLayerGroupByName(localPart);
+                }
+            }
+            if (publishable == null) {
+                throw new ServiceException("Layer not found: " + layerQName);
+            }
+            layers.add(publishable);
+        }
+        return layers;
+    }
+
+    private ReferencedEnvelope getBoundsFromLayers(
+            TilesLayer tiles, List<PublishedInfo> publisheds) {
+        try {
+            // generate one from requests layers
+            CoordinateReferenceSystem crs =
+                    tiles.getSrs() != null
+                            ? CRS.decode(tiles.getSrs().toString())
+                            : getCRS(publisheds.get(0));
+
+            ReferencedEnvelope bbox = null;
+            for (PublishedInfo p : publisheds) {
+                ReferencedEnvelope b = null;
+                if (p instanceof LayerInfo) {
+                    LayerInfo l = (LayerInfo) p;
+                    ResourceInfo r = l.getResource();
+                    b = r.getLatLonBoundingBox().transform(crs, true);
+                } else {
+                    LayerGroupInfo lg = (LayerGroupInfo) p;
+                    ReferencedEnvelope bounds = lg.getBounds();
+                    b = bounds.transform(crs, true);
+                }
+
+                if (bbox != null) {
+                    bbox.include(b);
+                } else {
+                    bbox = b;
+                }
+            }
+
+            return bbox;
+        } catch (Exception e) {
+            String msg = "Must specify bbox, unable to derive from requested layers";
+            throw new RuntimeException(msg, e);
+        }
+    }
+
+    private CoordinateReferenceSystem getCRS(PublishedInfo publishedInfo) {
+        if (publishedInfo instanceof LayerInfo) {
+            return ((LayerInfo) publishedInfo).getResource().getCRS();
+        } else {
+            return ((LayerGroupInfo) publishedInfo).getBounds().getCoordinateReferenceSystem();
         }
     }
 

@@ -24,6 +24,7 @@
       <constructor-arg index="3" ref="filterFactory"/>
       <constructor-arg index="4" ref="dataDirectory"/>
       <constructor-arg index="5" ref="entityResolverProvider"/>
+      <constructor-arg index="6" ref="getMapKvpReader"/>
     </bean>
     
     <bean id="geopkgProcessRequestPPIO" class="org.geoserver.geopkg.wps.GeoPackageProcessRequestPPIO" >

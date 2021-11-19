@@ -25,8 +25,10 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.map.RawMap;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geopkg.GeoPackage;
 import org.geotools.geopkg.Tile;
+import org.geotools.geopkg.TileEntry;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.util.URLs;
 import org.junit.Before;
@@ -65,7 +67,14 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
 
         assertTrue(geopkg.features().isEmpty());
         assertEquals(1, geopkg.tiles().size());
-        assertNotNull(geopkg.tile("World_Lakes"));
+        TileEntry tile = geopkg.tile("World_Lakes");
+        assertNotNull(tile);
+        // the bounds should be the ones of the tile matrix, not the ones of the layer
+        ReferencedEnvelope bounds = tile.getTileMatrixSetBounds();
+        assertEquals(-180, bounds.getMinimum(0), 0d);
+        assertEquals(180, bounds.getMaximum(0), 0d);
+        assertEquals(-90, bounds.getMinimum(1), 0d);
+        assertEquals(90, bounds.getMaximum(1), 0d);
     }
 
     @Test

@@ -5,7 +5,9 @@
  */
 package org.geoserver.geopkg;
 
-import static org.geoserver.geopkg.GeoPkg.*;
+import static org.geoserver.geopkg.GeoPkg.EXTENSION;
+import static org.geoserver.geopkg.GeoPkg.MIME_TYPE;
+import static org.geoserver.geopkg.GeoPkg.NAMES;
 
 import com.google.common.collect.Sets;
 import java.io.File;
@@ -35,6 +37,7 @@ import org.geotools.geopkg.TileEntry;
 import org.geotools.geopkg.TileMatrix;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
@@ -112,6 +115,19 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
                 // m.setYPixelSize(gridSet.getPixelSize());
 
                 e.getTileMatricies().add(m);
+            }
+            // tile index is calculated relative to the gridset, so we need to use
+            // the gridset bounds (otherwise the layer bounds will be used as the gridset ones)
+            BoundingBox subsetBounds = gridSubset.getGridSetBounds();
+            if (subsetBounds != null) {
+                ReferencedEnvelope re =
+                        new ReferencedEnvelope(
+                                subsetBounds.getMinX(),
+                                subsetBounds.getMaxX(),
+                                subsetBounds.getMinY(),
+                                subsetBounds.getMaxY(),
+                                box.getCoordinateReferenceSystem());
+                e.setTileMatrixSetBounds(re);
             }
 
             // figure out the actual bounds of the tiles to be renderered

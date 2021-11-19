@@ -123,6 +123,9 @@ Outline of the tiles layer:
         <gridset>
             ...
         </gridset>
+        <parameters>
+          <parameter name="...">value</parameter>
+        <parameters>
     </tiles>
 
 Each tiles layer has the following properties: 
@@ -136,7 +139,8 @@ Each tiles layer has the following properties:
   * ``transparent`` (optional): transparency (true or false)
   * ``coverage`` (optional)
   * ``minzoom``, ``maxzoom``, ``minColumn``, ``maxColumn``, ``minRow``, ``maxRow`` (all optional): set the minimum and maximum zoom level, column, and rows
-  * ``gridset`` (optional): see following
+  * ``gridset`` (optional): see below
+  * ``parameters`` (optional): list of other parameters that can be used in a GetMap to produce tiles (open to all GeoServer vendor parameters)
 
 Gridset can take on two possible (mutually exclusive) forms:
 

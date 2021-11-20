@@ -29,9 +29,8 @@ public class HzResourceNotificationDispatcherTest
     @Override
     protected ResourceNotificationDispatcher initWatcher() throws Exception {
         final Capture<MessageListener<ResourceNotification>> captureTopicListener =
-                new Capture<MessageListener<ResourceNotification>>();
-        final Capture<ResourceNotification> captureTopicPublish =
-                new Capture<ResourceNotification>();
+                Capture.newInstance();
+        final Capture<ResourceNotification> captureTopicPublish = Capture.newInstance();
 
         final Cluster cluster = createMock(Cluster.class);
         final ITopic<ResourceNotification> topic = createMock(ITopic.class);

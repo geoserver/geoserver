@@ -51,7 +51,7 @@ public class EventHzSynchronizerSendTest extends HzSynchronizerSendTest {
         final String storeId = "Store-TEST";
         final String storeWorkspace = "Workspace-TEST";
 
-        final Capture<ConfigChangeEvent> capture = new Capture<ConfigChangeEvent>();
+        final Capture<ConfigChangeEvent> capture = Capture.newInstance();
 
         {
             info = createMock(DataStoreInfo.class);

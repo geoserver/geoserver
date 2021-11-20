@@ -90,9 +90,9 @@ public abstract class HzSynchronizerTest {
         configWatcher = createMock(ClusterConfigWatcher.class);
         clusterConfig = createMock(ClusterConfig.class);
 
-        captureTopicListener = new Capture<MessageListener<Event>>();
-        captureAckTopicListener = new Capture<MessageListener<UUID>>();
-        captureAckTopicPublish = new Capture<UUID>();
+        captureTopicListener = Capture.newInstance();
+        captureAckTopicListener = Capture.newInstance();
+        captureAckTopicPublish = Capture.newInstance();
 
         localAddress = new InetSocketAddress(localAddress(42), 5000);
         remoteAddress = new InetSocketAddress(localAddress(54), 5000);
@@ -156,16 +156,16 @@ public abstract class HzSynchronizerTest {
 
         expect(geoServer.getCatalog()).andStubReturn(catalog);
 
-        gsListenerCapture = new Capture<ConfigurationListener>();
+        gsListenerCapture = Capture.newInstance();
         geoServer.addListener(capture(gsListenerCapture));
         expectLastCall().atLeastOnce();
 
-        catListenerCapture = new Capture<CatalogListener>();
+        catListenerCapture = Capture.newInstance();
         catalog.addListener(capture(catListenerCapture));
         expectLastCall().atLeastOnce();
 
         executor = createMock(ScheduledExecutorService.class);
-        captureExecutor = new Capture<>(CaptureType.ALL);
+        captureExecutor = Capture.newInstance(CaptureType.ALL);
         expect(executor.schedule(capture(captureExecutor), anyLong(), (TimeUnit) anyObject()))
                 .andStubReturn(null);
     }

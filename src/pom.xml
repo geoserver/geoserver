@@ -1481,6 +1481,7 @@
         <version>1.0-beta-2</version>
       </extension>
     </extensions>
+
     <!-- TODO: the resources stuff hardcodes paths to source + test directories,
       we should be able to use some properties here -->
     <resources>
@@ -1561,6 +1562,16 @@
         </includes>
       </testResource>
     </testResources>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>3.3.2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
 
     <plugins>
 

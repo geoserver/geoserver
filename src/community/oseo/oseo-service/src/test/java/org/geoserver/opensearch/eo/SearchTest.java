@@ -14,6 +14,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -49,6 +50,15 @@ public class SearchTest extends OSEOTestSupport {
         // this one is actually used instead
         copyTemplate("product-LANDSAT8.ftl");
         copyTemplate("collection-LANDSAT8.ftl");
+
+        GeoServerDataDirectory dd =
+                (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
+        File file = dd.getResourceLoader().createFile("/readAndEval.json");
+        File nestedFile =
+                dd.getResourceLoader().createFile("/workspaces/readAndEvalNestedDir.json");
+        dd.getResourceLoader().copyFromClassPath("readAndEval.json", file, getClass());
+        dd.getResourceLoader()
+                .copyFromClassPath("readAndEvalNestedDir.json", nestedFile, getClass());
     }
 
     @Test
@@ -1064,6 +1074,33 @@ public class SearchTest extends OSEOTestSupport {
                 hasXPath(
                         "/at:feed/at:entry[1]/at:summary",
                         containsString("<h1>This is a LANDSAT product!</h1>")));
+    }
+
+    @Test
+    public void testReadAndEvalJSON() throws Exception {
+        String uid = "LS8_TEST.02";
+        Document dom = getAsDOM("oseo/search?parentId=LANDSAT8&uid=" + uid);
+
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString("<h2>attribute1 => 1</h2>")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString("<h2>attribute2 => 2</h2>")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString("<h3>attribute4 => 4</h3>")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString("<h3>attribute3 => 3</h3>")));
     }
 
     private void summaryHasLink(Document dom, String link) {

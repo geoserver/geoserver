@@ -186,9 +186,7 @@ public class WFSXmlUtils {
 
         @Override
         public boolean isResolvable(
-                PicoContainer container,
-                ComponentAdapter adapter,
-                @SuppressWarnings("rawtypes") Class expectedType) {
+                PicoContainer container, ComponentAdapter adapter, Class expectedType) {
             if (clazz.isAssignableFrom(expectedType)) {
                 return true;
             }
@@ -197,9 +195,7 @@ public class WFSXmlUtils {
 
         @Override
         public Object resolveInstance(
-                PicoContainer container,
-                ComponentAdapter adapter,
-                @SuppressWarnings("rawtypes") Class expectedType) {
+                PicoContainer container, ComponentAdapter adapter, Class expectedType) {
             if (clazz.isAssignableFrom(expectedType)) {
                 return obj;
             }

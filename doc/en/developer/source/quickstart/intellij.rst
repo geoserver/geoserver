@@ -45,7 +45,7 @@ Run GeoServer from Intellij
    .. image:: img/intellij_run.png
       :width: 400
 
-#. The first time you do this, geoserver will fail to start. Navigate to the ``Run`` menu, an click ``Edit Configurations...``.
+#. The first time you do this, geoserver will fail to start. Navigate to the ``Run`` menu, and click ``Edit Configurations...``.
 #. Select the ``Start`` configuration, and append ``web/app`` to the ``Working Directory``.
 
    .. image:: img/intellij_run_config.png

@@ -226,7 +226,9 @@ public class FeatureService {
                                 + "/queryables",
                         null,
                         URLMangler.URLType.RESOURCE);
-        return new QueryablesBuilder(id).forType(ft).build();
+        Queryables queryables = new QueryablesBuilder(id).forType(ft).build();
+        queryables.addSelfLinks("collections/" + collectionId + "/queryables");
+        return queryables;
     }
 
     private FeatureTypeInfo getFeatureType(String collectionId) {

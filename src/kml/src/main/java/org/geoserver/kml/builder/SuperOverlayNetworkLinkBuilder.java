@@ -119,7 +119,7 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         link.setViewRefreshMode(ViewRefreshMode.NEVER);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     private void encodeLayerSuperOverlay(
             Document container,
             MapLayerInfo layerInfo,
@@ -330,7 +330,6 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         return false;
     }
 
-    @SuppressWarnings("rawtypes")
     void encodeKMLLink(Folder container, Layer layer, String name, int drawOrder, Envelope box) {
         // copy the format options
         CaseInsensitiveMap<String, Object> fo = new CaseInsensitiveMap<>(new HashMap<>());
@@ -392,7 +391,6 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     private int featuresInTile(Layer layer, Envelope bounds, boolean regionate) {
         if (!isVectorLayer(layer)) return 1; // for coverages, we want raster tiles everywhere
         Envelope originalBounds = mapContent.getRequest().getBbox();
@@ -476,7 +474,6 @@ public class SuperOverlayNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
     }
 
     /** Returns true if the request is GWC compatible */
-    @SuppressWarnings("unchecked")
     private boolean isRequestGWCCompatible(GetMapRequest request, int layerIndex, WMS wms) {
         // check the kml params are the same as the defaults (GWC uses always the defaults)
         boolean requestKmAttr = context.isDescriptionEnabled();

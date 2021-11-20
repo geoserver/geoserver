@@ -1056,7 +1056,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
          *
          * @task TODO: write wms specific elements.
          */
-        @SuppressWarnings("deprecation")
         protected void handleLayer(final LayerInfo layer, boolean isRoot) throws IOException {
 
             String layerName = layer.prefixedName();

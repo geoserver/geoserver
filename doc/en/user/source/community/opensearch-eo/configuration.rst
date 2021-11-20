@@ -130,6 +130,16 @@ geometry (mind, the output must be forced not to be escaped, using ``?no_esc``, 
 as ``minx``, ``miny``, ``maxx``, ``maxy`` that can be used to extract the bounding box
 corner values. All these function expect a geometry as input.
 
+
+Finally templates can use a ``loadJSON`` function to read a JSON from a file inside the GeoServer data directory. 
+The path to the JSON file can be absolute eg. :code:`"${loadJSON('/path/to/read.json')}"`, or a plain file name, in case the JSON file is present in the GeoServer root directory eg. :code:`"${loadJSON('read.json')}"`.
+
+The function returns a string JSON that can be parsed using the  :code:`?eval_json` free marker built-in function:
+:code:`<#assign loadedJSON = "${loadJSON('readAndEval.json')}">`
+:code:`<#assign evalJSON = loadedJSON?eval_json>`
+
+More information about writing templates can be found in the :ref:`templates guide <oseotemplates>`.
+
 GeoJSON output templates
 ------------------------
 

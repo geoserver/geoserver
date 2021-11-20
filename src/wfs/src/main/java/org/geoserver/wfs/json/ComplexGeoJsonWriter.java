@@ -379,7 +379,6 @@ class ComplexGeoJsonWriter {
      * Helper method that returns TRUE if the provided complex property corresponds to a chained
      * feature resolved as a link.
      */
-    @SuppressWarnings("unchecked")
     static boolean checkIfFeatureIsLinked(Property property, Map<NameImpl, String> attributes) {
         if (!(property instanceof ComplexAttribute)) {
             // not a complex attribute, so we don't consider it a candidate to be a linked one

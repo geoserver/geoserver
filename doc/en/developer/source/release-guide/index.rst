@@ -235,6 +235,66 @@ This job will rsync all the artifacts located at::
 
 to the SourceForge FRS server. Navigate to `Sourceforge <http://sourceforge.net/projects/geoserver/>`__ and verify that the artifacts have been uploaded properly. If this is the latest stable release, set the necessary flags on the ``.exe``, ``.dmg`` and ``.bin`` artifacts so that they show up as the appropriate default for users downloading on the Windows, OSX, and Linux platforms.
 
+Release notes
+-------------
+
+This job will tag the release located in::
+   
+   https://github.com/geoserver/geoserver/tags/<RELEASE>
+
+Publish JIRA markdown release notes to github tag:
+
+#. Select the correct release from `JIRA Releases <https://osgeo-org.atlassian.net/projects/GEOS?orderField=RANK&selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page&status=released>`__ page.
+
+#. From the release page, locate the :guilabel:`Release notes` button at the top of the page to open the release notes edit
+  
+#. Generate release notes as markdown:
+   
+   * Select format `Markdown`
+   * Layout: Issue key with link
+   * Issue types: `Bug` and `Improvement`
+   
+   Change the heading to :kbd:`Release notes`, and apply the change with :guilabel:`Done`.
+
+   Use :guilabel:`Copy to clipboard` to obtain the markdown, similar to the following:
+   
+   .. code-block:: text
+   
+      # Release notes
+
+      ### Bug
+
+      [GEOS-10264](https://osgeo-org.atlassian.net/browse/GEOS-10264) Address startup warning File option not set for appender \[geoserverlogfile\]
+
+      [GEOS-10263](https://osgeo-org.atlassian.net/browse/GEOS-10263) WPSRequestBuilderTest assumes that JTS:area is the first process in the list
+
+      [GEOS-10255](https://osgeo-org.atlassian.net/browse/GEOS-10255) i18n user interface inconsistent layout with br tags used for layout
+
+      [GEOS-10245](https://osgeo-org.atlassian.net/browse/GEOS-10245) jdbcconfig: prefixedName filter field not updated
+
+      [GEOS-9950](https://osgeo-org.atlassian.net/browse/GEOS-9950) MapPreviewPage logs unable to find property: format.wfs.text/csv continuously
+
+      ### Improvement
+
+      [GEOS-10246](https://osgeo-org.atlassian.net/browse/GEOS-10246) jdbcconfig: performance slow-down from unnecessary transactions
+
+      ### New Feature
+
+      [GEOS-10223](https://osgeo-org.atlassian.net/browse/GEOS-10223) Support MBTiles in OGC Tiles API
+
+      ### Task
+
+      [GEOS-10247](https://osgeo-org.atlassian.net/browse/GEOS-10247) Reuse of service documentation references for workspace, metadata and default language
+
+#. Navigate to github tags https://github.com/geoserver/geoserver/tags
+   
+   Locate the new tag from the list, and use :menuselection:`... --> Create release`
+   
+   * Release title: `GeoServer 2.20.0`
+   * Write: Paste the markdown from Jira release notes editor
+   
+   Use :guilabel:`Publish release` button to publish the release notes.
+   
 Create the download page
 ------------------------
 

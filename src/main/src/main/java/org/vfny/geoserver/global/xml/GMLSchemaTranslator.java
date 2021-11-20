@@ -197,7 +197,6 @@ class AbstractFeatureCollectionBaseElement extends NameSpaceElement {
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
     public Class<FeatureCollection> getJavaClass() {
         return FeatureCollection.class;
     }
@@ -252,7 +251,6 @@ class AbstractFeatureCollectionElement extends NameSpaceElement {
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
     public Class<FeatureCollection> getJavaClass() {
         return FeatureCollection.class;
     }

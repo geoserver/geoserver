@@ -427,7 +427,6 @@ public class WMSLayerController extends AbstractCatalogController {
                     // A hack to avoid overwriting the enabled property on a PUT
                     @Override
                     protected CatalogInfo getCatalogObject() {
-                        @SuppressWarnings("unchecked")
                         Map<String, String> uriTemplateVars = getURITemplateVariables();
                         String workspaceName = uriTemplateVars.get("workspaceName");
                         String storeName = uriTemplateVars.get("storeName");
@@ -473,7 +472,7 @@ public class WMSLayerController extends AbstractCatalogController {
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
         return new ObjectToMapWrapper<WMSLayerInfo>(WMSLayerInfo.class) {
-            @SuppressWarnings({"rawtypes", "unchecked"})
+            @SuppressWarnings("unchecked")
             @Override
             protected void wrapInternal(Map properties, SimpleHash model, WMSLayerInfo object) {
                 try {

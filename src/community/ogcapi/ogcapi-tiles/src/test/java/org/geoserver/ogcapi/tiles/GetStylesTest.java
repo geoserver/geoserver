@@ -21,7 +21,7 @@ public class GetStylesTest extends TilesTestSupport {
         DocumentContext json = getAsJSONPath("ogc/tiles/collections/" + lakesId + "/styles", 200);
 
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/tiles/collections/cite%3ALakes/styles/map/tiles?f=application%2Fjson",
+                "http://localhost:8080/geoserver/ogc/tiles/collections/cite:Lakes/styles/map/tiles?f=application%2Fjson",
                 readSingle(
                         json,
                         "styles[0].links[?(@.rel=='"

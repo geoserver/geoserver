@@ -114,7 +114,6 @@ public class TileLayerInfoUtilTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testUpdateAcceptAllRegExParameterFilter() {
         GeoServerTileLayerInfo info = defaultVectorInfo;
 
@@ -142,7 +141,6 @@ public class TileLayerInfoUtilTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testUpdateAcceptAllFloatParameterFilter() {
         GeoServerTileLayerInfo info = defaultVectorInfo;
 

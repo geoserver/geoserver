@@ -538,7 +538,6 @@ public abstract class WMSTestSupport extends GeoServerSystemTestSupport {
     }
 
     /** Validates a document against the */
-    @SuppressWarnings("rawtypes")
     protected void checkWms13ValidationErrors(Document dom) throws Exception {
         Parser p =
                 new Parser(

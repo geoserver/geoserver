@@ -33,7 +33,6 @@ public class CoverageKvpParser extends KvpParser {
         this.catalog = catalog;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Object parse(String value) throws Exception {
         final List<String> coverages = new ArrayList<>();

@@ -43,7 +43,7 @@ public class ParamInfo implements Serializable {
 
     private List<Serializable> options;
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     public ParamInfo(Param param) {
         this.name = param.key;
         this.deprecated = param.isDeprecated();

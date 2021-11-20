@@ -14,6 +14,16 @@
 <body>
   <header id="header">
     <a href="${serviceLink("")}"></a>
+    <#if model??>
+       <div id="fetch"><span style="margin: 0.5em">Fetch this resource as:</span>
+          <select class="form-select form-select-sm" onchange="window.open(this.options[this.selectedIndex].value);this.selectedIndex=0" >
+            <option value="none" selected>-- Please choose a format --</option>
+            <#list model.getLinksFor("alternate") as link>
+            <option value="${link.href}">${link.type}</option>
+            </#list>
+          </select>
+       </div>
+     </#if>
   </header>
   <#if pagecrumbs??>
   <div id="breadcrumb" class="py-2 mb-4">

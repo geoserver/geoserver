@@ -282,7 +282,7 @@ public class DiskQuotaConfigPanel extends Panel {
         globalQuotaPolicy.add(globalQuotaPolicyLRU);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     private void addCleanUpFrequencyConfig(final IModel<DiskQuotaConfig> diskQuotaModel) {
 
         final DiskQuotaConfig diskQuotaConfig = diskQuotaModel.getObject();

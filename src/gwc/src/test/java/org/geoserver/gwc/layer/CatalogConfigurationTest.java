@@ -225,7 +225,6 @@ public class CatalogConfigurationTest {
 
     @Test
     public void testDeprecatedGetTileLayers() {
-        @SuppressWarnings("deprecation")
         Iterable<TileLayer> layers = config.getLayers();
         testGetLayers(layers);
     }

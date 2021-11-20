@@ -108,7 +108,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
         this.wms = wms;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     @Override
     public GetLegendGraphicRequest read(Object req, Map kvp, Map rawKvp) throws Exception {
 
@@ -277,8 +277,6 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
             remoteLegendGraphicRequest =
                     new CascadedLegendRequest.GetLegendGraphicRequestV1_3_0(
                             wmsServer.createGetMapRequest().getFinalURL(), "1.3.0");
-            remoteLegendGraphicRequest.toString();
-
         } else {
             // other than 1.3.0
             remoteLegendGraphicRequest = wmsServer.createGetLegendGraphicRequest();

@@ -41,7 +41,6 @@ import org.geotools.styling.SelectedChannelType;
  *
  * @author Simone Giannecchini, GeoSolutions.
  */
-@SuppressWarnings("deprecation")
 public class ColorMapLegendCreator {
 
     /**

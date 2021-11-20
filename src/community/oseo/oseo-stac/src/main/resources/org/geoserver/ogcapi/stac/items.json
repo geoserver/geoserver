@@ -27,15 +27,6 @@
         "instruments": "${eo:collection/eo:instrument}",
         "constellation": "$${strToLowerCase(eop:parentIdentifier)}",
         "eo:cloud_cover": "${opt:cloudCover}",
-        "mergeThumbnail": {
-            "href":"will be replaced",
-            "type":"will be replaced",
-            "title":"Thumbnail to be replaced",
-            "roles":[
-              "will be replaced"
-            ]
-        },
-        "mergeThumbnail2": "$${jsonPointer(assets, '/thumbnail')}",
         // "view:off_nadir": "${opt:instrumentElevationAngle}",
         // "view:incidence_angle": "${opt:incidenceAngle}",
         // "view:azimuth": "${opt:instrumentAzimuthAngle}",

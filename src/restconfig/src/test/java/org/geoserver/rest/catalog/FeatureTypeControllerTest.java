@@ -457,7 +457,6 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
      *
      * <p>Update: Ensure feature type modification does not reset ResourcePool DataStoreCache
      */
-    @SuppressWarnings("rawtypes")
     @Test
     public void testPutWithCalculation() throws Exception {
         DataStoreInfo dataStoreInfo = getCatalog().getDataStoreByName("sf", "sf");

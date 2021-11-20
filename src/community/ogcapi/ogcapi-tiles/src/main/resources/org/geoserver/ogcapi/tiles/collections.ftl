@@ -4,7 +4,6 @@
   <h1>GeoServer Tiled Collections</h1>
   <p class="my-4">
     This document lists all the tiles collections available in the Tiles service.<br/>
-    This document is also available as <#list model.getLinksExcept(null, "text/html") as link><a href="${link.href}">${link.type}</a><#if link_has_next>, </#if></#list>.
   </p>
        
   <div class="row">

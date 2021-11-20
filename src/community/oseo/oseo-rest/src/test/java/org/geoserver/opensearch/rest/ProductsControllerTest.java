@@ -51,6 +51,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.feature.simple.SimpleFeature;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -211,11 +212,58 @@ public class ProductsControllerTest extends OSEORestTestSupport {
     }
 
     @Test
-    public void testCreateProduct() throws Exception {
+    public void testCreateProductPost() throws Exception {
         MockHttpServletResponse response =
                 postAsServletResponse(
                         "rest/oseo/collections/SENTINEL2/products",
                         getTestData("/product.json"),
+                        MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(201, response.getStatus());
+        assertEquals(
+                "http://localhost:8080/geoserver/rest/oseo/collections/SENTINEL2/products/"
+                        + PRODUCT_CREATE_UPDATE_ID,
+                response.getHeader("location"));
+
+        // check it's really there
+        assertProduct("2018-01-01T00:00:00.000Z", "2018-01-01T00:00:00.000Z");
+    }
+
+    @Test
+    public void testCreateProductPut() throws Exception {
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        "rest/oseo/collections/SENTINEL2/products/" + PRODUCT_CREATE_UPDATE_ID,
+                        getTestData("/product.json"),
+                        MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(201, response.getStatus());
+        assertEquals(
+                "http://localhost:8080/geoserver/rest/oseo/collections/SENTINEL2/products/"
+                        + PRODUCT_CREATE_UPDATE_ID,
+                response.getHeader("location"));
+
+        // check it's really there
+        assertProduct("2018-01-01T00:00:00.000Z", "2018-01-01T00:00:00.000Z");
+    }
+
+    @Test
+    public void testCreateProductPutIdentifierMismatch() throws Exception {
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        "rest/oseo/collections/SENTINEL2/products/foobar",
+                        getTestData("/product.json"),
+                        MediaType.APPLICATION_JSON_VALUE);
+        assertEquals(400, response.getStatus());
+        assertEquals(
+                "Product id in URL not consistent with eop:identifier in JSON, refusing creation",
+                response.getContentAsString());
+    }
+
+    @Test
+    public void testCreateProductNoIdentifierPut() throws Exception {
+        MockHttpServletResponse response =
+                putAsServletResponse(
+                        "rest/oseo/collections/SENTINEL2/products/" + PRODUCT_CREATE_UPDATE_ID,
+                        getTestData("/product-no-identifier.json"),
                         MediaType.APPLICATION_JSON_VALUE);
         assertEquals(201, response.getStatus());
         assertEquals(
@@ -464,7 +512,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testPutProductLinks() throws Exception {
-        testCreateProduct();
+        testCreateProductPost();
 
         // create the links
         MockHttpServletResponse response =
@@ -533,7 +581,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testPutProductThumbnail() throws Exception {
-        testCreateProduct();
+        testCreateProductPost();
 
         // create the image
         MockHttpServletResponse response =
@@ -591,7 +639,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testPutProductGranules() throws Exception {
-        testCreateProduct();
+        testCreateProductPost();
 
         // add the granules
         MockHttpServletResponse response =
@@ -606,7 +654,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testPutProductGranulesWithBands() throws Exception {
-        testCreateProduct();
+        testCreateProductPost();
 
         // add the granules
         MockHttpServletResponse response =
@@ -670,7 +718,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testDeleteProductGranules() throws Exception {
-        testCreateProduct();
+        testCreateProductPost();
 
         // now delete it
         MockHttpServletResponse response =
@@ -695,20 +743,24 @@ public class ProductsControllerTest extends OSEORestTestSupport {
                 new HashSet<>(asList(Product, Thumbnail, OwsLinks, Granules));
         Set<Set<ProductPart>> sets = Sets.powerSet(allProducts);
 
+        List<HttpMethod> methods = Arrays.asList(HttpMethod.POST, HttpMethod.PUT);
         for (Set<ProductPart> parts : sets) {
             if (parts.isEmpty()) {
                 continue;
             }
 
             LOGGER.info("Testing zip product creation with parts:" + parts);
-            cleanupTestProduct();
-            testCreateProductAsZip(parts);
+            for (HttpMethod method : methods) {
+                cleanupTestProduct();
+                testCreateProductAsZip(parts, method);
+            }
         }
     }
 
-    private void testCreateProductAsZip(Set<ProductPart> parts) throws Exception {
+    private void testCreateProductAsZip(Set<ProductPart> parts, HttpMethod method)
+            throws Exception {
         LOGGER.info("Testing: " + parts);
-        MockHttpServletResponse response = createProductAsZip(parts);
+        MockHttpServletResponse response = createProductAsZip(parts, method);
         if (parts.contains(Product)) {
             assertEquals(201, response.getStatus());
             assertEquals(
@@ -735,7 +787,24 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         }
     }
 
-    private MockHttpServletResponse createProductAsZip(Set<ProductPart> parts) throws Exception {
+    private MockHttpServletResponse createProductAsZip(Set<ProductPart> parts, HttpMethod method)
+            throws Exception {
+        byte[] zip = buildZip(parts);
+
+        if (method == HttpMethod.POST)
+            return postAsServletResponse(
+                    "rest/oseo/collections/SENTINEL2/products",
+                    zip,
+                    MediaTypeExtensions.APPLICATION_ZIP_VALUE);
+        else if (method == HttpMethod.PUT)
+            return putAsServletResponse(
+                    "rest/oseo/collections/SENTINEL2/products/" + PRODUCT_CREATE_UPDATE_ID,
+                    zip,
+                    MediaTypeExtensions.APPLICATION_ZIP_VALUE);
+        else throw new RuntimeException("Unsupported method: " + method);
+    }
+
+    private byte[] buildZip(Set<ProductPart> parts) throws IOException {
         byte[] zip;
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (ZipOutputStream zos = new ZipOutputStream(bos)) {
@@ -772,11 +841,7 @@ public class ProductsControllerTest extends OSEORestTestSupport {
             }
         }
         zip = bos.toByteArray();
-
-        return postAsServletResponse(
-                "rest/oseo/collections/SENTINEL2/products",
-                zip,
-                MediaTypeExtensions.APPLICATION_ZIP_VALUE);
+        return zip;
     }
 
     private MockHttpServletResponse putProductAsZip(Collection<ProductPart> parts)
@@ -856,7 +921,9 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         Set<ProductPart> allProductParts =
                 new LinkedHashSet<>(asList(Product, Thumbnail, OwsLinks, Granules));
         cleanupTestProduct();
-        assertEquals(HttpStatus.CREATED.value(), createProductAsZip(allProductParts).getStatus());
+        assertEquals(
+                HttpStatus.CREATED.value(),
+                createProductAsZip(allProductParts, HttpMethod.POST).getStatus());
 
         // update one items at a time
         for (ProductPart part : allProductParts) {
@@ -870,7 +937,9 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         Set<ProductPart> allProductParts =
                 new LinkedHashSet<>(asList(Product, Thumbnail, OwsLinks, Granules));
         cleanupTestProduct();
-        assertEquals(HttpStatus.CREATED.value(), createProductAsZip(allProductParts).getStatus());
+        assertEquals(
+                HttpStatus.CREATED.value(),
+                createProductAsZip(allProductParts, HttpMethod.POST).getStatus());
 
         // update all in one shot
         testUpdateProductAsZip(allProductParts);
@@ -881,7 +950,9 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         // prepare a basic initial product
         Set<ProductPart> initialProduct = new HashSet<>(asList(Product));
         cleanupTestProduct();
-        assertEquals(HttpStatus.CREATED.value(), createProductAsZip(initialProduct).getStatus());
+        assertEquals(
+                HttpStatus.CREATED.value(),
+                createProductAsZip(initialProduct, HttpMethod.POST).getStatus());
 
         // update/add one item at a time
         Set<ProductPart> allProductParts =

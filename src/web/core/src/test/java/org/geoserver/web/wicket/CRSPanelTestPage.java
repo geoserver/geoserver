@@ -5,6 +5,9 @@
  */
 package org.geoserver.web.wicket;
 
+import static org.junit.Assert.assertEquals;
+
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -18,6 +21,19 @@ public class CRSPanelTestPage extends WebPage {
         add(form);
 
         form.add(new CRSPanel("crs", new CRSModel(null)));
+    }
+
+    public CRSPanelTestPage(String expectedSRS) {
+        Form form = new Form("form");
+        add(form);
+
+        form.add(
+                new CRSPanel("crs", new CRSModel(null)) {
+                    @Override
+                    protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
+                        assertEquals(expectedSRS, srs);
+                    }
+                });
     }
 
     public CRSPanelTestPage(Object o) {

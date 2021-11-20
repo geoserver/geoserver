@@ -39,7 +39,6 @@ import org.geotools.styling.Symbolizer;
  *
  * @author Simone Giannecchini, GeoSolutions SAS
  */
-@SuppressWarnings("deprecation")
 public class RasterLayerLegendHelper {
 
     /** The default legend is a simple image with an R within it which stands for Raster. */
@@ -91,7 +90,6 @@ public class RasterLayerLegendHelper {
         parseRequest(request, style, ruleName);
     }
 
-    @SuppressWarnings("unchecked")
     private void parseRequest(
             final GetLegendGraphicRequest request, Style gt2Style, String ruleName) {
         // get the requested layer

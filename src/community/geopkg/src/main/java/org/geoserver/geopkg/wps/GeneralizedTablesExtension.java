@@ -51,8 +51,7 @@ public class GeneralizedTablesExtension extends GeoPkgExtension {
         }
 
         @Override
-        public GeoPkgExtension getExtension(
-                @SuppressWarnings("rawtypes") Class extensionClass, GeoPackage geoPackage) {
+        public GeoPkgExtension getExtension(Class extensionClass, GeoPackage geoPackage) {
             if (GeneralizedTablesExtension.class.equals(extensionClass)) {
                 try {
                     return new GeneralizedTablesExtension(geoPackage);

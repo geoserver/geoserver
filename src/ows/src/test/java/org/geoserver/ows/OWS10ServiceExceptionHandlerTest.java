@@ -131,7 +131,6 @@ public class OWS10ServiceExceptionHandlerTest {
                 exceptionText.getTextContent());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testHandleServiceExceptionEncodingMore() throws Exception {
         String message1 = "foo & <foo> \"foo's\"";

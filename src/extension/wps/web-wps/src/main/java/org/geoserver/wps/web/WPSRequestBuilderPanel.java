@@ -94,7 +94,7 @@ public class WPSRequestBuilderPanel extends Panel {
      * @param id id of the panel
      * @param executeRequest execute request, possibly with processName set
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     public WPSRequestBuilderPanel(String id, ExecuteRequest executeRequest) {
         super(id);
         setOutputMarkupId(true);

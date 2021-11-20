@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.images;
 
 import org.geoserver.ogcapi.AbstractLandingPageDocument;
 import org.geoserver.ogcapi.Link;
+import org.geoserver.ogcapi.LinksBuilder;
 
 /** Landing page for the images service */
 public class ImagesLandingPage extends AbstractLandingPageDocument {
@@ -16,12 +17,10 @@ public class ImagesLandingPage extends AbstractLandingPageDocument {
         super(title, description, IMAGES_SERVICE_BASE);
 
         // collections
-        addLinksFor(
-                IMAGES_SERVICE_BASE + "/collections",
-                ImagesCollectionsDocument.class,
-                "Image collections metadata as ",
-                "collections",
-                null,
-                Link.REL_DATA_URI);
+        new LinksBuilder(ImagesCollectionsDocument.class, IMAGES_SERVICE_BASE)
+                .segment("/collections")
+                .title("Image collections metadata as ")
+                .rel(Link.REL_DATA_URI)
+                .add(this);
     }
 }

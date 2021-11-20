@@ -511,7 +511,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
      * @param legendOptions the key/value pair of legend options strings
      * @see #getLegendOptions()
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     public void setLegendOptions(Map legendOptions) {
         this.legendOptions = legendOptions;
     }
@@ -568,7 +568,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
     }
 
     /** Sets the SLD environment substitution */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     public void setEnv(Map enviroment) {
         this.env = enviroment;
     }

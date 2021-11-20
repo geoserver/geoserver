@@ -84,7 +84,6 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
         assertEquals(1, sc.getStyles().size());
     }
 
-    @SuppressWarnings({"unchecked"})
     @Test
     public void testAccessToLayerGroup() throws Exception {
         CatalogFilterAccessManager mgr = setupAccessManager();

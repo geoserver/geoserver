@@ -60,7 +60,6 @@ public class KMLFileFormat extends VectorFormat {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public FeatureReader read(ImportData data, ImportTask task) throws IOException {
         File file = getFileFromData(data);
@@ -99,8 +98,7 @@ public class KMLFileFormat extends VectorFormat {
     }
 
     @Override
-    public void dispose(@SuppressWarnings("rawtypes") FeatureReader reader, ImportTask task)
-            throws IOException {
+    public void dispose(FeatureReader reader, ImportTask task) throws IOException {
         reader.close();
     }
 

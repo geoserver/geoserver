@@ -23,6 +23,7 @@ import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.ogcapi.APIException;
 import org.geoserver.ogcapi.AbstractCollectionDocument;
 import org.geoserver.ogcapi.CollectionExtents;
+import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.StyleDocument;
 import org.geoserver.wms.WMS;
@@ -94,35 +95,32 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
             dataTiles = tileTypes.stream().anyMatch(mt -> mt.isVector());
             if (dataTiles) {
                 // tiles
-                addLinksFor(
-                        "ogc/tiles/collections/" + id + "/tiles",
-                        TilesDocument.class,
-                        "Tiles metadata as ",
-                        "dataTiles",
-                        null,
-                        REL_TILESETS_VECTOR);
+                new LinksBuilder(TilesDocument.class, "ogc/tiles/collections/")
+                        .segment(id, true)
+                        .segment("tiles")
+                        .title("Tiles metadata as ")
+                        .rel(REL_TILESETS_VECTOR)
+                        .add(this);
             }
 
             // map tiles links (a layer might not have image tiles configured, need to check)
             mapTiles = tileTypes.stream().anyMatch(mt -> !mt.isVector());
             if (mapTiles) {
-                addLinksFor(
-                        "ogc/tiles/collections/" + id + "/map/tiles",
-                        TilesDocument.class,
-                        "Map tiles metadata as ",
-                        "mapTiles",
-                        null,
-                        REL_TILESETS_MAP);
+                new LinksBuilder(TilesDocument.class, "ogc/tiles/collections/")
+                        .segment(id, true)
+                        .segment("map/tiles")
+                        .title("Map tiles metadata as ")
+                        .rel(REL_TILESETS_MAP)
+                        .add(this);
             }
 
             // styles document links
-            addLinksFor(
-                    "ogc/tiles/collections/" + id + "/styles",
-                    StylesDocument.class,
-                    "Styles for this layer as ",
-                    "styles",
-                    null,
-                    "styles");
+            new LinksBuilder(StylesDocument.class, "ogc/tiles/collections/")
+                    .segment(id, true)
+                    .segment("/styles")
+                    .title("Styles for this layer as ")
+                    .rel("styles")
+                    .add(this);
 
             // style links
             if (tileLayer instanceof GeoServerTileLayer) {
@@ -163,13 +161,12 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
             // filtering support
             if (TilesService.supportsFiltering(tileLayer)) {
                 this.queryable = true;
-                addLinksFor(
-                        "ogc/tiles/collections/" + id + "/queryables",
-                        Queryables.class,
-                        "Collection queryables as ",
-                        "queryables",
-                        null,
-                        "queryables");
+                new LinksBuilder(Queryables.class, "ogc/tiles/collections/")
+                        .segment(id, true)
+                        .segment("/queryables")
+                        .title("Collection queryables as ")
+                        .rel("queryables")
+                        .add(this);
             }
         }
     }

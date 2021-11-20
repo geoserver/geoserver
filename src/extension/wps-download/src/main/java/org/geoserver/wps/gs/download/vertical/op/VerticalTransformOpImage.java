@@ -403,7 +403,7 @@ public class VerticalTransformOpImage extends PointOpImage {
         }
     }
 
-    @SuppressWarnings({"unchecked", "PMD.ReplaceVectorWithList"})
+    @SuppressWarnings("PMD.ReplaceVectorWithList")
     private static Vector<RenderedImage> vectorize(RenderedImage[] sources) {
 
         @SuppressWarnings("PMD.UseArrayListInsteadOfVector")

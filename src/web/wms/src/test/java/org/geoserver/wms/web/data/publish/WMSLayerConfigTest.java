@@ -47,7 +47,6 @@ import org.geoserver.wms.web.publish.WMSLayerConfig;
 import org.junit.Before;
 import org.junit.Test;
 
-@SuppressWarnings("serial")
 public class WMSLayerConfigTest extends GeoServerWicketTestSupport {
 
     @Before

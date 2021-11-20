@@ -23,7 +23,6 @@ public class LiteralPPIO extends ProcessParameterIO {
     }
 
     /** Decodes the parameter (as a string) to its internal object implementation. */
-    @SuppressWarnings("unchecked")
     public Object decode(String value) throws Exception {
         return Converters.convert(value, getType());
     }

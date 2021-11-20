@@ -71,7 +71,7 @@ public class XStreamPPIO extends XMLPPIO {
         }
 
         @Override
-        public String serializedClass(@SuppressWarnings("rawtypes") Class type) {
+        public String serializedClass(Class type) {
             return type.getName().replaceFirst(".*\\.", "");
         }
     }
@@ -83,8 +83,7 @@ public class XStreamPPIO extends XMLPPIO {
         }
 
         @Override
-        public String serializedMember(
-                @SuppressWarnings("rawtypes") Class type, String memberName) {
+        public String serializedMember(Class type, String memberName) {
             char startChar = memberName.charAt(0);
             if (Character.isLowerCase(startChar)) {
                 if (memberName.length() > 1) {
@@ -98,7 +97,8 @@ public class XStreamPPIO extends XMLPPIO {
         }
 
         @Override
-        public String realMember(@SuppressWarnings("rawtypes") Class type, String serialized) {
+        @SuppressWarnings("ReturnValueIgnored")
+        public String realMember(Class type, String serialized) {
             String fieldName = super.realMember(type, serialized);
             try {
                 type.getDeclaredField(fieldName);

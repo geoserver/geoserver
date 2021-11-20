@@ -304,7 +304,7 @@ public class TransformController extends AbstractCatalogController {
         }
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return TransformInfo.class.isAssignableFrom(type);
         }
 
@@ -332,7 +332,7 @@ public class TransformController extends AbstractCatalogController {
         }
 
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+        public boolean canConvert(Class type) {
             return true;
         }
 

@@ -195,7 +195,7 @@ public class UpdateElementHandler extends AbstractTransactionElementHandler {
     public void execute(
             TransactionElement element,
             TransactionRequest request,
-            @SuppressWarnings("rawtypes") Map<QName, FeatureStore> featureStores,
+            Map<QName, FeatureStore> featureStores,
             TransactionResponse response,
             TransactionListener listener)
             throws WFSTransactionException {

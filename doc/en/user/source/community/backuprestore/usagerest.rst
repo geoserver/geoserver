@@ -3,7 +3,7 @@
 Usage Via GeoServer's REST API
 ==============================
 
-The Backup and Restore REST api consists of a few resources meant to used in an asynchronous fashion:
+The Backup and Restore REST API consists of a few resources meant to be used in an asynchronous fashion:
 
 .. list-table::
    :header-rows: 1
@@ -72,7 +72,7 @@ Available options are:
 
 #. ``exclude.file.path``: A ``;`` separated list of paths relative to the ``GEOSERVER_DATA_DIR`` 
    (e.g.: 'exclude.file.path=/data/geonode;/monitoring;/geofence'). If exist, the backup / restore will skip the path listed. Default: `[]`.
-   WARNING: ``security`` and ``workspaces`` are threated differently. This option should be used only for custom external resources located under the ``GEOSERVER_DATA_DIR``.
+   WARNING: ``security`` and ``workspaces`` are treated differently. This option should be used only for custom external resources located under the ``GEOSERVER_DATA_DIR``.
 
 
 Also an optional ``Filter`` can be passed to restrict the scope of the restore operation to a list of workspaces. 
@@ -247,7 +247,7 @@ Also an optional ``Filter`` can be passed to restrict the scope of the restore o
         }
 
 If ``archiveFile`` is specified, the archive specified on that path of the remote file system will be used to initiate the restore procedure. 
-Otherwise you're the archive needs to be uploaded  from your local system.
+Otherwise the archive needs to be uploaded from your local system.
 
 Then make a POST HTTP request to GeoServer's REST interface endpoint for the restore procedure
 
@@ -318,7 +318,7 @@ To upload the archive from our local system instead, omit the archiveFile parame
     
         curl -u "admin:geoserver" -i -H "Content-Type: application/json" --upload-file "archive_to_restore.zip" -X POST --data @restore_post.json http://localhost:8081/geoserver/rest/br/restore/
 
-Local ``archive_to_restore.zip`` archive  will be uploaded and used by the restore procedure.
+Local ``archive_to_restore.zip`` archive will be uploaded and used by the restore procedure.
 
 .. figure:: images/usagerest005.png
    :align: center
@@ -413,7 +413,7 @@ Here you are able to see the status of all the steps involved in the restore pro
 
 **Cancel a Restore**
 
-Cancel an in progress Restore by sending an HTTP DELETE request:
+Cancel an in-progress Restore by sending an HTTP DELETE request:
 
     ::
     

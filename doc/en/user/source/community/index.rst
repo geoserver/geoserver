@@ -41,12 +41,10 @@ officially part of the GeoServer releases. They are however built along with the
    notification/index
    opensearch-eo/index
    s3-geotiff/index
-   nsg-profile/index
    netcdf-ghrsst/index
    monitor-hibernate/index
    taskmanager/index
    metadata/index
-   qose-module/index
    ogr-store/index
    geostyler/index
    csw-iso/index

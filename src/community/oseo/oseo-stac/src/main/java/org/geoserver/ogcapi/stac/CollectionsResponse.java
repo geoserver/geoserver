@@ -5,6 +5,7 @@
 package org.geoserver.ogcapi.stac;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import org.geoserver.ogcapi.AbstractDocument;
 import org.geotools.feature.FeatureCollection;
 
 /**
@@ -12,12 +13,13 @@ import org.geotools.feature.FeatureCollection;
  * because Spring MVC response binding is driven by the response type.
  */
 @JsonIgnoreType
-public class CollectionsResponse {
+public class CollectionsResponse extends AbstractDocument {
 
     FeatureCollection collections;
 
     public CollectionsResponse(FeatureCollection collections) {
         this.collections = collections;
+        addSelfLinks("ogc/stac/collections");
     }
 
     public FeatureCollection getCollections() {

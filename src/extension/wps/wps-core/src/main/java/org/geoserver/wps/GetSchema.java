@@ -27,7 +27,6 @@ public class GetSchema {
     }
 
     /** Fetches named schema and writes it to the response stream */
-    @SuppressWarnings("unchecked")
     public void run(HttpServletRequest request, HttpServletResponse response) {
         String name = null;
 

@@ -39,7 +39,6 @@ public abstract class GetCapabilitiesRequest extends RequestObject {
         return eGet(adaptee, "sections.section", List.class);
     }
 
-    @SuppressWarnings("unchecked")
     public String getUpdateSequence() {
         return eGet(adaptee, "updateSequence", String.class);
     }

@@ -50,7 +50,6 @@ public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
      * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
     @Override
-    @SuppressWarnings("rawtypes")
     public KMLMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
         GetMapRequest request = mapContent.getRequest();
 

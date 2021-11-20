@@ -217,7 +217,7 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
                 .orElse(StandardCharsets.UTF_8);
     }
 
-    /** Writes a WFS3 compliant timeStamp collection attribute */
+    /** Writes a DGGS compliant timeStamp collection attribute */
     protected void writeCollectionTimeStamp(JSONBuilder jw) {
         jw.key("timeStamp").value(new ISO8601Formatter().format(new Date()));
     }

@@ -10,7 +10,6 @@ import org.apache.wicket.markup.html.form.Form;
 @SuppressWarnings("serial")
 public class DirectoryRasterEditPanel extends AbstractRasterFileEditPanel {
 
-    @SuppressWarnings("rawtypes")
     public DirectoryRasterEditPanel(String componentId, Form storeEditForm) {
         super(componentId, storeEditForm, true);
     }

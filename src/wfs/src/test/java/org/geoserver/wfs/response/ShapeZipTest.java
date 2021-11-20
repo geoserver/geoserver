@@ -74,7 +74,7 @@ import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings("unchecked")
 public class ShapeZipTest extends WFSTestSupport {
 
     private static final QName ALL_TYPES =

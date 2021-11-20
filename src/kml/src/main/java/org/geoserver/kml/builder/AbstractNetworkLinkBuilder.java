@@ -108,7 +108,6 @@ public abstract class AbstractNetworkLinkBuilder {
         return aggregatedBounds;
     }
 
-    @SuppressWarnings("rawtypes")
     protected ReferencedEnvelope computeLayerBounds(
             Layer layer, MapLayerInfo layerInfo, boolean computeQueryBounds) {
 

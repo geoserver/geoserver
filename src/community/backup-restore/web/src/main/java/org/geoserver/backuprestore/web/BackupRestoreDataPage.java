@@ -751,7 +751,7 @@ public class BackupRestoreDataPage extends GeoServerSecuredPage implements GeoSe
                 || archiveFile.getType() == Type.DIRECTORY
                 || FilenameUtils.getExtension(archiveFile.name()).isEmpty()) {
             throw new Exception(
-                    "Archive File is Mandatory, must exists and should not be a Directory or URI.");
+                    "Archive File is Mandatory, must exist and should not be a Directory or URI.");
         }
         return archiveFile;
     }

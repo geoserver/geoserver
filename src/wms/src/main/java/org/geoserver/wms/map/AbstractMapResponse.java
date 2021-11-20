@@ -29,7 +29,6 @@ public abstract class AbstractMapResponse extends Response {
         this(responseBinding, new String[] {mime});
     }
 
-    @SuppressWarnings("unchecked")
     protected AbstractMapResponse(
             final Class<? extends WebMap> responseBinding, final String[] outputFormats) {
         this(

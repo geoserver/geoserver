@@ -24,7 +24,7 @@ public class LaxCollectionConverter extends CollectionConverter {
     }
 
     @Override
-    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+    public boolean canConvert(Class type) {
         return Collection.class.isAssignableFrom(type);
     }
 }

@@ -18,12 +18,10 @@ public class AbstractLandingPageDocument extends AbstractLandingPageDocumentNoCo
     public AbstractLandingPageDocument(String title, String description, String serviceBase) {
         super(title, description, serviceBase);
         // conformance
-        addLinksFor(
-                serviceBase + "/conformance",
-                ConformanceDocument.class,
-                "Conformance declaration as ",
-                "conformance",
-                null,
-                Link.REL_CONFORMANCE_URI);
+        new LinksBuilder(ConformanceDocument.class, serviceBase)
+                .segment("/conformance")
+                .title("Conformance declaration as ")
+                .rel(Link.REL_CONFORMANCE_URI)
+                .add(this);
     }
 }

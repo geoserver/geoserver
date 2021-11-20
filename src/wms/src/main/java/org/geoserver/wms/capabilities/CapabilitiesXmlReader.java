@@ -44,7 +44,6 @@ public class CapabilitiesXmlReader extends XmlRequestReader {
         this.resolverProvider = resolverProvider;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public Object read(Object request, Reader reader, Map kvp) throws Exception {
         // instantiante parsers and content handlers

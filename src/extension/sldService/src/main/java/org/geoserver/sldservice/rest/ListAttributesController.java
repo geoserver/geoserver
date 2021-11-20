@@ -182,7 +182,7 @@ public class ListAttributesController extends AbstractCatalogController {
          * @see com.thoughtworks.xstream.converters.ConverterMatcher#canConvert(java .lang.Class)
          */
         @Override
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class clazz) {
+        public boolean canConvert(Class clazz) {
             return LayerAttributesList.class.isAssignableFrom(clazz);
         }
 

@@ -237,7 +237,6 @@ public class WMTSStoreController extends AbstractCatalogController {
 
                     @Override
                     protected CatalogInfo getCatalogObject() {
-                        @SuppressWarnings("unchecked")
                         Map<String, String> uriTemplateVars = getURITemplateVariables();
                         String workspace = uriTemplateVars.get("workspaceName");
                         String store = uriTemplateVars.get("storeName");
@@ -297,8 +296,7 @@ public class WMTSStoreController extends AbstractCatalogController {
             }
 
             @Override
-            protected void wrapInternal(
-                    SimpleHash model, @SuppressWarnings("rawtypes") Collection object) {
+            protected void wrapInternal(SimpleHash model, Collection object) {
                 for (Object w : object) {
                     WMTSStoreInfo wk = (WMTSStoreInfo) w;
                     wrapInternal(null, model, wk);

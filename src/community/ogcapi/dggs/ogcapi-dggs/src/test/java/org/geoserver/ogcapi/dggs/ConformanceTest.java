@@ -18,7 +18,7 @@ public class ConformanceTest extends DGGSTestSupport {
     }
 
     private void checkConformance(DocumentContext json) {
-        assertEquals(1, (int) json.read("$.length()", Integer.class));
+        assertEquals(2, (int) json.read("$.length()", Integer.class));
         assertEquals(1, (int) json.read("$.conformsTo.length()", Integer.class));
         assertEquals(DGGSService.CORE, json.read("$.conformsTo[0]", String.class));
     }

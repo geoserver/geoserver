@@ -414,14 +414,16 @@ public class ResourcePool {
     }
 
     /**
-     * Sets the size of the feature type cache.
-     *
-     * <p>A warning that calling this method will blow away the existing cache.
+     * Sets the coverage executor used for concurrent processing of files (e.g. in image mosaic,
+     * when multi-threaded loading is enabled)
      */
-    public void setCoverageExecutor(ThreadPoolExecutor coverageExecutor) {
-        synchronized (this) {
-            this.coverageExecutor = coverageExecutor;
-        }
+    public synchronized void setCoverageExecutor(ThreadPoolExecutor coverageExecutor) {
+        this.coverageExecutor = coverageExecutor;
+    }
+
+    /** Returns the coverage executor. See also {@link #setCoverageExecutor(ThreadPoolExecutor)}. */
+    public synchronized ThreadPoolExecutor getCoverageExecutor() {
+        return this.coverageExecutor;
     }
 
     /** Adds a pool listener. */
@@ -528,7 +530,7 @@ public class ResourcePool {
      *     connection is needed)
      * @throws IOException Any errors that occur connecting to the resource.
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(DataStoreInfo info)
             throws IOException {
 
@@ -687,7 +689,6 @@ public class ResourcePool {
      */
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> getParams(Map<K, V> m, GeoServerResourceLoader loader) {
-        @SuppressWarnings("unchecked")
         Map<K, V> params = Collections.synchronizedMap(new HashMap<>(m));
 
         final GeoServerEnvironment gsEnvironment =
@@ -1497,7 +1498,6 @@ public class ResourcePool {
      * @param hints Hints to use when loading the coverage, may be <code>null</code>.
      * @throws IOException Any errors that occur loading the reader.
      */
-    @SuppressWarnings("deprecation")
     public GridCoverageReader getGridCoverageReader(CoverageStoreInfo info, Hints hints)
             throws IOException {
         return getGridCoverageReader(info, null, hints);
@@ -1510,7 +1510,6 @@ public class ResourcePool {
      * @param hints Hints to use when loading the coverage, may be <code>null</code>.
      * @throws IOException Any errors that occur loading the reader.
      */
-    @SuppressWarnings("deprecation")
     public GridCoverageReader getGridCoverageReader(
             CoverageStoreInfo storeInfo, String coverageName, Hints hints) throws IOException {
         return getGridCoverageReader(storeInfo, null, coverageName, hints);
@@ -1523,7 +1522,6 @@ public class ResourcePool {
      * @param hints Hints to use when loading the coverage, may be <code>null</code>.
      * @throws IOException Any errors that occur loading the reader.
      */
-    @SuppressWarnings("deprecation")
     private GridCoverageReader getGridCoverageReader(
             CoverageStoreInfo info, CoverageInfo coverageInfo, String coverageName, Hints hints)
             throws IOException {
@@ -1686,7 +1684,6 @@ public class ResourcePool {
      * @param hints Hints to use while loading the coverage.
      * @throws IOException Any errors that occur loading the coverage.
      */
-    @SuppressWarnings("deprecation")
     public GridCoverage getGridCoverage(
             CoverageInfo info, String coverageName, ReferencedEnvelope env, Hints hints)
             throws IOException {
@@ -1708,7 +1705,6 @@ public class ResourcePool {
      * @param hints Hints to use while loading the coverage.
      * @throws IOException Any errors that occur loading the coverage.
      */
-    @SuppressWarnings("deprecation")
     public GridCoverage getGridCoverage(
             CoverageInfo info, GridCoverageReader reader, ReferencedEnvelope env, Hints hints)
             throws IOException {
@@ -1788,7 +1784,6 @@ public class ResourcePool {
      * @param info The coverage metadata.
      * @return The format, or null.
      */
-    @SuppressWarnings("deprecation")
     public AbstractGridFormat getGridCoverageFormat(CoverageStoreInfo info) {
         final int length = CoverageStoreUtils.formats.length;
 
@@ -2318,7 +2313,6 @@ public class ResourcePool {
      *
      * @see ResourcePool#dataStoreCache
      */
-    @SuppressWarnings("rawtypes")
     class DataStoreCache extends CatalogResourceCache<String, DataAccess> {
         /**
          * Ensure data access entry is removed from catalog, and ensure DataAccess dispose is called

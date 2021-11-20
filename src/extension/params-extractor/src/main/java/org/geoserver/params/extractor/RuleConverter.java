@@ -84,7 +84,7 @@ public class RuleConverter implements Converter {
     }
 
     @Override
-    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+    public boolean canConvert(Class type) {
         return Rule.class.equals(type);
     }
 }

@@ -71,7 +71,6 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
     protected Component getFromList(String columnPath, Object columnValue, Property<T> property) {
         MarkupContainer listView = (MarkupContainer) tester.getLastRenderedPage().get(ITEMS_PATH);
 
-        @SuppressWarnings("unchecked")
         Iterator<Component> it = listView.iterator();
 
         while (it.hasNext()) {

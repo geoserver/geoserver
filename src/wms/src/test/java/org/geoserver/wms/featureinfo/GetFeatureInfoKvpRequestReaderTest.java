@@ -25,7 +25,6 @@ import org.geoserver.wms.WMSInfoImpl;
 import org.geoserver.wms.map.GetMapKvpRequestReader;
 import org.junit.Test;
 
-@SuppressWarnings("unchecked")
 public class GetFeatureInfoKvpRequestReaderTest extends KvpRequestReaderTestSupport {
     GetFeatureInfoKvpReader reader;
 

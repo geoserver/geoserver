@@ -287,12 +287,10 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     public void testDispose() throws IOException {
         disposeCalled = false;
         class ResourcePool2 extends ResourcePool {
-            @SuppressWarnings("serial")
             public ResourcePool2(Catalog catalog) {
                 super(catalog);
                 dataStoreCache =
                         new DataStoreCache() {
-                            @SuppressWarnings("unchecked")
                             @Override
                             protected void dispose(String name, DataAccess dataStore) {
                                 disposeCalled = true;

@@ -326,7 +326,7 @@ public enum ClassMappings {
 
     public abstract Class<? extends Info> getImpl();
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     public Class<? extends Info>[] concreteInterfaces() {
         Class<? extends Info> interf = getInterface();
         return new Class[] {interf};

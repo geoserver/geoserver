@@ -43,10 +43,10 @@
           Tiles available for this collection:
           <ul>
           <#if model.dataTiles>
-            <li><a href="${model.getLinkUrl('dataTiles', 'text/html')!}">Data tiles</a></li> 
+            <li><a href="${model.getLinkUrl('tilesets-vector', 'text/html')!}">Data tiles</a></li> 
           </#if>
           <#if model.mapTiles>
-            <li><a href="${model.getLinkUrl('mapTiles', 'text/html')!}">Map tiles in default style</a></li>
+            <li><a href="${model.getLinkUrl('tilesets-maps', 'text/html')!}">Map tiles in default style</a></li>
           </#if>
           </ul>
         </div>

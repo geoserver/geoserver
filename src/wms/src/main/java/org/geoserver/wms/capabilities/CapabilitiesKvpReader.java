@@ -30,7 +30,7 @@ public class CapabilitiesKvpReader extends KvpRequestReader {
         this.wms = wms;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     @Override
     public GetCapabilitiesRequest read(Object req, Map kvp, Map rawKvp) throws Exception {
         GetCapabilitiesRequest request = (GetCapabilitiesRequest) super.read(req, kvp, rawKvp);

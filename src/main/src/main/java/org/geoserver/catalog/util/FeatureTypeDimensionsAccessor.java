@@ -69,7 +69,6 @@ public class FeatureTypeDimensionsAccessor {
      * @param dimensionName Dimension Name
      * @return type binding class
      */
-    @SuppressWarnings("rawtypes")
     public Optional<Class> getBinding(String dimensionName) {
         final Optional<Entry<String, DimensionInfo>> dimEntry =
                 getCustomDimensionByName(dimensionName);

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.geoserver.ogcapi.AbstractDocument;
+import org.geoserver.ogcapi.LinksBuilder;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
@@ -37,13 +38,11 @@ public class TileMatrixSetDocument extends AbstractDocument {
 
         String path = "ogc/tiles/tileMatrixSets/" + ResponseUtils.urlEncode(id);
         if (summary) {
-            addLinksFor(
-                    path,
-                    TileMatrixSetDocument.class,
-                    id + " definition as ",
-                    "tileMatrixSet",
-                    null,
-                    "tileMatrixSet");
+            new LinksBuilder(TileMatrixSetDocument.class)
+                    .segment(path)
+                    .title(id + " definition as ")
+                    .rel("tileMatrixSet")
+                    .add(this);
         } else {
             addSelfLinks(path, MediaType.APPLICATION_JSON);
             for (int z = 0; z < gridSet.getNumLevels(); z++) {

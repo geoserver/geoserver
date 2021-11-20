@@ -69,7 +69,6 @@ class DefaultGridsetsEditor extends FormComponentPanel<Set<String>> {
         @Override
         protected Component actionLink(final String id, String gridSetName) {
 
-            @SuppressWarnings("rawtypes")
             Component removeLink =
                     new ImageAjaxLink(id, GWCIconFactory.DELETE_ICON) {
                         private static final long serialVersionUID = 1L;

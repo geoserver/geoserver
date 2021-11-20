@@ -243,22 +243,7 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-nsg-wmts-profile</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-nsg-wfs-profile</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
       <artifactId>gs-netcdf-ghrsst</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-wfs3</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -279,11 +264,6 @@
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-metadata</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-qos</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -389,11 +369,6 @@
     <dependency>
       <groupId>org.geoserver.community</groupId>
       <artifactId>gs-gsr</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-importer-bdb</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

@@ -132,7 +132,6 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public String getAttachmentFileName(Object value, Operation operation) {
         try {
             GetFeatureRequest request = GetFeatureRequest.adapt(operation.getParameters()[0]);
@@ -338,7 +337,6 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     private Set<FeatureType> getFeatureTypes(FeatureCollectionResponse collections) {
         Set<FeatureType> result = new HashSet<>();
         for (FeatureCollection fc : collections.getFeatures()) {

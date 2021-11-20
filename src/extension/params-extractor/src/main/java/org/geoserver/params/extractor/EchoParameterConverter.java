@@ -35,7 +35,7 @@ public class EchoParameterConverter implements Converter {
     }
 
     @Override
-    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+    public boolean canConvert(Class type) {
         return EchoParameter.class.equals(type);
     }
 }

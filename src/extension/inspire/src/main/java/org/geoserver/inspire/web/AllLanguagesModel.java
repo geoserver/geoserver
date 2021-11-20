@@ -51,7 +51,7 @@ public class AllLanguagesModel implements IModel<List<String>> {
         langs = null;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     List<String> getAvailableLanguages() throws IOException {
         List<String> langs = new ArrayList<>();
         Properties list = InspireDirectoryManager.get().getLanguagesMappings();

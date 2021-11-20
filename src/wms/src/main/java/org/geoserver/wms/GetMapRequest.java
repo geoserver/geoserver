@@ -759,7 +759,6 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         return httpRequestHeaders == null ? null : httpRequestHeaders.get(headerName);
     }
 
-    @SuppressWarnings("unchecked")
     public void putHttpRequestHeader(String headerName, String value) {
         if (httpRequestHeaders == null) {
             httpRequestHeaders = new CaseInsensitiveMap<>(new HashMap<>());

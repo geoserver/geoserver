@@ -10,14 +10,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.springframework.http.MediaType;
 
@@ -50,6 +47,12 @@ public class AbstractDocument {
                 .orElse(null);
     }
 
+    public List<Link> getLinksFor(String classification) {
+        return links.stream()
+                .filter(l -> Objects.equals(classification, l.getClassification()))
+                .collect(Collectors.toList());
+    }
+
     /** Returns all links except the ones matching both classification and type provided */
     public List<Link> getLinksExcept(String classification, String excludedType) {
         return links.stream()
@@ -59,38 +62,6 @@ public class AbstractDocument {
                                         || Objects.equals(classification, l.getClassification()))
                 .filter(l -> excludedType == null || !excludedType.equals(l.getType()))
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * Builds service links for the given response types
-     *
-     * @param path The path of the resource, typically starting with "ogc/&lt;service&gt;"
-     * @param responseType The class of the response object in the controller
-     * @param titlePrefix The code will add the format name to this prefix and make it the link
-     *     title
-     * @param classification The link classification, if any (optional)
-     * @param linkUpdater An optional callback to update the link object
-     * @param rel The rel of the link object (the updater can modify it, to handle for example
-     *     "self" relationships)
-     */
-    public final void addLinksFor(
-            String path,
-            Class<?> responseType,
-            String titlePrefix,
-            String classification,
-            BiConsumer<MediaType, Link> linkUpdater,
-            String rel) {
-        List<Link> links =
-                APIRequestInfo.get()
-                        .getLinksFor(
-                                path,
-                                responseType,
-                                titlePrefix,
-                                classification,
-                                linkUpdater,
-                                rel,
-                                true);
-        this.links.addAll(links);
     }
 
     /**
@@ -110,23 +81,18 @@ public class AbstractDocument {
      */
     protected final void addSelfLinks(String path, MediaType defaultFormat) {
         APIRequestInfo requestInfo = APIRequestInfo.get();
-        String baseUrl = requestInfo.getBaseURL();
-        boolean firstSelf = true;
-        for (MediaType format : requestInfo.getProducibleMediaTypes(getClass(), true)) {
-            String apiUrl =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            path,
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
-            String linkType = Link.REL_ALTERNATE;
-            String linkTitle = "This document as " + format;
-            if (firstSelf && requestInfo.isFormatRequested(format, defaultFormat)) {
-                linkType = Link.REL_SELF;
-                linkTitle = "This document";
-            }
-            links.add(new Link(apiUrl, linkType, format.toString(), linkTitle));
-        }
+        new LinksBuilder(getClass(), path)
+                .rel(Link.REL_ALTERNATE)
+                .title("This document as ")
+                .updater(
+                        (mt, l) -> {
+                            if (requestInfo.isFormatRequested(mt, defaultFormat)) {
+                                l.setRel(Link.REL_SELF);
+                                l.setClassification(Link.REL_SELF);
+                                l.setTitle("This document");
+                            }
+                        })
+                .add(this);
     }
 
     @Override

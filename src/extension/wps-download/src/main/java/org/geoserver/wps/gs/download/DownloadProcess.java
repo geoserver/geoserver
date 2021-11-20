@@ -53,7 +53,6 @@ import org.springframework.util.MimeType;
  * @author "Alessio Fabiani - alessio.fabiani@geo-solutions.it"
  * @author Simone Giannecchini, GeoSolutions SAS
  */
-@SuppressWarnings("deprecation")
 @DescribeProcess(
     title = "Enterprise Download Process",
     description = "Downloads Layer Stream and provides a ZIP."

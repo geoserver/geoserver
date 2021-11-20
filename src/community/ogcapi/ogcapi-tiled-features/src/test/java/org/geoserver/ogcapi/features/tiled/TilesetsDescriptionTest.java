@@ -89,7 +89,6 @@ public class TilesetsDescriptionTest extends TiledFeaturesTestSupport {
     }
 
     @Test
-    @SuppressWarnings("unchecked") // varargs generic in matcher
     public void getDataTilesMetadata() throws Exception {
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
         DocumentContext json =

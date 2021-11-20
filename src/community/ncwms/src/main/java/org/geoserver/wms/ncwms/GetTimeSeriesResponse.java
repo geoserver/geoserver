@@ -110,7 +110,6 @@ public class GetTimeSeriesResponse extends Response {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     private void writeChart(
             GetFeatureInfoRequest request,
             FeatureCollectionType results,
@@ -153,7 +152,6 @@ public class GetTimeSeriesResponse extends Response {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     private void writeCsv(
             GetFeatureInfoRequest request, FeatureCollectionType results, OutputStream output) {
         Charset charSet = wms.getCharSet();

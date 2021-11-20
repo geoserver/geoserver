@@ -79,7 +79,6 @@ public class LookAtOptions {
 
     private AltitudeMode altitudeMode;
 
-    @SuppressWarnings("unchecked")
     public LookAtOptions() {
         this(Collections.emptyMap());
     }

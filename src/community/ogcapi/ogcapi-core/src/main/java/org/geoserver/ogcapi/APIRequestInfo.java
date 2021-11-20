@@ -5,9 +5,6 @@
 
 package org.geoserver.ogcapi;
 
-import static org.geoserver.ows.util.ResponseUtils.buildURL;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -162,7 +159,7 @@ public class APIRequestInfo {
 
         return requestedMediaTypes
                 .stream()
-                .filter(mt -> !mt.equals(MediaType.ALL))
+                .filter(mt -> !mt.equalsTypeAndSubtype(MediaType.ALL))
                 .anyMatch(curr -> mediaType.isCompatibleWith(curr));
     }
 
@@ -180,25 +177,18 @@ public class APIRequestInfo {
             String path,
             Class<?> responseType,
             String titlePrefix,
-            String classification,
-            BiConsumer<MediaType, Link> linkUpdater,
             String rel,
-            boolean includeHTML) {
-        List<Link> result = new ArrayList<>();
-        for (MediaType mediaType :
-                APIRequestInfo.get().getProducibleMediaTypes(responseType, includeHTML)) {
-            String format = mediaType.toString();
-            Map<String, String> params = Collections.singletonMap("f", format);
-            String url = buildURL(baseURL, path, params, URLMangler.URLType.SERVICE);
-            String linkTitle = titlePrefix + format;
-            Link link = new Link(url, rel, format, linkTitle);
-            link.setClassification(classification);
-            if (linkUpdater != null) {
-                linkUpdater.accept(mediaType, link);
-            }
-            result.add(link);
-        }
-        return result;
+            boolean includeHTML,
+            String classification,
+            BiConsumer<MediaType, Link> linkUpdater) {
+        return new LinksBuilder(responseType)
+                .segment(path)
+                .title(titlePrefix)
+                .rel(rel)
+                .html(includeHTML)
+                .classification(classification)
+                .updater(linkUpdater)
+                .build();
     }
 
     /**

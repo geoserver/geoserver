@@ -41,6 +41,8 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
@@ -78,6 +80,8 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/oseo/collections/{collection}/products")
 public class ProductsController extends AbstractOpenSearchController {
+
+    private static final String EOP_IDENTIFIER = "eop:identifier";
 
     /** List of parts making up a zipfile for a collection */
     enum ProductPart implements ZipPart {
@@ -183,11 +187,17 @@ public class ProductsController extends AbstractOpenSearchController {
 
     @PostMapping(consumes = MediaTypeExtensions.APPLICATION_ZIP_VALUE)
     public ResponseEntity<String> postProductZip(
-            @PathVariable(name = "collection", required = true) String collection,
+            @PathVariable(name = "collection") String collection,
             HttpServletRequest request,
             InputStream body)
             throws IOException, URISyntaxException {
 
+        return createProductFromZip(collection, request, body, null);
+    }
+
+    private ResponseEntity<String> createProductFromZip(
+            String collection, HttpServletRequest request, InputStream body, String urlProductId)
+            throws IOException, URISyntaxException {
         Map<ProductPart, byte[]> parts = parsePartsFromZip(body, ProductPart.values());
 
         // process the product part
@@ -197,6 +207,7 @@ public class ProductsController extends AbstractOpenSearchController {
                     "product.json file is missing from the zip", HttpStatus.BAD_REQUEST);
         }
         SimpleFeature jsonFeature = parseGeoJSONFeature("product.json", productPayload);
+        if (urlProductId != null) jsonFeature = updateOrVerifyId(jsonFeature, urlProductId);
         String productId = (String) jsonFeature.getAttribute("eop:identifier");
         String parentId = (String) jsonFeature.getAttribute("eop:parentIdentifier");
         queryCollection(parentId, q -> {});
@@ -280,7 +291,7 @@ public class ProductsController extends AbstractOpenSearchController {
             @PathVariable(name = "collection", required = true) String collection,
             @PathVariable(name = "product", required = true) String product)
             throws IOException {
-        Feature feature = queryProduct(collection, product, q -> {});
+        Feature feature = queryProduct(collection, product, q -> {}, true);
 
         // map to the output schema for GeoJSON encoding
         SimpleFeatureType targetSchema =
@@ -325,16 +336,59 @@ public class ProductsController extends AbstractOpenSearchController {
     }
 
     @PutMapping(path = "{product:.+}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void putProductJson(
+    public ResponseEntity<String> putProductJson(
             HttpServletRequest request,
             @PathVariable(name = "collection", required = true) String collection,
             @PathVariable(name = "product", required = true) String product,
             @RequestBody(required = true) SimpleFeature feature)
             throws IOException, URISyntaxException {
         // check the product exists
-        queryProduct(collection, product, q -> {});
+        Feature f = queryProduct(collection, product, q -> {}, false);
 
+        // if does not exist, be lenient and create
+        if (f == null) return checkProductAndCreate(request, collection, product, feature);
+
+        // otherwise update
         runTransactionOnProductStore(fs -> updateProductInternal(collection, product, feature, fs));
+        return ResponseEntity.status(200).build();
+    }
+
+    private ResponseEntity<String> checkProductAndCreate(
+            HttpServletRequest request, String collection, String productId, SimpleFeature feature)
+            throws IOException, URISyntaxException {
+        feature = updateOrVerifyId(feature, productId);
+        return postProductJson(collection, request, feature);
+    }
+
+    private SimpleFeature updateOrVerifyId(SimpleFeature feature, String externalProductId) {
+        String productId = (String) feature.getAttribute(EOP_IDENTIFIER);
+        if (productId == null) {
+            feature = addIdentifier(feature, externalProductId);
+        } else if (!externalProductId.equals(productId)) {
+            throw new RestException(
+                    "Product id in URL not consistent with eop:identifier in JSON, refusing creation",
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        return feature;
+    }
+
+    private SimpleFeature addIdentifier(SimpleFeature feature, String productId) {
+        // available but null? just set it
+        if (feature.getType().getDescriptor(EOP_IDENTIFIER) != null) {
+            feature.setAttribute(EOP_IDENTIFIER, productId);
+            return feature;
+        }
+
+        // otherwise expand type and add
+        SimpleFeatureTypeBuilder ftb = new SimpleFeatureTypeBuilder();
+        ftb.init(feature.getType());
+        ftb.add(EOP_IDENTIFIER, String.class);
+        SimpleFeatureType schema = ftb.buildFeatureType();
+        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(schema);
+        fb.init(feature);
+        fb.set(EOP_IDENTIFIER, productId);
+        return fb.buildFeature(feature.getID());
     }
 
     private void updateProductInternal(
@@ -368,7 +422,7 @@ public class ProductsController extends AbstractOpenSearchController {
             @PathVariable(name = "product", required = true) String product)
             throws IOException {
         // check the product exists
-        queryProduct(collection, product, q -> {});
+        queryProduct(collection, product, q -> {}, true);
 
         // TODO: handle removing the publishing side without removing the metadata
         Filter filter = getProductFilter(collection, product);
@@ -397,7 +451,8 @@ public class ProductsController extends AbstractOpenSearchController {
                             q.setProperties(
                                     Collections.singletonList(
                                             FF.property(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME)));
-                        });
+                        },
+                        true);
 
         OgcLinks links = buildOgcLinksFromFeature(feature, true);
         return links;
@@ -411,7 +466,7 @@ public class ProductsController extends AbstractOpenSearchController {
             @RequestBody OgcLinks links)
             throws IOException {
         // check the product exists
-        queryProduct(collection, product, q -> {});
+        queryProduct(collection, product, q -> {}, true);
 
         ListFeatureCollection linksCollection = beansToLinksCollection(links);
 
@@ -428,7 +483,7 @@ public class ProductsController extends AbstractOpenSearchController {
             @PathVariable(name = "product", required = true) String product)
             throws IOException {
         // check the product exists
-        queryProduct(collection, product, q -> {});
+        queryProduct(collection, product, q -> {}, true);
 
         // prepare the update
         Filter filter = getProductFilter(collection, product);
@@ -460,7 +515,8 @@ public class ProductsController extends AbstractOpenSearchController {
                         product,
                         q -> {
                             q.setPropertyNames(new String[] {"htmlDescription"});
-                        });
+                        },
+                        true);
 
         // grab the description
         Property descriptionProperty = feature.getProperty("htmlDescription");
@@ -480,7 +536,7 @@ public class ProductsController extends AbstractOpenSearchController {
             HttpServletRequest request)
             throws IOException {
         // check the product exists
-        queryProduct(collection, product, q -> {});
+        queryProduct(collection, product, q -> {}, true);
 
         String description = IOUtils.toString(request.getReader());
 
@@ -493,7 +549,7 @@ public class ProductsController extends AbstractOpenSearchController {
             @PathVariable(name = "product", required = true) String product)
             throws IOException {
         // check the product exists
-        queryProduct(collection, product, q -> {});
+        queryProduct(collection, product, q -> {}, true);
 
         // set it to null
         updateDescription(collection, product, null);
@@ -534,7 +590,8 @@ public class ProductsController extends AbstractOpenSearchController {
                             q.setProperties(
                                     Collections.singletonList(
                                             FF.property(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME)));
-                        });
+                        },
+                        true);
 
         // grab the thumbnail
         Property thumbnailProperty = feature.getProperty(OpenSearchAccess.QUICKLOOK_PROPERTY_NAME);
@@ -557,7 +614,7 @@ public class ProductsController extends AbstractOpenSearchController {
             HttpServletRequest request)
             throws IOException {
         // check the product exists
-        queryProduct(collection, product, q -> {});
+        queryProduct(collection, product, q -> {}, true);
 
         byte[] thumbnail = IOUtils.toByteArray(request.getInputStream());
         updateThumbnail(collection, product, thumbnail);
@@ -569,7 +626,7 @@ public class ProductsController extends AbstractOpenSearchController {
             @PathVariable(name = "product", required = true) String product)
             throws IOException {
         // check the product exists
-        queryProduct(collection, product, q -> {});
+        queryProduct(collection, product, q -> {}, true);
 
         // set it to null
         updateThumbnail(collection, product, null);
@@ -632,7 +689,8 @@ public class ProductsController extends AbstractOpenSearchController {
                 });
     }
 
-    private Feature queryProduct(String collection, String product, Consumer<Query> queryDecorator)
+    private Feature queryProduct(
+            String collection, String product, Consumer<Query> queryDecorator, boolean ensureExists)
             throws IOException {
         // query products
         Query query = new Query();
@@ -644,7 +702,7 @@ public class ProductsController extends AbstractOpenSearchController {
         FeatureCollection<FeatureType, Feature> features = fs.getFeatures(query);
         Feature feature = DataUtilities.first(features);
 
-        if (feature == null) {
+        if (feature == null && ensureExists) {
             throwProductNotFound(collection, product, "Product");
         }
 
@@ -672,15 +730,19 @@ public class ProductsController extends AbstractOpenSearchController {
     }
 
     @PutMapping(path = "{product:.+}", consumes = MediaTypeExtensions.APPLICATION_ZIP_VALUE)
-    public void putProductZip(
+    public ResponseEntity<String> putProductZip(
             @PathVariable(name = "collection", required = true) String collection,
             @PathVariable(name = "product", required = true) String product,
             HttpServletRequest request,
             InputStream body)
             throws IOException, URISyntaxException {
-        // check the collection and product actually exist
+        // check the collection actually exists
         queryCollection(collection, q -> {});
-        queryProduct(collection, product, q -> {});
+        // if the product is missing, be lenient and create it
+        Feature f = queryProduct(collection, product, q -> {}, false);
+        if (f == null) {
+            return createProductFromZip(collection, request, body, product);
+        }
 
         // grab and process the parts
         Map<ProductPart, byte[]> parts = parsePartsFromZip(body, ProductPart.values());
@@ -758,5 +820,6 @@ public class ProductsController extends AbstractOpenSearchController {
                                 filter);
                     }
                 });
+        return ResponseEntity.status(200).build();
     }
 }

@@ -58,7 +58,7 @@ public class GML3FeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      * superclass and constructs a <code>GetFeaturesResult</code> wich is passed to a <code>
      * GML2FeatureResponseDelegate</code>.
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     @Override
     public void write(
             FeatureCollectionType results, GetFeatureInfoRequest fInfoReq, OutputStream out)

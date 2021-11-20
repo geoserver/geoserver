@@ -43,7 +43,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 @Component
 public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
 
-    /** The MIME type requested by WFS3 for GeoJSON Responses */
+    /** The MIME type requested for GeoJSON Responses */
     public static final String MIME = "application/stac+json";
 
     private final AssetHasher assetHasher;
@@ -276,7 +276,7 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
             GeoJSONBuilder jsonWriter,
             List<FeatureCollection> resultsList,
             boolean hasGeom) {
-        // not needed in WFS3
+        // not needed in STAC
     }
 
     /** capabilities output format string. */

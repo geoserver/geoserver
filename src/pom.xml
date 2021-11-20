@@ -94,7 +94,7 @@
     <spring.version>5.1.20.RELEASE</spring.version>
     <spring.security.version>5.1.13.RELEASE</spring.security.version>
     <servlet-api.version>3.0.1</servlet-api.version>
-    <jetty.version>9.4.36.v20210114</jetty.version>
+    <jetty.version>9.4.44.v20210927</jetty.version>
     <jetty.servlet-api.version>3.1.0</jetty.servlet-api.version>
     <poi.version>4.0.0</poi.version>
     <wicket.version>7.18.0</wicket.version>
@@ -150,7 +150,7 @@
     <pom.fmt.action>sort</pom.fmt.action>
     <pom.fmt.skip>${fmt.skip}</pom.fmt.skip>
     <errorProneFlags></errorProneFlags>
-    <errorProne.version>2.3.4</errorProne.version>
+    <errorProne.version>2.10.0</errorProne.version>
     <javac.version>9+181-r4173-1</javac.version>
     <pmd.version>6.35.0</pmd.version>
     <checkstyle.skip>false</checkstyle.skip>
@@ -1138,6 +1138,22 @@
         <artifactId>jackson-databind</artifactId>
         <version>${jackson2.databind.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-yaml</artifactId>
+        <version>${jackson2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
+        <version>${jackson2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.woodstox</groupId>
+        <artifactId>woodstox-core</artifactId>
+        <version>6.2.6</version>
+        <!-- match with jackson2.databind.version above -->
+      </dependency>
 
       <dependency>
         <groupId>javax.mail</groupId>
@@ -1194,6 +1210,12 @@
         <groupId>com.noelios.restlet</groupId>
         <artifactId>com.noelios.restlet.ext.servlet</artifactId>
         <version>1.0.8</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-core</artifactId>
+        <version>2.0.2</version>
+        <!-- exclude: javax.xml.bind, org.slf4j, swagger-annotations -->
       </dependency>
       <dependency>
         <groupId>com.thoughtworks.xstream</groupId>
@@ -2421,6 +2443,53 @@
               <skip>${checkstyle.skip}</skip>
               <configLocation>${geoserverBaseDir}/../build/qa/checkstyle.xml</configLocation>
             </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>enforcer</id>
+      <activation>
+        <property>
+          <name>qa</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <execution>
+                <id>localization-encodings</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <requireEncoding>
+                      <encoding>UTF-8</encoding>
+                      <includes>src/main/resources/GeoServerApplication*.utf8.properties</includes>
+                    </requireEncoding>
+                    <requireEncoding>
+                      <encoding>ISO-8859-1</encoding>
+                      <acceptAsciiSubset>true</acceptAsciiSubset>
+                      <includes>src/main/resources/GeoServerApplication*.properties</includes>
+                      <excludes>src/main/resources/GeoServerApplication*.utf8.properties</excludes>
+                    </requireEncoding>
+                  </rules>
+                  <fastFail>false</fastFail>
+                </configuration>
+              </execution>
+            </executions>
+            <dependencies>
+              <dependency>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>extra-enforcer-rules</artifactId>
+                <version>1.3</version>
+              </dependency>
+            </dependencies>
           </plugin>
         </plugins>
       </build>

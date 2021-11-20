@@ -60,7 +60,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
         }
     }
 
-    /** Returns the WFS3 featureId, or null if it's missing or the request is not a WFS3 one */
+    /** Returns the featureId, or null if it's missing or the request is not for OGC API Features */
     private String getItemId() {
         return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
                 .map(
@@ -182,7 +182,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
     }
 
     protected FeatureTypeInfo getFeatureType(GetFeatureRequest request) {
-        // a WFS3 always has a collection reference, so one query
+        // OGC API Features always have a collection reference, so one query
         return Optional.ofNullable(request.getQueries())
                 .filter(qs -> qs.size() > 0)
                 .map(qs -> qs.get(0))
@@ -219,7 +219,7 @@ public class RFCGeoJSONFeaturesResponse extends GeoJSONGetFeatureResponse {
             GeoJSONBuilder jsonWriter,
             List<FeatureCollection> resultsList,
             boolean hasGeom) {
-        // not needed in WFS3
+        // not needed in OGC API for Features
     }
 
     /** capabilities output format string. */

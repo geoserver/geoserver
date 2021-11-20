@@ -50,6 +50,7 @@ public class ImportDataHTMLMessageConverter extends BaseMessageConverter<ImportD
     // writing
     //
     @Override
+    @SuppressWarnings("PMD.CloseResource") // managed by container
     protected void writeInternal(ImportData data, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
 

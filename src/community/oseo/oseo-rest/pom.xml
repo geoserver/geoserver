@@ -118,5 +118,10 @@
       <artifactId>xmlunit</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>it.geosolutions.imageio-ext</groupId>
+      <artifactId>imageio-ext-cog-rangereader-http</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

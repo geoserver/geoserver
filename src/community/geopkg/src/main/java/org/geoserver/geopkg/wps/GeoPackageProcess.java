@@ -94,6 +94,7 @@ import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.util.ProgressListener;
 
 @DescribeProcess(title = "GeoPackage", description = "Geopackage Process")
 public class GeoPackageProcess implements GeoServerProcess {
@@ -161,7 +162,8 @@ public class GeoPackageProcess implements GeoServerProcess {
                         name = "contents",
                         description = "xml scheme describing geopackage contents"
                     )
-                    GeoPackageProcessRequest contents)
+                    GeoPackageProcessRequest contents,
+            ProgressListener listener)
             throws IOException {
 
         final File file;
@@ -197,9 +199,11 @@ public class GeoPackageProcess implements GeoServerProcess {
             if (layer.getType() == LayerType.FEATURES) {
                 FeaturesLayer fl = (FeaturesLayer) layer;
                 if (fl.isStyles()) stylesCount++;
+                // TODO: not getting a listener cause the low level GeoPackage API does not
+                // support stopping the process of adding features
                 addFeatureEntry(contents, gpkg, layer, metadataManager, contextWriter);
             } else if (layer.getType() == LayerType.TILES) {
-                addTilesEntry(gpkg, layer);
+                addTilesEntry(gpkg, layer, listener);
             }
         }
 
@@ -217,7 +221,8 @@ public class GeoPackageProcess implements GeoServerProcess {
         }
     }
 
-    private void addTilesEntry(GeoPackage gpkg, Layer layer) throws IOException {
+    private void addTilesEntry(GeoPackage gpkg, Layer layer, ProgressListener listener)
+            throws IOException {
         TilesLayer tiles = (TilesLayer) layer;
         GetMapRequest request = buildGetMapRequest(tiles);
 
@@ -256,9 +261,9 @@ public class GeoPackageProcess implements GeoServerProcess {
         addLayerMetadata(e, tiles);
 
         if (tiles.getGrids() != null) {
-            mapOutput.addTiles(gpkg, e, request, tiles.getGrids(), layer.getName());
+            mapOutput.addTiles(gpkg, e, request, tiles.getGrids(), layer.getName(), listener);
         } else {
-            mapOutput.addTiles(gpkg, e, request, layer.getName());
+            mapOutput.addTiles(gpkg, e, request, layer.getName(), listener);
         }
     }
 

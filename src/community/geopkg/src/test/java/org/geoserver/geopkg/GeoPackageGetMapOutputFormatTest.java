@@ -7,9 +7,11 @@ package org.geoserver.geopkg;
 
 import static org.geoserver.data.test.MockData.LAKES;
 import static org.geoserver.data.test.MockData.WORLD;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -18,9 +20,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.gwc.GWC;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMap;
@@ -31,6 +36,7 @@ import org.geotools.geopkg.Tile;
 import org.geotools.geopkg.TileEntry;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.util.URLs;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
@@ -109,6 +115,32 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
 
         ImageAssert.assertEquals(
                 URLs.urlToFile(getClass().getResource("toplefttile.png")), tileImg, 250);
+    }
+
+    @Test
+    public void testTimeout() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        wms.setMaxRenderingTime(1);
+        gs.save(wms);
+
+        // a set of zooms so large, it can only go in timeout
+        WMSMapContent mapContent = createMapContent(WORLD, LAKES);
+        mapContent
+                .getRequest()
+                .setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
+        mapContent.getRequest().getFormatOptions().put("min_zoom", "10");
+        mapContent.getRequest().getFormatOptions().put("max_zoom", "30");
+
+        try {
+            format.produceMap(mapContent);
+            fail("Should not have got here, and if it does, would have taken hours?");
+        } catch (ServiceException e) {
+            assertThat(e.getMessage(), CoreMatchers.containsString("used more time than allowed"));
+        } finally {
+            wms.setMaxRenderingTime(-1);
+            gs.save(wms);
+        }
     }
 
     GeoPackage createGeoPackage(WebMap map) throws IOException {

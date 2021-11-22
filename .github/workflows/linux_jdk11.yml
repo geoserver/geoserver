@@ -13,6 +13,7 @@ jobs:
         include:
           - os: ubuntu-20.04
             jdk: 11
+            dist: 'temurin'
     steps:
     - uses: actions/checkout@v2
       with:
@@ -22,6 +23,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: ${{ matrix.jdk }}
+        distribution: ${{ matrix.dist }}
     - name: Set up Maven
       uses: stCarolas/setup-maven@v4
       with:

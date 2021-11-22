@@ -12,6 +12,7 @@ import org.geoserver.featurestemplating.builders.flat.FlatDynamicBuilder;
 import org.geoserver.featurestemplating.builders.flat.FlatIteratingBuilder;
 import org.geoserver.featurestemplating.builders.flat.FlatStaticBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
+import org.geoserver.featurestemplating.builders.impl.DynamicMergeBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
@@ -52,6 +53,10 @@ public class TemplateBuilderMaker {
 
     private String separator = "_";
 
+    private JsonNode baseMergeNode;
+
+    private JsonNode overlayMergeNode;
+
     public TemplateBuilderMaker() {
         this.encondingHints = new EncodingHints();
         this.vendorOptions = new VendorOptions();
@@ -84,6 +89,30 @@ public class TemplateBuilderMaker {
      */
     public TemplateBuilderMaker jsonNode(JsonNode jsonNode) {
         this.jsonNode = jsonNode;
+        return this;
+    }
+
+    /**
+     * Set the baseMergeNode for the builder to be created. Only DynamicMergeBuilder can have a
+     * baseMergeNode content.
+     *
+     * @param baseMergeNode the dynamic merge content
+     * @return this TemplateBuilderMaker
+     */
+    public TemplateBuilderMaker baseMergeNode(JsonNode baseMergeNode) {
+        this.baseMergeNode = baseMergeNode;
+        return this;
+    }
+
+    /**
+     * Set the overlayMergeNode for the builder to be created. Only DynamicMergeBuilder can have a
+     * baseMergeNode content.
+     *
+     * @param overlayMergeNode the dynamic merge content
+     * @return this TemplateBuilderMaker
+     */
+    public TemplateBuilderMaker overlayMergeNode(JsonNode overlayMergeNode) {
+        this.overlayMergeNode = overlayMergeNode;
         return this;
     }
 
@@ -281,6 +310,8 @@ public class TemplateBuilderMaker {
         this.jsonNode = null;
         this.rootBuilder = false;
         this.topLevelFeature = false;
+        this.baseMergeNode = null;
+        this.overlayMergeNode = null;
     }
 
     /**
@@ -339,6 +370,26 @@ public class TemplateBuilderMaker {
         return dynamicValueBuilder;
     }
 
+    private DynamicMergeBuilder buildDynamicMergeBuilder() {
+        boolean overlayExpression = true;
+        String expression;
+        JsonNode node;
+        if (baseMergeNode.isTextual()) {
+            expression = baseMergeNode.textValue();
+            overlayExpression = false;
+            node = overlayMergeNode;
+        } else {
+            expression = overlayMergeNode.textValue();
+            node = baseMergeNode;
+        }
+        DynamicMergeBuilder dynamicMergeBuilder =
+                new DynamicMergeBuilder(name, expression, namespaces, node, overlayExpression);
+        if (filter != null) dynamicMergeBuilder.setFilter(filter);
+        if (!encondingHints.isEmpty())
+            dynamicMergeBuilder.getEncodingHints().putAll(encondingHints);
+        return dynamicMergeBuilder;
+    }
+
     private StaticBuilder buildStaticBuilder() {
         StaticBuilder staticBuilder;
         boolean hasJsonNode = jsonNode != null;
@@ -369,7 +420,9 @@ public class TemplateBuilderMaker {
     public TemplateBuilder build() {
         TemplateBuilder result;
         if (rootBuilder) result = buildRootBuilder();
-        else if (textContent == null && jsonNode == null) {
+        else if (baseMergeNode != null && overlayMergeNode != null) {
+            result = buildDynamicMergeBuilder();
+        } else if (textContent == null && jsonNode == null) {
             if (isCollection) result = buildIteratingBuilder();
             else result = buildCompositeBuilder();
         } else {

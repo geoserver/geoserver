@@ -37,6 +37,7 @@ import org.geotools.styling.Style;
 import org.geotools.util.URLs;
 import org.geotools.util.logging.Logging;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.util.ProgressListener;
 
 @DescribeProcess(title = "MBTiles", description = "MBTiles Process")
 public class MBTilesProcess implements GeoServerProcess {
@@ -163,7 +164,8 @@ public class MBTilesProcess implements GeoServerProcess {
                         description = "Body of the style to use",
                         min = 0
                     )
-                    String styleBody)
+                    String styleBody,
+            ProgressListener listener)
             throws IOException {
 
         // Extract the filename if present
@@ -328,7 +330,7 @@ public class MBTilesProcess implements GeoServerProcess {
             request.setFormatOptions(formatOptions);
 
             // Execute the requests
-            mapOutput.addTiles(mbtile, request, name);
+            mapOutput.addTiles(mbtile, request, name, listener);
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.SEVERE)) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);

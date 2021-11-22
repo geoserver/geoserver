@@ -40,6 +40,7 @@ import org.geoserver.wms.map.PNGMapResponse;
 import org.geoserver.wms.map.RawMap;
 import org.geoserver.wms.map.RenderedImageMap;
 import org.geoserver.wms.map.RenderedImageMapResponse;
+import org.geotools.data.util.NullProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
@@ -55,6 +56,7 @@ import org.geowebcache.grid.SRS;
 import org.geowebcache.layer.TileLayer;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.util.ProgressListener;
 
 /**
  * Abstract class for tiles style GetMapOutputFormat (mbtiles && geopackage)
@@ -129,7 +131,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
     @Override
     public WebMap produceMap(WMSMapContent map) throws ServiceException, IOException {
         TilesFile tiles = createTilesFile();
-        addTiles(tiles, map);
+        addTiles(tiles, map, getListener(map));
         tiles.close();
 
         final File dbFile = tiles.getFile();
@@ -166,10 +168,35 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return result;
     }
 
+    /**
+     * Returns a listener throwing a timeout error on isCancel, if the rendering too exceeded the
+     * allowed time, or a {@link NullProgressListener} in case there is no timeout.
+     */
+    private ProgressListener getListener(WMSMapContent map) {
+        int maxRenderingTime = wms.getMaxRenderingTime(map.getRequest());
+        if (maxRenderingTime > 0) {
+            final long start = System.currentTimeMillis();
+            return new NullProgressListener() {
+                @Override
+                public boolean isCanceled() {
+                    if ((System.currentTimeMillis() - start) > maxRenderingTime) {
+                        throw new ServiceException(
+                                "This request used more time than allowed and has been forcefully stopped. "
+                                        + "Max rendering time is "
+                                        + (maxRenderingTime / 1000.0)
+                                        + "s.");
+                    }
+                    return false;
+                }
+            };
+        }
+        return new NullProgressListener();
+    }
+
     /** Factory method for Tiles File */
     protected abstract TilesFile createTilesFile() throws IOException;
 
-    protected void addTiles(TilesFile tiles, WMSMapContent map)
+    protected void addTiles(TilesFile tiles, WMSMapContent map, ProgressListener listener)
             throws ServiceException, IOException {
         GetMapRequest req = map.getRequest();
 
@@ -180,10 +207,11 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
                 layers.size() == mapLayers.size(),
                 "Number of map layers not same as number of rendered layers");
 
-        addTiles(tiles, req, map.getTitle());
+        addTiles(tiles, req, map.getTitle(), listener);
     }
 
-    protected void addTiles(TilesFile tiles, GetMapRequest req, String name)
+    protected void addTiles(
+            TilesFile tiles, GetMapRequest req, String name, ProgressListener listener)
             throws ServiceException, IOException {
         List<MapLayerInfo> mapLayers = req.getLayers();
 
@@ -193,17 +221,24 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         // tiled mode means render all as map tile layer
         tileLayers.addAll(mapLayers);
 
-        addTiles(tiles, tileLayers, req, name);
+        addTiles(tiles, tileLayers, req, name, listener);
     }
 
-    /** Add the tiles */
+    /**
+     * Add the tiles. The listener is currently checked only for cancellation, in order to support
+     * WPS process cancellation
+     */
     protected void addTiles(
-            TilesFile tiles, List<MapLayerInfo> mapLayers, GetMapRequest request, String name)
+            TilesFile tiles,
+            List<MapLayerInfo> mapLayers,
+            GetMapRequest request,
+            String name,
+            ProgressListener listener)
             throws IOException, ServiceException {
-
         if (mapLayers.isEmpty()) {
             return;
         }
+        if (listener == null) listener = new NullProgressListener();
 
         // Get the RasterCleaner object
         RasterCleaner cleaner = GeoServerExtensions.bean(RasterCleaner.class);
@@ -295,6 +330,12 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
                             toBytes(result));
                     // Cleanup
                     cleaner.finished(null);
+
+                    if (listener.isCanceled()) {
+                        LOGGER.log(
+                                Level.FINE, "Stopping tile generation, request has been canceled");
+                        return;
+                    }
                 }
             }
         }

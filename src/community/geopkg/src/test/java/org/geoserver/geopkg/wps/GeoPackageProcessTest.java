@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import net.sf.json.JSONArray;
@@ -33,8 +34,12 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Level;
+import org.apache.log4j.spi.LoggingEvent;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -47,6 +52,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wps.WPSTestSupport;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
@@ -79,6 +85,14 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class GeoPackageProcessTest extends WPSTestSupport {
+
+    private static final int MAX_ASYNCH_WAIT = 10000;
+
+    @Override
+    protected String getLogConfiguration() {
+        // needed to verify proper process cancellation
+        return "/GPKG_LOGGING.properties";
+    }
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -1069,6 +1083,88 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         assertEquals(new Color(170, 170, 170), new Color(image.getRGB(128, 192))); // forest
     }
 
+    @Test
+    public void testProcessCancellation() throws Exception {
+        assertProcessTimeout(getXMLInnerRequestTimeout());
+    }
+
+    @Test
+    public void testProcessCancellationWithGridset() throws Exception {
+        assertProcessTimeout(getXMLInnerRequestTimeoutGridset());
+    }
+
+    private void assertProcessTimeout(String innerXML) throws Exception {
+        // grab logger
+        AtomicBoolean foundExecution = new AtomicBoolean(false);
+        AtomicBoolean foundCancel = new AtomicBoolean(false);
+        AppenderSkeleton appender =
+                new AppenderSkeleton() {
+                    @Override
+                    public void close() {}
+
+                    @Override
+                    public boolean requiresLayout() {
+                        return false;
+                    }
+
+                    @Override
+                    protected void append(LoggingEvent event) {
+                        String message = event.getRenderedMessage();
+
+                        if (message != null) {
+                            if (message.contains("Creating tile entry")) foundExecution.set(true);
+                            else if (message.contains("request has been canceled"))
+                                foundCancel.set(true);
+                        }
+                    }
+                };
+        // relevant logging happens on the get tiled map logger
+        org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger("org.geoserver.tiles");
+        logger.setLevel(Level.DEBUG);
+        logger.removeAllAppenders();
+        logger.addAppender(appender);
+
+        // start
+        String xml = getAsynchXml(innerXML);
+        Document dom = postAsDOM("wps", xml);
+
+        // grab execution id
+        String statusLocation = getStatusLocation(dom);
+        Map<String, Object> kvp = KvpUtils.parseQueryString(statusLocation);
+        String executionId = (String) kvp.get("executionId");
+
+        // wait for execution to kick in
+        waitForCondition(foundExecution);
+        assertTrue(foundExecution.get());
+
+        // dismiss
+        getAsDOM("wps?service=WPS&version=1.0.0&request=Dismiss&executionId=" + executionId);
+
+        // wait for cancellation
+        waitForCondition(foundCancel);
+
+        // make sure it actually got cancelled
+        assertTrue(foundCancel.get());
+    }
+
+    private void waitForCondition(AtomicBoolean condition) {
+        long start = System.currentTimeMillis();
+        while (!condition.get() && (System.currentTimeMillis() - start) < MAX_ASYNCH_WAIT)
+            ; // nothing to do
+    }
+
+    private String getStatusLocation(Document dom) throws XpathException {
+        String fullStatusLocation = getFullStatusLocation(dom);
+        String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
+        return statusLocation;
+    }
+
+    private String getFullStatusLocation(Document dom) throws XpathException {
+        assertXpathExists("//wps:ProcessAccepted", dom);
+        XpathEngine xpath = XMLUnit.newXpathEngine();
+        return xpath.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
+    }
+
     public String getXml(String xmlInnerRequest) {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                 + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3"
@@ -1095,6 +1191,38 @@ public class GeoPackageProcessTest extends WPSTestSupport {
                 + "    <wps:RawDataOutput>"
                 + "      <ows:Identifier>geopackage</ows:Identifier>"
                 + "    </wps:RawDataOutput>"
+                + "  </wps:ResponseForm>"
+                + "</wps:Execute>";
+    }
+
+    public String getAsynchXml(String xmlInnerRequest) {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3"
+                + ".org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis"
+                + ".net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
+                + "xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis"
+                + ".net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" "
+                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www"
+                + ".opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">"
+                + "  <ows:Identifier>gs:GeoPackage</ows:Identifier>"
+                + "  <wps:DataInputs>"
+                + "    <wps:Input>"
+                + "      <ows:Identifier>contents</ows:Identifier>"
+                + "      <wps:Data>"
+                + "        <wps:ComplexData mimeType=\"text/xml; "
+                + "subtype=geoserver/geopackage\"><![CDATA["
+                + xmlInnerRequest
+                + "]]></wps:ComplexData>"
+                + "      </wps:Data>"
+                + "    </wps:Input>"
+                + "  </wps:DataInputs>"
+                + "  <wps:ResponseForm>"
+                + "    <wps:ResponseDocument storeExecuteResponse='true' status='true'>"
+                + "      <wps:Output>"
+                + "        <ows:Identifier>geopackage</ows:Identifier>"
+                + "      </wps:Output>"
+                + "    </wps:ResponseDocument>"
                 + "  </wps:ResponseForm>"
                 + "</wps:Execute>";
     }
@@ -1203,6 +1331,68 @@ public class GeoPackageProcessTest extends WPSTestSupport {
                 + "    <parameters>"
                 + "      <parameter name=\"env\">fill:#FF0000</parameter>"
                 + "    </parameters>"
+                + "  </tiles>"
+                + "</geopackage>";
+    }
+
+    private String getXMLInnerRequestTimeout() {
+        return "<geopackage name=\"test\" xmlns=\"http://www.opengis.net/gpkg\">"
+                + "  <tiles name=\"groupenv\" identifier=\"ge\">"
+                + "    <description>A group, and a style with env params</description>  "
+                + "    <srs>EPSG:4326</srs>"
+                + "    <bbox>"
+                + "      <minx>-0.0014</minx>"
+                + "      <maxx>0.004</maxx>"
+                + "      <miny>-0.0024</miny>"
+                + "      <maxy>0.0016</maxy>"
+                + "    </bbox>"
+                + "    <layers>groupenv</layers>"
+                + "    <styles></styles>"
+                + "    <format>png</format>"
+                + "    <bgcolor>222222</bgcolor>"
+                + "    <transparent>false</transparent>"
+                + "    <coverage>"
+                + "      <minZoom>16</minZoom>"
+                // too many levels to complete
+                + "      <maxZoom>30</maxZoom>"
+                + "    </coverage>"
+                + "  </tiles>"
+                + "</geopackage>";
+    }
+
+    private String getXMLInnerRequestTimeoutGridset() {
+        return "<geopackage name=\"test\" xmlns=\"http://www.opengis.net/gpkg\">"
+                + "  <tiles name=\"world_lakes\" identifier=\"wl1\">"
+                + "    <description>world and lakes overlay</description>  "
+                + "    <srs>EPSG:4326</srs>"
+                + "    <bbox>"
+                + "      <minx>-0.17578125</minx>"
+                + "      <maxx>0.17578125</maxx>"
+                + "      <miny>-0.087890625</miny>"
+                + "      <maxy>0.087890625</maxy>"
+                + "    </bbox>"
+                + "    <layers>wcs:World,cite:Lakes</layers>"
+                + "    <styles></styles>"
+                + "    <format>png</format>"
+                + "    <bgcolor>aaaaaa</bgcolor>"
+                + "    <transparent>true</transparent>"
+                + "    <coverage>"
+                + "      <minZoom>10</minZoom>"
+                + "      <maxZoom>30</maxZoom>"
+                + "    </coverage>"
+                + "    <gridset>"
+                + "      <grids>"
+                + "        <grid>"
+                + "          <zoomlevel>10</zoomlevel>"
+                + "          <tilewidth>256</tilewidth>"
+                + "          <tileheight>256</tileheight>"
+                + "          <matrixwidth>2048</matrixwidth>"
+                + "          <matrixheight>1024</matrixheight>"
+                + "          <pixelxsize>0.00068</pixelxsize>"
+                + "          <pixelysize>0.00068</pixelysize>"
+                + "        </grid> "
+                + "      </grids>"
+                + "    </gridset>"
                 + "  </tiles>"
                 + "</geopackage>";
     }

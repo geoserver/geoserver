@@ -1,16 +1,19 @@
 package org.geoserver.ogcapi.stac;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.util.IOUtils;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * This test class is created separately due to copying collection.ftl file to the data directory in
@@ -22,11 +25,9 @@ public class LoadJSONTest extends STACTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        copyAbsolutePathToCollectionsFtl();
-
+        replacePathAndCopy("/collections.ftl");
         copyTemplate("/collections-SENTINEL2.json");
         copyTemplate("/collection.ftl");
-        copyTemplate("/collections.ftl");
 
         GeoServerDataDirectory dd =
                 (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
@@ -36,25 +37,23 @@ public class LoadJSONTest extends STACTestSupport {
     }
 
     // it replaces the path with machine's local path
-    private void copyAbsolutePathToCollectionsFtl() throws IOException {
-        String collectionsPath =
-                LoadJSONTest.class.getClassLoader().getResource("collections.ftl").getPath();
-
+    private void replacePathAndCopy(String template) throws IOException, URISyntaxException {
         String nestedJsonPath =
-                LoadJSONTest.class.getClassLoader().getResource("readAndEval.json").getPath();
-        File fileToBeModified = new File(collectionsPath);
-
-        FileWriter writer = null;
-
-        try {
-            String oldContent = new String(Files.readAllBytes(Paths.get(collectionsPath)));
-            String newContent = oldContent.replaceAll("willBeReplaced", nestedJsonPath);
-            writer = new FileWriter(fileToBeModified);
-            writer.write(newContent);
-        } catch (Exception e) {
-            System.out.println();
-        } finally {
-            writer.close();
+                new File(
+                                LoadJSONTest.class
+                                        .getClassLoader()
+                                        .getResource("readAndEval.json")
+                                        .toURI())
+                        .getCanonicalPath();
+        // makes sure forward slash is used otherwise freemarker will complain
+        if (nestedJsonPath.indexOf("\\") != -1)
+            nestedJsonPath = nestedJsonPath.replaceAll("\\\\", "/");
+        assertTrue(new File(nestedJsonPath).exists());
+        String oldContent = IOUtils.toString(getClass().getResourceAsStream(template));
+        String newContent = oldContent.replace("willBeReplaced", nestedJsonPath).trim();
+        try (ByteArrayInputStream bais =
+                new ByteArrayInputStream(newContent.getBytes(Charset.forName("UTF-8")))) {
+            copyTemplate(template, bais);
         }
     }
 
@@ -67,10 +66,8 @@ public class LoadJSONTest extends STACTestSupport {
 
     @Test
     public void testReadFileOutsideOfDataDir() throws Exception {
-        Document dom = getAsJSoup("ogc/stac/collections?f=html");
-
-        // should return an empty element since collections.ftl loadJSON will not evaluate the file
-        // outside of data dir
-        assertEquals("", dom.select("h2").text());
+        MockHttpServletResponse response =
+                getAsMockHttpServletResponse("ogc/stac/collections?f=html", 200);
+        assertTrue(response.getContentAsString().contains("FreeMarker template error"));
     }
 }

@@ -198,3 +198,26 @@ using the full name, in which case they will be all picked, or by using zero-bas
 The same syntax is meant to be used in the ``browseBands`` property. In case the source is not
 split band, the ``browseBands`` can still be used to select specific bands, using the layer
 name as the coverage name, e.g. "test123[0]" to select the first band of the coverage.
+
+COG Mosaic creation
+```````````````````
+It's also possible to configure a layer on top of a COG ImageMosaic, provided that the :ref:`cog_plugin` plugin has been installed in GeoServer.
+
+Additional fields for the layer configuration are:
+
+.. list-table::
+   :widths: 30 70
+   :header-rows: 1
+
+   * - Attribute
+     - Description
+   * - cog
+     - Set it to true to specify the layer is made of COG datasets
+   * - cogUser
+     - (Optional) Credential to be set whenever basic HTTP authentication is needed to access the COG Datasets or an S3 Access KeyID is required
+   * - cogPassword
+     - (Optional) Password for the above user OR Secret Access Key for the above S3 KeyId.
+   * - cogRangeReader
+     - (Optional) Specify the desired RangeReader implementation. (default is HTTP based)
+
+See :ref:`cog_plugin_rangereader` from the COG plugin documentation, for the list of supported RangeReader implementations.

@@ -163,6 +163,55 @@ public class CollectionLayerTest extends OSEORestTestSupport {
     }
 
     @Test
+    public void testCreateCollectionSimpleCogLayer() throws Exception {
+        // setup the granules
+        setupDefaultLayer(
+                "/test123-product-granules-cog.json",
+                "/test123-layer-simple-cog.json",
+                "gs",
+                Boolean.FALSE);
+
+        // check the configuration elements are there too
+        LayerInfo layer = validateBasicLayerStructure("gs", "test123", new String[] {"GRAY_INDEX"});
+        assertThat(layer.getDefaultStyle().getName(), equalTo("raster"));
+
+        BufferedImage image =
+                getAsImage(
+                        "wms/reflect?layers=gs:test123&format=image/png&bbox=55.70,-21.30,55.80,-21.20&width=200",
+                        "image/png");
+        File expected = new File("src/test/resources/test123-simple-cog.png");
+        ImageAssert.assertEquals(expected, image, 1000);
+    }
+
+    @Test
+    public void testCreateCollectionMultibandCogLayer() throws Exception {
+        // setup the granules
+        setupDefaultLayer(
+                "/test123-product-granules-multiband-cog.json",
+                "/test123-layer-multiband-cog.json",
+                "gs",
+                Boolean.TRUE);
+
+        // check the configuration elements are there too
+        LayerInfo layer =
+                validateBasicLayerStructure(
+                        "gs", "test123", new String[] {"B02", "B03", "B04", "B08"});
+        assertThat(layer.getDefaultStyle().prefixedName(), equalTo("gs:test123"));
+        ChannelSelection cs = getChannelSelection(layer);
+        assertEquals("4", cs.getRGBChannels()[0].getChannelName().evaluate(null, String.class));
+        assertEquals("2", cs.getRGBChannels()[1].getChannelName().evaluate(null, String.class));
+        assertEquals("1", cs.getRGBChannels()[2].getChannelName().evaluate(null, String.class));
+        assertNull(cs.getGrayChannel());
+
+        BufferedImage image =
+                getAsImage(
+                        "wms/reflect?layers=gs:test123&format=image/png&bbox=55.75,-21.30,55.85,-21.20&width=200",
+                        "image/png");
+        File expected = new File("src/test/resources/test123-multiband-cog.png");
+        ImageAssert.assertEquals(expected, image, 1000);
+    }
+
+    @Test
     public void testCreateCollectionSimpleLayerTestWorkspace() throws Exception {
         // setup the granules
         setupDefaultLayer(

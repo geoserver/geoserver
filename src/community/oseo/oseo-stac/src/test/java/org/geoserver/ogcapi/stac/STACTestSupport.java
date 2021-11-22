@@ -103,6 +103,14 @@ public class STACTestSupport extends OGCApiTestSupport {
         }
     }
 
+    protected void copyTemplate(String template, InputStream is) throws IOException {
+        GeoServerDataDirectory dd = getDataDirectory();
+        Resource target = dd.get("templates/ogc/stac/", template);
+        try (OutputStream os = target.out()) {
+            IOUtils.copy(is, os);
+        }
+    }
+
     protected void checkLandsat8_02(DocumentContext l8_02) {
         // ... instrument related
         assertEquals("LANDSAT_8", l8_02.read("properties.platform"));

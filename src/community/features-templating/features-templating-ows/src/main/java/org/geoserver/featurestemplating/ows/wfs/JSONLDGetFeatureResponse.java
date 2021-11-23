@@ -5,6 +5,8 @@
 package org.geoserver.featurestemplating.ows.wfs;
 
 import static org.geoserver.featurestemplating.builders.EncodingHints.CONTEXT;
+import static org.geoserver.featurestemplating.builders.VendorOptions.COLLECTION_NAME;
+import static org.geoserver.featurestemplating.builders.VendorOptions.JSONLD_TYPE;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,10 +64,8 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
 
         JSONLDContextValidation validator = null;
         try {
-            JsonNode context = jsonLdContext(featureCollection);
+            EncodingHints encodingHints = optionsToEncodingHints(featureCollection);
             boolean validate = isSemanticValidation();
-            EncodingHints encodingHints = new EncodingHints();
-            encodingHints.put(CONTEXT, context);
             // setting it back to false
             if (validate) {
                 validate(featureCollection, encodingHints, getFeature);
@@ -85,19 +85,33 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
     }
 
     // retrieve the jsonld context
-    private JsonNode jsonLdContext(FeatureCollectionResponse featureCollection)
+    private EncodingHints optionsToEncodingHints(FeatureCollectionResponse featureCollection)
             throws ExecutionException {
         List<FeatureCollection> collectionList = featureCollection.getFeature();
+        EncodingHints encodingHints = new EncodingHints();
         List<JsonNode> allContexts = new ArrayList<>();
         for (FeatureCollection collection : collectionList) {
             FeatureTypeInfo fti = helper.getFeatureTypeInfo(collection);
             RootBuilder rootBuilder = configuration.getTemplate(fti, identifier.getOutputFormat());
-            JsonNode node = rootBuilder.getVendorOptions().get(CONTEXT, JsonNode.class);
+            VendorOptions options = rootBuilder.getVendorOptions();
+            JsonNode node = options.get(CONTEXT, JsonNode.class);
             if (node == null) node = rootBuilder.getEncodingHints().get(CONTEXT, JsonNode.class);
             if (node != null) allContexts.add(node);
+            addHintIfNotPresent(encodingHints, options, JSONLD_TYPE, String.class);
+            addHintIfNotPresent(encodingHints, options, COLLECTION_NAME, String.class);
         }
         // merge contexts in case we have more then one
-        return nodesUnion(allContexts);
+        JsonNode finalContext = nodesUnion(allContexts);
+        encodingHints.put(CONTEXT, finalContext);
+        return encodingHints;
+    }
+
+    private void addHintIfNotPresent(
+            EncodingHints encodingHints, VendorOptions options, String name, Class<?> targetType) {
+        if (!encodingHints.hasHint(name)) {
+            Object value = options.get(name, targetType);
+            if (value != null) encodingHints.put(name, value);
+        }
     }
 
     private JsonNode nodesUnion(List<JsonNode> contexts) {

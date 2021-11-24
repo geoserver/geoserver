@@ -29,15 +29,25 @@ public class VendorOptions extends HashMap<String, Object> {
     // vendor option used to define Style for XHTML templates
     public static final String STYLE = "style";
 
+    // vendor option used to add a Link element for XHTML templates
     public static final String LINK = "link";
 
-    // encoding hint to encode all json-ld attributes as string
+    // vendor option to encode all json-ld attributes as string
     public static final String JSON_LD_STRING_ENCODE = "encode_as_string";
+
+    // vendor option to define the json-ld root type
+    public static final String JSONLD_TYPE = "@type";
+
+    // vendor option to define features collectionName
+    public static final String COLLECTION_NAME = "collection_name";
+
+    // vendor option used to inject a JSON-LD script element for XHTML templates
+    public static final String JSON_LD_SCRIPT = "JSON_LD_SCRIPT";
 
     public <T> T get(String key, Class<T> cast) {
         Object value = get(key);
         T result = null;
-        if (value instanceof Expression && !cast.isAssignableFrom(Expression.class)) {
+        if (value instanceof Expression && !Expression.class.isAssignableFrom(cast)) {
             result = ((Expression) value).evaluate(null, cast);
         } else {
             result = cast.cast(value);

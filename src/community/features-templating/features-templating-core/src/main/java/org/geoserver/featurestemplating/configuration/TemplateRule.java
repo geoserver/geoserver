@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.geoserver.ows.Request;
 import org.geoserver.util.XCQL;
 import org.geotools.filter.text.cql2.CQLException;
+import org.opengis.filter.Filter;
 
 /**
  * A template rule associated to a FeatureTypeInfo. Its evaluation determines if a specific template
@@ -72,16 +73,20 @@ public class TemplateRule implements Serializable {
         if (outputFormat != null) result = matchOutputFormat(getOutputFormat(request));
 
         if (result && cqlFilter != null) {
-            result = evaluateCQLFilter(cqlFilter);
+            result = evaluateCQLFilter(cqlFilter, request);
         }
-        if (result && profileFilter != null) result = evaluateCQLFilter(profileFilter);
+        if (result && profileFilter != null) result = evaluateCQLFilter(profileFilter, request);
 
         return result;
     }
 
-    private boolean evaluateCQLFilter(String filter) {
+    private boolean evaluateCQLFilter(String filter, Request request) {
+        return getCQLFilter(filter).evaluate(request);
+    }
+
+    private Filter getCQLFilter(String filter) {
         try {
-            return XCQL.toFilter(filter).evaluate(null);
+            return XCQL.toFilter(filter);
         } catch (CQLException e) {
             throw new RuntimeException(e);
         }

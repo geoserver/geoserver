@@ -38,6 +38,10 @@ public class GetFeatureInfoGroupTest extends WMSTestSupport {
     private static final String FORESTS_HTML_FEATUREINFO = "HTMLFeatureInfoFORESTS";
     private static final String FORESTS_HTML_PARAM = "&" + FORESTS_HTML_FEATUREINFO + "=true";
 
+    private static final String FORESTS_HTML_JSONLD_FEATUREINFO = "HTMLFeatureInfoJSONLDFORESTS";
+    private static final String FORESTS_HTML_JSONLD_PARAM =
+            "&" + FORESTS_HTML_JSONLD_FEATUREINFO + "=true";
+
     private static final String LAKES_GML_FEATUREINFO = "GMLFeatureInfoLAKES";
     private static final String LAKES_GML_PARAM = "&" + LAKES_GML_FEATUREINFO + "=true";
 
@@ -53,6 +57,10 @@ public class GetFeatureInfoGroupTest extends WMSTestSupport {
 
     private static final String LAKES_HTML_FEATUREINFO = "HTMLFeatureInfoLAKES";
     private static final String LAKES_HTML_PARAM = "&" + LAKES_HTML_FEATUREINFO + "=true";
+
+    private static final String LAKES_HTML_JSONLD_FEATUREINFO = "HTMLJSONLDFeatureInfoLAKES";
+    private static final String LAKES_HTML_JSONLD_PARAM =
+            "&" + LAKES_HTML_JSONLD_FEATUREINFO + "=true";
 
     private static final String GEOJSON_LAKE_TEMPLATE =
             "{\n"
@@ -222,6 +230,44 @@ public class GetFeatureInfoGroupTest extends WMSTestSupport {
                     + "      </table>\n"
                     + "      </gft:Template>";
 
+    private static final String HTML_LAKE_TEMPLATE_JSON_LD =
+            "<gft:Template>\n"
+                    + "        <gft:Options>"
+                    + "          <script type=\"application/ld+json\"/>"
+                    + "        </gft:Options>"
+                    + "        <table class=\"featureInfo\">\n"
+                    + "         <tr>\n"
+                    + "            <th>fid</th>\n"
+                    + "            <th>name</th>\n"
+                    + "            <th>static attribute</th>\n"
+                    + "         </tr>\n"
+                    + "         <tr>\n"
+                    + "            <td>${@id}</td>\n"
+                    + "            <td>${NAME}</td>\n"
+                    + "            <td>I'm a lake</td>\n"
+                    + "         </tr>\n"
+                    + "      </table>\n"
+                    + "      </gft:Template>";
+
+    private static final String HTML_FOREST_TEMPLATE_JSON_LD =
+            "<gft:Template>\n"
+                    + "        <gft:Options>"
+                    + "          <script type=\"application/ld+json\"/>"
+                    + "        </gft:Options>"
+                    + "        <table class=\"featureInfo\">\n"
+                    + "         <tr>\n"
+                    + "            <th>fid</th>\n"
+                    + "            <th>name</th>\n"
+                    + "            <th>static attribute</th>\n"
+                    + "         </tr>\n"
+                    + "         <tr>\n"
+                    + "            <td>${@id}</td>\n"
+                    + "            <td>${NAME}</td>\n"
+                    + "            <td>I'm a forest</td>\n"
+                    + "         </tr>\n"
+                    + "      </table>\n"
+                    + "      </gft:Template>";
+
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
@@ -307,6 +353,23 @@ public class GetFeatureInfoGroupTest extends WMSTestSupport {
                 SupportedFormat.HTML,
                 IOUtils.toInputStream(HTML_LAKE_TEMPLATE, Charsets.UTF_8),
                 LAKES_HTML_FEATUREINFO,
+                ".xhtml",
+                "cite",
+                getCatalog().getFeatureTypeByName(MockData.LAKES.getLocalPart()));
+
+        helper.setUpTemplate(
+                "requestParam('" + FORESTS_HTML_JSONLD_FEATUREINFO + "')='true'",
+                SupportedFormat.HTML,
+                IOUtils.toInputStream(HTML_FOREST_TEMPLATE_JSON_LD, Charsets.UTF_8),
+                FORESTS_HTML_JSONLD_FEATUREINFO,
+                ".xhtml",
+                "cite",
+                getCatalog().getFeatureTypeByName(MockData.FORESTS.getLocalPart()));
+        helper.setUpTemplate(
+                "requestParam('" + LAKES_HTML_JSONLD_FEATUREINFO + "')='true'",
+                SupportedFormat.HTML,
+                IOUtils.toInputStream(HTML_LAKE_TEMPLATE_JSON_LD, Charsets.UTF_8),
+                LAKES_HTML_JSONLD_FEATUREINFO,
                 ".xhtml",
                 "cite",
                 getCatalog().getFeatureTypeByName(MockData.LAKES.getLocalPart()));
@@ -429,5 +492,28 @@ public class GetFeatureInfoGroupTest extends WMSTestSupport {
         JSONObject result = (JSONObject) getAsJSON(url);
         assertNotNull(result);
         assertEquals(6, result.size());
+    }
+
+    @Test
+    public void testHTMLWithJSONLD() throws Exception {
+        String url =
+                "wms?service=wms&version=1.1.1"
+                        + "&layers=nature&width=100&height=100&format=image/png"
+                        + "&srs=epsg:4326&bbox=-0.002,-0.003,0.005,0.002&info_format=text/html"
+                        + "&request=GetFeatureInfo&query_layers=nature&x=50&y=50&feature_count=2"
+                        + LAKES_HTML_JSONLD_PARAM
+                        + FORESTS_HTML_JSONLD_PARAM
+                        + LAKES_JSONLD_PARAM
+                        + FORESTS_JSONLD_PARAM;
+
+        String result = getAsString(url);
+        String trimmed = result.trim();
+        // check jsonld is present
+        assertTrue(trimmed.contains("@context"));
+        assertTrue(trimmed.contains("\"staticAttr\":\"I'm a lake\""));
+        assertTrue(trimmed.contains("\"staticAttr\":\"I'm a forest\""));
+        // checks html template
+        assertTrue(trimmed.contains("<td>I'm a lake</td>"));
+        assertTrue(trimmed.contains("<td>I'm a forest</td>"));
     }
 }

@@ -70,8 +70,8 @@ public class JSONLDOutputHelper {
                 if (node == null)
                     node = rootBuilder.getEncodingHints().get(CONTEXT, JsonNode.class);
                 if (node != null) allContexts.add(node);
-                addHintIfNotPresent(encodingHints, options, JSONLD_TYPE, String.class);
-                addHintIfNotPresent(encodingHints, options, COLLECTION_NAME, String.class);
+                putEncodingHintIfAbsent(encodingHints, options, JSONLD_TYPE, String.class);
+                putEncodingHintIfAbsent(encodingHints, options, COLLECTION_NAME, String.class);
             }
         }
         // merge contexts in case we have more then one
@@ -91,7 +91,7 @@ public class JSONLDOutputHelper {
         return loader.getTemplate(fti, TemplateIdentifier.JSONLD.getOutputFormat());
     }
 
-    private void addHintIfNotPresent(
+    private void putEncodingHintIfAbsent(
             EncodingHints encodingHints, VendorOptions options, String name, Class<?> targetType) {
         if (!encodingHints.hasHint(name)) {
             Object value = options.get(name, targetType);
@@ -150,7 +150,7 @@ public class JSONLDOutputHelper {
      * @throws IOException
      * @throws ExecutionException
      */
-    public void write(List<FeatureCollection> collections, EncodingHints hints, JSONLDWriter writer)
+    void write(List<FeatureCollection> collections, EncodingHints hints, JSONLDWriter writer)
             throws IOException, ExecutionException {
         writer.startTemplateOutput(hints);
         for (FeatureCollection coll : collections) {

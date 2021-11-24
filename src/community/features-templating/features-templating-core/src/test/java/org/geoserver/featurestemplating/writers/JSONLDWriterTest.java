@@ -3,6 +3,7 @@ package org.geoserver.featurestemplating.writers;
 import static org.geoserver.featurestemplating.builders.VendorOptions.COLLECTION_NAME;
 import static org.geoserver.featurestemplating.builders.VendorOptions.JSONLD_TYPE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.core.JsonEncoding;
@@ -18,70 +19,51 @@ import org.junit.Test;
 public class JSONLDWriterTest {
 
     @Test
-    public void testJSONRootAttributesTypeCustomization() throws IOException {
-        // test that values of URL types are correctly encoded
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JSONLDWriter writer =
-                new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+    public void testJSONRootAttributesCollNameCustomization() throws IOException {
         EncodingHints encodingHints = new EncodingHints();
         encodingHints.put(COLLECTION_NAME, "diseaseSpreadStatistics");
-        writer.startTemplateOutput(encodingHints);
-        writer.endTemplateOutput(encodingHints);
-        writer.close();
-        String rawJSON = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-        JSONObject json = (JSONObject) JSONSerializer.toJSON(rawJSON);
+        JSONObject json = writeJSONLD(encodingHints);
         assertEquals("FeatureCollection", json.getString(JSONLD_TYPE));
         assertTrue(json.has("diseaseSpreadStatistics"));
+        assertFalse(json.has("features"));
     }
 
     @Test
-    public void testJSONRootAttributesCollectionNameCustomization() throws IOException {
-        // test that values of URL types are correctly encoded
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JSONLDWriter writer =
-                new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
+    public void testJSONRootAttributesTypeCustomization() throws IOException {
         EncodingHints encodingHints = new EncodingHints();
         encodingHints.put(JSONLD_TYPE, "schema:PublicAnnouncement");
-        writer.startTemplateOutput(encodingHints);
-        writer.endTemplateOutput(encodingHints);
-        writer.close();
-        String rawJSON = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-        JSONObject json = (JSONObject) JSONSerializer.toJSON(rawJSON);
+        JSONObject json = writeJSONLD(encodingHints);
         assertEquals("schema:PublicAnnouncement", json.getString(JSONLD_TYPE));
         assertTrue(json.has("features"));
     }
 
     @Test
     public void testJSONRootAttributesFullCustomization() throws IOException {
-        // test that values of URL types are correctly encoded
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        JSONLDWriter writer =
-                new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
         EncodingHints encodingHints = new EncodingHints();
         encodingHints.put(JSONLD_TYPE, "schema:PublicAnnouncement");
         encodingHints.put(COLLECTION_NAME, "diseaseSpreadStatistics");
-        writer.startTemplateOutput(encodingHints);
-        writer.endTemplateOutput(encodingHints);
-        writer.close();
-        String rawJSON = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-        JSONObject json = (JSONObject) JSONSerializer.toJSON(rawJSON);
+        JSONObject json = writeJSONLD(encodingHints);
         assertEquals("schema:PublicAnnouncement", json.getString(JSONLD_TYPE));
         assertTrue(json.has("diseaseSpreadStatistics"));
+        assertFalse(json.has("features"));
     }
 
     @Test
     public void testJSONRootAttributesDefault() throws IOException {
-        // test that values of URL types are correctly encoded
+        EncodingHints encodingHints = new EncodingHints();
+        JSONObject json = writeJSONLD(encodingHints);
+        assertEquals("FeatureCollection", json.getString(JSONLD_TYPE));
+        assertTrue(json.has("features"));
+    }
+
+    private JSONObject writeJSONLD(EncodingHints hints) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JSONLDWriter writer =
                 new JSONLDWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8));
-        EncodingHints encodingHints = new EncodingHints();
-        writer.startTemplateOutput(encodingHints);
-        writer.endTemplateOutput(encodingHints);
+        writer.startTemplateOutput(hints);
+        writer.endTemplateOutput(hints);
         writer.close();
         String rawJSON = new String(baos.toByteArray(), Charset.forName("UTF-8"));
-        JSONObject json = (JSONObject) JSONSerializer.toJSON(rawJSON);
-        assertEquals("FeatureCollection", json.getString(JSONLD_TYPE));
-        assertTrue(json.has("features"));
+        return (JSONObject) JSONSerializer.toJSON(rawJSON);
     }
 }

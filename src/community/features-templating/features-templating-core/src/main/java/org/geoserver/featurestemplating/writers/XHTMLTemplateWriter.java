@@ -12,12 +12,9 @@ import static org.geoserver.featurestemplating.builders.VendorOptions.STYLE;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -79,21 +76,20 @@ public class XHTMLTemplateWriter extends XMLTemplateWriter {
             EncodingHints jsonLdHints = jsonldOutputHelper.optionsToEncodingHints(collections);
             streamWriter.writeStartElement("script");
             streamWriter.writeAttribute("type", "application/ld+json");
-            ByteArrayOutputStream baos = null;
-            try (JSONLDWriter writer = getJSONLDWriter(baos = new ByteArrayOutputStream())) {
+            // write empty characters otherwise the streamWriter will not add
+            // > at the end of the start element
+            streamWriter.writeCharacters("");
+            streamWriter.flush();
+            try (JSONLDWriter writer = getJSONLDWriter(output)) {
                 jsonldOutputHelper.write(collections, jsonLdHints, writer);
             }
-            if (baos != null)
-                streamWriter.writeCharacters(
-                        new String(baos.toByteArray(), Charset.forName("UTF-8")));
-
             streamWriter.writeEndElement();
         }
     }
 
-    private JSONLDWriter getJSONLDWriter(ByteArrayOutputStream baos) throws IOException {
-        BufferedOutputStream bos = new BufferedOutputStream(baos);
-        JsonGenerator generator = new JsonFactory().createGenerator(bos, JsonEncoding.UTF8);
+    private JSONLDWriter getJSONLDWriter(OutputStream output) throws IOException {
+        JsonGenerator generator = new JsonFactory().createGenerator(output, JsonEncoding.UTF8);
+        generator.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
         return new JSONLDWriter(generator);
     }
 

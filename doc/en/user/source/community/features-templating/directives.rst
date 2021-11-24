@@ -709,19 +709,19 @@ The :code:`flat_output` will act in the following way:
 
 JSON-LD
 """"""""
-A JSON-LD template can be defined as a GeoJSON template since it is a JSON based output as well. However it needs to have a :code:`@context` attribute, object or array at the beginning of it in orther to conform to the standard. Moreover each JSON Object must have an :code:`@type` defining a type through a vocabulary term.
-To accomplish this requirements it is possible to specify a bounch of :code:`$options` on the template:
+A JSON-LD template can be defined as a GeoJSON template since it is a JSON based output as well. However it needs to have a :code:`@context` attribute, object or array at the beginning of it in order to conform to the standard. Moreover each JSON Object must have an :code:`@type` defining a type through a vocabulary term.
+To accomplish these requirements it is possible to specify several :code:`$options` on the template:
 
 * :code:`@context` providing a full JSON-LD :code:`@context`.
 * :code:`@type` providing a type term for the root JSON object in the final output (by default the value is :code:`FeatureCollection`).
-* :code:`collection_name` providing an alternative name for the features array in the final output (by default :code:`features` is used). The option is usefull in case the user wants to use a features attribute name equals to a specific term defined in a vocabulary.
+* :code:`collection_name` providing an alternative name for the features array in the final output (by default :code:`features` is used). The option is useful in case the user wants to use a features attribute name equals to a specific term defined in a vocabulary.
 
 .. code-block:: json
 
   {
    "$options":{
       "encode_as_string": true,
-      "collection_name":"features",
+      "collection_name":"stations",
       "@type":"schema:Thing",
       "@context":[
          "https://opengeospatial.github.io/ELFIE/contexts/elfie-2/elf-index.jsonld",
@@ -804,7 +804,7 @@ The :code:`@context` will show up at the beginning of the JSON-LD output:
    ],
    "type":"FeatureCollection",
    "@type":"schema:Thing",
-   "features":[
+   "stations":[
       {
          "Identifier":"MeteoStationsFeature.7",
          "Name":"Bologna",
@@ -886,7 +886,7 @@ GML output has two :code:`options`: Namespaces and SchemaLocation, that define t
 HTML
 """"
 
-HTML templates can use three :code:`options`: 
+HTML templates can use several :code:`options`: 
 
 * :code:`<script>` allows defining whathever javascript is needed, e.g. to create a tree view (as in the example below) or an openlayers map client.
 

@@ -1,0 +1,8 @@
+{
+  "$options": {
+    "@context": "https://schema.org",
+    "collection_name": "diseaseSpreadStatistics",
+    "@type": "schema:SpecialAnnouncement"
+  },
+  "just_some_static_content": "static"
+}

@@ -79,7 +79,7 @@ The following are the directives available in XML based templates.
      - It has to be the root element of an XML template (:code:`<gft:Template> Template content</gft:Template>`)
    * - defines options to customize the output outside of a feature scope
      - gft:Options
-     - specify it as an element at the beggining of the xml document after the :code:`<gft:Template>` one (:code:`<gft:Options></gft:Options>`). GML options: :code:`<gtf:Namespaces>`,:code:`<gtf:SchemaLocation>`. HTML options: :code:`<script>`,:code:`<style>`, :code: `<link>`.
+     - specify it as an element at the beggining of the xml document after the :code:`<gft:Template>` one (:code:`<gft:Options></gft:Options>`). GML options: :code:`<gtf:Namespaces>`,:code:`<gtf:SchemaLocation>`. HTML options: :code:`<script>`, :code: `<script type="application/ld+json"/>`, :code:`<style>`, :code: `<link>`.
    * - allows including a template into another
      - $include, gft:includeFlat
      - specify the :code:`$include` option as an element value (:code:`<element>$include{included.xml}</element>`) and the :code:`gft:includeFlat` as an element having the included template as text content (:code:`<gft:includeFlat>included.xml</gft:includeFlat>`)
@@ -890,6 +890,8 @@ HTML templates can use three :code:`options`:
 
 * :code:`<script>` allows defining whathever javascript is needed, e.g. to create a tree view (as in the example below) or an openlayers map client.
 
+* :code: `<script type="application/ld+json"/>` allows to inject the JSON-LD representation of the features being templated in the `<head>`. In order to have the option working properly a JSON-LD template must be configured for the layer, or GeoServer will return an error messsage.
+
 * :code:`<style>` allows defining css content.
 
 * :code:`<link>` allows linking to external resources.
@@ -942,6 +944,7 @@ The following is an example of a HTML template that will output the Stations fea
       });
       }
       }]]></script>
+      <script type="application/ld+json"/>
       </gft:Options>
       <ul id="myUL">
        <li>

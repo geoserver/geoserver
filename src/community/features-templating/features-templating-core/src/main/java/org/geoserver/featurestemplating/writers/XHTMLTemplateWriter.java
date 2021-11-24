@@ -4,19 +4,30 @@
  */
 package org.geoserver.featurestemplating.writers;
 
+import static org.geoserver.featurestemplating.builders.VendorOptions.JSON_LD_SCRIPT;
 import static org.geoserver.featurestemplating.builders.VendorOptions.LINK;
 import static org.geoserver.featurestemplating.builders.VendorOptions.SCRIPT;
 import static org.geoserver.featurestemplating.builders.VendorOptions.STYLE;
 
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.Attribute;
 import org.geoserver.featurestemplating.builders.EncodingHints;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.jts.WKTWriter2;
 import org.locationtech.jts.geom.Geometry;
@@ -24,8 +35,11 @@ import org.locationtech.jts.geom.Geometry;
 /** A template writer able to produce XHTML output. */
 public class XHTMLTemplateWriter extends XMLTemplateWriter {
 
-    public XHTMLTemplateWriter(XMLStreamWriter streamWriter) {
+    private OutputStream output;
+
+    public XHTMLTemplateWriter(XMLStreamWriter streamWriter, OutputStream outputStream) {
         super(streamWriter);
+        this.output = outputStream;
     }
 
     @Override
@@ -48,11 +62,39 @@ public class XHTMLTemplateWriter extends XMLTemplateWriter {
             List style = encodingHints.get(STYLE, List.class);
             if (style != null) encodeHeadContent(STYLE, style);
             encodeLinks(encodingHints);
+            injectJSONLD(encodingHints);
             streamWriter.writeEndElement();
             streamWriter.writeStartElement("body");
-        } catch (XMLStreamException e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
+    }
+
+    private void injectJSONLD(EncodingHints encodingHints)
+            throws ExecutionException, IOException, XMLStreamException {
+        List injectJSONLD = encodingHints.get(JSON_LD_SCRIPT, List.class, Collections.emptyList());
+        if (!injectJSONLD.isEmpty()) {
+            List<FeatureCollection> collections = (List<FeatureCollection>) injectJSONLD;
+            JSONLDOutputHelper jsonldOutputHelper = new JSONLDOutputHelper();
+            EncodingHints jsonLdHints = jsonldOutputHelper.optionsToEncodingHints(collections);
+            streamWriter.writeStartElement("script");
+            streamWriter.writeAttribute("type", "application/ld+json");
+            ByteArrayOutputStream baos = null;
+            try (JSONLDWriter writer = getJSONLDWriter(baos = new ByteArrayOutputStream())) {
+                jsonldOutputHelper.write(collections, jsonLdHints, writer);
+            }
+            if (baos != null)
+                streamWriter.writeCharacters(
+                        new String(baos.toByteArray(), Charset.forName("UTF-8")));
+
+            streamWriter.writeEndElement();
+        }
+    }
+
+    private JSONLDWriter getJSONLDWriter(ByteArrayOutputStream baos) throws IOException {
+        BufferedOutputStream bos = new BufferedOutputStream(baos);
+        JsonGenerator generator = new JsonFactory().createGenerator(bos, JsonEncoding.UTF8);
+        return new JSONLDWriter(generator);
     }
 
     private void encodeHeadContent(String elementName, List contents) throws XMLStreamException {

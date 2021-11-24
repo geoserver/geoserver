@@ -29,6 +29,7 @@ public class VendorOptions extends HashMap<String, Object> {
     // vendor option used to define Style for XHTML templates
     public static final String STYLE = "style";
 
+    // vendor option used to add a Link element for XHTML templates
     public static final String LINK = "link";
 
     // vendor option to encode all json-ld attributes as string
@@ -39,6 +40,9 @@ public class VendorOptions extends HashMap<String, Object> {
 
     // vendor option to define features collectionName
     public static final String COLLECTION_NAME = "collection_name";
+
+    // vendor option used to inject a JSON-LD script element for XHTML templates
+    public static final String JSON_LD_SCRIPT = "JSON_LD_SCRIPT";
 
     public <T> T get(String key, Class<T> cast) {
         Object value = get(key);

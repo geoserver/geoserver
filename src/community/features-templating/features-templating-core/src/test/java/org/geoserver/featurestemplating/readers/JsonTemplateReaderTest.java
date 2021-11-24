@@ -4,6 +4,8 @@
  */
 package org.geoserver.featurestemplating.readers;
 
+import static org.geoserver.featurestemplating.builders.VendorOptions.COLLECTION_NAME;
+import static org.geoserver.featurestemplating.builders.VendorOptions.JSONLD_TYPE;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
+import org.geoserver.featurestemplating.builders.VendorOptions;
 import org.geoserver.featurestemplating.builders.flat.FlatBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
@@ -105,6 +108,14 @@ public class JsonTemplateReaderTest {
 
         // third is a static
         assertThat(it.getChildren().get(3), instanceOf(StaticBuilder.class));
+    }
+
+    @Test
+    public void testOptionsParsingForRootAttributes() throws IOException {
+        RootBuilder root = getBuilderTree("jsonld_custom_root_attrs.json");
+        VendorOptions options = root.getVendorOptions();
+        assertEquals("diseaseSpreadStatistics", options.get(COLLECTION_NAME, String.class));
+        assertEquals("schema:SpecialAnnouncement", options.get(JSONLD_TYPE, String.class));
     }
 
     private RootBuilder getBuilderTree(String resourceName) throws IOException {

@@ -16,18 +16,16 @@ import javax.xml.stream.XMLStreamWriter;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
+import org.geoserver.featurestemplating.utils.FeatureTypeInfoUtils;
 import org.geoserver.featurestemplating.writers.GMLTemplateWriter;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
 import org.geoserver.featurestemplating.writers.JSONLDWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geoserver.featurestemplating.writers.XHTMLTemplateWriter;
-import org.geoserver.platform.ServiceException;
-import org.geoserver.wfs.TypeInfoCollectionWrapper;
 import org.geoserver.wfs.request.GetFeatureRequest;
 import org.geoserver.wfs.request.Query;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
-import org.geoserver.wms.featureinfo.FeatureCollectionDecorator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.NameImpl;
 import org.opengis.feature.type.Name;
@@ -75,7 +73,7 @@ public class TemplateGetFeatureResponseHelper {
                     XMLStreamWriter xMLStreamWriter =
                             xMLOutputFactory.createXMLStreamWriter(output);
                     if (format.equals(TemplateIdentifier.HTML))
-                        outputWriter = new XHTMLTemplateWriter(xMLStreamWriter);
+                        outputWriter = new XHTMLTemplateWriter(xMLStreamWriter, output);
                     else outputWriter = new GMLTemplateWriter(xMLStreamWriter, version);
                     break;
 
@@ -112,25 +110,14 @@ public class TemplateGetFeatureResponseHelper {
     }
 
     FeatureTypeInfo getFeatureTypeInfo(FeatureCollection collection) {
-        if (collection instanceof TypeInfoCollectionWrapper)
-            return ((TypeInfoCollectionWrapper) collection).getFeatureTypeInfo();
-        else if (collection instanceof FeatureCollectionDecorator)
-            return getFeatureTypeInfo(((FeatureCollectionDecorator) collection).getName());
-        else return getFeatureTypeInfo(collection.getSchema().getName());
+        return FeatureTypeInfoUtils.getFeatureTypeInfo(catalog, collection);
     }
 
     public FeatureTypeInfo getFeatureType(String collectionId) {
-        FeatureTypeInfo featureType = catalog.getFeatureTypeByName(collectionId);
-        if (featureType == null) {
-            throw new ServiceException(
-                    "Unknown collection " + collectionId,
-                    ServiceException.INVALID_PARAMETER_VALUE,
-                    "collectionId");
-        }
-        return featureType;
+        return FeatureTypeInfoUtils.getFeatureTypeInfo(catalog, collectionId);
     }
 
     FeatureTypeInfo getFeatureTypeInfo(Name name) {
-        return catalog.getFeatureTypeByName(name);
+        return FeatureTypeInfoUtils.getFeatureTypeInfo(catalog, name);
     }
 }

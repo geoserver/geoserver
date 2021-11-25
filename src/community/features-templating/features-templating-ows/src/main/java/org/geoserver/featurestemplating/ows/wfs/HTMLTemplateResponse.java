@@ -4,6 +4,7 @@
  */
 package org.geoserver.featurestemplating.ows.wfs;
 
+import static org.geoserver.featurestemplating.builders.VendorOptions.JSON_LD_SCRIPT;
 import static org.geoserver.featurestemplating.builders.VendorOptions.LINK;
 import static org.geoserver.featurestemplating.builders.VendorOptions.SCRIPT;
 import static org.geoserver.featurestemplating.builders.VendorOptions.STYLE;
@@ -79,6 +80,7 @@ public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {
         List<FeatureCollection> collectionList = response.getFeature();
         List<String> scripts = new ArrayList<>();
         List<String> styles = new ArrayList<>();
+        List<FeatureCollection> jsonLdCollections = new ArrayList<>();
         EncodingHints encodingHints = new EncodingHints();
         for (FeatureCollection collection : collectionList) {
             FeatureTypeInfo fti = helper.getFeatureTypeInfo(collection);
@@ -89,10 +91,20 @@ public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {
             if (!style.isEmpty()) styles.add(style);
             VendorOptions options = root.getVendorOptions();
             addLinks(options, encodingHints);
+            addToJsonLdScriptNameList(jsonLdCollections, options, collection);
         }
         if (!scripts.isEmpty()) encodingHints.put(SCRIPT, scripts);
         if (!styles.isEmpty()) encodingHints.put(STYLE, styles);
+        if (!jsonLdCollections.isEmpty()) encodingHints.put(JSON_LD_SCRIPT, jsonLdCollections);
         return encodingHints;
+    }
+
+    private void addToJsonLdScriptNameList(
+            List<FeatureCollection> jsonLdScriptNames,
+            VendorOptions options,
+            FeatureCollection collection) {
+        boolean jsonLdScript = options.get(JSON_LD_SCRIPT, Boolean.class, false);
+        if (jsonLdScript) jsonLdScriptNames.add(collection);
     }
 
     private void addLinks(VendorOptions options, EncodingHints hints) {

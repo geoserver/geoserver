@@ -4,7 +4,9 @@
  */
 package org.geoserver.featurestemplating.readers;
 
+import static org.geoserver.featurestemplating.builders.VendorOptions.COLLECTION_NAME;
 import static org.geoserver.featurestemplating.builders.VendorOptions.FLAT_OUTPUT;
+import static org.geoserver.featurestemplating.builders.VendorOptions.JSONLD_TYPE;
 import static org.geoserver.featurestemplating.builders.VendorOptions.JSON_LD_STRING_ENCODE;
 import static org.geoserver.featurestemplating.builders.VendorOptions.SEPARATOR;
 import static org.geoserver.featurestemplating.readers.JSONMerger.*;
@@ -248,25 +250,13 @@ public class JSONTemplateReader implements TemplateReader {
         if (!node.isObject()) {
             throw new RuntimeException("VendorOptions should be defined as a JSON object");
         }
-        if (node.has(FLAT_OUTPUT)) {
-            TemplateCQLManager cqlManager =
-                    new TemplateCQLManager(node.get(FLAT_OUTPUT).asText(), null);
-            builder.addVendorOption(FLAT_OUTPUT, cqlManager.getExpressionFromString());
-        }
-        if (node.has(VendorOptions.SEPARATOR)) {
-            TemplateCQLManager cqlManager =
-                    new TemplateCQLManager(node.get(SEPARATOR).asText(), null);
-            builder.addVendorOption(VendorOptions.SEPARATOR, cqlManager.getExpressionFromString());
-        }
+        addOptionIfPresent(builder, FLAT_OUTPUT, node);
+        addOptionIfPresent(builder, SEPARATOR, node);
+        addOptionIfPresent(builder, JSON_LD_STRING_ENCODE, node);
+        addOptionIfPresent(builder, COLLECTION_NAME, node);
+        addOptionIfPresent(builder, JSONLD_TYPE, node);
         if (node.has(CONTEXTKEY)) {
             builder.addVendorOption(CONTEXTKEY, node.get(CONTEXTKEY));
-        }
-        if (node.has(JSON_LD_STRING_ENCODE)) {
-            JsonNode stringEncodeJSONLD = node.get(JSON_LD_STRING_ENCODE);
-            if (!stringEncodeJSONLD.isBoolean())
-                throw new RuntimeException(
-                        "The option " + JSON_LD_STRING_ENCODE + " can only be a boolean value");
-            builder.addVendorOption(JSON_LD_STRING_ENCODE, stringEncodeJSONLD.booleanValue());
         }
         Expression flatOutput =
                 builder.getVendorOptions()
@@ -279,6 +269,14 @@ public class JSONTemplateReader implements TemplateReader {
                                 Expression.class,
                                 new LiteralExpressionImpl("_"));
         maker.flatOutput(bFlatOutput).separator(expression.evaluate(null, String.class));
+    }
+
+    private void addOptionIfPresent(RootBuilder builder, String optionName, JsonNode node) {
+        if (node.has(optionName)) {
+            TemplateCQLManager cqlManager =
+                    new TemplateCQLManager(node.get(optionName).asText(), null);
+            builder.addVendorOption(optionName, cqlManager.getExpressionFromString());
+        }
     }
 
     // create a composite as direct child of a Root builder

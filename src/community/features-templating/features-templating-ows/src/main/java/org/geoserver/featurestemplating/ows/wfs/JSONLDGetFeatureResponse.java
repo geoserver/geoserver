@@ -4,16 +4,8 @@
  */
 package org.geoserver.featurestemplating.ows.wfs;
 
-import static org.geoserver.featurestemplating.builders.EncodingHints.CONTEXT;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.*;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -25,6 +17,7 @@ import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
 import org.geoserver.featurestemplating.configuration.TemplateLoader;
 import org.geoserver.featurestemplating.validation.JSONLDContextValidation;
+import org.geoserver.featurestemplating.writers.JSONLDOutputHelper;
 import org.geoserver.featurestemplating.writers.JSONLDWriter;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geoserver.ows.Dispatcher;
@@ -32,7 +25,6 @@ import org.geoserver.ows.Request;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
-import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.Feature;
 
@@ -41,8 +33,6 @@ import org.opengis.feature.Feature;
  * a JSON-LD template
  */
 public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
-
-    private TemplateLoader configuration;
 
     public JSONLDGetFeatureResponse(GeoServer gs, TemplateLoader configuration) {
         super(gs, configuration, TemplateIdentifier.JSONLD);
@@ -62,10 +52,9 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
 
         JSONLDContextValidation validator = null;
         try {
-            JsonNode context = jsonLdContext(featureCollection);
+            EncodingHints encodingHints =
+                    new JSONLDOutputHelper().optionsToEncodingHints(featureCollection.getFeature());
             boolean validate = isSemanticValidation();
-            EncodingHints encodingHints = new EncodingHints();
-            encodingHints.put(CONTEXT, context);
             // setting it back to false
             if (validate) {
                 validate(featureCollection, encodingHints, getFeature);
@@ -82,64 +71,6 @@ public class JSONLDGetFeatureResponse extends BaseTemplateGetFeatureResponse {
                 validator.validate();
             }
         }
-    }
-
-    // retrieve the jsonld context
-    private JsonNode jsonLdContext(FeatureCollectionResponse featureCollection)
-            throws ExecutionException {
-        List<FeatureCollection> collectionList = featureCollection.getFeature();
-        List<JsonNode> allContexts = new ArrayList<>();
-        for (FeatureCollection collection : collectionList) {
-            FeatureTypeInfo fti = helper.getFeatureTypeInfo(collection);
-            RootBuilder rootBuilder = configuration.getTemplate(fti, identifier.getOutputFormat());
-            JsonNode node = rootBuilder.getVendorOptions().get(CONTEXT, JsonNode.class);
-            if (node == null) node = rootBuilder.getEncodingHints().get(CONTEXT, JsonNode.class);
-            if (node != null) allContexts.add(node);
-        }
-        // merge contexts in case we have more then one
-        return nodesUnion(allContexts);
-    }
-
-    private JsonNode nodesUnion(List<JsonNode> contexts) {
-        JsonNode base = null;
-        for (JsonNode node : contexts) {
-            if (base == null) base = node;
-            else base = nodesUnion(base, node);
-        }
-        return base;
-    }
-
-    // union of two JsonNode. By union it is meant that a single @context is created from
-    // two contexts.
-    private JsonNode nodesUnion(JsonNode node1, JsonNode node2) {
-        JsonNode result = node1;
-        if (!node1.equals(node2)) {
-            if (node1.isObject() && node2.isObject()) {
-                ObjectNode copy = node1.deepCopy();
-                copy.setAll((ObjectNode) node2);
-                result = copy;
-            } else if (node1.isArray() && node2.isArray()) {
-                ArrayNode copy = node1.deepCopy();
-                copy.addAll((ArrayNode) node2);
-                result = copy;
-            } else if (node2.isArray()) {
-                ArrayNode copy = node2.deepCopy();
-                copy.add(node1);
-                result = copy;
-            } else if (node1.isArray()) {
-                ArrayNode copy = node1.deepCopy();
-                copy.add(node2);
-                result = copy;
-            } else {
-                // two text fields or one field and one object.
-                ObjectMapper mapper = new ObjectMapper();
-                ArrayNode arrayNode = mapper.createArrayNode();
-                arrayNode.add(node1);
-                arrayNode.add(node2);
-                result = arrayNode;
-            }
-        }
-        return result;
     }
 
     private void validate(

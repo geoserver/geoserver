@@ -58,7 +58,7 @@ public class ManagedComplexFeaturesResponseTest extends TemplateComplexTestSuppo
                 "requestParam('" + MF_JSONLD_MANAGED + "')='true'",
                 SupportedFormat.JSONLD,
                 templateMappedFeatureJSONLD,
-                MF_JSONLD_MANAGED,
+                MF_JSONLD_PARAM,
                 ".json",
                 "gsml",
                 mappedFeature);

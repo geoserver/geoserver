@@ -52,14 +52,44 @@ public class TemplateLoader {
     }
 
     /**
-     * Get the template related to the featureType. If template has been modified updates the cache
-     * with the new Template
+     * Get the template related to the featureType. Searching for the highest priority rule. If not
+     * found will try to load it from the featureType directory as per legacy rule. If not found
+     * will return null.
+     *
+     * @param typeInfo the FeatureTypeInfo for which retrieve the template.
+     * @param outputFormat the output format for which retrieve the template.
+     * @param request the ows request can be null.
+     * @return the RootBuilder.
+     * @throws ExecutionException
+     */
+    public RootBuilder getTemplate(FeatureTypeInfo typeInfo, String outputFormat, Request request)
+            throws ExecutionException {
+        String templateIdentifier =
+                request == null
+                        ? evaluatesTemplateRule(typeInfo)
+                        : evaluatesTemplateRule(typeInfo, request);
+        if (templateIdentifier == null)
+            templateIdentifier = TemplateIdentifier.fromOutputFormat(outputFormat).getFilename();
+        return getTemplateByIdentifier(typeInfo, templateIdentifier);
+    }
+
+    /**
+     * Get the template related to the featureType. Searching for the highest priority rule. If not
+     * found will try to load it from the featureType directory as per legacy rule. If not found
+     * will return null.
+     *
+     * @param typeInfo the FeatureTypeInfo for which retrieve the template.
+     * @param outputFormat the output format for which retrieve the template.
+     * @return the RootBuilder.
+     * @throws ExecutionException
      */
     public RootBuilder getTemplate(FeatureTypeInfo typeInfo, String outputFormat)
             throws ExecutionException {
-        String templateIdentifier = evaluatesTemplateRule(typeInfo);
-        if (templateIdentifier == null)
-            templateIdentifier = TemplateIdentifier.fromOutputFormat(outputFormat).getFilename();
+        return getTemplate(typeInfo, outputFormat, null);
+    }
+
+    private RootBuilder getTemplateByIdentifier(FeatureTypeInfo typeInfo, String templateIdentifier)
+            throws ExecutionException {
         CacheKey key = new CacheKey(typeInfo, templateIdentifier);
         Template template = templateCache.get(key);
         boolean updateCache = false;
@@ -166,32 +196,34 @@ public class TemplateLoader {
         }
     }
 
-    // evaluates the template rule associated to the featureTypeInfo and return the TemplateInfo id.
     private String evaluatesTemplateRule(FeatureTypeInfo featureTypeInfo) {
+        return evaluatesTemplateRule(featureTypeInfo, Dispatcher.REQUEST.get());
+    }
+
+    // evaluates the template rule associated to the featureTypeInfo and return the TemplateInfo id.
+    private String evaluatesTemplateRule(FeatureTypeInfo featureTypeInfo, Request request) {
         List<TemplateRule> matching = new ArrayList<>();
-        TemplateLayerConfig config =
-                featureTypeInfo
-                        .getMetadata()
-                        .get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
-        if (config == null || config.getTemplateRules().isEmpty()) return null;
-        else {
-            Set<TemplateRule> rules = config.getTemplateRules();
-            Request request = Dispatcher.REQUEST.get();
+        TemplateRuleService ruleService = new TemplateRuleService(featureTypeInfo);
+        Set<TemplateRule> rules = ruleService.getRules();
+        String result = null;
+        if (rules != null && !rules.isEmpty()) {
             for (TemplateRule r : rules) {
                 if (r.applyRule(request)) matching.add(r);
             }
         }
         int size = matching.size();
-        if (size > 0) {
-            if (size > 1) {
-                TemplateRule.TemplateRuleComparator comparator =
-                        new TemplateRule.TemplateRuleComparator();
-                matching.sort(comparator);
-            }
-            return matching.get(0).getTemplateIdentifier();
-        }
+        if (size > 0) result = getHighestPriorityIdentifier(matching);
 
-        return null;
+        return result;
+    }
+
+    private String getHighestPriorityIdentifier(List<TemplateRule> rules) {
+        if (rules.size() > 1) {
+            TemplateRule.TemplateRuleComparator comparator =
+                    new TemplateRule.TemplateRuleComparator();
+            rules.sort(comparator);
+        }
+        return rules.get(0).getTemplateIdentifier();
     }
 
     /**

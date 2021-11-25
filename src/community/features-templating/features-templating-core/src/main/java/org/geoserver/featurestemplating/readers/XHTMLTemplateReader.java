@@ -4,6 +4,7 @@
  */
 package org.geoserver.featurestemplating.readers;
 
+import static org.geoserver.featurestemplating.builders.VendorOptions.JSON_LD_SCRIPT;
 import static org.geoserver.featurestemplating.builders.VendorOptions.LINK;
 import static org.geoserver.featurestemplating.builders.VendorOptions.SCRIPT;
 import static org.geoserver.featurestemplating.builders.VendorOptions.STYLE;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
+import javax.xml.namespace.QName;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
@@ -49,7 +51,10 @@ public class XHTMLTemplateReader extends XMLRecursiveTemplateReader {
     protected void addVendorOption(StartElement element, RootBuilder builder) {
         String elementName = element.getName().toString();
         if (elementName.equalsIgnoreCase(SCRIPT) || elementName.equalsIgnoreCase(STYLE)) {
-            optionsNamesStack.add(elementName);
+            Attribute attribute = element.getAttributeByName(new QName("type"));
+            if (attribute != null && attribute.getValue().equals("application/ld+json"))
+                builder.addVendorOption(JSON_LD_SCRIPT, true);
+            else optionsNamesStack.add(elementName);
         } else if (elementName.equalsIgnoreCase(LINK)) {
             Iterator<Attribute> attributeIterator = element.getAttributes();
             List<Attribute> attributes = new ArrayList<>();

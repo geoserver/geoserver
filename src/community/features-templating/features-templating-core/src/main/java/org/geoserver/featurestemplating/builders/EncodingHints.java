@@ -6,6 +6,8 @@ package org.geoserver.featurestemplating.builders;
 
 import java.util.HashMap;
 import java.util.Optional;
+import org.geotools.util.Converters;
+import org.opengis.filter.expression.Expression;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
@@ -77,7 +79,11 @@ public class EncodingHints extends HashMap<String, Object> {
      * @return the value of the hint if found, otherwise null.
      */
     public <T> T get(String key, Class<T> cast, T defaultValue) {
-        T value = cast.cast(get(key));
+        Object result = get(key);
+        if (result instanceof Expression && !Expression.class.isAssignableFrom(cast)) {
+            result = ((Expression) result).evaluate(null);
+        }
+        T value = Converters.convert(result, cast);
         if (value == null) value = defaultValue;
         return value;
     }

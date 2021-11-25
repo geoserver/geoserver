@@ -7,6 +7,8 @@ package org.geoserver.featurestemplating.writers;
 
 import static org.geoserver.featurestemplating.builders.EncodingHints.CONTEXT;
 import static org.geoserver.featurestemplating.builders.EncodingHints.isSingleFeatureRequest;
+import static org.geoserver.featurestemplating.builders.VendorOptions.COLLECTION_NAME;
+import static org.geoserver.featurestemplating.builders.VendorOptions.JSONLD_TYPE;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -56,7 +58,12 @@ public class JSONLDWriter extends CommonJSONWriter {
         if (!isSingleFeatureRequest()) {
             generator.writeFieldName("type");
             generator.writeString("FeatureCollection");
-            generator.writeFieldName("features");
+
+            String jsonLdType = encodingHints.get(JSONLD_TYPE, String.class, "FeatureCollection");
+            generator.writeFieldName("@type");
+            generator.writeString(jsonLdType);
+            String collectionName = encodingHints.get(COLLECTION_NAME, String.class, "features");
+            generator.writeFieldName(collectionName);
             writeStartArray();
         }
     }

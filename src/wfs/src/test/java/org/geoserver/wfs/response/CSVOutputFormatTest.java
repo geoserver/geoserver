@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.WfsFactory;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.impl.NamespaceInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.WFSTestSupport;
@@ -292,5 +294,36 @@ public class CSVOutputFormatTest extends WFSTestSupport {
             // check each line has the expected number of elements (num of att + 1 for the id)
             assertEquals(fs.getSchema().getDescriptors().size() + 1, line.length);
         }
+    }
+
+    @Test
+    public void testResolvePrefixedAttributeNames() {
+        NamespaceInfo nsInfo = new NamespaceInfoImpl();
+        nsInfo.setPrefix("test-ns");
+        nsInfo.setURI("http://test-ns/core");
+        getGeoServer().getCatalog().add(nsInfo);
+        CSVOutputFormat csvFormat = new CSVOutputFormat(getGeoServer());
+        assertEquals(
+                "test-ns:attributeName",
+                csvFormat.resolveNamespacePrefixName("http://test-ns/core:attributeName"));
+    }
+
+    @Test
+    public void testDontResolvePrefixedAttributeNames() {
+        NamespaceInfo nsInfo = new NamespaceInfoImpl();
+        nsInfo.setPrefix("test-ns2");
+        nsInfo.setURI("http://test-ns2/core");
+        getGeoServer().getCatalog().add(nsInfo);
+        CSVOutputFormat csvFormat = new CSVOutputFormat(getGeoServer());
+        assertEquals(
+                "test-ns2:attributeName",
+                csvFormat.resolveNamespacePrefixName("test-ns2:attributeName"));
+    }
+
+    @Test
+    public void testUnvalidResolvePrefixedAttributeNames() {
+        CSVOutputFormat csvFormat = new CSVOutputFormat(getGeoServer());
+        assertEquals(
+                "test:attributeName:", csvFormat.resolveNamespacePrefixName("test:attributeName:"));
     }
 }

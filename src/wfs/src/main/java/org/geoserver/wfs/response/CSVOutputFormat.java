@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xsd.XSDElementDeclaration;
-import org.eclipse.xsd.impl.XSDElementDeclarationImpl;
+import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.feature.FlatteningFeatureCollection;
 import org.geoserver.platform.Operation;
@@ -131,12 +131,13 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                     }
                     String elName = att.getName().toString();
                     Object xsd = att.getUserData().get(XSDElementDeclaration.class);
-                    if (xsd != null && xsd instanceof XSDElementDeclarationImpl) {
+                    if (xsd instanceof XSDElementDeclaration) {
                         // get the prefixed name if possible
                         // otherwise defaults to the full name with namespace URI
-                        XSDElementDeclarationImpl xsdEl = (XSDElementDeclarationImpl) xsd;
+                        XSDElementDeclaration xsdEl = (XSDElementDeclaration) xsd;
                         elName = xsdEl.getQName();
                     }
+                    elName = resolveNamespacePrefixName(elName);
                     w.write(prepCSVField(elName));
                     i++;
                 }
@@ -383,5 +384,29 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
     @Override
     public String getCharset(Operation operation) {
         return gs.getGlobal().getSettings().getCharset();
+    }
+
+    /**
+     * Checks if the used namespace prefix is available on GeoServer namespaces, and replace the
+     * namespace URI with the prefix name found.
+     *
+     * @param attributeName the current attribute name
+     * @return the fixed prefixed name, of the original attribute name if no namespace is found
+     */
+    String resolveNamespacePrefixName(String attributeName) {
+        if (StringUtils.isBlank(attributeName)
+                || !attributeName.contains(":")
+                || attributeName.endsWith(":")) {
+            return attributeName;
+        }
+        int lastIndexOfSeparator = attributeName.lastIndexOf(":");
+        String namespaceUri = attributeName.substring(0, lastIndexOfSeparator);
+        NamespaceInfo namespace = this.gs.getCatalog().getNamespaceByURI(namespaceUri);
+        if (namespace != null) {
+            String localName =
+                    attributeName.substring(lastIndexOfSeparator + 1, attributeName.length());
+            return namespace.getPrefix() + ":" + localName;
+        }
+        return attributeName;
     }
 }

@@ -22,17 +22,16 @@ class ElasticConfigurationPanelInfo extends ResourceConfigurationPanelInfo
 
     @Override
     public boolean canHandle(Object obj) {
-        boolean canHandle = false;
         if (obj instanceof FeatureTypeInfo) {
             FeatureTypeInfo fti = (FeatureTypeInfo) obj;
             for (String st : getSupportedTypes()) {
-                if (fti.getStore().getType().equals(st)) {
-                    canHandle = true;
-                    break;
+                // getType can return null
+                if (st != null && st.equals(fti.getStore().getType())) {
+                    return true;
                 }
             }
         }
-        return canHandle;
+        return false;
     }
 
     @Override

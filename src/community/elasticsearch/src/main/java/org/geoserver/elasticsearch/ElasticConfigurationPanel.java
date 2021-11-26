@@ -62,7 +62,7 @@ public class ElasticConfigurationPanel extends ResourceConfigurationPanel {
 
         final ModalWindow modal = new ModalWindow("modal");
         modal.setInitialWidth(800);
-        modal.setTitle(new ParamResourceModel("modalTitle", ElasticConfigurationPanel.this));
+        modal.setTitle(new ParamResourceModel("modalTitle", this));
 
         if (fti.getMetadata().get(ElasticLayerConfiguration.KEY) == null) {
             modal.add(new OpenWindowOnLoadBehavior());

@@ -167,9 +167,7 @@ abstract class ElasticConfigurationPage extends Panel {
                 }
             }
             if (!geomSet) {
-                error(
-                        new ParamResourceModel("geomEmptyFailure", ElasticConfigurationPage.this)
-                                .getString());
+                error(new ParamResourceModel("geomEmptyFailure", this).getString());
             }
 
             Catalog catalog = ((GeoServerApplication) this.getPage().getApplication()).getCatalog();
@@ -262,9 +260,9 @@ abstract class ElasticConfigurationPage extends Panel {
                                     new Fragment(id, "geometry", ElasticConfigurationPage.this);
                             //noinspection unchecked
                             f.add(
-                                    new DropDownChoice(
+                                    new DropDownChoice<>(
                                             "geometry",
-                                            new PropertyModel(itemModel, "type"),
+                                            new PropertyModel<>(itemModel, "type"),
                                             GEOMETRY_TYPES,
                                             new GeometryTypeRenderer()));
                             return f;
@@ -309,7 +307,7 @@ abstract class ElasticConfigurationPage extends Panel {
                             List<String> validFormats = null;
                             if (att.getValidDateFormats() == null) {
                                 if (att.getDateFormat() != null) {
-                                    validFormats = new ArrayList<String>();
+                                    validFormats = new ArrayList<>();
                                     validFormats.add(att.getDateFormat());
                                     att.setValidDateFormats(validFormats);
                                 }
@@ -397,20 +395,22 @@ abstract class ElasticConfigurationPage extends Panel {
     /*
      * Render geometry type select
      */
-    private static class GeometryTypeRenderer implements IChoiceRenderer<Object> {
+    private static class GeometryTypeRenderer
+            implements IChoiceRenderer<Class<? extends Geometry>> {
 
         @Override
-        public Object getDisplayValue(Object object) {
-            return ((Class<?>) object).getSimpleName();
+        public Object getDisplayValue(Class<? extends Geometry> object) {
+            return object.getSimpleName();
         }
 
         @Override
-        public String getIdValue(Object object, int index) {
+        public String getIdValue(Class<? extends Geometry> object, int index) {
             return (String) getDisplayValue(object);
         }
 
         @Override
-        public Object getObject(String id, IModel<? extends List<?>> choices) {
+        public Class<? extends Geometry> getObject(
+                String id, IModel<? extends List<? extends Class<? extends Geometry>>> choices) {
             for (Class<? extends Geometry> c : GEOMETRY_TYPES) {
                 if (id.equals(getDisplayValue(c))) {
                     return c;

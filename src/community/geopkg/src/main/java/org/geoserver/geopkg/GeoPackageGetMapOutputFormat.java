@@ -5,7 +5,9 @@
  */
 package org.geoserver.geopkg;
 
-import static org.geoserver.geopkg.GeoPkg.*;
+import static org.geoserver.geopkg.GeoPkg.EXTENSION;
+import static org.geoserver.geopkg.GeoPkg.MIME_TYPE;
+import static org.geoserver.geopkg.GeoPkg.NAMES;
 
 import com.google.common.collect.Sets;
 import java.io.File;
@@ -14,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.util.OwsUtils;
@@ -28,18 +30,20 @@ import org.geoserver.wms.WMS;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 import org.geoserver.wms.WebMapService;
+import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geopkg.GeoPackage;
 import org.geotools.geopkg.Tile;
 import org.geotools.geopkg.TileEntry;
 import org.geotools.geopkg.TileMatrix;
 import org.geotools.referencing.CRS;
-import org.geotools.util.logging.Logging;
+import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
 import org.locationtech.jts.geom.Envelope;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.util.ProgressListener;
 
 /**
  * WMS GetMap Output Format for GeoPackage
@@ -47,8 +51,6 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Justin Deoliveira, Boundless
  */
 public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
-
-    static Logger LOGGER = Logging.getLogger("org.geoserver.geopkg");
 
     public GeoPackageGetMapOutputFormat(WebMapService webMapService, WMS wms, GWC gwc) {
         super(MIME_TYPE, "." + EXTENSION, Sets.newHashSet(NAMES), webMapService, wms, gwc);
@@ -113,6 +115,19 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
 
                 e.getTileMatricies().add(m);
             }
+            // tile index is calculated relative to the gridset, so we need to use
+            // the gridset bounds (otherwise the layer bounds will be used as the gridset ones)
+            BoundingBox subsetBounds = gridSubset.getGridSetBounds();
+            if (subsetBounds != null) {
+                ReferencedEnvelope re =
+                        new ReferencedEnvelope(
+                                subsetBounds.getMinX(),
+                                subsetBounds.getMaxX(),
+                                subsetBounds.getMinY(),
+                                subsetBounds.getMaxY(),
+                                box.getCoordinateReferenceSystem());
+                e.setTileMatrixSetBounds(re);
+            }
 
             // figure out the actual bounds of the tiles to be renderered
             LOGGER.fine("Creating tile entry" + e.getTableName());
@@ -162,9 +177,14 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
     }
 
     /** Add tiles to an existing GeoPackage */
-    public void addTiles(GeoPackage geopkg, TileEntry e, GetMapRequest req, String name)
+    public void addTiles(
+            GeoPackage geopkg,
+            TileEntry e,
+            GetMapRequest req,
+            String name,
+            ProgressListener listener)
             throws IOException {
-        addTiles(new GeopackageWrapper(geopkg, e), req, name);
+        addTiles(new GeopackageWrapper(geopkg, e), req, name, listener);
     }
 
     /**
@@ -176,12 +196,15 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
             TileEntry e,
             GetMapRequest request,
             List<TileMatrix> matrices,
-            String name)
+            String name,
+            ProgressListener listener)
             throws IOException, ServiceException {
+
+        if (listener == null) listener = new DefaultProgressListener();
 
         List<MapLayerInfo> mapLayers = request.getLayers();
 
-        SortedMap<Integer, TileMatrix> matrixSet = new TreeMap<Integer, TileMatrix>();
+        SortedMap<Integer, TileMatrix> matrixSet = new TreeMap<>();
         for (TileMatrix matrix : matrices) {
             matrixSet.put(matrix.getZoomLevel(), matrix);
         }
@@ -201,7 +224,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
         e.setBounds(bbox);
         e.setSrid(srid(request));
         e.getTileMatricies().addAll(matrices);
-        LOGGER.fine("Creating tile entry" + e.getTableName());
+        LOGGER.fine("Creating tile entry " + e.getTableName());
         geopkg.create(e);
 
         GetMapRequest req = new GetMapRequest();
@@ -304,6 +327,11 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
                     // Cleanup
                     cleaner.finished(null);
                 }
+            }
+
+            if (listener.isCanceled()) {
+                LOGGER.log(Level.FINE, "Stopping tile generation, request has been canceled");
+                return;
             }
         }
     }

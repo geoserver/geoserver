@@ -71,6 +71,10 @@ Additional configuration parameters can be specified in the ImageMosaic indexer 
      - N
      - Password for the above user OR Secret Access Key for the above S3 KeyId.
 
+.. _cog_plugin_rangereader:
+
+COG RangeReader
+```````````````
 The following table provides the values for the ``CogRangeReader`` based on the type of target storage:
 
 .. list-table::

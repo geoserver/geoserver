@@ -1315,6 +1315,11 @@
         <version>${imageio-ext.version}</version>
       </dependency>
       <dependency>
+        <groupId>it.geosolutions.imageio-ext</groupId>
+        <artifactId>imageio-ext-cog-rangereader-http</artifactId>
+        <version>${imageio-ext.version}</version>
+      </dependency>
+      <dependency>
         <groupId>no.ecc.vectortile</groupId>
         <artifactId>java-vector-tile</artifactId>
         <version>1.3.9</version>
@@ -2238,7 +2243,7 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>6.2.2</version>
+            <version>6.5.0</version>
             <executions>
               <execution>
                 <goals>

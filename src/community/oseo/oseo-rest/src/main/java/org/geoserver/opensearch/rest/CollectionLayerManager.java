@@ -4,15 +4,18 @@
  */
 package org.geoserver.opensearch.rest;
 
+import it.geosolutions.imageio.core.SourceSPIProvider;
 import java.awt.image.SampleModel;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -60,6 +63,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.NameImpl;
 import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.gce.imagemosaic.Utils;
+import org.geotools.gce.imagemosaic.catalog.CogConfiguration;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.image.io.ImageIOExt;
 import org.geotools.referencing.CRS;
@@ -198,24 +202,43 @@ class CollectionLayerManager {
             final String mosaicName = collection + OpenSearchAccess.BAND_LAYER_SEPARATOR + band;
 
             // get the sample granule
-            File file = getSampleGranule(collection, nsURI, band, mosaicName);
+            String location = getSampleGranule(collection, nsURI, band, mosaicName);
+            Object source = null;
+            if (!layerConfiguration.isCog()) {
+                File file = new File(location);
+                if (!file.exists()) {
+                    throw new RestException(
+                            "Sample granule '"
+                                    + location
+                                    + "' could not be found on the file system, check your database",
+                            HttpStatus.EXPECTATION_FAILED);
+                }
+                source = file;
+            } else {
+                CogConfiguration cogConfig = getCogConfiguration(layerConfiguration);
+                SourceSPIProvider provider = cogConfig.getSourceSPIProvider(new URL(location));
+                source = provider;
+            }
+            if (source == null) {
+                throw new RestException(
+                        "Unable to setup a supported source from granule " + location,
+                        HttpStatus.PRECONDITION_FAILED);
+            }
             AbstractGridFormat format =
-                    (AbstractGridFormat) GridFormatFinder.findFormat(file, EXCLUDE_MOSAIC_HINTS);
+                    (AbstractGridFormat) GridFormatFinder.findFormat(source, EXCLUDE_MOSAIC_HINTS);
             if (format == null) {
                 throw new RestException(
-                        "Could not find a coverage reader able to process "
-                                + file.getAbsolutePath(),
+                        "Could not find a coverage reader able to process " + location,
                         HttpStatus.PRECONDITION_FAILED);
             }
             ImageLayout imageLayout;
             double[] nativeResolution;
             AbstractGridCoverage2DReader reader = null;
             try {
-                reader = format.getReader(file);
+                reader = format.getReader(source);
                 if (reader == null) {
                     throw new RestException(
-                            "Could not find a coverage reader able to process "
-                                    + file.getAbsolutePath(),
+                            "Could not find a coverage reader able to process " + location,
                             HttpStatus.PRECONDITION_FAILED);
                 }
                 imageLayout = reader.getImageLayout();
@@ -227,13 +250,7 @@ class CollectionLayerManager {
                     reader.dispose();
                 }
             }
-            ImageReaderSpi spi = null;
-            try (FileImageInputStream fis = new FileImageInputStream(file)) {
-                ImageReader imageReader = ImageIOExt.getImageioReader(fis);
-                if (imageReader != null) {
-                    spi = imageReader.getOriginatingProvider();
-                }
-            }
+            ImageReaderSpi spi = getSpi(source);
 
             // the mosaic configuration
             Properties mosaicConfig = new Properties();
@@ -245,6 +262,8 @@ class CollectionLayerManager {
             mosaicConfig.put("TypeNames", "false"); // disable typename scanning
             mosaicConfig.put("Caching", "false");
             mosaicConfig.put("LocationAttribute", "location");
+            setCogConfig(mosaicConfig, layerConfiguration, false);
+
             if (layerConfiguration.isTimeRanges()) {
                 mosaicConfig.put("TimeAttribute", TIME_START_END);
             } else {
@@ -308,6 +327,47 @@ class CollectionLayerManager {
 
         // configure the style if needed
         createStyle(layerConfiguration, layerInfo, mosaicStoreInfo);
+    }
+
+    private ImageReaderSpi getSpi(Object source) throws IOException {
+        if (source instanceof File) {
+            try (FileImageInputStream fis = new FileImageInputStream((File) source)) {
+                ImageReader imageReader = ImageIOExt.getImageioReader(fis);
+                if (imageReader != null) {
+                    return imageReader.getOriginatingProvider();
+                }
+            }
+        } else if (source instanceof SourceSPIProvider) {
+            return ((SourceSPIProvider) source).getReaderSpi();
+        }
+        return null;
+    }
+
+    private CogConfiguration getCogConfiguration(CollectionLayer layerConfiguration) {
+        CogConfiguration cogConfiguration = new CogConfiguration();
+        if (layerConfiguration != null) {
+            String rangeReader = layerConfiguration.getCogRangeReader();
+            cogConfiguration.setUser(layerConfiguration.getCogUser());
+            cogConfiguration.setPassword(layerConfiguration.getCogPassword());
+            cogConfiguration.setRangeReader(validateRangeReader(rangeReader));
+        }
+        return cogConfiguration;
+    }
+
+    private String validateRangeReader(String rangeReader) {
+        if (rangeReader != null) {
+            try {
+                Class<?> rangeReaderClass = Class.forName(rangeReader);
+                if (rangeReaderClass != null) return rangeReader;
+            } catch (ClassNotFoundException e) {
+                throw new IllegalArgumentException(
+                        "The specified RangeReader ("
+                                + rangeReader
+                                + ") is not supported. Check the name has been "
+                                + " properly typed and make sure that the plugin is in the classpath");
+            }
+        }
+        return Utils.DEFAULT_RANGE_READER;
     }
 
     private double[][] getResolutionLevelsInCRS(
@@ -418,7 +478,7 @@ class CollectionLayerManager {
         return result;
     }
 
-    private File getSampleGranule(
+    private String getSampleGranule(
             String collection, final String nsURI, String band, final String mosaicName)
             throws IOException {
         // make sure there is at least one granule to grab resolution, sample/color model,
@@ -440,16 +500,7 @@ class CollectionLayerManager {
         }
         // grab the file
         String location = (String) firstFeature.getAttribute("location");
-        File file = new File(location);
-        if (!file.exists()) {
-            throw new RestException(
-                    "Sample granule '"
-                            + location
-                            + "' could not be found on the file system, check your database",
-                    HttpStatus.EXPECTATION_FAILED);
-        }
-
-        return file;
+        return location;
     }
 
     private void configureSimpleMosaic(
@@ -519,9 +570,27 @@ class CollectionLayerManager {
             indexer.put("MosaicCRS", "EPSG:4326");
             indexer.put("CrsAttribute", "crs");
         }
+        setCogConfig(indexer, layerConfiguration, true);
         Resource resource = mosaic.get("indexer.properties");
         try (OutputStream os = resource.out()) {
             indexer.store(os, "Indexer for collection: " + collection);
+        }
+    }
+
+    private void setCogConfig(Map indexer, CollectionLayer layerConfiguration, boolean canBeEmpty) {
+        if (layerConfiguration.isCog()) {
+            indexer.put("Cog", "true");
+            String cogPassword = layerConfiguration.getCogPassword();
+            String cogUser = layerConfiguration.getCogUser();
+            String cogRangeReader = layerConfiguration.getCogRangeReader();
+            if (cogPassword != null && cogUser != null) {
+                indexer.put(Utils.Prop.COG_PASSWORD, cogPassword);
+                indexer.put(Utils.Prop.COG_USER, cogUser);
+            }
+            if (cogRangeReader != null) {
+                indexer.put(Utils.Prop.COG_RANGE_READER, cogRangeReader);
+            }
+            if (canBeEmpty) indexer.put(Utils.Prop.CAN_BE_EMPTY, "true");
         }
     }
 

@@ -39,7 +39,7 @@ The following are the directives available in JSON based templates.
      - specify it inside the first nested object in arrays (:code:`{"$filter":"condition"}`) or as an attribute in objects (:code:`"$filter":"condition"`) or in an attribute next to the attribute value separated by a :code:`,` (:code:`"attribute":"$filter{condition}, ${property}"`)
    * - defines options to customize the output outside of a feature scope
      - $options
-     - specify it at the top of the JSON template as a JSON object (GeoJSON options: :code:`"$options":{"flat_output":true, "separator":"."}`; JSON-LD options: :code:`"$options":{"@context": "the context json", "encode_as_string": true}`).
+     - specify it at the top of the JSON template as a JSON object (GeoJSON options: :code:`"$options":{"flat_output":true, "separator":"."}`; JSON-LD options: :code:`"$options":{"@context": "the context json", "encode_as_string": true, "@type":"schema:SpecialAnnouncement", "collection_name":"customCollectionName"}`).
    * - allows including a template into another
      - $include, $includeFlat
      - specify the :code:`$include` option as an attribute value (:code:`"attribute":"$include{subProperty.json}"`) and the :code:`$includeFlat` as an attribute name with the included template path as a value (:code:`"$includeFlat":"included.json"`)
@@ -79,7 +79,7 @@ The following are the directives available in XML based templates.
      - It has to be the root element of an XML template (:code:`<gft:Template> Template content</gft:Template>`)
    * - defines options to customize the output outside of a feature scope
      - gft:Options
-     - specify it as an element at the beggining of the xml document after the :code:`<gft:Template>` one (:code:`<gft:Options></gft:Options>`). GML options: :code:`<gtf:Namespaces>`,:code:`<gtf:SchemaLocation>`. HTML options: :code:`<script>`,:code:`<style>`, :code: `<link>`.
+     - specify it as an element at the beggining of the xml document after the :code:`<gft:Template>` one (:code:`<gft:Options></gft:Options>`). GML options: :code:`<gtf:Namespaces>`,:code:`<gtf:SchemaLocation>`. HTML options: :code:`<script>`, :code: `<script type="application/ld+json"/>`, :code:`<style>`, :code: `<link>`.
    * - allows including a template into another
      - $include, gft:includeFlat
      - specify the :code:`$include` option as an element value (:code:`<element>$include{included.xml}</element>`) and the :code:`gft:includeFlat` as an element having the included template as text content (:code:`<gft:includeFlat>included.xml</gft:includeFlat>`)
@@ -709,14 +709,20 @@ The :code:`flat_output` will act in the following way:
 
 JSON-LD
 """"""""
-A JSON-LD template can be defined as a GeoJSON template since it is a JSON based output as well. However it needs to have a :code:`@context` attribute, object or array at the beginning of it in orther to conform to the standard.
-To accomplish this requirement it is possible to specify the :code:`@context` as an :code:`option` in the template, like in the following one:
+A JSON-LD template can be defined as a GeoJSON template since it is a JSON based output as well. However it needs to have a :code:`@context` attribute, object or array at the beginning of it in order to conform to the standard. Moreover each JSON Object must have an :code:`@type` defining a type through a vocabulary term.
+To accomplish these requirements it is possible to specify several :code:`$options` on the template:
+
+* :code:`@context` providing a full JSON-LD :code:`@context`.
+* :code:`@type` providing a type term for the root JSON object in the final output (by default the value is :code:`FeatureCollection`).
+* :code:`collection_name` providing an alternative name for the features array in the final output (by default :code:`features` is used). The option is useful in case the user wants to use a features attribute name equals to a specific term defined in a vocabulary.
 
 .. code-block:: json
 
   {
    "$options":{
       "encode_as_string": true,
+      "collection_name":"stations",
+      "@type":"schema:Thing",
       "@context":[
          "https://opengeospatial.github.io/ELFIE/contexts/elfie-2/elf-index.jsonld",
          "https://opengeospatial.github.io/ELFIE/contexts/elfie-2/gwml2.jsonld",
@@ -797,7 +803,8 @@ The :code:`@context` will show up at the beginning of the JSON-LD output:
       }
    ],
    "type":"FeatureCollection",
-   "features":[
+   "@type":"schema:Thing",
+   "stations":[
       {
          "Identifier":"MeteoStationsFeature.7",
          "Name":"Bologna",
@@ -879,9 +886,11 @@ GML output has two :code:`options`: Namespaces and SchemaLocation, that define t
 HTML
 """"
 
-HTML templates can use three :code:`options`: 
+HTML templates can use several :code:`options`: 
 
 * :code:`<script>` allows defining whathever javascript is needed, e.g. to create a tree view (as in the example below) or an openlayers map client.
+
+* :code: `<script type="application/ld+json"/>` allows to inject the JSON-LD representation of the features being templated in the `<head>`. In order to have the option working properly a JSON-LD template must be configured for the layer, or GeoServer will return an error messsage.
 
 * :code:`<style>` allows defining css content.
 
@@ -935,6 +944,7 @@ The following is an example of a HTML template that will output the Stations fea
       });
       }
       }]]></script>
+      <script type="application/ld+json"/>
       </gft:Options>
       <ul id="myUL">
        <li>

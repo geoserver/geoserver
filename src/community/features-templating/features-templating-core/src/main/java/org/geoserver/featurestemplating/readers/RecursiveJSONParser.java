@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
@@ -22,6 +23,7 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
     private static final String INCLUDE_KEY = "$include";
     private static final String MERGE_KEY = "$merge";
     private static final String INCLUDE_FLAT_KEY = "$includeFlat";
+    public static final String DYNAMIC_INCLUDE_FLAT_KEY = "$dynamicIncludeFlat_";
 
     private final ObjectMapper mapper;
     private final String rootCollectionName;
@@ -101,14 +103,16 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
                                     + INCLUDE_FLAT_KEY
                                     + " key must be the path of the file being included");
                 }
-                Resource resource = getResource(this.resource, node.asText());
-                JsonNode processed = new RecursiveJSONParser(this, resource).parse();
-                Iterator<String> fields = processed.fieldNames();
-                while (fields.hasNext()) {
-                    String field = fields.next();
-                    result.set(field, processed.get(field));
+                if (!isDynamicIncludeFlat(node)) {
+                    Resource resource = getResource(this.resource, node.asText());
+                    JsonNode processed = new RecursiveJSONParser(this, resource).parse();
+                    Iterator<String> fields = processed.fieldNames();
+                    while (fields.hasNext()) {
+                        String field = fields.next();
+                        result.set(field, processed.get(field));
+                    }
+                    continue;
                 }
-                continue;
             }
             // inclusion in value?
             if (node.isTextual()) {
@@ -125,6 +129,26 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
         // process eventual merge directive as well
         if (result.has(MERGE_KEY)) {
             result = processMergeDirective(result);
+        }
+
+        // iterate here again to put DYNAMIC_INCLUDE_FLAT_KEY as a parent node
+        if (result.has(INCLUDE_FLAT_KEY)) {
+            ObjectNode dynamicIncludeFlatResult = mapper.getNodeFactory().objectNode();
+            Iterator<String> namesSecond = input.fieldNames();
+            while (namesSecond.hasNext()) {
+                String name = namesSecond.next();
+                JsonNode node = input.get(name);
+                if (isDynamicIncludeFlat(node)) {
+                    String key = DYNAMIC_INCLUDE_FLAT_KEY.concat(name);
+                    ObjectNode emptyNode = JsonNodeFactory.instance.objectNode();
+                    dynamicIncludeFlatResult.set(key, emptyNode);
+                    dynamicIncludeFlatResult.with(key).set(INCLUDE_FLAT_KEY, node);
+                } else {
+                    dynamicIncludeFlatResult.set(name, node);
+                }
+            }
+
+            return dynamicIncludeFlatResult;
         }
 
         return result;
@@ -187,5 +211,9 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
         try (InputStream is = resource.in()) {
             return mapper.readTree(is);
         }
+    }
+
+    private boolean isDynamicIncludeFlat(JsonNode node) {
+        return (node.asText().startsWith("${") || node.asText().startsWith("$${"));
     }
 }

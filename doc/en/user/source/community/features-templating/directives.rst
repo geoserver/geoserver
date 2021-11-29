@@ -1070,7 +1070,17 @@ Regarding the :code:`$includeFlat` option is worth mentioning that in a JSON con
 * If a JSON object is included, then its properties are directly included in-place, which makes sense only within another object. 
 * If instead a JSON array is included, then its values are directly included in-place, which makes sense only within another array.
 
-The following JSON snippet shows the four possible syntax options for template inclusion:
+The following JSON snippet shows the five possible syntax options for template inclusion:
+
+${property}:
+
+.. code-block:: json
+   :linenos: 
+
+    {
+       "aProperty": "10", 
+       "bProperty": "20"
+    }
 
 .. code-block:: json
    :linenos: 
@@ -1081,7 +1091,8 @@ The following JSON snippet shows the four possible syntax options for template i
        "anArray" : [
           "$include{arrayElement.json}", 
           "$includeFlat{subArray.json}" 
-       ]
+       ],
+      "$includeFlat": "${property}"
     }
 
 Notes:
@@ -1094,6 +1105,7 @@ Notes:
    element, or the creation of a nested array.
 4) The ``subArray.json`` template (line 6) must be an array itself, the container array will be stripped and
    its values directly integrated inside ``anArray``.
+5) The ``${property}`` template (line 7) evaluates to a json, its properties will be passed to parent json without ``"$includeFlat"`` keyword.
 
 
 XML based templates (GML)

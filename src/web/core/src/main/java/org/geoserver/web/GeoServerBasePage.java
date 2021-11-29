@@ -5,15 +5,6 @@
  */
 package org.geoserver.web;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -39,6 +30,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.Type;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
@@ -59,6 +51,18 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Base class for web pages in GeoServer web application.
@@ -168,7 +172,8 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                             org.apache.wicket.markup.ComponentTag tag) {
                                         String loginPath = getResourcePath(info.getLoginPath());
                                         tag.put("action", loginPath);
-                                    };
+                                    }
+                                    ;
                                 };
 
                         Image image;
@@ -428,7 +433,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         DropDownChoice<Locale> select =
                 new DropDownChoice<>(
                         "localeSwitcher",
-                        new Model<>(Locale.ENGLISH),
+                        new Model<>(getSessionLocale()),
                         LocalizationsFinder.getAvailableLocales());
         select.add(
                 new AjaxFormComponentUpdatingBehavior("change") {
@@ -439,10 +444,39 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                         // cannot be set to null, so using english as a fallback
                         if (locale == null) locale = Locale.ENGLISH;
                         getSession().setLocale(locale);
+
+                        // also save it in a cookie
+                        Cookie languageCookie =
+                                new Cookie(
+                                        GeoServerApplication.LANGUAGE_COOKIE_NAME,
+                                        locale.getLanguage());
+                        languageCookie.setMaxAge(GeoServerApplication.LANGUAGE_COOKIE_AGE);
+                        ((WebResponse) getResponse()).addCookie(languageCookie);
+
                         target.add(getPage());
                     }
                 });
         return select;
+    }
+
+    /**
+     * Returns the locale held in the session, if it's one of the locales supported by GeoServer
+     *
+     * @return
+     */
+    private Locale getSessionLocale() {
+        Locale locale = getSession().getLocale();
+        if (locale == null) return Locale.ENGLISH;
+
+        // exact match?
+        List<Locale> locales = LocalizationsFinder.getAvailableLocales();
+        if (locales.contains(locale)) return locale;
+
+        // maybe a match just on the language then?
+        return locales.stream()
+                .filter(l -> locale.getLanguage().equals(l.getLanguage()))
+                .findFirst()
+                .orElse(Locale.ENGLISH);
     }
 
     private String getResourcePath(String path) {

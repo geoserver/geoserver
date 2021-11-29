@@ -1515,3 +1515,11 @@ li.select2-results__option {
 .fullscreen #cm_editor_heigth {
    enabled: false;
 }
+
+#localeSwitcher {
+  margin-left: 0.5em;
+}
+
+#localeSwitcher img, #_spring_security_remember_me {
+   vertical-align: middle;
+}

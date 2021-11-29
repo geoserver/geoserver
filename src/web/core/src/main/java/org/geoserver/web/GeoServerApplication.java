@@ -7,14 +7,6 @@ package org.geoserver.web;
 
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.logging.Logger;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Application;
 import org.apache.wicket.ConverterLocator;
 import org.apache.wicket.DefaultExceptionMapper;
@@ -36,6 +28,8 @@ import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.IRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebRequest;
+import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.resource.JQueryResourceReference;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
@@ -63,6 +57,17 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.logging.Logger;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * The GeoServer application, the main entry point for any Wicket application. In particular, this
  * one sets up, among the others, custom resource loader, custom localizers, and custom converters
@@ -74,6 +79,11 @@ import org.springframework.security.authentication.event.InteractiveAuthenticati
  */
 public class GeoServerApplication extends WebApplication
         implements ApplicationContextAware, ApplicationListener<ApplicationEvent> {
+
+    /** Name of the cookie used to remember the chosen language across sessions */
+    public static final String LANGUAGE_COOKIE_NAME = "GeoServerUILanguage";
+    /** Default cookie expiration date (one year) */
+    public static final int LANGUAGE_COOKIE_AGE = 365 * 24 * 60 * 60;
 
     /** logger for web application */
     public static Logger LOGGER = Logging.getLogger("org.geoserver.web");
@@ -302,8 +312,32 @@ public class GeoServerApplication extends WebApplication
     @Override
     public Session newSession(Request request, Response response) {
         Session s = new GeoServerSession(request);
-        if (s.getLocale() == null) s.setLocale(Locale.ENGLISH);
+
+        // the locale is normally established by the browser's accept language, but we override
+        // it in case a different choice was made by the user in the past
+        Locale locale = getLocaleFromCookies(request, response);
+        if (locale != null) s.setLocale(locale);
+        else if (s.getLocale() == null) s.setLocale(Locale.ENGLISH);
+        
         return s;
+    }
+
+    /** Grabs the locale from cookies, if possible, otherwise defaults to English */
+    private Locale getLocaleFromCookies(Request request, Response response) {
+        if (request instanceof WebRequest) {
+            List<Cookie> cookies = ((WebRequest) request).getCookies();
+
+            for (Cookie cookie : cookies) {
+                if (LANGUAGE_COOKIE_NAME.equals(cookie.getName())) {
+                    // refresh cookie
+                    cookie.setMaxAge(LANGUAGE_COOKIE_AGE);
+                    ((WebResponse) response).addCookie(cookie);
+
+                    return new Locale(cookie.getValue());
+                }
+            }
+        }
+        return null;
     }
 
     /*

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.CoverageReadingTransformation;
 import org.geotools.feature.FeatureTypes;
 import org.geotools.styling.AnchorPoint;
 import org.geotools.styling.ChannelSelection;
@@ -69,7 +70,9 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
 
     Expression rasterTransformation = null;
 
-    boolean otherRenderingTransformations = false;
+    CoverageReadingTransformation coverageReadingTransformation = null;
+
+    List<Expression> otherRenderingTransformations = new ArrayList<>();
 
     public RasterSymbolizerVisitor(double scaleDenominator, FeatureType featureType) {
         this.scaleDenominator = scaleDenominator;
@@ -80,16 +83,25 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
         symbolizers.clear();
         otherSymbolizers = false;
         rasterTransformation = null;
-        otherRenderingTransformations = false;
+        otherRenderingTransformations = new ArrayList<>();
     }
 
     public List<RasterSymbolizer> getRasterSymbolizers() {
-        if (otherSymbolizers || otherRenderingTransformations) return Collections.emptyList();
+        if (otherSymbolizers || !otherRenderingTransformations.isEmpty())
+            return Collections.emptyList();
         else return symbolizers;
     }
 
     public Expression getRasterRenderingTransformation() {
         return rasterTransformation;
+    }
+
+    public CoverageReadingTransformation getCoverageReadingTransformation() {
+        return coverageReadingTransformation;
+    }
+
+    public List<Expression> getOtherRenderingTransformations() {
+        return otherRenderingTransformations;
     }
 
     @Override
@@ -145,25 +157,32 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
             Expression tx = fts.getTransformation();
             if (tx != null) {
                 boolean rasterTransformation = false;
-                if (tx instanceof Function) {
-                    Function f = (Function) tx;
-                    FunctionName name = f.getFunctionName();
-                    if (name != null) {
-                        Parameter<?> result = name.getReturn();
-                        if (result != null) {
-                            if (GridCoverage2D.class.isAssignableFrom(result.getType())) {
-                                rasterTransformation = true;
-                                this.rasterTransformation = tx;
-                            }
-                        }
-                    }
+                if (tx instanceof CoverageReadingTransformation)
+                    this.coverageReadingTransformation = (CoverageReadingTransformation) tx;
+                else if (tx instanceof Function) {
+                    rasterTransformation = isRasterTransformation(tx, rasterTransformation);
                 }
-                otherRenderingTransformations |= !rasterTransformation;
+                if (!rasterTransformation) otherRenderingTransformations.add(tx);
             }
             for (Rule r : fts.rules()) {
                 r.accept(this);
             }
         }
+    }
+
+    private boolean isRasterTransformation(Expression tx, boolean rasterTransformation) {
+        Function f = (Function) tx;
+        FunctionName name = f.getFunctionName();
+        if (name != null) {
+            Parameter<?> result = name.getReturn();
+            if (result != null) {
+                if (GridCoverage2D.class.isAssignableFrom(result.getType())) {
+                    rasterTransformation = true;
+                    this.rasterTransformation = tx;
+                }
+            }
+        }
+        return rasterTransformation;
     }
 
     @Override

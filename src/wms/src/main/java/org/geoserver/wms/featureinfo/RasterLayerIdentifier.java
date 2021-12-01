@@ -38,11 +38,14 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.CoverageReadingTransformation;
+import org.geotools.coverage.grid.io.CoverageReadingTransformation.ReaderAndParams;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.store.FilteringFeatureCollection;
 import org.geotools.data.util.NullProgressListener;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
@@ -50,6 +53,7 @@ import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.TransformedDirectPosition;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geometry.util.XRectangle2D;
 import org.geotools.image.ImageWorker;
 import org.geotools.image.util.ImageUtilities;
@@ -69,8 +73,10 @@ import org.opengis.coverage.grid.GridEnvelope;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.expression.Expression;
 import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.spatial.BBOX;
 import org.opengis.geometry.DirectPosition;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.FactoryException;
@@ -125,12 +131,43 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                 setupReadParameters(requestParams, layer, filter, sort, cinfo, reader, position);
         if (parameters == null) return null;
 
-        GridCoverage2D coverage = readCoverage(requestParams, reader, parameters);
-        if (coverage == null) {
+        Object info = read(requestParams, reader, parameters);
+        if (info instanceof GridCoverage2D) {
+            GridCoverage2D coverage = (GridCoverage2D) info;
+            return toFeatures(cinfo, coverage, position, requestParams);
+        } else if (info instanceof FeatureCollection) {
+            // the read used the whole WMS GetMap area (an RT may need more space than just the
+            // queried pixel to produce correct results), need to filter down the results
+            FeatureCollection fc = (FeatureCollection) info;
+            return Arrays.asList(filterCollection(fc, requestParams));
+        } else {
             if (LOGGER.isLoggable(Level.FINE))
                 LOGGER.fine("Unable to load raster data for this request.");
             return null;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private FeatureCollection filterCollection(
+            FeatureCollection fc, FeatureInfoRequestParameters params) {
+        // is it part of the request params?
+        int requestBuffer =
+                params.getBuffer() <= 0
+                        ? VectorBasicLayerIdentifier.MIN_BUFFER_SIZE
+                        : params.getBuffer();
+        ReferencedEnvelope bbox = LayerIdentifier.getEnvelopeFilter(params, requestBuffer);
+
+        FilterFactory2 ff = params.getFilterFactory();
+        BBOX filter = ff.bbox(ff.property(""), bbox);
+
+        return new FilteringFeatureCollection(fc, filter);
+    }
+
+    private List<FeatureCollection> toFeatures(
+            CoverageInfo cinfo,
+            GridCoverage2D coverage,
+            DirectPosition position,
+            FeatureInfoRequestParameters requestParams) {
         FeatureCollection pixel = null;
         try {
             final double[] pixelValues = coverage.evaluate(position, (double[]) null);
@@ -358,19 +395,26 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
         return position;
     }
 
-    private GridCoverage2D readCoverage(
+    private Object read(
             FeatureInfoRequestParameters params,
             GridCoverage2DReader reader,
             GeneralParameterValue[] parameters)
             throws IOException, SchemaException, TransformException, FactoryException {
-        GridCoverage2D coverage = reader.read(parameters);
-
-        //
         Style style = params.getStyle();
         RasterSymbolizerVisitor visitor =
                 new RasterSymbolizerVisitor(params.getScaleDenominator(), null);
         style.accept(visitor);
-        Expression transformation = visitor.getRasterRenderingTransformation();
+
+        // we could skip the reading altoghether
+        CoverageReadingTransformation readingTx = visitor.getCoverageReadingTransformation();
+        if (readingTx != null) {
+            ReaderAndParams ctx = new ReaderAndParams(reader, parameters);
+            return readingTx.evaluate(ctx);
+        }
+
+        // otherwise read, evaluate if a transformation is needed
+        GridCoverage2D coverage = reader.read(parameters);
+        Expression transformation = getTransformation(visitor);
         if (transformation != null) {
             RenderingTransformationHelper helper =
                     new RenderingTransformationHelper() {
@@ -382,22 +426,24 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                                     "This helper is meant to be used with a coverage already read");
                         }
                     };
-            Object result =
-                    helper.applyRenderingTransformation(
-                            transformation,
-                            DataUtilities.source(FeatureUtilities.wrapGridCoverage(coverage)),
-                            Query.ALL,
-                            Query.ALL,
-                            null,
-                            coverage.getCoordinateReferenceSystem2D(),
-                            null);
-            if (result instanceof GridCoverage2D) {
-                coverage = (GridCoverage2D) result;
-            } else {
-                coverage = null;
-            }
+            return helper.applyRenderingTransformation(
+                    transformation,
+                    DataUtilities.source(FeatureUtilities.wrapGridCoverage(coverage)),
+                    Query.ALL,
+                    Query.ALL,
+                    null,
+                    coverage.getCoordinateReferenceSystem2D(),
+                    null);
         }
         return coverage;
+    }
+
+    private Expression getTransformation(RasterSymbolizerVisitor visitor) {
+        Expression result = visitor.getRasterRenderingTransformation();
+        if (result == null && visitor.getOtherRenderingTransformations().size() == 1) {
+            result = visitor.getOtherRenderingTransformations().get(0);
+        }
+        return result;
     }
 
     private boolean pixelsAreNodata(GridCoverage2D coverage, final double[] values) {

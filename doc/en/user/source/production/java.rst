@@ -28,19 +28,16 @@ GeoServer 2.21.x is compatible with Java 17, but requires extra care for running
 Deployment on Tomcat 9.0.55 has been tested with success.
 
 The "bin" packaging can work too, but requires turning off the Marlin rasterizer integration. 
-This can be done by modifying the scripts, or by simply removing the Marlin jars:
+This can be done by modifying the scripts, or by simply removing the Marlin jars::
 
-```
-rm webapps/geoserver/WEB-INF/lib/marlin-0.9.3.jar
-```
+   rm webapps/geoserver/WEB-INF/lib/marlin-0.9.3.jar
+
 
 GeoServer code depends on a variety of libraries trying to access the JDK internals. As reported above,
 it does not seem to matter when running as a web application. However, in case of need, here is
-the full list of opens used by the build process:
+the full list of opens used by the build process::
 
-```
---add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED  --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED
-```
+   --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED  --add-opens=java.desktop/sun.awt.image=ALL-UNNAMED --add-opens=java.naming/com.sun.jndi.ldap=ALL-UNNAMED
 
 Running on Java 11
 ------------------

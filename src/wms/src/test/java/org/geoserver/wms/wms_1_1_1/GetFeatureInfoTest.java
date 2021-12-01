@@ -65,6 +65,7 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.util.logging.Logging;
+import org.hamcrest.CoreMatchers;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -97,6 +98,8 @@ public class GetFeatureInfoTest extends WMSTestSupport {
 
     private static final QName RAIN = new QName(MockData.SF_URI, "rain", MockData.SF_PREFIX);
     private static final String RAIN_RT_STYLE = "filteredRain";
+    private static final String RAIN_CONTOUR_STYLE = "contourRain";
+    private static final String FOOTPRINTS_STYLE = "footprints";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -231,6 +234,10 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         // add global rain and style
         testData.addRasterLayer(RAIN, "rain.zip", "asc", getCatalog());
         testData.addStyle(RAIN_RT_STYLE, "filteredRain.sld", GetMapIntegrationTest.class, catalog);
+        testData.addStyle(RAIN_CONTOUR_STYLE, "rainContour.sld", GetFeatureInfoTest.class, catalog);
+
+        // footprints extraction tx
+        testData.addStyle(FOOTPRINTS_STYLE, "footprints.sld", GetFeatureInfoTest.class, catalog);
     }
 
     /** Test GetFeatureInfo with 3D content, and the result returns the expected point. */
@@ -1543,6 +1550,42 @@ public class GetFeatureInfoTest extends WMSTestSupport {
     }
 
     @Test
+    public void testRasterToVectorTransformation() throws Exception {
+        JSONObject json =
+                (JSONObject)
+                        getAsJSON(
+                                "wms?service=wms&request=GetFeatureInfo&version=1.1.1"
+                                        + "&layers=rain"
+                                        + "&styles="
+                                        + RAIN_CONTOUR_STYLE
+                                        + "&bbox=-180,-90,180,90&width=600&height=300"
+                                        + "&x=20&y=150"
+                                        + "&info_format=application/json&query_layers=rain"
+                                        + "&srs=EPSG:4326&buffer=2");
+        assertEquals(
+                1000,
+                json.getJSONArray("features")
+                        .getJSONObject(0)
+                        .getJSONObject("properties")
+                        .get("value"));
+    }
+
+    @Test
+    public void testFootprintsExtraction() throws Exception {
+        String response =
+                getAsString(
+                        "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES="
+                                + FOOTPRINTS_STYLE
+                                + "&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetFeatureInfo&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150"
+                                + "&transparent=false&CQL_FILTER=location like 'green%25' + "
+                                + "&query_layers=sf:mosaic&x=10&y=10");
+
+        assertThat(
+                response, CoreMatchers.containsString("location = green_00000002T0000000Z.tiff"));
+    }
+
+    @Test
     public void testLayerGroupStyleSingle() throws Exception {
         LayerGroupInfo group = null;
         Catalog catalog = getCatalog();
@@ -1711,10 +1754,5 @@ public class GetFeatureInfoTest extends WMSTestSupport {
         } finally {
             if (group != null) catalog.remove(group);
         }
-    }
-
-    @Override
-    protected String getLogConfiguration() {
-        return "/DEFAULT_LOGGING.properties";
     }
 }

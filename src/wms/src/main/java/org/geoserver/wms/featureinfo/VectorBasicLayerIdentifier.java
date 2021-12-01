@@ -31,7 +31,6 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -54,7 +53,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
 
     public static final String FEATUREINFO_DEFAULT_BUFFER =
             "org.geoserver.wms.featureinfo.minBuffer";
-    protected static final int MIN_BUFFER_SIZE = Integer.getInteger(FEATUREINFO_DEFAULT_BUFFER, 5);
+    public static final int MIN_BUFFER_SIZE = Integer.getInteger(FEATUREINFO_DEFAULT_BUFFER, 5);
 
     private WMS wms;
 
@@ -80,7 +79,7 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         double radius = getSearchRadius(params, layer, rules);
 
         // compute the bbox for the request
-        ReferencedEnvelope queryEnvelope = getEnvelopeFilter(params, radius);
+        ReferencedEnvelope queryEnvelope = LayerIdentifier.getEnvelopeFilter(params, radius);
         CoordinateReferenceSystem requestedCRS = params.getRequestedCRS();
         CoordinateReferenceSystem dataCRS = layer.getCoordinateReferenceSystem();
         if ((requestedCRS != null) && !CRS.equalsIgnoreMetadata(dataCRS, requestedCRS)) {
@@ -223,23 +222,5 @@ public class VectorBasicLayerIdentifier extends AbstractVectorLayerIdentifier {
         Filter or = ff.or(filters);
         SimplifyingFilterVisitor simplifier = new SimplifyingFilterVisitor();
         return (Filter) or.accept(simplifier, null);
-    }
-
-    private ReferencedEnvelope getEnvelopeFilter(
-            FeatureInfoRequestParameters params, double radius) {
-        final int x = params.getX();
-        final int y = params.getY();
-        final ReferencedEnvelope bbox = params.getRequestedBounds();
-        final int width = params.getWidth();
-        final int height = params.getHeight();
-        Coordinate upperLeft = WMS.pixelToWorld(x - radius, y - radius, bbox, width, height);
-        Coordinate lowerRight = WMS.pixelToWorld(x + radius, y + radius, bbox, width, height);
-
-        return new ReferencedEnvelope(
-                upperLeft.x,
-                lowerRight.x,
-                lowerRight.y,
-                upperLeft.y,
-                bbox.getCoordinateReferenceSystem());
     }
 }

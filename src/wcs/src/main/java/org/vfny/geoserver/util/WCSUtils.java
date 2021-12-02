@@ -20,6 +20,7 @@ import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.WCSInfo;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.GridEnvelope2D;
@@ -100,7 +101,7 @@ public class WCSUtils {
                 ((Resample) PROCESSOR.getOperation("Resample")).doOperation(param, hints);
     }
 
-    /** Crops the coverage to the specified bounds */
+    /** Crops the coverage to the specified bounds. May return null in case of empty intersection */
     public static GridCoverage2D crop(final GridCoverage2D coverage, final Envelope bounds) {
 
         // checks
@@ -109,6 +110,11 @@ public class WCSUtils {
         if (cropBounds.contains((org.locationtech.jts.geom.Envelope) coverageBounds)) {
             return coverage;
         }
+        // if the intersection is so small that we'll end up reading nothing, return null
+        // instead of failing at the JAI level
+        ReferencedEnvelope intersection = cropBounds.intersection(coverageBounds);
+        if (getEnvelopeInRasterSpace(intersection, coverage.getGridGeometry()).isEmpty())
+            return null;
         Polygon polygon = JTS.toGeometry(cropBounds);
         Geometry roi = polygon.getFactory().createMultiPolygon(new Polygon[] {polygon});
 
@@ -127,19 +133,12 @@ public class WCSUtils {
      * @param coverage The coverage to be padded
      * @param bounds The bounds to pad to
      * @return The padded covearge, or the original one, if the padding would not add a single pixel
-     *     to it
+     *     to it. May return null if the padding area is so small it won't contain a single pixel.
      */
     public static GridCoverage2D padToEnvelope(final GridCoverage2D coverage, final Envelope bounds)
             throws TransformException {
         GridGeometry2D gg = coverage.getGridGeometry();
-        GeneralEnvelope padRange =
-                CRS.transform(gg.getCRSToGrid2D(PixelOrientation.UPPER_LEFT), bounds);
-        GridEnvelope2D targetRange =
-                new GridEnvelope2D(
-                        (int) Math.round(padRange.getMinimum(0)),
-                        (int) Math.round(padRange.getMinimum(1)),
-                        (int) Math.round(padRange.getSpan(0)),
-                        (int) Math.round(padRange.getSpan(1)));
+        GridEnvelope2D targetRange = getEnvelopeInRasterSpace(bounds, gg);
         GridEnvelope2D sourceRange = gg.getGridRange2D();
         if (sourceRange.x == targetRange.x
                 && sourceRange.y == targetRange.y
@@ -147,6 +146,8 @@ public class WCSUtils {
                 && sourceRange.height == targetRange.height) {
             return coverage;
         }
+        // in case the target envelope is so tiny that it won't fix a whole pixel on either axis
+        if (targetRange.isEmpty()) return null;
 
         GridGeometry2D target =
                 new GridGeometry2D(
@@ -161,6 +162,21 @@ public class WCSUtils {
         param.parameter("geometry").setValue(target);
 
         return (GridCoverage2D) PROCESSOR.doOperation(param);
+    }
+
+    private static GridEnvelope2D getEnvelopeInRasterSpace(Envelope bounds, GridGeometry2D gg) {
+        try {
+            // transform to raster space, and snap to the integer grid
+            GeneralEnvelope rasterEnvelopeFloat =
+                    CRS.transform(gg.getCRSToGrid2D(PixelOrientation.UPPER_LEFT), bounds);
+            return new GridEnvelope2D(
+                    (int) Math.round(rasterEnvelopeFloat.getMinimum(0)),
+                    (int) Math.round(rasterEnvelopeFloat.getMinimum(1)),
+                    (int) Math.round(rasterEnvelopeFloat.getSpan(0)),
+                    (int) Math.round(rasterEnvelopeFloat.getSpan(1)));
+        } catch (TransformException e) {
+            throw new ServiceException("Failed to transform envelope to raster space", e);
+        }
     }
 
     /**

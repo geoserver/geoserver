@@ -1087,6 +1087,7 @@ public class GetCoverage {
                     && (covEnvelope.getWidth() > readBoundingBox.getWidth()
                             || covEnvelope.getHeight() > readBoundingBox.getHeight())) {
                 cropped = cropOnEnvelope(cov, readEnvelope);
+                if (cropped == null) continue;
             }
 
             // do we have less than expected?
@@ -1096,7 +1097,7 @@ public class GetCoverage {
                 padded = padOnEnvelope(cropped, padEnvelope);
             }
 
-            result.add(padded);
+            if (padded != null) result.add(padded);
         }
 
         return result;
@@ -1859,12 +1860,12 @@ public class GetCoverage {
                 for (GeneralEnvelope ge : normalizedEnvelopes) {
                     if (ge.intersects(coverageEnvelope, false)) {
                         GridCoverage2D cropped = cropOnEnvelope(coverage, ge);
-                        result.add(cropped);
+                        if (cropped != null) result.add(cropped);
                     }
                 }
             } else {
                 GridCoverage2D cropped = cropOnEnvelope(coverage, subset);
-                result.add(cropped);
+                if (cropped != null) result.add(cropped);
             }
         }
         return result;
@@ -1886,6 +1887,7 @@ public class GetCoverage {
         }
 
         GridCoverage2D cropped = WCSUtils.crop(coverage, cropEnvelope);
+        if (cropped == null) return null;
         cropped = GridCoverageWrapper.wrapCoverage(cropped, coverage, null, null, false);
         return cropped;
     }
@@ -1894,9 +1896,8 @@ public class GetCoverage {
             throws TransformException {
         GridCoverage2D padded = WCSUtils.padToEnvelope(coverage, padEnvelope);
         // in case of no padding just return the original coverage without wrapping
-        if (padded == coverage) {
-            return coverage;
-        }
+        if (padded == coverage) return coverage;
+        if (padded == null) return null;
         padded = GridCoverageWrapper.wrapCoverage(padded, coverage, null, null, false);
         return padded;
     }

@@ -41,6 +41,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.CoverageUtils;
 import org.geoserver.ows.util.RequestUtils;
+import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.kvp.GridCS;
 import org.geoserver.wcs.kvp.GridType;
 import org.geoserver.wcs.response.DescribeCoverageTransformer;
@@ -361,6 +362,9 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
             // to crop
             if (!intersectionEnvelopeInSourceCRS.contains(coverage.getEnvelope2D(), true)) {
                 coverage = WCSUtils.crop(coverage, intersectionEnvelopeInSourceCRS);
+                if (coverage == null)
+                    throw new ServiceException(
+                            "Requested area incompatible with raster space, less than a pixel would be read");
             }
 
             /** Band Select (works on just one field) */

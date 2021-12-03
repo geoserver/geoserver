@@ -50,3 +50,7 @@ Provide the connection parameters directly in the configuration file. This inclu
 
 - ``pool.validationQuery``: validation query for connections from pool, must be set when ``pool.testOnBorrow`` is true
 
+- ``pool.testWhileIdle``: whether to validate idle connections, used in conjunction with the idle timer below 
+
+- ``pool.setTimeBetweenEvictionRunsMillis``: period in millseconds for the idle object evictor, -1 to disable
+

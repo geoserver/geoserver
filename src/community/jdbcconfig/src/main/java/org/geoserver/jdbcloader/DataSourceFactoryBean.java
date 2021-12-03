@@ -178,7 +178,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
                 get(config, "pool.testWhileIdle", Boolean.class, false).or(false));
         
         dataSource.setTimeBetweenEvictionRunsMillis(
-                get(config, "pool.timeBetweenEvictionRunsMillis", Long.class, false).or(-1l));
+                get(config, "pool.timeBetweenEvictionRunsMillis", Long.class, false).or(-1L));
 
         boolean testOnBorrow = get(config, "pool.testOnBorrow", Boolean.class, false).or(false);
         if (testOnBorrow) {

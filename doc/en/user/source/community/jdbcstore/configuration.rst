@@ -44,11 +44,11 @@ Provide the connection parameters directly in the configuration file. This inclu
 
 - ``pool.poolPreparedStatements``: whether to pool prepared statements
 
-- ``pool.maxOpenPreparedStatements``: size of prepared statement cache, only used if ``pool.poolPreparedStatements`` = true
+- ``pool.maxOpenPreparedStatements``: size of prepared statement cache, only used if ``pool.poolPreparedStatements`` is true
 
 - ``pool.testOnBorrow``: whether to validate connections when obtaining from the pool
 
-- ``pool.validationQuery``: validation query for connections from pool, must be set when ``pool.testOnBorrow`` = true
+- ``pool.validationQuery``: validation query for connections from pool, must be set when ``pool.testOnBorrow`` is true
 
 - ``pool.testWhileIdle``: whether to validate idle connections, used in conjunction with the idle timer below 
 

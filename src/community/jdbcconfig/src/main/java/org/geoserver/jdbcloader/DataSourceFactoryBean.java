@@ -173,10 +173,10 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
                 get(config, "pool.poolPreparedStatements", Boolean.class, false).or(true));
         dataSource.setMaxOpenPreparedStatements(
                 get(config, "pool.maxOpenPreparedStatements", Integer.class, false).or(50));
-        
+
         dataSource.setTestWhileIdle(
                 get(config, "pool.testWhileIdle", Boolean.class, false).or(false));
-        
+
         dataSource.setTimeBetweenEvictionRunsMillis(
                 get(config, "pool.timeBetweenEvictionRunsMillis", Long.class, false).or(-1L));
 

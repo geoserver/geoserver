@@ -43,7 +43,7 @@ pool.validationQuery=SELECT now()
 
 
 # The indication of whether objects will be validated by the idle object evictor (if any). If an object fails to validate, it will be dropped from the pool. 
-# pool.testWhileIdle=false
+pool.testWhileIdle=false
 
 # The number of milliseconds to sleep between runs of the idle object evictor thread. When non-positive, no idle object evictor thread will be run. 
-# pool.timeBetweenEvictionRunsMillis=-1L
+pool.timeBetweenEvictionRunsMillis=-1L

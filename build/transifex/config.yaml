@@ -1,0 +1,6 @@
+filters:
+- filter_type: file
+  file_format: PROPERTIES
+  source_file: src/web/wms/src/main/resources/GeoServerApplication.properties
+  source_language: en
+  translation_files_expression: 'src/web/wms/src/main/resources/GeoServerApplication_<lang>.properties'

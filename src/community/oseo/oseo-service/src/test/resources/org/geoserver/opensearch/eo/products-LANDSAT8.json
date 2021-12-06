@@ -110,7 +110,10 @@
               "offering": "${eo:offering}",
               "method": "${eo:method}",
               "type": "${eo:type}",
-              "href": "$${templateLink(eo:href)}"
+              "href": "$${templateLink(eo:href)}",
+              "title": "productTitle1",
+              "title2": "productTitle2",
+              "randomText": "productText"
             }
           ]
         }

@@ -68,7 +68,10 @@
               "offering": "${eo:offering}",
               "method": "${eo:method}",
               "type": "${eo:type}",
-              "href": "$${templateLink(eo:href)}"
+              "href": "$${templateLink(eo:href)}",
+              "title": "collectionsTitle1",
+              "title2": "collectionsTitle2",
+              "randomText": "collectionsText"
             }
             
           ]

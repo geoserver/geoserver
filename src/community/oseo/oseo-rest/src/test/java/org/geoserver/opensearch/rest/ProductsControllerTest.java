@@ -508,6 +508,9 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(
                 "${BASE_URL}/sentinel2/ows?service=wms&version=1.3.0&request=GetCapabilities",
                 json.read("$.links[0].href"));
+        assertEquals("randomText6881", json.read("$.links[0].randomText"));
+        assertEquals("title6881.2", json.read("$.links[0].title2"));
+        assertEquals("title6881.1", json.read("$.links[0].title"));
     }
 
     @Test
@@ -540,6 +543,9 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(
                 "${BASE_URL}/SENTINEL2/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/ows?service=wms&version=1.3.0&request=GetCapabilities",
                 json.read("$.links[0].href"));
+        assertEquals("text-1", json.read("$.links[0].randomText"));
+        assertEquals("title2-2.1", json.read("$.links[0].title2"));
+        assertEquals("title-1", json.read("$.links[0].title"));
     }
 
     @Test

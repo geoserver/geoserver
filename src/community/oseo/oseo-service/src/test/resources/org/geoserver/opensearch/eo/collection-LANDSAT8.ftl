@@ -1,4 +1,5 @@
-<#assign a = model.attributes /> 
+<#assign a = model.attributes />
+<p>${a.ogcLinks}</p>
  <tr valign="top">
     <td>
       <b>Title</b>

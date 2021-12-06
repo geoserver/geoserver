@@ -18,14 +18,14 @@ VALUES(34, 'DISABLED_COLLECTION', 'A disabled collections', 'Not meant to be sha
 select setval('collection_id_seq'::regclass, 35);
 -- collection ogc links
 INSERT INTO public.collection_ogclink
-("collection_id", "offering", "method", "code", "type", "href")
-VALUES(17, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel2/ows?service=wms&version=1.3.0&request=GetCapabilities');
+("collection_id", "offering", "method", "code", "type", "href", "title", "title2", "randomText")
+VALUES(17, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel2/ows?service=wms&version=1.3.0&request=GetCapabilities', 'title17.1', 'title17.2', 'randomText1');
 INSERT INTO public.collection_ogclink
-("collection_id", "offering", "method", "code", "type", "href")
-VALUES(31, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/landsat8/ows?service=wms&version=1.3.0&request=GetCapabilities');
+("collection_id", "offering", "method", "code", "type", "href", "title", "title2", "randomText")
+VALUES(31, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/landsat8/ows?service=wms&version=1.3.0&request=GetCapabilities', 'title31.1', 'title31.2', 'randomText2');
 INSERT INTO public.collection_ogclink
-("collection_id", "offering", "method", "code", "type", "href")
-VALUES(32, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel1/ows?service=wms&version=1.3.0&request=GetCapabilities');
+("collection_id", "offering", "method", "code", "type", "href", "title", "title2", "randomText")
+VALUES(32, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel1/ows?service=wms&version=1.3.0&request=GetCapabilities', 'title32.1', 'title32.2', 'randomText3');
 -- collection publishing metadata
 INSERT into public.collection_layer
 ("cid", "workspace", "layer", "separateBands", "bands", "browseBands", "heterogeneousCRS", "mosaicCRS", "defaultLayer")

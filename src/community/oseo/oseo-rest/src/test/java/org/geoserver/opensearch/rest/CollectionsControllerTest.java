@@ -269,6 +269,9 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals(
                 "${BASE_URL}/test123/ows?service=wms&version=1.3.0&request=GetCapabilities",
                 json.read("$.links[0].href"));
+        assertEquals("text-test123-1", json.read("$.links[0].randomText"));
+        assertEquals("title2-test123-2.1", json.read("$.links[0].title2"));
+        assertEquals("title-test123-1", json.read("$.links[0].title"));
     }
 
     @Test

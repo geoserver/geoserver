@@ -11,171 +11,171 @@ filters:
   translation_files_expression: 'src/web/wfs/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\backup-restore\web\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/backup-restore/web/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\backup-restore\web\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/backup-restore/web/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\cog\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/cog/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\cog\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/cog/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\dds\src\main\java/GeoServerApplication.properties
+  source_file: src/community/dds/src/main/java/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\dds\src\main\java/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/dds/src/main/java/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\dyndimension\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/dyndimension/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\dyndimension\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/dyndimension/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\elasticsearch\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/elasticsearch/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\elasticsearch\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/elasticsearch/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\features-templating\features-templating-web\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/features-templating/features-templating-web/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\features-templating\features-templating-web\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/features-templating/features-templating-web/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\flatgeobuf\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/flatgeobuf/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\flatgeobuf\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/flatgeobuf/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\geogig\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/geogig/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\geogig\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/geogig/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\geopkg\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/geopkg/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\geopkg\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/geopkg/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\geostyler\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/geostyler/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\geostyler\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/geostyler/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\gwc-azure-blob\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/gwc-azure-blob/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\gwc-azure-blob\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/gwc-azure-blob/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\gwc-sqlite\src\main\resource/GeoServerApplication.properties
+  source_file: src/community/gwc-sqlite/src/main/resource/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\gwc-sqlite\src\main\resource/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/gwc-sqlite/src/main/resource/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\hello_web\src\main\java/GeoServerApplication.properties
+  source_file: src/community/hello_web/src/main/java/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\hello_web\src\main\java/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/hello_web/src/main/java/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\hz-cluster\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/hz-cluster/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\hz-cluster\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/hz-cluster/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\jms-cluster\jms-geoserver\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/jms-cluster/jms-geoserver/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\jms-cluster\jms-geoserver\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/jms-cluster/jms-geoserver/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\metadata\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/metadata/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\metadata\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/metadata/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\netcdf-ghrsst\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/netcdf-ghrsst/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\netcdf-ghrsst\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/netcdf-ghrsst/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\ogcapi\dggs\web-dggs\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/ogcapi/dggs/web-dggs/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\ogcapi\dggs\web-dggs\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/ogcapi/dggs/web-dggs/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\pgraster\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/pgraster/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\pgraster\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/pgraster/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\pgraster\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/pgraster/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\pgraster\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/pgraster/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\rest-ext\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/rest-ext/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\rest-ext\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/rest-ext/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\saml\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/saml/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\saml\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/saml/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\security\keycloak\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/security/keycloak/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\security\keycloak\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/security/keycloak/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\security\oauth2-core\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/security/oauth2-core/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\security\oauth2-core\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/security/oauth2-core/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\security\oauth2-geonode\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/security/oauth2-geonode/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\security\oauth2-geonode\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/security/oauth2-geonode/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\security\oauth2-github\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/security/oauth2-github/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\security\oauth2-github\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/security/oauth2-github/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\security\oauth2-google\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/security/oauth2-google/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\security\oauth2-google\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/security/oauth2-google/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\security\oauth2-openid-connect\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/security/oauth2-openid-connect/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\security\oauth2-openid-connect\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/security/oauth2-openid-connect/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\smart-data-loader\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/smart-data-loader/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\smart-data-loader\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/smart-data-loader/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\solr\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/solr/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\solr\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/solr/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\taskmanager\core\bin\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/taskmanager/core/bin/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\taskmanager\core\bin\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/taskmanager/core/bin/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\taskmanager\core\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/taskmanager/core/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\taskmanager\core\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/taskmanager/core/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\web-service-auth\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/web-service-auth/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\web-service-auth\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/web-service-auth/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\community\wms-eo\src\main\resources/GeoServerApplication.properties
+  source_file: src/community/wms-eo/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\community\wms-eo\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/community/wms-eo/src/main/resources/GeoServerApplication_<lang>.properties'

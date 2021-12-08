@@ -5,6 +5,16 @@
  */
 package org.geoserver.web;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -51,18 +61,6 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Base class for web pages in GeoServer web application.
@@ -172,8 +170,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                                             org.apache.wicket.markup.ComponentTag tag) {
                                         String loginPath = getResourcePath(info.getLoginPath());
                                         tag.put("action", loginPath);
-                                    }
-                                    ;
+                                    };
                                 };
 
                         Image image;
@@ -432,31 +429,41 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         // defaults to English to have a more compact dropdown
         DropDownChoice<Locale> select =
                 new DropDownChoice<>(
-                        "localeSwitcher",
-                        new Model<>(getSessionLocale()),
-                        LocalizationsFinder.getAvailableLocales());
+                        "localeSwitcher", new Model<>(getSessionLocale()), getLocalesModel());
         select.add(
                 new AjaxFormComponentUpdatingBehavior("change") {
 
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         Locale locale = select.getModelObject();
-                        // cannot be set to null, so using english as a fallback
-                        if (locale == null) locale = Locale.ENGLISH;
+                        // null is used for reset to browser settings
+                        if (locale == null) {
+                            // clear the cookie
+                            Cookie languageCookie =
+                                    new Cookie(GeoServerApplication.LANGUAGE_COOKIE_NAME, null);
+                            ((WebResponse) getResponse()).clearCookie(languageCookie);
+
+                            // get the language from request
+                            locale = target.getPage().getRequest().getLocale();
+                            if (locale == null) locale = Locale.ENGLISH;
+                        } else {
+                            // explicit choice, save to cookie
+                            getGeoServerApplication().refreshLocaleCookie(getResponse(), locale);
+                        }
+
+                        // by now locale has been set to a non-null value, stick in the session too
                         getSession().setLocale(locale);
-
-                        // also save it in a cookie
-                        Cookie languageCookie =
-                                new Cookie(
-                                        GeoServerApplication.LANGUAGE_COOKIE_NAME,
-                                        locale.getLanguage());
-                        languageCookie.setMaxAge(GeoServerApplication.LANGUAGE_COOKIE_AGE);
-                        ((WebResponse) getResponse()).addCookie(languageCookie);
-
                         target.add(getPage());
                     }
                 });
         return select;
+    }
+
+    private List<Locale> getLocalesModel() {
+        List<Locale> model = new ArrayList<>();
+        model.add(null); // to reset the choice and go back to browser language
+        model.addAll(LocalizationsFinder.getAvailableLocales());
+        return model;
     }
 
     /**

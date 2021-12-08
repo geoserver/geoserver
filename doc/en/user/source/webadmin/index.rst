@@ -11,6 +11,15 @@ The Web administration interface is a web-based tool for configuring all aspects
 
 The following sections detail the menu options available in GeoServer. **Unless otherwise specified, you will need to be logged in with administrative credentials to see these options.**
 
+Choosing the UI language
+------------------------
+
+The administration interface is displayed using the browser native language, if a translation
+is available in it, otherwise, it shows in English.
+The drop-down chooser on the side of the login/logout button allows to choose a different language.
+The language choice is saved in the session, as well as in a cookie, to retain the language
+choice across user sessions.
+
 About & Status
 --------------
 

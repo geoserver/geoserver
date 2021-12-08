@@ -7,6 +7,15 @@ package org.geoserver.web;
 
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.logging.Logger;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Application;
 import org.apache.wicket.ConverterLocator;
 import org.apache.wicket.DefaultExceptionMapper;
@@ -56,17 +65,6 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
-
-import java.io.File;
-import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.logging.Logger;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * The GeoServer application, the main entry point for any Wicket application. In particular, this
@@ -313,31 +311,40 @@ public class GeoServerApplication extends WebApplication
     public Session newSession(Request request, Response response) {
         Session s = new GeoServerSession(request);
 
-        // the locale is normally established by the browser's accept language, but we override
-        // it in case a different choice was made by the user in the past
-        Locale locale = getLocaleFromCookies(request, response);
-        if (locale != null) s.setLocale(locale);
-        else if (s.getLocale() == null) s.setLocale(Locale.ENGLISH);
-        
+        // the locale is normally established by the browser's accept language, but it
+        // can be overridden by a cookie (set by GUI in GeoServerWebPage)
+        Locale locale = getLocaleFromCookies(request);
+        if (locale != null) {
+            refreshLocaleCookie(response, locale);
+            s.setLocale(locale);
+        } else if (s.getLocale() == null) {
+            s.setLocale(Locale.ENGLISH);
+        }
+
         return s;
     }
 
     /** Grabs the locale from cookies, if possible, otherwise defaults to English */
-    private Locale getLocaleFromCookies(Request request, Response response) {
+    public Locale getLocaleFromCookies(Request request) {
         if (request instanceof WebRequest) {
             List<Cookie> cookies = ((WebRequest) request).getCookies();
 
             for (Cookie cookie : cookies) {
                 if (LANGUAGE_COOKIE_NAME.equals(cookie.getName())) {
-                    // refresh cookie
                     cookie.setMaxAge(LANGUAGE_COOKIE_AGE);
-                    ((WebResponse) response).addCookie(cookie);
-
                     return new Locale(cookie.getValue());
                 }
             }
         }
         return null;
+    }
+
+    /** Refreshes the locale cookie, to maintain its presence in future requests */
+    public void refreshLocaleCookie(Response response, Locale locale) {
+        Cookie languageCookie =
+                new Cookie(GeoServerApplication.LANGUAGE_COOKIE_NAME, locale.getLanguage());
+        languageCookie.setMaxAge(GeoServerApplication.LANGUAGE_COOKIE_AGE);
+        ((WebResponse) response).addCookie(languageCookie);
     }
 
     /*

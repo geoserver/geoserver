@@ -192,21 +192,27 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                             w.write(csvSeparator);
                         }
                         j++;
-                        // Multi valued properties aren't supported, only for SF0 for now
+                        // Returns the list of values as a comma separated string
                         Collection<Property> values = f.getProperties(desc.getName());
                         if (values.size() > 1) {
-                            throw new UnsupportedOperationException(
-                                    "Multi valued properties aren't supported with CSV format!");
-                        }
+                            StringBuilder sb = new StringBuilder();
+                            for (Property property : values) {
+                                Object att = property.getValue();
+                                String value = formatToString(att, coordFormatter);
+                                sb.append(value).append(",");
+                            }
+                            sb.setLength(sb.length() - 1);
+                            w.write(prepCSVField(sb.toString()));
+                        } else {
+                            Object att = null;
+                            if (!values.isEmpty()) {
+                                att = values.iterator().next().getValue();
+                            }
 
-                        Object att = null;
-                        if (!values.isEmpty()) {
-                            att = values.iterator().next().getValue();
-                        }
-
-                        if (att != null) {
-                            String value = formatToString(att, coordFormatter);
-                            w.write(prepCSVField(value));
+                            if (att != null) {
+                                String value = formatToString(att, coordFormatter);
+                                w.write(prepCSVField(value));
+                            }
                         }
                     }
                 }

@@ -1,12 +1,12 @@
 <layer>
-  <name>bmapgelaende</name>
+  <name>topowebb_nedtonad</name>
   <id>LayerInfoImpl-3f2427e:172cbb93637:-7ffd</id>
   <type>WMTS</type>
   <defaultStyle>
     <id>StyleInfoImpl--570ae188:124761b8d78:-7fe2</id>
   </defaultStyle>
   <resource class="wmtsLayer">
-    <id>WMTSLayerInfoImpl-3f2427e:172cbb93637:-7ffe</id>
+    <id>WMTSLayerInfoImpl-17eae2a5:17d9ed65afe:-7ff3</id>
   </resource>
   <attribution>
     <logoWidth>0</logoWidth>

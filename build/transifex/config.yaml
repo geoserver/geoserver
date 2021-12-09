@@ -16,151 +16,151 @@ filters:
   translation_files_expression: 'src/web/wcs/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\web\security\core\src\main\resources/GeoServerApplication.properties
+  source_file: src/web/security/core/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\web\security\core\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/web/security/core/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\web\gwc\src\main\resources/GeoServerApplication.properties
+  source_file: src/web/gwc/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\web\gwc\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/web/gwc/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\web\demo\src\main\resources/GeoServerApplication.properties
+  source_file: src/web/demo/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\web\demo\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/web/demo/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\web\core\src\test\resources/GeoServerApplication.properties
+  source_file: src/web/core/src/test/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\web\core\src\test\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/web/core/src/test/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\web\core\src\main\resources/GeoServerApplication.properties
+  source_file: src/web/core/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\web\core\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/web/core/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\security\ldap\src\main\resources/GeoServerApplication.properties
+  source_file: src/security/ldap/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\security\ldap\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/security/ldap/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\security\jdbc\src\main\resources/GeoServerApplication.properties
+  source_file: src/security/jdbc/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\security\jdbc\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/security/jdbc/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\maven\archetype\webPlugin\src\main\resources\archetype-resources\src\main\resources/GeoServerApplication.properties
+  source_file: src/maven/archetype/webPlugin/src/main/resources/archetype-resources/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\maven\archetype\webPlugin\src\main\resources\archetype-resources\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/maven/archetype/webPlugin/src/main/resources/archetype-resources/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\wps-download\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/wps-download/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\wps-download\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/wps-download/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\wps\web-wps\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/wps/web-wps/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\wps\web-wps\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/wps/web-wps/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\wmts-multi-dimensional\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/wmts-multi-dimensional/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\wmts-multi-dimensional\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/wmts-multi-dimensional/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\web-resource\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/web-resource/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\web-resource\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/web-resource/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\wcs2_0-eo\web\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/wcs2_0-eo/web/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\wcs2_0-eo\web\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/wcs2_0-eo/web/src/main/resources/GeoServerApplication_<lang>.properties'
   - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\vectortiles\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/vectortiles/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\vectortiles\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/vectortiles/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\security\cas\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/security/cas/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\security\cas\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/security/cas/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\printing\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/printing/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\printing\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/printing/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\params-extractor\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/params-extractor/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\params-extractor\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/params-extractor/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\ogr\ogr-wfs\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/ogr/ogr-wfs/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\ogr\ogr-wfs\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/ogr/ogr-wfs/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\netcdf-out\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/netcdf-out/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\netcdf-out\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/netcdf-out/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\monitor\core\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/monitor/core/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\monitor\core\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/monitor/core/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\mapml\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/mapml/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\mapml\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/mapml/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\inspire\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/inspire/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\inspire\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/inspire/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\importer\web\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/importer/web/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\importer\web\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/importer/web/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\h2\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/h2/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\h2\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/h2/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\gwc-s3\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/gwc-s3/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\gwc-s3\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/gwc-s3/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\geofence-server\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/geofence-server/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\geofence-server\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/geofence-server/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\geofence\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/geofence/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\geofence\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/geofence/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\excel\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/excel/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\excel\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/excel/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\dxf\core\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/dxf/core/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\dxf\core\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/dxf/core/src/main/resources/GeoServerApplication_<lang>.properties'
 - filter_type: file
   file_format: PROPERTIES
-  source_file: src\extension\csw\web-csw\src\main\resources/GeoServerApplication.properties
+  source_file: src/extension/csw/web-csw/src/main/resources/GeoServerApplication.properties
   source_language: en
-  translation_files_expression: 'src\extension\csw\web-csw\src\main\resources/GeoServerApplication_<lang>.properties'
+  translation_files_expression: 'src/extension/csw/web-csw/src/main/resources/GeoServerApplication_<lang>.properties'

@@ -610,7 +610,8 @@ public class CatalogBuilder {
         } else if (rinfo instanceof WMTSLayerInfo) {
             // the logic to compute the native bounds is pretty convoluted,
             // let's rebuild the layer info
-            WMTSLayerInfo rebuilt = buildWMTSLayer(rinfo.getStore(), rinfo.getNativeName());
+            WMTSLayerInfo rebuilt =
+                    buildWMTSLayer(rinfo.getStore(), rinfo.getNativeName(), rinfo.getNativeCRS());
             bounds = rebuilt.getNativeBoundingBox();
         }
 
@@ -651,7 +652,8 @@ public class CatalogBuilder {
             nativeCRS = rebuilt.getNativeCRS();
 
         } else if (rinfo instanceof WMTSLayerInfo) {
-            WMTSLayerInfo rebuilt = buildWMTSLayer(rinfo.getStore(), rinfo.getNativeName());
+            WMTSLayerInfo rebuilt =
+                    buildWMTSLayer(rinfo.getStore(), rinfo.getNativeName(), rinfo.getNativeCRS());
             return rebuilt.getNativeCRS();
         }
         return nativeCRS;
@@ -799,7 +801,7 @@ public class CatalogBuilder {
         OwsUtils.resolveCollections(layer);
 
         // get a fully initialized version we can copy from
-        WMTSLayerInfo full = buildWMTSLayer(store, layer.getNativeName());
+        WMTSLayerInfo full = buildWMTSLayer(store, layer.getNativeName(), layer.getNativeCRS());
 
         // setup the srs if missing
         if (layer.getSRS() == null) {
@@ -1418,6 +1420,12 @@ public class CatalogBuilder {
     }
 
     WMTSLayerInfo buildWMTSLayer(StoreInfo store, String layerName) throws IOException {
+        return buildWMTSLayer(store, layerName, null);
+    }
+
+    WMTSLayerInfo buildWMTSLayer(
+            StoreInfo store, String layerName, CoordinateReferenceSystem nativeCRS)
+            throws IOException {
         if (store == null || !(store instanceof WMTSStoreInfo)) {
             throw new IllegalStateException("WMTS store not set.");
         }
@@ -1441,10 +1449,9 @@ public class CatalogBuilder {
         // TODO: handle axis order here ?
         // try to get the native SRS -> we use the bounding boxes, GeoServer will publish all of the
         // supported SRS in the root, if we use getSRS() we'll get them all
-        CoordinateReferenceSystem preferred = layer.getPreferredCRS();
-        if (preferred != null) {
-            wli.setSRS(CRS.toSRS(preferred));
-            wli.setNativeCRS(preferred);
+        if (nativeCRS != null) {
+            wli.setSRS(CRS.toSRS(nativeCRS));
+            wli.setNativeCRS(nativeCRS);
         } else {
 
             for (String srs : layer.getSrs()) {

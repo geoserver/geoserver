@@ -33,3 +33,11 @@ The configuration page looks as follows:
    * - Maximum asynchronous jobs
      - How many asynchronous jobs can be run in parallel. Asynchronous jobs can run via the REST API,
          and all jobs started from the GUI are asynchronous.
+   * - Maximum asynchronous jobs
+     - How many asynchronous jobs can be run in parallel. Asynchronous jobs can run via the REST API,
+         and all jobs started from the GUI are asynchronous.
+   * - Completed and stale imports expiration
+     - How many minutes to wait, before removing an import from the database. Imports that are still
+       running are ignored, while completed, errored, or imports that were created, but never started,
+       are going to be considered for cleanup. Value is in minutes, set to zero or negative to never
+       remove values. Defaults to 1440 minutes, one day.

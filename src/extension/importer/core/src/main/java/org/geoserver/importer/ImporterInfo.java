@@ -26,4 +26,14 @@ public interface ImporterInfo extends Serializable {
 
     /** @see #getMaxAsynchronousImports() */
     public void setMaxAsynchronousImports(int maxAsynchronousImports);
+
+    /**
+     * Number of minutes before a context that is not in RUNNING state will be automatically removed
+     * from {@link ImportStore}. Set to zero, or to a negative number, to have no expiry. Defaults
+     * to 1440, one day. Double data type is used to allow integration testing.
+     */
+    double getContextExpiration();
+
+    /** @see #getContextExpiration() */
+    void setContextExpiration(double contextExpiration);
 }

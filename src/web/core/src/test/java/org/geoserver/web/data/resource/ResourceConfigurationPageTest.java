@@ -19,6 +19,7 @@ import static org.geotools.gce.imagemosaic.ImageMosaicFormat.OUTPUT_TRANSPARENT_
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -84,6 +85,7 @@ import org.geotools.referencing.CRS;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.opengis.referencing.FactoryException;
 import org.springframework.security.core.Authentication;
 
 public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
@@ -579,26 +581,12 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         // to display only the code in otherSRS list. This test
         // checks that CRS identified through urn format are properly
         // displayed as well.
-        String baseURL = TestHttpClientProvider.MOCKSERVER;
-        MockHttpClient client = new MockHttpClient();
         Catalog catalog = getCatalog();
-        URL descURL = new URL(baseURL + "/wmts?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS");
-        client.expectGet(
-                descURL,
-                new MockHttpResponse(getClass().getResource("/wmts_getCaps.xml"), "text/xml"));
-
-        TestHttpClientProvider.bind(client, descURL);
-        WMTSStoreInfo storeInfo = new WMTSStoreInfoImpl(getCatalog());
-        storeInfo.setName("Another Mock WMTS Store");
-        storeInfo.setCapabilitiesURL(descURL.toString());
-        storeInfo.setConnectTimeout(60);
-        storeInfo.setMaxConnections(10);
-        storeInfo.setDateCreated(new Date());
-        storeInfo.setDateModified(new Date());
-        catalog.add(storeInfo);
+        URL descURL = configureMockWMTSCapClient();
+        WMTSStoreInfo storeInfo = configureWMTSStoreInfo(catalog, descURL, "WMTS Store Urn");
         CatalogBuilder builder = new CatalogBuilder(catalog);
         builder.setStore(storeInfo);
-        WMTSLayerInfo wmtsLayerInfo = builder.buildWMTSLayer("bmapgrau");
+        WMTSLayerInfo wmtsLayerInfo = builder.buildWMTSLayer("topowebb_nedtonad");
         LayerInfo layerInfo = builder.buildLayer(wmtsLayerInfo);
 
         // page should show additional SRS in WMTS cap document
@@ -631,10 +619,11 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                         "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:3:itemProperties:0:component:link:label");
 
         // checks that they have been properly displayed with not urn format being cut
+        assertEquals("urn:ogc:def:crs:EPSG::3006", epsgComponent1.getDefaultModel().getObject());
 
-        assertEquals("3857", epsgComponent1.getDefaultModel().getObject());
-        assertEquals("urn:ogc:def:crs:EPSG::900913", epsgComponent2.getDefaultModel().getObject());
-        assertEquals("urn:ogc:def:crs:EPSG::3857", epsgComponent3.getDefaultModel().getObject());
+        // not urn format but checking as well
+        assertEquals("3857", epsgComponent2.getDefaultModel().getObject());
+        assertEquals("3006", epsgComponent3.getDefaultModel().getObject());
     }
 
     @Test
@@ -658,5 +647,90 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
                                 "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:srs")
                         .getDefaultModelObjectAsString();
         assertEquals("Asserting EPSG code", "EPSG:4326", nativeSRSTextFieldValue);
+    }
+
+    @Test
+    public void testConsistentUpdateWMTSBbox() throws IOException, FactoryException {
+        LayerInfo layerInfo = setUpWMTSLayer("WMTS Store BBOX");
+        // page should show additional SRS in WMTS cap document
+        login();
+        tester.startPage(new ResourceConfigurationPage(layerInfo, true));
+        ReferencedEnvelope oldEnvelope =
+                (ReferencedEnvelope)
+                        tester.getComponentFromLastRenderedPage(
+                                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeBoundingBox")
+                                .getDefaultModel()
+                                .getObject();
+        // click the FIND button next to open SRS selection popup
+        tester.clickLink(
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:find");
+
+        // verify Layer`s resource is updated with metadata
+        assertNotNull(layerInfo.getResource().getMetadata().get(FeatureTypeInfo.OTHER_SRS));
+
+        // click first item in SRS
+        tester.clickLink(
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeSRS:popup:content:table:listContainer:items:1:itemProperties:0:component:link",
+                true);
+        tester.clickLink(
+                "publishedinfo:tabs:panel:theList:0:content:referencingForm:computeNative", true);
+        // assert that native SRS has changed
+        ReferencedEnvelope newEnvelope =
+                (ReferencedEnvelope)
+                        tester.getComponentFromLastRenderedPage(
+                                        "publishedinfo:tabs:panel:theList:0:content:referencingForm:nativeBoundingBox")
+                                .getDefaultModel()
+                                .getObject();
+        // these are defined in capabilities
+        ReferencedEnvelope envelope =
+                new ReferencedEnvelope(
+                        4305696.0,
+                        8500000.0,
+                        -1200000.0,
+                        2994304.0,
+                        CRS.decode("urn:ogc:def:crs:EPSG::3006"));
+        // the envelope was updated
+        assertNotEquals(oldEnvelope, newEnvelope);
+        // it equals the expected
+        assertEquals(envelope, newEnvelope);
+    }
+
+    private LayerInfo setUpWMTSLayer(String storeName) throws IOException {
+        Catalog catalog = getCatalog();
+        URL descURL = configureMockWMTSCapClient();
+        WMTSStoreInfo storeInfo = configureWMTSStoreInfo(catalog, descURL, storeName);
+        XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
+        WMTSLayerInfo wmtsInfo =
+                xp.load(getClass().getResourceAsStream("/wmtsLayerInfo.xml"), WMTSLayerInfo.class);
+        wmtsInfo.setStore(storeInfo);
+        catalog.add(wmtsInfo);
+        LayerInfo layerInfo =
+                xp.load(getClass().getResourceAsStream("/wmtsLayer.xml"), LayerInfo.class);
+        layerInfo.setResource(wmtsInfo);
+        return layerInfo;
+    }
+
+    private URL configureMockWMTSCapClient() throws IOException {
+        String baseURL = TestHttpClientProvider.MOCKSERVER;
+        MockHttpClient client = new MockHttpClient();
+        URL descURL = new URL(baseURL + "/wmts?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS");
+        client.expectGet(
+                descURL,
+                new MockHttpResponse(getClass().getResource("/wmts_getCaps.xml"), "text/xml"));
+
+        TestHttpClientProvider.bind(client, descURL);
+        return descURL;
+    }
+
+    private WMTSStoreInfo configureWMTSStoreInfo(Catalog catalog, URL capURL, String name) {
+        WMTSStoreInfo storeInfo = new WMTSStoreInfoImpl(getCatalog());
+        storeInfo.setName(name);
+        storeInfo.setCapabilitiesURL(capURL.toString());
+        storeInfo.setConnectTimeout(60);
+        storeInfo.setMaxConnections(10);
+        storeInfo.setDateCreated(new Date());
+        storeInfo.setDateModified(new Date());
+        catalog.add(storeInfo);
+        return storeInfo;
     }
 }

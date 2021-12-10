@@ -5,12 +5,14 @@
 package org.geoserver.importer.jdbc;
 
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.Optional;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.importer.ImportContext;
 import org.geoserver.importer.Importer;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.jdbc.JDBCDataStore;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -30,8 +32,8 @@ class ImportContextMapper {
 
     static {
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-        builder.length(32767); // import contexts can be pretty bulky
-        builder.add(CONTEXT, String.class);
+        // XStream stored context can be pretty large, try to use a clob
+        builder.userData(JDBCDataStore.JDBC_NATIVE_TYPE, Types.CLOB).add(CONTEXT, String.class);
         // these fields are added to speed up lookups
         builder.add(CREATED, Timestamp.class);
         builder.add(UPDATED, Timestamp.class);

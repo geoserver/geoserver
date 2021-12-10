@@ -32,6 +32,7 @@ public class ImporterConfigPageTest extends GeoServerWicketTestSupport {
         config.setUploadRoot(temp);
         config.setMaxSynchronousImports(4);
         config.setMaxAsynchronousImports(2);
+        config.setContextExpiration(300);
         importer.setConfiguration(config);
 
         // make sure it's populated correctly
@@ -40,6 +41,7 @@ public class ImporterConfigPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:uploadRoot:border:border_body:paramValue", temp);
         tester.assertModelValue("form:maxSync", 4);
         tester.assertModelValue("form:maxAsync", 2);
+        tester.assertModelValue("form:expiration", 300d);
 
         // change and save
         FormTester form = tester.newFormTester("form");
@@ -47,12 +49,14 @@ public class ImporterConfigPageTest extends GeoServerWicketTestSupport {
         form.setValue("uploadRoot:border:border_body:paramValue", newUploadRoot);
         form.setValue("maxSync", "2");
         form.setValue("maxAsync", "1");
+        form.setValue("expiration", "1");
         form.submit("submit");
 
         ImporterInfo newConfiguration = importer.getConfiguration();
         assertEquals(newUploadRoot, newConfiguration.getUploadRoot());
         assertEquals(2, newConfiguration.getMaxSynchronousImports());
         assertEquals(1, newConfiguration.getMaxAsynchronousImports());
+        assertEquals(1, newConfiguration.getContextExpiration(), 0d);
     }
 
     @Test

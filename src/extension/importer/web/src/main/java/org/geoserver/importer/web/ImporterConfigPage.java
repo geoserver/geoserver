@@ -65,6 +65,13 @@ public class ImporterConfigPage extends GeoServerSecuredPage {
         maxAsync.add(threadValidator);
         form.add(maxAsync);
 
+        TextField<Double> expiration =
+                new TextField<>(
+                        "expiration",
+                        new PropertyModel<>(model, "contextExpiration"),
+                        Double.class);
+        form.add(expiration);
+
         SubmitLink submit =
                 new SubmitLink("submit", form) {
                     @Override

@@ -170,6 +170,7 @@ import org.opengis.coverage.grid.GridGeometry;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.util.InternationalString;
 
 /**
  * Utility class which loads and saves catalog and configuration objects to and from an xstream.
@@ -2614,8 +2615,9 @@ public class XStreamPersister {
 
         @Override
         @SuppressWarnings("unchecked")
-        public boolean canConvert(@SuppressWarnings("rawtypes") Class aClass) {
-            return aClass.isAssignableFrom(GrowableInternationalString.class);
+        public boolean canConvert(Class aClass) {
+            // REST config actually tries to de-serialize based on InternationalString only
+            return InternationalString.class.isAssignableFrom(aClass);
         }
 
         @Override

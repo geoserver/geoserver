@@ -8,6 +8,7 @@ package org.geoserver.config.util;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -16,6 +17,7 @@ import static org.junit.Assert.fail;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.thoughtworks.xstream.converters.Converter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -84,6 +87,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.referencing.wkt.Formattable;
 import org.geotools.referencing.wkt.UnformattableObjectException;
+import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.NumberRange;
 import org.junit.Assert;
 import org.junit.Before;
@@ -1552,6 +1556,31 @@ public class XStreamPersisterTest {
 
         assertTrue(wmsLayerInfo.getPreferredFormat().equalsIgnoreCase("image/png"));
         assertTrue(wmsLayerInfo.getForcedRemoteStyle().isEmpty());
+    }
+
+    @Test
+    public void testGrowableInternationalStringConverter() {
+        Converter candidate =
+                persister
+                        .getXStream()
+                        .getConverterLookup()
+                        .lookupConverterForType(GrowableInternationalString.class);
+        XStreamPersister.GrowableInternationalStringConverter converter =
+                (XStreamPersister.GrowableInternationalStringConverter) candidate;
+
+        // the class
+        assertTrue(converter.canConvert(GrowableInternationalString.class));
+        // a subclass
+        GrowableInternationalString anonymous =
+                new GrowableInternationalString() {
+                    @Override
+                    public synchronized String toString(Locale locale) {
+                        return "foobar";
+                    }
+                };
+        assertTrue(converter.canConvert(anonymous.getClass()));
+        // wont' try to convert object though
+        assertFalse(converter.canConvert(Object.class));
     }
 
     ByteArrayOutputStream out() {

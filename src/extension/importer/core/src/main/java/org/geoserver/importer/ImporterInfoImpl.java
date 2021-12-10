@@ -12,6 +12,7 @@ public class ImporterInfoImpl implements ImporterInfo {
     String uploadRoot;
     int maxSynchronousImports;
     int maxAsynchronousImports;
+    double contextExpiration = 1440;
 
     public ImporterInfoImpl() {}
 
@@ -19,6 +20,7 @@ public class ImporterInfoImpl implements ImporterInfo {
         this.uploadRoot = configuration.getUploadRoot();
         this.maxSynchronousImports = configuration.getMaxSynchronousImports();
         this.maxAsynchronousImports = configuration.getMaxAsynchronousImports();
+        this.contextExpiration = configuration.getContextExpiration();
     }
 
     public int getMaxSynchronousImports() {
@@ -48,17 +50,29 @@ public class ImporterInfoImpl implements ImporterInfo {
     }
 
     @Override
+    public double getContextExpiration() {
+        return contextExpiration;
+    }
+
+    @Override
+    public void setContextExpiration(double contextExpiration) {
+        this.contextExpiration = contextExpiration;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImporterInfoImpl that = (ImporterInfoImpl) o;
         return maxSynchronousImports == that.maxSynchronousImports
                 && maxAsynchronousImports == that.maxAsynchronousImports
+                && contextExpiration == that.contextExpiration
                 && Objects.equals(uploadRoot, that.uploadRoot);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(uploadRoot, maxSynchronousImports, maxAsynchronousImports);
+        return Objects.hash(
+                uploadRoot, maxSynchronousImports, maxAsynchronousImports, contextExpiration);
     }
 }

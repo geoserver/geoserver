@@ -1,0 +1,58 @@
+<wmtsLayer>
+  <id>WMTSLayerInfoImpl-17eae2a5:17d9ed65afe:-7ff3</id>
+  <name>topowebb_nedtonad</name>
+  <nativeName>topowebb_nedtonad</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ff4</id>
+  </namespace>
+  <title>topowebb_nedtonad</title>
+  <description></description>
+  <nativeCRS class="projected">PROJCS[&quot;SWEREF99 TM&quot;, &#xd;
+    GEOGCS[&quot;SWEREF99&quot;, &#xd;
+    DATUM[&quot;SWEREF99&quot;, &#xd;
+    SPHEROID[&quot;GRS 1980&quot;, 6378137.0, 298.257222101, AUTHORITY[&quot;EPSG&quot;,&quot;7019&quot;]], &#xd;
+    TOWGS84[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], &#xd;
+    AUTHORITY[&quot;EPSG&quot;,&quot;6619&quot;]], &#xd;
+    PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], &#xd;
+    UNIT[&quot;degree&quot;, 0.017453292519943295], &#xd;
+    AXIS[&quot;Geodetic longitude&quot;, EAST], &#xd;
+    AXIS[&quot;Geodetic latitude&quot;, NORTH], &#xd;
+    AUTHORITY[&quot;EPSG&quot;,&quot;4619&quot;]], &#xd;
+    PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]], &#xd;
+    PARAMETER[&quot;central_meridian&quot;, 15.0], &#xd;
+    PARAMETER[&quot;latitude_of_origin&quot;, 0.0], &#xd;
+    PARAMETER[&quot;scale_factor&quot;, 0.9996], &#xd;
+    PARAMETER[&quot;false_easting&quot;, 500000.0], &#xd;
+    PARAMETER[&quot;false_northing&quot;, 0.0], &#xd;
+    UNIT[&quot;m&quot;, 1.0], &#xd;
+    AXIS[&quot;Easting&quot;, EAST], &#xd;
+    AXIS[&quot;Northing&quot;, NORTH], &#xd;
+    AUTHORITY[&quot;EPSG&quot;,&quot;3006&quot;]]</nativeCRS>
+  <srs>EPSG:3006</srs>
+  <nativeBoundingBox>
+    <minx>-7043051.107252148</minx>
+    <maxx>8088445.6934734965</maxx>
+    <miny>3945596.6873048693</miny>
+    <maxy>3.3078473148527395E7</maxy>
+    <crs class="projected">EPSG:3006</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-180.0</minx>
+    <maxx>180.0</maxx>
+    <miny>-48.4908819887063</miny>
+    <maxy>90.0</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="OTHER_SRS">urn:ogc:def:crs:EPSG::3006,EPSG:3857</entry>
+  </metadata>
+  <store class="wmtsStore">
+    <id>WMTSStoreInfoImpl-6ce5a4ff:17d8f04daac:-7fff</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <simpleConversionEnabled>false</simpleConversionEnabled>
+  <internationalTitle/>
+  <internationalAbstract/>
+</wmtsLayer>

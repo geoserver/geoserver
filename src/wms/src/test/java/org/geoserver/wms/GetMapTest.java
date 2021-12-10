@@ -10,17 +10,41 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.TestHttpClientProvider;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
+import org.geoserver.catalog.impl.WMTSStoreInfoImpl;
+import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.Request;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.test.http.MockHttpClient;
+import org.geoserver.test.http.MockHttpResponse;
 import org.geoserver.wms.WMSMockData.DummyRasterMapProducer;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.function.EnvFunction;
+import org.geotools.ows.wmts.WebMapTileServer;
+import org.geotools.ows.wmts.map.WMTSMapLayer;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Point;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory;
+import org.opengis.parameter.GeneralParameterValue;
+import org.opengis.parameter.ParameterValue;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.util.ProgressListener;
 
 /**
  * Unit test for {@link GetMap}
@@ -173,6 +197,66 @@ public class GetMapTest {
             fail("Expected ServiceException");
         } catch (ServiceException e) {
             assertEquals(expectedExceptionCode, e.getCode());
+        }
+    }
+
+    @Test
+    public void addWMTSLayerIsAddingNativeCRSAsSource() throws IOException, FactoryException {
+        Request request = new Request();
+        request.setRawKvp(new HashMap<>());
+        Dispatcher.REQUEST.set(request);
+        String baseURL = TestHttpClientProvider.MOCKSERVER;
+        MockHttpClient client = new MockHttpClient();
+        Catalog catalog = mockData.getGeoServer().getCatalog();
+        URL descURL = new URL(baseURL + "/wmts?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS");
+        client.expectGet(
+                descURL,
+                new MockHttpResponse(getClass().getResource("wmts_getCaps.xml"), "text/xml"));
+
+        TestHttpClientProvider.bind(client, descURL);
+        WMTSStoreInfo storeInfo = new MockWMTSStoreInfo(catalog);
+        storeInfo.setName("Another Mock WMTS Store");
+        storeInfo.setCapabilitiesURL(descURL.toString());
+        storeInfo.setConnectTimeout(60);
+        storeInfo.setMaxConnections(10);
+        storeInfo.setDateCreated(new Date());
+        storeInfo.setDateModified(new Date());
+        catalog.add(storeInfo);
+        XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
+        WMTSLayerInfo wmtsInfo =
+                xp.load(getClass().getResourceAsStream("wmtsLayerInfo.xml"), WMTSLayerInfo.class);
+        wmtsInfo.setStore(storeInfo);
+        catalog.add(wmtsInfo);
+        LayerInfo layerInfo =
+                xp.load(getClass().getResourceAsStream("wmtsLayer.xml"), LayerInfo.class);
+        layerInfo.setResource(wmtsInfo);
+        GetMap op = new GetMap(mockData.getWMS());
+        WMSMapContent mapContent = new WMSMapContent();
+        MapLayerInfo mli = new MapLayerInfo(layerInfo);
+        op.addWMTSLayer(mapContent, mli);
+        WMTSMapLayer layer = (WMTSMapLayer) mapContent.layers().get(0);
+        SimpleFeature sf = layer.toFeatureCollection().features().next();
+        GeneralParameterValue[] params =
+                new AttributeExpressionImpl("params").evaluate(sf, GeneralParameterValue[].class);
+        CoordinateReferenceSystem crs =
+                (CoordinateReferenceSystem) ((ParameterValue) params[0]).getValue();
+        assertEquals(wmtsInfo.getNativeCRS(), crs);
+    }
+
+    class MockWMTSStoreInfo extends WMTSStoreInfoImpl {
+
+        MockWMTSStoreInfo(Catalog catalog) {
+            super(catalog);
+        }
+
+        @Override
+        public WebMapTileServer getWebMapTileServer(ProgressListener listener) throws IOException {
+            try {
+                return new WebMapTileServer(
+                        getClass().getResource("wmts_getCaps.xml").toURI().toURL());
+            } catch (Exception e) {
+                return null;
+            }
         }
     }
 }

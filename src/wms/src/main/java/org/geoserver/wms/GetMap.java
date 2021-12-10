@@ -716,16 +716,7 @@ public class GetMap {
                     mapContent.addLayer(Layer);
                 }
             } else if (layerType == MapLayerInfo.TYPE_WMTS) {
-                WMTSLayerInfo wmtsLayer = (WMTSLayerInfo) mapLayerInfo.getResource();
-                WebMapTileServer wmts = wmtsLayer.getStore().getWebMapTileServer(null);
-                Layer gt2Layer = wmtsLayer.getWMTSLayer(null);
-
-                WMTSMapLayer mapLayer = new WMTSMapLayer(wmts, gt2Layer);
-                mapLayer.setTitle(wmtsLayer.prefixedName());
-
-                mapLayer.setRawTime((String) Dispatcher.REQUEST.get().getRawKvp().get("time"));
-
-                mapContent.addLayer(mapLayer);
+                addWMTSLayer(mapContent, mapLayerInfo);
 
             } else {
                 throw new IllegalArgumentException("Unknown layer type " + layerType);
@@ -759,6 +750,19 @@ public class GetMap {
         }
 
         return map;
+    }
+
+    void addWMTSLayer(WMSMapContent mapContent, MapLayerInfo mapLayerInfo) throws IOException {
+        WMTSLayerInfo wmtsLayer = (WMTSLayerInfo) mapLayerInfo.getResource();
+        WebMapTileServer wmts = wmtsLayer.getStore().getWebMapTileServer(null);
+        CoordinateReferenceSystem nativeCRS = wmtsLayer.getNativeCRS();
+        Layer gt2Layer = wmtsLayer.getWMTSLayer(null);
+        WMTSMapLayer mapLayer = new WMTSMapLayer(wmts, gt2Layer, nativeCRS);
+        mapLayer.setTitle(wmtsLayer.prefixedName());
+
+        mapLayer.setRawTime((String) Dispatcher.REQUEST.get().getRawKvp().get("time"));
+
+        mapContent.addLayer(mapLayer);
     }
 
     protected Filter buildDimensionFilter(

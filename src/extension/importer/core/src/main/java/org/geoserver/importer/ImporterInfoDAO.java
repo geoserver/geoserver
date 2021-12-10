@@ -30,6 +30,8 @@ public class ImporterInfoDAO {
 
     public static final String MAX_SYNCH_KEY = "importer.maxSynch";
 
+    public static final String CONTEXT_EXPIRATION_KEY = "importer.contextExpiration";
+
     /**
      * Reads the importer configuration from the specified resource, or returns a default
      *
@@ -56,6 +58,8 @@ public class ImporterInfoDAO {
                 getConfig(props, MAX_ASYNCH_KEY, Integer.class, () -> processors));
         info.setMaxSynchronousImports(
                 getConfig(props, MAX_SYNCH_KEY, Integer.class, () -> processors));
+        info.setContextExpiration(
+                getConfig(props, CONTEXT_EXPIRATION_KEY, Double.class, () -> 1440d));
     }
 
     private <T> T getConfig(
@@ -98,6 +102,8 @@ public class ImporterInfoDAO {
         props.setProperty(MAX_SYNCH_KEY, String.valueOf(configuration.getMaxSynchronousImports()));
         props.setProperty(
                 MAX_ASYNCH_KEY, String.valueOf(configuration.getMaxAsynchronousImports()));
+        props.setProperty(
+                CONTEXT_EXPIRATION_KEY, String.valueOf(configuration.getContextExpiration()));
         try (OutputStream os = resource.out()) {
             props.store(os, null);
         }

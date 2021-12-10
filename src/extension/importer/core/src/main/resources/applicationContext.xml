@@ -24,4 +24,30 @@
 
   <bean id="spatialFileExtensionsProvider" class="org.geoserver.importer.SpatialFileExtensionsProvider" />
 
+  <!-- Import context automatic clean-up -->
+  <bean id="importerContextCleaner" class="org.geoserver.importer.ImporterContextCleaner">
+      <constructor-arg ref="importer"/>
+  </bean>
+  
+  <!-- Definition of how often the scheduled task runs -->
+  <bean id="importerContextCleanerTask"
+    class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
+    <!-- wait 10 seconds before starting repeated execution -->
+    <property name="delay" value="10000" />
+    <!-- run every 60 seconds -->
+    <property name="period" value="60000" />
+    <property name="runnable" ref="importerContextCleaner" />
+  </bean>
+  
+  <!-- And finally the class that instantiates the scheduled tasks and makes them run -->
+  <bean id="importerTimerFactory" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean"
+        lazy-init="false">
+    <property name="scheduledExecutorTasks">
+      <list>
+        <ref bean="importerContextCleanerTask" />
+      </list>
+    </property>
+    <property name="daemon" value="true"/>
+  </bean>
+
 </beans>

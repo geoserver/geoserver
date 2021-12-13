@@ -150,11 +150,16 @@ public class BatchJobServiceImpl
     @Override
     @Transactional("tmTransactionManager")
     public Batch remove(Batch batch) {
+        batch = dao.lockReload(batch);
         try {
             scheduler.deleteJob(JobKey.jobKey(batch.getId().toString()));
         } catch (SchedulerException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
             throw new IllegalArgumentException(e);
+        }
+        for (BatchElement element : batch.getElements()) {
+            element.setActive(false);
+            element.getTask().getBatchElements().remove(element);
         }
         return dao.remove(batch);
     }

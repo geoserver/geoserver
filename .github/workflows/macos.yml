@@ -1,6 +1,10 @@
 name: Mac OS CI
 
-on: [pull_request]
+on:
+  pull_request:
+    paths-ignore:
+      - '**/src/main/resources/GeoServerApplication_*.properties'
+      - '!**/src/main/resources/GeoServerApplication_fr.properties'
 
 jobs:
   build:

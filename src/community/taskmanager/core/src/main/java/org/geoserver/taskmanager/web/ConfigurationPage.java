@@ -98,6 +98,8 @@ public class ConfigurationPage extends GeoServerSecuredPage {
 
     private AjaxSubmitLink remove;
 
+    private ResourceLink<Object> export;
+
     private AttributesModel attributesModel;
 
     private GeoServerTablePanel<Attribute> attributesPanel;
@@ -177,7 +179,11 @@ public class ConfigurationPage extends GeoServerSecuredPage {
         AjaxSubmitLink applyButton = saveOrApplyButton("apply", false);
         form.add(applyButton);
 
-        form.add(exportButton().setVisible(!initMode));
+        form.add(
+                (export = exportButton())
+                        .setOutputMarkupId(true)
+                        .setOutputMarkupPlaceholderTag(true)
+                        .setVisible(!initMode && configurationModel.getObject().getId() != null));
 
         form.add(
                 new TextField<String>(
@@ -553,10 +559,21 @@ public class ConfigurationPage extends GeoServerSecuredPage {
 
                     @Override
                     protected ResourceResponse newResourceResponse(Attributes attributes) {
+                        // reload from database
+                        Configuration lastSaved =
+                                TaskManagerBeans.get()
+                                        .getDao()
+                                        .init(
+                                                TaskManagerBeans.get()
+                                                        .getDao()
+                                                        .getConfiguration(
+                                                                configurationModel
+                                                                        .getObject()
+                                                                        .getId()));
                         ResourceResponse response = new ResourceResponse();
                         response.setContentType(ContentType.APPLICATION_XML.getMimeType());
                         response.setContentDisposition(ContentDisposition.ATTACHMENT);
-                        response.setFileName(configurationModel.getObject().getName() + ".xml");
+                        response.setFileName(lastSaved.getName() + ".xml");
                         response.setWriteCallback(
                                 new WriteCallback() {
 
@@ -566,9 +583,7 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                                         OutputStream outputStream =
                                                 attributes.getResponse().getOutputStream();
                                         outputStream.write(
-                                                XStreamUtil.xs()
-                                                        .toXML(configurationModel.getObject())
-                                                        .getBytes());
+                                                XStreamUtil.xs().toXML(lastSaved).getBytes());
                                     }
                                 });
                         return response;
@@ -951,9 +966,12 @@ public class ConfigurationPage extends GeoServerSecuredPage {
                         oldTasks = new HashMap<>(configurationModel.getObject().getTasks());
                         oldBatches = new HashMap<>(configurationModel.getObject().getBatches());
                         form.success(new ParamResourceModel("success", getPage()).getString());
+                        export.setVisible(true);
+                        target.add(export);
                         target.add(batchesPanel);
                         attributesModel.refresh();
                         target.add(attributesPanel);
+
                         ((MarkupContainer)
                                         batchesPanel.get("form:batchesPanel:listContainer:items"))
                                 .removeAll();

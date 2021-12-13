@@ -103,6 +103,12 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
 
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
+    // taken from OgcLink properties. these properties are known(static) from OgcLink.
+    private static final Set<String> KNOWN_FIELDS =
+            new HashSet<>(
+                    Arrays.asList(
+                            "collection_id", "lid", "offering", "method", "code", "type", "href"));
+
     protected OpenSearchAccessProvider accessProvider;
 
     protected OseoJSONConverter jsonConverter;
@@ -224,31 +230,28 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
         Collection<Property> linkProperties =
                 feature.getProperties(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME);
 
-        Map<String, String> unknownFields = new HashMap<>();
-        // taken from OgcLink properties. these properties are known(static) from OgcLink.
-        Set<String> knownFields =
-                new HashSet<>(
-                        Arrays.asList(
-                                "collection_id",
-                                "lid",
-                                "offering",
-                                "method",
-                                "code",
-                                "type",
-                                "href"));
+        Map<String, Object> unknownFields = new HashMap<>();
 
         if (linkProperties != null && linkProperties.size() > 0) {
             SimpleFeatureImpl simpleFeature =
                     (SimpleFeatureImpl) ((ArrayList) linkProperties).get(0);
 
             // iterate over feature to get unknown properties from OgcLink
-            List<AttributeType> types = simpleFeature.getType().getTypes();
-            for (int i = 0; i < types.size(); i++) {
-                String unknownColumnName = types.get(i).getName().getLocalPart();
-                if (!knownFields.contains(unknownColumnName)
-                        && simpleFeature.getAttributes().get(i) != null) {
-                    unknownFields.put(
-                            unknownColumnName, simpleFeature.getAttributes().get(i).toString());
+            if (simpleFeature != null
+                    && simpleFeature.getType() != null
+                    && simpleFeature.getType().getTypes() != null) {
+                List<AttributeType> types = simpleFeature.getType().getTypes();
+                for (int i = 0; i < types.size(); i++) {
+                    if (types.get(i) != null && simpleFeature.getAttributes().get(i) != null) {
+                        String unknownColumnName = types.get(i).getName().getLocalPart();
+                        if (!KNOWN_FIELDS.contains(unknownColumnName)
+                                && simpleFeature != null
+                                && simpleFeature.getAttributes() != null
+                                && simpleFeature.getAttributes().get(i) != null) {
+                            unknownFields.put(
+                                    unknownColumnName, simpleFeature.getAttributes().get(i));
+                        }
+                    }
                 }
             }
 
@@ -508,9 +511,9 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
             fb.set("code", link.code);
             fb.set("type", link.type);
             fb.set("href", link.href);
-            for (Map.Entry<String, String> entry : link.unknownFields.entrySet()) {
+            for (Map.Entry<String, Object> entry : link.unknownFields.entrySet()) {
                 String key = entry.getKey();
-                String value = entry.getValue();
+                Object value = entry.getValue();
                 fb.set(key, value);
             }
             SimpleFeature sf = fb.buildFeature(null);

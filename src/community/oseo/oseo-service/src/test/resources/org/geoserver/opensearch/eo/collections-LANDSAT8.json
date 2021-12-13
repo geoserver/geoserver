@@ -69,9 +69,11 @@
               "method": "${eo:method}",
               "type": "${eo:type}",
               "href": "$${templateLink(eo:href)}",
-              "title": "collectionsTitle1",
-              "title2": "collectionsTitle2",
-              "randomText": "collectionsText"
+              "intTest":2,
+              "floatTest":2.1,
+              "booleanTest":false,
+              "dateTest":"2015-07-01T07:20:21.000Z",
+              "varcharTest":"text2"
             }
             
           ]

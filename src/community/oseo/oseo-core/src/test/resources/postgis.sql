@@ -206,10 +206,7 @@ create table collection_ogclink (
   "method" varchar,
   "code" varchar,
   "type" varchar,
-  "href" varchar,
-  "title" varchar,
-  "title2" varchar,
-  "randomText" varchar
+  "href" varchar
 );
 
 -- links for products
@@ -220,10 +217,7 @@ create table product_ogclink (
   "method" varchar,
   "code" varchar,
   "type" varchar,
-  "href" varchar,
-  "title" varchar,
-  "title2" varchar,
-  "randomText" varchar
+  "href" varchar
 ); 
 
 -- the granules table (might be abstract, and we can use partitioning)

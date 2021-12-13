@@ -1,3 +1,5 @@
+ALTER TABLE public.collection_ogclink
+add column "intTest" integer, add column "floatTest" float, add column "booleanTest" boolean, add column "dateTest" date, add column "varcharTest" varchar;
 -- data
 INSERT INTO collection
 ("id", "name", "title", "description", "primary", "footprint", "timeStart", "timeEnd", "productCqlFilter", "masked", "eoIdentifier", "eoProductType", "eoPlatform", "eoPlatformSerialIdentifier", "eoInstrument", "eoSensorType", "eoCompositeType", "eoProcessingLevel", "eoOrbitType", "eoSpectralRange", "eoWavelength", "eoSecurityConstraints", "eoDissemination", "eoAcquisitionStation", "license", "assets")
@@ -18,14 +20,14 @@ VALUES(34, 'DISABLED_COLLECTION', 'A disabled collections', 'Not meant to be sha
 select setval('collection_id_seq'::regclass, 35);
 -- collection ogc links
 INSERT INTO public.collection_ogclink
-("collection_id", "offering", "method", "code", "type", "href", "title", "title2", "randomText")
-VALUES(17, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel2/ows?service=wms&version=1.3.0&request=GetCapabilities', 'title17.1', 'title17.2', 'randomText1');
+("collection_id", "offering", "method", "code", "type", "href", "intTest", "floatTest", "booleanTest", "dateTest", "varcharTest")
+VALUES(17, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel2/ows?service=wms&version=1.3.0&request=GetCapabilities', 17, 17.1, true, '2017-01-01', 'text17');
 INSERT INTO public.collection_ogclink
-("collection_id", "offering", "method", "code", "type", "href", "title", "title2", "randomText")
-VALUES(31, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/landsat8/ows?service=wms&version=1.3.0&request=GetCapabilities', 'title31.1', 'title31.2', 'randomText2');
+("collection_id", "offering", "method", "code", "type", "href", "intTest", "floatTest", "booleanTest", "dateTest", "varcharTest")
+VALUES(31, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/landsat8/ows?service=wms&version=1.3.0&request=GetCapabilities', 31, 31.1, true, '2031-01-01', 'text31');
 INSERT INTO public.collection_ogclink
-("collection_id", "offering", "method", "code", "type", "href", "title", "title2", "randomText")
-VALUES(32, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel1/ows?service=wms&version=1.3.0&request=GetCapabilities', 'title32.1', 'title32.2', 'randomText3');
+("collection_id", "offering", "method", "code", "type", "href", "intTest", "floatTest", "booleanTest", "dateTest", "varcharTest")
+VALUES(32, 'http://www.opengis.net/spec/owc/1.0/req/atom/wms', 'GET', 'GetCapabilities', 'application/xml', '${BASE_URL}/sentinel1/ows?service=wms&version=1.3.0&request=GetCapabilities', 32, 32.1, true, '2032-01-01', 'text32');
 -- collection publishing metadata
 INSERT into public.collection_layer
 ("cid", "workspace", "layer", "separateBands", "bands", "browseBands", "heterogeneousCRS", "mosaicCRS", "defaultLayer")

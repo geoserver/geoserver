@@ -111,9 +111,11 @@
               "method": "${eo:method}",
               "type": "${eo:type}",
               "href": "$${templateLink(eo:href)}",
-              "title": "productTitle1",
-              "title2": "productTitle2",
-              "randomText": "productText"
+              "intTest":2,
+              "floatTest":2.1,
+              "booleanTest":false,
+              "dateTest":"2015-07-01T07:20:21.000Z",
+              "varcharTest":"text2"
             }
           ]
         }

@@ -6,6 +6,7 @@ package org.geoserver.opensearch.rest;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ class OgcLink {
 
     String href;
 
-    Map<String, String> unknownFields = new HashMap<>();
+    Map<String, Object> unknownFields = new HashMap<>();
 
     public OgcLink() {
         // default constructor
@@ -37,7 +38,7 @@ class OgcLink {
             String code,
             String type,
             String href,
-            Map<String, String> unknownFields) {
+            Map<String, Object> unknownFields) {
         this.offering = offering;
         this.method = method;
         this.code = code;
@@ -88,12 +89,13 @@ class OgcLink {
 
     // Capture all other fields that Jackson do not match other members
     @JsonAnyGetter
-    public Map<String, String> otherFields() {
+    @JsonSerialize(using = UnknownFieldsSerializer.class)
+    public Map<String, Object> otherFields() {
         return unknownFields;
     }
 
     @JsonAnySetter
-    public void setOtherField(String name, String value) {
+    public void setOtherField(String name, Object value) {
         unknownFields.put(name, value);
     }
 }

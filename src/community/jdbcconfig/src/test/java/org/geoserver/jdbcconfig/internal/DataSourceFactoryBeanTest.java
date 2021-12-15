@@ -48,6 +48,8 @@ public class DataSourceFactoryBeanTest {
         expect(config.getProperty("password")).andStubReturn("swordfish");
         ds.setPassword("swordfish");
 
+        expect(config.getProperty("pool.testWhileIdle")).andStubReturn(null);
+        expect(config.getProperty("pool.timeBetweenEvictionRunsMillis")).andStubReturn(null);
         expect(config.getProperty("pool.minIdle")).andStubReturn(null);
         expect(config.getProperty("pool.maxActive")).andStubReturn(null);
         expect(config.getProperty("pool.poolPreparedStatements")).andStubReturn(null);
@@ -57,6 +59,10 @@ public class DataSourceFactoryBeanTest {
         config.setDatasourceId("jdbc:test");
         expectLastCall();
 
+        ds.setTestWhileIdle(false);
+        expectLastCall();
+        ds.setTimeBetweenEvictionRunsMillis(-1L);
+        expectLastCall();
         ds.setMinIdle(1);
         expectLastCall();
         ds.setMaxActive(10);
@@ -155,6 +161,8 @@ public class DataSourceFactoryBeanTest {
         expect(config.getProperty("password")).andStubReturn("swordfish");
         ds.setPassword("swordfish");
 
+        expect(config.getProperty("pool.testWhileIdle")).andStubReturn(null);
+        expect(config.getProperty("pool.timeBetweenEvictionRunsMillis")).andStubReturn(null);
         expect(config.getProperty("pool.minIdle")).andStubReturn(null);
         expect(config.getProperty("pool.maxActive")).andStubReturn(null);
         expect(config.getProperty("pool.poolPreparedStatements")).andStubReturn(null);
@@ -164,6 +172,10 @@ public class DataSourceFactoryBeanTest {
         config.setDatasourceId("jdbc:test");
         expectLastCall();
 
+        ds.setTestWhileIdle(false);
+        expectLastCall();
+        ds.setTimeBetweenEvictionRunsMillis(-1L);
+        expectLastCall();
         ds.setMinIdle(1);
         expectLastCall();
         ds.setMaxActive(10);

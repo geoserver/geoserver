@@ -269,6 +269,11 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals(
                 "${BASE_URL}/test123/ows?service=wms&version=1.3.0&request=GetCapabilities",
                 json.read("$.links[0].href"));
+        assertEquals("123", json.read("$.links[0].intTest").toString());
+        assertEquals("123.1", json.read("$.links[0].floatTest").toString());
+        assertEquals("false", json.read("$.links[0].booleanTest").toString());
+        assertEquals("2015-07-01T00:00:00.000Z", json.read("$.links[0].dateTest").toString());
+        assertEquals("text123", json.read("$.links[0].varcharTest").toString());
     }
 
     @Test

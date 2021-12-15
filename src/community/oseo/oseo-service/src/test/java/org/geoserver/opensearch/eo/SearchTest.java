@@ -1066,6 +1066,43 @@ public class SearchTest extends OSEOTestSupport {
                         containsString("<h1>This is a LANDSAT product!</h1>")));
     }
 
+    @Test
+    public void testReadAndEvalJSON() throws Exception {
+        String uid = "LS8_TEST.02";
+        Document dom = getAsDOM("oseo/search?parentId=LANDSAT8&uid=" + uid);
+
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString("<h2>attribute1 => 1</h2>")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString("<h2>attribute2 => 2</h2>")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString("<h3>attribute4 => 4</h3>")));
+        assertThat(
+                dom,
+                hasXPath(
+                        "/at:feed/at:entry[1]/at:summary",
+                        containsString("<h3>attribute3 => 3</h3>")));
+    }
+
+    @Test
+    public void testOgcLinkAttributeHTMLTemplate() throws Exception {
+        String uid = "LANDSAT8";
+        Document dom = getAsDOM("oseo/search?uid=" + uid);
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]", containsString("31.1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]", containsString("true")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]", containsString("text31")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]", containsString("2031-01-01")));
+    }
+
     private void summaryHasLink(Document dom, String link) {
         assertThat(
                 dom,

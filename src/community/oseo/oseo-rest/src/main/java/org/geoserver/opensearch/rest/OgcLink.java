@@ -4,6 +4,12 @@
  */
 package org.geoserver.opensearch.rest;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Bean representation of a OWS context OGC Link
  *
@@ -20,16 +26,25 @@ class OgcLink {
 
     String href;
 
+    Map<String, Object> unknownFields = new HashMap<>();
+
     public OgcLink() {
         // default constructor
     }
 
-    public OgcLink(String offering, String method, String code, String type, String href) {
+    public OgcLink(
+            String offering,
+            String method,
+            String code,
+            String type,
+            String href,
+            Map<String, Object> unknownFields) {
         this.offering = offering;
         this.method = method;
         this.code = code;
         this.type = type;
         this.href = href;
+        this.unknownFields = unknownFields;
     }
 
     public String getOffering() {
@@ -70,5 +85,17 @@ class OgcLink {
 
     public void setHref(String href) {
         this.href = href;
+    }
+
+    // Capture all other fields that Jackson do not match other members
+    @JsonAnyGetter
+    @JsonSerialize(using = UnknownFieldsSerializer.class)
+    public Map<String, Object> otherFields() {
+        return unknownFields;
+    }
+
+    @JsonAnySetter
+    public void setOtherField(String name, Object value) {
+        unknownFields.put(name, value);
     }
 }

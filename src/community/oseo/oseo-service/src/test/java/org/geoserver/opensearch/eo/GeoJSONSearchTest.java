@@ -133,6 +133,13 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         JSONObject instrument = acquisition.getJSONObject("instrument");
         assertEquals("OLI", instrument.get("instrumentShortName"));
         assertEquals("OPTICAL", instrument.get("sensorType"));
+
+        JSONObject ogcLink = (JSONObject) sp.getJSONObject("links").getJSONArray("ogc").get(0);
+        assertEquals(ogcLink.get("intTest").toString(), "2");
+        assertEquals(ogcLink.get("floatTest").toString(), "2.1");
+        assertEquals(ogcLink.get("booleanTest").toString(), "false");
+        assertEquals(ogcLink.get("dateTest").toString(), "2015-07-01T07:20:21.000Z");
+        assertEquals(ogcLink.get("varcharTest").toString(), "text2");
     }
 
     @Test

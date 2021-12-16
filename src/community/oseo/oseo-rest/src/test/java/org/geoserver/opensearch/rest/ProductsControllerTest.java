@@ -508,6 +508,11 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(
                 "${BASE_URL}/sentinel2/ows?service=wms&version=1.3.0&request=GetCapabilities",
                 json.read("$.links[0].href"));
+        assertEquals("6881", json.read("$.links[0].intTest").toString());
+        assertEquals("6881.1", json.read("$.links[0].floatTest").toString());
+        assertEquals("true", json.read("$.links[0].booleanTest").toString());
+        assertEquals("2017-01-01T00:00:00.000Z", json.read("$.links[0].dateTest").toString());
+        assertEquals("6881text", json.read("$.links[0].varcharTest").toString());
     }
 
     @Test
@@ -540,6 +545,11 @@ public class ProductsControllerTest extends OSEORestTestSupport {
         assertEquals(
                 "${BASE_URL}/SENTINEL2/S2A_OPER_MSI_L1C_TL_SGS__20180101T000000_A006640_T32TPP_N02.04/ows?service=wms&version=1.3.0&request=GetCapabilities",
                 json.read("$.links[0].href"));
+        assertEquals("1", json.read("$.links[0].intTest").toString());
+        assertEquals("1.1", json.read("$.links[0].floatTest").toString());
+        assertEquals("false", json.read("$.links[0].booleanTest").toString());
+        assertEquals("2015-07-01T00:00:00.000Z", json.read("$.links[0].dateTest").toString());
+        assertEquals("text1", json.read("$.links[0].varcharTest").toString());
     }
 
     @Test

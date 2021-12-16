@@ -68,7 +68,12 @@
               "offering": "${eo:offering}",
               "method": "${eo:method}",
               "type": "${eo:type}",
-              "href": "$${templateLink(eo:href)}"
+              "href": "$${templateLink(eo:href)}",
+              "intTest":2,
+              "floatTest":2.1,
+              "booleanTest":false,
+              "dateTest":"2015-07-01T07:20:21.000Z",
+              "varcharTest":"text2"
             }
             
           ]

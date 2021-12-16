@@ -1066,6 +1066,16 @@ public class SearchTest extends OSEOTestSupport {
                         containsString("<h1>This is a LANDSAT product!</h1>")));
     }
 
+    @Test
+    public void testOgcLinkAttributeHTMLTemplate() throws Exception {
+        String uid = "LANDSAT8";
+        Document dom = getAsDOM("oseo/search?uid=" + uid);
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]", containsString("31.1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]", containsString("true")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]", containsString("text31")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]", containsString("2031-01-01")));
+    }
+
     private void summaryHasLink(Document dom, String link) {
         assertThat(
                 dom,

@@ -10,12 +10,16 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -55,6 +59,7 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.collection.BaseSimpleFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureImpl;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
@@ -65,6 +70,7 @@ import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.AttributeType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
 import org.opengis.feature.type.PropertyDescriptor;
@@ -96,6 +102,12 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
     static final FeatureFactory FEATURE_FACTORY = CommonFactoryFinder.getFeatureFactory(null);
 
     static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+
+    // taken from OgcLink properties. these properties are known(static) from OgcLink.
+    private static final Set<String> KNOWN_FIELDS =
+            new HashSet<>(
+                    Arrays.asList(
+                            "collection_id", "lid", "offering", "method", "code", "type", "href"));
 
     protected OpenSearchAccessProvider accessProvider;
 
@@ -217,7 +229,32 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
         List<OgcLink> links = Collections.emptyList();
         Collection<Property> linkProperties =
                 feature.getProperties(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME);
-        if (linkProperties != null) {
+
+        Map<String, Object> unknownFields = new HashMap<>();
+
+        if (linkProperties != null && linkProperties.size() > 0) {
+            SimpleFeatureImpl simpleFeature =
+                    (SimpleFeatureImpl) ((ArrayList) linkProperties).get(0);
+
+            // iterate over feature to get unknown properties from OgcLink
+            if (simpleFeature != null
+                    && simpleFeature.getType() != null
+                    && simpleFeature.getType().getTypes() != null) {
+                List<AttributeType> types = simpleFeature.getType().getTypes();
+                for (int i = 0; i < types.size(); i++) {
+                    if (types.get(i) != null && simpleFeature.getAttributes().get(i) != null) {
+                        String unknownColumnName = types.get(i).getName().getLocalPart();
+                        if (!KNOWN_FIELDS.contains(unknownColumnName)
+                                && simpleFeature != null
+                                && simpleFeature.getAttributes() != null
+                                && simpleFeature.getAttributes().get(i) != null) {
+                            unknownFields.put(
+                                    unknownColumnName, simpleFeature.getAttributes().get(i));
+                        }
+                    }
+                }
+            }
+
             links =
                     linkProperties
                             .stream()
@@ -230,10 +267,12 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
                                         String code = (String) sf.getAttribute("code");
                                         String type = (String) sf.getAttribute("type");
                                         String href = (String) sf.getAttribute("href");
-                                        return new OgcLink(offering, method, code, type, href);
+                                        return new OgcLink(
+                                                offering, method, code, type, href, unknownFields);
                                     })
                             .collect(Collectors.toList());
         }
+
         if (links.isEmpty() && notFoundOnEmpty) {
             throw new ResourceNotFoundException();
         }
@@ -472,6 +511,11 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
             fb.set("code", link.code);
             fb.set("type", link.type);
             fb.set("href", link.href);
+            for (Map.Entry<String, Object> entry : link.unknownFields.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                fb.set(key, value);
+            }
             SimpleFeature sf = fb.buildFeature(null);
             linksCollection.add(sf);
         }

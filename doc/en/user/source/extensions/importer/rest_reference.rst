@@ -275,8 +275,8 @@ Import object
     
 The representation of a import is the same as the one contained in the import creation response.
 The execution of a import can be a long task, as such, it's possible to add ``async=true`` to the
-request to make it run in a asynchronous fashion, the client will have to poll the import representation
-and check when it reaches the "COMPLETE" state. 
+request to make it run in an asynchronous fashion, the client will have to poll the import representation
+and check when it reaches either the "COMPLETE" or "COMPLETE_ERROR" state. 
 
 Data
 ^^^^

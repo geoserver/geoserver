@@ -199,7 +199,7 @@ public class WPSOgrTest extends WPSTestSupport {
             while ((entry = zis.getNextEntry()) != null) {
                 final String name = entry.getName();
                 zis.closeEntry();
-                if (name.equals("feature.tab")) {
+                if (name.equals("features.tab")) {
                     found = true;
                     break;
                 }

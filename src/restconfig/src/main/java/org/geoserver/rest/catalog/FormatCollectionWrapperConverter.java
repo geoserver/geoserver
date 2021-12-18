@@ -30,7 +30,7 @@ public class FormatCollectionWrapperConverter
         MediaType mediaType = outputMessage.getHeaders().getContentType();
         if (MediaType.APPLICATION_JSON.includes(mediaType)
                 || MediaTypeExtensions.TEXT_JSON.includes(mediaType)) {
-            writeGeoJsonl(content.getCollection(), outputMessage);
+            writeGeoJson(content.getCollection(), outputMessage);
         } else if (MediaType.APPLICATION_XML.includes(mediaType)
                 || MediaTypeExtensions.TEXT_JSON.includes(mediaType)) {
             writeGML(content.getCollection(), outputMessage);

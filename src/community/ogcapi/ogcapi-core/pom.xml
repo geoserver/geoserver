@@ -76,7 +76,7 @@
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-geojsondatastore</artifactId>
+      <artifactId>gt-geojson-core</artifactId>
       <version>${gt.version}</version>
     </dependency>
     <dependency>

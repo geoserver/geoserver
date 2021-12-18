@@ -19,7 +19,7 @@
         <include>jackson-module-jaxb*.jar</include>
         <include>swagger-models-*.jar</include>
         <include>snakeyaml-*.jar</include>
-        <include>gt-geojsondatastore-*.jar</include>
+        <include>gt-geojson-core-*.jar</include>
         <include>swagger-core-*.jar</include>
       </includes>
     </fileSet>

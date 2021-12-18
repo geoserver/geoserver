@@ -8,17 +8,15 @@ package org.geoserver.wps.gs;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import javax.xml.namespace.QName;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.data.test.MockData;
 import org.geoserver.wps.WPSTestSupport;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
@@ -277,7 +275,7 @@ public class AggregateProcessTest extends WPSTestSupport {
         assertEquals(1, aggregationResults.size());
         JSONArray sumResult = (JSONArray) aggregationResults.get(0);
         assertEquals(1, sumResult.size());
-        assertEquals(sumResult.get(0), -111L);
+        assertEquals(sumResult.get(0), -111);
     }
 
     @Test
@@ -310,9 +308,7 @@ public class AggregateProcessTest extends WPSTestSupport {
                 postAsServletResponse(getWorkspaceAndServicePath(), wpsRequest);
         String content = response.getContentAsString();
         assertFalse(content.isEmpty());
-        Object jsonObject = new JSONParser().parse(content);
-        assertNotNull(jsonObject);
-        return (JSONObject) jsonObject;
+        return (JSONObject) json(response);
     }
 
     protected String getWorkspaceAndServicePath() {

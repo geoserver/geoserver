@@ -7,8 +7,8 @@ package org.geoserver.rest.catalog;
 import java.io.IOException;
 import org.geoserver.rest.catalog.FormatCollectionWrapper.JSONCollectionWrapper;
 import org.geoserver.rest.converters.BaseMessageConverter;
+import org.geotools.data.geojson.GeoJSONWriter;
 import org.geotools.data.simple.SimpleFeatureCollection;
-import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.wfs.GML;
 import org.geotools.wfs.GML.Version;
 import org.springframework.http.HttpOutputMessage;
@@ -37,13 +37,13 @@ public abstract class FeatureCollectionConverter<T> extends BaseMessageConverter
     //
     // writing
     //
-    protected void writeGeoJsonl(SimpleFeatureCollection features, HttpOutputMessage outputMessage)
+    protected void writeGeoJson(SimpleFeatureCollection features, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        final FeatureJSON json = new FeatureJSON();
-        boolean geometryless = features.getSchema().getGeometryDescriptor() == null;
-        json.setEncodeFeatureCollectionBounds(!geometryless);
-        json.setEncodeFeatureCollectionCRS(!geometryless);
-        json.writeFeatureCollection(features, outputMessage.getBody());
+        try (GeoJSONWriter writer = new GeoJSONWriter(outputMessage.getBody())) {
+            boolean geometryless = features.getSchema().getGeometryDescriptor() == null;
+            writer.setEncodeFeatureCollectionCRS(!geometryless);
+            writer.writeFeatureCollection(features);
+        }
     }
 
     protected void writeGML(SimpleFeatureCollection features, HttpOutputMessage outputMessage)

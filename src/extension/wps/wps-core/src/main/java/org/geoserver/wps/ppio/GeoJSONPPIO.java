@@ -5,14 +5,19 @@
  */
 package org.geoserver.wps.ppio;
 
+import com.bedatadriven.jackson.datatype.jts.JtsModule;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geotools.data.geojson.GeoJSONReader;
+import org.geotools.data.geojson.GeoJSONWriter;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.geojson.feature.FeatureJSON;
-import org.geotools.geojson.geom.GeometryJSON;
 import org.locationtech.jts.geom.Geometry;
 
 /**
@@ -21,6 +26,16 @@ import org.locationtech.jts.geom.Geometry;
  * @author Andrea Aime - OpenGeo
  */
 public abstract class GeoJSONPPIO extends CDataPPIO {
+
+    private static JsonFactory JSON_FACTORY = new JsonFactory();;
+    static final ObjectMapper MAPPER;
+
+    static {
+        MAPPER = new ObjectMapper();
+        JtsModule module = new JtsModule(6);
+        MAPPER.registerModule(module);
+    }
+
     GeoServer gs;
 
     protected GeoJSONPPIO(Class<?> clazz) {
@@ -59,22 +74,24 @@ public abstract class GeoJSONPPIO extends CDataPPIO {
         @Override
         public void encode(Object value, OutputStream os) throws IOException {
             int decimals = gs.getSettings().getNumDecimals();
-            GeometryJSON js = new GeometryJSON(decimals);
-            FeatureJSON json = new FeatureJSON(js);
-            // commented out due to GEOT-3209
-            // json.setEncodeFeatureCRS(true);
-            // json.setEncodeFeatureCollectionCRS(true);
-            json.writeFeatureCollection((FeatureCollection) value, os);
+            try (GeoJSONWriter writer = new GeoJSONWriter(os)) {
+                writer.setMaxDecimals(decimals);
+                writer.writeFeatureCollection((SimpleFeatureCollection) value);
+            }
         }
 
         @Override
         public Object decode(InputStream input) throws Exception {
-            return new FeatureJSON().readFeatureCollection(input);
+            try (GeoJSONReader reader = new GeoJSONReader(input)) {
+                return reader.getFeatures();
+            }
         }
 
         @Override
         public Object decode(String input) throws Exception {
-            return new FeatureJSON().readFeatureCollection(input);
+            try (GeoJSONReader reader = new GeoJSONReader(input)) {
+                return reader.getFeatures();
+            }
         }
     }
 
@@ -90,18 +107,32 @@ public abstract class GeoJSONPPIO extends CDataPPIO {
         @Override
         public void encode(Object value, OutputStream os) throws IOException {
             int decimals = gs.getSettings().getNumDecimals();
-            GeometryJSON json = new GeometryJSON(decimals);
-            json.write((Geometry) value, os);
+            ObjectMapper mapper = getMapper(decimals);
+            mapper.writeValue(os, value);
+        }
+
+        private ObjectMapper getMapper(int decimals) {
+            if (decimals == 6) {
+                return MAPPER;
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            JtsModule module = new JtsModule(decimals);
+            mapper.registerModule(module);
+            return mapper;
         }
 
         @Override
         public Object decode(InputStream input) throws Exception {
-            return new GeometryJSON().read(input);
+            try (JsonParser parser = JSON_FACTORY.createParser(input)) {
+                return MAPPER.readValue(parser, Geometry.class);
+            }
         }
 
         @Override
         public Object decode(String input) throws Exception {
-            return new GeometryJSON().read(input);
+            try (JsonParser parser = JSON_FACTORY.createParser(input)) {
+                return MAPPER.readValue(parser, Geometry.class);
+            }
         }
     }
 }

@@ -19,12 +19,13 @@ package org.geoserver.wps.ppio;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.List;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.SystemTestData;
@@ -41,6 +42,7 @@ import org.opengis.filter.Filter;
 
 public class GeoJSONPPIOTest extends WPSTestSupport {
     private InputStream is;
+    static final double EPS = 1e-5;
 
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
@@ -115,53 +117,58 @@ public class GeoJSONPPIOTest extends WPSTestSupport {
         new GeoJSONPPIO.FeatureCollections(gs).encode(states, os);
 
         String json = os.toString();
-
-        BufferedReader r = new BufferedReader(new StringReader(json));
-        String line;
-        int lines = 0;
-        while ((line = r.readLine()) != null) {
-            String[] state = line.split("]]]]}");
-
-            String[] coords = state[0].split(",");
-            // The test data has 6 digits of precision.
-            // The default number of digits given by GeoServer is 8.
-            assertEquals("[-88.087883", coords[7]);
-            assertEquals("[-88.311707", coords[9]);
-            assertEquals("37.420292]", coords[14]);
-
-            String[] attribs = state[2].split(",");
-            assertEquals(attribs[2], "\"STATE_FIPS\":\"29\"");
-            assertEquals(attribs[3], "\"SUB_REGION\":\"W N Cen\"");
-            assertEquals(attribs[6], "\"WATER_KM\":2100.115");
-            assertEquals(attribs[9], "\"HOUSHOLD\":1961206");
-
-            String[] attribs2 = state[4].split(",");
-            assertEquals(attribs2[2], "\"STATE_FIPS\":\"40\"");
-            assertEquals(attribs2[3], "\"SUB_REGION\":\"W S Cen\"");
-            assertEquals(attribs2[6], "\"WATER_KM\":3170.998");
-            assertEquals(attribs2[9], "\"HOUSHOLD\":1206135");
-            lines++;
-        }
-        assertEquals("Block line", 1, lines);
+        JSONObject fc = (JSONObject) JSONSerializer.toJSON(json);
+        JSONArray features = fc.getJSONArray("features");
+        JSONObject state0 = features.getJSONObject(0);
+        // random tests on the first state ordinates ...
+        JSONArray state0Ordinates =
+                state0.getJSONObject("geometry")
+                        .getJSONArray("coordinates")
+                        .getJSONArray(0)
+                        .getJSONArray(0);
+        assertEquals(-88.087883, state0Ordinates.getJSONArray(1).getDouble(0), EPS);
+        assertEquals(-88.311707, state0Ordinates.getJSONArray(2).getDouble(0), EPS);
+        assertEquals(37.420292, state0Ordinates.getJSONArray(4).getDouble(1), EPS);
+        // checking the 10th state attributes...
+        JSONObject state10 = features.getJSONObject(9);
+        JSONObject state10p = state10.getJSONObject("properties");
+        assertEquals("Missouri", state10p.getString("STATE_NAME"));
+        assertEquals("29", state10p.getString("STATE_FIPS"));
+        assertEquals("W N Cen", state10p.getString("SUB_REGION"));
+        assertEquals("2100.115", state10p.getString("WATER_KM"));
+        assertEquals("1961206", state10p.getString("HOUSHOLD"));
+        // checking the 11th state attributes...
+        JSONObject state11 = features.getJSONObject(11);
+        JSONObject state11p = state11.getJSONObject("properties");
+        assertEquals("Oklahoma", state11p.getString("STATE_NAME"));
+        assertEquals("40", state11p.getString("STATE_FIPS"));
+        assertEquals("W S Cen", state11p.getString("SUB_REGION"));
+        assertEquals("3170.998", state11p.getString("WATER_KM"));
+        assertEquals("1206135", state11p.getString("HOUSHOLD"));
 
         int dec = global.getSettings().getNumDecimals();
         global.getSettings().setNumDecimals(2);
         getGeoServer().save(global);
+        try {
 
-        ByteArrayOutputStream os2 = new ByteArrayOutputStream(1024);
-        new GeoJSONPPIO.FeatureCollections(gs).encode(states, os2);
+            ByteArrayOutputStream os2 = new ByteArrayOutputStream(1024);
+            new GeoJSONPPIO.FeatureCollections(gs).encode(states, os2);
 
-        String json2 = os2.toString();
-
-        String[] state = json2.split("]]]]}");
-        String[] coords = state[0].split(",");
-        // This part of the test shows reducing the precision from 8 to 4.
-        assertEquals("[-88.09", coords[7]);
-        assertEquals("[-88.31", coords[9]);
-        assertEquals("37.42]", coords[14]);
-
-        // Resetting the number of decimals so that the next test will pass.
-        global.getSettings().setNumDecimals(dec);
-        getGeoServer().save(global);
+            String json2 = os2.toString();
+            JSONObject fc2 = (JSONObject) JSONSerializer.toJSON(json2);
+            JSONArray features2 = fc2.getJSONArray("features");
+            state0 = features2.getJSONObject(0);
+            state0Ordinates =
+                    state0.getJSONObject("geometry")
+                            .getJSONArray("coordinates")
+                            .getJSONArray(0)
+                            .getJSONArray(0);
+            assertEquals(-88.09, state0Ordinates.getJSONArray(1).getDouble(0), EPS);
+            assertEquals(-88.31, state0Ordinates.getJSONArray(2).getDouble(0), EPS);
+            assertEquals(37.42, state0Ordinates.getJSONArray(4).getDouble(1), EPS);
+        } finally {
+            global.getSettings().setNumDecimals(dec);
+            getGeoServer().save(global);
+        }
     }
 }

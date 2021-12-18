@@ -36,7 +36,7 @@ public class SimpleFeatureCollectionConverter
         MediaType mediaType = outputMessage.getHeaders().getContentType();
         if (MediaType.APPLICATION_JSON.includes(mediaType)
                 || MediaTypeExtensions.TEXT_JSON.includes(mediaType)) {
-            writeGeoJsonl(content, outputMessage);
+            writeGeoJson(content, outputMessage);
         } else if (MediaType.APPLICATION_XML.includes(mediaType)) {
             writeGML(content, outputMessage);
         }

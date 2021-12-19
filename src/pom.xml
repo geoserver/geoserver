@@ -2243,7 +2243,7 @@
           <plugin>
             <groupId>org.owasp</groupId>
             <artifactId>dependency-check-maven</artifactId>
-            <version>6.5.0</version>
+            <version>6.5.1</version>
             <executions>
               <execution>
                 <goals>

@@ -26,6 +26,8 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,6 +62,7 @@ import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
+import org.geotools.data.Transaction;
 import org.geotools.data.h2.H2DataStoreFactory;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -560,6 +563,42 @@ public class ImporterDataTest extends ImporterTestSupport {
             assertEquals(archsitesCount * 2, archsitesCount2);
             assertEquals(bugsitesCount, bugsitesCount2);
         }
+    }
+
+    @Test
+    public void testImportIntoDatabaseDuplicateKey() throws Exception {
+        Catalog cat = getCatalog();
+
+        DataStoreInfo ds = createH2DataStore(cat.getDefaultWorkspace().getName(), "spearfish");
+
+        File dir = tmpDir();
+        unpack("shape/archsites_epsg_prj.zip", dir);
+
+        // run import once
+        ImportContext ctx1 = importer.createContext(new Directory(dir), ds);
+        assertEquals(1, ctx1.getTasks().size());
+        importer.run(ctx1);
+        assertEquals(ImportContext.State.COMPLETE, ctx1.getState());
+        assertNotNull(cat.getLayerByName("archsites"));
+
+        JDBCDataStore jdbc = (JDBCDataStore) ds.getDataStore(null);
+        try (Connection cx = jdbc.getConnection(Transaction.AUTO_COMMIT);
+                Statement st = cx.createStatement()) {
+            st.execute("CREATE UNIQUE INDEX \"archsites_cat_ids\" ON \"archsites\"(\"CAT_ID\")");
+        }
+
+        // run again, should fail and report issues happened
+        ImportContext ctx2 = importer.createContext(new Directory(dir), ds);
+        assertEquals(1, ctx2.getTasks().size());
+        ImportTask task = ctx2.getTasks().get(0);
+        task.setUpdateMode(UpdateMode.APPEND);
+        importer.run(ctx2);
+        assertEquals(ImportContext.State.COMPLETE, ctx2.getState());
+        assertEquals(State.ERROR, task.getState());
+        assertThat(
+                task.getError().getCause().getMessage(),
+                CoreMatchers.containsString(
+                        "Unique index or primary key violation: archsites_cat_ids"));
     }
 
     @Test

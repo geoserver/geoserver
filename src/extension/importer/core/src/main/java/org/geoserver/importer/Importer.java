@@ -938,6 +938,7 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         context.setProgress(monitor);
         context.setState(ImportContext.State.RUNNING);
+        contextStore.save(context);
 
         LOGGER.log(Level.FINE, "Running import {0}", context.getId());
 
@@ -986,13 +987,20 @@ public class Importer implements DisposableBean, ApplicationListener {
         }
         LOGGER.log(Level.FINE, "Running task {0}", task);
         task.setState(ImportTask.State.RUNNING);
+        contextStore.save(task.getContext());
 
-        if (task.isDirect()) {
-            // direct import, simply add configured store and layers to catalog
-            doDirectImport(task);
-        } else {
-            // indirect import, read data from the source and into the target store
-            doIndirectImport(task);
+        try {
+            if (task.isDirect()) {
+                // direct import, simply add configured store and layers to catalog
+                doDirectImport(task);
+            } else {
+                // indirect import, read data from the source and into the target store
+                doIndirectImport(task);
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Task failed during import: " + task, e);
+            task.setState(ImportTask.State.ERROR);
+            task.setError(e);
         }
     }
 
@@ -1026,7 +1034,13 @@ public class Importer implements DisposableBean, ApplicationListener {
                         if (init) {
                             init(context, true);
                         }
-                        runInternal(context, filter, monitor);
+                        try {
+                            runInternal(context, filter, monitor);
+                        } catch (Exception e) {
+                            LOGGER.log(Level.WARNING, "Import " + context.getId() + " failed", e);
+                            context.setState(ImportContext.State.COMPLETE);
+                            context.setMessage(e.getMessage());
+                        }
                         return context;
                     }
 
@@ -1119,37 +1133,31 @@ public class Importer implements DisposableBean, ApplicationListener {
 
         task.setState(ImportTask.State.RUNNING);
 
-        try {
-            // set up transform chain
-            TransformChain tx = task.getTransform();
+        // set up transform chain
+        TransformChain tx = task.getTransform();
 
-            // apply pre transform
-            if (!doPreTransform(task, task.getData(), tx)) {
-                return;
-            }
-
-            addToCatalog(task);
-
-            if (task.getLayer().getResource() instanceof FeatureTypeInfo) {
-                FeatureTypeInfo featureType = (FeatureTypeInfo) task.getLayer().getResource();
-                FeatureTypeInfo resource =
-                        getCatalog()
-                                .getResourceByName(
-                                        featureType.getQualifiedName(), FeatureTypeInfo.class);
-                calculateBounds(resource);
-            }
-
-            // apply post transform
-            if (!doPostTransform(task, task.getData(), tx)) {
-                return;
-            }
-
-            task.setState(ImportTask.State.COMPLETE);
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Task failed during import: " + task, e);
-            task.setState(ImportTask.State.ERROR);
-            task.setError(e);
+        // apply pre transform
+        if (!doPreTransform(task, task.getData(), tx)) {
+            return;
         }
+
+        addToCatalog(task);
+
+        if (task.getLayer().getResource() instanceof FeatureTypeInfo) {
+            FeatureTypeInfo featureType = (FeatureTypeInfo) task.getLayer().getResource();
+            FeatureTypeInfo resource =
+                    getCatalog()
+                            .getResourceByName(
+                                    featureType.getQualifiedName(), FeatureTypeInfo.class);
+            calculateBounds(resource);
+        }
+
+        // apply post transform
+        if (!doPostTransform(task, task.getData(), tx)) {
+            return;
+        }
+
+        task.setState(ImportTask.State.COMPLETE);
     }
 
     /*

@@ -2113,7 +2113,6 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
     @Test
     public void testLegendDecoratorWithRaster() throws Exception {
-
         File layouts = getDataDirectory().findOrCreateDir("layouts");
         URL layout = GetMapIntegrationTest.class.getResource("../test-layout-legend-image.xml");
         FileUtils.copyURLToFile(layout, new File(layouts, "test-layout-legend-image.xml"));
@@ -2124,9 +2123,9 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + "&format_options=layout:test-layout-legend-image&styles=demTranslucent&SRS=EPSG:32753&format=image/png&bgcolor=#404040",
                         "image/png");
 
-        URL expectedResponse = getClass().getResource("dem_with_legend.png");
-        BufferedImage expectedImage = ImageIO.read(expectedResponse);
-        ImageAssert.assertEquals(image, expectedImage, 3400);
+        File expected =
+                new File("src/test/resources/org/geoserver/wms/wms_1_1_1/dem_with_legend.png");
+        ImageAssert.assertEquals(expected, image, 3400);
     }
 
     @Test

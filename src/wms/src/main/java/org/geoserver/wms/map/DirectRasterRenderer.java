@@ -8,6 +8,8 @@ import static org.geoserver.wms.map.RenderedImageMapOutputFormat.getConfiguredLa
 import static org.geoserver.wms.map.RenderedImageMapOutputFormat.toInterpolationObject;
 import static org.geotools.renderer.lite.gridcoverage2d.ChannelSelectionUpdateStyleVisitor.getBandIndicesFromSelectionChannels;
 
+import it.geosolutions.jaiext.lookup.LookupTable;
+import it.geosolutions.jaiext.lookup.LookupTableFactory;
 import it.geosolutions.jaiext.range.Range;
 import it.geosolutions.jaiext.vectorbin.ROIGeometry;
 import it.geosolutions.rendered.viewer.RenderedImageBrowser;
@@ -22,6 +24,7 @@ import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +40,7 @@ import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.ROI;
 import javax.media.jai.ROIShape;
+import javax.media.jai.RasterFactory;
 import javax.media.jai.operator.ConstantDescriptor;
 import javax.media.jai.operator.MosaicDescriptor;
 import org.geoserver.catalog.LayerInfo;
@@ -348,7 +352,7 @@ class DirectRasterRenderer {
         //
         // IndexColorModel
         //
-        final int transparencyType = cm.getTransparency();
+        int transparencyType = cm.getTransparency();
 
         // in case of index color model we try to preserve it, so that output
         // formats that can work with it can enjoy its extra compactness
@@ -398,6 +402,7 @@ class DirectRasterRenderer {
                 if (transparent && !image.getColorModel().hasAlpha()) {
                     image = addAlphaChannel(image);
                     worker.setImage(image);
+                    transparencyType = image.getColorModel().getTransparency();
                 }
                 cm = image.getColorModel();
             } else {
@@ -1069,23 +1074,50 @@ class DirectRasterRenderer {
     }
 
     private RenderedImage addAlphaChannel(RenderedImage image) {
+        RenderedImage alpha = buildAlphaBand(image);
+
+        // Adding Alpha band
+        ImageWorker iw = new ImageWorker(image);
+        iw.addBand(alpha, false, true, null);
+        return iw.getRenderedImage();
+    }
+
+    /** Creates an alpha band, ready to be added to the specified image */
+    private RenderedImage buildAlphaBand(RenderedImage image) {
         final ImageLayout tempLayout = new ImageLayout(image);
         tempLayout
                 .unsetValid(ImageLayout.COLOR_MODEL_MASK)
                 .unsetValid(ImageLayout.SAMPLE_MODEL_MASK);
-        RenderedImage alpha =
-                ConstantDescriptor.create(
-                        Float.valueOf(image.getWidth()),
-                        Float.valueOf(image.getHeight()),
-                        new Byte[] {Byte.valueOf((byte) 255)},
-                        new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
+        int width = image.getWidth();
+        int height = image.getHeight();
 
-        // Using an ImageWorker
-        ImageWorker iw = new ImageWorker(image);
+        // in case of ROI, create an alpha band that is transparent where the ROI is zero,
+        // and solid where the ROI is one. The most efficient way is to use a Lookup
+        Object roiCandidate = image.getProperty("ROI");
+        if (roiCandidate instanceof ROI) {
+            PlanarImage roiImage = ((ROI) roiCandidate).getAsImage();
+            ImageWorker iw = new ImageWorker(roiImage);
+            byte[] lookup = new byte[256];
+            Arrays.fill(lookup, (byte) 255);
+            lookup[0] = 0;
+            LookupTable lookupTable = LookupTableFactory.create(lookup);
+            SampleModel sm =
+                    RasterFactory.createPixelInterleavedSampleModel(
+                            DataBuffer.TYPE_BYTE, width, height, 1);
+            ColorModel cm = PlanarImage.createColorModel(sm);
+            tempLayout.setSampleModel(sm);
+            tempLayout.setColorModel(cm);
+            iw.setRenderingHints(new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
+            iw.lookup(lookupTable);
+            return iw.getRenderedImage();
+        }
 
-        // Adding Alpha band
-        iw.addBand(alpha, false, true, null);
-        return iw.getRenderedImage();
+        // if there is no ROI instead, a constant image will do
+        return ConstantDescriptor.create(
+                Float.valueOf(width),
+                Float.valueOf(height),
+                new Byte[] {Byte.valueOf((byte) 255)},
+                new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
     }
 
     /**

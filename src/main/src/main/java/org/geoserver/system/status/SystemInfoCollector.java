@@ -15,4 +15,8 @@ public interface SystemInfoCollector {
 
     /** @return the list of metric */
     Metrics retrieveAllSystemInfo();
+
+    void setStatisticsStatus(Boolean status);
+
+    Boolean getStatisticsStatus();
 }

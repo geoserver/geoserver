@@ -1901,9 +1901,6 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
     @Test
     public void testVendorOptionClipVector() throws Exception {
-        URL exptectedResponse = this.getClass().getResource("../wms_clip_vector.png");
-        BufferedImage expectedImage = ImageIO.read(exptectedResponse);
-
         String polygonWkt =
                 "POLYGON((-103.81153231351766%2038.73789567417218,-105.74512606351766%2031.78525172547746,-95.28614168851766%2028.053665204466157,-91.33106356351766%2031.260810654461146,-96.42871981351766%2038.66930662128952,-103.81153231351766%2038.73789567417218))";
 
@@ -1923,6 +1920,10 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + polygonWkt,
                         "image/png");
 
+        String pkg = this.getClass().getPackage().getName();
+        File parentResourceDir =
+                new File("src/test/resources/" + pkg.replace(".", "/")).getParentFile();
+        File expectedImage = new File(parentResourceDir, "wms_clip_vector.png");
         ImageAssert.assertEquals(expectedImage, response, 100);
 
         String polygonWkt900913 =
@@ -1947,10 +1948,6 @@ public class GetMapIntegrationTest extends WMSTestSupport {
 
     @Test
     public void testVendorOptionClipRaster() throws Exception {
-
-        URL exptectedResponse = this.getClass().getResource("../wms_clip_raster.png");
-        BufferedImage expectedImage = ImageIO.read(exptectedResponse);
-
         // EU south of Schengen
         String rasterMask =
                 "POLYGON((-0.4455465239619838 49.03915485780325,27.679453476038034 48.692256255310134,34.53492222603802 32.400173313532584,5.355234726038036 37.161881019039605,-0.4455465239619838 49.03915485780325))";
@@ -1971,8 +1968,13 @@ public class GetMapIntegrationTest extends WMSTestSupport {
                                 + "&clip="
                                 + rasterMask,
                         "image/png");
+        String pkg = this.getClass().getPackage().getName();
+        File parentResourceDir =
+                new File("src/test/resources/" + pkg.replace(".", "/")).getParentFile();
+        File expectedImage = new File(parentResourceDir, "wms_clip_raster.png");
         ImageAssert.assertEquals(expectedImage, response, 100);
 
+        // now with clip mask reprojection
         String rasterMask900913 =
                 "srid=900913;POLYGON ((-49598.01217216109 6281507.767506711, 3081262.66638866 6222804.1297836965, 3844409.956787858 3815954.983140064, 596142.0027810101 4461694.998093233, -49598.01217216109 6281507.767506711))";
 

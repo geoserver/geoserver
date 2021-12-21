@@ -104,6 +104,9 @@ public class OSHISystemInfoCollector extends BaseSystemInfoCollector {
     @Override
     List<MetricValue> retrieveSystemInfo(MetricInfo info) {
         List<MetricValue> si = super.retrieveSystemInfo(info);
+        if (!super.getStatisticsStatus()) {
+            return si;
+        }
         try {
             switch (info) {
                     // system metrics

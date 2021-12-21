@@ -67,6 +67,7 @@ public class SecuredWebMapTileServer extends WebMapTileServer {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Set<Tile> issueRequest(GetTileRequest request) throws ServiceException {
         return delegate.issueRequest(request);
     }

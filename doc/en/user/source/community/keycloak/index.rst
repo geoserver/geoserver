@@ -77,7 +77,12 @@ Installation Instructions
     .. figure:: images/keycloak_adapter002.png
        :align: center
 
-3. Check your work so far by navigating to the GeoServer UI. You should be redirected to the Keycloak `login-page`, and after logging-in you should be redirected back to the actual GUI page.
+3. Check your work so far by navigating to the GeoServer UI. You should see a Keycloak icon in the top right corner next to the Login button.
+
+    .. figure:: images/keycloak_client010.png
+       :align: center
+
+4. On clicking the Keycloak button you should be redirected to the Keycloak `login-page`, and after logging-in you should be redirected back to the actual GUI page.
 
     .. figure:: images/keycloak_adapter003.png
        :align: center

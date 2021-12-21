@@ -2,6 +2,20 @@
 <head></head>
 <body>
 	<wicket:panel>
+
+				<div>
+					<ul class="plain">
+						<li class="choiceItem">
+							<input id="statistics" type="checkbox" wicket:id="statistics"/>
+							<label for="statistics">
+								<b>
+									<wicket:message key="statistics.enabled">Enable All Statistics</wicket:message>
+								</b>
+							</label>
+						</li>
+					</ul>
+				</div>
+
 		<div>
 			<wicket:message key="updated">Updated at</wicket:message>
 			<span wicket:id="time"></span>

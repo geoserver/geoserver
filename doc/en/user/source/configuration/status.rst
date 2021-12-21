@@ -222,6 +222,10 @@ The system information will be available in the GeoServer status page in the ``S
 
 If the ``System status`` tab is not present, it means that the plugin was not installed correctly. The ``System status`` tab content will be refreshed automatically every second.  
 
+Enable All Statistics
+^^^^^^^^^^^^^^^^^^^^^
+When enabled, It displays the information of the listed System Status Info properties. It is disabled by default. Disabling is useful if GeoServer is generating a high CPU load due to system status computations.
+
 REST interface
 ^^^^^^^^^^^^^^
 

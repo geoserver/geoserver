@@ -206,7 +206,7 @@ public class JsonWriterTest {
         JSONObject object = json.getJSONObject("geometry");
         JSONArray coordinates = object.getJSONArray("coordinates");
         for (int i = 0; i < coordinates.size(); i++) {
-            assertTrue(coordinates.get(i) instanceof Double);
+            assertTrue(coordinates.get(i) instanceof Number);
         }
     }
 }

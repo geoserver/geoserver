@@ -1,21 +1,15 @@
 package org.geoserver.featurestemplating.builders.impl;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import org.geoserver.featurestemplating.configuration.TemplateIdentifier;
-import org.geoserver.featurestemplating.readers.RecursiveJSONParser;
 import org.geoserver.featurestemplating.writers.GeoJSONWriter;
-import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geotools.data.DataTestCase;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
@@ -28,23 +22,15 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.xml.sax.helpers.NamespaceSupport;
 
 public class DynamicIncludeFlatBuilderTest extends DataTestCase {
-
-    private static final String BASE =
-            "{\"metadata\":{\"metadata_iso_19139\":{\"title\":\"basetext\",\"href\":\"basehref\",\"type\":\"basetype\"}}}";
     private static final String DYNAMIC_METADATA =
             "{\"metadata\":{\"metadata_iso_19139\":{\"title\":\"metadata_iso_19139\",\"dynamicValue\":\"${dynamicValue}\",\"href\":\"http://metadata_iso_19139.org\",\"type\":\"metadata\"}}}";
     private static final String STATIC_METADATA =
             "{\"metadata\":{\"metadata_iso_19139\":{\"title\":\"metadata_iso_19139\",\"href\":\"http://metadata_iso_19139.org\",\"type\":\"metadata\"}}}";
 
-    private JsonNode node;
     private SimpleFeature jsonFieldSimpleFeature;
-    FileSystemResourceStore store;
 
     @Before
     public void setup() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        node = mapper.readTree(BASE);
-
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.userData(JDBCDataStore.JDBC_NATIVE_TYPENAME, "json");
         tb.add("dynamicMetadata", String.class);
@@ -65,15 +51,6 @@ public class DynamicIncludeFlatBuilderTest extends DataTestCase {
         fb.add(STATIC_METADATA);
         fb.add("dynamic value result");
         jsonFieldSimpleFeature = fb.buildFeature("jsonFieldSimpleType.1");
-
-        store = new FileSystemResourceStore(new File("src/test/resources/jsonIncludes"));
-    }
-
-    @Test
-    public void testObtainDynamicIncludeFlatKeyword() throws IOException {
-        RecursiveJSONParser parser = new RecursiveJSONParser(store.get("dynamicIncludeFlat.json"));
-        JsonNode parse = parser.parse();
-        assertTrue(parse.toString().contains("$dynamicIncludeFlat_$includeFlat"));
     }
 
     @Test

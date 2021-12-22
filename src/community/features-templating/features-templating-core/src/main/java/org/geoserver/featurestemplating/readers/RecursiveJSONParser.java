@@ -9,7 +9,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
@@ -22,7 +21,7 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
 
     private static final String INCLUDE_KEY = "$include";
     private static final String MERGE_KEY = "$merge";
-    private static final String INCLUDE_FLAT_KEY = "$includeFlat";
+    public static final String INCLUDE_FLAT_KEY = "$includeFlat";
     public static final String DYNAMIC_INCLUDE_FLAT_KEY = "$dynamicIncludeFlat_";
 
     private final ObjectMapper mapper;
@@ -130,27 +129,6 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
         if (result.has(MERGE_KEY)) {
             result = processMergeDirective(result);
         }
-
-        // iterate here again to put DYNAMIC_INCLUDE_FLAT_KEY as a parent node
-        if (result.has(INCLUDE_FLAT_KEY)) {
-            ObjectNode dynamicIncludeFlatResult = mapper.getNodeFactory().objectNode();
-            Iterator<String> namesSecond = input.fieldNames();
-            while (namesSecond.hasNext()) {
-                String name = namesSecond.next();
-                JsonNode node = input.get(name);
-                if (isDynamicIncludeFlat(node)) {
-                    String key = DYNAMIC_INCLUDE_FLAT_KEY.concat(name);
-                    ObjectNode emptyNode = JsonNodeFactory.instance.objectNode();
-                    dynamicIncludeFlatResult.set(key, emptyNode);
-                    dynamicIncludeFlatResult.with(key).set(INCLUDE_FLAT_KEY, node);
-                } else {
-                    dynamicIncludeFlatResult.set(name, node);
-                }
-            }
-
-            return dynamicIncludeFlatResult;
-        }
-
         return result;
     }
 

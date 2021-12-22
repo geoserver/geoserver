@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.Interpolation;
 import javax.media.jai.InterpolationNearest;
@@ -1173,15 +1174,11 @@ class DirectRasterRenderer {
                                 interpolationHints);
                 gcr.setAdvancedProjectionHandlingEnabled(advancedProjectionHandling);
                 gcr.setWrapEnabled(mapWrapping);
+                GeneralParameterValue[] readingParams =
+                        setInterpolation(interpolation, (GeneralParameterValue[]) readParams);
+
                 RenderedImage ri =
-                        gcr.renderImage(
-                                reader,
-                                (GeneralParameterValue[]) readParams,
-                                null,
-                                interpolation,
-                                null,
-                                256,
-                                256);
+                        gcr.renderImage(reader, readingParams, null, interpolation, null, 256, 256);
                 if (ri != null) {
                     PlanarImage pi = PlanarImage.wrapRenderedImage(ri);
                     GridCoverage2D gc2d =
@@ -1193,6 +1190,29 @@ class DirectRasterRenderer {
             } catch (TransformException | NoninvertibleTransformException | FactoryException e) {
                 throw new IOException("Failure rendering the coverage", e);
             }
+        }
+
+        private GeneralParameterValue[] setInterpolation(
+                Interpolation interpolation, GeneralParameterValue[] readParams) {
+            if (interpolation != null) {
+                List<GeneralParameterValue> paramList = new ArrayList<>();
+                if (readParams != null) {
+                    paramList =
+                            Arrays.stream(readParams)
+                                    .filter(param -> notInterpolation(param))
+                                    .collect(Collectors.toList());
+                }
+                final Parameter<Interpolation> readInterpolation =
+                        (Parameter<Interpolation>) ImageMosaicFormat.INTERPOLATION.createValue();
+                readInterpolation.setValue(interpolation);
+                paramList.add(readInterpolation);
+                readParams = paramList.toArray(new GeneralParameterValue[paramList.size()]);
+            }
+            return readParams;
+        }
+
+        private boolean notInterpolation(GeneralParameterValue param) {
+            return !param.getDescriptor().equals(ImageMosaicFormat.INTERPOLATION);
         }
     }
 }

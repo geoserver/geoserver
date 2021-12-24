@@ -29,7 +29,7 @@ public class FeatureLayer extends AbstractLayerOrTable {
 
     // editFieldsInfo - skipped we are not editable
     // ownershipBasedAccessControlForFeatures - skipped we are not doing ownership
-    // syncCanReturnChanges - skipped revision not supported until geogig
+    // syncCanReturnChanges - revision not supported
     protected Boolean syncCanReturnChanges = false;
     // supportsRollbackOnFailureParameter - supported
     protected Boolean supportsRollbackOnFailureParameter = true;

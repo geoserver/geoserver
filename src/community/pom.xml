@@ -476,25 +476,6 @@
       </modules>
     </profile>
     <profile>
-      <id>geogig</id>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>3.2.0</version>
-            <configuration>
-              <descriptors>
-                <descriptor>release/ext-geogig.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-      <modules>
-        <module>geogig</module>
-      </modules>
-    </profile>
-    <profile>
       <id>oauth2-google</id>
       <modules>
         <module>security/oauth2-core</module>

@@ -39,7 +39,7 @@ public class LocalizationsFinder {
                     resolver.getResources("classpath*:/GeoServerApplication_*.properties")) {
                 String name = resource.getFilename();
                 try {
-                    int idx = name.indexOf("."); // guaranteed to be there by pattern
+                    int idx = name.lastIndexOf("."); // guaranteed to be there by pattern
                     String language = name.substring("GeoServerApplication_".length(), idx);
                     Locale locale = LocaleUtils.toLocale(language);
                     locales.add(locale);

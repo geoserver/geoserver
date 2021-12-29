@@ -38,21 +38,9 @@ public class LocalizationsFinder {
             for (Resource resource :
                     resolver.getResources("classpath*:/GeoServerApplication_*.properties")) {
                 String name = resource.getFilename();
-<<<<<<< Updated upstream
-                try {
-                    int idx = name.lastIndexOf("."); // guaranteed to be there by pattern
-                    String language = name.substring("GeoServerApplication_".length(), idx);
-                    Locale locale = LocaleUtils.toLocale(language);
-                    locales.add(locale);
-                } catch (Exception e) {
-                    LOGGER.log(
-                            Level.FINE,
-                            "Skipping file " + name + ", could not extract a Locale from it",
-                            e);
-=======
                 if (name != null) {
                     try {
-                        int idx = name.indexOf("."); // guaranteed to be there by pattern
+                        int idx = name.lastIndexOf("."); // guaranteed to be there by pattern
                         String language = name.substring("GeoServerApplication_".length(), idx);
                         Locale locale = LocaleUtils.toLocale(language);
                         locales.add(locale);
@@ -62,7 +50,6 @@ public class LocalizationsFinder {
                                 "Skipping file " + name + ", could not extract a Locale from it",
                                 e);
                     }
->>>>>>> Stashed changes
                 }
             }
             locales.add(Locale.ENGLISH);

@@ -5,6 +5,9 @@
  */
 package org.geoserver.wfs.response;
 
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
@@ -15,6 +18,8 @@ import java.io.StringReader;
 import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,17 +33,31 @@ import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
+import org.geotools.data.complex.feature.type.ComplexFeatureTypeImpl;
 import org.geotools.data.memory.MemoryDataStore;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.wfs.internal.WFSContentComplexFeatureCollection;
+import org.geotools.feature.FakeTypes;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
+import org.geotools.feature.type.AttributeDescriptorImpl;
 import org.geotools.feature.type.DateUtil;
+import org.geotools.feature.type.FeatureTypeImpl;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.opengis.feature.Feature;
+import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.ComplexType;
+import org.opengis.feature.type.Name;
+import org.opengis.feature.type.PropertyDescriptor;
+import org.opengis.filter.identity.FeatureId;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class CSVOutputFormatTest extends WFSTestSupport {
@@ -325,5 +344,95 @@ public class CSVOutputFormatTest extends WFSTestSupport {
         CSVOutputFormat csvFormat = new CSVOutputFormat(getGeoServer());
         assertEquals(
                 "test:attributeName:", csvFormat.resolveNamespacePrefixName("test:attributeName:"));
+    }
+
+    @Test
+    public void testComplexFeatureMultiValuedAttributes() throws IOException {
+
+        FeatureCollectionResponse fct =
+                FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
+
+        ComplexFeatureTypeImpl schema = createNiceMock(ComplexFeatureTypeImpl.class);
+        expect(schema.getName()).andReturn(new NameImpl("testComplexFt"));
+        List<PropertyDescriptor> descriptors = new ArrayList<>();
+
+        ComplexType MINENAMETYPE_TYPE =
+                new FeatureTypeImpl(
+                        FakeTypes.Mine.NAME_MineNameType,
+                        FakeTypes.Mine.MINENAMETYPE_SCHEMA,
+                        null,
+                        false,
+                        Collections.emptyList(),
+                        FakeTypes.ANYTYPE_TYPE,
+                        null);
+
+        // Name of multi-valued attribute
+        Name name = new NameImpl("items");
+        PropertyDescriptor propertyDescriptor =
+                new AttributeDescriptorImpl(MINENAMETYPE_TYPE, name, 1, 1, false, null);
+        descriptors.add(propertyDescriptor);
+
+        expect(schema.getDescriptors()).andReturn(descriptors).anyTimes();
+        replay(schema);
+
+        Feature feature = createNiceMock(Feature.class);
+
+        FeatureId featureId = createNiceMock(FeatureId.class);
+        expect(featureId.getID()).andReturn("testId").anyTimes();
+        replay(featureId);
+
+        expect(feature.getIdentifier()).andReturn(featureId);
+
+        Collection<Property> values = new ArrayList<>();
+        Property property1 = createNiceMock(Property.class);
+        expect(property1.getValue()).andReturn("prop1").anyTimes();
+        values.add(property1);
+        Property property2 = createNiceMock(Property.class);
+        expect(property2.getValue()).andReturn("prop2").anyTimes();
+        values.add(property2);
+        replay(property1, property2);
+
+        expect(feature.getProperties(name)).andReturn(values).anyTimes();
+        replay(feature);
+
+        FeatureCollection featureCollection =
+                createNiceMock(WFSContentComplexFeatureCollection.class);
+        try (FeatureIterator<Feature> i = createNiceMock(FeatureIterator.class)) {
+
+            expect(i.hasNext()).andReturn(true).times(1);
+            expect(i.next()).andReturn(feature).anyTimes();
+            replay(i);
+
+            expect(featureCollection.getSchema()).andReturn(schema).anyTimes();
+            expect(featureCollection.features()).andReturn(i).anyTimes();
+            replay(featureCollection);
+        }
+
+        fct.getFeature().add(featureCollection);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        GetFeatureType gft = WfsFactory.eINSTANCE.createGetFeatureType();
+        Operation op =
+                new Operation("GetFeature", getServiceDescriptor10(), null, new Object[] {gft});
+
+        // write out the results
+        CSVOutputFormat format = new CSVOutputFormat(getGeoServer());
+        format.write(fct, bos, op);
+
+        String csvResponse = bos.toString();
+
+        List<String[]> lines = readLines(csvResponse, ',');
+
+        // check header line contains 2 attributes
+        assertEquals(2, lines.get(0).length);
+
+        // check total lines
+        assertEquals(2, lines.size());
+
+        // check expected id
+        assertEquals("testId", lines.get(1)[0]);
+
+        // check expected list of values as a comma separated string
+        assertEquals("prop1,prop2", lines.get(1)[1]);
     }
 }

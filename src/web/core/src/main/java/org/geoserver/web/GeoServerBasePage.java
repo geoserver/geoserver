@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -19,6 +21,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxIndicatorAware;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -26,6 +29,7 @@ import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -33,8 +37,10 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.Type;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
@@ -49,6 +55,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.config.SecurityManagerConfig;
 import org.geoserver.web.spring.security.GeoServerSession;
+import org.geoserver.web.util.LocalizationsFinder;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.util.logging.Logging;
@@ -413,6 +420,70 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
         if (id == null) {
             container.setVisible(false);
         }
+
+        // locale switcher
+        add(localeSwitcher());
+    }
+
+    private Component localeSwitcher() {
+        // defaults to English to have a more compact dropdown
+        DropDownChoice<Locale> select =
+                new DropDownChoice<>(
+                        "localeSwitcher", new Model<>(getSessionLocale()), getLocalesModel());
+        select.add(
+                new AjaxFormComponentUpdatingBehavior("change") {
+
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        Locale locale = select.getModelObject();
+                        // null is used for reset to browser settings
+                        if (locale == null) {
+                            // clear the cookie
+                            Cookie languageCookie =
+                                    new Cookie(GeoServerApplication.LANGUAGE_COOKIE_NAME, null);
+                            ((WebResponse) getResponse()).clearCookie(languageCookie);
+
+                            // get the language from request
+                            locale = target.getPage().getRequest().getLocale();
+                            if (locale == null) locale = Locale.ENGLISH;
+                        } else {
+                            // explicit choice, save to cookie
+                            getGeoServerApplication().refreshLocaleCookie(getResponse(), locale);
+                        }
+
+                        // by now locale has been set to a non-null value, stick in the session too
+                        getSession().setLocale(locale);
+                        target.add(getPage());
+                    }
+                });
+        return select;
+    }
+
+    private List<Locale> getLocalesModel() {
+        List<Locale> model = new ArrayList<>();
+        model.add(null); // to reset the choice and go back to browser language
+        model.addAll(LocalizationsFinder.getAvailableLocales());
+        return model;
+    }
+
+    /**
+     * Returns the locale held in the session, if it's one of the locales supported by GeoServer
+     *
+     * @return
+     */
+    private Locale getSessionLocale() {
+        Locale locale = getSession().getLocale();
+        if (locale == null) return Locale.ENGLISH;
+
+        // exact match?
+        List<Locale> locales = LocalizationsFinder.getAvailableLocales();
+        if (locales.contains(locale)) return locale;
+
+        // maybe a match just on the language then?
+        return locales.stream()
+                .filter(l -> locale.getLanguage().equals(l.getLanguage()))
+                .findFirst()
+                .orElse(Locale.ENGLISH);
     }
 
     private String getResourcePath(String path) {

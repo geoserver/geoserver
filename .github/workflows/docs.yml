@@ -1,6 +1,10 @@
 name: Docs CI
 
-on: [pull_request]
+on:
+  pull_request:
+    paths:
+      - doc/**
+      - src/pom.xml
 
 env:
   MAVEN_OPTS: -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3 -Xmx512m -Dorg.slf4j.simpleLogger.showDateTime=true -Dorg.slf4j.simpleLogger.dateTimeFormat=HH:mm:ss,SSS
@@ -20,6 +24,7 @@ jobs:
           requests
     - name: Build docs
       run: mvn -f doc/en install
+
   docs-zhcn:
     runs-on: ubuntu-20.04
     steps:

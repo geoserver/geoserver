@@ -150,7 +150,7 @@ When creating the first release candidate of a series, there are some extra step
       
 * Create the new RC version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on the main development branch; for example, if the main development branch is now ``2.12-SNAPSHOT``, create a Jira version ``2.12-RC1`` for the first release of the ``2.12.x`` series
 
-* Update the main, nightly, geogig-plugin and live-docs jobs on build.geoserver.org:
+* Update the main, nightly and live-docs jobs on build.geoserver.org:
   
   * disable the maintenance jobs, and remove them from the geoserver view
   * create new jobs, copying from the existing stable jobs, and edit the branch.

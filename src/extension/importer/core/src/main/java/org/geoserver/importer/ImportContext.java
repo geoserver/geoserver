@@ -54,8 +54,10 @@ public class ImportContext implements Serializable {
         PENDING,
         /** Import is running */
         RUNNING,
-        /** Import is complete */
-        COMPLETE;
+        /** Import completed succesfully */
+        COMPLETE,
+        /** Import completed with errors */
+        COMPLETE_ERROR,
     }
 
     /** identifier */
@@ -231,18 +233,25 @@ public class ImportContext implements Serializable {
         } else {
             newState = State.COMPLETE;
         }
-        O:
+        boolean error = false;
         for (ImportTask task : tasks) {
             switch (task.getState()) {
                 case COMPLETE:
                     continue;
                 case RUNNING:
                     newState = State.RUNNING;
-                    break O;
+                    break;
+                case ERROR:
+                    error = true;
+                    break;
                 default:
                     newState = State.PENDING;
-                    break O;
+                    break;
             }
+        }
+        if (error && newState == State.COMPLETE) {
+            newState = State.COMPLETE_ERROR;
+            setMessage("At least one task failed, look for error details in the tasks");
         }
         state = newState;
 

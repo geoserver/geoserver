@@ -356,13 +356,12 @@ public class GetMap {
         return map;
     }
 
-    private void addWMTSLayer(WMSMapContent mapContent, MapLayerInfo mapLayerInfo)
-            throws IOException {
+    void addWMTSLayer(WMSMapContent mapContent, MapLayerInfo mapLayerInfo) throws IOException {
         WMTSLayerInfo wmtsLayer = (WMTSLayerInfo) mapLayerInfo.getResource();
         WebMapTileServer wmts = wmtsLayer.getStore().getWebMapTileServer(null);
+        CoordinateReferenceSystem nativeCRS = wmtsLayer.getNativeCRS();
         Layer gt2Layer = wmtsLayer.getWMTSLayer(null);
-
-        WMTSMapLayer mapLayer = new WMTSMapLayer(wmts, gt2Layer);
+        WMTSMapLayer mapLayer = new WMTSMapLayer(wmts, gt2Layer, nativeCRS);
         mapLayer.setTitle(wmtsLayer.prefixedName());
 
         mapLayer.setRawTime((String) Dispatcher.REQUEST.get().getRawKvp().get("time"));

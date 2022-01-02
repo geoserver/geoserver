@@ -12,9 +12,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -46,6 +49,20 @@ public class RefreshedPanel extends Panel {
                 GeoServerExtensions.bean(SystemInfoCollector.class);
         final IModel<Date> timeMdl = Model.of(new Date());
         final IModel<List<MetricValue>> metricMdl = Model.ofList(Collections.emptyList());
+        final IModel<Boolean> statisticsIModel =
+                Model.of(systemInfoCollector.getStatisticsStatus());
+
+        final CheckBox statisticsCheckBox = new CheckBox("statistics", statisticsIModel);
+        statisticsCheckBox.add(
+                new AjaxFormComponentUpdatingBehavior("click") {
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                        systemInfoCollector.setStatisticsStatus(
+                                statisticsCheckBox.getModelObject());
+                    }
+                });
+        statisticsCheckBox.setOutputMarkupId(true);
+        add(statisticsCheckBox);
 
         Label time = DateLabel.forDatePattern("time", timeMdl, datePattern);
         time.setOutputMarkupId(true);

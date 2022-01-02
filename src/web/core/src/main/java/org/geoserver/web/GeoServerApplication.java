@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Application;
 import org.apache.wicket.ConverterLocator;
@@ -36,6 +37,8 @@ import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.IRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebRequest;
+import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.resource.JQueryResourceReference;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
@@ -74,6 +77,11 @@ import org.springframework.security.authentication.event.InteractiveAuthenticati
  */
 public class GeoServerApplication extends WebApplication
         implements ApplicationContextAware, ApplicationListener<ApplicationEvent> {
+
+    /** Name of the cookie used to remember the chosen language across sessions */
+    public static final String LANGUAGE_COOKIE_NAME = "GeoServerUILanguage";
+    /** Default cookie expiration date (one year) */
+    public static final int LANGUAGE_COOKIE_AGE = 365 * 24 * 60 * 60;
 
     /** logger for web application */
     public static Logger LOGGER = Logging.getLogger("org.geoserver.web");
@@ -302,8 +310,41 @@ public class GeoServerApplication extends WebApplication
     @Override
     public Session newSession(Request request, Response response) {
         Session s = new GeoServerSession(request);
-        if (s.getLocale() == null) s.setLocale(Locale.ENGLISH);
+
+        // the locale is normally established by the browser's accept language, but it
+        // can be overridden by a cookie (set by GUI in GeoServerWebPage)
+        Locale locale = getLocaleFromCookies(request);
+        if (locale != null) {
+            refreshLocaleCookie(response, locale);
+            s.setLocale(locale);
+        } else if (s.getLocale() == null) {
+            s.setLocale(Locale.ENGLISH);
+        }
+
         return s;
+    }
+
+    /** Grabs the locale from cookies, if possible, otherwise defaults to English */
+    public Locale getLocaleFromCookies(Request request) {
+        if (request instanceof WebRequest) {
+            List<Cookie> cookies = ((WebRequest) request).getCookies();
+
+            for (Cookie cookie : cookies) {
+                if (LANGUAGE_COOKIE_NAME.equals(cookie.getName())) {
+                    cookie.setMaxAge(LANGUAGE_COOKIE_AGE);
+                    return new Locale(cookie.getValue());
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Refreshes the locale cookie, to maintain its presence in future requests */
+    public void refreshLocaleCookie(Response response, Locale locale) {
+        Cookie languageCookie =
+                new Cookie(GeoServerApplication.LANGUAGE_COOKIE_NAME, locale.getLanguage());
+        languageCookie.setMaxAge(GeoServerApplication.LANGUAGE_COOKIE_AGE);
+        ((WebResponse) response).addCookie(languageCookie);
     }
 
     /*

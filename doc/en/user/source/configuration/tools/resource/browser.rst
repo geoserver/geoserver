@@ -3,7 +3,7 @@
 Resource Browser
 ================
 
-The :guilabel:`Resource Browser` provides a tree showing configuration folders, along with actions to edit and mange resources.
+The :guilabel:`Resource Browser` provides a tree showing configuration folders, along with actions to edit and manage resources.
 
 .. figure:: img/browser.png
    
@@ -39,7 +39,7 @@ User interface elements:
      
      Paste a Resource
      
-* :guilabel:`Rename` to rename an selected resource.
+* :guilabel:`Rename` to rename a selected resource.
    
    .. figure:: img/rename_resource.png
       

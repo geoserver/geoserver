@@ -389,28 +389,20 @@ public abstract class FeatureTypeSchemaBuilder {
                 if (!(mapObject instanceof Map)) continue;
                 @SuppressWarnings("unchecked")
                 final Map<String, String> featureTypeNamespaces = (Map<String, String>) mapObject;
-                featureTypeNamespaces
-                        .entrySet()
-                        .forEach(
-                                entry -> {
-                                    final String uri = entry.getValue();
-                                    // check if URI is already taken
-                                    if (schemaNamespacesMap.containsValue(uri)) return;
-                                    // exists a prefix available in catalog for this URI?
-                                    final Optional<NamespaceInfo> nsFromCatalog =
-                                            catalogNamespaces
-                                                    .stream()
-                                                    .filter(
-                                                            nsi ->
-                                                                    Objects.equals(
-                                                                            nsi.getURI(), uri))
-                                                    .findFirst();
-                                    final String prefix =
-                                            nsFromCatalog
-                                                    .map(NamespaceInfo::getPrefix)
-                                                    .orElse(entry.getKey());
-                                    schemaNamespacesMap.put(prefix, uri);
-                                });
+                for (Map.Entry<String, String> entry : featureTypeNamespaces.entrySet()) {
+                    final String uri = entry.getValue();
+                    // check if URI is already taken
+                    if (schemaNamespacesMap.containsValue(uri)) continue;
+                    // exists a prefix available in catalog for this URI?
+                    final Optional<NamespaceInfo> nsFromCatalog =
+                            catalogNamespaces
+                                    .stream()
+                                    .filter(nsi -> Objects.equals(nsi.getURI(), uri))
+                                    .findFirst();
+                    final String prefix =
+                            nsFromCatalog.map(NamespaceInfo::getPrefix).orElse(entry.getKey());
+                    schemaNamespacesMap.put(prefix, uri);
+                }
             }
             // Check if xlink namespace was added, otherwise add it, it is a required namespace
             if (!schemaNamespacesMap.containsValue(XLINK.NAMESPACE)) {

@@ -109,37 +109,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                         final LayerInfo layer = value.getObject();
                         String text = property.getPropertyValue(layer).toString();
                         if (property == layerProvider.defaultStyle) {
-                            IModel<Boolean> model =
-                                    new IModel<java.lang.Boolean>() {
-                                        private static final long serialVersionUID =
-                                                -5895600269146950033L;
-
-                                        @Override
-                                        public Boolean getObject() {
-                                            return defaultEditedStyle(layer);
-                                        }
-
-                                        @Override
-                                        public void setObject(java.lang.Boolean b) {
-                                            if (b) {
-                                                layer.setDefaultStyle(parent.getStyleInfo());
-                                            } else {
-                                                if (layer.getStyles().size() == 0) {
-                                                    layer.setDefaultStyle(
-                                                            parent.getCatalog()
-                                                                    .getStyleByName("generic"));
-                                                } else {
-                                                    StyleInfo s =
-                                                            layer.getStyles().iterator().next();
-                                                    layer.setDefaultStyle(s);
-                                                }
-                                            }
-                                            parent.getCatalog().save(layer);
-                                        }
-
-                                        @Override
-                                        public void detach() {}
-                                    };
+                            IModel<Boolean> model = new DefaultStyleModel(layer, parent);
 
                             Fragment fragment =
                                     new Fragment(
@@ -156,40 +126,7 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                                     });
                             return fragment;
                         } else if (property == layerProvider.associatedStyle) {
-                            IModel<Boolean> model =
-                                    new IModel<java.lang.Boolean>() {
-                                        private static final long serialVersionUID =
-                                                -5895600269146950033L;
-
-                                        @Override
-                                        public Boolean getObject() {
-                                            return usesEditedStyle(layer);
-                                        }
-
-                                        @Override
-                                        public void setObject(java.lang.Boolean b) {
-                                            if (b) {
-                                                layer.getStyles().add(parent.getStyleInfo());
-                                            } else {
-                                                StyleInfo s = null;
-                                                for (StyleInfo candidate : layer.getStyles()) {
-                                                    if (candidate
-                                                            .getName()
-                                                            .equals(
-                                                                    parent.getStyleInfo()
-                                                                            .getName())) {
-                                                        s = candidate;
-                                                        break;
-                                                    }
-                                                }
-                                                if (s != null) layer.getStyles().remove(s);
-                                            }
-                                            parent.getCatalog().save(layer);
-                                        }
-
-                                        @Override
-                                        public void detach() {}
-                                    };
+                            IModel<Boolean> model = new AssociatedStyleModel(layer, parent);
 
                             Fragment fragment =
                                     new Fragment(
@@ -211,5 +148,75 @@ public class LayerAssociationPanel extends StyleEditTabPanel {
                     };
                 };
         add(layerTable);
+    }
+
+    private class DefaultStyleModel implements IModel<Boolean> {
+        private static final long serialVersionUID = -5895600269146950033L;
+        private final LayerInfo layer;
+        private final AbstractStylePage parent;
+
+        public DefaultStyleModel(LayerInfo layer, AbstractStylePage parent) {
+            this.layer = layer;
+            this.parent = parent;
+        }
+
+        @Override
+        public Boolean getObject() {
+            return defaultEditedStyle(layer);
+        }
+
+        @Override
+        public void setObject(Boolean b) {
+            if (b) {
+                layer.setDefaultStyle(parent.getStyleInfo());
+            } else {
+                if (layer.getStyles().size() == 0) {
+                    layer.setDefaultStyle(parent.getCatalog().getStyleByName("generic"));
+                } else {
+                    StyleInfo s = layer.getStyles().iterator().next();
+                    layer.setDefaultStyle(s);
+                }
+            }
+            parent.getCatalog().save(layer);
+        }
+
+        @Override
+        public void detach() {}
+    }
+
+    private class AssociatedStyleModel implements IModel<Boolean> {
+        private static final long serialVersionUID = -5895600269146950033L;
+        private final LayerInfo layer;
+        private final AbstractStylePage parent;
+
+        public AssociatedStyleModel(LayerInfo layer, AbstractStylePage parent) {
+            this.layer = layer;
+            this.parent = parent;
+        }
+
+        @Override
+        public Boolean getObject() {
+            return usesEditedStyle(layer);
+        }
+
+        @Override
+        public void setObject(Boolean b) {
+            if (b) {
+                layer.getStyles().add(parent.getStyleInfo());
+            } else {
+                StyleInfo s = null;
+                for (StyleInfo candidate : layer.getStyles()) {
+                    if (candidate.getName().equals(parent.getStyleInfo().getName())) {
+                        s = candidate;
+                        break;
+                    }
+                }
+                if (s != null) layer.getStyles().remove(s);
+            }
+            parent.getCatalog().save(layer);
+        }
+
+        @Override
+        public void detach() {}
     }
 }

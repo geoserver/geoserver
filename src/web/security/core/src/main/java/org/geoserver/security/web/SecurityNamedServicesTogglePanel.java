@@ -37,53 +37,7 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
         Form form = new Form("form");
         add(form);
 
-        form.add(
-                new ListView<T>("services", model) {
-                    @Override
-                    protected void populateItem(final ListItem<T> item) {
-                        IModel<T> model = item.getModel();
-                        AjaxLink toggle =
-                                new AjaxLink<T>("toggle", model) {
-                                    @Override
-                                    public void onClick(AjaxRequestTarget target) {
-                                        if (item.get("panel") instanceof ContentPanel) {
-                                            // toggle off
-                                            item.addOrReplace(new WebMarkupContainer("panel"));
-                                            item.get("toggle")
-                                                    .add(
-                                                            new AttributeModifier(
-                                                                    "class",
-                                                                    new Model<>("collapsed")));
-                                        } else {
-                                            // toggle on
-                                            item.addOrReplace(
-                                                    createPanel("panel", item.getModel()));
-                                            item.get("toggle")
-                                                    .add(
-                                                            new AttributeModifier(
-                                                                    "class",
-                                                                    new Model<>("expanded")));
-                                        }
-                                        target.add(item);
-                                    }
-                                };
-                        toggle.add(new Label("name", new PropertyModel(model, "name")));
-
-                        boolean first = item.getIndex() == 0;
-                        toggle.add(
-                                new AttributeAppender(
-                                        "class",
-                                        new Model<>(first ? "expanded" : "collapsed"),
-                                        " "));
-                        item.add(toggle);
-
-                        item.add(
-                                first
-                                        ? createPanel("panel", model)
-                                        : new WebMarkupContainer("panel"));
-                        item.setOutputMarkupId(true);
-                    }
-                });
+        form.add(new ServicesListView(model));
     }
 
     protected abstract ContentPanel createPanel(String id, IModel<T> config);
@@ -105,5 +59,46 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
                         }
                     });
         }
+    }
+
+    private class ServicesListView extends ListView<T> {
+        public ServicesListView(IModel<List<T>> model) {
+            super("services", model);
+        }
+
+        @Override
+        protected void populateItem(final ListItem<T> item) {
+            IModel<T> model = item.getModel();
+            AjaxLink toggle = buildToggleLink(item, model);
+            toggle.add(new Label("name", new PropertyModel(model, "name")));
+
+            boolean first = item.getIndex() == 0;
+            toggle.add(
+                    new AttributeAppender(
+                            "class", new Model<>(first ? "expanded" : "collapsed"), " "));
+            item.add(toggle);
+
+            item.add(first ? createPanel("panel", model) : new WebMarkupContainer("panel"));
+            item.setOutputMarkupId(true);
+        }
+    }
+
+    private AjaxLink<T> buildToggleLink(ListItem<T> item, IModel<T> model) {
+        return new AjaxLink<T>("toggle", model) {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                if (item.get("panel") instanceof ContentPanel) {
+                    // toggle off
+                    item.addOrReplace(new WebMarkupContainer("panel"));
+                    item.get("toggle")
+                            .add(new AttributeModifier("class", new Model<>("collapsed")));
+                } else {
+                    // toggle on
+                    item.addOrReplace(createPanel("panel", item.getModel()));
+                    item.get("toggle").add(new AttributeModifier("class", new Model<>("expanded")));
+                }
+                target.add(item);
+            }
+        };
     }
 }

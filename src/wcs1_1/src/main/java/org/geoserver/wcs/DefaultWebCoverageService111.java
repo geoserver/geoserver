@@ -504,24 +504,16 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
                     //
 
                     // TODO: draft code ... it needs more study!
-                    int elevationLevels =
-                            (int)
-                                    Math.round(
-                                            requestedEnvelope.getUpperCorner().getOrdinate(2)
-                                                    - requestedEnvelope
-                                                            .getLowerCorner()
-                                                            .getOrdinate(2));
+                    double upperZ = requestedEnvelope.getUpperCorner().getOrdinate(2);
+                    double lowerZ = requestedEnvelope.getLowerCorner().getOrdinate(2);
+                    int elevationLevels = (int) Math.round(upperZ - lowerZ);
 
                     // compute the elevation levels, we have elevationLevels values
                     if (elevationLevels > 0) {
                         double[] elevations = new double[elevationLevels];
 
-                        elevations[0] =
-                                requestedEnvelope
-                                        .getLowerCorner()
-                                        .getOrdinate(2); // TODO put the extrema
-                        elevations[elevationLevels - 1] =
-                                requestedEnvelope.getUpperCorner().getOrdinate(2);
+                        elevations[0] = lowerZ; // TODO put the extrema
+                        elevations[elevationLevels - 1] = upperZ;
                         if (elevationLevels > 2) {
                             final int adjustedLevelsNum = elevationLevels - 1;
                             double step =

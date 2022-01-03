@@ -323,91 +323,9 @@ public class CachedLayersPage extends GeoServerSecuredPage {
         removal.setEnabled(false);
 
         // the clear All GWC cache link
-        header.add(trucateAllLink("clearGwcLink"));
+        header.add(new TruncateAllLink("clearGwcLink"));
 
         return header;
-    }
-
-    private AjaxLink<String> trucateAllLink(String id) {
-        AjaxLink<String> trunkAlllink =
-                new AjaxLink<String>(id) {
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        dialog.setTitle(
-                                new ParamResourceModel(
-                                        "confirmGwcTruncateTitle", CachedLayersPage.this));
-                        dialog.setDefaultModel(getDefaultModel());
-
-                        dialog.showOkCancel(
-                                target,
-                                new GeoServerDialog.DialogDelegate() {
-                                    private static final long serialVersionUID = 1L;
-                                    private TruncateAllRequest truncateAllRequest;
-
-                                    @Override
-                                    protected Component getContents(final String id) {
-                                        Label confirmLabel =
-                                                new Label(
-                                                        id,
-                                                        new ParamResourceModel(
-                                                                "confirmGWCClean",
-                                                                CachedLayersPage.this));
-                                        confirmLabel.setEscapeModelStrings(
-                                                false); // allow some html inside, like
-                                        // <b></b>, etc
-                                        return confirmLabel;
-                                    }
-
-                                    @Override
-                                    protected boolean onSubmit(
-                                            final AjaxRequestTarget target,
-                                            final Component contents) {
-
-                                        GWC facade = GWC.get();
-                                        try {
-                                            truncateAllRequest = facade.truncateAll();
-                                        } catch (Exception e) {
-                                            error(
-                                                    new ParamResourceModel(
-                                                                    "confirmGWCClean",
-                                                                    CachedLayersPage.this)
-                                                            .getString());
-                                            log.error("An Error while clearing GWC cache", e);
-                                            return false;
-                                        }
-                                        return true;
-                                    }
-
-                                    @Override
-                                    public void onClose(final AjaxRequestTarget target) {
-                                        target.add(table);
-                                        if (truncateAllRequest != null)
-                                            if (truncateAllRequest.getTrucatedLayers().length()
-                                                    == 0)
-                                                warn(
-                                                        new ParamResourceModel(
-                                                                        "warnGWCClean",
-                                                                        CachedLayersPage.this)
-                                                                .getString());
-                                            else
-                                                info(
-                                                        new ParamResourceModel(
-                                                                        "confirmGWCCleanInfo",
-                                                                        CachedLayersPage.this)
-                                                                .getString());
-                                        else
-                                            error(
-                                                    new ParamResourceModel(
-                                                                    "errorGWCClean2",
-                                                                    CachedLayersPage.this)
-                                                            .getString());
-                                        setResponsePage(getPage());
-                                    }
-                                });
-                    }
-                };
-        return trunkAlllink;
     }
 
     private static class DelayedImageResource extends DynamicImageResource {
@@ -513,6 +431,70 @@ public class CachedLayersPage extends GeoServerSecuredPage {
                             }
                         }
                     });
+        }
+    }
+
+    private class TruncateAllLink extends AjaxLink<String> {
+
+        public TruncateAllLink(String id) {
+            super(id);
+        }
+
+        @Override
+        public void onClick(AjaxRequestTarget target) {
+            dialog.setTitle(
+                    new ParamResourceModel("confirmGwcTruncateTitle", CachedLayersPage.this));
+            dialog.setDefaultModel(getDefaultModel());
+
+            GeoServerDialog.DialogDelegate delegate =
+                    new GeoServerDialog.DialogDelegate() {
+                        private static final long serialVersionUID1 = 1L;
+                        private TruncateAllRequest truncateAllRequest;
+
+                        @Override
+                        protected Component getContents(final String id) {
+                            Label confirmLabel =
+                                    new Label(
+                                            id,
+                                            new ParamResourceModel(
+                                                    "confirmGWCClean", CachedLayersPage.this));
+                            confirmLabel.setEscapeModelStrings(
+                                    false); // allow some html inside, like
+                            // <b></b>, etc
+                            return confirmLabel;
+                        }
+
+                        @Override
+                        protected boolean onSubmit(
+                                final AjaxRequestTarget target1, final Component contents) {
+
+                            GWC facade = GWC.get();
+                            try {
+                                truncateAllRequest = facade.truncateAll();
+                            } catch (Exception e) {
+                                error(message("confirmGWCClean"));
+                                log.error("An Error while clearing GWC cache", e);
+                                return false;
+                            }
+                            return true;
+                        }
+
+                        private String message(String key) {
+                            return new ParamResourceModel(key, CachedLayersPage.this).getString();
+                        }
+
+                        @Override
+                        public void onClose(final AjaxRequestTarget target) {
+                            target.add(table);
+                            if (truncateAllRequest != null)
+                                if (truncateAllRequest.getTrucatedLayers().length() == 0)
+                                    warn(message("warnGWCClean"));
+                                else info(message("confirmGWCCleanInfo"));
+                            else error(message("errorGWCClean2"));
+                            setResponsePage(getPage());
+                        }
+                    };
+            dialog.showOkCancel(target, delegate);
         }
     }
 }

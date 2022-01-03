@@ -517,13 +517,7 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
                         if (axis.getSingleValue().size() > 0) {
                             bands = new int[axis.getSingleValue().size()];
                             for (int s = 0; s < axis.getSingleValue().size(); s++) {
-                                bands[s] =
-                                        Integer.parseInt(
-                                                        ((TypedLiteralType)
-                                                                        axis.getSingleValue()
-                                                                                .get(s))
-                                                                .getValue())
-                                                - 1;
+                                bands[s] = getBandFromAxis(axis, s);
                             }
                         } else if (axis.getInterval().size() > 0) {
                             IntervalType interval = (IntervalType) axis.getInterval().get(0);
@@ -548,6 +542,10 @@ public class DefaultWebCoverageService100 implements WebCoverageService100 {
             }
         }
         return coverage;
+    }
+
+    private int getBandFromAxis(AxisSubsetType axis, int s) {
+        return Integer.parseInt(((TypedLiteralType) axis.getSingleValue().get(s)).getValue()) - 1;
     }
 
     private Interpolation parseInterpolation(String interpolationType) {

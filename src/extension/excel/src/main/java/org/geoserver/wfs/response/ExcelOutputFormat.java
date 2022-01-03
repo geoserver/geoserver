@@ -103,11 +103,10 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
                 // write out the features
                 try (SimpleFeatureIterator i = fc.features()) {
                     int r = 0; // row index
-                    Row row;
                     while (i.hasNext()) {
                         r++; // start at 1, since header is at 0
 
-                        row = sheet.createRow(r);
+                        Row row = sheet.createRow(r);
                         cell = row.createCell(0);
 
                         if (r == (rowLimit - 1) && i.hasNext()) {
@@ -128,47 +127,49 @@ public abstract class ExcelOutputFormat extends WFSGetFeatureOutputFormat {
 
                         SimpleFeature f = i.next();
                         cell.setCellValue(helper.createRichTextString(f.getID()));
-                        for (int j = 0; j < f.getAttributeCount() && j < colLimit; j++) {
-                            Object att = f.getAttribute(j);
-                            if (att != null) {
-                                cell = row.createCell(j + 1);
-                                if (att instanceof Number) {
-                                    cell.setCellValue(((Number) att).doubleValue());
-                                } else if (att instanceof Date) {
-                                    cell.setCellValue((Date) att);
-                                    cell.setCellStyle(styles.getDateStyle());
-                                } else if (att instanceof Calendar) {
-                                    cell.setCellValue((Calendar) att);
-                                    cell.setCellStyle(styles.getDateStyle());
-                                } else if (att instanceof Boolean) {
-                                    cell.setCellValue((Boolean) att);
-                                } else {
-                                    // ok, it seems we have no better way than dump it as a string
-                                    String stringVal = att.toString();
-
-                                    // if string length > excel cell limit, truncate it and warn the
-                                    // user, otherwise excel workbook will be corrupted
-                                    if (stringVal.length() > CELL_CHAR_LIMIT) {
-                                        stringVal =
-                                                TRUNCATE_WARNING
-                                                        + " "
-                                                        + stringVal.substring(
-                                                                0,
-                                                                CELL_CHAR_LIMIT
-                                                                        - TRUNCATE_WARNING.length()
-                                                                        - 1);
-                                        cell.setCellStyle(styles.getWarningStyle());
-                                    }
-                                    cell.setCellValue(helper.createRichTextString(stringVal));
-                                }
-                            }
-                        }
+                        writeFeature(helper, styles, row, f);
                     }
                 }
             }
 
             // write to output
             wb.write(output);
+        }
+    }
+
+    private void writeFeature(
+            CreationHelper helper, ExcelCellStyles styles, Row row, SimpleFeature f) {
+        for (int j = 0; j < f.getAttributeCount() && j < colLimit; j++) {
+            Object att = f.getAttribute(j);
+            if (att != null) {
+                Cell cell = row.createCell(j + 1);
+                if (att instanceof Number) {
+                    cell.setCellValue(((Number) att).doubleValue());
+                } else if (att instanceof Date) {
+                    cell.setCellValue((Date) att);
+                    cell.setCellStyle(styles.getDateStyle());
+                } else if (att instanceof Calendar) {
+                    cell.setCellValue((Calendar) att);
+                    cell.setCellStyle(styles.getDateStyle());
+                } else if (att instanceof Boolean) {
+                    cell.setCellValue((Boolean) att);
+                } else {
+                    // ok, it seems we have no better way than dump it as a string
+                    String stringVal = att.toString();
+
+                    // if string length > excel cell limit, truncate it and warn the
+                    // user, otherwise excel workbook will be corrupted
+                    if (stringVal.length() > CELL_CHAR_LIMIT) {
+                        stringVal =
+                                TRUNCATE_WARNING
+                                        + " "
+                                        + stringVal.substring(
+                                                0, CELL_CHAR_LIMIT - TRUNCATE_WARNING.length() - 1);
+                        cell.setCellStyle(styles.getWarningStyle());
+                    }
+                    cell.setCellValue(helper.createRichTextString(stringVal));
+                }
+            }
         }
     }
 }

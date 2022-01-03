@@ -140,16 +140,15 @@ public class AuthenticationKeyFilterPanel
                             "parametersList", new Model<>(new ArrayList<>(parameters.keySet()))) {
                         @Override
                         protected void populateItem(ListItem<String> item) {
+                            String labelKey =
+                                    "AuthenticationKeyFilterPanel."
+                                            + authMapperName
+                                            + "."
+                                            + item.getModel().getObject();
                             item.add(
                                     new Label(
                                             "parameterName",
-                                            new StringResourceModel(
-                                                    "AuthenticationKeyFilterPanel."
-                                                            + authMapperName
-                                                            + "."
-                                                            + item.getModel().getObject(),
-                                                    this,
-                                                    null)));
+                                            new StringResourceModel(labelKey, this, null)));
                             item.add(
                                     new TextField<String>(
                                             "parameterField",

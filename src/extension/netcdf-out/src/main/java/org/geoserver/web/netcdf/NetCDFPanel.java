@@ -173,174 +173,45 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
         // Variable Attributes definition
         /////////////////////////////////
 
-        {
-            IModel<List<VariableAttribute>> model =
-                    new PropertyModel(netcdfModel, "variableAttributes");
-            variableAttributes =
-                    new ListView<VariableAttribute>("variableAttributes", model) {
-
-                        @Override
-                        protected void populateItem(final ListItem<VariableAttribute> item) {
-                            Label keyField =
-                                    new Label(
-                                            "variableAttributeKey",
-                                            new PropertyModel<String>(item.getModel(), "key"));
-                            item.add(keyField);
-                            Label valueField =
-                                    new Label(
-                                            "variableAttributeValue",
-                                            new PropertyModel<String>(item.getModel(), "value"));
-                            item.add(valueField);
-                            Component removeLink =
-                                    new ImageAjaxLink("removeVariableAttributeIcon", DELETE_ICON) {
-
-                                        @Override
-                                        protected void onClick(AjaxRequestTarget target) {
-                                            List<VariableAttribute> list =
-                                                    new ArrayList<>(
-                                                            variableAttributes.getModelObject());
-                                            VariableAttribute attribute =
-                                                    (VariableAttribute) getDefaultModelObject();
-                                            list.remove(attribute);
-                                            variableAttributes.setModelObject(list);
-                                            item.remove();
-                                            target.add(container);
-                                        }
-                                    };
-                            removeLink.setDefaultModel(item.getModel());
-                            item.add(removeLink);
-                        }
-                    };
-            variableAttributes.setOutputMarkupId(true);
-            container.add(variableAttributes);
-            final TextField<String> newValue =
-                    new TextField<>("newVariableAttributeValue", Model.of(""));
-            newValue.setOutputMarkupId(true);
-            container.add(newValue);
-            final TextField<String> newKey =
-                    new TextField<>("newVariableAttributeKey", Model.of(""));
-            newKey.setOutputMarkupId(true);
-            container.add(newKey);
-            GeoServerAjaxFormLink addLink =
-                    new GeoServerAjaxFormLink("addVariableAttribute") {
-
-                        @Override
-                        protected void onClick(AjaxRequestTarget ajaxTarget, Form form) {
-                            newKey.processInput();
-                            newValue.processInput();
-                            String key = newKey.getModelObject();
-                            String value = newValue.getModelObject();
-                            if (key == null || key.trim().isEmpty()) {
-                                ParamResourceModel rm =
-                                        new ParamResourceModel("NetCDFOut.emptyKey", null, "");
-                                error(rm.getString());
-                            } else {
-                                VariableAttribute attribute = new VariableAttribute(key, value);
-                                if (!variableAttributes.getModelObject().contains(attribute)) {
-                                    variableAttributes.getModelObject().add(attribute);
-                                }
-                                newKey.setModel(Model.of(""));
-                                newValue.setModel(Model.of(""));
-                                ajaxTarget.add(container);
-                            }
-                        }
-                    };
-            addLink.add(new Icon("addVariableAttributeIcon", ADD_ICON));
-            container.add(addLink);
-        }
+        IModel<List<VariableAttribute>> varAttributesModel =
+                new PropertyModel(netcdfModel, "variableAttributes");
+        variableAttributes = new VariableAttributeListView(varAttributesModel);
+        variableAttributes.setOutputMarkupId(true);
+        container.add(variableAttributes);
+        final TextField<String> newValue =
+                new TextField<>("newVariableAttributeValue", Model.of(""));
+        newValue.setOutputMarkupId(true);
+        container.add(newValue);
+        final TextField<String> newKey = new TextField<>("newVariableAttributeKey", Model.of(""));
+        newKey.setOutputMarkupId(true);
+        container.add(newKey);
+        GeoServerAjaxFormLink addVariableLink = new AddVariableLink(newKey, newValue);
+        addVariableLink.add(new Icon("addVariableAttributeIcon", ADD_ICON));
+        container.add(addVariableLink);
 
         /////////////////////////////
         // Extra Variables definition
         /////////////////////////////
 
-        {
-            IModel<List<ExtraVariable>> model = new PropertyModel(netcdfModel, "extraVariables");
-            extraVariables =
-                    new ListView<ExtraVariable>("extraVariables", model) {
-
-                        @Override
-                        protected void populateItem(final ListItem<ExtraVariable> item) {
-                            item.add(
-                                    new Label(
-                                            "extraVariableSource",
-                                            new PropertyModel<String>(item.getModel(), "source")));
-                            item.add(
-                                    new Label(
-                                            "extraVariableOutput",
-                                            new PropertyModel<String>(item.getModel(), "output")));
-                            item.add(
-                                    new Label(
-                                            "extraVariableDimensions",
-                                            new PropertyModel<String>(
-                                                    item.getModel(), "dimensions")));
-                            Component removeLink =
-                                    new ImageAjaxLink("removeExtraVariableIcon", DELETE_ICON) {
-
-                                        @Override
-                                        protected void onClick(AjaxRequestTarget target) {
-                                            List<ExtraVariable> list =
-                                                    new ArrayList<>(
-                                                            extraVariables.getModelObject());
-                                            final ExtraVariable attribute =
-                                                    (ExtraVariable) getDefaultModelObject();
-                                            list.remove(attribute);
-                                            extraVariables.setModelObject(list);
-                                            item.remove();
-                                            target.add(container);
-                                        }
-                                    };
-                            removeLink.setDefaultModel(item.getModel());
-                            item.add(removeLink);
-                        }
-                    };
-            extraVariables.setOutputMarkupId(true);
-            container.add(extraVariables);
-            TextField<String> newSource = new TextField<>("newExtraVariableSource", Model.of(""));
-            newSource.setOutputMarkupId(true);
-            container.add(newSource);
-            TextField<String> newOutput = new TextField<>("newExtraVariableOutput", Model.of(""));
-            newOutput.setOutputMarkupId(true);
-            container.add(newOutput);
-            TextField<String> newDimensions =
-                    new TextField<>("newExtraVariableDimensions", Model.of(""));
-            newDimensions.setOutputMarkupId(true);
-            container.add(newDimensions);
-            GeoServerAjaxFormLink addLink =
-                    new GeoServerAjaxFormLink("addExtraVariable") {
-
-                        @Override
-                        protected void onClick(AjaxRequestTarget ajaxTarget, Form form) {
-                            newSource.processInput();
-                            newOutput.processInput();
-                            newDimensions.processInput();
-                            String source = newSource.getModelObject();
-                            String output = newOutput.getModelObject();
-                            String dimensions = newDimensions.getModelObject();
-                            if ((source == null || source.trim().isEmpty())
-                                    && (output == null || output.trim().isEmpty())) {
-                                ParamResourceModel rm =
-                                        new ParamResourceModel(
-                                                "NetCDFOut.emptySourceOutput", null, "");
-                                error(rm.getString());
-                            } else if (dimensions != null && dimensions.split("\\s").length > 1) {
-                                ParamResourceModel rm =
-                                        new ParamResourceModel(
-                                                "NetCDFOut.tooManyDimensions", null, "");
-                                error(rm.getString());
-                            } else {
-                                extraVariables
-                                        .getModelObject()
-                                        .add(new ExtraVariable(source, output, dimensions));
-                                newOutput.setModel(Model.of(""));
-                                newSource.setModel(Model.of(""));
-                                newDimensions.setModel(Model.of(""));
-                                ajaxTarget.add(container);
-                            }
-                        }
-                    };
-            addLink.add(new Icon("addExtraVariableIcon", ADD_ICON));
-            container.add(addLink);
-        }
+        IModel<List<ExtraVariable>> extraVarModel =
+                new PropertyModel(netcdfModel, "extraVariables");
+        extraVariables = new ExtraVariableListView(extraVarModel);
+        extraVariables.setOutputMarkupId(true);
+        container.add(extraVariables);
+        TextField<String> newSource = new TextField<>("newExtraVariableSource", Model.of(""));
+        newSource.setOutputMarkupId(true);
+        container.add(newSource);
+        TextField<String> newOutput = new TextField<>("newExtraVariableOutput", Model.of(""));
+        newOutput.setOutputMarkupId(true);
+        container.add(newOutput);
+        TextField<String> newDimensions =
+                new TextField<>("newExtraVariableDimensions", Model.of(""));
+        newDimensions.setOutputMarkupId(true);
+        container.add(newDimensions);
+        GeoServerAjaxFormLink addExtraVariableLink =
+                new AddExtraVariableLink(newSource, newOutput, newDimensions);
+        addExtraVariableLink.add(new Icon("addExtraVariableIcon", ADD_ICON));
+        container.add(addExtraVariableLink);
 
         ///////////////////////////
         // End of definition blocks
@@ -424,5 +295,153 @@ public class NetCDFPanel<T extends NetCDFSettingsContainer> extends FormComponen
                 }
             }
         };
+    }
+
+    private class VariableAttributeListView extends ListView<VariableAttribute> {
+
+        public VariableAttributeListView(IModel<List<VariableAttribute>> varAttributesModel) {
+            super("variableAttributes", varAttributesModel);
+        }
+
+        @Override
+        protected void populateItem(final ListItem<VariableAttribute> item) {
+            Label keyField =
+                    new Label("variableAttributeKey", new PropertyModel<>(item.getModel(), "key"));
+            item.add(keyField);
+            Label valueField =
+                    new Label(
+                            "variableAttributeValue",
+                            new PropertyModel<>(item.getModel(), "value"));
+            item.add(valueField);
+            Component removeLink =
+                    new ImageAjaxLink("removeVariableAttributeIcon", DELETE_ICON) {
+
+                        @Override
+                        protected void onClick(AjaxRequestTarget target) {
+                            List<VariableAttribute> list =
+                                    new ArrayList<>(variableAttributes.getModelObject());
+                            VariableAttribute attribute =
+                                    (VariableAttribute) getDefaultModelObject();
+                            list.remove(attribute);
+                            variableAttributes.setModelObject(list);
+                            item.remove();
+                            target.add(container);
+                        }
+                    };
+            removeLink.setDefaultModel(item.getModel());
+            item.add(removeLink);
+        }
+    }
+
+    private class ExtraVariableListView extends ListView<ExtraVariable> {
+
+        public ExtraVariableListView(IModel<List<ExtraVariable>> extraVarModel) {
+            super("extraVariables", extraVarModel);
+        }
+
+        @Override
+        protected void populateItem(final ListItem<ExtraVariable> item) {
+            item.add(
+                    new Label(
+                            "extraVariableSource", new PropertyModel<>(item.getModel(), "source")));
+            item.add(
+                    new Label(
+                            "extraVariableOutput", new PropertyModel<>(item.getModel(), "output")));
+            item.add(
+                    new Label(
+                            "extraVariableDimensions",
+                            new PropertyModel<>(item.getModel(), "dimensions")));
+            Component removeLink =
+                    new ImageAjaxLink("removeExtraVariableIcon", DELETE_ICON) {
+
+                        @Override
+                        protected void onClick(AjaxRequestTarget target) {
+                            List<ExtraVariable> list =
+                                    new ArrayList<>(extraVariables.getModelObject());
+                            final ExtraVariable attribute = (ExtraVariable) getDefaultModelObject();
+                            list.remove(attribute);
+                            extraVariables.setModelObject(list);
+                            item.remove();
+                            target.add(container);
+                        }
+                    };
+            removeLink.setDefaultModel(item.getModel());
+            item.add(removeLink);
+        }
+    }
+
+    private class AddVariableLink extends GeoServerAjaxFormLink {
+
+        private final TextField<String> newKey;
+        private final TextField<String> newValue;
+
+        public AddVariableLink(TextField<String> newKey, TextField<String> newValue) {
+            super("addVariableAttribute");
+            this.newKey = newKey;
+            this.newValue = newValue;
+        }
+
+        @Override
+        protected void onClick(AjaxRequestTarget ajaxTarget, Form form) {
+            newKey.processInput();
+            newValue.processInput();
+            String key = newKey.getModelObject();
+            String value = newValue.getModelObject();
+            if (key == null || key.trim().isEmpty()) {
+                ParamResourceModel rm = new ParamResourceModel("NetCDFOut.emptyKey", null, "");
+                error(rm.getString());
+            } else {
+                VariableAttribute attribute = new VariableAttribute(key, value);
+                if (!variableAttributes.getModelObject().contains(attribute)) {
+                    variableAttributes.getModelObject().add(attribute);
+                }
+                newKey.setModel(Model.of(""));
+                newValue.setModel(Model.of(""));
+                ajaxTarget.add(container);
+            }
+        }
+    }
+
+    private class AddExtraVariableLink extends GeoServerAjaxFormLink {
+
+        private final TextField<String> newSource;
+        private final TextField<String> newOutput;
+        private final TextField<String> newDimensions;
+
+        public AddExtraVariableLink(
+                TextField<String> newSource,
+                TextField<String> newOutput,
+                TextField<String> newDimensions) {
+            super("addExtraVariable");
+            this.newSource = newSource;
+            this.newOutput = newOutput;
+            this.newDimensions = newDimensions;
+        }
+
+        @Override
+        protected void onClick(AjaxRequestTarget ajaxTarget, Form form) {
+            newSource.processInput();
+            newOutput.processInput();
+            newDimensions.processInput();
+            String source = newSource.getModelObject();
+            String output = newOutput.getModelObject();
+            String dimensions = newDimensions.getModelObject();
+            if ((source == null || source.trim().isEmpty())
+                    && (output == null || output.trim().isEmpty())) {
+                ParamResourceModel rm =
+                        new ParamResourceModel("NetCDFOut.emptySourceOutput", null, "");
+                error(rm.getString());
+            } else if (dimensions != null && dimensions.split("\\s").length > 1) {
+                ParamResourceModel rm =
+                        new ParamResourceModel("NetCDFOut.tooManyDimensions", null, "");
+                error(rm.getString());
+            } else {
+                extraVariables.getModelObject().add(new ExtraVariable(source, output, dimensions));
+                newOutput.setModel(Model.of(""));
+                newSource.setModel(Model.of(""));
+                newDimensions.setModel(Model.of(""));
+                ajaxTarget.add(container);
+            }
+        }
     }
 }

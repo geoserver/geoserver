@@ -161,12 +161,10 @@ public abstract class IconProperties {
                             file = graphicFile = file.getCanonicalFile();
                             if (file.getAbsolutePath().startsWith(styles.getAbsolutePath())) {
                                 // ok, part of the styles directory, extract only the relative path
-                                file =
-                                        new File(
-                                                file.getAbsolutePath()
-                                                        .substring(
-                                                                styles.getAbsolutePath().length()
-                                                                        + 1));
+                                String relativePath =
+                                        file.getAbsolutePath()
+                                                .substring(styles.getAbsolutePath().length() + 1);
+                                file = new File(relativePath);
                             } else {
                                 // we wont' transform this, other dirs are not published
                                 file = null;

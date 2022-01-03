@@ -64,159 +64,150 @@ public class BlobStoresPage extends GeoServerSecuredPage {
                 });
 
         // the removal button
-        header.add(
-                remove =
-                        new AjaxLink<Object>("removeSelected") {
-                            private static final long serialVersionUID = 1L;
-
-                            @Override
-                            public void onClick(AjaxRequestTarget target) {
-
-                                final Set<String> ids = new HashSet<>();
-                                final List<String> assignedLayers = new ArrayList<>();
-
-                                for (BlobStoreInfo config : blobStoresPanel.getSelection()) {
-                                    if (config.isDefault()) {
-                                        error(
-                                                new ParamResourceModel("deleteError", getPage())
-                                                        .getString());
-                                        addFeedbackPanels(target);
-                                        return;
-                                    }
-                                    ids.add(config.getName());
-                                }
-
-                                for (TileLayer layer : GWC.get().getTileLayers()) {
-                                    if (layer.getBlobStoreId() != null) {
-                                        if (ids.contains(layer.getBlobStoreId())) {
-                                            assignedLayers.add(layer.getName());
-                                        }
-                                    }
-                                }
-                                if (assignedLayers.size() > 0) {
-                                    dialog.showOkCancel(
-                                            target,
-                                            new GeoServerDialog.DialogDelegate() {
-                                                private static final long serialVersionUID =
-                                                        5257987095800108993L;
-
-                                                private String error = null;
-
-                                                @Override
-                                                protected Component getContents(String id) {
-                                                    StringBuilder sb = new StringBuilder();
-                                                    sb.append(
-                                                            new ParamResourceModel(
-                                                                            "confirmDeleteDialog.content",
-                                                                            getPage())
-                                                                    .getString());
-                                                    for (String layerName : assignedLayers) {
-                                                        sb.append("\n&nbsp;&nbsp;");
-                                                        sb.append(
-                                                                StringEscapeUtils.escapeHtml4(
-                                                                        layerName));
-                                                    }
-                                                    return new MultiLineLabel(
-                                                                    "userPanel", sb.toString())
-                                                            .setEscapeModelStrings(false);
-                                                }
-
-                                                @Override
-                                                protected boolean onSubmit(
-                                                        AjaxRequestTarget target,
-                                                        Component contents) {
-                                                    try {
-                                                        GWC.get().removeBlobStores(ids);
-                                                        for (String layerName : assignedLayers) {
-                                                            TileLayer layer =
-                                                                    GWC.get()
-                                                                            .getTileLayerByName(
-                                                                                    layerName);
-                                                            layer.setBlobStoreId(null);
-                                                            GWC.get().save(layer);
-                                                        }
-                                                    } catch (ConfigurationException e) {
-                                                        error = e.getMessage();
-                                                    }
-                                                    return true;
-                                                }
-
-                                                @Override
-                                                public void onClose(AjaxRequestTarget target) {
-                                                    if (error != null) {
-                                                        error(error);
-                                                        addFeedbackPanels(target);
-                                                    } else {
-                                                        target.add(blobStoresPanel);
-                                                    }
-                                                }
-                                            });
-                                } else {
-                                    try {
-                                        GWC.get().removeBlobStores(ids);
-                                    } catch (ConfigurationException e) {
-                                        error(e.toString());
-                                        addFeedbackPanels(target);
-                                    }
-                                    target.add(blobStoresPanel);
-                                }
-                            }
-                        });
+        header.add(remove = new RemoveSelectedLink());
         remove.setOutputMarkupId(true);
         remove.setEnabled(false);
 
         setHeaderPanel(header);
 
         // the panel
-        add(
-                blobStoresPanel =
-                        new GeoServerTablePanel<BlobStoreInfo>(
-                                "storesPanel", new BlobStoresProvider(), true) {
-                            private static final long serialVersionUID = -5380703588873422601L;
+        add(blobStoresPanel = new BlobStoreTable());
+        blobStoresPanel.setOutputMarkupId(true);
+    }
+
+    private class RemoveSelectedLink extends AjaxLink<Object> {
+        private static final long serialVersionUID = 1L;
+
+        public RemoveSelectedLink() {
+            super("removeSelected");
+        }
+
+        @Override
+        public void onClick(AjaxRequestTarget target) {
+
+            final Set<String> ids = new HashSet<>();
+            final List<String> assignedLayers = new ArrayList<>();
+
+            for (BlobStoreInfo config : blobStoresPanel.getSelection()) {
+                if (config.isDefault()) {
+                    error(new ParamResourceModel("deleteError", getPage()).getString());
+                    addFeedbackPanels(target);
+                    return;
+                }
+                ids.add(config.getName());
+            }
+
+            for (TileLayer layer : GWC.get().getTileLayers()) {
+                if (layer.getBlobStoreId() != null) {
+                    if (ids.contains(layer.getBlobStoreId())) {
+                        assignedLayers.add(layer.getName());
+                    }
+                }
+            }
+            if (!assignedLayers.isEmpty()) {
+                dialog.showOkCancel(
+                        target,
+                        new GeoServerDialog.DialogDelegate() {
+                            private static final long serialVersionUID = 5257987095800108993L;
+
+                            private String error = null;
 
                             @Override
-                            protected Component getComponentForProperty(
-                                    String id,
-                                    IModel<BlobStoreInfo> itemModel,
-                                    Property<BlobStoreInfo> property) {
-                                final BlobStoreInfo blobStore = itemModel.getObject();
-                                if (property == BlobStoresProvider.ID) {
-                                    return new SimpleAjaxLink<BlobStoreInfo>(
-                                            id, itemModel, property.getModel(itemModel)) {
-                                        private static final long serialVersionUID = 1L;
-
-                                        @Override
-                                        protected void onClick(AjaxRequestTarget target) {
-                                            setResponsePage(new BlobStorePage(blobStore));
-                                        }
-                                    };
-                                } else if (property == BlobStoresProvider.DEFAULT) {
-                                    if (blobStore.isDefault()) {
-                                        return new Icon(id, CatalogIconFactory.ENABLED_ICON);
-                                    } else {
-                                        return new Label(id, "");
-                                    }
-                                } else if (property == BlobStoresProvider.ENABLED) {
-                                    if (blobStore.isEnabled()) {
-                                        return new Icon(id, CatalogIconFactory.ENABLED_ICON);
-                                    } else {
-                                        return new Label(id, "");
-                                    }
-                                } else if (property == BlobStoresProvider.TYPE) {
-                                    return new Label(
-                                            id,
-                                            BlobStoreTypes.getFromClass(blobStore.getClass())
-                                                    .toString());
+                            protected Component getContents(String id) {
+                                StringBuilder sb = new StringBuilder();
+                                sb.append(
+                                        new ParamResourceModel(
+                                                        "confirmDeleteDialog.content", getPage())
+                                                .getString());
+                                for (String layerName : assignedLayers) {
+                                    sb.append("\n&nbsp;&nbsp;");
+                                    sb.append(StringEscapeUtils.escapeHtml4(layerName));
                                 }
-                                return null;
+                                return new MultiLineLabel("userPanel", sb.toString())
+                                        .setEscapeModelStrings(false);
                             }
 
                             @Override
-                            protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                remove.setEnabled(blobStoresPanel.getSelection().size() > 0);
-                                target.add(remove);
+                            protected boolean onSubmit(
+                                    AjaxRequestTarget target, Component contents) {
+                                try {
+                                    GWC.get().removeBlobStores(ids);
+                                    for (String layerName : assignedLayers) {
+                                        TileLayer layer = GWC.get().getTileLayerByName(layerName);
+                                        layer.setBlobStoreId(null);
+                                        GWC.get().save(layer);
+                                    }
+                                } catch (ConfigurationException e) {
+                                    error = e.getMessage();
+                                }
+                                return true;
+                            }
+
+                            @Override
+                            public void onClose(AjaxRequestTarget target) {
+                                if (error != null) {
+                                    error(error);
+                                    addFeedbackPanels(target);
+                                } else {
+                                    target.add(blobStoresPanel);
+                                }
                             }
                         });
-        blobStoresPanel.setOutputMarkupId(true);
+            } else {
+                try {
+                    GWC.get().removeBlobStores(ids);
+                } catch (ConfigurationException e) {
+                    error(e.toString());
+                    addFeedbackPanels(target);
+                }
+                target.add(blobStoresPanel);
+            }
+        }
+    }
+
+    private class BlobStoreTable extends GeoServerTablePanel<BlobStoreInfo> {
+        private static final long serialVersionUID = -5380703588873422601L;
+
+        public BlobStoreTable() {
+            super("storesPanel", new BlobStoresProvider(), true);
+        }
+
+        @Override
+        protected Component getComponentForProperty(
+                String id, IModel<BlobStoreInfo> itemModel, Property<BlobStoreInfo> property) {
+            final BlobStoreInfo blobStore = itemModel.getObject();
+            if (property == BlobStoresProvider.ID) {
+                return new SimpleAjaxLink<BlobStoreInfo>(
+                        id, itemModel, property.getModel(itemModel)) {
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    protected void onClick(AjaxRequestTarget target) {
+                        setResponsePage(new BlobStorePage(blobStore));
+                    }
+                };
+            } else if (property == BlobStoresProvider.DEFAULT) {
+                if (blobStore.isDefault()) {
+                    return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                } else {
+                    return new Label(id, "");
+                }
+            } else if (property == BlobStoresProvider.ENABLED) {
+                if (blobStore.isEnabled()) {
+                    return new Icon(id, CatalogIconFactory.ENABLED_ICON);
+                } else {
+                    return new Label(id, "");
+                }
+            } else if (property == BlobStoresProvider.TYPE) {
+                return new Label(id, BlobStoreTypes.getFromClass(blobStore.getClass()).toString());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onSelectionUpdate(AjaxRequestTarget target) {
+            remove.setEnabled(blobStoresPanel.getSelection().size() > 0);
+            target.add(remove);
+        }
     }
 }

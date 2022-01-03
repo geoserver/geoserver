@@ -168,23 +168,7 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
                             @SuppressWarnings("unchecked")
                             protected void populateItem(ListItem<GeoServerRole> item) {
                                 IModel<GeoServerRole> model = item.getModel();
-                                item.add(
-                                        new SimpleAjaxLink(
-                                                "role",
-                                                model,
-                                                RoleListProvider.ROLENAME.getModel(model)) {
-                                            @Override
-                                            protected void onClick(AjaxRequestTarget target) {
-                                                setResponsePage(
-                                                        new EditRolePage(
-                                                                        getSecurityManager()
-                                                                                .getActiveRoleService()
-                                                                                .getName(),
-                                                                        (GeoServerRole)
-                                                                                getDefaultModelObject())
-                                                                .setReturnPage(this.getPage()));
-                                            }
-                                        });
+                                item.add(new RoleEditLink(model));
                             }
                         });
         calculatedRoles.setOutputMarkupId(true);
@@ -348,4 +332,18 @@ public abstract class AbstractUserPage extends AbstractSecurityPage {
     /** Implements the actual save action. */
     protected abstract void onFormSubmit(GeoServerUser user)
             throws IOException, PasswordPolicyException;
+
+    private class RoleEditLink extends SimpleAjaxLink<GeoServerRole> {
+        public RoleEditLink(IModel<GeoServerRole> model) {
+            super("role", model, RoleListProvider.ROLENAME.getModel(model));
+        }
+
+        @Override
+        protected void onClick(AjaxRequestTarget target) {
+            String roleService = getSecurityManager().getActiveRoleService().getName();
+            EditRolePage page =
+                    new EditRolePage(roleService, (GeoServerRole) getDefaultModelObject());
+            setResponsePage(page.setReturnPage(this.getPage()));
+        }
+    }
 }

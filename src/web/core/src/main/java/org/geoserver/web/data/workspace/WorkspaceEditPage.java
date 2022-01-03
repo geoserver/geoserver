@@ -575,54 +575,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                         protected void populateItem(ListItem<Service> item) {
                             Service service = item.getModelObject();
 
-                            final Link<Service> link =
-                                    new Link<Service>("link", new Model<>(service)) {
-                                        private static final long serialVersionUID =
-                                                1111536301891090436L;
-
-                                        @Override
-                                        public void onClick() {
-                                            Service s = getModelObject();
-                                            Page page = null;
-
-                                            if (s.model instanceof ExistingServiceModel) {
-                                                // service that has already been added,
-                                                PageParameters pp =
-                                                        new PageParameters()
-                                                                .add(
-                                                                        "workspace",
-                                                                        wsModel.getObject()
-                                                                                .getName());
-                                                try {
-                                                    page =
-                                                            s.adminPage
-                                                                    .getComponentClass()
-                                                                    .getConstructor(
-                                                                            PageParameters.class)
-                                                                    .newInstance(pp);
-                                                } catch (Exception e) {
-                                                    throw new WicketRuntimeException(e);
-                                                }
-                                            } else {
-                                                // service that has yet to be added
-                                                try {
-                                                    page =
-                                                            s.adminPage
-                                                                    .getComponentClass()
-                                                                    .getConstructor(
-                                                                            s.adminPage
-                                                                                    .getServiceClass())
-                                                                    .newInstance(
-                                                                            s.model.getObject());
-                                                } catch (Exception e) {
-                                                    throw new WicketRuntimeException(e);
-                                                }
-                                            }
-                                            ((BaseServiceAdminPage<?>) page)
-                                                    .setReturnPage(WorkspaceEditPage.this);
-                                            setResponsePage(page);
-                                        }
-                                    };
+                            final Link<Service> link = new ServiceLink(service, wsModel);
                             link.setOutputMarkupId(true);
                             link.setEnabled(service.enabled);
 
@@ -705,6 +658,50 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         @SuppressWarnings("unchecked")
         private boolean isEnabled(IModel<WorkspaceInfo> wsModel, ServiceMenuPageInfo page) {
             return getGeoServer().getService(wsModel.getObject(), page.getServiceClass()) != null;
+        }
+
+        private class ServiceLink extends Link<Service> {
+            private static final long serialVersionUID = 1111536301891090436L;
+            private final IModel<WorkspaceInfo> wsModel;
+
+            public ServiceLink(Service service, IModel<WorkspaceInfo> wsModel) {
+                super("link", new Model<>(service));
+                this.wsModel = wsModel;
+            }
+
+            @Override
+            public void onClick() {
+                Service s = getModelObject();
+                Page page = null;
+
+                if (s.model instanceof ExistingServiceModel) {
+                    // service that has already been added,
+                    PageParameters pp =
+                            new PageParameters().add("workspace", wsModel.getObject().getName());
+                    try {
+                        page =
+                                s.adminPage
+                                        .getComponentClass()
+                                        .getConstructor(PageParameters.class)
+                                        .newInstance(pp);
+                    } catch (Exception e) {
+                        throw new WicketRuntimeException(e);
+                    }
+                } else {
+                    // service that has yet to be added
+                    try {
+                        page =
+                                s.adminPage
+                                        .getComponentClass()
+                                        .getConstructor(s.adminPage.getServiceClass())
+                                        .newInstance(s.model.getObject());
+                    } catch (Exception e) {
+                        throw new WicketRuntimeException(e);
+                    }
+                }
+                ((BaseServiceAdminPage<?>) page).setReturnPage(WorkspaceEditPage.this);
+                setResponsePage(page);
+            }
         }
     }
 }

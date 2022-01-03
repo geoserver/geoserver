@@ -27,4 +27,11 @@
 \*"/>
     <property name="fileExtensions" value="java"/>
   </module>
+  <module name="RegexpSingleline">
+    <property name="format" value="^\s{60}"/>
+    <property name="message" value="Excessive nesting found. Please try to factor out the deeply nested code in a separate method or class"/>
+    <property name="minimum" value="0"/>
+    <property name="maximum" value="1"/>
+    <property name="fileExtensions" value="java"/>
+  </module>
 </module>

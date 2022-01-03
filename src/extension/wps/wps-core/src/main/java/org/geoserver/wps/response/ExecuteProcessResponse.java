@@ -145,13 +145,8 @@ public class ExecuteProcessResponse extends Response {
                         ProcessParameterIO ppio =
                                 ProcessParameterIO.find(p, ctx, complex.getMimeType());
                         if (ppio instanceof ComplexPPIO) {
-                            fext =
-                                    ((ComplexPPIO) ppio)
-                                            .getFileExtension(
-                                                    result.getData()
-                                                            .getComplexData()
-                                                            .getData()
-                                                            .get(0));
+                            Object cd = result.getData().getComplexData().getData().get(0);
+                            fext = ((ComplexPPIO) ppio).getFileExtension(cd);
                         }
                     }
                 }

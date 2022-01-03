@@ -341,57 +341,7 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
             }
         }
 
-        tabbedPanel =
-                new AjaxTabbedPanel<ITab>("context", tabs) {
-                    @Override
-                    protected String getTabContainerCssClass() {
-                        return "tab-row tab-row-compact";
-                    }
-
-                    @Override
-                    protected WebMarkupContainer newLink(String linkId, final int index) {
-                        /*
-                         * Use a submit link here in order to save the state of the current tab to the model
-                         * setDefaultFormProcessing(false) is used so that we do not do a full submit
-                         * (with validation + saving to the catalog)
-                         */
-                        AjaxSubmitLink link =
-                                new AjaxSubmitLink(linkId) {
-                                    private static final long serialVersionUID = 1L;
-
-                                    @Override
-                                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                                        if (getLayerInfo() == null
-                                                || getLayerInfo().getId() == null) {
-                                            switch (index) {
-                                                case 1:
-                                                    tabbedPanel.error(
-                                                            "Cannot show Publishing options: No Layers available.");
-                                                    addFeedbackPanels(target);
-                                                    return;
-                                                case 2:
-                                                    tabbedPanel.error(
-                                                            "Cannot show Layer Preview: No Layers available.");
-                                                    addFeedbackPanels(target);
-                                                    return;
-                                                case 3:
-                                                    tabbedPanel.error(
-                                                            "Cannot show Attribute Preview: No Layers available.");
-                                                    addFeedbackPanels(target);
-                                                    return;
-                                                default:
-                                                    break;
-                                            }
-                                        }
-
-                                        setSelectedTab(index);
-                                        target.add(tabbedPanel);
-                                    }
-                                };
-                        link.setDefaultFormProcessing(false);
-                        return link;
-                    }
-                };
+        tabbedPanel = new StyleTabbedPanel(tabs);
         tabbedPanel.setMarkupId("style-context");
         tabbedPanel.setOutputMarkupId(true);
 
@@ -418,127 +368,12 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
         editor.addCustomButton(
                 new ParamResourceModel("insertImage", getPage()).getString(),
                 "button-picture",
-                target -> {
-                    String input = editor.getInput();
-                    dialog.setTitle(new ParamResourceModel("insertImage", getPage()));
-                    dialog.setInitialWidth(385);
-                    dialog.setInitialHeight(175);
-
-                    dialog.showOkCancel(
-                            target,
-                            new GeoServerDialog.DialogDelegate() {
-
-                                private ChooseImagePanel imagePanel;
-
-                                @Override
-                                protected Component getContents(String id) {
-                                    return imagePanel =
-                                            new ChooseImagePanel(
-                                                    id,
-                                                    styleModel.getObject().getWorkspace(),
-                                                    styleHandler().imageExtensions());
-                                }
-
-                                @Override
-                                protected boolean onSubmit(
-                                        AjaxRequestTarget target, Component contents) {
-                                    String imageFileName = imagePanel.getChoice();
-                                    if (Strings.isEmpty(imageFileName)) {
-                                        FileUpload fu = imagePanel.getFileUpload();
-                                        imageFileName = fu.getClientFileName();
-                                        int teller = 0;
-                                        GeoServerDataDirectory dd =
-                                                GeoServerApplication.get()
-                                                        .getBeanOfType(
-                                                                GeoServerDataDirectory.class);
-                                        Resource res =
-                                                dd.getStyles(
-                                                        styleModel.getObject().getWorkspace(),
-                                                        imageFileName);
-                                        while (Resources.exists(res)) {
-                                            imageFileName =
-                                                    FilenameUtils.getBaseName(
-                                                                    fu.getClientFileName())
-                                                            + "."
-                                                            + (++teller)
-                                                            + "."
-                                                            + FilenameUtils.getExtension(
-                                                                    fu.getClientFileName());
-                                            res =
-                                                    dd.getStyles(
-                                                            styleModel.getObject().getWorkspace(),
-                                                            imageFileName);
-                                        }
-                                        try (InputStream is = fu.getInputStream()) {
-                                            try (OutputStream os = res.out()) {
-                                                IOUtils.copy(is, os);
-                                            }
-                                        } catch (IOException e) {
-                                            error(e.getMessage());
-                                            target.add(imagePanel.getFeedback());
-                                            return false;
-                                        }
-                                    }
-                                    String code = StringEscapeUtils.escapeEcmaScript(imageFileName);
-                                    code = styleHandler().insertImageCode(code, input);
-                                    target.appendJavaScript("replaceSelection('" + code + "');");
-                                    return true;
-                                }
-
-                                @Override
-                                public void onError(AjaxRequestTarget target, Form<?> form) {
-                                    target.add(imagePanel.getFeedback());
-                                }
-                            });
-                });
+                new InsertImageButton());
 
         editor.addCustomButton(
                 new ParamResourceModel("chooseColor", getPage()).getString(),
                 "button-color",
-                target -> {
-                    IRequestParameters queryParameters =
-                            target.getPage().getRequest().getQueryParameters();
-                    StringValue cmSelection = queryParameters.getParameterValue("cmSelection");
-                    String defaultColor;
-                    if (cmSelection != null) {
-                        defaultColor = cmSelection.toString();
-                    } else {
-                        defaultColor = "#000";
-                    }
-                    dialog.setTitle(new ParamResourceModel("chooseColor", getPage()));
-                    dialog.setInitialWidth(410);
-                    dialog.setInitialHeight(270);
-
-                    dialog.showOkCancel(
-                            target,
-                            new GeoServerDialog.DialogDelegate() {
-
-                                private ChooseColorPanel chooserPanel;
-
-                                @Override
-                                protected Component getContents(String id) {
-                                    return chooserPanel = new ChooseColorPanel(id, defaultColor);
-                                }
-
-                                @Override
-                                protected boolean onSubmit(
-                                        AjaxRequestTarget target, Component contents) {
-                                    String chosenColor = chooserPanel.chooser.getModelObject();
-                                    if (chosenColor != null) {
-                                        // it's easy to double click a color in the editor, but it
-                                        // won't select the #, work around that to allow a seamless
-                                        // editing experience
-                                        if (HEX_COLOR.matcher("#" + defaultColor).matches()
-                                                && chosenColor.startsWith("#")) {
-                                            chosenColor = chosenColor.substring(1);
-                                        }
-                                        target.appendJavaScript(
-                                                "replaceSelection('" + chosenColor + "');");
-                                    }
-                                    return true;
-                                }
-                            });
-                });
+                new ChooseColorButton());
 
         add(validateLink());
         add(
@@ -855,5 +690,184 @@ public abstract class AbstractStylePage extends GeoServerSecuredPage {
     @Override
     protected GeoServerApplication getGeoServerApplication() {
         return super.getGeoServerApplication();
+    }
+
+    private class StyleTabbedPanel extends AjaxTabbedPanel<ITab> {
+        public StyleTabbedPanel(List<ITab> tabs) {
+            super("context", tabs);
+        }
+
+        @Override
+        protected String getTabContainerCssClass() {
+            return "tab-row tab-row-compact";
+        }
+
+        @Override
+        protected WebMarkupContainer newLink(String linkId, final int index) {
+            /*
+             * Use a submit link here in order to save the state of the current tab to the model
+             * setDefaultFormProcessing(false) is used so that we do not do a full submit
+             * (with validation + saving to the catalog)
+             */
+            AjaxSubmitLink link =
+                    new AjaxSubmitLink(linkId) {
+                        private static final long serialVersionUID = 1L;
+
+                        @Override
+                        public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                            if (getLayerInfo() == null || getLayerInfo().getId() == null) {
+                                switch (index) {
+                                    case 1:
+                                        tabbedPanel.error(
+                                                "Cannot show Publishing options: No Layers available.");
+                                        addFeedbackPanels(target);
+                                        return;
+                                    case 2:
+                                        tabbedPanel.error(
+                                                "Cannot show Layer Preview: No Layers available.");
+                                        addFeedbackPanels(target);
+                                        return;
+                                    case 3:
+                                        tabbedPanel.error(
+                                                "Cannot show Attribute Preview: No Layers available.");
+                                        addFeedbackPanels(target);
+                                        return;
+                                    default:
+                                        break;
+                                }
+                            }
+
+                            setSelectedTab(index);
+                            target.add(tabbedPanel);
+                        }
+                    };
+            link.setDefaultFormProcessing(false);
+            return link;
+        }
+    }
+
+    private class InsertImageButton implements CodeMirrorEditor.CustomButtonAction {
+        @Override
+        public void onClick(AjaxRequestTarget target) {
+            String input = editor.getInput();
+            dialog.setTitle(
+                    new ParamResourceModel("insertImage", AbstractStylePage.this.getPage()));
+            dialog.setInitialWidth(385);
+            dialog.setInitialHeight(175);
+
+            dialog.showOkCancel(
+                    target,
+                    new GeoServerDialog.DialogDelegate() {
+
+                        private ChooseImagePanel imagePanel;
+
+                        @Override
+                        protected Component getContents(String id) {
+                            return imagePanel =
+                                    new ChooseImagePanel(
+                                            id,
+                                            styleModel.getObject().getWorkspace(),
+                                            styleHandler().imageExtensions());
+                        }
+
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            String imageFileName = imagePanel.getChoice();
+                            if (Strings.isEmpty(imageFileName)) {
+                                FileUpload fu = imagePanel.getFileUpload();
+                                imageFileName = fu.getClientFileName();
+                                int teller = 0;
+                                GeoServerDataDirectory dd =
+                                        GeoServerApplication.get()
+                                                .getBeanOfType(GeoServerDataDirectory.class);
+                                Resource res =
+                                        dd.getStyles(
+                                                styleModel.getObject().getWorkspace(),
+                                                imageFileName);
+                                while (Resources.exists(res)) {
+                                    imageFileName = getImageFileName(fu, ++teller);
+                                    res =
+                                            dd.getStyles(
+                                                    styleModel.getObject().getWorkspace(),
+                                                    imageFileName);
+                                }
+                                try (InputStream is = fu.getInputStream()) {
+                                    try (OutputStream os = res.out()) {
+                                        IOUtils.copy(is, os);
+                                    }
+                                } catch (IOException e) {
+                                    error(e.getMessage());
+                                    target.add(imagePanel.getFeedback());
+                                    return false;
+                                }
+                            }
+                            String code = StringEscapeUtils.escapeEcmaScript(imageFileName);
+                            code = styleHandler().insertImageCode(code, input);
+                            target.appendJavaScript("replaceSelection('" + code + "');");
+                            return true;
+                        }
+
+                        private String getImageFileName(FileUpload fu, int tellerParam) {
+                            return FilenameUtils.getBaseName(fu.getClientFileName())
+                                    + "."
+                                    + tellerParam
+                                    + "."
+                                    + FilenameUtils.getExtension(fu.getClientFileName());
+                        }
+
+                        @Override
+                        public void onError(AjaxRequestTarget target, Form<?> form) {
+                            target.add(imagePanel.getFeedback());
+                        }
+                    });
+        }
+    }
+
+    private class ChooseColorButton implements CodeMirrorEditor.CustomButtonAction {
+        @Override
+        public void onClick(AjaxRequestTarget target) {
+            IRequestParameters queryParameters = target.getPage().getRequest().getQueryParameters();
+            StringValue cmSelection = queryParameters.getParameterValue("cmSelection");
+            String defaultColor;
+            if (cmSelection != null) {
+                defaultColor = cmSelection.toString();
+            } else {
+                defaultColor = "#000";
+            }
+            dialog.setTitle(
+                    new ParamResourceModel("chooseColor", AbstractStylePage.this.getPage()));
+            dialog.setInitialWidth(410);
+            dialog.setInitialHeight(270);
+
+            dialog.showOkCancel(
+                    target,
+                    new GeoServerDialog.DialogDelegate() {
+
+                        private ChooseColorPanel chooserPanel;
+
+                        @Override
+                        protected Component getContents(String id) {
+                            return chooserPanel = new ChooseColorPanel(id, defaultColor);
+                        }
+
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            String chosenColor = chooserPanel.chooser.getModelObject();
+                            if (chosenColor != null) {
+                                // it's easy to double click a color in the editor,
+                                // but it
+                                // won't select the #, work around that to allow a
+                                // seamless
+                                // editing experience
+                                if (HEX_COLOR.matcher("#" + defaultColor).matches()
+                                        && chosenColor.startsWith("#")) {
+                                    chosenColor = chosenColor.substring(1);
+                                }
+                                target.appendJavaScript("replaceSelection('" + chosenColor + "');");
+                            }
+                            return true;
+                        }
+                    });
+        }
     }
 }

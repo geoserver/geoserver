@@ -162,37 +162,13 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
                 tabs.add(
                         new AbstractTab(titleModel) {
                             private static final long serialVersionUID = -6637277497986497791L;
-                            private final Class<PublishedEditTabPanel<T>> panelType = panelClass;
 
                             @Override
                             public Panel getPanel(String panelId) {
                                 PublishedEditTabPanel<?> tabPanel;
                                 final IModel<?> panelCustomModel =
-                                        tabPanelCustomModels.get(panelType);
-                                try {
-                                    // if this tab needs a custom model instead of just our layer
-                                    // model, then
-                                    // let it create it once
-                                    if (panelCustomModel == null) {
-                                        tabPanel =
-                                                panelClass
-                                                        .getConstructor(String.class, IModel.class)
-                                                        .newInstance(panelId, myModel);
-                                    } else {
-                                        tabPanel =
-                                                panelClass
-                                                        .getConstructor(
-                                                                String.class,
-                                                                IModel.class,
-                                                                IModel.class)
-                                                        .newInstance(
-                                                                panelId, myModel, panelCustomModel);
-                                    }
-                                } catch (Exception e) {
-                                    throw new WicketRuntimeException(e);
-                                    // LOGGER.log(Level.WARNING, "Error creating resource panel",
-                                    // e);
-                                }
+                                        tabPanelCustomModels.get(panelClass);
+                                tabPanel = createTabPanel(panelId, panelCustomModel, panelClass);
                                 return tabPanel;
                             }
                         });
@@ -228,6 +204,31 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         theForm.add(saveLink());
         theForm.add(applyLink());
         theForm.add(cancelLink());
+    }
+
+    private PublishedEditTabPanel<?> createTabPanel(
+            String panelId,
+            IModel<?> panelCustomModel,
+            Class<PublishedEditTabPanel<T>> panelClass) {
+        PublishedEditTabPanel<?> tabPanel;
+        try {
+            // if this tab needs a custom model instead of just our layer
+            // model, then let it create it once
+            if (panelCustomModel == null) {
+                tabPanel =
+                        panelClass
+                                .getConstructor(String.class, IModel.class)
+                                .newInstance(panelId, myModel);
+            } else {
+                tabPanel =
+                        panelClass
+                                .getConstructor(String.class, IModel.class, IModel.class)
+                                .newInstance(panelId, myModel, panelCustomModel);
+            }
+        } catch (Exception e) {
+            throw new WicketRuntimeException(e);
+        }
+        return tabPanel;
     }
 
     private void sortTabPanels(List<PublishedEditTabPanelInfo> tabPanels) {

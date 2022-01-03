@@ -336,11 +336,7 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
                                             new String[] {groupName},
                                             groupMembershipAttribute)
                                     .stream()
-                                    .filter(
-                                            x ->
-                                                    !useNestedGroups
-                                                            || StringUtils.containsIgnoreCase(
-                                                                    x, groupSearchBase))
+                                    .filter(this::acceptChildGroup)
                                     .collect(Collectors.toSet());
                     memberGroupDns.addAll(membersDns);
                 });
@@ -351,6 +347,10 @@ public class LDAPUserGroupService extends LDAPBaseSecurityService
                 childGroups.add(new GeoServerUserGroup(memberGroupName));
         }
         return childGroups;
+    }
+
+    private boolean acceptChildGroup(String x) {
+        return !useNestedGroups || StringUtils.containsIgnoreCase(x, groupSearchBase);
     }
 
     @Override

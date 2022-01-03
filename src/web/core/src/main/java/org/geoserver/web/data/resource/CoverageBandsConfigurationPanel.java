@@ -137,31 +137,8 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                 new GeoServerAjaxFormLink("reload") {
                     @Override
                     protected void onClick(AjaxRequestTarget target, Form form) {
-                        GeoServerApplication app = (GeoServerApplication) getApplication();
-
                         try {
-                            CoverageInfo ci = (CoverageInfo) getResourceInfo();
-                            String nativeName = ci.getNativeCoverageName();
-                            Catalog catalog = app.getCatalog();
-                            CatalogBuilder cb = new CatalogBuilder(catalog);
-                            cb.setStore(ci.getStore());
-                            MetadataMap metadata = ci.getMetadata();
-                            CoverageInfo rebuilt = null;
-                            if (metadata != null
-                                    && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
-                                GridCoverage2DReader reader =
-                                        (GridCoverage2DReader)
-                                                catalog.getResourcePool()
-                                                        .getGridCoverageReader(
-                                                                ci,
-                                                                nativeName,
-                                                                GeoTools.getDefaultHints());
-                                rebuilt = cb.buildCoverage(reader, nativeName, null);
-                            } else {
-                                rebuilt = cb.buildCoverage(nativeName);
-                            }
-                            ci.getDimensions().clear();
-                            ci.getDimensions().addAll(rebuilt.getDimensions());
+                            reloadBands();
                             target.add(bands);
                         } catch (Exception e) {
                             LOGGER.log(Level.SEVERE, "Failure updating the bands list", e);
@@ -170,6 +147,29 @@ public class CoverageBandsConfigurationPanel extends ResourceConfigurationPanel 
                     }
                 };
         add(reload);
+    }
+
+    private void reloadBands() throws Exception {
+        GeoServerApplication app = (GeoServerApplication) getApplication();
+        CoverageInfo ci = (CoverageInfo) getResourceInfo();
+        String nativeName = ci.getNativeCoverageName();
+        Catalog catalog = app.getCatalog();
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.setStore(ci.getStore());
+        MetadataMap metadata = ci.getMetadata();
+        CoverageInfo rebuilt;
+        if (metadata != null && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
+            GridCoverage2DReader reader =
+                    (GridCoverage2DReader)
+                            catalog.getResourcePool()
+                                    .getGridCoverageReader(
+                                            ci, nativeName, GeoTools.getDefaultHints());
+            rebuilt = cb.buildCoverage(reader, nativeName, null);
+        } else {
+            rebuilt = cb.buildCoverage(nativeName);
+        }
+        ci.getDimensions().clear();
+        ci.getDimensions().addAll(rebuilt.getDimensions());
     }
 
     protected Component buildUnitField(String id, IModel<String> model) {

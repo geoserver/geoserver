@@ -365,16 +365,8 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                             // need to make room for the stroke in the symbol, thus, a
                             // smaller rect
                             double symbolizerSize = getSymbolizerSize(estimator, symbolizer, 0);
-                            int rescaledWidth =
-                                    (int)
-                                            Math.ceil(
-                                                    Math.max(
-                                                            minimumSymbolSize, w - symbolizerSize));
-                            int rescaledHeight =
-                                    (int)
-                                            Math.ceil(
-                                                    Math.max(
-                                                            minimumSymbolSize, h - symbolizerSize));
+                            int rescaledWidth = integerSize(minimumSymbolSize, w - symbolizerSize);
+                            int rescaledHeight = integerSize(minimumSymbolSize, h - symbolizerSize);
                             shape = getSampleShape(symbolizer, rescaledWidth, rescaledHeight, w, h);
 
                             symbolizer = rescaleSymbolizer(symbolizer, w, rescaledWidth);
@@ -417,6 +409,10 @@ public class BufferedImageLegendGraphicBuilder extends LegendGraphicBuilder {
                 layersImages.add(image);
             }
         }
+    }
+
+    private int integerSize(double minimumSymbolSize, double size) {
+        return (int) Math.ceil(Math.max(minimumSymbolSize, size));
     }
 
     @Override

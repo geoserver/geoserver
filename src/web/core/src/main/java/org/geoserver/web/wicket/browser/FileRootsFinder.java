@@ -15,7 +15,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.web.wicket.browser.FileRootsFinder.PathSplitter;
 
 /**
  * Support class to locate the file system roots the file chooser uses to locate files, along with
@@ -178,11 +177,10 @@ public class FileRootsFinder implements Serializable {
                 Stream<String> rootPaths =
                         Arrays.stream(names)
                                 .filter(
-                                        fileName ->
+                                        name ->
                                                 fileFilter == null
                                                         || fileFilter.accept(
-                                                                new File(
-                                                                        fsSplitter.base, fileName)))
+                                                                new File(fsSplitter.base, name)))
                                 .map(fileName -> fsSplitter.buildPath(fileName));
                 result = Stream.concat(result, rootPaths);
             }

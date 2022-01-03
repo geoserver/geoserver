@@ -59,28 +59,8 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
                     @Override
                     protected void populateItem(ListItem<Tuple> item) {
                         item.setModel(new CompoundPropertyModel<>(item.getModelObject()));
-                        item.add(
-                                new TextField<String>("key")
-                                        .add(
-                                                new AjaxFormComponentUpdatingBehavior("blur") {
-                                                    private static final long serialVersionUID =
-                                                            5416373713193788662L;
-
-                                                    @Override
-                                                    protected void onUpdate(
-                                                            AjaxRequestTarget target) {}
-                                                }));
-                        item.add(
-                                new TextField<String>("value")
-                                        .add(
-                                                new AjaxFormComponentUpdatingBehavior("blur") {
-                                                    private static final long serialVersionUID =
-                                                            -8679502120189597358L;
-
-                                                    @Override
-                                                    protected void onUpdate(
-                                                            AjaxRequestTarget target) {}
-                                                }));
+                        item.add(new TextField<String>("key").add(getEmptyBlurBehavior()));
+                        item.add(new TextField<String>("value").add(getEmptyBlurBehavior()));
                         item.add(
                                 new AjaxLink<Tuple>("remove", item.getModel()) {
                                     private static final long serialVersionUID =
@@ -93,6 +73,15 @@ public class PropertyEditorFormComponent extends FormComponentPanel<Properties> 
                                         target.add(container);
                                     }
                                 });
+                    }
+
+                    private AjaxFormComponentUpdatingBehavior getEmptyBlurBehavior() {
+                        return new AjaxFormComponentUpdatingBehavior("blur") {
+                            private static final long serialVersionUID = 5416373713193788662L;
+
+                            @Override
+                            protected void onUpdate(AjaxRequestTarget target) {}
+                        };
                     }
                 };
         // listView.setReuseItems(true);

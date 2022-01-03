@@ -306,14 +306,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                                         new ParamResourceModel("fileRequired", getPage())
                                                 .getString());
                             } else {
-                                String dir = uploadPanel.getDirectory();
-                                Resource dest =
-                                        store().get(
-                                                        Paths.path(
-                                                                dir,
-                                                                uploadPanel
-                                                                        .getFileUpload()
-                                                                        .getClientFileName()));
+                                Resource dest = getUploadPanelResource(uploadPanel);
                                 if (Resources.exists(dest)) {
                                     uploadPanel.error(
                                             new ParamResourceModel("resourceExists", getPage())
@@ -336,6 +329,13 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                         }
                     });
         }
+    }
+
+    private Resource getUploadPanelResource(PanelUpload uploadPanel) {
+        String dir = uploadPanel.getDirectory();
+        Resource dest =
+                store().get(Paths.path(dir, uploadPanel.getFileUpload().getClientFileName()));
+        return dest;
     }
 
     private class NewButton extends AjaxLink<Void> {
@@ -534,39 +534,7 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                             Iterator<Resource> it = sources.iterator();
                             while (it.hasNext()) {
                                 Resource src = it.next();
-                                Resource dest = store().get(Paths.path(dir, src.name()));
-                                if (clipBoard.isCopy()
-                                        && Resources.serializable(dest).equals(src)) {
-                                    // if we are copying a resource to its own
-                                    // directory, we will give it a new name.
-                                    for (int i = 1; Resources.exists(dest); i++) {
-                                        dest = store().get(getPath(dir, src, i));
-                                    }
-                                }
-                                if (Resources.exists(dest)) {
-                                    pastePanel.error(
-                                            new ParamResourceModel("resourceExists", getPage())
-                                                    .getString()
-                                                    .replace("%", "/" + dest.path()));
-                                } else {
-                                    try {
-                                        if (clipBoard.isCopy()) {
-                                            Resources.copy(src, dest);
-                                        } else {
-                                            if (!store().move(src.path(), dest.path())) {
-                                                throw new IOException(
-                                                        new ParamResourceModel(
-                                                                        "moveFailed", getPage())
-                                                                .getString()
-                                                                .replace("%", "/" + dest.path()));
-                                            }
-                                        }
-                                        it.remove();
-                                        newSelected.add(new ResourceNode(dest, expandedStates));
-                                    } catch (IOException | IllegalStateException e) {
-                                        pastePanel.error(e.getMessage());
-                                    }
-                                }
+                                pasteResource(dir, it, src);
                             }
 
                             // we select all the newly created nodes.
@@ -586,6 +554,45 @@ public class PageResourceBrowser extends GeoServerSecuredPage {
                             }
 
                             return true;
+                        }
+
+                        private void pasteResource(
+                                String dir, Iterator<Resource> it, Resource src) {
+                            Resource dest = store().get(Paths.path(dir, src.name()));
+                            if (clipBoard.isCopy() && Resources.serializable(dest).equals(src)) {
+                                // if we are copying a resource to its own
+                                // directory, we will give it a new name.
+                                for (int i = 1; Resources.exists(dest); i++) {
+                                    dest = store().get(getPath(dir, src, i));
+                                }
+                            }
+                            if (Resources.exists(dest)) {
+                                pastePanel.error(
+                                        new ParamResourceModel("resourceExists", getPage())
+                                                .getString()
+                                                .replace("%", "/" + dest.path()));
+                            } else {
+                                try {
+                                    if (clipBoard.isCopy()) {
+                                        Resources.copy(src, dest);
+                                    } else {
+                                        if (!store().move(src.path(), dest.path())) {
+                                            moveFailed(dest);
+                                        }
+                                    }
+                                    it.remove();
+                                    newSelected.add(new ResourceNode(dest, expandedStates));
+                                } catch (IOException | IllegalStateException e) {
+                                    pastePanel.error(e.getMessage());
+                                }
+                            }
+                        }
+
+                        private void moveFailed(Resource dest) throws IOException {
+                            throw new IOException(
+                                    new ParamResourceModel("moveFailed", getPage())
+                                            .getString()
+                                            .replace("%", "/" + dest.path()));
                         }
 
                         private String getPath(String dir, Resource src, int i) {

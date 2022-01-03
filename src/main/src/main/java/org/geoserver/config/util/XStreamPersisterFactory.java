@@ -59,7 +59,9 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
         // needed for Jettison 1.4.1
         Configuration configuration = new Configuration();
         configuration.setRootElementArrayWrapper(false);
-        return buildPersister(new JettisonMappedXmlDriver(configuration));
+        // preserve legacy single-element-array-as-object serialization
+        boolean useSerializeAsArray = false;
+        return buildPersister(new JettisonMappedXmlDriver(configuration, useSerializeAsArray));
     }
 
     /** Builds a persister and runs the initializers against it */

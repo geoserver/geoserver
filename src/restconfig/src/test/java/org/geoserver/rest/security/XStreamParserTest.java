@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import java.io.IOException;
-
 import org.codehaus.jettison.mapped.Configuration;
 import org.geoserver.rest.security.xml.JaxbUser;
 import org.geoserver.security.GeoServerUserGroupService;
@@ -40,8 +39,11 @@ public class XStreamParserTest extends SecurityRESTTestSupport {
         // needed for Jettison 1.4.1
         Configuration configuration = new Configuration();
         configuration.setRootElementArrayWrapper(false);
+        // preserve legacy single-element-array-as-object serialization
+        boolean useSerializeAsArray = false;
 
-        XStream xstream = new XStream(new JettisonMappedXmlDriver(configuration));
+        XStream xstream =
+                new XStream(new JettisonMappedXmlDriver(configuration, useSerializeAsArray));
         xstream.setMode(XStream.NO_REFERENCES);
         xstream.alias("user", JaxbUser.class);
         xstream.allowTypes(new Class[] {JaxbUser.class});

@@ -219,8 +219,11 @@ public abstract class XStreamCatalogListConverter
         protected XStream createXStreamInstance() {
             // needed for Jettison 1.4.1
             Configuration configuration = new Configuration();
-            configuration.setRootElementArrayWrapper(false);
-            return new SecureXStream(new JettisonMappedXmlDriver(configuration));
+            configuration.setRootElementArrayWrapper(true);
+            // preserve legacy single-element-array-as-object serialization
+            boolean useSerializeAsArray = false;
+            return new SecureXStream(
+                    new JettisonMappedXmlDriver(configuration, useSerializeAsArray));
         }
 
         @Override

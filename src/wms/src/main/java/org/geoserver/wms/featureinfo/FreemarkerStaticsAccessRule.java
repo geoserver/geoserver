@@ -10,8 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 import javax.lang.model.SourceVersion;
-import org.apache.log4j.Logger;
+import org.geotools.util.logging.Logging;
 
 /**
  * Represents the rules for accessing static members from within Freemarker templates.
@@ -75,13 +76,13 @@ class FreemarkerStaticsAccessRule {
                 try {
                     tmpClasses.add(Class.forName(tmpCandidate));
                 } catch (ClassNotFoundException e) {
-                    logger.warn(
+                    logger.warning(
                             "Denying access to static members of '"
                                     + tmpCandidate
                                     + "': Class not found.");
                 }
             } else {
-                logger.warn(
+                logger.warning(
                         "Denying access to static members of '"
                                 + tmpCandidate
                                 + "': Not a valid class name.");
@@ -110,7 +111,7 @@ class FreemarkerStaticsAccessRule {
         return new FreemarkerStaticsAccessRule(tmpItems);
     }
 
-    private static Logger logger = Logger.getLogger(FreemarkerStaticsAccessRule.class);
+    private static Logger logger = Logging.getLogger(FreemarkerStaticsAccessRule.class);
 
     /** "true" for rules representing unrestricted access */
     private boolean unrestricted;

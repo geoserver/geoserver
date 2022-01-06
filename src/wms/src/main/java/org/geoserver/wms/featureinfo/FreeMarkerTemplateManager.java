@@ -20,8 +20,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.opengis.wfs.FeatureCollectionType;
-import org.apache.log4j.Logger;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.GeoServerExtensions;
@@ -35,6 +36,7 @@ import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
 import org.geoserver.wms.featureinfo.FreemarkerStaticsAccessRule.RuleItem;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.simple.SimpleFeatureType;
 
 /**
@@ -66,24 +68,24 @@ public abstract class FreeMarkerTemplateManager {
     private static DirectTemplateFeatureCollectionFactory tfcFactory =
             new DirectTemplateFeatureCollectionFactory();
 
-    private static Logger logger = Logger.getLogger(FreeMarkerTemplateManager.class);
+    private static Logger logger = Logging.getLogger(FreeMarkerTemplateManager.class);
     private static FreemarkerStaticsAccessRule staticsAccessRule;
 
     /** Initializes the {@link #staticsAccessRule}. */
     static void initStaticsAccessRule() {
         String tmpAccessPattern = GeoServerExtensions.getProperty(KEY_STATIC_MEMBER_ACCESS);
         FreemarkerStaticsAccessRule tmpRule = fromPattern(tmpAccessPattern);
-        logger.debug("Initializing with " + tmpRule);
+        logger.fine("Initializing with " + tmpRule);
         for (RuleItem tmpItem : tmpRule.getAllowedItems()) {
             if (tmpItem.isNumberedAlias()) {
-                logger.warn(
+                logger.warning(
                         "Granting access to static members of "
                                 + tmpItem.getClassName()
                                 + " using the variable name "
                                 + tmpItem.getAlias()
                                 + " to keep names unique.");
-            } else if (logger.isDebugEnabled()) {
-                logger.debug(
+            } else if (logger.isLoggable(Level.FINER)) {
+                logger.finer(
                         "Granting access to static members of "
                                 + tmpItem.getClassName()
                                 + " using the variable name "

@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
-import org.apache.log4j.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.platform.GeoServerExtensions;
@@ -19,6 +18,7 @@ import org.geoserver.platform.resource.Files;
 import org.geoserver.platform.resource.Resources;
 import org.geotools.data.DataStore;
 import org.geotools.data.Repository;
+import org.geotools.util.logging.Logging;
 import org.opengis.feature.type.Name;
 
 /**
@@ -64,7 +64,7 @@ public class DSFinderRepository extends org.geotools.data.gen.DSFinderRepository
                 throw new RuntimeException(ex);
             }
         }
-        Logger.getLogger(this.getClass().getName())
+        Logging.getLogger(this.getClass().getName())
                 .info("Not in Geoserver catalog: " + name.toString());
         return super.dataStore(name);
     }

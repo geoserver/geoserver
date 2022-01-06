@@ -31,6 +31,7 @@ Hide the Tomcat version in error responses and its error details.
 
 To remove the Tomcat version, create following file with emtpy parameters
 ::
+
  cd $CATALINA_HOME (where Tomcat binaries are installed)
  mkdir -p ./lib/org/apache/catalina/util/
  cat > ./lib/org/apache/catalina/util/ServerInfo.properties <<EOF
@@ -46,6 +47,7 @@ Additionally add to server.xml the ErrorReportValve to disable showReport and sh
 
 Add to ``<Host name=...`` section this new ErrorReportValve entry:
 ::
+
  ...
       <Host name="localhost"  appBase="webapps"
             unpackWARs="true" autoDeploy="true">
@@ -68,12 +70,14 @@ Let's take the attackers point of view.
 
 Response with just HTTP status:
 ::
+
  HTTP Status 400 – Bad Request
 
 Ok, it looks like a Tomcat is installed.
 
 Default full response:
 ::
+
  HTTP Status 400 – Bad Request
  Type Status Report
  Message Invalid URI
@@ -84,6 +88,7 @@ Ahh, great, the software ist not really maintained. Tomcat is far outdated from 
 
 Notice: For support reason, the local output of version.sh still outputs the current version
 ::
+
  $CATALINA_HOME/bin/version.sh
   ...
   Server number:  7.0.67

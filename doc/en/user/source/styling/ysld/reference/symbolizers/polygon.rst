@@ -34,7 +34,8 @@ The full syntax of a polygon symbolizer is::
       x-labelObstacle: <boolean>
       x-composite-base: <boolean>
       x-composite: <text>
-
+      x-inclusion: <text>
+      
 where:
 
 .. include:: include/stroke.txt
@@ -66,7 +67,14 @@ The following properties are equivalent to SLD "vendor options".
 
 .. include:: include/misc.txt
 
+Additional "vendor options" properties for :ref:`sld-extensions_composite-blend`:
+
 .. include:: include/composite.txt
+
+Additional "vendor options" properties for :ref:`rendering_selection`:
+
+.. include:: include/inclusion.txt
+
 
 Examples
 --------

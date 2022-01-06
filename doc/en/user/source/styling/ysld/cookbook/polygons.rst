@@ -46,7 +46,6 @@ The :download:`polygons layer <artifacts/ysld_cookbook_polygon.zip>` used below 
 
 :download:`Download the polygons shapefile <artifacts/ysld_cookbook_polygon.zip>`
 
-
 .. _ysld_cookbook_polygons_simplepolygon:
 
 Simple polygon
@@ -63,16 +62,8 @@ Code
 
 :download:`Download the "Simple polygon" YSLD <artifacts/polygon_simplepolygon.ysld>`
 
-.. code-block:: yaml
-  :linenos:
-
-  title: 'YSLD Cook Book: Simple polygon'
-  feature-styles:
-  - name: name
-    rules:
-    - symbolizers:
-      - polygon:
-          fill-color: '#000080'
+.. literalinclude:: artifacts/polygon_simplepolygon.ysld
+   :language: yaml
 
 Details
 ~~~~~~~
@@ -97,18 +88,8 @@ Code
 
 :download:`Download the "Simple polygon with stroke" YSLD <artifacts/polygon_simplepolygonwithstroke.ysld>`
 
-.. code-block:: yaml
-  :linenos:
-
-  title: 'YSLD Cook Book: Simple polygon with stroke'
-  feature-styles:
-  - name: name
-    rules:
-    - symbolizers:
-      - polygon:
-          stroke-color: '#FFFFFF'
-          stroke-width: 2
-          fill-color: '#000080'
+.. literalinclude:: artifacts/polygon_simplepolygonwithstroke.ysld
+   :language: yaml
 
 Details
 ~~~~~~~
@@ -130,19 +111,8 @@ Code
 
 :download:`Download the "Transparent polygon" YSLD <artifacts/polygon_transparentpolygon.ysld>`
 
-.. code-block:: yaml
-  :linenos:
-
-  title: 'YSLD Cook Book: Transparent polygon'
-  feature-styles:
-  - name: name
-    rules:
-    - symbolizers:
-      - polygon:
-          stroke-color: '#FFFFFF'
-          stroke-width: 2
-          fill-color: '#000080'
-          fill-opacity: 0.5
+.. literalinclude:: artifacts/polygon_transparentpolygon.ysld
+   :language: yaml
 
 Details
 ~~~~~~~
@@ -166,22 +136,8 @@ Code
 
 :download:`Download the "Graphic fill" YSLD <artifacts/polygon_graphicfill.ysld>`
 
-.. code-block:: yaml
-  :linenos:
-
-  title: 'YSLD Cook Book: Graphic fill'
-  feature-styles:
-  - name: name
-    rules:
-    - symbolizers:
-      - polygon:
-          fill-color: '#808080'
-          fill-graphic:
-            size: 93
-            symbols:
-            - external:
-                url: colorblocks.png
-                format: image/png
+.. literalinclude:: artifacts/polygon_graphicfill.ysld
+   :language: yaml
 
 Details
 ~~~~~~~
@@ -207,23 +163,8 @@ Code
 
 :download:`Download the "Hatching fill" YSLD <artifacts/polygon_hatchingfill.ysld>`
 
-.. code-block:: yaml
-  :linenos:
-
-  title: 'YSLD Cook Book: Hatching fill'
-  feature-styles:
-  - name: name
-    rules:
-    - symbolizers:
-      - polygon:
-          fill-color: '#808080'
-          fill-graphic:
-            size: 16
-            symbols:
-            - mark:
-                shape: shape://times
-                stroke-color: '#990099'
-                stroke-width: 1
+.. literalinclude:: artifacts/polygon_hatchingfill.ysld
+   :language: yaml
 
 Details
 ~~~~~~~
@@ -247,21 +188,9 @@ Code
 
 :download:`Download the "Polygon with default label" YSLD <artifacts/polygon_polygonwithdefaultlabel.ysld>`
 
-.. code-block:: yaml
-  :linenos:
+.. literalinclude:: artifacts/polygon_polygonwithdefaultlabel.ysld
+   :language: yaml
 
-  title: 'YSLD Cook Book: Polygon with default label'
-  feature-styles:
-  - name: name
-    rules:
-    - symbolizers:
-      - polygon:
-          stroke-color: '#FFFFFF'
-          stroke-width: 2
-          fill-color: '#40FF40'
-      - text:
-          label: ${name}
-          placement: point
 
 Details
 ~~~~~~~
@@ -283,26 +212,9 @@ Code
 
 :download:`Download the "Label halo" YSLD <artifacts/polygon_labelhalo.ysld>`
 
-.. code-block:: yaml
-  :linenos:
-
-  title: 'YSLD Cook Book: Label halo'
-  feature-styles:
-  - name: name
-    rules:
-    - symbolizers:
-      - polygon:
-          stroke-color: '#FFFFFF'
-          stroke-width: 2
-          fill-color: '#40FF40'
-      - text:
-          label: ${name}
-          halo:
-            fill-color: '#FFFFFF'
-            radius: 3
-          placement:
-            type: point
-
+.. literalinclude:: artifacts/polygon_labelhalo.ysld
+   :language: yaml
+   
 Details
 ~~~~~~~
 
@@ -325,29 +237,8 @@ Code
 
 :download:`Download the "Polygon with styled label" YSLD <artifacts/polygon_polygonwithstyledlabel.ysld>`
 
-.. code-block:: yaml
-  :linenos:
-
-  title: 'YSLD Cook Book: Polygon with styled label'
-  feature-styles:
-  - name: name
-    rules:
-    - symbolizers:
-      - polygon:
-          stroke-color: '#FFFFFF'
-          stroke-width: 2
-          fill-color: '#40FF40'
-      - text:
-          label: ${name}
-          fill-color: '#000000'
-          font-family: Arial
-          font-size: 11
-          font-style: normal
-          font-weight: bold
-          placement: point
-          anchor: [0.5,0.5]
-          x-autoWrap: 60
-          x-maxDisplacement: 150
+.. literalinclude:: artifacts/polygon_polygonwithstyledlabel.ysld
+   :language: yaml
 
 Details
 ~~~~~~~
@@ -362,7 +253,6 @@ Finally, there are two added touches for label placement optimization: **line 20
 Attribute-based polygon
 -----------------------
 
-
 This example styles the polygons differently based on the "pop" (Population) attribute.
 
 .. figure:: ../../sld/cookbook/images/polygon_attributebasedpolygon.png
@@ -374,31 +264,8 @@ Code
 
 :download:`Download the "Attribute-based polygon" YSLD <artifacts/polygon_attributebasedpolygon.ysld>`
 
-.. code-block:: yaml
-  :linenos:
-
-  title: 'YSLD Cook Book: Attribute-based polygon'
-  feature-styles:
-  - name: name
-    rules:
-    - name: SmallPop
-      title: Less Than 200,000
-      filter: ${pop < '200000'}
-      symbolizers:
-      - polygon:
-          fill-color: '#66FF66'
-    - name: MediumPop
-      title: 200,000 to 500,000
-      filter: ${pop >= '200000' AND pop < '500000'}
-      symbolizers:
-      - polygon:
-          fill-color: '#33CC33'
-    - name: LargePop
-      title: ${Greater Than 500,000}
-      filter: pop > '500000'
-      symbolizers:
-      - polygon:
-          fill-color: '#009900'
+.. literalinclude:: artifacts/polygon_attributebasedpolygon.ysld
+   :language: yaml
 
 Details
 ~~~~~~~
@@ -463,43 +330,8 @@ Code
 
 :download:`Download the "Zoom-based polygon" YSLD <artifacts/polygon_zoombasedpolygon.ysld>`
 
-.. code-block:: yaml
-  :linenos:
-
-  title: 'YSLD Cook Book: Zoom-based polygon'
-  feature-styles:
-  - name: name
-    rules:
-    - name: Large
-      scale: [min,1.0e8]
-      symbolizers:
-      - polygon:
-          stroke-color: '#000000'
-          stroke-width: 7
-          fill-color: '#0000CC'
-      - text:
-          label: ${name}
-          fill-color: '#FFFFFF'
-          font-family: Arial
-          font-size: 14
-          font-style: normal
-          font-weight: bold
-          placement: point
-          anchor: [0.5,0.5]
-    - name: Medium
-      scale: [1.0e8,2.0e8]
-      symbolizers:
-      - polygon:
-          stroke-color: '#000000'
-          stroke-width: 4
-          fill-color: '#0000CC'
-    - name: Small
-      scale: [2.0e8,max]
-      symbolizers:
-      - polygon:
-          stroke-color: '#000000'
-          stroke-width: 1
-          fill-color: '#0000CC'
+.. literalinclude:: artifacts/polygon_zoombasedpolygon.ysld
+   :language: yaml
 
 Details
 ~~~~~~~

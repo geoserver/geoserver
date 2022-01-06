@@ -14,6 +14,11 @@ As YSLD is heavily modeled on `YAML <http://yaml.org>`_, it may be useful to ref
    featurestyles
    rules
    symbolizers/index
+   symbolizers/line
+   symbolizers/polygon
+   symbolizers/point
+   symbolizers/raster
+   symbolizers/text
    scalezoom
    filters
    functions

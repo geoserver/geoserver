@@ -1,3 +1,5 @@
+Additional "vendor options" property for :ref:`label_obstacles`:
+
 .. list-table::
    :class: non-responsive
    :header-rows: 1

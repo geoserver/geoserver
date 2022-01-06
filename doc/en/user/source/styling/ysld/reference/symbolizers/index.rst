@@ -113,22 +113,12 @@ The following is the basic syntax common to all symbolizers. Note that the conte
    ..
    x-composite: <text>
    x-composite-base: <boolean>
+   x-inclusion: <text>
 
-where:
+Where:
 
 .. include:: include/symbol.txt
 
-The following properties are equivalent to SLD "vendor options".
-
 .. include:: include/composite.txt
 
-See the following pages for details:
-
-.. toctree::
-   :maxdepth: 1
-
-   line
-   polygon
-   point
-   raster
-   text
+.. include:: include/inclusion.txt

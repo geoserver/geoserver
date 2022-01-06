@@ -36,7 +36,6 @@ Code
 :download:`Download the "Two-color gradient" YSLD <artifacts/raster_twocolorgradient.ysld>`
 
 .. code-block:: yaml
-  :linenos:
 
   title: 'YSLD Cook Book: Two color gradient'
   feature-styles:
@@ -73,7 +72,6 @@ Code
 :download:`Download the "Transparent gradient" YSLD <artifacts/raster_transparentgradient.ysld>`
 
 .. code-block:: yaml
-  :linenos:
 
   title: 'YSLD Cook Book: Transparent gradient'
   feature-styles:
@@ -110,7 +108,6 @@ Code
 :download:`Download the "Brightness and contrast" YSLD <artifacts/raster_brightnessandcontrast.ysld>`
 
 .. code-block:: yaml
-  :linenos:
 
   title: 'YSLD Cook Book: Brightness and contrast'
   feature-styles:
@@ -152,7 +149,6 @@ Code
 :download:`Download the "Three-color gradient" YSLD <artifacts/raster_threecolorgradient.ysld>`
 
 .. code-block:: yaml
-  :linenos:
 
   title: 'YSLD Cook Book: Three color gradient'
   feature-styles:
@@ -191,7 +187,6 @@ Code
 :download:`Download the "Alpha channel" YSLD <artifacts/raster_alphachannel.ysld>`
 
 .. code-block:: yaml
-  :linenos:
 
   title: 'YSLD Cook Book: Alpha channel'
   feature-styles:
@@ -229,7 +224,6 @@ Code
 :download:`Download the "Discrete colors" YSLD <artifacts/raster_discretecolors.ysld>`
 
 .. code-block:: yaml
-  :linenos:
 
   title: 'YSLD Cook Book: Discrete colors'
   feature-styles:
@@ -265,7 +259,6 @@ Code
 :download:`Download the "Many color gradient" YSLD <artifacts/raster_manycolorgradient.ysld>`
 
 .. code-block:: yaml
-  :linenos:
 
   title: 'YSLD Cook Book: Many color gradient'
   feature-styles:

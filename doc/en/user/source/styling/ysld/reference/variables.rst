@@ -85,7 +85,7 @@ Examples
 Define variables to reuse colors
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Name background color and and for both polygon fill and halo outline:
+Name background color for both polygon fill and halo outline:
 
 .. code-block:: yaml
 

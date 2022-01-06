@@ -19,6 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.feature.ReprojectingFeatureCollection;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;
@@ -27,7 +28,10 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geopkg.FeatureEntry;
 import org.geotools.geopkg.GeoPackage;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.referencing.ReferenceIdentifier;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * WFS GetFeature OutputFormat for GeoPackage
@@ -67,6 +71,39 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
         return EXTENSION;
     }
 
+    /**
+     * According to GeoPKG spec, the coordinates MUST be in XY order. If this FC is in YX format, we
+     * reproject to the equivalent XY project.
+     *
+     * <p>If already XY, return the input FC.
+     *
+     * @param fc underlying feature collection
+     * @return feature collection which is has axis order in XY (NORTH_EAST)
+     */
+    public static SimpleFeatureCollection forceXY(SimpleFeatureCollection fc) {
+        CoordinateReferenceSystem sourceCRS = fc.getSchema().getCoordinateReferenceSystem();
+        if ((CRS.getAxisOrder(sourceCRS) == CRS.AxisOrder.EAST_NORTH)
+                || (CRS.getAxisOrder(sourceCRS) == CRS.AxisOrder.INAPPLICABLE)) {
+            return fc;
+        }
+
+        for (ReferenceIdentifier identifier : sourceCRS.getIdentifiers()) {
+            try {
+                String _identifier = identifier.toString();
+                CoordinateReferenceSystem flippedCRS = CRS.decode(_identifier, true);
+                if (CRS.getAxisOrder(flippedCRS) == CRS.AxisOrder.EAST_NORTH) {
+                    ReprojectingFeatureCollection result =
+                            new ReprojectingFeatureCollection(fc, flippedCRS);
+                    result.setDefaultSource(sourceCRS);
+                    return result;
+                }
+            } catch (Exception e) {
+                // couldn't flip - try again
+            }
+        }
+        return fc;
+    }
+
     @Override
     protected void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
@@ -85,6 +122,9 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
             }
 
             SimpleFeatureCollection features = (SimpleFeatureCollection) collection;
+
+            features = forceXY(features); // geopkg requires data in XY orientation
+
             FeatureTypeInfo meta = lookupFeatureType(features);
             if (meta != null) {
                 // initialize entry metadata

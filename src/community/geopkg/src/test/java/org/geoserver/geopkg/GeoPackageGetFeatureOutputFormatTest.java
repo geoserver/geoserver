@@ -5,8 +5,7 @@
  */
 package org.geoserver.geopkg;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,6 +17,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.request.FeatureCollectionResponse;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.memory.MemoryFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -27,13 +27,17 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geopkg.FeatureEntry;
 import org.geotools.geopkg.GeoPackage;
+import org.geotools.referencing.CRS;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.FilterFactory;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
@@ -150,6 +154,68 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
                                 + "&format_options=filename:TEST.GPKG");
         assertEquals(GeoPkg.MIME_TYPE, resp.getContentType());
         assertEquals("attachment; filename=TEST.GPKG", resp.getHeader("Content-Disposition"));
+    }
+
+    // if the FC already is XY, then forceXY does nothing (should return same FC)
+    @Test
+    public void testForceXY_alreadyXY() throws IOException {
+        FeatureSource<? extends FeatureType, ? extends Feature> fs =
+                getFeatureSource(SystemTestData.BASIC_POLYGONS);
+        SimpleFeatureCollection fc = (SimpleFeatureCollection) fs.getFeatures();
+
+        SimpleFeatureCollection fcXY = GeoPackageGetFeatureOutputFormat.forceXY(fc);
+
+        assertEquals(
+                CRS.getAxisOrder(fc.getSchema().getCoordinateReferenceSystem()),
+                CRS.AxisOrder.EAST_NORTH);
+        assertSame(fc, fcXY);
+    }
+
+    // if underlying data is YX, result should be XY
+    @Test
+    public void testForceXY_simpleFlip() throws Exception {
+        FeatureSource<? extends FeatureType, ? extends Feature> fs =
+                getFeatureSource(SystemTestData.BASIC_POLYGONS);
+        SimpleFeatureCollection fc = (SimpleFeatureCollection) fs.getFeatures();
+
+        // create a FeatureCollection that is advertised as YX
+        String wkt_yx =
+                "GEOGCS[\"WGS 84\", \n"
+                        + "  DATUM[\"World Geodetic System 1984\", \n"
+                        + "    SPHEROID[\"WGS 84\", 6378137.0, 298.257223563, AUTHORITY[\"EPSG\",\"7030\"]], \n"
+                        + "    AUTHORITY[\"EPSG\",\"6326\"]], \n"
+                        + "  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \n"
+                        + "  UNIT[\"degree\", 0.017453292519943295], \n"
+                        + "  AXIS[\"Geodetic longitude\", NORTH], \n"
+                        + "  AXIS[\"Geodetic latitude\", EAST], \n"
+                        + "  AUTHORITY[\"EPSG\",\"4326\"]]";
+        CoordinateReferenceSystem crs_yx = CRS.parseWKT(wkt_yx);
+        assertEquals(CRS.getAxisOrder(crs_yx), CRS.AxisOrder.NORTH_EAST);
+
+        SimpleFeatureType newType = DataUtilities.createSubType(fc.getSchema(), null, crs_yx);
+        SimpleFeature sf = fc.features().next();
+        ((Geometry) sf.getDefaultGeometry())
+                .setUserData(
+                        null); // clear out CRS from geometry (or ReprojectingFeatureCollection will
+        // use old CRS)
+        SimpleFeatureCollection collectionYX =
+                DataUtilities.collection(DataUtilities.reType(newType, sf));
+
+        // xform
+        SimpleFeatureCollection fcXY = GeoPackageGetFeatureOutputFormat.forceXY(collectionYX);
+
+        assertEquals(
+                CRS.getAxisOrder(fc.getSchema().getCoordinateReferenceSystem()),
+                CRS.AxisOrder.EAST_NORTH);
+
+        SimpleFeature sfXY = fcXY.features().next();
+
+        // verify geometry is actually XY
+        Coordinate coordinate = ((Geometry) sf.getDefaultGeometry()).getCoordinate();
+        Coordinate coordinateYX = ((Geometry) sfXY.getDefaultGeometry()).getCoordinate();
+
+        assertEquals(coordinate.x, coordinateYX.y, 0);
+        assertEquals(coordinate.y, coordinateYX.x, 0);
     }
 
     public void testGetFeature(FeatureCollectionResponse fct, boolean indexed) throws IOException {

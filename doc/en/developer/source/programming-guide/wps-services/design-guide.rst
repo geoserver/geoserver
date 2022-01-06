@@ -99,7 +99,7 @@ Once the ProcessFilter is coded it can be activated by declaring it in the Sprin
 for example the ``ProcessSelector`` subclass that controls which processes can be exposed based on
 the WPS admin panel configuration is registered in ``applicationContext.xml`` as follows:
 
-.. code-block:: java
+.. code-block:: xml
 
     <!-- The default process filters -->
     <bean id="unsupportedParameterTypeProcessFilter" class="org.geoserver.wps.UnsupportedParameterTypeProcessFilter"/>

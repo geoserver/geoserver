@@ -43,6 +43,7 @@ The full syntax of a point symbolizer is::
       x-labelObstacle: <boolean>
       x-composite-base: <boolean>
       x-composite: <text>
+      x-inclusion: <text>
 
 where:
 
@@ -107,7 +108,14 @@ The following properties are equivalent to SLD "vendor options".
 
 .. include:: include/misc.txt
 
+Additional "vendor options" properties for :ref:`sld-extensions_composite-blend`:
+
 .. include:: include/composite.txt
+
+Additional "vendor options" properties for :ref:`rendering_selection`:
+
+.. include:: include/inclusion.txt
+
 
 Examples
 --------

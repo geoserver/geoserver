@@ -68,6 +68,7 @@ The full syntax of a text symbolizer is::
       x-strikethroughText: <boolean>
       x-charSpacing: <expression>
       x-wordSpacing: <expression>
+      x-inclusion: <text>
 
 where:
 

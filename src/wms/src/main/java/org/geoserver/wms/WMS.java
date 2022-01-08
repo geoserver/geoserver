@@ -1115,13 +1115,7 @@ public class WMS implements ApplicationContextAware {
                         // convert down to string
                         String sortBySpec =
                                 Arrays.stream(sortBy)
-                                        .map(
-                                                sb ->
-                                                        sb.getPropertyName().getPropertyName()
-                                                                + " "
-                                                                + sb.getSortOrder()
-                                                                        .name()
-                                                                        .charAt(0))
+                                        .map(this::sortSpecification)
                                         .collect(Collectors.joining(","));
                         pv.setValue(sortBySpec);
                     } else {
@@ -1182,6 +1176,10 @@ public class WMS implements ApplicationContextAware {
         }
 
         return readParameters;
+    }
+
+    private String sortSpecification(SortBy sb) {
+        return sb.getPropertyName().getPropertyName() + " " + sb.getSortOrder().name().charAt(0);
     }
 
     public Collection<RenderedImageMapResponse> getAvailableMapResponses() {

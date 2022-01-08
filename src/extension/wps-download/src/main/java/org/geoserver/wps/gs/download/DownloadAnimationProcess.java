@@ -198,12 +198,9 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                                 while ((frame = renderingQueue.take()) != STOP) {
                                     enc.encodeImage(frame);
                                     listener.progress(90 * (((float) count) / totalTimes));
-                                    listener.setTask(
-                                            new SimpleInternationalString(
-                                                    "Generated frames "
-                                                            + count
-                                                            + " out of "
-                                                            + totalTimes));
+                                    String message =
+                                            "Generated frames " + count + " out of " + totalTimes;
+                                    listener.setTask(new SimpleInternationalString(message));
                                     count++;
                                     // handling exit due to WPS cancellation, or to exceptions
                                     if (listener.isCanceled() || abortEncoding.get()) return null;

@@ -67,20 +67,7 @@ class CustomDimensionFilterConverter {
             final MetadataMap metadataMap = typeInfo.getMetadata();
             final FeatureType featureType = typeInfo.getFeatureType();
             final Map<String, Pair<DimensionInfo, String>> rawValuesMap =
-                    metadataMap
-                            .entrySet()
-                            .stream()
-                            .filter(
-                                    e ->
-                                            e.getValue() instanceof DimensionInfo
-                                                    && e.getKey().startsWith("dim_"))
-                            .collect(
-                                    Collectors.toMap(
-                                            e -> unrollDimPrefix(e.getKey()),
-                                            e ->
-                                                    Pair.of(
-                                                            (DimensionInfo) e.getValue(),
-                                                            rawKVP.get(e.getKey().toUpperCase()))));
+                    getRawDimensionValues(rawKVP, metadataMap);
             final List<Filter> filters = new ArrayList<>();
             // convert raw value strings to proper types
             for (Map.Entry<String, Pair<DimensionInfo, String>> entry : rawValuesMap.entrySet()) {
@@ -116,6 +103,22 @@ class CustomDimensionFilterConverter {
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    /** Maps each configured dimension to the KVP key/value found in the request */
+    private Map<String, Pair<DimensionInfo, String>> getRawDimensionValues(
+            Map<String, String> rawKVP, MetadataMap metadataMap) {
+        return metadataMap
+                .entrySet()
+                .stream()
+                .filter(e -> e.getValue() instanceof DimensionInfo && e.getKey().startsWith("dim_"))
+                .collect(
+                        Collectors.toMap(
+                                e -> unrollDimPrefix(e.getKey()),
+                                e ->
+                                        Pair.of(
+                                                (DimensionInfo) e.getValue(),
+                                                rawKVP.get(e.getKey().toUpperCase()))));
     }
 
     private List<Object> convertValues(

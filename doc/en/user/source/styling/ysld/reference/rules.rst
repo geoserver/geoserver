@@ -32,6 +32,7 @@ The following is the basic syntax of a rule. Note that the contents of the block
        scale: [<min>,<max>]
        symbolizers:
        - ...
+       x-inclusion: <text>
 
 where:
 
@@ -69,6 +70,10 @@ where:
      - Yes
      - Block containing one or more :ref:`symbolizers <ysld_reference_symbolizers>`. These contain the actual visualization directives. If the filter returns true and the view is within the scale boundaries, these symbolizers will be drawn.
      - N/A
+   * - ``x-inclusion``
+     - No
+     - Define if rule should be included in style for ``legendOnly`` or ``mapOnly`` (see :ref:`rendering_selection`)
+     - ``normal``
 
 Short syntax
 ------------

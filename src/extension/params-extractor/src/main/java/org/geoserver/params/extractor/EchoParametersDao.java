@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -16,6 +15,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.util.SecureXStream;
 import org.geoserver.platform.GeoServerExtensions;
@@ -120,13 +120,7 @@ public final class EchoParametersDao {
         writeEchoParameters(
                 getEchoParameters(inputStream)
                         .stream()
-                        .filter(
-                                forwardParameter ->
-                                        !Arrays.stream(forwardParameterIds)
-                                                .anyMatch(
-                                                        forwardParameterId ->
-                                                                forwardParameterId.equals(
-                                                                        forwardParameter.getId())))
+                        .filter(p -> !ArrayUtils.contains(forwardParameterIds, p.getId()))
                         .collect(Collectors.toList()),
                 outputStream);
     }

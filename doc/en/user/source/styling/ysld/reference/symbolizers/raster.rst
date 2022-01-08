@@ -26,6 +26,7 @@ The full syntax of a raster symbolizer is::
       contrast-enhancement: 
         mode: <normalize|histogram>
         gamma: <expression>
+      x-inclusion: <text>
 
 where:
 
@@ -103,6 +104,14 @@ where:
      - No
      - Multiplier value for contrast adjustment. A value greater than 1 will increase darkness, while a value less than 1 will decrease darkness.
      - ``1``
+
+Additional "vendor options" properties for :ref:`sld-extensions_composite-blend`:
+
+.. include:: include/composite.txt
+
+Additional "vendor options" properties for :ref:`rendering_selection`:
+
+.. include:: include/inclusion.txt
 
 Examples
 --------

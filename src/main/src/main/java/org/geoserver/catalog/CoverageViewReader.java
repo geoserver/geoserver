@@ -56,6 +56,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
+import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.parameter.DefaultParameterDescriptorGroup;
 import org.geotools.parameter.ParameterGroup;
 import org.geotools.referencing.CRS;
@@ -178,12 +179,9 @@ public class CoverageViewReader implements GridCoverage2DReader {
                     Arrays.stream(parameters)
                             .filter(
                                     parameter ->
-                                            parameter
-                                                    .getDescriptor()
-                                                    .getName()
-                                                    .equals(
-                                                            AbstractGridFormat.READ_GRIDGEOMETRY2D
-                                                                    .getName()))
+                                            matches(
+                                                    parameter,
+                                                    AbstractGridFormat.READ_GRIDGEOMETRY2D))
                             .findFirst();
         }
         GridGeometry2D requestedGridGeometry = null;
@@ -301,12 +299,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
                             Arrays.stream(parameters)
                                     .filter(
                                             parameter ->
-                                                    !parameter
-                                                            .getDescriptor()
-                                                            .getName()
-                                                            .equals(
-                                                                    AbstractGridFormat.BANDS
-                                                                            .getName()))
+                                                    !matches(parameter, AbstractGridFormat.BANDS))
                                     .toArray(GeneralParameterValue[]::new);
                 }
                 GridCoverage2D coverage = reader.read(filteredParameters);
@@ -512,6 +505,11 @@ public class CoverageViewReader implements GridCoverage2DReader {
         }
 
         return result;
+    }
+
+    private boolean matches(
+            GeneralParameterValue parameter, DefaultParameterDescriptor<?> expected) {
+        return parameter.getDescriptor().getName().equals(expected.getName());
     }
 
     /**

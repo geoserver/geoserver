@@ -328,96 +328,7 @@ public class TreeView<T> extends Panel {
         protected Component createSelectableLabel() {
             return selectableLabel =
                     new Label("selectableLabel", getNode().getLabel())
-                            .add(
-                                    new AjaxEventBehavior("click") {
-                                        private static final long serialVersionUID =
-                                                -3705747320247194977L;
-
-                                        @Override
-                                        protected void updateAjaxAttributes(
-                                                AjaxRequestAttributes attributes) {
-                                            super.updateAjaxAttributes(attributes);
-                                            attributes
-                                                    .getDynamicExtraParameters()
-                                                    .add(
-                                                            "return {'ctrl' : attrs.event.ctrlKey, 'shift' : attrs.event.shiftKey}");
-                                            attributes.setPreventDefault(true);
-                                        }
-
-                                        @Override
-                                        public void onEvent(AjaxRequestTarget target) {
-                                            boolean shift =
-                                                    RequestCycle.get()
-                                                            .getRequest()
-                                                            .getRequestParameters()
-                                                            .getParameterValue("shift")
-                                                            .toBoolean();
-                                            boolean ctrl =
-                                                    RequestCycle.get()
-                                                            .getRequest()
-                                                            .getRequestParameters()
-                                                            .getParameterValue("ctrl")
-                                                            .toBoolean();
-
-                                            if (ctrl) { // toggle selection of this node
-                                                Set<TreeNode<T>> newSelectedNodes = new HashSet<>();
-                                                if (isSelected(getNode())) {
-                                                    for (TreeNode<T> selectedNode :
-                                                            getSelectedNodes()) {
-                                                        if (!selectedNode.isSameAs(getNode())) {
-                                                            newSelectedNodes.add(selectedNode);
-                                                        }
-                                                    }
-                                                } else {
-                                                    newSelectedNodes.addAll(getSelectedNodes());
-                                                    newSelectedNodes.add(getNode());
-                                                }
-                                                setSelectedNodesInternal(newSelectedNodes, target);
-                                            } else if (shift) { // group select to nearest sibling
-                                                boolean select = false;
-                                                boolean moveOn = false;
-                                                Set<TreeNode<T>> newSelectedNodes =
-                                                        new HashSet<>(getSelectedNodes());
-                                                for (TreeNode<T> sibling :
-                                                        getNode().getParent().getChildren()) {
-                                                    if (!select
-                                                            && (sibling.isSameAs(getNode())
-                                                                    || isSelected(sibling))) {
-                                                        select = true;
-                                                        moveOn =
-                                                                !sibling.isSameAs(
-                                                                        getNode()); // we _must_
-                                                        // move on to
-                                                        // clicked node
-                                                    } else if (select
-                                                            && (sibling.isSameAs(getNode())
-                                                                    || (!moveOn
-                                                                            && isSelected(
-                                                                                    sibling)))) {
-                                                        select = false;
-                                                        break;
-                                                    }
-                                                    if (select) {
-                                                        newSelectedNodes.add(sibling);
-                                                        target.add(getNearestViewInternal(sibling));
-                                                    }
-                                                }
-                                                if (!select) {
-                                                    newSelectedNodes.add(getNode());
-                                                    setSelectedNodesInternal(
-                                                            newSelectedNodes, target);
-                                                } // if we never went out of select, there was no
-                                                // selected sibling to being with and we are
-                                                // just going to ignore this.
-                                            } else {
-                                                // replace selection, old one is removed
-                                                target.add(getSelectedViews());
-                                                setSelectedNodesInternal(
-                                                        Collections.singleton(getNode()), target);
-                                            }
-                                            target.add(TreeNodeView.this);
-                                        }
-                                    })
+                            .add(new SelectableLabelClickBehavior())
                             .setOutputMarkupId(true);
         }
 
@@ -447,6 +358,87 @@ public class TreeView<T> extends Panel {
                         selectableLabel.add(mark.getBehaviour());
                     }
                 }
+            }
+        }
+
+        private class SelectableLabelClickBehavior extends AjaxEventBehavior {
+            private static final long serialVersionUID = -3705747320247194977L;
+
+            public SelectableLabelClickBehavior() {
+                super("click");
+            }
+
+            @Override
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes
+                        .getDynamicExtraParameters()
+                        .add(
+                                "return {'ctrl' : attrs.event.ctrlKey, 'shift' : attrs.event.shiftKey}");
+                attributes.setPreventDefault(true);
+            }
+
+            @Override
+            public void onEvent(AjaxRequestTarget target) {
+                boolean shift =
+                        RequestCycle.get()
+                                .getRequest()
+                                .getRequestParameters()
+                                .getParameterValue("shift")
+                                .toBoolean();
+                boolean ctrl =
+                        RequestCycle.get()
+                                .getRequest()
+                                .getRequestParameters()
+                                .getParameterValue("ctrl")
+                                .toBoolean();
+
+                if (ctrl) { // toggle selection of this node
+                    Set<TreeNode<T>> newSelectedNodes = new HashSet<>();
+                    if (isSelected(getNode())) {
+                        for (TreeNode<T> selectedNode : getSelectedNodes()) {
+                            if (!selectedNode.isSameAs(getNode())) {
+                                newSelectedNodes.add(selectedNode);
+                            }
+                        }
+                    } else {
+                        newSelectedNodes.addAll(getSelectedNodes());
+                        newSelectedNodes.add(getNode());
+                    }
+                    setSelectedNodesInternal(newSelectedNodes, target);
+                } else if (shift) { // group select to nearest sibling
+                    boolean select = false;
+                    boolean moveOn = false;
+                    Set<TreeNode<T>> newSelectedNodes = new HashSet<>(getSelectedNodes());
+                    for (TreeNode<T> sibling : getNode().getParent().getChildren()) {
+                        if (!select && (sibling.isSameAs(getNode()) || isSelected(sibling))) {
+                            select = true;
+                            moveOn = !sibling.isSameAs(getNode()); // we _must_
+                            // move on to
+                            // clicked node
+                        } else if (select
+                                && (sibling.isSameAs(getNode())
+                                        || (!moveOn && isSelected(sibling)))) {
+                            select = false;
+                            break;
+                        }
+                        if (select) {
+                            newSelectedNodes.add(sibling);
+                            target.add(getNearestViewInternal(sibling));
+                        }
+                    }
+                    if (!select) {
+                        newSelectedNodes.add(getNode());
+                        setSelectedNodesInternal(newSelectedNodes, target);
+                    } // if we never went out of select, there was no
+                    // selected sibling to being with and we are
+                    // just going to ignore this.
+                } else {
+                    // replace selection, old one is removed
+                    target.add(getSelectedViews());
+                    setSelectedNodesInternal(Collections.singleton(getNode()), target);
+                }
+                target.add(TreeNodeView.this);
             }
         }
     }

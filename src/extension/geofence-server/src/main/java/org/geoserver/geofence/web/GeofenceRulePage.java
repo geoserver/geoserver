@@ -558,66 +558,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                             ruleFormModel.getObject().rule.getWorkspace())));
             layerChoice.setOutputMarkupId(true);
             layerChoice.setNullValid(true);
-            layerChoice.add(
-                    new OnChangeAjaxBehavior() {
-                        private static final long serialVersionUID = 8434775615039939193L;
-
-                        @Override
-                        protected void onUpdate(AjaxRequestTarget target) {
-                            ruleFormModel.getObject().layerDetailsCheck =
-                                    ruleFormModel.getObject().layerDetailsCheck
-                                            && GrantType.ALLOW.equals(
-                                                    grantTypeChoice.getConvertedInput())
-                                            && layerChoice.getConvertedInput() != null;
-
-                            ruleFormModel.getObject().layerDetails.attributes.clear();
-                            if (layerChoice.getConvertedInput() != null) {
-                                PublishedInfo info =
-                                        getCatalog()
-                                                .get(
-                                                        PublishedInfo.class,
-                                                        Predicates.equal(
-                                                                "name",
-                                                                layerChoice.getConvertedInput()));
-                                LayerDetailsFormData layerDetails =
-                                        ruleFormModel.getObject().layerDetails;
-                                LayerType layerType = setLayerType(info, layerDetails);
-                                ResourceInfo resource =
-                                        info instanceof LayerInfo
-                                                ? ((LayerInfo) info).getResource()
-                                                : null;
-                                if (layerType != null && layerType.equals(LayerType.RASTER)) {
-                                    spatialFilterTypeChoice.setModelObject(SpatialFilterType.CLIP);
-                                    spatialFilterTypeChoice.setEnabled(false);
-                                } else {
-                                    spatialFilterTypeChoice.setEnabled(true);
-                                }
-                                target.add(spatialFilterTypeLabel, spatialFilterTypeChoice);
-
-                                if (resource instanceof FeatureTypeInfo) {
-                                    FeatureTypeInfo fti = (FeatureTypeInfo) resource;
-                                    try {
-                                        for (AttributeTypeInfo ati : fti.attributes()) {
-                                            ruleFormModel
-                                                    .getObject()
-                                                    .layerDetails
-                                                    .attributes
-                                                    .add(
-                                                            new LayerAttribute(
-                                                                    ati.getName(),
-                                                                    ati.getBinding() == null
-                                                                            ? null
-                                                                            : ati.getBinding()
-                                                                                    .getName(),
-                                                                    AccessType.NONE));
-                                        }
-                                    } catch (IOException e) {
-                                        LOGGER.log(Level.WARNING, "Could not fetch attributes.", e);
-                                    }
-                                }
-                            }
-                        }
-                    });
+            layerChoice.add(new LayerChoiceOnChange());
 
             add(new TextField<String>("addressRange", ruleFormModel.bind("rule.addressRange")));
 
@@ -630,39 +571,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                                     new GrantTypeRenderer()));
             grantTypeChoice.setRequired(true);
 
-            grantTypeChoice.add(
-                    new OnChangeAjaxBehavior() {
-
-                        private static final long serialVersionUID = -4302901248019983282L;
-
-                        @Override
-                        protected void onUpdate(AjaxRequestTarget target) {
-                            boolean isLimit =
-                                    grantTypeChoice.getConvertedInput().equals(GrantType.LIMIT);
-                            allowedAreaLabel.setVisible(isLimit);
-                            allowedArea.setVisible(isLimit);
-                            spatialFilterTypeLabel.setVisible(isLimit);
-                            spatialFilterTypeChoice.setVisible(isLimit);
-                            catalogModeChoice.setVisible(isLimit);
-                            catalogModeChoiceLabel.setVisible(isLimit);
-
-                            target.add(allowedAreaLabel);
-                            target.add(allowedArea);
-                            target.add(spatialFilterTypeLabel);
-                            target.add(spatialFilterTypeChoice);
-                            target.add(catalogModeChoice);
-                            target.add(catalogModeChoiceLabel);
-
-                            ruleFormModel.getObject().layerDetailsCheck =
-                                    ruleFormModel.getObject().layerDetailsCheck
-                                            && (grantTypeChoice.getConvertedInput() != null
-                                                    && grantTypeChoice
-                                                            .getConvertedInput()
-                                                            .equals(GrantType.ALLOW))
-                                            && (layerChoice.getConvertedInput() != null
-                                                    && !layerChoice.getConvertedInput().isEmpty());
-                        }
-                    });
+            grantTypeChoice.add(new GrantTypeOnChange());
 
             boolean isLimit =
                     form.getModelObject().rule.getAccess() != null
@@ -725,6 +634,89 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             catalogModeChoice.setOutputMarkupId(true);
             catalogModeChoice.setOutputMarkupPlaceholderTag(true);
         }
+
+        private class LayerChoiceOnChange extends OnChangeAjaxBehavior {
+            private static final long serialVersionUID = 8434775615039939193L;
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                ruleFormModel.getObject().layerDetailsCheck =
+                        ruleFormModel.getObject().layerDetailsCheck
+                                && GrantType.ALLOW.equals(grantTypeChoice.getConvertedInput())
+                                && layerChoice.getConvertedInput() != null;
+
+                ruleFormModel.getObject().layerDetails.attributes.clear();
+                if (layerChoice.getConvertedInput() != null) {
+                    PublishedInfo info =
+                            getCatalog()
+                                    .get(
+                                            PublishedInfo.class,
+                                            Predicates.equal(
+                                                    "name", layerChoice.getConvertedInput()));
+                    LayerDetailsFormData layerDetails = ruleFormModel.getObject().layerDetails;
+                    LayerType layerType = setLayerType(info, layerDetails);
+                    ResourceInfo resource =
+                            info instanceof LayerInfo ? ((LayerInfo) info).getResource() : null;
+                    if (layerType != null && layerType.equals(LayerType.RASTER)) {
+                        spatialFilterTypeChoice.setModelObject(SpatialFilterType.CLIP);
+                        spatialFilterTypeChoice.setEnabled(false);
+                    } else {
+                        spatialFilterTypeChoice.setEnabled(true);
+                    }
+                    target.add(spatialFilterTypeLabel, spatialFilterTypeChoice);
+
+                    if (resource instanceof FeatureTypeInfo) {
+                        FeatureTypeInfo fti = (FeatureTypeInfo) resource;
+                        try {
+                            for (AttributeTypeInfo ati : fti.attributes()) {
+                                LayerAttribute attribute =
+                                        new LayerAttribute(
+                                                ati.getName(),
+                                                ati.getBinding() == null
+                                                        ? null
+                                                        : ati.getBinding().getName(),
+                                                AccessType.NONE);
+                                ruleFormModel.getObject().layerDetails.attributes.add(attribute);
+                            }
+                        } catch (IOException e) {
+                            LOGGER.log(Level.WARNING, "Could not fetch attributes.", e);
+                        }
+                    }
+                }
+            }
+        }
+
+        private class GrantTypeOnChange extends OnChangeAjaxBehavior {
+
+            private static final long serialVersionUID = -4302901248019983282L;
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                boolean isLimit = grantTypeChoice.getConvertedInput().equals(GrantType.LIMIT);
+                allowedAreaLabel.setVisible(isLimit);
+                allowedArea.setVisible(isLimit);
+                spatialFilterTypeLabel.setVisible(isLimit);
+                spatialFilterTypeChoice.setVisible(isLimit);
+                catalogModeChoice.setVisible(isLimit);
+                catalogModeChoiceLabel.setVisible(isLimit);
+
+                target.add(allowedAreaLabel);
+                target.add(allowedArea);
+                target.add(spatialFilterTypeLabel);
+                target.add(spatialFilterTypeChoice);
+                target.add(catalogModeChoice);
+                target.add(catalogModeChoiceLabel);
+
+                ruleFormModel.getObject().layerDetailsCheck =
+                        ruleFormModel.getObject().layerDetailsCheck
+                                && (grantTypeChoice.getConvertedInput() != null
+                                        && grantTypeChoice
+                                                .getConvertedInput()
+                                                .equals(GrantType.ALLOW))
+                                && (layerChoice.getConvertedInput() != null
+                                        && !layerChoice.getConvertedInput().isEmpty());
+            }
+        }
     }
 
     LayerType setLayerType(PublishedInfo info, LayerDetailsFormData layerDetails) {
@@ -778,12 +770,9 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                             target.add(container);
                             RuleFormData rule = ruleFormModel.getObject();
                             if (layerDetailsCheck.getConvertedInput().booleanValue()) {
+                                Filter layerFilter = Predicates.equal("name", rule.rule.getLayer());
                                 PublishedInfo info =
-                                        getCatalog()
-                                                .get(
-                                                        PublishedInfo.class,
-                                                        Predicates.equal(
-                                                                "name", rule.rule.getLayer()));
+                                        getCatalog().get(PublishedInfo.class, layerFilter);
                                 LayerDetailsFormData layerDetailsFormData = rule.layerDetails;
                                 LayerType layerType = layerDetailsFormData.layerType;
                                 if (layerType == null)

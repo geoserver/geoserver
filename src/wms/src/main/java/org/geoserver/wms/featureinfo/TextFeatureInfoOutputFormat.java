@@ -71,15 +71,10 @@ public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
 
         try {
             final List collections = results.getFeature();
-            FeatureCollection fr;
-            SimpleFeature f;
-
-            SimpleFeatureType schema;
-            List<AttributeDescriptor> types;
 
             // for each layer queried
             for (Object collection : collections) {
-                fr = (FeatureCollection) collection;
+                FeatureCollection fr = (FeatureCollection) collection;
                 try (FeatureIterator reader = fr.features()) {
 
                     boolean startFeat = true;
@@ -96,52 +91,8 @@ public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                             writer.println("--------------------------------------------");
 
                             if (feature instanceof SimpleFeature) {
-                                f = (SimpleFeature) feature;
-                                schema = f.getType();
-                                types = schema.getAttributeDescriptors();
-
-                                for (AttributeDescriptor descriptor : types) {
-                                    final Name name = descriptor.getName();
-                                    final Class<?> binding = descriptor.getType().getBinding();
-                                    if (Geometry.class.isAssignableFrom(binding)) {
-                                        // writer.println(types[j].getName() + " =
-                                        // [GEOMETRY]");
-
-                                        // DJB: changed this to print out WKT - its very
-                                        // nice for users
-                                        // Geometry g = (Geometry)
-                                        // f.getAttribute(types[j].getName());
-                                        // writer.println(types[j].getName() + " =
-                                        // [GEOMETRY] = "+g.toText() );
-
-                                        // DJB: decided that all the geometry info was
-                                        // too much - they should use GML version if
-                                        // they want those details
-                                        Geometry g = (Geometry) f.getAttribute(name);
-                                        if (g != null) {
-                                            writer.println(
-                                                    name
-                                                            + " = [GEOMETRY ("
-                                                            + g.getGeometryType()
-                                                            + ") with "
-                                                            + g.getNumPoints()
-                                                            + " points]");
-                                        } else {
-                                            // GEOS-6829
-                                            writer.println(name + " = null");
-                                        }
-                                    } else if (Date.class.isAssignableFrom(binding)
-                                            && TemporalUtils.isDateTimeFormatEnabled()) {
-                                        // Temporal types print handling
-                                        String printValue =
-                                                TemporalUtils.printDate(
-                                                        (Date) f.getAttribute(name));
-                                        writer.println(name + " = " + printValue);
-                                    } else {
-                                        writer.println(name + " = " + f.getAttribute(name));
-                                    }
-                                }
-
+                                SimpleFeature f = (SimpleFeature) feature;
+                                writeSimpleFeature(writer, f);
                             } else {
                                 writer.println(feature.toString());
                             }
@@ -161,6 +112,51 @@ public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
         }
 
         writer.flush();
+    }
+
+    private void writeSimpleFeature(PrintWriter writer, SimpleFeature f) {
+        SimpleFeatureType schema = f.getType();
+        List<AttributeDescriptor> types = schema.getAttributeDescriptors();
+
+        for (AttributeDescriptor descriptor : types) {
+            final Name name = descriptor.getName();
+            final Class<?> binding = descriptor.getType().getBinding();
+            if (Geometry.class.isAssignableFrom(binding)) {
+                // writer.println(types[j].getName() + " =
+                // [GEOMETRY]");
+
+                // DJB: changed this to print out WKT - its very
+                // nice for users
+                // Geometry g = (Geometry)
+                // f.getAttribute(types[j].getName());
+                // writer.println(types[j].getName() + " =
+                // [GEOMETRY] = "+g.toText() );
+
+                // DJB: decided that all the geometry info was
+                // too much - they should use GML version if
+                // they want those details
+                Geometry g = (Geometry) f.getAttribute(name);
+                if (g != null) {
+                    writer.println(
+                            name
+                                    + " = [GEOMETRY ("
+                                    + g.getGeometryType()
+                                    + ") with "
+                                    + g.getNumPoints()
+                                    + " points]");
+                } else {
+                    // GEOS-6829
+                    writer.println(name + " = null");
+                }
+            } else if (Date.class.isAssignableFrom(binding)
+                    && TemporalUtils.isDateTimeFormatEnabled()) {
+                // Temporal types print handling
+                String printValue = TemporalUtils.printDate((Date) f.getAttribute(name));
+                writer.println(name + " = " + printValue);
+            } else {
+                writer.println(name + " = " + f.getAttribute(name));
+            }
+        }
     }
 
     @Override

@@ -285,72 +285,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                     @Override
                     public void populateItem(ListItem<Category> item) {
                         Category category = item.getModelObject();
-                        item.add(
-                                new Label(
-                                        "category.header",
-                                        new StringResourceModel(
-                                                category.getNameKey(), null, null)));
-                        item.add(
-                                new ListView<MenuPageInfo<GeoServerBasePage>>(
-                                        "category.links", links.get(category)) {
-                                    @Override
-                                    public void populateItem(
-                                            ListItem<MenuPageInfo<GeoServerBasePage>> item) {
-                                        MenuPageInfo<GeoServerBasePage> info =
-                                                item.getModelObject();
-                                        BookmarkablePageLink<Page> link =
-                                                new BookmarkablePageLink<Page>(
-                                                        "link", info.getComponentClass()) {
-
-                                                    @Override
-                                                    public PageParameters getPageParameters() {
-                                                        PageParameters pageParams =
-                                                                super.getPageParameters();
-                                                        pageParams.add(
-                                                                GeoServerTablePanel.FILTER_PARAM,
-                                                                false,
-                                                                Type.PATH);
-                                                        return pageParams;
-                                                    }
-                                                };
-
-                                        link.add(
-                                                AttributeModifier.replace(
-                                                        "title",
-                                                        new StringResourceModel(
-                                                                info.getDescriptionKey(),
-                                                                null,
-                                                                null)));
-                                        link.add(
-                                                new Label(
-                                                        "link.label",
-                                                        new StringResourceModel(
-                                                                info.getTitleKey(), null, null)));
-                                        Image image;
-                                        if (info.getIcon() != null) {
-                                            image =
-                                                    new Image(
-                                                            "link.icon",
-                                                            new PackageResourceReference(
-                                                                    info.getComponentClass(),
-                                                                    info.getIcon()));
-                                        } else {
-                                            image =
-                                                    new Image(
-                                                            "link.icon",
-                                                            new PackageResourceReference(
-                                                                    GeoServerBasePage.class,
-                                                                    "img/icons/silk/wrench.png"));
-                                        }
-                                        image.add(
-                                                AttributeModifier.replace(
-                                                        "alt",
-                                                        new ParamResourceModel(
-                                                                info.getTitleKey(), null)));
-                                        link.add(image);
-                                        item.add(link);
-                                    }
-                                });
+                        createCategoryComponent(item, category, links);
                     }
                 });
 
@@ -484,6 +419,60 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                 .filter(l -> locale.getLanguage().equals(l.getLanguage()))
                 .findFirst()
                 .orElse(Locale.ENGLISH);
+    }
+
+    private void createCategoryComponent(
+            ListItem<Category> item,
+            Category category,
+            Map<Category, List<MenuPageInfo<GeoServerBasePage>>> links) {
+        item.add(
+                new Label(
+                        "category.header",
+                        new StringResourceModel(category.getNameKey(), null, null)));
+        item.add(
+                new ListView<MenuPageInfo<GeoServerBasePage>>(
+                        "category.links", links.get(category)) {
+                    @Override
+                    public void populateItem(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
+                        createMenuComponent(item);
+                    }
+                });
+    }
+
+    private void createMenuComponent(ListItem<MenuPageInfo<GeoServerBasePage>> item) {
+        MenuPageInfo<GeoServerBasePage> info = item.getModelObject();
+        BookmarkablePageLink<Page> link =
+                new BookmarkablePageLink<Page>("link", info.getComponentClass()) {
+
+                    @Override
+                    public PageParameters getPageParameters() {
+                        PageParameters pageParams = super.getPageParameters();
+                        pageParams.add(GeoServerTablePanel.FILTER_PARAM, false, Type.PATH);
+                        return pageParams;
+                    }
+                };
+
+        link.add(
+                AttributeModifier.replace(
+                        "title", new StringResourceModel(info.getDescriptionKey(), null, null)));
+        link.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
+        Image image;
+        if (info.getIcon() != null) {
+            image =
+                    new Image(
+                            "link.icon",
+                            new PackageResourceReference(info.getComponentClass(), info.getIcon()));
+        } else {
+            image =
+                    new Image(
+                            "link.icon",
+                            new PackageResourceReference(
+                                    GeoServerBasePage.class, "img/icons/silk/wrench.png"));
+        }
+        image.add(
+                AttributeModifier.replace("alt", new ParamResourceModel(info.getTitleKey(), null)));
+        link.add(image);
+        item.add(link);
     }
 
     private String getResourcePath(String path) {

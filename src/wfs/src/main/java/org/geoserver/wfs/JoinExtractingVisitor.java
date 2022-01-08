@@ -398,11 +398,7 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
                             Optional<String> wsName =
                                     featureTypes
                                             .stream()
-                                            .filter(
-                                                    ft ->
-                                                            ns.equals(
-                                                                    ft.getQualifiedName()
-                                                                            .getNamespaceURI()))
+                                            .filter(ft -> matchesNamespace(ns, ft))
                                             .map(ft -> ft.getStore().getWorkspace().getName())
                                             .findFirst();
                             if (wsName.isPresent()) {
@@ -415,6 +411,10 @@ public class JoinExtractingVisitor extends FilterVisitorSupport {
             }
         }
         return prefixes;
+    }
+
+    private boolean matchesNamespace(String ns, FeatureTypeInfo ft) {
+        return ns.equals(ft.getQualifiedName().getNamespaceURI());
     }
 
     List<Filter> rewriteAndSortOtherFilters(List<Filter> filters) {

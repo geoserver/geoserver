@@ -31,6 +31,7 @@ The full syntax of a line symbolizer is:
       x-labelObstacle: <boolean>
       x-composite-base: <boolean>
       x-composite: <text>
+      x-inclusion: <text>
 
 where:
 
@@ -53,11 +54,11 @@ where:
 
 .. include:: include/symbol.txt
 
-The following properties are equivalent to SLD "vendor options".
-
 .. include:: include/misc.txt
 
 .. include:: include/composite.txt
+
+.. include:: include/inclusion.txt
 
 Examples
 --------

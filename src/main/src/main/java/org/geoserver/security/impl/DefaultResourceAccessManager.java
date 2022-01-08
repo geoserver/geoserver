@@ -577,18 +577,13 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
 
                     boolean layerAccess = canAccess(user, layerNode);
                     if (layerAccess != wsAccess) {
+                        Filter prefixedNameFilter =
+                                Predicates.and(
+                                        typeFilter, Predicates.equal("prefixedName", prefixedName));
                         if (wsAccess) {
-                            layerExceptions.add(
-                                    Predicates.not(
-                                            Predicates.and(
-                                                    typeFilter,
-                                                    Predicates.equal(
-                                                            "prefixedName", prefixedName))));
+                            layerExceptions.add(Predicates.not(prefixedNameFilter));
                         } else {
-                            layerExceptions.add(
-                                    Predicates.and(
-                                            typeFilter,
-                                            Predicates.equal("prefixedName", prefixedName)));
+                            layerExceptions.add(prefixedNameFilter);
                         }
                     }
                 }

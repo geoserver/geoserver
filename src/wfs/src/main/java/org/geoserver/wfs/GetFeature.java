@@ -1334,44 +1334,7 @@ public class GetFeature {
                 replaceCRSIfComplexFeatures(source, wfsVersion, crs, featureTypeInfo, declaredCRS);
 
         // replace gml:boundedBy with an expression
-        transformedFilter =
-                (Filter)
-                        transformedFilter.accept(
-                                new DuplicatingFilterVisitor(filterFactory) {
-                                    @Override
-                                    public Object visit(PropertyName expression, Object extraData) {
-                                        if (isGmlBoundedBy(expression)) {
-                                            // envelope of the default geometry
-                                            return filterFactory.function(
-                                                    "boundedBy", filterFactory.property(""));
-                                        } else {
-                                            return super.visit(expression, extraData);
-                                        }
-                                    }
-
-                                    @Override
-                                    public Object visit(BBOX filter, Object extraData) {
-                                        // BBOX must work against a propertyName, if boundedBy is
-                                        // used we
-                                        // need to switch to an intersects filter
-                                        Expression expression1 = filter.getExpression1();
-                                        if (expression1 instanceof PropertyName
-                                                && isGmlBoundedBy((PropertyName) expression1)) {
-                                            ReferencedEnvelope bounds =
-                                                    ReferencedEnvelope.reference(
-                                                            filter.getBounds());
-                                            Polygon polygon = JTS.toGeometry(bounds);
-                                            Function boundedBy =
-                                                    filterFactory.function(
-                                                            "boundedBy",
-                                                            filterFactory.property(""));
-                                            return filterFactory.intersects(
-                                                    boundedBy, filterFactory.literal(polygon));
-                                        }
-                                        return super.visit(filter, extraData);
-                                    }
-                                },
-                                null);
+        transformedFilter = (Filter) transformedFilter.accept(new BoundedByVisitor(), null);
 
         // only handle non-joins for now
         QName typeName = primaryTypeName;
@@ -1864,6 +1827,38 @@ public class GetFeature {
             }
 
             return data;
+        }
+    }
+
+    private class BoundedByVisitor extends DuplicatingFilterVisitor {
+        public BoundedByVisitor() {
+            super(GetFeature.this.filterFactory);
+        }
+
+        @Override
+        public Object visit(PropertyName expression, Object extraData) {
+            if (isGmlBoundedBy(expression)) {
+                // envelope of the default geometry
+                return filterFactory.function("boundedBy", filterFactory.property(""));
+            } else {
+                return super.visit(expression, extraData);
+            }
+        }
+
+        @Override
+        public Object visit(BBOX filter, Object extraData) {
+            // BBOX must work against a propertyName, if boundedBy is
+            // used we
+            // need to switch to an intersects filter
+            Expression expression1 = filter.getExpression1();
+            if (expression1 instanceof PropertyName && isGmlBoundedBy((PropertyName) expression1)) {
+                ReferencedEnvelope bounds = ReferencedEnvelope.reference(filter.getBounds());
+                Polygon polygon = JTS.toGeometry(bounds);
+                Function boundedBy =
+                        filterFactory.function("boundedBy", filterFactory.property(""));
+                return filterFactory.intersects(boundedBy, filterFactory.literal(polygon));
+            }
+            return super.visit(filter, extraData);
         }
     }
 }

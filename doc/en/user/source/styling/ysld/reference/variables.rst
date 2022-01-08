@@ -1,7 +1,7 @@
 .. _ysld_reference_variables:
 
-Variables
-=========
+Define and reuse YAML Variables
+===============================
 
 Variables in YSLD that allow for a certain directive or block of directives to be defined by name and later reused. This can greatly simplify the styling document.
 
@@ -15,8 +15,8 @@ It is customary, but not required, to place all definitions at the very top of t
 Syntax
 ------
 
-Single value
-^^^^^^^^^^^^
+Define a single value
+^^^^^^^^^^^^^^^^^^^^^
 
 The syntax for defining a variable as a single value is::
 
@@ -53,8 +53,8 @@ The syntax for using this variable is to prepend the variable name with a ``*``:
 
 This variable can be used in any place where its type is expected.
 
-Directive block
-^^^^^^^^^^^^^^^
+Define a directive block
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 The syntax for defining a variable as a content block is::
 
@@ -82,33 +82,56 @@ The line that contains the variable will be replaced with the contents of the de
 Examples
 --------
 
-The following are all examples of variable substitution
+Define variables to reuse colors
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Name a color::
+Name background color for both polygon fill and halo outline:
 
-  define: &myorange '#EE8000'
+.. code-block:: yaml
 
-::
+  define: &background_color '#998088'
+  define: &text_color "#111122"
 
-  stroke: *myorange
+  feature-styles:
+  - rules:
+    - symbolizers:
+      - polygon:
+          stroke-width: 1
+          fill-color: *background_color
+      - text:
+          label: ${name}
+          fill-color: *text_color
+          halo:
+             radius: 2
+             fill-color: *background_color
+             fill-opacity: 0.8
 
-Reusable text string::
+Define block to reuse stroke
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-  define: &rulename "This is my rule"
+Define a block of stroke parameters for reuse in each rule:
 
-::
+.. code-block:: yaml
 
-  title: *rulename
-
-Stroke style::
-
-  define: &strokestyle
+  define: &stroke_style
     stroke: '#FF0000'
     stroke-width: 2
     stroke-opacity: 0.5
 
-::
-
-  polygon:
-    <<: *strokestyle
-
+  feature-styles:
+  - rules:
+    - filter: ${pop < '200000'}
+      symbolizers:
+      - polygon:
+          <<: *stroke_style
+          fill-color: '#66FF66'
+    - filter: ${pop BETWEEN '200000' AND '500000'}
+      symbolizers:
+      - polygon:
+          <<: *stroke_style
+          fill-color: '#33CC33'
+    - filter: ${pop > '500000'}
+      symbolizers:
+      - polygon:
+          <<: *stroke_style
+          fill-color: '009900'

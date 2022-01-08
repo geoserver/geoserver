@@ -63,62 +63,7 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
                     }
                 }.setEnabled(isAdmin));
 
-        add(
-                removeLink =
-                        new AjaxLink("remove") {
-                            @Override
-                            public void onClick(AjaxRequestTarget target) {
-                                boolean ok = true;
-                                for (T config : tablePanel.getSelection()) {
-                                    // first determine if the config can be removed
-                                    try {
-                                        validateRemoveConfig(config);
-                                    } catch (Exception e) {
-                                        handleException(e, null);
-                                        ok = false;
-                                    }
-                                }
-
-                                if (ok) {
-                                    // proceed with the removal, confirming first
-                                    dialog.showOkCancel(
-                                            target,
-                                            new GeoServerDialog.DialogDelegate() {
-                                                @Override
-                                                protected Component getContents(String id) {
-                                                    return new ConfirmRemovalNamedServicePanel<>(
-                                                            id, tablePanel.getSelection());
-                                                }
-
-                                                @Override
-                                                protected boolean onSubmit(
-                                                        AjaxRequestTarget target,
-                                                        Component contents) {
-                                                    for (T config : tablePanel.getSelection()) {
-                                                        try {
-                                                            removeConfig(config);
-                                                            feedbackPanel.info(
-                                                                    config.getName() + " removed");
-                                                            tablePanel.clearSelection();
-                                                        } catch (Exception e) {
-                                                            handleException(e, feedbackPanel);
-                                                        }
-                                                    }
-                                                    return true;
-                                                }
-
-                                                @Override
-                                                public void onClose(AjaxRequestTarget target) {
-                                                    target.add(tablePanel);
-                                                    target.add(feedbackPanel);
-                                                }
-                                            });
-                                }
-
-                                // render any feedback
-                                target.add(feedbackPanel);
-                            }
-                        });
+        add(removeLink = new RemoveLink());
         removeLink.setEnabled(false);
 
         add(
@@ -272,4 +217,61 @@ public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceC
         removeLink.setEnabled(false);
         super.onBeforeRender();
     };
+
+    private class RemoveLink extends AjaxLink {
+        public RemoveLink() {
+            super("remove");
+        }
+
+        @Override
+        public void onClick(AjaxRequestTarget target) {
+            boolean ok = true;
+            for (T config : tablePanel.getSelection()) {
+                // first determine if the config can be removed
+                try {
+                    validateRemoveConfig(config);
+                } catch (Exception e) {
+                    handleException(e, null);
+                    ok = false;
+                }
+            }
+
+            if (ok) {
+                // proceed with the removal, confirming first
+                GeoServerDialog.DialogDelegate delegate =
+                        new GeoServerDialog.DialogDelegate() {
+                            @Override
+                            protected Component getContents(String id) {
+                                return new ConfirmRemovalNamedServicePanel<>(
+                                        id, tablePanel.getSelection());
+                            }
+
+                            @Override
+                            protected boolean onSubmit(
+                                    AjaxRequestTarget target, Component contents) {
+                                for (T config : tablePanel.getSelection()) {
+                                    try {
+                                        removeConfig(config);
+                                        feedbackPanel.info(config.getName() + " removed");
+                                        tablePanel.clearSelection();
+                                    } catch (Exception e) {
+                                        handleException(e, feedbackPanel);
+                                    }
+                                }
+                                return true;
+                            }
+
+                            @Override
+                            public void onClose(AjaxRequestTarget target) {
+                                target.add(tablePanel);
+                                target.add(feedbackPanel);
+                            }
+                        };
+                dialog.showOkCancel(target, delegate);
+            }
+
+            // render any feedback
+            target.add(feedbackPanel);
+        }
+    }
 }

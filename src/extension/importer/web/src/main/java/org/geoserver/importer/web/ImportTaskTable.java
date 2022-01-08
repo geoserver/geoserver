@@ -448,33 +448,15 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
                                     "links",
                                     new Model<>(links.get(0)),
                                     links,
-                                    new ChoiceRenderer<PreviewLink>() {
-                                        @Override
-                                        public Object getDisplayValue(PreviewLink object) {
-                                            return new ParamResourceModel(
-                                                            object.id,
-                                                            ImportTaskTable.this,
-                                                            object.id)
-                                                    .getString();
-                                        }
-
-                                        @Override
-                                        public String getIdValue(PreviewLink object, int index) {
-                                            return object.href;
-                                        }
-                                    })
+                                    new PreviewLinkChoiceRenderer())
                             .setNullValid(false)
                             .setOutputMarkupId(true));
 
+            String javascript =
+                    "go(document.getElementById('" + get("links").getMarkupId() + "'));";
             add(
                     new ExternalLink("go", "#")
-                            .add(
-                                    new AttributeModifier(
-                                            "onclick",
-                                            new Model<>(
-                                                    "go(document.getElementById('"
-                                                            + get("links").getMarkupId()
-                                                            + "'));"))));
+                            .add(new AttributeModifier("onclick", new Model<>(javascript))));
         }
 
         class PreviewLink implements Serializable {
@@ -484,6 +466,19 @@ public class ImportTaskTable extends GeoServerTablePanel<ImportTask> {
             PreviewLink(String id, String href) {
                 this.id = id;
                 this.href = href;
+            }
+        }
+
+        private class PreviewLinkChoiceRenderer extends ChoiceRenderer<PreviewLink> {
+            @Override
+            public Object getDisplayValue(PreviewLink object) {
+                return new ParamResourceModel(object.id, ImportTaskTable.this, object.id)
+                        .getString();
+            }
+
+            @Override
+            public String getIdValue(PreviewLink object, int index) {
+                return object.href;
             }
         }
     }

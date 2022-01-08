@@ -10,9 +10,9 @@
      - Default value
    * - ``geometry``
      - No
-     - Specifies which attribute to use as the geometry.
+     - Specifies which attribute to use as the geometry (see :ref:`geometry_transformations`)
      - First geometry attribute found (usually named ``geom`` or ``the_geom``)
    * - ``uom``
      - No
-     - Unit of measure used for width calculations
+     - Unit of measure used for width calculations (see :ref:`unit_of_measure`)
      - pixel

@@ -93,6 +93,7 @@ The following is the basic syntax of a feature style. Note that the contents of 
      x-ruleEvaluation: <text>
      x-composite: <text>
      x-composite-base: <boolean>
+     x-inclusion: <text>
 
 where:
 
@@ -151,7 +152,11 @@ The following properties are equivalent to SLD "vendor options".
      - No
      - Allows the rendering engine to use that feature-style as a "base", and will compose all subsequent feature-styles and layers on top of it, until another base is found. Once the full set of layers against a base is composed, then the base itself will be composed against the next set of composed layers using its own compositing operator, if present. This is useful to fine-tune the use of ``x-composite``, and to make sure that only the desired content is composited/blended and not all of the drawn content.
      - ``false``
-
+   * - ``x-inclusion``
+     - No
+     - Define if rule should be included in style for ``legendOnly`` or ``mapOnly`` (see :ref:`rendering_selection`)
+     - ``normal``
+     
 .. _ysld_reference_featurestyles_composite:
 
 Compositing and blending

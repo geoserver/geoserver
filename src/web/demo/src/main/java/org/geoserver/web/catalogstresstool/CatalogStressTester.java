@@ -125,30 +125,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
         Form form = new Form("form", new Model());
         add(form);
 
-        IModel<List<Tuple>> wsModel =
-                new LoadableDetachableModel<List<Tuple>>() {
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    protected List<Tuple> load() {
-                        Catalog catalog = GeoServerApplication.get().getCatalog();
-                        Filter filter = Predicates.acceptAll();
-
-                        try (CloseableIterator<WorkspaceInfo> list =
-                                catalog.list(WorkspaceInfo.class, filter, null, 4000, null)) {
-                            List<Tuple> workspaces =
-                                    Lists.newArrayList(
-                                            Iterators.transform(
-                                                    list,
-                                                    input ->
-                                                            new Tuple(
-                                                                    input.getId(),
-                                                                    input.getName())));
-                            Collections.sort(workspaces);
-                            return workspaces;
-                        }
-                    }
-                };
+        IModel<List<Tuple>> wsModel = new WorkspacesTestModel();
         workspace =
                 new DropDownChoice<>(
                         "workspace", new Model<>(), wsModel, new TupleChoiceRenderer());
@@ -168,35 +145,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                     }
                 });
 
-        IModel<List<Tuple>> storesModel =
-                new LoadableDetachableModel<List<Tuple>>() {
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    protected List<Tuple> load() {
-                        Catalog catalog = GeoServerApplication.get().getCatalog();
-                        Tuple ws = workspace.getModelObject();
-                        if (ws == null) {
-                            return Lists.newArrayList();
-                        }
-                        Filter filter = Predicates.equal("workspace.id", ws.id);
-                        int limit = 100;
-
-                        try (CloseableIterator<StoreInfo> iter =
-                                catalog.list(StoreInfo.class, filter, null, limit, null); ) {
-                            List<Tuple> stores =
-                                    Lists.newArrayList(
-                                            Iterators.transform(
-                                                    iter,
-                                                    input ->
-                                                            new Tuple(
-                                                                    input.getId(),
-                                                                    input.getName())));
-                            Collections.sort(stores);
-                            return stores;
-                        }
-                    }
-                };
+        IModel<List<Tuple>> storesModel = new StoresTestModel();
 
         store =
                 new DropDownChoice<>(
@@ -215,35 +164,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
                 });
         form.add(store);
 
-        IModel<List<Tuple>> resourcesModel =
-                new LoadableDetachableModel<List<Tuple>>() {
-                    private static final long serialVersionUID = 1L;
-
-                    @Override
-                    protected List<Tuple> load() {
-                        Catalog catalog = getCatalog();
-                        Tuple storeInfo = store.getModelObject();
-                        if (storeInfo == null) {
-                            return Lists.newArrayList();
-                        }
-                        Integer limit = 100;
-                        Filter filter = Predicates.equal("store.id", storeInfo.id);
-
-                        try (CloseableIterator<ResourceInfo> iter =
-                                catalog.list(ResourceInfo.class, filter, null, limit, null)) {
-                            List<Tuple> resources =
-                                    Lists.newArrayList(
-                                            Iterators.transform(
-                                                    iter,
-                                                    input ->
-                                                            new Tuple(
-                                                                    input.getId(),
-                                                                    input.getName())));
-                            Collections.sort(resources);
-                            return resources;
-                        }
-                    }
-                };
+        IModel<List<Tuple>> resourcesModel = new ResourcesTestModel();
 
         resourceAndLayer =
                 new DropDownChoice<>(
@@ -542,5 +463,75 @@ public class CatalogStressTester extends GeoServerSecuredPage {
             throw new IllegalArgumentException(original.toString());
         }
         return prototype;
+    }
+
+    private static class WorkspacesTestModel extends LoadableDetachableModel<List<Tuple>> {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        protected List<Tuple> load() {
+            Catalog catalog = GeoServerApplication.get().getCatalog();
+            Filter filter = Predicates.acceptAll();
+
+            try (CloseableIterator<WorkspaceInfo> list =
+                    catalog.list(WorkspaceInfo.class, filter, null, 4000, null)) {
+                List<Tuple> workspaces =
+                        Lists.newArrayList(
+                                Iterators.transform(
+                                        list, input -> new Tuple(input.getId(), input.getName())));
+                Collections.sort(workspaces);
+                return workspaces;
+            }
+        }
+    }
+
+    private class ResourcesTestModel extends LoadableDetachableModel<List<Tuple>> {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        protected List<Tuple> load() {
+            Catalog catalog = getCatalog();
+            Tuple storeInfo = store.getModelObject();
+            if (storeInfo == null) {
+                return Lists.newArrayList();
+            }
+            Integer limit = 100;
+            Filter filter = Predicates.equal("store.id", storeInfo.id);
+
+            try (CloseableIterator<ResourceInfo> iter =
+                    catalog.list(ResourceInfo.class, filter, null, limit, null)) {
+                List<Tuple> resources =
+                        Lists.newArrayList(
+                                Iterators.transform(
+                                        iter, input -> new Tuple(input.getId(), input.getName())));
+                Collections.sort(resources);
+                return resources;
+            }
+        }
+    }
+
+    private class StoresTestModel extends LoadableDetachableModel<List<Tuple>> {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        protected List<Tuple> load() {
+            Catalog catalog = GeoServerApplication.get().getCatalog();
+            Tuple ws = workspace.getModelObject();
+            if (ws == null) {
+                return Lists.newArrayList();
+            }
+            Filter filter = Predicates.equal("workspace.id", ws.id);
+            int limit = 100;
+
+            try (CloseableIterator<StoreInfo> iter =
+                    catalog.list(StoreInfo.class, filter, null, limit, null); ) {
+                List<Tuple> stores =
+                        Lists.newArrayList(
+                                Iterators.transform(
+                                        iter, input -> new Tuple(input.getId(), input.getName())));
+                Collections.sort(stores);
+                return stores;
+            }
+        }
     }
 }

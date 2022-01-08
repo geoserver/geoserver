@@ -5,6 +5,9 @@
  */
 package org.geoserver.wms.web.data;
 
+import static org.apache.commons.io.FilenameUtils.getBaseName;
+import static org.apache.commons.io.FilenameUtils.getExtension;
+
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,7 +22,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -35,6 +37,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.io.IOUtils;
 import org.apache.wicket.util.string.Strings;
+import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.RangeValidator;
@@ -94,154 +97,11 @@ public class ExternalGraphicPanel extends Panel {
 
         IModel<String> bind = styleModel.bind("legend.onlineResource");
         onlineResource = new TextField<>("onlineResource", bind);
-        onlineResource.add(
-                (IValidator<String>)
-                        input -> {
-                            String value = input.getValue();
-                            int last = value == null ? -1 : value.lastIndexOf('.');
-                            if (last == -1
-                                    || !Arrays.asList(EXTENSIONS)
-                                            .contains(value.substring(last + 1).toLowerCase())) {
-                                ValidationError error = new ValidationError();
-                                error.setMessage("Not an image");
-                                error.addKey("nonImage");
-                                input.error(error);
-                                return;
-                            }
-                            URI uri = null;
-                            try {
-                                uri = new URI(value);
-                            } catch (URISyntaxException e1) {
-                                // Unable to check if absolute
-                            }
-                            if (uri != null && uri.isAbsolute() && isUrl(value)) {
-                                try {
-                                    URL url = uri.toURL();
-                                    URLConnection conn = url.openConnection();
-                                    if ("text/html".equals(conn.getContentType())) {
-                                        ValidationError error = new ValidationError();
-                                        error.setMessage("Unable to access image");
-                                        error.addKey("imageUnavailable");
-                                        input.error(error);
-                                        return; // error message back!
-                                    }
-                                } catch (IOException e) {
-                                    ValidationError error = new ValidationError();
-                                    error.setMessage("Unable to access image");
-                                    error.addKey("imageUnavailable");
-                                    input.error(error);
-                                }
-                                return; // no further checks possible
-                            } else {
-                                try {
-
-                                    WorkspaceInfo wsInfo = styleModel.getObject().getWorkspace();
-                                    getIconFromStyleDirectory(wsInfo, value);
-                                } catch (Exception e) {
-                                    ValidationError error = new ValidationError();
-                                    error.setMessage(
-                                            "File not found in styles directory or given path is invalid");
-                                    error.addKey("imageNotFound");
-                                    input.error(error);
-                                }
-                            }
-                        });
+        onlineResource.add(new OnlineResourceValidator(styleModel));
         onlineResource.setOutputMarkupId(true);
         table.add(onlineResource);
 
-        GeoServerAjaxFormLink chooseImage =
-                new GeoServerAjaxFormLink("chooseImage", styleForm) {
-
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form<?> form) {
-                        stylePage
-                                .getDialog()
-                                .setTitle(new ParamResourceModel("chooseImage", stylePage));
-                        stylePage.getDialog().setInitialWidth(385);
-                        stylePage.getDialog().setInitialHeight(175);
-
-                        stylePage
-                                .getDialog()
-                                .showOkCancel(
-                                        target,
-                                        new GeoServerDialog.DialogDelegate() {
-
-                                            private ChooseImagePanel imagePanel;
-
-                                            @Override
-                                            protected Component getContents(String id) {
-                                                return imagePanel =
-                                                        new ChooseImagePanel(
-                                                                id,
-                                                                styleModel
-                                                                        .getObject()
-                                                                        .getWorkspace(),
-                                                                EXTENSIONS);
-                                            }
-
-                                            @Override
-                                            protected boolean onSubmit(
-                                                    AjaxRequestTarget target, Component contents) {
-                                                String imageFileName = imagePanel.getChoice();
-                                                if (Strings.isEmpty(imageFileName)) {
-                                                    FileUpload fu = imagePanel.getFileUpload();
-                                                    imageFileName = fu.getClientFileName();
-                                                    int teller = 0;
-                                                    GeoServerDataDirectory dd =
-                                                            GeoServerApplication.get()
-                                                                    .getBeanOfType(
-                                                                            GeoServerDataDirectory
-                                                                                    .class);
-                                                    Resource res =
-                                                            dd.getStyles(
-                                                                    styleModel
-                                                                            .getObject()
-                                                                            .getWorkspace(),
-                                                                    imageFileName);
-                                                    while (Resources.exists(res)) {
-                                                        imageFileName =
-                                                                FilenameUtils.getBaseName(
-                                                                                fu
-                                                                                        .getClientFileName())
-                                                                        + "."
-                                                                        + (++teller)
-                                                                        + "."
-                                                                        + FilenameUtils
-                                                                                .getExtension(
-                                                                                        fu
-                                                                                                .getClientFileName());
-                                                        res =
-                                                                dd.getStyles(
-                                                                        styleModel
-                                                                                .getObject()
-                                                                                .getWorkspace(),
-                                                                        imageFileName);
-                                                    }
-                                                    try (InputStream is = fu.getInputStream()) {
-                                                        try (OutputStream os = res.out()) {
-                                                            IOUtils.copy(is, os);
-                                                        }
-                                                    } catch (IOException e) {
-                                                        error(e.getMessage());
-                                                        target.add(imagePanel.getFeedback());
-                                                        return false;
-                                                    }
-                                                }
-
-                                                onlineResource.setModelObject(imageFileName);
-                                                target.add(onlineResource);
-
-                                                return true;
-                                            }
-
-                                            @Override
-                                            public void onError(
-                                                    AjaxRequestTarget target, Form<?> form) {
-                                                target.add(imagePanel.getFeedback());
-                                            }
-                                        });
-                    }
-                };
+        GeoServerAjaxFormLink chooseImage = new ChooseImageLink(styleForm, stylePage, styleModel);
         table.add(chooseImage);
 
         // add the autofill button
@@ -448,5 +308,149 @@ public class ExternalGraphicPanel extends Panel {
                 throw new Exception("given path is a directory");
         }
         return icon;
+    }
+
+    private class ChooseImageLink extends GeoServerAjaxFormLink {
+
+        private final AbstractStylePage stylePage;
+        private final CompoundPropertyModel<StyleInfo> styleModel;
+
+        public ChooseImageLink(
+                Form<?> styleForm,
+                AbstractStylePage stylePage,
+                CompoundPropertyModel<StyleInfo> styleModel) {
+            super("chooseImage", styleForm);
+            this.stylePage = stylePage;
+            this.styleModel = styleModel;
+        }
+
+        @Override
+        protected void onClick(AjaxRequestTarget target, Form<?> form) {
+            stylePage.getDialog().setTitle(new ParamResourceModel("chooseImage", stylePage));
+            stylePage.getDialog().setInitialWidth(385);
+            stylePage.getDialog().setInitialHeight(175);
+
+            GeoServerDialog.DialogDelegate delegate =
+                    new GeoServerDialog.DialogDelegate() {
+
+                        private ChooseImagePanel imagePanel;
+
+                        @Override
+                        protected Component getContents(String id) {
+                            return imagePanel =
+                                    new ChooseImagePanel(
+                                            id, styleModel.getObject().getWorkspace(), EXTENSIONS);
+                        }
+
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            String imageFileName = imagePanel.getChoice();
+                            if (Strings.isEmpty(imageFileName)) {
+                                FileUpload fu = imagePanel.getFileUpload();
+                                imageFileName = fu.getClientFileName();
+                                int teller = 0;
+                                GeoServerDataDirectory dd =
+                                        GeoServerApplication.get()
+                                                .getBeanOfType(GeoServerDataDirectory.class);
+                                Resource res =
+                                        dd.getStyles(
+                                                styleModel.getObject().getWorkspace(),
+                                                imageFileName);
+                                while (Resources.exists(res)) {
+                                    imageFileName = getImageFileName(fu, teller++);
+                                    res =
+                                            dd.getStyles(
+                                                    styleModel.getObject().getWorkspace(),
+                                                    imageFileName);
+                                }
+                                try (InputStream is = fu.getInputStream()) {
+                                    try (OutputStream os = res.out()) {
+                                        IOUtils.copy(is, os);
+                                    }
+                                } catch (IOException e) {
+                                    error(e.getMessage());
+                                    target.add(imagePanel.getFeedback());
+                                    return false;
+                                }
+                            }
+
+                            onlineResource.setModelObject(imageFileName);
+                            target.add(onlineResource);
+
+                            return true;
+                        }
+
+                        private String getImageFileName(FileUpload fu, int teller) {
+                            String name = fu.getClientFileName();
+                            return getBaseName(name) + "." + teller + "." + getExtension(name);
+                        }
+
+                        @Override
+                        public void onError(AjaxRequestTarget target, Form<?> form) {
+                            target.add(imagePanel.getFeedback());
+                        }
+                    };
+            stylePage.getDialog().showOkCancel(target, delegate);
+        }
+    }
+
+    private class OnlineResourceValidator implements IValidator<String> {
+        private final CompoundPropertyModel<StyleInfo> styleModel;
+
+        public OnlineResourceValidator(CompoundPropertyModel<StyleInfo> styleModel) {
+            this.styleModel = styleModel;
+        }
+
+        @Override
+        public void validate(IValidatable<String> input) {
+
+            String value = input.getValue();
+            int last = value == null ? -1 : value.lastIndexOf('.');
+            if (last == -1
+                    || !Arrays.asList(EXTENSIONS)
+                            .contains(value.substring(last + 1).toLowerCase())) {
+                ValidationError error = new ValidationError();
+                error.setMessage("Not an image");
+                error.addKey("nonImage");
+                input.error(error);
+                return;
+            }
+            URI uri = null;
+            try {
+                uri = new URI(value);
+            } catch (URISyntaxException e1) {
+                // Unable to check if absolute
+            }
+            if (uri != null && uri.isAbsolute() && isUrl(value)) {
+                try {
+                    URL url = uri.toURL();
+                    URLConnection conn = url.openConnection();
+                    if ("text/html".equals(conn.getContentType())) {
+                        ValidationError error = new ValidationError();
+                        error.setMessage("Unable to access image");
+                        error.addKey("imageUnavailable");
+                        input.error(error);
+                        return; // error message back!
+                    }
+                } catch (IOException e) {
+                    ValidationError error = new ValidationError();
+                    error.setMessage("Unable to access image");
+                    error.addKey("imageUnavailable");
+                    input.error(error);
+                }
+                return; // no further checks possible
+            } else {
+                try {
+
+                    WorkspaceInfo wsInfo = styleModel.getObject().getWorkspace();
+                    getIconFromStyleDirectory(wsInfo, value);
+                } catch (Exception e) {
+                    ValidationError error = new ValidationError();
+                    error.setMessage("File not found in styles directory or given path is invalid");
+                    error.addKey("imageNotFound");
+                    input.error(error);
+                }
+            }
+        }
     }
 }

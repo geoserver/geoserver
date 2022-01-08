@@ -1,0 +1,79 @@
+# Java sources
+*.java          text diff=java
+*.kt            text diff=java
+*.groovy        text diff=java
+*.scala         text diff=java
+*.gradle        text diff=java
+*.gradle.kts    text diff=java
+
+# These files are text and should be normalized (Convert crlf => lf)
+*.css           text diff=css
+*.scss          text diff=css
+*.sass          text
+*.df            text
+*.htm           text diff=html
+*.html          text diff=html
+*.js            text
+*.jsp           text
+*.jspf          text
+*.jspx          text
+*.properties    text
+*.tld           text
+*.tag           text
+*.tagx          text
+*.xml           text
+*.xsd           text
+*.sld           text
+*.csv           text
+*.jjt           text
+*.prj           text
+*.apt           text
+*.md            text
+*.pgw           text
+*.jgw           text
+*.txt           text
+*.rst           text
+*.ftl           text
+
+# These files are binary and should be left untouched
+# (binary is a macro for -text -diff)
+*.class         binary
+*.dll           binary
+*.ear           binary
+*.jar           binary
+*.so            binary
+*.war           binary
+*.jks           binary
+*.shp           binary
+*.shx           binary
+*.dbf           binary
+*.qix           binary
+*.fix           binary
+*.tiff          binary
+*.tif           binary
+*.jpg           binary
+*.jpeg          binary
+*.png           binary
+*.zip           binary
+*.pdf           binary
+*.db            binary
+*.ecw           binary
+*.fgb           binary
+*.gif           binary
+*.gpkg          binary
+*.grb2          binary
+*.grib2         binary
+*.gz            binary
+*.img           binary
+*.jgrass        binary
+*.jp2           binary
+*.mbtiles       binary
+*.msk           binary
+*.ovr           binary
+*.pbf           binary
+*.pdf           binary
+*.sid           binary
+*.tpk           binary
+*.ttf           binary
+*.wkb           binary
+

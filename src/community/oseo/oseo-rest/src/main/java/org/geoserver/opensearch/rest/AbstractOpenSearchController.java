@@ -469,7 +469,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
         String[] split = sourceName.split(":");
         switch (split.length) {
             case 1:
-                if ("the_geom".equals(sourceName)) {
+                if (GeoJSONReader.GEOMETRY_NAME.equals(sourceName)) {
                     return new NameImpl(defaultNamespace, "footprint");
                 } else {
                     return new NameImpl(defaultNamespace, sourceName);

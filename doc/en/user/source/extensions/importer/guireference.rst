@@ -1,4 +1,4 @@
-﻿.. _extensions_importer_guireference:
+.. _extensions_importer_guireference:
 
 Importer interface reference 
 ============================

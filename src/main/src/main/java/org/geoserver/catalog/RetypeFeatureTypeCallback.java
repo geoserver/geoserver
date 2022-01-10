@@ -4,6 +4,7 @@
  */
 package org.geoserver.catalog;
 
+import java.io.IOException;
 import org.geotools.data.FeatureSource;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
@@ -26,8 +27,8 @@ public interface RetypeFeatureTypeCallback {
      * @param featureType non NULL GeoTools data source feature type
      * @return retyped feature type or the unchanged provided feature type
      */
-    default FeatureType retypeFeatureType(
-            FeatureTypeInfo featureTypeInfo, FeatureType featureType) {
+    default FeatureType retypeFeatureType(FeatureTypeInfo featureTypeInfo, FeatureType featureType)
+            throws IOException {
         return featureType;
     }
 
@@ -41,7 +42,7 @@ public interface RetypeFeatureTypeCallback {
      * @return wrapped feature source or the unchanged provided feature source
      */
     default <T extends FeatureType, U extends Feature> FeatureSource<T, U> wrapFeatureSource(
-            FeatureTypeInfo featureTypeInfo, FeatureSource<T, U> featureSource) {
+            FeatureTypeInfo featureTypeInfo, FeatureSource<T, U> featureSource) throws IOException {
         return featureSource;
     }
 }

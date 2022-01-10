@@ -474,7 +474,11 @@ left: auto;
 right: 0;
 }
 
-
+textarea.cql {
+  height : 1.2em;
+  width : 95%;
+  padding: 3px 3px;
+}
 
 textarea.small {
 height: 3em;
@@ -1301,6 +1305,11 @@ padding: 2px 0px 2px 20px;
 
 .edit-link {
 background: transparent url(../img/icons/silk/pencil.png) scroll no-repeat left center;
+padding: 2px 0px 2px 20px;
+}
+
+.reset-link {
+background: transparent url(../img/icons/silk/bin.png) scroll no-repeat left center;
 padding: 2px 0px 2px 20px;
 }
 

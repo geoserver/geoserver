@@ -7,19 +7,19 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-    <bean id="geopkgGetMapOutputFormat" class="org.geoserver.geopkg.GeoPackageGetMapOutputFormat">
+    <bean id="geopkgGetMapOutputFormatWPS" class="org.geoserver.geopkg.GeoPackageGetMapOutputFormatWPS">
       <constructor-arg ref="webMapService" />
       <constructor-arg ref="wms" />
       <constructor-arg ref="gwcFacade" />
     </bean>
-    
-    <bean id="geopkgGetFeatureOutputFormat" class="org.geoserver.geopkg.GeoPackageGetFeatureOutputFormat">
-      <constructor-arg ref="geoServer" />
-    </bean>
+
+<!--    <bean id="geopkgGetFeatureOutputFormat" class="org.geoserver.geopkg.GeoPackageGetFeatureOutputFormat">-->
+<!--      <constructor-arg ref="geoServer" />-->
+<!--    </bean>-->
     
     <bean id="geopkgProcess" class="org.geoserver.geopkg.wps.GeoPackageProcess">
 	  <constructor-arg index="0" ref="geoServer"/>
-      <constructor-arg index="1" ref="geopkgGetMapOutputFormat" />
+      <constructor-arg index="1" ref="geopkgGetMapOutputFormatWPS" />
       <constructor-arg index="2" ref="wpsResourceManager"/>
       <constructor-arg index="3" ref="filterFactory"/>
       <constructor-arg index="4" ref="dataDirectory"/>

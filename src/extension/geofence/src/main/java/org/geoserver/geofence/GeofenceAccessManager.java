@@ -230,7 +230,9 @@ public class GeofenceAccessManager
 
                 return InetAddress.getByName(ips[0]).getHostAddress();
             } else {
-                return http.getRemoteAddr();
+                // Returns an IP address, removes surrounding brackets present in case of IPV6
+                // addresses
+                return http.getRemoteAddr().replaceAll("[\\[\\]]", "");
             }
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Failed to get remote address", e);

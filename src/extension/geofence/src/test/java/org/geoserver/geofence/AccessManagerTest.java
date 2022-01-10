@@ -33,6 +33,7 @@ import org.locationtech.jts.io.WKTReader;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.spatial.Intersects;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.Authentication;
 
 public class AccessManagerTest extends GeofenceBaseTest {
@@ -314,6 +315,15 @@ public class AccessManagerTest extends GeofenceBaseTest {
                                 "MULTIPOLYGON (((5343335.558077131 8859142.800565697, 5343335.558077131 9100250.907059547, 5454655.048870404 9100250.907059547, 5454655.048870404 8859142.800565697, 5343335.558077131 8859142.800565697)))");
 
         assertTrue(expectedLimit.equalsExact(accessLimits.getRasterFilter(), .000000001));
+    }
+
+    @Test
+    public void testIPv6Address() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRemoteAddr("[0:0:0:0:0:0:0:1]");
+        String sourceAddress = accessManager.getSourceAddress(request);
+        // assert that address does not contain any brackets
+        assertFalse(sourceAddress.matches("\\[(.*)\\]"));
     }
 
     static class IntersectExtractor extends DefaultFilterVisitor {

@@ -3,9 +3,9 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geopkg;
+package org.geoserver.wfs.geopackage;
 
-import static org.geoserver.geopkg.GeoPkg.*;
+import static org.geoserver.geopackage.GeoPkg.*;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -19,6 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.geopackage.GeoPkg;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wfs.WFSGetFeatureOutputFormat;

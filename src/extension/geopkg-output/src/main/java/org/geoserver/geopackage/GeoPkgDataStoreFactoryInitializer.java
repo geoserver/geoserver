@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geopkg;
+package org.geoserver.geopackage;
 
 import org.geoserver.data.DataStoreFactoryInitializer;
 import org.geoserver.platform.GeoServerResourceLoader;

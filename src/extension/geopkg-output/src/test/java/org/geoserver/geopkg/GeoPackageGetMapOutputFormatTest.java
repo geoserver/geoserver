@@ -29,6 +29,7 @@ import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMap;
+import org.geoserver.wms.geopackage.GeoPackageGetMapOutputFormat;
 import org.geoserver.wms.map.RawMap;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geopkg.GeoPackage;

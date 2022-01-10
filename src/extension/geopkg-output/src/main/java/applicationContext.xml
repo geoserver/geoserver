@@ -7,17 +7,17 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-    <bean id="geopkgGetMapOutputFormat" class="org.geoserver.geopkg.GeoPackageGetMapOutputFormat">
+    <bean id="geopkgGetMapOutputFormat" class="org.geoserver.wms.geopackage.GeoPackageGetMapOutputFormat">
       <constructor-arg ref="webMapService" />
       <constructor-arg ref="wms" />
       <constructor-arg ref="gwcFacade" />
     </bean>
     
-    <bean id="geopkgGetFeatureOutputFormat" class="org.geoserver.geopkg.GeoPackageGetFeatureOutputFormat">
+    <bean id="geopkgGetFeatureOutputFormat" class="org.geoserver.wfs.geopackage.GeoPackageGetFeatureOutputFormat">
       <constructor-arg ref="geoServer" />
     </bean>
      
-    <bean id="geopkgDataStoreFactoryInitializer" class="org.geoserver.geopkg.GeoPkgDataStoreFactoryInitializer">
+    <bean id="geopkgDataStoreFactoryInitializer" class="org.geoserver.geopackage.GeoPkgDataStoreFactoryInitializer">
         <property name="resourceLoader" ref="resourceLoader"/>
     </bean>
 </beans>

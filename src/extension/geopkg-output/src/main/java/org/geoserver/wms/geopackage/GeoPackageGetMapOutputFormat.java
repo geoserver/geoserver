@@ -3,11 +3,11 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geopkg;
+package org.geoserver.wms.geopackage;
 
-import static org.geoserver.geopkg.GeoPkg.EXTENSION;
-import static org.geoserver.geopkg.GeoPkg.MIME_TYPE;
-import static org.geoserver.geopkg.GeoPkg.NAMES;
+import static org.geoserver.geopackage.GeoPkg.EXTENSION;
+import static org.geoserver.geopackage.GeoPkg.MIME_TYPE;
+import static org.geoserver.geopackage.GeoPkg.NAMES;
 
 import com.google.common.collect.Sets;
 import java.io.File;

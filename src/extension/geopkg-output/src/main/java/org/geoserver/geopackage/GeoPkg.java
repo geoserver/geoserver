@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.geopkg;
+package org.geoserver.geopackage;
 
 import com.google.common.collect.Lists;
 import java.io.File;

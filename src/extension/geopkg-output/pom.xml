@@ -24,16 +24,16 @@
       <artifactId>gs-main</artifactId>
       <version>${project.version}</version>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.geoserver</groupId>-->
-<!--      <artifactId>gs-ows</artifactId>-->
-<!--      <version>${project.version}</version>-->
-<!--    </dependency>-->
-<!--    <dependency>-->
-<!--      <groupId>org.geoserver</groupId>-->
-<!--      <artifactId>gs-gwc</artifactId>-->
-<!--      <version>${project.version}</version>-->
-<!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.geoserver</groupId>-->
+    <!--      <artifactId>gs-ows</artifactId>-->
+    <!--      <version>${project.version}</version>-->
+    <!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.geoserver</groupId>-->
+    <!--      <artifactId>gs-gwc</artifactId>-->
+    <!--      <version>${project.version}</version>-->
+    <!--    </dependency>-->
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms</artifactId>
@@ -55,11 +55,11 @@
       <artifactId>gt-geopkg</artifactId>
       <version>${gt.version}</version>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.geotools</groupId>-->
-<!--      <artifactId>gt-render</artifactId>-->
-<!--      <version>${gt.version}</version>-->
-<!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.geotools</groupId>-->
+    <!--      <artifactId>gt-render</artifactId>-->
+    <!--      <version>${gt.version}</version>-->
+    <!--    </dependency>-->
 
     <!--    <dependency>-->
     <!--      <groupId>ch.hsr</groupId>-->
@@ -87,12 +87,12 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.geotools</groupId>-->
-<!--      <artifactId>gt-sample-data</artifactId>-->
-<!--      <version>${gt.version}</version>-->
-<!--      <scope>test</scope>-->
-<!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.geotools</groupId>-->
+    <!--      <artifactId>gt-sample-data</artifactId>-->
+    <!--      <version>${gt.version}</version>-->
+    <!--      <scope>test</scope>-->
+    <!--    </dependency>-->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
@@ -108,10 +108,10 @@
       <artifactId>xmlunit</artifactId>
       <scope>test</scope>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.geowebcache</groupId>-->
-<!--      <artifactId>gwc-core</artifactId>-->
-<!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.geowebcache</groupId>-->
+    <!--      <artifactId>gwc-core</artifactId>-->
+    <!--    </dependency>-->
     <!--    <dependency>-->
     <!--      <groupId>org.geoserver.extension</groupId>-->
     <!--      <artifactId>gs-wps-core</artifactId>-->
@@ -132,11 +132,11 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.hamcrest</groupId>-->
-<!--      <artifactId>hamcrest-library</artifactId>-->
-<!--      <scope>test</scope>-->
-<!--    </dependency>-->
+    <!--    <dependency>-->
+    <!--      <groupId>org.hamcrest</groupId>-->
+    <!--      <artifactId>hamcrest-library</artifactId>-->
+    <!--      <scope>test</scope>-->
+    <!--    </dependency>-->
   </dependencies>
   <build>
     <testResources>

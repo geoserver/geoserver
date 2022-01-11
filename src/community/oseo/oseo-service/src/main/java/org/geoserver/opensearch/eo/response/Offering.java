@@ -6,13 +6,13 @@ package org.geoserver.opensearch.eo.response;
 
 import java.util.List;
 
-/** This class is used for passing custom object to freemarker template. */
+/** This class is used for passing custom Offering object to freemarker templates. */
 public class Offering {
 
     String offeringCode;
-    List<String> offeringDetailList;
+    List<OfferingDetail> offeringDetailList;
 
-    public Offering(String offeringCode, List<String> offeringDetailList) {
+    public Offering(String offeringCode, List<OfferingDetail> offeringDetailList) {
         this.offeringCode = offeringCode;
         this.offeringDetailList = offeringDetailList;
     }
@@ -21,7 +21,7 @@ public class Offering {
         return offeringCode;
     }
 
-    public List<String> getOfferingDetailList() {
+    public List<OfferingDetail> getOfferingDetailList() {
         return offeringDetailList;
     }
 }

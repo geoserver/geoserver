@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.opensearch.eo.FreemarkerTemplateSupport;
-import org.geoserver.opensearch.eo.MetadataRequest;
 import org.geoserver.opensearch.eo.OSEOInfo;
 import org.geoserver.opensearch.eo.OpenSearchParameters;
 import org.geoserver.opensearch.eo.ProductClass;
@@ -57,9 +56,9 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.Encoder;
-import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
+import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.type.FeatureType;
@@ -68,7 +67,6 @@ import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.TransformException;
-import org.springframework.http.MediaType;
 
 /**
  * Loads, caches and processes Freemarker templates against a stream of features. It's meant to be
@@ -77,11 +75,10 @@ import org.springframework.http.MediaType;
 public class TemplatesProcessor {
 
     private static final Logger LOGGER = Logging.getLogger(TemplatesProcessor.class);
-    static final String BASE_URL_KEY = "${BASE_URL}";
+    private static final String BASE_URL_KEY = "${BASE_URL}";
 
     private FreemarkerTemplateSupport support;
     private Map<String, Template> templateCache = new HashMap<>();
-    private boolean isHeaderWritten = false;
     private GeoServerInfo gs;
     private OSEOInfo info;
 
@@ -105,7 +102,6 @@ public class TemplatesProcessor {
     public String processTemplate(String collection, String templateName, Feature feature)
             throws IOException {
         Template template = getTemplate(collection, templateName);
-
         StringWriter sw = new StringWriter();
         HashMap<String, Object> model = setupModel(feature);
         try {
@@ -118,17 +114,16 @@ public class TemplatesProcessor {
 
     public String processTemplate(SearchResults searchResults)
             throws IOException, TemplateException {
+        HashMap<String, Object> model = setupGenericHeaderModel(searchResults);
         StringWriter sw = new StringWriter();
-        Template footer;
-        Template header = null;
-        HashMap<String, Object> model = null;
+        Template header = getTemplate("", "generic" + "-header");
+        header.process(model, sw);
         FeatureCollection results = searchResults.getResults();
 
         try (FeatureIterator<Feature> featureIterator = results.features()) {
             while (featureIterator.hasNext()) {
                 String templateName = "";
                 String collectionName = "";
-                String identifier = "";
 
                 Feature feature = featureIterator.next();
                 FeatureType schema = results.getSchema();
@@ -147,56 +142,20 @@ public class TemplatesProcessor {
                                             feature,
                                             ProductClass.GENERIC.getNamespace(),
                                             "parentIdentifier");
-                    identifier =
-                            (String)
-                                    value(
-                                            feature,
-                                            ProductClass.GENERIC.getNamespace(),
-                                            "identifier");
                 } else if (templateName.equals("collection")) {
                     collectionName = (String) value(feature, EO_NAMESPACE, "identifier");
-                    identifier = collectionName;
                 }
 
                 Template template = getTemplate(collectionName, templateName);
-                Template contentStart = getTemplate("", "generic" + "-content-start");
-                Template contentEnd = getTemplate(collectionName, templateName + "-content-end");
-
-                if (!isHeaderWritten) {
-                    header = getTemplate(collectionName, "generic" + "-header");
-                    model = setupHeaderModel(feature, searchResults);
-                    header.process(model, sw);
-                    isHeaderWritten = true;
-                }
-
-                model = setupContentModel(feature, searchResults, templateName, identifier);
-                contentStart.process(model, sw);
+                model = setupContentModel(feature, searchResults, templateName);
                 template.process(model, sw);
-                contentEnd.process(model, sw);
             }
         }
 
-        if (header == null) {
-            Template noFeatureHeader = getTemplate("", "generic" + "-header");
-            model = setupHeaderModel(searchResults);
-            noFeatureHeader.process(model, sw);
-        }
-
-        footer = getTemplate("", "generic" + "-footer");
+        Template footer = getTemplate("", "generic" + "-footer");
         footer.process(model, sw);
 
         return sw.toString();
-    }
-
-    private Template getTemplate(String collection, String templateName) throws IOException {
-        String key = templateName;
-        if (collection != null) key = collection + "/" + templateName;
-        Template t = templateCache.get(key);
-        if (t == null) {
-            t = support.getTemplate(collection, templateName, TemplatesProcessor.class);
-            templateCache.put(key, t);
-        }
-        return t;
     }
 
     protected HashMap<String, Object> setupModel(Feature feature) {
@@ -211,62 +170,39 @@ public class TemplatesProcessor {
         return model;
     }
 
+    protected HashMap<String, Object> setupGenericHeaderModel(SearchResults searchResults) {
+        HashMap<String, Object> model = new HashMap<>();
+        prepareGenericHeaderModel(searchResults, model);
+        model.put("searchResults", searchResults);
+
+        if (Dispatcher.REQUEST.get() != null) {
+            final String baseURL = ResponseUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest());
+            model.put("baseURL", baseURL);
+            addUtilityFunctions(baseURL, model);
+        }
+
+        return model;
+    }
+
     protected HashMap<String, Object> setupContentModel(
-            Feature feature, SearchResults searchResults, String templateName, String identifier) {
+            Feature feature, SearchResults searchResults, String templateName) {
         HashMap<String, Object> model = new HashMap<>();
         SearchRequest request = searchResults.getRequest();
 
-        String identifierLink = "";
-        if (templateName.equals("product")) {
-            identifierLink = buildProductIdentifierLink(identifier, request);
-        } else if (templateName.equals("collection")) {
-            identifierLink = buildCollectionIdentifierLink(identifier, request);
-        }
-
-        model.put("id", identifierLink.replaceAll("&", "&amp;"));
-        model.put("title", identifier);
         putDatesToContentModel(feature, model);
 
         Geometry footprint = (Geometry) value(feature, "footprint");
         if (footprint != null) {
             // geometry is already in lat/lon order here
-            Envelope envelope = footprint.getEnvelopeInternal();
-            model.put("georssGeom", encodeGmlRssGeometry(footprint));
-            model.put(
-                    "georssBox",
-                    envelope.getMinX()
-                            + " "
-                            + envelope.getMinY()
-                            + " "
-                            + envelope.getMaxX()
-                            + " "
-                            + envelope.getMaxY());
+            GeometryAttribute defaultGeometryProperty = feature.getDefaultGeometryProperty();
+            // reprojected the coordinates of the geometry
+            defaultGeometryProperty.setValue(footprint);
+            feature.setDefaultGeometryProperty(defaultGeometryProperty);
         }
 
         if (templateName.equals("product")) {
-            fillProductContentModel(feature, identifier, model, request, identifierLink);
+            encodeOgcLinksFromFeature(feature, request, model);
         } else if (templateName.equals("collection")) {
-            String metadataLink =
-                    buildMetadataLink(null, identifier, MetadataRequest.ISO_METADATA, request);
-            String osddLink = buildOsddLink(identifier, request);
-
-            model.put(
-                    "identifierLink",
-                    encodeLink("self", identifierLink, AtomSearchResponse.MIME, "self"));
-            model.put(
-                    "metadataLink",
-                    encodeLink(
-                            "alternate",
-                            metadataLink,
-                            MetadataRequest.ISO_METADATA,
-                            "ISO metadata"));
-            model.put(
-                    "osddLink",
-                    encodeLink(
-                            "search",
-                            osddLink,
-                            DescriptionResponse.OS_DESCRIPTION_MIME,
-                            "Collection OSDD"));
             encodeOgcLinksFromFeature(feature, request, model);
         }
 
@@ -280,37 +216,20 @@ public class TemplatesProcessor {
         return model;
     }
 
-    private void fillProductContentModel(
-            Feature feature,
-            String identifier,
-            HashMap<String, Object> model,
-            SearchRequest request,
-            String identifierLink) {
-        String metadataLink =
-                buildMetadataLink(
-                        request.getParentIdentifier(),
-                        identifier,
-                        MetadataRequest.OM_METADATA,
-                        request);
-
-        model.put(
-                "identifierLink",
-                encodeLink("self", identifierLink, AtomSearchResponse.MIME, "self"));
-        model.put(
-                "metadataLink",
-                encodeLink("alternate", metadataLink, MetadataRequest.OM_METADATA, "OM metadata"));
-
-        String quicklookLink = buildQuicklookLink(identifier, request);
-
-        // and a quicklook as a link and as media
-        if (quicklookLink != null) {
-            model.put(
-                    "quicklookLink", encodeLink("icon", quicklookLink, "image/jpeg", "Quicklook"));
-            model.put("mediaContent", encodeMedia("image", "image/jpeg", quicklookLink));
+    private void prepareGenericHeaderModel(
+            SearchResults searchResults, HashMap<String, Object> model) {
+        model.put("Query", getQueryAttributes(searchResults.getRequest()));
+        String organization = gs.getSettings().getContact().getContactOrganization();
+        if (organization != null) {
+            model.put("organization", organization);
         }
-
-        encodeOgcLinksFromFeature(feature, request, model);
-        encodeDownloadLink(feature, request, model);
+        String title = info.getTitle();
+        if (title != null) {
+            model.put("title", title);
+        }
+        model.put("updated", DateTimeFormatter.ISO_INSTANT.format(Instant.now()));
+        model.put(
+                "builder", new PaginationLinkBuilder(searchResults, info, AtomSearchResponse.MIME));
     }
 
     private void putDatesToContentModel(Feature feature, HashMap<String, Object> model) {
@@ -332,55 +251,6 @@ public class TemplatesProcessor {
             }
             model.put("dcDate", spec);
         }
-    }
-
-    protected HashMap<String, Object> setupHeaderModel(
-            Feature feature, SearchResults searchResults) {
-        HashMap<String, Object> model = new HashMap<>();
-        putHeaderContentToModel(searchResults, model);
-
-        model.put("model", feature);
-        if (Dispatcher.REQUEST.get() != null) {
-            final String baseURL = ResponseUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest());
-            model.put("baseURL", baseURL);
-            addUtilityFunctions(baseURL, model);
-        }
-
-        return model;
-    }
-
-    protected HashMap<String, Object> setupHeaderModel(SearchResults searchResults) {
-        HashMap<String, Object> model = new HashMap<>();
-        putHeaderContentToModel(searchResults, model);
-
-        if (Dispatcher.REQUEST.get() != null) {
-            final String baseURL = ResponseUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest());
-            model.put("baseURL", baseURL);
-            addUtilityFunctions(baseURL, model);
-        }
-
-        return model;
-    }
-
-    private void putHeaderContentToModel(
-            SearchResults searchResults, HashMap<String, Object> model) {
-        Integer startIndex = getQueryStartIndex(searchResults) + 1;
-        model.put("startIndex", startIndex);
-        model.put("itemsPerPage", "" + searchResults.getRequest().getQuery().getMaxFeatures());
-        model.put("Query", getQueryAttributes(searchResults.getRequest()));
-        String organization = gs.getSettings().getContact().getContactOrganization();
-        if (organization != null) {
-            model.put("organization", organization);
-        }
-        String title = info.getTitle();
-        if (title != null) {
-            model.put("title", title);
-        }
-        String updated = DateTimeFormatter.ISO_INSTANT.format(Instant.now());
-        model.put("updated", updated);
-        model.put("totalResults", searchResults.getTotalResults());
-        buildPaginationLinks(searchResults, model);
-        buildSearchLink(searchResults.getRequest(), model);
     }
 
     /**
@@ -536,7 +406,7 @@ public class TemplatesProcessor {
         } else {
             Object value = property.getValue();
             if (value instanceof Geometry) {
-                // cheap reprojection support since there is no reprojecting collection
+                // cheap re-projection support since there is no re-projecting collection
                 // wrapper for complex features
                 CoordinateReferenceSystem nativeCRS =
                         ((GeometryDescriptor) property.getDescriptor())
@@ -560,15 +430,7 @@ public class TemplatesProcessor {
         }
     }
 
-    private int getQueryStartIndex(SearchResults results) {
-        Integer startIndex = results.getRequest().getQuery().getStartIndex();
-        if (startIndex == null) {
-            startIndex = 0;
-        }
-        return startIndex;
-    }
-
-    public String getQueryAttributes(SearchRequest request) {
+    public Map<String, String> getQueryAttributes(SearchRequest request) {
         // turn each request parameter into an attribute for os:Query
         Map<String, String> parameters = new LinkedHashMap<>();
         for (Map.Entry<Parameter, String> entry : request.getSearchParameters().entrySet()) {
@@ -591,153 +453,7 @@ public class TemplatesProcessor {
         }
         parameters.put("role", "request");
 
-        String result = "";
-        for (Map.Entry<String, String> entry : parameters.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            result += key + "=\"" + value + "\" ";
-        }
-        return result;
-    }
-
-    private void buildPaginationLinks(SearchResults results, HashMap<String, Object> model) {
-        PaginationLinkBuilder builder =
-                new PaginationLinkBuilder(results, info, AtomSearchResponse.MIME);
-
-        model.put("self", encodeLink("self", builder.getSelf(), AtomSearchResponse.MIME));
-        model.put("first", encodeLink("first", builder.getFirst(), AtomSearchResponse.MIME));
-        if (builder.getPrevious() != null)
-            model.put(
-                    "previous",
-                    encodeLink("previous", builder.getPrevious(), AtomSearchResponse.MIME));
-        if (builder.getNext() != null)
-            model.put("next", encodeLink("next", builder.getNext(), AtomSearchResponse.MIME));
-        model.put("last", encodeLink("last", builder.getLast(), AtomSearchResponse.MIME));
-    }
-
-    private void buildSearchLink(SearchRequest request, HashMap<String, Object> model) {
-        Map<String, String> kvp = null;
-        if (request.getParentIdentifier() != null) {
-            kvp = Collections.singletonMap("parentId", request.getParentIdentifier());
-        }
-        String href =
-                ResponseUtils.buildURL(
-                        request.getBaseUrl(),
-                        "oseo/search/description",
-                        kvp,
-                        URLMangler.URLType.SERVICE);
-        model.put("search", encodeLink("search", href, DescriptionResponse.OS_DESCRIPTION_MIME));
-    }
-
-    private String buildCollectionIdentifierLink(Object identifier, SearchRequest request) {
-        String baseURL = request.getBaseUrl();
-        Map<String, String> kvp = new LinkedHashMap<>();
-        kvp.put("uid", String.valueOf(identifier));
-        kvp.put("httpAccept", AtomSearchResponse.MIME);
-        return ResponseUtils.buildURL(baseURL, "oseo/search", kvp, URLMangler.URLType.SERVICE);
-    }
-
-    private String buildProductIdentifierLink(Object identifier, SearchRequest request) {
-        String baseURL = request.getBaseUrl();
-        Map<String, String> kvp = new LinkedHashMap<>();
-        kvp.put("parentId", request.getParentIdentifier());
-        kvp.put("uid", String.valueOf(identifier));
-        kvp.put("httpAccept", AtomSearchResponse.MIME);
-        return ResponseUtils.buildURL(baseURL, "oseo/search", kvp, URLMangler.URLType.SERVICE);
-    }
-
-    private String buildQuicklookLink(String identifier, SearchRequest request) {
-        String baseURL = request.getBaseUrl();
-        Map<String, String> kvp = new LinkedHashMap<>();
-        kvp.put("parentId", request.getParentIdentifier());
-        kvp.put("uid", String.valueOf(identifier));
-        return ResponseUtils.buildURL(baseURL, "oseo/quicklook", kvp, URLMangler.URLType.SERVICE);
-    }
-
-    private String buildMetadataLink(
-            String parentIdentifier, Object identifier, String mimeType, SearchRequest request) {
-        String baseURL = request.getBaseUrl();
-        Map<String, String> kvp = new LinkedHashMap<>();
-        if (parentIdentifier != null) {
-            kvp.put("parentId", parentIdentifier);
-        }
-        kvp.put("uid", String.valueOf(identifier));
-        if (mimeType != null) {
-            kvp.put("httpAccept", mimeType);
-        }
-        return ResponseUtils.buildURL(baseURL, "oseo/metadata", kvp, URLMangler.URLType.SERVICE);
-    }
-
-    private String buildOsddLink(String parentIdentifier, SearchRequest request) {
-        String baseURL = request.getBaseUrl();
-        Map<String, String> kvp = new LinkedHashMap<>();
-        if (parentIdentifier != null) {
-            kvp.put("parentId", parentIdentifier);
-        }
-        return ResponseUtils.buildURL(baseURL, "oseo/description", kvp, URLMangler.URLType.SERVICE);
-    }
-
-    private String encodeLink(String rel, String builder, String type) {
-        return "href=\""
-                + builder.replaceAll("&", "&amp;")
-                + "\" rel=\""
-                + rel
-                + "\" type=\""
-                + type
-                + "\"";
-    }
-
-    private String encodeLink(String rel, String builder, String type, String title) {
-        return "href=\""
-                + builder.replaceAll("&", "&amp;")
-                + "\" rel=\""
-                + rel
-                + "\" title=\""
-                + title.replaceAll("&", "&amp;")
-                + "\" type=\""
-                + type
-                + "\"";
-    }
-
-    private String encodeMedia(String medium, String type, String url) {
-        return "medium=\""
-                + medium
-                + "\" type=\""
-                + type
-                + "\" url=\""
-                + url.replaceAll("&", "&amp;")
-                + "\"";
-    }
-
-    private String encodeOffering(String code, String href, String method, String type) {
-        return "code=\""
-                + code
-                + "\" href=\""
-                + href.replaceAll("&", "&amp;")
-                + "\" method=\""
-                + method
-                + "\" type=\""
-                + type
-                + "\"";
-    }
-
-    private void encodeDownloadLink(
-            Feature feature, SearchRequest request, HashMap<String, Object> model) {
-        String location = (String) value(feature, null, OpenSearchAccess.ORIGINAL_PACKAGE_LOCATION);
-        if (location != null) {
-            String type = (String) value(feature, null, OpenSearchAccess.ORIGINAL_PACKAGE_TYPE);
-            if (type == null) {
-                type = MediaType.APPLICATION_OCTET_STREAM_VALUE;
-            }
-            String hrefBase = getHRefBase(request);
-            String locationExpanded =
-                    QuickTemplate.replaceVariables(
-                            location, Collections.singletonMap(BASE_URL_KEY, hrefBase));
-
-            model.put(
-                    "downloadLink",
-                    encodeLink("enclosure", locationExpanded, type, "Source package download"));
-        }
+        return parameters;
     }
 
     private void encodeOgcLinksFromFeature(
@@ -776,17 +492,17 @@ public class TemplatesProcessor {
 
         linksByOffering.forEach(
                 (offering, links) -> {
-                    ArrayList<String> offeringDetailList = new ArrayList<>();
+                    ArrayList<OfferingDetail> offeringDetailList = new ArrayList<>();
 
                     for (SimpleFeature link : links) {
                         offeringDetailList.add(encodeOgcLink(link, hrefBase));
                     }
-                    offerings.add(new Offering("code=\"" + offering + "\"", offeringDetailList));
+                    offerings.add(new Offering(offering, offeringDetailList));
                 });
         model.put("offerings", offerings);
     }
 
-    private String encodeOgcLink(SimpleFeature link, String hrefBase) {
+    private OfferingDetail encodeOgcLink(SimpleFeature link, String hrefBase) {
         String method = (String) link.getAttribute("method");
         String code = (String) link.getAttribute("code");
         String type = (String) link.getAttribute("type");
@@ -794,23 +510,17 @@ public class TemplatesProcessor {
         String hrefExpanded =
                 QuickTemplate.replaceVariables(
                         href, Collections.singletonMap(BASE_URL_KEY, hrefBase));
-        return encodeOffering(code, hrefExpanded, method, type);
+        return new OfferingDetail(method, code, type, hrefExpanded);
     }
 
-    private String encodeGmlRssGeometry(Geometry g) {
-        try {
-            Encoder encoder = new Encoder(new GMLConfiguration());
-            encoder.setOmitXMLDeclaration(true);
-            encoder.setIndenting(true);
-            String gml = encoder.encodeAsString(g, GML.Polygon);
-
-            // has extra prefix declarations that we don't want, sanitize
-            gml = gml.replace("xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"", "");
-            gml = gml.replace("xmlns:gml=\"http://www.opengis.net/gml/3.2\"", "");
-
-            return gml;
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot transform the specified geometry in GML", e);
+    private Template getTemplate(String collection, String templateName) throws IOException {
+        String key = templateName;
+        if (collection != null) key = collection + "/" + templateName;
+        Template t = templateCache.get(key);
+        if (t == null) {
+            t = support.getTemplate(collection, templateName, TemplatesProcessor.class);
+            templateCache.put(key, t);
         }
+        return t;
     }
 }

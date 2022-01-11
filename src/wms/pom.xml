@@ -82,10 +82,6 @@
       <artifactId>imageio-ext-png</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-    </dependency>
-    <dependency>
       <groupId>ar.com.hjg</groupId>
       <artifactId>pngj</artifactId>
     </dependency>

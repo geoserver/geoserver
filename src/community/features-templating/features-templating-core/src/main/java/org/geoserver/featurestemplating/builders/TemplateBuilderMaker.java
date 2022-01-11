@@ -12,6 +12,7 @@ import org.geoserver.featurestemplating.builders.flat.FlatDynamicBuilder;
 import org.geoserver.featurestemplating.builders.flat.FlatIteratingBuilder;
 import org.geoserver.featurestemplating.builders.flat.FlatStaticBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
+import org.geoserver.featurestemplating.builders.impl.DynamicIncludeFlatBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicMergeBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.IteratingBuilder;
@@ -44,6 +45,8 @@ public class TemplateBuilderMaker {
     private boolean ownOutput = true;
 
     private boolean topLevelFeature;
+
+    private boolean dynamicIncludeFlatBuilder = false;
 
     private EncodingHints encondingHints;
 
@@ -289,6 +292,17 @@ public class TemplateBuilderMaker {
         return this;
     }
 
+    /**
+     * Set to true if the builder is having a dynamic expression inside includeFlat directive
+     *
+     * @param dynamicIncludeFlatBuilder
+     * @return
+     */
+    public TemplateBuilderMaker dynamicIncludeFlatBuilder(boolean dynamicIncludeFlatBuilder) {
+        this.dynamicIncludeFlatBuilder = dynamicIncludeFlatBuilder;
+        return this;
+    }
+
     /** Reset all the attributes of this TemplateBuilderMaker. */
     public void globalReset() {
         localReset();
@@ -310,6 +324,7 @@ public class TemplateBuilderMaker {
         this.jsonNode = null;
         this.rootBuilder = false;
         this.topLevelFeature = false;
+        this.dynamicIncludeFlatBuilder = false;
         this.baseMergeNode = null;
         this.overlayMergeNode = null;
     }
@@ -390,6 +405,16 @@ public class TemplateBuilderMaker {
         return dynamicMergeBuilder;
     }
 
+    private DynamicIncludeFlatBuilder buildDynamicIncludeFlatBuilder() {
+        DynamicIncludeFlatBuilder dynamicIncludeFlatBuilder;
+        dynamicIncludeFlatBuilder =
+                new DynamicIncludeFlatBuilder(name, jsonNode.textValue(), namespaces);
+        if (filter != null) dynamicIncludeFlatBuilder.setFilter(filter);
+        if (!encondingHints.isEmpty())
+            dynamicIncludeFlatBuilder.getEncodingHints().putAll(encondingHints);
+        return dynamicIncludeFlatBuilder;
+    }
+
     private StaticBuilder buildStaticBuilder() {
         StaticBuilder staticBuilder;
         boolean hasJsonNode = jsonNode != null;
@@ -425,6 +450,8 @@ public class TemplateBuilderMaker {
         } else if (textContent == null && jsonNode == null) {
             if (isCollection) result = buildIteratingBuilder();
             else result = buildCompositeBuilder();
+        } else if (dynamicIncludeFlatBuilder) {
+            result = buildDynamicIncludeFlatBuilder();
         } else {
             if (textContent != null && textContent.contains(TemplateReader.EXPRSTART))
                 result = buildDynamicBuilder();

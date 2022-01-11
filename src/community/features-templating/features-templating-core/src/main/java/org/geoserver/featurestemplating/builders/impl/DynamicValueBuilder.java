@@ -4,15 +4,17 @@
  */
 package org.geoserver.featurestemplating.builders.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
-import org.geoserver.featurestemplating.builders.EncodingHints;
-import org.geoserver.featurestemplating.builders.JSONFieldSupport;
+import org.geoserver.featurestemplating.builders.*;
 import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
+import org.geoserver.featurestemplating.readers.JSONTemplateReader;
+import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geotools.feature.ComplexAttributeImpl;
 import org.geotools.filter.AttributeExpressionImpl;
@@ -214,5 +216,20 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
             }
         }
         return contextObject;
+    }
+
+    void writeFromNestedTree(
+            TemplateBuilderContext context, TemplateOutputWriter writer, JsonNode node)
+            throws IOException {
+        TemplateReaderConfiguration configuration =
+                new TemplateReaderConfiguration(getNamespaces());
+        JSONTemplateReader jsonTemplateReader =
+                new JSONTemplateReader(node, configuration, new ArrayList<>());
+        TemplateBuilderMaker maker = configuration.getBuilderMaker();
+        maker.namespaces(configuration.getNamespaces());
+        writer.startObject(getKey(context), getEncodingHints());
+        jsonTemplateReader.getBuilderFromJson(getKey(context), node, this, maker);
+        for (TemplateBuilder child : getChildren()) child.evaluate(writer, context);
+        writer.endObject(getKey(context), encodingHints);
     }
 }

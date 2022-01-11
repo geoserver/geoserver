@@ -10,6 +10,7 @@ import static org.geoserver.featurestemplating.builders.VendorOptions.JSONLD_TYP
 import static org.geoserver.featurestemplating.builders.VendorOptions.JSON_LD_STRING_ENCODE;
 import static org.geoserver.featurestemplating.builders.VendorOptions.SEPARATOR;
 import static org.geoserver.featurestemplating.readers.JSONMerger.*;
+import static org.geoserver.featurestemplating.readers.RecursiveJSONParser.INCLUDE_FLAT_KEY;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Iterator;
@@ -134,6 +135,12 @@ public class JSONTemplateReader implements TemplateReader {
                     currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
                     maker.name(entryName).jsonNode(valueNode);
                     currentBuilder.addChild(maker.build());
+                } else if (entryName.startsWith(INCLUDE_FLAT_KEY)) {
+                    currentBuilder.addChild(
+                            maker.jsonNode(valueNode)
+                                    .name(entryName)
+                                    .dynamicIncludeFlatBuilder(true)
+                                    .build());
                 } else {
                     if (valueNode.isObject()) {
                         if (entryName.startsWith(DYNAMIC_MERGE_KEY)) {

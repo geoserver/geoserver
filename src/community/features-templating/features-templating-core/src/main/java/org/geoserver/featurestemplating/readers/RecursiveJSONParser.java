@@ -21,7 +21,8 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
 
     private static final String INCLUDE_KEY = "$include";
     private static final String MERGE_KEY = "$merge";
-    private static final String INCLUDE_FLAT_KEY = "$includeFlat";
+    public static final String INCLUDE_FLAT_KEY = "$includeFlat";
+    public static final String DYNAMIC_INCLUDE_FLAT_KEY = "$dynamicIncludeFlat_";
 
     private final ObjectMapper mapper;
     private final String rootCollectionName;
@@ -101,14 +102,16 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
                                     + INCLUDE_FLAT_KEY
                                     + " key must be the path of the file being included");
                 }
-                Resource resource = getResource(this.resource, node.asText());
-                JsonNode processed = new RecursiveJSONParser(this, resource).parse();
-                Iterator<String> fields = processed.fieldNames();
-                while (fields.hasNext()) {
-                    String field = fields.next();
-                    result.set(field, processed.get(field));
+                if (!isDynamicIncludeFlat(node)) {
+                    Resource resource = getResource(this.resource, node.asText());
+                    JsonNode processed = new RecursiveJSONParser(this, resource).parse();
+                    Iterator<String> fields = processed.fieldNames();
+                    while (fields.hasNext()) {
+                        String field = fields.next();
+                        result.set(field, processed.get(field));
+                    }
+                    continue;
                 }
-                continue;
             }
             // inclusion in value?
             if (node.isTextual()) {
@@ -126,7 +129,6 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
         if (result.has(MERGE_KEY)) {
             result = processMergeDirective(result);
         }
-
         return result;
     }
 
@@ -187,5 +189,9 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
         try (InputStream is = resource.in()) {
             return mapper.readTree(is);
         }
+    }
+
+    private boolean isDynamicIncludeFlat(JsonNode node) {
+        return (node.asText().startsWith("${") || node.asText().startsWith("$${"));
     }
 }

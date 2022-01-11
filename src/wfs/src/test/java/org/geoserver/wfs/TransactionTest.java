@@ -898,22 +898,20 @@ public class TransactionTest extends WFSTestSupport {
     public void testBuildGeotoolsTransaction() throws IOException {
         Authentication authentication = null;
         // no authentication, defaults to "anonymous"
-        testBuildGeotoolsTransaction(authentication, "anonymous");
+        testBuildGeotoolsTransaction(authentication);
 
         // principal being a String
         Object principal = "John Smith";
         authentication = new TestingAuthenticationToken(principal, null);
-        testBuildGeotoolsTransaction(authentication, "John Smith");
+        testBuildGeotoolsTransaction(authentication);
 
         // principal being an org.springframework.security.core.userdetails.UserDetails
         principal = new GeoServerUser("Akira Kurosawa");
         authentication = new TestingAuthenticationToken(principal, null);
-        testBuildGeotoolsTransaction(authentication, "Akira Kurosawa");
+        testBuildGeotoolsTransaction(authentication);
     }
 
-    private void testBuildGeotoolsTransaction(
-            Authentication authentication, String expectedVersioningCommitAuthor)
-            throws IOException {
+    private void testBuildGeotoolsTransaction(Authentication authentication) throws IOException {
 
         final String wfsReqHandle = "Request handle";
         final Map<Object, Object> extendedProperties = new HashMap<>();
@@ -946,10 +944,6 @@ public class TransactionTest extends WFSTestSupport {
             SecurityContextHolder.setContext(ctxBackup);
         }
         assertNotNull(gtTransaction);
-        assertEquals(
-                expectedVersioningCommitAuthor,
-                gtTransaction.getProperty("VersioningCommitAuthor"));
-        assertEquals(wfsReqHandle, gtTransaction.getProperty("VersioningCommitMessage"));
         assertEquals("extValue", gtTransaction.getProperty("extKey"));
         gtTransaction.close();
     }

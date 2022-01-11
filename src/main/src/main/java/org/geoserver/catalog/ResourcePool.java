@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
@@ -181,20 +180,6 @@ public class ResourcePool {
     public static Hints.Key MAP_CRS = new Hints.Key(CoordinateReferenceSystem.class);
     /** logging */
     static Logger LOGGER = Logging.getLogger("org.geoserver.catalog");
-
-    static Class<?> VERSIONING_FS = null;
-    static Class<?> GS_VERSIONING_FS = null;
-
-    static {
-        try {
-            // only support versioning if on classpath
-            VERSIONING_FS = Class.forName("org.geotools.data.VersioningFeatureSource");
-            GS_VERSIONING_FS =
-                    Class.forName("org.vfny.geoserver.global.GeoServerVersioningFeatureSource");
-        } catch (ClassNotFoundException e) {
-            // fall through
-        }
-    }
 
     /** Default number of hard references */
     static int FEATURETYPE_CACHE_SIZE_DEFAULT = 100;
@@ -1231,7 +1216,7 @@ public class ResourcePool {
         DataAccess<? extends FeatureType, ? extends Feature> dataAccess =
                 getDataStore(info.getStore());
 
-        // TODO: support aliasing (renaming), reprojection, versioning, and locking for DataAccess
+        // TODO: support aliasing (renaming), reprojection, and locking for DataAccess
         if (!(dataAccess instanceof DataStore)) {
             return getFeatureSource(dataAccess, info);
         }
@@ -1315,43 +1300,6 @@ public class ResourcePool {
                     schema = FeatureTypes.transform(schema, resultCRS);
             } catch (Exception e) {
                 throw new DataSourceException("Problem forcing CRS onto feature type", e);
-            }
-
-            //
-            // versioning
-            //
-            try {
-                // only support versioning if on classpath
-                if (VERSIONING_FS != null
-                        && GS_VERSIONING_FS != null
-                        && VERSIONING_FS.isAssignableFrom(fs.getClass())) {
-                    // class implements versioning, reflectively create the versioning wrapper
-                    try {
-                        Method m =
-                                GS_VERSIONING_FS.getMethod(
-                                        "create",
-                                        VERSIONING_FS,
-                                        SimpleFeatureType.class,
-                                        Filter.class,
-                                        CoordinateReferenceSystem.class,
-                                        int.class);
-                        @SuppressWarnings("unchecked")
-                        FeatureSource<? extends FeatureType, ? extends Feature> invoke =
-                                (FeatureSource)
-                                        m.invoke(
-                                                null,
-                                                fs,
-                                                schema,
-                                                info.filter(),
-                                                resultCRS,
-                                                info.getProjectionPolicy().getCode());
-                        return invoke;
-                    } catch (Exception e) {
-                        throw new DataSourceException("Creation of a versioning wrapper failed", e);
-                    }
-                }
-            } catch (ClassCastException e) {
-                // fall through
             }
 
             // joining, check for join hint which requires us to create a shcema with some

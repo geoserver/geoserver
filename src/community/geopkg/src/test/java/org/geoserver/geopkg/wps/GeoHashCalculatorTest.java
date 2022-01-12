@@ -6,7 +6,6 @@ package org.geoserver.geopkg.wps;
 
 import static org.junit.Assert.assertEquals;
 
-import org.geoserver.test.TestSetup;
 import org.geotools.referencing.CRS;
 import org.junit.BeforeClass;
 import org.junit.Test;

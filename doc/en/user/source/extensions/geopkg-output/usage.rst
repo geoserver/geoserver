@@ -19,7 +19,8 @@ Add ``&outputFormat=geopkg`` to your request. The result will be a GeoPackage (M
 .. note::
 
     You can use `geopkg`, `geopackage`, or `gpkg` as the output format in the request.  Use `1.0.0`, `1.1.0`, or `2.0.0` as ``version=`` to specify which WFS version to use.
-
+    
+    GeoPackages always have the ordinates in X,Y (``EAST_NORTH``) format.
 
 WMS
 ^^^
@@ -32,7 +33,64 @@ Add ``&format=geopkg`` to your request. The result will be a GeoPackage (MIME ty
     curl "http://localhost:8080/geoserver/dave/wms?service=WMS&version=1.1.0&request=GetMap&layers=ws:layername&bbox=-123.43670607166865%2C48.3956835%2C-123.2539813%2C48.5128362547052&width=1536&height=984&srs=EPSG%3A4326&styles=&format=geopkg" \
     -o wms.gpkg
 
+    curl "http://localhost:8080/geoserver/dave/wms?service=WMS&version=1.3.0&request=GetMap&layers=ws:layername&bbox=48.3956835,-123.43670607166865,48.5128362547052,-123.2539813&width=768&height=492&srs=EPSG%3A4326&styles=&format=geopkg \
+    -o wms.gpkg
+
+You can also add format options (``format_options=param1:value1;param2:value2;...```) to the request.  With all default values, you will get a GeoPackage with PNG tiles of multiple resolutions.  There will be a little more than 255 total tiles - all occupying the area in the request's bbox.
+
+.. list-table:: Format Options
+   :widths: auto  
+   :header-rows: 1
+
+   * - Parameter
+     - Description
+   * - min_zoom
+     - Grid Zoom level for tiles to start.
+
+       default: zoom level based on a single tile covering the bbox area.
+   * - max_zoom
+     - Grid Zoom level for tiles to end.
+
+       default: zoom where there's >255 tiles in total in the geopkg (could be a bit more)
+   * - num_zooms
+     - Number of zoom levels in the geopkg.  
+     
+       If present then `max_zoom = min_zoom + num_zooms`
+   * - format
+     - Format for the image tiles in the geopkg.
+     
+       default: PNG
+   * - tileset_name
+     - Name of tile set ("layer") used in the geopkg. 
+       
+       default: based on the layer names given in the request ('_' separated)
+   * - min_column
+     - First column number (from the gridset) to use.
+     
+       default: use request bbox to determine which tiles to produce
+   * - max_column
+     - Last column number (from the gridset) to use.
+     
+       default: use request bbox to determine which tiles to produce
+   * - min_row
+     - First row number (from the gridset) to use.
+     
+       default: use request bbox to determine which tiles to produce
+   * - max_row
+     - Last row number (from the gridset) to use.
+     
+       default: use request bbox to determine which tiles to produce
+   * - gridset
+     - Name of the gridset (from GWC GridSetBroker) to uses.
+     
+       default: find based on request SRS
+   * - flipy
+     - Do NOT set.
+
+       default: TRUE (required for GeoPackage - `The tile coordinate (0,0) always refers to the tile in the upper left corner of the tile matrix...`)
 
 .. note::
 
-    You can use `geopkg`, `geopackage`, or `gpkg` as the output format in the request.  Use `1.1.0`, `1.1.1`, or `1.3` as ``version=`` to specify which WFS version to use.
+    You can use `geopkg`, `geopackage`, or `gpkg` as the output format in the request.  Use `1.1.0`, or `1.3` as ``version=`` to specify which WMS version to use.
+    
+    GeoPackages always have the ordinates in X,Y (``EAST_NORTH``) format.

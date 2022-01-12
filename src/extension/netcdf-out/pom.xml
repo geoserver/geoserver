@@ -28,6 +28,10 @@
   <packaging>jar</packaging>
   <name>WCS NetCDF output Module</name>
 
+  <properties>
+    <netcdf.version>4.6.15</netcdf.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -107,6 +111,38 @@
       <scope>test</scope>
     </dependency>
 
+    <!--  NetCDF logging dependencies -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+    </dependency>
+
+    <!-- TODO: relax this dependency: just need to depends on NetCDF java library from Unidata -->
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>udunits</artifactId>
+      <version>${netcdf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-netcdf</artifactId>
+      <version>${gt.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>slf4j-api</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jcl-over-slf4j</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>

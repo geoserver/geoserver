@@ -9,12 +9,18 @@ import static org.junit.Assert.*;
 import org.geotools.data.DataTestCase;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 
 public class GeoHashCollectionTest extends DataTestCase {
+
+    @BeforeClass
+    public static void setup() {
+        System.setProperty("org.geotools.referencing.forceXY", "true");
+    }
 
     @Test
     public void testSimpleDecorationSchema() {

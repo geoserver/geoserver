@@ -6,7 +6,9 @@ package org.geoserver.geopkg.wps;
 
 import static org.junit.Assert.assertEquals;
 
+import org.geoserver.test.TestSetup;
 import org.geotools.referencing.CRS;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
@@ -17,6 +19,11 @@ public class GeoHashCalculatorTest {
 
     WKTReader wkt = new WKTReader();
     GeoHashCalculator calculator = GeoHashCalculator.DEFAULT;
+
+    @BeforeClass
+    public static void setup() {
+        System.setProperty("org.geotools.referencing.forceXY", "true");
+    }
 
     @Test
     public void testPoint() throws ParseException, TransformException {

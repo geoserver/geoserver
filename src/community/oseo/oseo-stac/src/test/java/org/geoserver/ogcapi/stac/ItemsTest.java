@@ -375,4 +375,22 @@ public class ItemsTest extends STACTestSupport {
         assertEquals("Thumbnail", title);
         assertEquals(0, additional.intValue());
     }
+
+    @Test
+    public void dynamicIncludeFlatTest() throws Exception {
+        DocumentContext result = getAsJSONPath("ogc/stac/collections/LANDSAT8/items", 200);
+
+        // tests before the dynamic merge with expression on overlay
+        String randomNumber = result.read("features[0].assets.dynamicIncludeFlatTest.randomNumber");
+        String href = result.read("features[0].assets.dynamicIncludeFlatTest.thumbnail.href");
+        String title = result.read("features[0].assets.dynamicIncludeFlatTest.thumbnail.title");
+        String type = result.read("features[0].assets.dynamicIncludeFlatTest.thumbnail.type");
+
+        assertEquals("23", randomNumber);
+        assertEquals(
+                "https://landsat-pds.s3.us-west-2.amazonaws.com/c1/L8/218/077/LC08_L1TP_218077_20210511_20210511_01_T1/LC08_L1TP_218077_20210511_20210511_01_T1_thumb_large.jpg",
+                href);
+        assertEquals("image/jpeg", type);
+        assertEquals("Thumbnail", title);
+    }
 }

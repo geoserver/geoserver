@@ -20,7 +20,7 @@
             "will be replaced"
           ]
         },
-        "gsd": 30, 
+        "gsd": 30,
         "landsat:tier": "pre-collection",
         "landsat:orbit": "${eop:orbitNumber}" // just to have a custom queriable
       },

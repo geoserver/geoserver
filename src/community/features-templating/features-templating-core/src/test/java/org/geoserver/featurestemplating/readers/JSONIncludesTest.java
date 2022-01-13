@@ -198,6 +198,13 @@ public class JSONIncludesTest {
         assertTrue(rootBuilder.needsReload());
     }
 
+    @Test
+    public void testObtainDynamicIncludeFlatKeyword() throws IOException {
+        RecursiveJSONParser parser = new RecursiveJSONParser(store.get("dynamicIncludeFlat.json"));
+        JsonNode parse = parser.parse();
+        assertTrue(parse.toString().contains("$includeFlat"));
+    }
+
     private RuntimeException checkThrowingTemplate(String s) {
         return assertThrows(
                 RuntimeException.class, () -> new RecursiveJSONParser(store.get(s)).parse());

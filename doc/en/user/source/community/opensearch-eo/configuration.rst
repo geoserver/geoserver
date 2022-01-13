@@ -91,8 +91,10 @@ HTML templates
 
 The Freemarker templates for collections and products can be found in ``$GEOSERVER_DATA_DIRECTORY/templates/os-eo``:
 
-* `product.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/product.ftl>`_ receives an OpenSearch product and encodes the Atom HTML description for it.
-* `collection.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/collection.ftl>`_ receives an OpenSearch collection and encodes the Atom HTML description for it.
+* `generic-header.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/>`_ receives SearchResults, Query, organization, title, updated(date), builder and encodes a generic header Atom HTML description for it.
+* `generic-footer.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/>`_ exists simple for having a </feed> closing tag.
+* `product.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/product.ftl>`_ receives an OpenSearch product, updated(date), dcDate(date), offerings and encodes the Atom HTML description for it.
+* `collection.ftl <https://github.com/geoserver/geoserver/blob/main/src/community/oseo/oseo-service/src/main/resources/org/geoserver/opensearch/eo/response/collection.ftl>`_ receives an OpenSearch collection, updated(date), dcDate(date), offerings and encodes the Atom HTML description for it.
 
 The default templates, linked above, report the time range for the product/collection, and link
 to other pertinent OpenSearch resources (metadata, self link, quicklooks).

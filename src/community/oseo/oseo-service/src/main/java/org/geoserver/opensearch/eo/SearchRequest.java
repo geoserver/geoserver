@@ -5,8 +5,6 @@
 package org.geoserver.opensearch.eo;
 
 import java.util.Map;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.geotools.data.Parameter;
 import org.geotools.data.Query;
 
@@ -65,10 +63,5 @@ public class SearchRequest {
 
     public Map<Parameter, String> getSearchParameters() {
         return searchParameters;
-    }
-
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 }

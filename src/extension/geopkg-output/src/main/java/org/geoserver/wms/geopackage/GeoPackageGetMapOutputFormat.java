@@ -49,6 +49,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
         super(MIME_TYPE, "." + EXTENSION, Sets.newHashSet(NAMES), webMapService, wms, gwc);
     }
 
+    // TilesFile interface implementation for a GeoPackage
     private static class GeopackageWrapper implements TilesFile {
 
         GeoPackage geopkg;
@@ -60,11 +61,13 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
             this.e = e;
         }
 
+        // creates the underlying geopackage file
         public GeopackageWrapper() throws IOException {
             this(new GeoPackage(), new TileEntry());
             geopkg.init();
         }
 
+        // setup the geopackage
         @Override
         public void setMetadata(
                 String name,
@@ -127,6 +130,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
             geopkg.create(e);
         }
 
+        // add a tile (image) into the geoopackage with the given grid coordinates
         @Override
         public void addTile(int zoom, int x, int y, byte[] data) throws IOException {
             Tile t = new Tile();
@@ -148,6 +152,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
         }
     }
 
+    // setup format option (i.e. flipy) for incoming request, then make the tiles.
     @Override
     public WebMap produceMap(WMSMapContent map) throws ServiceException, IOException {
         /*
@@ -161,9 +166,11 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
          * [1]: http://www.geopackage.org/spec/#tile_matrix
          */
         map.getRequest().getFormatOptions().put("flipy", "true");
+        rewriteRequest(map.getRequest());
         return super.produceMap(map);
     }
 
+    // create the TilesFile
     @Override
     protected TilesFile createTilesFile() throws IOException {
         return new GeopackageWrapper();
@@ -180,6 +187,8 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
     // For a WMS 1.1 EPSG:4326 request, this will NOT flip.
     // NOTE: typically, a WMS 1.1 and WMS 1.3 EPSG:4326 request will have the bbox ordinates
     // flipped.
+    //
+    // NOTE: updates request in-situ
     private GetMapRequest rewriteRequest(GetMapRequest req) {
         CoordinateReferenceSystem sourceCRS = req.getCrs();
 
@@ -200,11 +209,6 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
 
                     req.setBbox(flippedEnvelope);
                     req.setCrs(flippedCRS);
-
-                    //                    GeneralEnvelope reqGenEnvelope = new
-                    // GeneralEnvelope(reqEnvelope.getLowerCorner(),reqEnvelope.getUpperCorner());
-                    //                    CRS.transform(reqEnvelope,flippedCRS)
-                    //                    req.setCrs(flippedCRS);
                 }
             } catch (Exception e) {
                 // couldn't flip - try again
@@ -221,19 +225,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
             String name,
             ProgressListener listener)
             throws IOException {
-        req = rewriteRequest(req);
         addTiles(new GeopackageWrapper(geopkg, e), req, name, listener);
     }
-
-    @Override
-    protected void addTiles(
-            TilesFile tiles,
-            List<MapLayerInfo> mapLayers,
-            GetMapRequest request,
-            String name,
-            ProgressListener listener)
-            throws IOException, ServiceException {
-        request = rewriteRequest(request);
-        super.addTiles(tiles, mapLayers, request, name, listener);
-    }
+    
 }

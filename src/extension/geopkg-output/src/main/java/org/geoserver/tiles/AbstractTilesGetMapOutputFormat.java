@@ -66,10 +66,27 @@ import org.opengis.util.ProgressListener;
  */
 public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputFormat {
 
-    /** Wrapper class for tiles file, allows generic access */
-    protected static interface TilesFile {
+    /** Wrapper class for tiles file, allows generic access. */
+    protected interface TilesFile {
 
-        public void setMetadata(
+        /**
+         * This is called before tiles are added to the file so the underlying DB (i.e.
+         * geopkg/mbtiles) can be setup (i.e. create tables). Also, allows the file to add any
+         * metadata info.
+         *
+         * <p>Typically, this is the main work of the subclasses.
+         *
+         * @param name Name of the dataset (i.e. table name)
+         * @param box Bounds of the dataset
+         * @param imageFormat MIME format of the tiles (i.e. image/jpeg)
+         * @param srid EPSG number of the CRS
+         * @param mapLayers Metadata about the layers being added to the TilesFile
+         * @param minmax Zoom levels for the grid set that this TilesFile will hold
+         * @param gridSubset Metadata about the Grid for the Tiles
+         * @throws IOException
+         * @throws ServiceException
+         */
+        void setMetadata(
                 String name,
                 ReferencedEnvelope box,
                 String imageFormat,
@@ -79,12 +96,27 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
                 GridSubset gridSubset)
                 throws IOException, ServiceException;
 
-        public void addTile(int zoom, int x, int y, byte[] data)
-                throws IOException, ServiceException;
+        /**
+         * put a tile into the File (i.e. geopkg, mbtiles) that this TilesFile abstracts.
+         *
+         * @param zoom Tile coordinate
+         * @param x Tile coordinate
+         * @param y Tile coordinate
+         * @param data Actual tile information (i.e. PNG file)
+         * @throws IOException
+         * @throws ServiceException
+         */
+        void addTile(int zoom, int x, int y, byte[] data) throws IOException, ServiceException;
 
-        public File getFile();
+        /**
+         * Get the underlying File that this TilesFile is writing to.
+         *
+         * @return
+         */
+        File getFile();
 
-        public void close();
+        /** Finished working with the tiles file - close it and release filesystem resources. */
+        void close();
     }
 
     protected static final int TILE_CLEANUP_INTERVAL;
@@ -128,6 +160,14 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return new MapProducerCapabilities(false, false, true);
     }
 
+    /**
+     * produces a map (TilesFile) that contains the requests tiles as specified.
+     *
+     * @param map The entire set of request parameters for the WMS GetMap request
+     * @return TilesFile with the appropriate tiles
+     * @throws ServiceException
+     * @throws IOException
+     */
     @Override
     public WebMap produceMap(WMSMapContent map) throws ServiceException, IOException {
         TilesFile tiles = createTilesFile();
@@ -193,7 +233,10 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return new NullProgressListener();
     }
 
-    /** Factory method for Tiles File */
+    /**
+     * Factory method for Tiles File. Implement this method to create the underlying TilesFile (i.e.
+     * geopkg). Later, setMetdata() will be called to allow the TilesFile to be fully setup.
+     */
     protected abstract TilesFile createTilesFile() throws IOException;
 
     protected void addTiles(TilesFile tiles, WMSMapContent map, ProgressListener listener)
@@ -375,19 +418,10 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return srid;
     }
 
-    protected Envelope findTileBounds(GridSubset gridSubset, BoundingBox bbox, int z) {
-
-        long[] i = gridSubset.getCoverageIntersection(z, bbox);
-
-        BoundingBox b1 = gridSubset.boundsFromIndex(new long[] {i[0], i[1], i[4]});
-        BoundingBox b2 = gridSubset.boundsFromIndex(new long[] {i[2], i[3], i[4]});
-        return new Envelope(
-                Math.min(b1.getMinX(), b2.getMinX()),
-                Math.max(b1.getMaxX(), b2.getMaxX()),
-                Math.min(b1.getMinY(), b2.getMinY()),
-                Math.max(b1.getMaxY(), b2.getMaxY()));
-    }
-
+    // Creates a GridSubset (GridSet + a coverage area) based on the WMS request (i.e. SRID in the
+    // request)
+    // &format_options=gridset:<name> can get used in the WMS request to explicitly use a particular
+    // GWC gridset
     protected GridSubset findBestGridSubset(GetMapRequest req) {
         Map formatOpts = req.getFormatOptions();
 
@@ -459,6 +493,19 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return gridSubsets.iterator().next();
     }
 
+    // finds the appropriate gridset zoom levels for the request
+    // This can be controlled with &format_options=p1:v1;p2:v2
+    //
+    // min_zoom -  Grid Zoom level for tiles to start.
+    //             default: zoom level based on a single tile covering the bbox area.
+    // max_zoom - Grid Zoom level for tiles to end.
+    //            default: zoom where there's >255 tiles in total (could be a bit more - see
+    // findMaxZoomAuto)
+    // num_zooms - Number of zoom levels in the geopkg. If present then  max_zoom = min_zoom +
+    // num_zooms
+    //
+    //  result[0] - most zoomed out zoom level (ie. 10)
+    //  result[1] - least zoomed out level (i.e. 15)
     protected int[] findMinMaxZoom(GridSubset gridSubset, GetMapRequest req) {
         GridSet gridSet = gridSubset.getGridSet();
         Map formatOpts = req.getFormatOptions();
@@ -500,6 +547,11 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return new int[] {minZoom, maxZoom};
     }
 
+    // find the zoom level associated with the request
+    // This is based on a single tile (i.e. 256px) for the request bounds.
+    //  It is NOT based on the scale of the actual WMS request (i.e. request width/height does not
+    // affect
+    //  this calculation).
     protected Integer findClosestZoom(GridSet gridSet, GetMapRequest req) {
         double reqScale =
                 RendererUtilities.calculateOGCScale(bounds(req), gridSet.getTileWidth(), null);
@@ -521,6 +573,9 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return Math.max(i, 0);
     }
 
+    // given a minZoom, find the corresponding maxZoom.
+    // Calculation is to keep adding zoom levels until the total number of tiles in the result is
+    // >255.
     protected Integer findMaxZoomAuto(GridSubset gridSubset, Integer minZoom, GetMapRequest req) {
         BoundingBox bbox = bbox(req);
 
@@ -535,11 +590,14 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return zoom;
     }
 
+    // get the underlying image (i.e. png/jpeg) from requests format options
     protected String parseFormatFromOpts(Map formatOpts) {
         String format = (String) formatOpts.get("format");
         return format.contains("/") ? format : "image/" + format;
     }
 
+    // guess at the best format (png or jpeg) by looking at the layers requested.
+    // if any of the layers are raster, then JPEG.  Otherwise (i.e. all vector layers) PNG.
     protected String findBestFormat(GetMapRequest req) {
         // if request is a single coverage layer return jpeg, otherwise use just png
         List<MapLayerInfo> layers = req.getLayers();

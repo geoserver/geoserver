@@ -43,31 +43,39 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
         super(gs, Sets.union(Sets.newHashSet(MIME_TYPES), Sets.newHashSet(NAMES)));
     }
 
+    // returns the geopackage mime type (for http response)
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return MIME_TYPE;
     }
 
+    // gets the element name (<geopackage/>) to put in the capabilities file.
     @Override
     public String getCapabilitiesElementName() {
         return NAMES.iterator().next();
     }
 
+    // gets the element names (<geopackage/><geopkg/><gpkg/>) to put in the capabilities file.
     @Override
     public List<String> getCapabilitiesElementNames() {
         return Lists.newArrayList(NAMES);
     }
 
+    // Get the preferred Content-Disposition header for this response
     @Override
     public String getPreferredDisposition(Object value, Operation operation) {
         return DISPOSITION_ATTACH;
     }
 
+    // get the filename extension for the resulting geopackage file
     @Override
     protected String getExtension(FeatureCollectionResponse response) {
         return EXTENSION;
     }
 
+    // create the geopackage file and write the features into it.
+    // geopackage is written to a temporary file, copied into the outputStream, then the temp file
+    // deleted.
     @Override
     protected void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
@@ -110,6 +118,8 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
         geopkg.getFile().delete();
     }
 
+    // get the FeatureTypeInfo from the catalog (i.e. metadata - title/description/abstract) for the
+    // given collection.
     FeatureTypeInfo lookupFeatureType(SimpleFeatureCollection features) {
         FeatureType featureType = features.getSchema();
         if (featureType != null) {
@@ -127,6 +137,7 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
         return null;
     }
 
+    // try to find an appropriate description for the featureTypeInfo
     String abstractOrDescription(FeatureTypeInfo meta) {
         return meta.getAbstract() != null ? meta.getAbstract() : meta.getDescription();
     }

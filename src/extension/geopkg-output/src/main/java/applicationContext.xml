@@ -7,13 +7,13 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-    <bean id="geopkgGetMapOutputFormat" class="org.geoserver.wms.geopackage.GeoPackageGetMapOutputFormat">
+    <bean id="geopkgGetMapOutputFormat" class="org.geoserver.geopkg.wms.GeoPackageGetMapOutputFormat">
       <constructor-arg ref="webMapService" />
       <constructor-arg ref="wms" />
       <constructor-arg ref="gwcFacade" />
     </bean>
     
-    <bean id="geopkgGetFeatureOutputFormat" class="org.geoserver.wfs.geopackage.GeoPackageGetFeatureOutputFormat">
+    <bean id="geopkgGetFeatureOutputFormat" class="org.geoserver.geopkg.wfs.GeoPackageGetFeatureOutputFormat">
       <constructor-arg ref="geoServer" />
     </bean>
      

@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wms.geopackage;
+package org.geoserver.geopkg.wms;
 
 import static org.geoserver.geopkg.GeoPkg.EXTENSION;
 import static org.geoserver.geopkg.GeoPkg.MIME_TYPE;

@@ -3,7 +3,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wfs.geopackage;
+package org.geoserver.geopkg.wfs;
 
 import static org.geoserver.geopkg.GeoPkg.*;
 

@@ -91,6 +91,6 @@ You can also add format options (``format_options=param1:value1;param2:value2;..
 
 .. note::
 
-    You can use `geopkg`, `geopackage`, or `gpkg` as the output format in the request.  Use `1.1.0`, or `1.3` as ``version=`` to specify which WMS version to use.
+    You can use `geopkg`, `geopackage`, or `gpkg` as the output format in the request.  Use `1.1.0`, or `1.3.0` as ``version=`` to specify which WMS version to use.
     
     GeoPackages always have the ordinates in X,Y (``EAST_NORTH``) format.

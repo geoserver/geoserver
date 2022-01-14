@@ -1,7 +1,5 @@
 package org.geoserver.geopkg;
 
-import static org.geoserver.geopackage.GeoPkg.*;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +10,12 @@ import org.geoserver.gwc.GWC;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.wms.*;
+import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapLayerInfo;
+import org.geoserver.wms.RasterCleaner;
+import org.geoserver.wms.WMS;
+import org.geoserver.wms.WebMap;
+import org.geoserver.wms.WebMapService;
 import org.geoserver.wms.geopackage.GeoPackageGetMapOutputFormat;
 import org.geotools.data.util.DefaultProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;

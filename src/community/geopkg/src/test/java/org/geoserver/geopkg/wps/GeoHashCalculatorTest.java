@@ -7,6 +7,7 @@ package org.geoserver.geopkg.wps;
 import static org.junit.Assert.assertEquals;
 
 import org.geotools.referencing.CRS;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.locationtech.jts.io.ParseException;
@@ -22,6 +23,13 @@ public class GeoHashCalculatorTest {
     @BeforeClass
     public static void setup() {
         System.setProperty("org.geotools.referencing.forceXY", "true");
+        CRS.reset("all");
+    }
+
+    @AfterClass
+    public static void teardown() {
+        System.clearProperty("org.geotools.referencing.forceXY");
+        CRS.reset("all");
     }
 
     @Test

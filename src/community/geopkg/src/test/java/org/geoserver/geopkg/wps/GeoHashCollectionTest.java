@@ -9,6 +9,8 @@ import static org.junit.Assert.*;
 import org.geotools.data.DataTestCase;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.referencing.CRS;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.simple.SimpleFeature;
@@ -20,6 +22,13 @@ public class GeoHashCollectionTest extends DataTestCase {
     @BeforeClass
     public static void setup() {
         System.setProperty("org.geotools.referencing.forceXY", "true");
+        CRS.reset("all");
+    }
+
+    @AfterClass
+    public static void teardown() {
+        System.clearProperty("org.geotools.referencing.forceXY");
+        CRS.reset("all");
     }
 
     @Test

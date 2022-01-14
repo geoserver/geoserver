@@ -41,4 +41,4 @@ To verify that the extension was installed successfully:
 
 .. note::
 
-    You can also verify installation by looking for ``GeoPKG Output Extension`` on the server's `Module Status Page <http://localhost:8080/geoserver/web/wicket/bookmarkable/org.geoserver.web.admin.StatusPage?5&filter=false>`__
+    You can also verify installation by looking for ``GeoPKG Output Extension`` on the server's `Module Status Page`.

@@ -12,10 +12,6 @@
       <constructor-arg ref="wms" />
       <constructor-arg ref="gwcFacade" />
     </bean>
-
-<!--    <bean id="geopkgGetFeatureOutputFormat" class="org.geoserver.geopkg.GeoPackageGetFeatureOutputFormat">-->
-<!--      <constructor-arg ref="geoServer" />-->
-<!--    </bean>-->
     
     <bean id="geopkgProcess" class="org.geoserver.geopkg.wps.GeoPackageProcess">
 	  <constructor-arg index="0" ref="geoServer"/>

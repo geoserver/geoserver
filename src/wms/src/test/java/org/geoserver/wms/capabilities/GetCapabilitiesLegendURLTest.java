@@ -413,7 +413,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertTrue(href.contains("height=20"));
     }
 
-    /** Tests that checks Legend Graphic URL contains version or not. */
+    /** Tests that Legend Graphic URL contains version. */
     @Test
     public void testOnlineResourceLegendURLVersion() throws Exception {
 

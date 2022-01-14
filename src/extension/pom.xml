@@ -513,6 +513,7 @@
         <module>wps-download</module>
         <module>wps-jdbc</module>
         <module>mapml</module>
+        <module>geopkg-output</module>
       </modules>
     </profile>
   </profiles>

@@ -8,9 +8,7 @@
     <fileSet>
       <directory>release/target/dependency</directory>
       <outputDirectory></outputDirectory>
-      <includes>	
-        <include>gt-mbtiles-*.jar</include>
-        <include>gs-mbtiles-*.jar</include>
+      <includes>
         <include>jackson-databind*</include>
         <include>jackson-annotations*</include>
         <include>gs-geopkg-*.jar</include>

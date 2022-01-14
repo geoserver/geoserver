@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import org.geoserver.data.DataStoreFactoryInitializer;
-import org.geoserver.geopackage.GeoPkgDataStoreFactoryInitializer;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geotools.geopkg.GeoPkgDataStoreFactory;

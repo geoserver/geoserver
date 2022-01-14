@@ -4,7 +4,7 @@
  */
 package org.geoserver.geopkg.wps;
 
-import static org.geoserver.geopackage.GeoPkg.MIME_TYPE;
+import static org.geoserver.geopkg.GeoPkg.MIME_TYPE;
 
 import com.google.common.base.Strings;
 import java.io.File;
@@ -34,8 +34,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.geopackage.GeoPkg;
-import org.geoserver.geopkg.GeoPackageGetMapOutputFormatWPS;
+import org.geoserver.geopkg.GeoPkg;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.KvpMap;

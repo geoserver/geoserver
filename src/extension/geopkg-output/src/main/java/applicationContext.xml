@@ -17,7 +17,7 @@
       <constructor-arg ref="geoServer" />
     </bean>
      
-    <bean id="geopkgDataStoreFactoryInitializer" class="org.geoserver.geopackage.GeoPkgDataStoreFactoryInitializer">
+    <bean id="geopkgDataStoreFactoryInitializer" class="org.geoserver.geopkg.GeoPkgDataStoreFactoryInitializer">
         <property name="resourceLoader" ref="resourceLoader"/>
     </bean>
 

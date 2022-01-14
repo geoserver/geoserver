@@ -15,7 +15,6 @@ import java.io.IOException;
 import net.opengis.wfs.GetFeatureType;
 import net.opengis.wfs.WfsFactory;
 import org.geoserver.data.test.SystemTestData;
-import org.geoserver.geopackage.GeoPkg;
 import org.geoserver.platform.Operation;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.geopackage.GeoPackageGetFeatureOutputFormat;

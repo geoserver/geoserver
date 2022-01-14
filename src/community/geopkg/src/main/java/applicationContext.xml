@@ -7,7 +7,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-    <bean id="geopkgGetMapOutputFormatWPS" class="org.geoserver.geopkg.GeoPackageGetMapOutputFormatWPS">
+    <bean id="geopkgGetMapOutputFormatWPS" class="org.geoserver.geopkg.wps.GeoPackageGetMapOutputFormatWPS">
       <constructor-arg ref="webMapService" />
       <constructor-arg ref="wms" />
       <constructor-arg ref="gwcFacade" />

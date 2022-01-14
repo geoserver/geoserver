@@ -5,9 +5,9 @@
  */
 package org.geoserver.wms.geopackage;
 
-import static org.geoserver.geopackage.GeoPkg.EXTENSION;
-import static org.geoserver.geopackage.GeoPkg.MIME_TYPE;
-import static org.geoserver.geopackage.GeoPkg.NAMES;
+import static org.geoserver.geopkg.GeoPkg.EXTENSION;
+import static org.geoserver.geopkg.GeoPkg.MIME_TYPE;
+import static org.geoserver.geopkg.GeoPkg.NAMES;
 
 import com.google.common.collect.Sets;
 import java.io.File;
@@ -227,5 +227,4 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
             throws IOException {
         addTiles(new GeopackageWrapper(geopkg, e), req, name, listener);
     }
-    
 }

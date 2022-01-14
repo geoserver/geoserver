@@ -1,4 +1,4 @@
-package org.geoserver.geopkg;
+package org.geoserver.geopkg.wps;
 
 import java.io.IOException;
 import java.util.List;

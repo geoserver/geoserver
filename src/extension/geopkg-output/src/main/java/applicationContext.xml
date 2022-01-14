@@ -20,4 +20,13 @@
     <bean id="geopkgDataStoreFactoryInitializer" class="org.geoserver.geopackage.GeoPkgDataStoreFactoryInitializer">
         <property name="resourceLoader" ref="resourceLoader"/>
     </bean>
+
+    <bean id="GeoPKGOutputExtension"
+          class="org.geoserver.platform.ModuleStatusImpl">
+        <property name="module" value="gs-geopkg-output" />
+        <property name="name" value="GeoPKG Output Extension" />
+        <property name="component" value="GeoPKG WFS/WMS Output" />
+        <property name="available" value="true" />
+        <property name="enabled" value="true" />
+    </bean>
 </beans>

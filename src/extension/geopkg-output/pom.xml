@@ -44,12 +44,17 @@
       <artifactId>gs-wfs</artifactId>
       <version>${project.version}</version>
     </dependency>
-
     <dependency>
-      <groupId>org.geoserver.community</groupId>
-      <artifactId>gs-mbtiles</artifactId>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-gwc</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <!--    <dependency>-->
+    <!--      <groupId>org.geoserver.community</groupId>-->
+    <!--      <artifactId>gs-mbtiles</artifactId>-->
+    <!--      <version>${project.version}</version>-->
+    <!--    </dependency>-->
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-geopkg</artifactId>

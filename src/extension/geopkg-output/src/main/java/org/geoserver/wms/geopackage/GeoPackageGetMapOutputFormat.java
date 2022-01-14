@@ -28,10 +28,14 @@ import org.geotools.geopkg.GeoPackage;
 import org.geotools.geopkg.Tile;
 import org.geotools.geopkg.TileEntry;
 import org.geotools.geopkg.TileMatrix;
+import org.geotools.referencing.CRS;
 import org.geowebcache.grid.BoundingBox;
 import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
+import org.locationtech.jts.geom.Envelope;
+import org.opengis.referencing.ReferenceIdentifier;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
 
 /**
@@ -165,6 +169,50 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
         return new GeopackageWrapper();
     }
 
+    // re-formats the original request to one that's inline with the GeoPKG specification.
+    // If the CRS is XY (EAST_NORTH), the we do nothing.
+    // If the CRS is YX (NORTH_EAST), we attempt to re-write the request in XY format.
+    //   i.e. change the request CRS to the equivalent EAST_NORTH CRS
+    //   and  flip the request's ordinates around in the request
+    // NOTE: geopkg requires XY coordinate systems and WMS 1.3 assumes 4326 is YX (WMS 1.1's 4326 is
+    // XY).
+    // For a WMS 1.3 EPSG:4326 request, this will flip.
+    // For a WMS 1.1 EPSG:4326 request, this will NOT flip.
+    // NOTE: typically, a WMS 1.1 and WMS 1.3 EPSG:4326 request will have the bbox ordinates
+    // flipped.
+    private GetMapRequest rewriteRequest(GetMapRequest req) {
+        CoordinateReferenceSystem sourceCRS = req.getCrs();
+
+        if ((CRS.getAxisOrder(sourceCRS) == CRS.AxisOrder.EAST_NORTH)
+                || (CRS.getAxisOrder(sourceCRS) == CRS.AxisOrder.INAPPLICABLE)) {
+            return req;
+        }
+
+        for (ReferenceIdentifier identifier : sourceCRS.getIdentifiers()) {
+            try {
+                String _identifier = identifier.toString();
+                CoordinateReferenceSystem flippedCRS = CRS.decode(_identifier, true);
+                if (CRS.getAxisOrder(flippedCRS) == CRS.AxisOrder.EAST_NORTH) {
+                    Envelope reqJTSEnvelope = req.getBbox();
+                    ReferencedEnvelope reqEnvelope =
+                            ReferencedEnvelope.create(reqJTSEnvelope, req.getCrs());
+                    ReferencedEnvelope flippedEnvelope = reqEnvelope.transform(flippedCRS, false);
+
+                    req.setBbox(flippedEnvelope);
+                    req.setCrs(flippedCRS);
+
+                    //                    GeneralEnvelope reqGenEnvelope = new
+                    // GeneralEnvelope(reqEnvelope.getLowerCorner(),reqEnvelope.getUpperCorner());
+                    //                    CRS.transform(reqEnvelope,flippedCRS)
+                    //                    req.setCrs(flippedCRS);
+                }
+            } catch (Exception e) {
+                // couldn't flip - try again
+            }
+        }
+        return req; // couldn't do the xform
+    }
+
     /** Add tiles to an existing GeoPackage */
     public void addTiles(
             GeoPackage geopkg,
@@ -173,6 +221,19 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
             String name,
             ProgressListener listener)
             throws IOException {
+        req = rewriteRequest(req);
         addTiles(new GeopackageWrapper(geopkg, e), req, name, listener);
+    }
+
+    @Override
+    protected void addTiles(
+            TilesFile tiles,
+            List<MapLayerInfo> mapLayers,
+            GetMapRequest request,
+            String name,
+            ProgressListener listener)
+            throws IOException, ServiceException {
+        request = rewriteRequest(request);
+        super.addTiles(tiles, mapLayers, request, name, listener);
     }
 }

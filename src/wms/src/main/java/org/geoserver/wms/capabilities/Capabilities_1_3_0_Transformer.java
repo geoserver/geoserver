@@ -1682,6 +1682,8 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                     params(
                             "service",
                             "WMS",
+                            "version",
+                            request.getVersion(),
                             "request",
                             "GetLegendGraphic",
                             "format",

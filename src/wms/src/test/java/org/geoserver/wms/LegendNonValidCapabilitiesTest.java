@@ -94,7 +94,7 @@ public class LegendNonValidCapabilitiesTest extends WMSTestSupport {
         assertXpathEvaluatesTo(LEGEND_FORMAT, legendUrlPath + "/wms:Format", dom);
         assertXpathEvaluatesTo(
                 BASE
-                        + "/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20"
+                        + "/ows?service=WMS&version=1.3.0&request=GetLegendGraphic&format=image%2Fpng&width=20"
                         + "&height=20&layer=gs%3Awatertemp",
                 legendUrlPath + "/wms:OnlineResource/@xlink:href",
                 dom);
@@ -111,7 +111,7 @@ public class LegendNonValidCapabilitiesTest extends WMSTestSupport {
         assertXpathEvaluatesTo(LEGEND_FORMAT, legendUrlPath + "/Format", dom);
         assertXpathEvaluatesTo(
                 BASE
-                        + "/wms?request=GetLegendGraphic&format=image%2Fpng&width=20"
+                        + "/wms?request=GetLegendGraphic&version=1.1.1&format=image%2Fpng&width=20"
                         + "&height=20&layer=gs%3Awatertemp",
                 legendUrlPath + "/OnlineResource/@xlink:href",
                 dom);

@@ -413,6 +413,25 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
         assertTrue(href.contains("height=20"));
     }
 
+    /** Tests that Legend Graphic URL contains version. */
+    @Test
+    public void testOnlineResourceLegendURLVersion() throws Exception {
+
+        TransformerBase tr = createTransformer();
+        tr.setIndentation(2);
+        Document dom = WMSTestSupport.transform(req, tr);
+
+        NodeList onlineResources =
+                XPATH.getMatchingNodes(getOnlineResourceXPath("cite:BasicPolygons"), dom);
+        assertEquals(1, onlineResources.getLength());
+        Element onlineResource = (Element) onlineResources.item(0);
+        String href = onlineResource.getAttribute("xlink:href");
+
+        assertNotNull(href);
+        assertTrue(href.contains("GetLegendGraphic"));
+        assertTrue(href.contains("version"));
+    }
+
     /**
      * Tests that width and height in legend online resources are consistent with the ones specified
      * in legendURL when dealing with static legends.

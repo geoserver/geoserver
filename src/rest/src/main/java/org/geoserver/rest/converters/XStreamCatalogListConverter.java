@@ -290,7 +290,8 @@ public abstract class XStreamCatalogListConverter
         private void writeSingleElementCollection(
                 RestListWrapper<?> wrapper, HttpOutputMessage outputMessage) throws IOException {
 
-            XStream xstream = this.createXStreamInstance(true);
+            final boolean useSerializeAsArray = true;
+            XStream xstream = this.createXStreamInstance(useSerializeAsArray);
             XStreamPersister xp = xpf.createXMLPersister();
             wrapper.configurePersister(xp, this);
             final Class<?> targetClass = wrapper.getObjectClass();

@@ -1,5 +1,8 @@
 {
-  "title": "GeoServer"
+  "title": "GeoServer",
+  "description":"GeoServer implements industry standard OGC protocols such as Web Feature Service (WFS), Web Map Service (WMS), and Web Coverage Service (WCS). Additional formats and publication options are available as extensions including Web Processing Service (WPS), and Web Map Tile Service (WMTS).  GeoServer is working with the OSGeo Foundation to be certified as compliant and we need your help. Both financial support and developers are needed to complete this activity.",
+  "keywords":["gis","webmapping","wms","wfs","wcs","wps","ogc","standards"],
+  "license":{"id":"GPL2"},
    "creators": [
         {
           "name":"Andrea Aime",

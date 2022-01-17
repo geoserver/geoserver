@@ -155,7 +155,7 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
                                         .stream()
                                         .anyMatch(tn -> FeatureTypes.matches(featureType, tn)))) {
             Expression tx = fts.getTransformation();
-            if (tx != null) {
+            if (tx != null && activeRules(fts)) {
                 boolean rasterTransformation = false;
                 if (tx instanceof CoverageReadingTransformation)
                     this.coverageReadingTransformation = (CoverageReadingTransformation) tx;
@@ -168,6 +168,15 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
                 r.accept(this);
             }
         }
+    }
+
+    private boolean activeRules(FeatureTypeStyle fts) {
+        for (Rule rule : fts.rules()) {
+            if (rule.getMinScaleDenominator() < scaleDenominator
+                    && rule.getMaxScaleDenominator() > scaleDenominator) return true;
+        }
+
+        return false;
     }
 
     private boolean isRasterTransformation(Expression tx, boolean rasterTransformation) {

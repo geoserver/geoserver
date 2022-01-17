@@ -405,7 +405,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                 new RasterSymbolizerVisitor(params.getScaleDenominator(), null);
         style.accept(visitor);
 
-        // we could skip the reading altoghether
+        // we could skip the reading altogether
         CoverageReadingTransformation readingTx = visitor.getCoverageReadingTransformation();
         if (readingTx != null) {
             ReaderAndParams ctx = new ReaderAndParams(reader, parameters);

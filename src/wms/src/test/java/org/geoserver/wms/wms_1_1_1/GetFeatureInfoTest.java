@@ -1572,6 +1572,7 @@ public class GetFeatureInfoTest extends WMSTestSupport {
 
     @Test
     public void testFootprintsExtraction() throws Exception {
+        // lower scale, the footprint tx kicks in
         String response =
                 getAsString(
                         "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES="
@@ -1583,6 +1584,21 @@ public class GetFeatureInfoTest extends WMSTestSupport {
 
         assertThat(
                 response, CoreMatchers.containsString("location = green_00000002T0000000Z.tiff"));
+    }
+
+    @Test
+    public void testFootprintsExtractionHigherScale() throws Exception {
+        // higher scale, the fts with no tx and raster symbolizer kicks in
+        String response =
+                getAsString(
+                        "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES="
+                                + FOOTPRINTS_STYLE
+                                + "&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetFeatureInfo&SRS=EPSG:4326&BBOX=0.49,0.49,0.51,0.51&WIDTH=150&HEIGHT=150"
+                                + "&transparent=false&CQL_FILTER=location like 'green%25' + "
+                                + "&query_layers=sf:mosaic&x=10&y=10");
+
+        assertThat(response, CoreMatchers.containsString("RED_BAND = 0.0"));
     }
 
     @Test

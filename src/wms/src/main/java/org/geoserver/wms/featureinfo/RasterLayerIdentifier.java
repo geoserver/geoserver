@@ -290,7 +290,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                         bands[j++] = i;
                     }
                 }
-                if (!requestedNames.isEmpty()) {
+                if (!requestedNames.isEmpty() && !hasVectorTransformations(requestParams)) {
                     String availableNames =
                             dimensionNames.stream().collect(Collectors.joining(", "));
                     throw new ServiceException(
@@ -305,6 +305,17 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
             }
         }
         return parameters;
+    }
+
+    private boolean hasVectorTransformations(FeatureInfoRequestParameters params) {
+        Style style = params.getStyle();
+        RasterSymbolizerVisitor visitor =
+                new RasterSymbolizerVisitor(params.getScaleDenominator(), null);
+        style.accept(visitor);
+
+        // we could skip the reading altogether
+        CoverageReadingTransformation readingTx = visitor.getCoverageReadingTransformation();
+        return readingTx != null || getTransformation(visitor) != null;
     }
 
     private DirectPosition getQueryPosition(

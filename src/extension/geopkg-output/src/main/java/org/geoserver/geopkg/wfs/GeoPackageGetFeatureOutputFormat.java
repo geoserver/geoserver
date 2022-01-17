@@ -46,83 +46,75 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
         super(gs, Sets.union(Sets.newHashSet(MIME_TYPES), Sets.newHashSet(NAMES)));
     }
 
-    // returns the geopackage mime type (for http response)
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         return MIME_TYPE;
     }
 
-    // gets the element name (<geopackage/>) to put in the capabilities file.
     @Override
     public String getCapabilitiesElementName() {
         return NAMES.iterator().next();
     }
 
-    // gets the element names (<geopackage/><geopkg/><gpkg/>) to put in the capabilities file.
     @Override
     public List<String> getCapabilitiesElementNames() {
         return Lists.newArrayList(NAMES);
     }
 
-    // Get the preferred Content-Disposition header for this response
     @Override
     public String getPreferredDisposition(Object value, Operation operation) {
         return DISPOSITION_ATTACH;
     }
 
-    // get the filename extension for the resulting geopackage file
     @Override
     protected String getExtension(FeatureCollectionResponse response) {
         return EXTENSION;
     }
 
-    // create the geopackage file and write the features into it.
-    // geopackage is written to a temporary file, copied into the outputStream, then the temp file
-    // deleted.
+
     @Override
     protected void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
-
+        // create the geopackage file and write the features into it.
+        // geopackage is written to a temporary file, copied into the outputStream, then the temp file
+        // deleted.
         File file = File.createTempFile("geopkg", ".tmp.gpkg");
-        GeoPackage geopkg = GeoPkg.getGeoPackage(file);
 
-        for (FeatureCollection collection : featureCollection.getFeatures()) {
+        try (GeoPackage geopkg = GeoPkg.getGeoPackage(file)) {
+            for (FeatureCollection collection : featureCollection.getFeatures()) {
 
-            FeatureEntry e = new FeatureEntry();
+                FeatureEntry e = new FeatureEntry();
 
-            if (!(collection instanceof SimpleFeatureCollection)) {
-                throw new ServiceException(
-                        "GeoPackage OutputFormat does not support Complex Features.");
-            }
+                if (!(collection instanceof SimpleFeatureCollection)) {
+                    throw new ServiceException(
+                            "GeoPackage OutputFormat does not support Complex Features.");
+                }
 
-            SimpleFeatureCollection features = (SimpleFeatureCollection) collection;
-            FeatureTypeInfo meta = lookupFeatureType(features);
-            if (meta != null) {
-                // initialize entry metadata
-                e.setIdentifier(meta.getTitle());
-                e.setDescription(abstractOrDescription(meta));
-            }
+                SimpleFeatureCollection features = (SimpleFeatureCollection) collection;
+                FeatureTypeInfo meta = lookupFeatureType(features);
+                if (meta != null) {
+                    // initialize entry metadata
+                    e.setIdentifier(meta.getTitle());
+                    e.setDescription(abstractOrDescription(meta));
+                }
 
-            geopkg.add(e, features);
+                geopkg.add(e, features);
 
-            if (!"false".equals(System.getProperty(PROPERTY_INDEXED))) {
-                geopkg.createSpatialIndex(e);
+                if (!"false".equals(System.getProperty(PROPERTY_INDEXED))) {
+                    geopkg.createSpatialIndex(e);
+                }
             }
         }
 
-        geopkg.close();
-
         // write to output and delete temporary file
-        InputStream temp = new FileInputStream(geopkg.getFile());
-        IOUtils.copy(temp, output);
-        output.flush();
-        temp.close();
-        geopkg.getFile().delete();
+        try (InputStream temp = new FileInputStream(file)) {
+            IOUtils.copy(temp, output);
+            output.flush();
+        }
+        file.delete();
     }
 
-    // get the FeatureTypeInfo from the catalog (i.e. metadata - title/description/abstract) for the
-    // given collection.
     FeatureTypeInfo lookupFeatureType(SimpleFeatureCollection features) {
         FeatureType featureType = features.getSchema();
         if (featureType != null) {
@@ -140,7 +132,6 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
         return null;
     }
 
-    // try to find an appropriate description for the featureTypeInfo
     String abstractOrDescription(FeatureTypeInfo meta) {
         return meta.getAbstract() != null ? meta.getAbstract() : meta.getDescription();
     }

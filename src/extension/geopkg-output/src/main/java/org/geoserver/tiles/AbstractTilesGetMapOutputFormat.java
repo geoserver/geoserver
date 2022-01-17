@@ -7,12 +7,9 @@ package org.geoserver.tiles;
 import static java.lang.String.format;
 
 import com.google.common.base.Preconditions;
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -21,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
 import org.geoserver.gwc.GWC;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -175,34 +171,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         tiles.close();
 
         final File dbFile = tiles.getFile();
-        final BufferedInputStream bin = new BufferedInputStream(new FileInputStream(dbFile));
-
-        RawMap result =
-                new RawMap(map, bin, getMimeType()) {
-                    @Override
-                    public void writeTo(OutputStream out) throws IOException {
-                        String dbFilename = getAttachmentFileName();
-                        if (dbFilename != null) {
-                            dbFilename =
-                                    dbFilename.substring(0, dbFilename.length() - 4) + extension;
-                        } else {
-                            // this shouldn't really ever happen, but fallback anyways
-                            dbFilename = "tiles" + extension;
-                        }
-
-                        IOUtils.copy(bin, out);
-                        out.flush();
-                        bin.close();
-                        try {
-                            dbFile.delete();
-                        } catch (Exception e) {
-                            LOGGER.log(
-                                    Level.WARNING,
-                                    "Error deleting file: " + dbFile.getAbsolutePath(),
-                                    e);
-                        }
-                    }
-                };
+        FileBackedRawMap result = new FileBackedRawMap(map, dbFile, getMimeType());
 
         result.setContentDispositionHeader(map, extension, true);
         return result;
@@ -418,10 +387,11 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return srid;
     }
 
-    // Creates a GridSubset (GridSet + a coverage area) based on the WMS request (i.e. SRID in the
-    // request)
-    // &format_options=gridset:<name> can get used in the WMS request to explicitly use a particular
-    // GWC gridset
+    /** Creates a GridSubset (GridSet + a coverage area) based on the WMS request (i.e. SRID in the
+     * request)
+     * &format_options=gridset:<name> can get used in the WMS request to explicitly use a particular
+     * GWC gridset
+     */
     protected GridSubset findBestGridSubset(GetMapRequest req) {
         Map formatOpts = req.getFormatOptions();
 
@@ -493,19 +463,21 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return gridSubsets.iterator().next();
     }
 
-    // finds the appropriate gridset zoom levels for the request
-    // This can be controlled with &format_options=p1:v1;p2:v2
-    //
-    // min_zoom -  Grid Zoom level for tiles to start.
-    //             default: zoom level based on a single tile covering the bbox area.
-    // max_zoom - Grid Zoom level for tiles to end.
-    //            default: zoom where there's >255 tiles in total (could be a bit more - see
-    // findMaxZoomAuto)
-    // num_zooms - Number of zoom levels in the geopkg. If present then  max_zoom = min_zoom +
-    // num_zooms
-    //
-    //  result[0] - most zoomed out zoom level (ie. 10)
-    //  result[1] - least zoomed out level (i.e. 15)
+    /*
+    * finds the appropriate gridset zoom levels for the request
+    * This can be controlled with &format_options=p1:v1;p2:v2
+    *
+    * min_zoom -  Grid Zoom level for tiles to start.
+    *             default: zoom level based on a single tile covering the bbox area.
+    * max_zoom - Grid Zoom level for tiles to end.
+    *            default: zoom where there's >255 tiles in total (could be a bit more - see
+    * findMaxZoomAuto)
+    * num_zooms - Number of zoom levels in the geopkg. If present then  max_zoom = min_zoom +
+    * num_zooms
+    *
+    *  result[0] - most zoomed out zoom level (ie. 10)
+    *  result[1] - least zoomed out level (i.e. 15)
+    */
     protected int[] findMinMaxZoom(GridSubset gridSubset, GetMapRequest req) {
         GridSet gridSet = gridSubset.getGridSet();
         Map formatOpts = req.getFormatOptions();
@@ -547,12 +519,12 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return new int[] {minZoom, maxZoom};
     }
 
-    // find the zoom level associated with the request
-    // This is based on a single tile (i.e. 256px) for the request bounds.
-    //  It is NOT based on the scale of the actual WMS request (i.e. request width/height does not
-    // affect
-    //  this calculation).
     protected Integer findClosestZoom(GridSet gridSet, GetMapRequest req) {
+        // find the zoom level associated with the request
+        // This is based on a single tile (i.e. 256px) for the request bounds.
+        //  It is NOT based on the scale of the actual WMS request (i.e. request width/height does not
+        // affect
+        //  this calculation).
         double reqScale =
                 RendererUtilities.calculateOGCScale(bounds(req), gridSet.getTileWidth(), null);
 
@@ -573,10 +545,10 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return Math.max(i, 0);
     }
 
-    // given a minZoom, find the corresponding maxZoom.
-    // Calculation is to keep adding zoom levels until the total number of tiles in the result is
-    // >255.
     protected Integer findMaxZoomAuto(GridSubset gridSubset, Integer minZoom, GetMapRequest req) {
+        // given a minZoom, find the corresponding maxZoom.
+        // Calculation is to keep adding zoom levels until the total number of tiles in the result is
+        // >255.
         BoundingBox bbox = bbox(req);
 
         int zoom = minZoom;
@@ -590,14 +562,11 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return zoom;
     }
 
-    // get the underlying image (i.e. png/jpeg) from requests format options
     protected String parseFormatFromOpts(Map formatOpts) {
         String format = (String) formatOpts.get("format");
         return format.contains("/") ? format : "image/" + format;
     }
 
-    // guess at the best format (png or jpeg) by looking at the layers requested.
-    // if any of the layers are raster, then JPEG.  Otherwise (i.e. all vector layers) PNG.
     protected String findBestFormat(GetMapRequest req) {
         // if request is a single coverage layer return jpeg, otherwise use just png
         List<MapLayerInfo> layers = req.getLayers();

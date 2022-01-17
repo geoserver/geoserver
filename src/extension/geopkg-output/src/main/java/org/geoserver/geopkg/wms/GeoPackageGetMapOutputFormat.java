@@ -49,7 +49,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
         super(MIME_TYPE, "." + EXTENSION, Sets.newHashSet(NAMES), webMapService, wms, gwc);
     }
 
-    // TilesFile interface implementation for a GeoPackage
+    /** TilesFile interface implementation for a GeoPackage */
     private static class GeopackageWrapper implements TilesFile {
 
         GeoPackage geopkg;
@@ -61,13 +61,11 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
             this.e = e;
         }
 
-        // creates the underlying geopackage file
         public GeopackageWrapper() throws IOException {
             this(new GeoPackage(), new TileEntry());
             geopkg.init();
         }
 
-        // setup the geopackage
         @Override
         public void setMetadata(
                 String name,
@@ -152,7 +150,6 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
         }
     }
 
-    // setup format option (i.e. flipy) for incoming request, then make the tiles.
     @Override
     public WebMap produceMap(WMSMapContent map) throws ServiceException, IOException {
         /*
@@ -165,30 +162,31 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
          *
          * [1]: http://www.geopackage.org/spec/#tile_matrix
          */
+        // setup format option (i.e. flipy) for incoming request, then make the tiles.
         map.getRequest().getFormatOptions().put("flipy", "true");
         rewriteRequest(map.getRequest());
         return super.produceMap(map);
     }
 
-    // create the TilesFile
     @Override
     protected TilesFile createTilesFile() throws IOException {
         return new GeopackageWrapper();
     }
 
-    // re-formats the original request to one that's inline with the GeoPKG specification.
-    // If the CRS is XY (EAST_NORTH), the we do nothing.
-    // If the CRS is YX (NORTH_EAST), we attempt to re-write the request in XY format.
-    //   i.e. change the request CRS to the equivalent EAST_NORTH CRS
-    //   and  flip the request's ordinates around in the request
-    // NOTE: geopkg requires XY coordinate systems and WMS 1.3 assumes 4326 is YX (WMS 1.1's 4326 is
-    // XY).
-    // For a WMS 1.3 EPSG:4326 request, this will flip.
-    // For a WMS 1.1 EPSG:4326 request, this will NOT flip.
-    // NOTE: typically, a WMS 1.1 and WMS 1.3 EPSG:4326 request will have the bbox ordinates
-    // flipped.
-    //
-    // NOTE: updates request in-situ
+    /**
+     * re-formats the original request to one that's inline with the GeoPKG specification.
+     * If the CRS is XY (EAST_NORTH), the we do nothing.
+     * If the CRS is YX (NORTH_EAST), we attempt to re-write the request in XY format.
+     *    i.e. change the request CRS to the equivalent EAST_NORTH CRS
+     *         and  flip the request's ordinates around in the request
+     * NOTE: geopkg requires XY coordinate systems and WMS 1.3 assumes 4326 is YX (WMS 1.1's 4326 is
+     *       XY).
+     *      For a WMS 1.3 EPSG:4326 request, this will flip.
+     *      For a WMS 1.1 EPSG:4326 request, this will NOT flip.
+     * NOTE: typically, a WMS 1.1 and WMS 1.3 EPSG:4326 request will have the bbox ordinates
+     * flipped.
+     * NOTE: updates request in-situ
+     */
     private GetMapRequest rewriteRequest(GetMapRequest req) {
         CoordinateReferenceSystem sourceCRS = req.getCrs();
 

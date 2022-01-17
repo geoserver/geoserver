@@ -158,60 +158,63 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         format.write(fct, os, op);
 
-        GeoPackage geopkg = createGeoPackage(os.toByteArray());
+        try (GeoPackage geopkg = createGeoPackage(os.toByteArray())) {
 
-        // compare all feature collections
-        for (FeatureCollection collection : fct.getFeatures()) {
-            FeatureEntry e = new FeatureEntry();
-            e.setTableName(collection.getSchema().getName().getLocalPart());
-            e.setGeometryColumn(
-                    collection.getSchema().getGeometryDescriptor().getName().getLocalPart());
+            // compare all feature collections
+            for (FeatureCollection collection : fct.getFeatures()) {
+                FeatureEntry e = new FeatureEntry();
+                e.setTableName(collection.getSchema().getName().getLocalPart());
+                e.setGeometryColumn(
+                        collection.getSchema().getGeometryDescriptor().getName().getLocalPart());
 
-            SimpleFeatureReader reader = geopkg.reader(e, null, null);
+                try (SimpleFeatureReader reader = geopkg.reader(e, null, null)) {
 
-            SimpleFeatureCollection sCollection = (SimpleFeatureCollection) collection;
+                    SimpleFeatureCollection sCollection = (SimpleFeatureCollection) collection;
 
-            // spatial index
-            assertEquals(indexed, geopkg.hasSpatialIndex(e));
+                    // spatial index
+                    assertEquals(indexed, geopkg.hasSpatialIndex(e));
 
-            // compare type
-            SimpleFeatureType type1 = reader.getFeatureType();
-            SimpleFeatureType type2 = sCollection.getSchema();
-            assertEquals(type1.getDescriptors().size(), type2.getDescriptors().size());
-            for (int i = 0; i < type1.getDescriptors().size(); i++) {
-                assertEquals(type1.getDescriptor(i).getName(), type2.getDescriptor(i).getName());
-                assertEquals(type1.getDescriptor(i).getType(), type2.getDescriptor(i).getType());
-            }
+                    // compare type
+                    SimpleFeatureType type1 = reader.getFeatureType();
+                    SimpleFeatureType type2 = sCollection.getSchema();
+                    assertEquals(type1.getDescriptors().size(), type2.getDescriptors().size());
+                    for (int i = 0; i < type1.getDescriptors().size(); i++) {
+                        assertEquals(
+                                type1.getDescriptor(i).getName(), type2.getDescriptor(i).getName());
+                        assertEquals(
+                                type1.getDescriptor(i).getType(), type2.getDescriptor(i).getType());
+                    }
 
-            // compare data
-            MemoryFeatureCollection memCollection = new MemoryFeatureCollection(type2);
-            while (reader.hasNext()) {
-                memCollection.add(reader.next());
-            }
+                    // compare data
+                    MemoryFeatureCollection memCollection = new MemoryFeatureCollection(type2);
+                    while (reader.hasNext()) {
+                        memCollection.add(reader.next());
+                    }
 
-            assertEquals(sCollection.size(), memCollection.size());
+                    assertEquals(sCollection.size(), memCollection.size());
 
-            SimpleFeatureIterator it = sCollection.features();
-            while (it.hasNext()) {
-                SimpleFeature sf = it.next();
-                for (int i = 0; i < type1.getDescriptors().size(); i++) {
-                    assertTrue(findFeatureAttribute(memCollection, i, sf.getAttribute(i)));
+                    try (SimpleFeatureIterator it = sCollection.features()) {
+                        while (it.hasNext()) {
+                            SimpleFeature sf = it.next();
+                            for (int i = 0; i < type1.getDescriptors().size(); i++) {
+                                assertTrue(
+                                        findFeatureAttribute(memCollection, i, sf.getAttribute(i)));
+                            }
+                        }
+                    }
                 }
             }
-
-            reader.close();
         }
-
-        geopkg.close();
     }
 
     protected boolean findFeatureAttribute(
             SimpleFeatureCollection collection, int indexProp, Object value) {
-        SimpleFeatureIterator it = collection.features();
-        while (it.hasNext()) {
-            SimpleFeature sf = it.next();
-            if (sf.getAttribute(indexProp).equals(value)) {
-                return true;
+        try (SimpleFeatureIterator it = collection.features()) {
+            while (it.hasNext()) {
+                SimpleFeature sf = it.next();
+                if (sf.getAttribute(indexProp).equals(value)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -220,10 +223,10 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
     protected GeoPackage createGeoPackage(byte[] inMemory) throws IOException {
 
         File f = File.createTempFile("temp", ".gpkg", new File("target"));
-        FileOutputStream fout = new FileOutputStream(f);
-        fout.write(inMemory);
-        fout.flush();
-        fout.close();
+        try (FileOutputStream fout = new FileOutputStream(f)) {
+            fout.write(inMemory);
+            fout.flush();
+        }
 
         return new GeoPackage(f);
     }

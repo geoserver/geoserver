@@ -10,16 +10,23 @@ import java.util.Set;
 import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.map.AbstractMapResponse;
+import org.geoserver.wms.map.RawMapResponse;
 import org.springframework.util.Assert;
 
-public class FileBackedRawResponse extends AbstractMapResponse {
-    public FileBackedRawResponse() {
+/**
+ * MapResponse for a response backed by a file (i.e. geopkg).
+ *
+ *  * <p>See {@link RawMapResponse}, which is similar, but backed with a byte[]
+ */
+public class FileBackedRawMapResponse extends AbstractMapResponse {
+    public FileBackedRawMapResponse() {
         super(FileBackedRawMap.class, (Set<String>) null);
     }
 
     @Override
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
+        //offset work to FileBackedRawMap's writeTo() method
         Assert.isInstanceOf(FileBackedRawMap.class, value);
         FileBackedRawMap map = (FileBackedRawMap) value;
         try {

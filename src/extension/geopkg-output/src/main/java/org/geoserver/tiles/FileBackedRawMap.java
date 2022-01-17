@@ -14,11 +14,12 @@ import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
+import org.geoserver.wms.map.RawMap;
 
 /**
  * This represents a webmap that is backed by a file (i.e. geopkg).
  *
- * <p>See RawMap, which is similar, but backed with a byte[]
+ * <p>See {@link RawMap}, which is similar, but backed with a byte[]
  */
 public class FileBackedRawMap extends WebMap implements Closeable {
 
@@ -31,6 +32,12 @@ public class FileBackedRawMap extends WebMap implements Closeable {
         setMimeType(mimeType);
     }
 
+    /**
+     * Write the underlying file to the outputstream.
+     * DELETES the underlying file after writing.
+     * @param out stream to write to
+     * @throws IOException
+     */
     public void writeTo(OutputStream out) throws IOException {
         if (underlyingFile == null) {
             throw new IOException("underlying file is not present!");
@@ -43,6 +50,10 @@ public class FileBackedRawMap extends WebMap implements Closeable {
         }
     }
 
+    /**
+     * Deletes the underlying file!
+     * @throws IOException
+     */
     @Override
     public void close() throws IOException {
         if (underlyingFile != null) {
@@ -53,6 +64,7 @@ public class FileBackedRawMap extends WebMap implements Closeable {
 
     @Override
     protected void disposeInternal() {
+        //close() deletes the underlying file.
         try {
             close();
         } catch (IOException e) {

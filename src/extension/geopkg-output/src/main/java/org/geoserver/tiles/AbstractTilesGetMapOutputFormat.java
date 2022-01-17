@@ -589,6 +589,8 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
             response.write(map, bout, null);
         } else if (map instanceof RawMap) {
             ((RawMap) map).writeTo(bout);
+        } else if (map instanceof FileBackedRawMap) {
+            ((FileBackedRawMap) map).writeTo(bout);
         }
         bout.flush();
         return bout.toByteArray();

@@ -12,6 +12,9 @@
       <constructor-arg ref="wms" />
       <constructor-arg ref="gwcFacade" />
     </bean>
+
+    <bean id="FileBackedRawResponse" class="org.geoserver.tiles.FileBackedRawResponse">
+    </bean>
     
     <bean id="geopkgGetFeatureOutputFormat" class="org.geoserver.geopkg.wfs.GeoPackageGetFeatureOutputFormat">
       <constructor-arg ref="geoServer" />

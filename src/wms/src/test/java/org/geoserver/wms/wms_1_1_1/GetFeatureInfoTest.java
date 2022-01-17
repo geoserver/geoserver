@@ -5,7 +5,9 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -65,7 +67,6 @@ import org.geotools.styling.Rule;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.util.logging.Logging;
-import org.hamcrest.CoreMatchers;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -1581,9 +1582,29 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                                 + "&REQUEST=GetFeatureInfo&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150"
                                 + "&transparent=false&CQL_FILTER=location like 'green%25' + "
                                 + "&query_layers=sf:mosaic&x=10&y=10");
-
         assertThat(
-                response, CoreMatchers.containsString("location = green_00000002T0000000Z.tiff"));
+                response,
+                allOf(
+                        containsString("location = green_00000002T0000000Z.tiff"),
+                        containsString("ingestion =")));
+    }
+
+    @Test
+    public void testFootprintsExtractionProperties() throws Exception {
+        // lower scale, the footprint tx kicks in
+        String response =
+                getAsString(
+                        "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES="
+                                + FOOTPRINTS_STYLE
+                                + "&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetFeatureInfo&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150"
+                                + "&transparent=false&CQL_FILTER=location like 'green%25' + "
+                                + "&query_layers=sf:mosaic&x=10&y=10&propertyname=ingestion");
+        assertThat(
+                response,
+                allOf(
+                        not(containsString("location = green_00000002T0000000Z.tiff")),
+                        containsString("ingestion =")));
     }
 
     @Test
@@ -1598,7 +1619,32 @@ public class GetFeatureInfoTest extends WMSTestSupport {
                                 + "&transparent=false&CQL_FILTER=location like 'green%25' + "
                                 + "&query_layers=sf:mosaic&x=10&y=10");
 
-        assertThat(response, CoreMatchers.containsString("RED_BAND = 0.0"));
+        assertThat(
+                response,
+                allOf(
+                        containsString("RED_BAND = "),
+                        containsString("GREEN_BAND = "),
+                        containsString("BLUE_BAND = ")));
+    }
+
+    @Test
+    public void testFootprintsExtractionHigherScaleProps() throws Exception {
+        // higher scale, the fts with no tx and raster symbolizer kicks in
+        String response =
+                getAsString(
+                        "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES="
+                                + FOOTPRINTS_STYLE
+                                + "&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                                + "&REQUEST=GetFeatureInfo&SRS=EPSG:4326&BBOX=0.49,0.49,0.51,0.51&WIDTH=150&HEIGHT=150"
+                                + "&transparent=false&CQL_FILTER=location like 'green%25' + "
+                                + "&query_layers=sf:mosaic&x=10&y=10&propertyname=RED_BAND");
+
+        assertThat(
+                response,
+                allOf(
+                        containsString("RED_BAND = "),
+                        not(containsString("GREEN_BAND = ")),
+                        not(containsString("BLUE_BAND = "))));
     }
 
     @Test

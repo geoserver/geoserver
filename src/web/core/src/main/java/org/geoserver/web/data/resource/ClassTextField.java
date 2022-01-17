@@ -72,7 +72,7 @@ class ClassTextField extends AutoCompleteTextField<Class> {
     }
 
     @Override
-    protected Iterator getChoices(String s) {
+    protected Iterator<Class> getChoices(String s) {
         return BINDINGS.iterator();
     }
 
@@ -104,7 +104,7 @@ class ClassTextField extends AutoCompleteTextField<Class> {
 
     private static String getClassName(Class c) {
         String name = CLASS_TO_NAME.get(c);
-        if (name == null) c.getName(); // if not a common one, use the full name
+        if (name == null) return c.getName(); // if not a common one, use the full name
         return name;
     }
 

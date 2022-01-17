@@ -6,9 +6,7 @@ package org.geoserver.catalog;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import org.geoserver.platform.ExtensionPriority;
 import org.geoserver.platform.ServiceException;
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
@@ -16,9 +14,8 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.transform.Definition;
 import org.geotools.data.transform.TransformFactory;
-import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
-import org.geotools.util.logging.Logging;
+import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.expression.Expression;
@@ -27,10 +24,8 @@ import org.opengis.filter.expression.Expression;
  * Transforms a vector layer {@link org.opengis.feature.type.FeatureType} based on the definitions
  * contains in the eventual {@link AttributeTypeInfo} list.
  */
-public class TransformFeatureTypeCallback implements RetypeFeatureTypeCallback, ExtensionPriority {
-    static final Logger LOGGER = Logging.getLogger(TransformFeatureTypeCallback.class);
+public class TransformFeatureTypeCallback {
 
-    @Override
     public FeatureType retypeFeatureType(FeatureTypeInfo fti, FeatureType schema)
             throws IOException {
         List<AttributeTypeInfo> attributes = fti.getAttributes();
@@ -44,7 +39,6 @@ public class TransformFeatureTypeCallback implements RetypeFeatureTypeCallback, 
         return tfs.getSchema();
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     public <T extends FeatureType, U extends Feature> FeatureSource<T, U> wrapFeatureSource(
             FeatureTypeInfo fti, FeatureSource<T, U> fs) throws IOException {
@@ -76,18 +70,12 @@ public class TransformFeatureTypeCallback implements RetypeFeatureTypeCallback, 
     private Definition toDefinition(AttributeTypeInfo ati) {
         try {
             String name = ati.getName();
-            Expression source = CQL.toExpression(ati.getSource());
+            Expression source = ECQL.toExpression(ati.getSource());
             Class<?> binding = ati.getBinding();
             return new Definition(name, source, binding);
         } catch (CQLException e) {
             throw new ServiceException(
                     "Failed to parse the attribute source definition to a valid OGC Expression", e);
         }
-    }
-
-    @Override
-    public int getPriority() {
-        // this should run as the first one, or the expressions might not match
-        return ExtensionPriority.HIGHEST;
     }
 }

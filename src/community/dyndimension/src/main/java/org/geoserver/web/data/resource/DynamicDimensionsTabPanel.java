@@ -172,7 +172,10 @@ public class DynamicDimensionsTabPanel extends PublishedEditTabPanel<LayerInfo> 
 
             table =
                     new ReorderableTablePanel<DefaultValueConfiguration>(
-                            "defaultConfigs", configurations, properties) {
+                            "defaultConfigs",
+                            DefaultValueConfiguration.class,
+                            configurations,
+                            properties) {
 
                         private static final long serialVersionUID = 8562909315041926320L;
 

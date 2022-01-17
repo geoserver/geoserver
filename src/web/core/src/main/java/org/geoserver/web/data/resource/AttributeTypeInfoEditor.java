@@ -35,6 +35,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourcePool;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
+import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.ReorderableTablePanel;
@@ -46,26 +47,24 @@ class AttributeTypeInfoEditor extends Panel {
     static final Logger LOGGER = Logging.getLogger(AttributeTypeInfoEditor.class);
 
     // editor panel constants
-    private static final GeoServerDataProvider.Property<AttributeTypeInfo> NAME =
+    private static final Property<AttributeTypeInfo> NAME =
             new GeoServerDataProvider.BeanProperty<>("name");
-    private static final GeoServerDataProvider.Property<AttributeTypeInfo> BINDING =
+    private static final Property<AttributeTypeInfo> BINDING =
             new GeoServerDataProvider.BeanProperty<>("binding");
-    private static final GeoServerDataProvider.Property<AttributeTypeInfo> SOURCE =
+    private static final Property<AttributeTypeInfo> SOURCE =
             new GeoServerDataProvider.BeanProperty<>("source");
-    private static final GeoServerDataProvider.Property<AttributeTypeInfo> NILLABLE =
+    private static final Property<AttributeTypeInfo> NILLABLE =
             new GeoServerDataProvider.BeanProperty<>("nillable");
     private static final GeoServerDataProvider.PropertyPlaceholder<AttributeTypeInfo> REMOVE =
             new GeoServerDataProvider.PropertyPlaceholder<>("remove");
 
     // make sure we don't end up serializing the list, but get it fresh from the dataProvider,
     // to avoid serialization issues seen in GEOS-8273
-    private static final LoadableDetachableModel<
-                    List<GeoServerDataProvider.Property<AttributeTypeInfo>>>
+    private static final LoadableDetachableModel<List<Property<AttributeTypeInfo>>>
             propertiesModel =
-                    new LoadableDetachableModel<
-                            List<GeoServerDataProvider.Property<AttributeTypeInfo>>>() {
+                    new LoadableDetachableModel<List<Property<AttributeTypeInfo>>>() {
                         @Override
-                        protected List<GeoServerDataProvider.Property<AttributeTypeInfo>> load() {
+                        protected List<Property<AttributeTypeInfo>> load() {
                             return Arrays.asList(NAME, BINDING, SOURCE, NILLABLE, REMOVE);
                         }
                     };
@@ -156,12 +155,15 @@ class AttributeTypeInfoEditor extends Panel {
          * redraw on the client).
          */
         @Override
+        @SuppressWarnings("unchecked")
         protected Component getComponentForProperty(
-                String id, IModel itemModel, GeoServerDataProvider.Property property) {
+                String id,
+                IModel<AttributeTypeInfo> itemModel,
+                Property<AttributeTypeInfo> property) {
             IModel model = property.getModel(itemModel);
             if (property == NAME) {
                 Fragment f = new Fragment(id, "text", getParent());
-                TextField<String> nameField = new TextField<String>("text", model);
+                TextField<String> nameField = new TextField<>("text", model);
                 nameField.add(new UpdateModelBehavior());
                 f.add(nameField);
                 return f;
@@ -172,7 +174,7 @@ class AttributeTypeInfoEditor extends Panel {
                 return f;
             } else if (property == SOURCE) {
                 Fragment f = new Fragment(id, "area", getParent());
-                TextArea<String> source = new TextArea<String>("area", model);
+                TextArea<String> source = new TextArea<>("area", model);
                 source.add(new UpdateModelBehavior());
                 f.add(source);
                 return f;

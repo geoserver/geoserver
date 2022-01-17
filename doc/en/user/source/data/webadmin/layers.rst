@@ -200,9 +200,9 @@ It is possible to:
 
 * Change the order of attributes, using either the up/down arrows, or dragging the attribute row.
 * Remove an attribute using the "remove" icon at the end of the attribute row.
-* Add a new attribute, which will be computed based on the :guilabel:`Source` CQL expresssion.
+* Add a new attribute, which will be computed based on the :guilabel:`Source` CQL expression.
 * Rename an attribute.
-* Chance the nillability of the attribute, for example, making the attribute mandatory even if it's
+* Change the nillability of the attribute, for example, making the attribute mandatory even if it's
   not in the data source, and vice-versa.
 * Change the type of the attribute using the `Type` column. The most common types are available in 
   a drop-down on editing, but it's possible to indicate any valid Java class, as long as GeoServer

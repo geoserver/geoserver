@@ -259,7 +259,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         List<MapLayerInfo> mapLayers = req.getLayers();
 
         // list of layers to render directly and include as tiles
-        List<MapLayerInfo> tileLayers = new ArrayList<MapLayerInfo>();
+        List<MapLayerInfo> tileLayers = new ArrayList<>();
 
         // tiled mode means render all as map tile layer
         tileLayers.addAll(mapLayers);
@@ -458,7 +458,7 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         SRS srs = SRS.getSRS(epsgCode);
 
         // figure out the appropriate grid sub set
-        Set<GridSubset> gridSubsets = new LinkedHashSet<GridSubset>();
+        Set<GridSubset> gridSubsets = new LinkedHashSet<>();
         for (MapLayerInfo l : req.getLayers()) {
             TileLayer tl = gwc.getTileLayerByName(l.getName());
             if (tl == null) {

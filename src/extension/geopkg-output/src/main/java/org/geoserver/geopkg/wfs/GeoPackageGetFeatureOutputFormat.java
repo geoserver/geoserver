@@ -5,7 +5,10 @@
  */
 package org.geoserver.geopkg.wfs;
 
-import static org.geoserver.geopkg.GeoPkg.*;
+import static org.geoserver.geopkg.GeoPkg.EXTENSION;
+import static org.geoserver.geopkg.GeoPkg.MIME_TYPE;
+import static org.geoserver.geopkg.GeoPkg.MIME_TYPES;
+import static org.geoserver.geopkg.GeoPkg.NAMES;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;

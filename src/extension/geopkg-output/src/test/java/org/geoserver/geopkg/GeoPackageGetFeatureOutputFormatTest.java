@@ -66,10 +66,10 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
 
         FeatureSource<? extends FeatureType, ? extends Feature> fs =
                 getFeatureSource(SystemTestData.BASIC_POLYGONS);
-        ;
+
         fct.getFeature().add(fs.getFeatures());
 
-        testGetFeature(fct, true);
+        validateGetFeature(fct, true);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         fs = getFeatureSource(SystemTestData.STREAMS);
         fct.getFeature().add(fs.getFeatures());
 
-        testGetFeature(fct, true);
+        validateGetFeature(fct, true);
     }
 
     @Test
@@ -102,7 +102,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         assertEquals(1, coll.size());
 
         fct.getFeature().add(coll);
-        testGetFeature(fct, true);
+        validateGetFeature(fct, true);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
                 getFeatureSource(SystemTestData.BASIC_POLYGONS);
         fct.getFeature().add(fs.getFeatures());
 
-        testGetFeature(fct, true);
+        validateGetFeature(fct, true);
 
         System.getProperties().remove(GeoPackageGetFeatureOutputFormat.PROPERTY_INDEXED);
     }
@@ -153,10 +153,8 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         assertEquals("attachment; filename=TEST.GPKG", resp.getHeader("Content-Disposition"));
     }
 
-    public void testGetFeature(FeatureCollectionResponse fct, boolean indexed) throws IOException {
-        // FileOutputStream fos = new FileOutputStream(new File("/home/niels/Temp/geopkg.db"));
-        // format.write(fct, fos, op);
-
+    public void validateGetFeature(FeatureCollectionResponse fct, boolean indexed)
+            throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         format.write(fct, os, op);
 

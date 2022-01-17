@@ -387,10 +387,10 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
         return srid;
     }
 
-    /** Creates a GridSubset (GridSet + a coverage area) based on the WMS request (i.e. SRID in the
-     * request)
-     * &format_options=gridset:<name> can get used in the WMS request to explicitly use a particular
-     * GWC gridset
+    /**
+     * Creates a GridSubset (GridSet + a coverage area) based on the WMS request (i.e. SRID in the
+     * request) &format_options=gridset:<name> can get used in the WMS request to explicitly use a
+     * particular GWC gridset
      */
     protected GridSubset findBestGridSubset(GetMapRequest req) {
         Map formatOpts = req.getFormatOptions();
@@ -464,20 +464,20 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
     }
 
     /*
-    * finds the appropriate gridset zoom levels for the request
-    * This can be controlled with &format_options=p1:v1;p2:v2
-    *
-    * min_zoom -  Grid Zoom level for tiles to start.
-    *             default: zoom level based on a single tile covering the bbox area.
-    * max_zoom - Grid Zoom level for tiles to end.
-    *            default: zoom where there's >255 tiles in total (could be a bit more - see
-    * findMaxZoomAuto)
-    * num_zooms - Number of zoom levels in the geopkg. If present then  max_zoom = min_zoom +
-    * num_zooms
-    *
-    *  result[0] - most zoomed out zoom level (ie. 10)
-    *  result[1] - least zoomed out level (i.e. 15)
-    */
+     * finds the appropriate gridset zoom levels for the request
+     * This can be controlled with &format_options=p1:v1;p2:v2
+     *
+     * min_zoom -  Grid Zoom level for tiles to start.
+     *             default: zoom level based on a single tile covering the bbox area.
+     * max_zoom - Grid Zoom level for tiles to end.
+     *            default: zoom where there's >255 tiles in total (could be a bit more - see
+     * findMaxZoomAuto)
+     * num_zooms - Number of zoom levels in the geopkg. If present then  max_zoom = min_zoom +
+     * num_zooms
+     *
+     *  result[0] - most zoomed out zoom level (ie. 10)
+     *  result[1] - least zoomed out level (i.e. 15)
+     */
     protected int[] findMinMaxZoom(GridSubset gridSubset, GetMapRequest req) {
         GridSet gridSet = gridSubset.getGridSet();
         Map formatOpts = req.getFormatOptions();
@@ -522,7 +522,8 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
     protected Integer findClosestZoom(GridSet gridSet, GetMapRequest req) {
         // find the zoom level associated with the request
         // This is based on a single tile (i.e. 256px) for the request bounds.
-        //  It is NOT based on the scale of the actual WMS request (i.e. request width/height does not
+        //  It is NOT based on the scale of the actual WMS request (i.e. request width/height does
+        // not
         // affect
         //  this calculation).
         double reqScale =
@@ -547,7 +548,8 @@ public abstract class AbstractTilesGetMapOutputFormat extends AbstractMapOutputF
 
     protected Integer findMaxZoomAuto(GridSubset gridSubset, Integer minZoom, GetMapRequest req) {
         // given a minZoom, find the corresponding maxZoom.
-        // Calculation is to keep adding zoom levels until the total number of tiles in the result is
+        // Calculation is to keep adding zoom levels until the total number of tiles in the result
+        // is
         // >255.
         BoundingBox bbox = bbox(req);
 

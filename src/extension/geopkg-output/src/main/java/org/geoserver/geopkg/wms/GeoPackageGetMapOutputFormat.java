@@ -174,17 +174,13 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
     }
 
     /**
-     * re-formats the original request to one that's inline with the GeoPKG specification.
-     * If the CRS is XY (EAST_NORTH), the we do nothing.
-     * If the CRS is YX (NORTH_EAST), we attempt to re-write the request in XY format.
-     *    i.e. change the request CRS to the equivalent EAST_NORTH CRS
-     *         and  flip the request's ordinates around in the request
-     * NOTE: geopkg requires XY coordinate systems and WMS 1.3 assumes 4326 is YX (WMS 1.1's 4326 is
-     *       XY).
-     *      For a WMS 1.3 EPSG:4326 request, this will flip.
-     *      For a WMS 1.1 EPSG:4326 request, this will NOT flip.
-     * NOTE: typically, a WMS 1.1 and WMS 1.3 EPSG:4326 request will have the bbox ordinates
-     * flipped.
+     * re-formats the original request to one that's inline with the GeoPKG specification. If the
+     * CRS is XY (EAST_NORTH), the we do nothing. If the CRS is YX (NORTH_EAST), we attempt to
+     * re-write the request in XY format. i.e. change the request CRS to the equivalent EAST_NORTH
+     * CRS and flip the request's ordinates around in the request NOTE: geopkg requires XY
+     * coordinate systems and WMS 1.3 assumes 4326 is YX (WMS 1.1's 4326 is XY). For a WMS 1.3
+     * EPSG:4326 request, this will flip. For a WMS 1.1 EPSG:4326 request, this will NOT flip. NOTE:
+     * typically, a WMS 1.1 and WMS 1.3 EPSG:4326 request will have the bbox ordinates flipped.
      * NOTE: updates request in-situ
      */
     private GetMapRequest rewriteRequest(GetMapRequest req) {

@@ -71,14 +71,13 @@ public class GeoPackageGetFeatureOutputFormat extends WFSGetFeatureOutputFormat 
         return EXTENSION;
     }
 
-
     @Override
     protected void write(
             FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
         // create the geopackage file and write the features into it.
-        // geopackage is written to a temporary file, copied into the outputStream, then the temp file
-        // deleted.
+        // geopackage is written to a temporary file, copied into the outputStream, then the temp
+        // file deleted.
         File file = File.createTempFile("geopkg", ".tmp.gpkg");
 
         try (GeoPackage geopkg = GeoPkg.getGeoPackage(file)) {

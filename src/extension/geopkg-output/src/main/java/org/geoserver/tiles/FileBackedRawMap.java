@@ -15,8 +15,6 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WebMap;
 
-import javax.imageio.IIOException;
-
 /**
  * This represents a webmap that is backed by a file (i.e. geopkg).
  *
@@ -34,8 +32,9 @@ public class FileBackedRawMap extends WebMap implements Closeable {
     }
 
     public void writeTo(OutputStream out) throws IOException {
-        if (underlyingFile==null)
+        if (underlyingFile == null) {
             throw new IOException("underlying file is not present!");
+        }
         try (final BufferedInputStream bin =
                 new BufferedInputStream(new FileInputStream(underlyingFile))) {
             IOUtils.copy(bin, out);

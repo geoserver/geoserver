@@ -30,12 +30,10 @@ public class FileBackedRawMapResponse extends AbstractMapResponse {
             throws IOException, ServiceException {
         // offset work to FileBackedRawMap's writeTo() method
         Assert.isInstanceOf(FileBackedRawMap.class, value);
-        FileBackedRawMap map = (FileBackedRawMap) value;
-        try {
+
+        try (FileBackedRawMap map = (FileBackedRawMap) value) {
             map.writeTo(output);
             output.flush();
-        } finally {
-            map.dispose();
         }
     }
 }

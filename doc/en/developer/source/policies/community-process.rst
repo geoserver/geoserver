@@ -115,7 +115,7 @@ Here is what that looks like:
   * Month 10: (next branch N+1 issues a stable release)
   * Month 11: Release N.5 maintenance
 
-For more information, or to volunteer, please check the `release schedule <https://github.com/geoserver/geoserver/wiki/Release-Schedule>`__ in the wiki.
+For more information, or to volunteer, please check the :wiki:`Release-Schedule` in the wiki.
 
 **Unscheduled Releases**
 

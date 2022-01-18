@@ -7,11 +7,12 @@ The :guilabel:`Resource Brower` tool is provided by the web-resource extension i
 
 To install web-resource extension:
 
-#. Download the :file:`geoserver-2.17-RC-web-resource-plugin.zip` from `GeoServer Download <http://geoserver.org/download/>`__ page.
+#. From the :website:`GeoServer Download <download>` page locate the release used and download: :download_extension:`web-resource`
    
    Verify that the version number in the filename corresponds to the version of GeoServer you are running (for example |release| above).
    
 #. Extract the contents of the archive into the :file:`WEB-INF/lib` directory in GeoServer.
+
    This extension includes two jars.
 
 #. Restart GeoServer.

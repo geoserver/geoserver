@@ -11,6 +11,16 @@ GeoServer connects to a Teradata database via JDBC.
 
 For more information on Teradata and the Teradata Database system, please go to `<http://www.teradata.com>`_.
 
+Installation
+------------
+
+#. Visit the :website:`website download <download>` page, locate your release, and download: :download_extension:`teradata`
+   
+   .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
+
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory of the GeoServer installation.
+
+#. Restart the GeoServer to load the extension.
 
 Compatibility
 -------------
@@ -128,7 +138,9 @@ Teradata database support is not enabled by default and requires the GeoServer T
 GeoServer artifacts
 ~~~~~~~~~~~~~~~~~~~
 
-#. Download the Teradata extension from the `download page <http://geoserver.org/release/stable/>`_ that matches your version of GeoServer.  The extension is listed at the bottom of the download page under :guilabel:`Extensions`.
+#. Download the Teradata extension from the :website:`download page <download>` that matches your version of GeoServer: :download_extension:`teradata`
+
+   The extension is listed at the bottom of the download page under :guilabel:`Extensions`.
 
    .. warning:: Make sure to match the version of the extension to the version of GeoServer!
 

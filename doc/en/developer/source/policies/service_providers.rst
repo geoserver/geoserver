@@ -7,14 +7,14 @@ Service providers are an important part of GeoServer community, thank you for he
 
 The PSC manages:
 
-* `GeoServer Commercial Support <http://geoserver.org/support/>`__ (geoserver.org)
+* :website:`GeoServer Commercial Support <support>` (geoserver.org)
 * `Service Providers List <https://www.osgeo.org/service-providers/?p=geoserver>`__ (osgeo.org)
   
   Available from `project page <https://www.osgeo.org/projects/geoserver/>`__ from *view all service providers* link.
 
 In addition:
 
-* Project `sponsorship <https://github.com/geoserver/geoserver/wiki/Sponsor>`__ is another way to increase visibility, with specific activities available to sponsor throughout the year. Financial support is also recognized on the `osgeo sponsor <https://www.osgeo.org/sponsors/>`__ page.
+* Project :wiki:`sponsorship <Sponsor>` is another way to increase visibility, with specific activities available to sponsor throughout the year. Financial support is also recognized on the `osgeo sponsor <https://www.osgeo.org/sponsors/>`__ page.
 
 Service Provider checklist
 --------------------------

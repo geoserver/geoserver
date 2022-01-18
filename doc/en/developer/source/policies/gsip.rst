@@ -26,14 +26,13 @@ The typical life cycle of a GSIP is as follows:
 Writing a GSIP
 --------------
    
-GSIPs are written up on the 
-`Proposals <https://github.com/geoserver/geoserver/wiki/Proposals>`_ wiki page.
+GSIPs are written up on the :wiki:`Proposals` wiki page.
 
 If you have write access login and follow the steps below. If you do not have write access GitHub will automatically create a fork for you as you edit individual pages.
 
 To make a GSIP:
 
-#. Navigate to the wiki `proposals page <https://github.com/geoserver/geoserver/wiki/Proposals>`__
+#. Navigate to the wiki :wiki:`proposals page <Proposals>`.
 #. Edit the page with a new link under *Proposals Under Discussion*:
    
    .. code-block:: text

@@ -14,9 +14,9 @@ Mac OS X binary
 
    .. note:: 有关Java和GeoServer兼容性的更多信息，请参阅 production_java.
 
-#. 导航到 `GeoServer下载页面 <http://geoserver.org/download>`_.
+#. 导航到 :website:`GeoServer下载页面 <download>`.
 
-#. 选择您要下载的GeoServer版本。如果不确定，选择 `Stable <http://geoserver.org/release/stable>`_.
+#. 选择您要下载的GeoServer版本。如果不确定，选择 :website:`Stable <release/stable>`.
 
 #. 在下载页面上选择 :guilabel:`Platform Independent Binary` 。
 

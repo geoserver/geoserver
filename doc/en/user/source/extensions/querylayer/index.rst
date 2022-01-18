@@ -19,11 +19,11 @@ Filter functions are widely supported in GeoServer, so cross-layer filtering can
 Installing the querylayer module
 ----------------------------------
 
-#. Download the **querylayer** extension corresponding to your version of GeoServer.
+* Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`querylayer`
 
    .. warning:: The version of the extension **must** match the version of the GeoServer instance
 
-#. Extract the contents of the extension archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+#. Extract the contents of the extension archive into the :file:`WEB-INF/lib` directory of the GeoServer installation.
 #. To check the module is properly installed request the WFS 1.1 capabilities from the GeoServer home page.
    The ``Filter_Capabilities`` section should contain a reference to a function named ``queryCollection``.
 

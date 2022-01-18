@@ -488,6 +488,13 @@ public class CatalogImpl implements Catalog {
         }
 
         validateKeywords(resource.getKeywords());
+
+        // don't perform this validation on load, it would force connection to
+        // all data stores. Just on save/add at runtime
+        if (resource instanceof FeatureTypeInfo && extendedValidation) {
+            new FeatureTypeValidator().validate((FeatureTypeInfo) resource);
+        }
+
         return postValidate(resource, isNew);
     }
 

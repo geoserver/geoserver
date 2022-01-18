@@ -144,6 +144,10 @@
       <groupId>com.github.oshi</groupId>
       <artifactId>oshi-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-transform</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>

@@ -438,6 +438,10 @@ public abstract class GeoServerDataProvider<T> extends SortableDataProvider<T, O
         private static final long serialVersionUID = 5532661316457341748L;
         String propertyPath;
 
+        public BeanProperty(String key) {
+            this(key, key, true);
+        }
+
         public BeanProperty(String key, String propertyPath) {
             this(key, propertyPath, true);
         }

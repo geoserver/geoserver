@@ -16,7 +16,9 @@ import org.springframework.util.Assert;
 /**
  * MapResponse for a response backed by a file (i.e. geopkg).
  *
- *  * <p>See {@link RawMapResponse}, which is similar, but backed with a byte[]
+ * <p>*
+ *
+ * <p>See {@link RawMapResponse}, which is similar, but backed with a byte[]
  */
 public class FileBackedRawMapResponse extends AbstractMapResponse {
     public FileBackedRawMapResponse() {
@@ -26,7 +28,7 @@ public class FileBackedRawMapResponse extends AbstractMapResponse {
     @Override
     public void write(Object value, OutputStream output, Operation operation)
             throws IOException, ServiceException {
-        //offset work to FileBackedRawMap's writeTo() method
+        // offset work to FileBackedRawMap's writeTo() method
         Assert.isInstanceOf(FileBackedRawMap.class, value);
         FileBackedRawMap map = (FileBackedRawMap) value;
         try {

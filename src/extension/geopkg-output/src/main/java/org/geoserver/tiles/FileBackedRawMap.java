@@ -33,8 +33,8 @@ public class FileBackedRawMap extends WebMap implements Closeable {
     }
 
     /**
-     * Write the underlying file to the outputstream.
-     * DELETES the underlying file after writing.
+     * Write the underlying file to the outputstream. DELETES the underlying file after writing.
+     *
      * @param out stream to write to
      * @throws IOException
      */
@@ -52,6 +52,7 @@ public class FileBackedRawMap extends WebMap implements Closeable {
 
     /**
      * Deletes the underlying file!
+     *
      * @throws IOException
      */
     @Override
@@ -64,7 +65,7 @@ public class FileBackedRawMap extends WebMap implements Closeable {
 
     @Override
     protected void disposeInternal() {
-        //close() deletes the underlying file.
+        // close() deletes the underlying file.
         try {
             close();
         } catch (IOException e) {

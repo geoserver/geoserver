@@ -14,7 +14,7 @@ Installation
 
    .. note:: 有关Java和GeoServer兼容性的更多信息，请参阅 `production_java`.
 
-#. 选择您要下载的GeoServer版本。如果不确定，请选择 `Stable <http://geoserver.org/release/stable>`_ 。
+#. 选择您要下载的GeoServer版本。如果不确定，请选择 :website:`Stable <release/stable>` 。
 
 #. 在下载页面上选择 :guilabel:`Platform Independent Binary` 。
 

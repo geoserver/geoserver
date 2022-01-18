@@ -57,6 +57,7 @@ release = '2.20-SNAPSHOT'
 branch = '2.20.x'
 
 # Users don't need to see the "SNAPSHOT" notation when it's there
+download = release
 if release.find('SNAPSHOT') != -1:
    release = '2.20.x'
    download_release = 'https://build.geoserver.org/geoserver/'+branch+'/geoserver-'+version+'.x-latest-%s.zip'
@@ -114,9 +115,9 @@ extlinks = {
     'geot': ('https://osgeo-org.atlassian.net/browse/GEOT-%s','GEOT-'),
     'api': ('http://docs.geoserver.org/latest/en/api/#1.0.0/%s',''),
     'geotools': ('https://docs.geotools.org/latest/userguide/%s',''),
-    'download_release': (download_release,None),
-    'download_extension': (download_extension,None),
-    'download_community': (download_community,None)
+    'download_release': (download_release,'geoserver-'+download+'-%s.zip'),
+    'download_extension': (download_extension,'geoserver-'+download+'-%s-plugin.zip'),
+    'download_community': (download_community,'geoserver-'+download+'-%s-plugin.zip')
 }
 
 # Common substitutions

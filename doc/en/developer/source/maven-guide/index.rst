@@ -199,30 +199,3 @@ This can also be used when running the local jetty application server:
   mvn jetty:run -DconfigId=release -DconfigDirectory=../../../data/release
 
 You may also use an absolute path, if you have a custom data directory you would like to use.
-  
-
-Installing the Oracle module
-----------------------------
-
-To configure GeoServer to include the Oracle datastore extension module, do the following:
-
-Obtain the appropriate Oracle JDBC driver (possibly by downloading from Oracle or from the GeoServer ORACLE-extension on http://geoserver.org/release/stable/).
-Install it in the Maven repository using the command::
-	
-  mvn install:install-file -Dfile=ojdbc7.jar -DgroupId=com.oracle -DartifactId=ojdbc7 -Dversion=12.1.0.2 -Dpackaging=jar -DgeneratePom=true
-  
-Configure the Eclipse project using::
-
-  mvn -P oracle,oracleDriver eclipse:eclipse
-
-(The ``oracle`` profile includes the GeoServer Oracle module, 
-while the ``oracleDriver`` profile includes the proprietary Oracle JDBC driver.
-These are separate because there are situations where 
-the Oracle JDBC JAR should not be included with the build.)
-
-Finally, in Eclipse import the ``oracle`` module project. 
-Refresh the ``web-app`` project to configure the dependency on the ``oracle`` project.
-
-When GeoServer is run, Oracle should be provided as a **Vector Data Source** on the *New Data source* page
-
-

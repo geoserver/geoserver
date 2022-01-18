@@ -5,20 +5,22 @@ Linux binary
 
 .. note:: For installing on Linux with an existing application server such as Tomcat, please see the :ref:`installation_war` section.
 
-The platform-independent binary is a GeoServer web application bundled inside `Jetty <http://eclipse.org/jetty/>`_, a lightweight and portable application server. It has the advantages of working very similarly across all operating systems and is very simple to set up.
+The platform-independent binary is a GeoServer web application bundled inside `Jetty <http://eclipse.org/jetty/>`__, a lightweight and portable application server. It has the advantages of working very similarly across all operating systems and is very simple to set up.
 
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** or **Java 11** environment, available from `OpenJDK <http://openjdk.java.net>`__, `AdoptOpenJDK <https://adoptopenjdk.net>`__, or provided by your OS distribution.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** or **Java 11** environment, available from `OpenJDK <https://openjdk.java.net>`__, `Adoptium <https://adoptium.net>`__, or provided by your OS distribution.
 
    .. note:: For more information about Java and GeoServer compatibility, please see the section on :ref:`production_java`.
 
-#. Select the version of GeoServer that you wish to download.  If you're not sure, select `Stable <http://geoserver.org/release/stable>`_.  
+#. Navigate to the :website:`GeoServer Download page <download>`.
 
-#. Select :guilabel:`Platform Independent Binary` on the download page.
+#. Select the version of GeoServer that you wish to download.  If you're not sure, select :website:`Stable <release/stable>` release.
 
-#. Download the archive and unpack to the directory where you would like the program to be located.
+#. Select :guilabel:`Platform Independent Binary` on the download page: :download_release:`bin`
+
+#. Download the :file:`zip` archive and unpack to the directory where you would like the program to be located.
 
    .. note:: A suggested location would be :file:`/usr/share/geoserver`.
 
@@ -46,9 +48,9 @@ Installation
 
 If you see the GeoServer logo, then GeoServer is successfully installed.
 
-   .. figure:: images/success.png
+.. figure:: images/success.png
 
-      GeoServer installed and running successfully
+   GeoServer installed and running successfully
 
 To shut down GeoServer, either close the persistent command-line window, or run the :file:`shutdown.sh` file inside the :file:`bin` directory.
 

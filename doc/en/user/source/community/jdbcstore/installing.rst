@@ -5,7 +5,9 @@ Installing JDBCStore
 
 To install the JDBCStore module:
 
-#. `Download <http://geoserver.org/download>`_ the module. The file name is called :file:`geoserver-*-jdbcstore-plugin.zip`, where ``*`` is the version/snapshot name. The JDBCStore plug-in automatically includes the :ref:`community_jdbcconfig` plugin as well which will generally be run at the same time.
+#. Download the module: :download_community:`jdbcstore`
+   
+   The JDBCStore plug-in automatically includes the :ref:`community_jdbcconfig` plugin as well which will generally be run at the same time.
 
 #. Extract this file and place the JARs in ``WEB-INF/lib``. 
 

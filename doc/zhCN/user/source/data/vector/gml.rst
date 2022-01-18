@@ -20,8 +20,8 @@ GML
 安装GML扩展
 ----------------------------
 
-#. 从 `GeoServer download page 
-   <http://geoserver.org/download>`_.下载GML扩展。
+#. 从 :website:`GeoServer download page 
+   <download>`.下载GML扩展。
 
    .. warning:: 确保将扩展版本与GeoServer实例的版本匹配！
 

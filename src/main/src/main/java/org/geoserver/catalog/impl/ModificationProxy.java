@@ -22,6 +22,8 @@ import java.util.Objects;
 import java.util.function.UnaryOperator;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.ows.util.ClassProperties;
@@ -123,6 +125,19 @@ public class ModificationProxy implements WrappingProxy, Serializable {
             properties().put(property, args[0]);
 
             return null;
+        }
+
+        // validation needs to run on top of the proxy, otherwise it won't see the updated values
+        if (proxyObject instanceof CatalogInfo
+                && method.getName().equals("accept")
+                && method.getParameters().length == 1
+                && method.getParameters()[0].getType().equals(CatalogVisitor.class)) {
+            CatalogVisitor visitor = (CatalogVisitor) args[0];
+
+            if (proxy instanceof FeatureTypeInfo) {
+                visitor.visit((FeatureTypeInfo) proxy);
+                return null;
+            }
         }
 
         try {

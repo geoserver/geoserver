@@ -16,26 +16,32 @@
          </ul>
       </fieldset>
     </div>
-    <div wicket:id="attributePanel"></div>
     <wicket:fragment wicket:id="attributePanelFragment">
-      <div>
+        <table>
+            <tr>
+                <th><wicket:message key="property">Property</wicket:message></th>
+                <th><wicket:message key="type">Type</wicket:message></th>
+                <th><wicket:message key="nillable">Nillable</wicket:message></th>
+                <th><wicket:message key="minMaxOccurences">Min/Max Occurrences</wicket:message></th>
+            </tr>
+            <tr wicket:id="attributes">
+                <td wicket:id="name"></td>
+                <td wicket:id="type"></td>
+                <td wicket:id="nillable"></td>
+                <td wicket:id="minmax"></td>
+            </tr>
+        </table>
+    </wicket:fragment>
+    <div wicket:id="attributePanel">
       <fieldset><legend><span><wicket:message key="featureTypeDetails">Feature Type Details</wicket:message></span></legend>
     <ul>
-      <li>
-      <table>
-        <tr>
-          <th><wicket:message key="property">Property</wicket:message></th>
-          <th><wicket:message key="type">Type</wicket:message></th>
-          <th><wicket:message key="nillable">Nillable</wicket:message></th>
-          <th><wicket:message key="minMaxOccurences">Min/Max Occurrences</wicket:message></th>
-        </tr>
-        <tr wicket:id="attributes">
-          <td wicket:id="name"></td>
-          <td wicket:id="type"></td>
-          <td wicket:id="nillable"></td>
-          <td wicket:id="minmax"></td>
-        </tr>
-      </table>
+        <li class="choiceItem">
+            <input id="customizeFeatureType" wicket:id="customizeFeatureType" type="checkbox"/>
+            <label for="customizeFeatureType"><wicket:message key="customizeFeatureType">Enabled</wicket:message></label>
+        </li>
+        <li>
+        <div wicket:id="attributesTable"/>
+        <div wicket:id="attributesEditor"/>  
       </li>
       <li>
         <ul>
@@ -47,7 +53,6 @@
     </ul>
     </fieldset>
     </div>
-    </wicket:fragment>    
     <div wicket:id="reloadWarningDialog"></div>
         
     <label for="cqlFilter"><wicket:message key="cqlFilter">cqlFilter</wicket:message></label>

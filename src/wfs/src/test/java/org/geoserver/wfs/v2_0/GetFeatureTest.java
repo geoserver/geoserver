@@ -5,6 +5,9 @@
  */
 package org.geoserver.wfs.v2_0;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.geoserver.data.test.CiteTestData.PRIMITIVEGEOFEATURE;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -16,11 +19,13 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 import javax.xml.namespace.QName;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
@@ -48,7 +53,7 @@ public class GetFeatureTest extends WFS20TestSupport {
 
     @Before
     public void revert() throws Exception {
-        revertLayer(SystemTestData.PRIMITIVEGEOFEATURE);
+        revertLayer(PRIMITIVEGEOFEATURE);
     }
 
     @Override
@@ -78,14 +83,14 @@ public class GetFeatureTest extends WFS20TestSupport {
                 getAsDOM("wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs");
         assertEquals("unknown", dom.getDocumentElement().getAttribute("numberMatched"));
         assertEquals("15", dom.getDocumentElement().getAttribute("numberReturned"));
-        XMLAssert.assertXpathEvaluatesTo("15", "count(//cdf:Fifteen)", dom);
+        assertXpathEvaluatesTo("15", "count(//cdf:Fifteen)", dom);
 
         dom =
                 getAsDOM(
                         "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs&resultType=hits");
         assertEquals("15", dom.getDocumentElement().getAttribute("numberMatched"));
         assertEquals("0", dom.getDocumentElement().getAttribute("numberReturned"));
-        XMLAssert.assertXpathEvaluatesTo("0", "count(//cdf:Fifteen)", dom);
+        assertXpathEvaluatesTo("0", "count(//cdf:Fifteen)", dom);
 
         fti.setSkipNumberMatched(false);
         this.getCatalog().save(fti);
@@ -168,8 +173,8 @@ public class GetFeatureTest extends WFS20TestSupport {
         Document dom =
                 getAsDOM(
                         "wfs?request=GetFeature&typenames=(cdf:Fifteen)(cdf:Seven)&version=2.0.0&service=wfs");
-        XMLAssert.assertXpathEvaluatesTo("15", "count(//cdf:Fifteen)", dom);
-        XMLAssert.assertXpathEvaluatesTo("7", "count(//cdf:Seven)", dom);
+        assertXpathEvaluatesTo("15", "count(//cdf:Fifteen)", dom);
+        assertXpathEvaluatesTo("7", "count(//cdf:Seven)", dom);
     }
 
     @Test
@@ -182,7 +187,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         Document dom =
                 getAsDOM(
                         "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs&count=5");
-        XMLAssert.assertXpathEvaluatesTo("5", "count(//cdf:Fifteen)", dom);
+        assertXpathEvaluatesTo("5", "count(//cdf:Fifteen)", dom);
         assertEquals("5", dom.getDocumentElement().getAttribute("numberReturned"));
         assertEquals("15", dom.getDocumentElement().getAttribute("numberMatched"));
     }
@@ -192,7 +197,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         Document dom =
                 getAsDOM(
                         "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs&count=5&startIndex=0");
-        XMLAssert.assertXpathEvaluatesTo("5", "count(//cdf:Fifteen)", dom);
+        assertXpathEvaluatesTo("5", "count(//cdf:Fifteen)", dom);
         assertEquals("5", dom.getDocumentElement().getAttribute("numberReturned"));
         assertEquals("15", dom.getDocumentElement().getAttribute("numberMatched"));
     }
@@ -202,7 +207,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         Document dom =
                 getAsDOM(
                         "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs&count=5&startIndex=7");
-        XMLAssert.assertXpathEvaluatesTo("5", "count(//cdf:Fifteen)", dom);
+        assertXpathEvaluatesTo("5", "count(//cdf:Fifteen)", dom);
         assertEquals("5", dom.getDocumentElement().getAttribute("numberReturned"));
         assertEquals("15", dom.getDocumentElement().getAttribute("numberMatched"));
     }
@@ -212,7 +217,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         Document dom =
                 getAsDOM(
                         "wfs?request=GetFeature&typenames=cdf:Fifteen&version=2.0.0&service=wfs&count=5&startIndex=11");
-        XMLAssert.assertXpathEvaluatesTo("4", "count(//cdf:Fifteen)", dom);
+        assertXpathEvaluatesTo("4", "count(//cdf:Fifteen)", dom);
         assertEquals("4", dom.getDocumentElement().getAttribute("numberReturned"));
         assertEquals("15", dom.getDocumentElement().getAttribute("numberMatched"));
     }
@@ -251,9 +256,8 @@ public class GetFeatureTest extends WFS20TestSupport {
                         "wfs?request=GetFeature&typeName=cdf:Fifteen&version=2.0.0&service=wfs&featureid=Fifteen.2");
         assertGML32(doc);
 
-        XMLAssert.assertXpathEvaluatesTo(
-                "1", "count(//wfs:FeatureCollection/wfs:member/cdf:Fifteen)", doc);
-        XMLAssert.assertXpathEvaluatesTo(
+        assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection/wfs:member/cdf:Fifteen)", doc);
+        assertXpathEvaluatesTo(
                 "Fifteen.2", "//wfs:FeatureCollection/wfs:member/cdf:Fifteen/@gml:id", doc);
 
         doc =
@@ -262,9 +266,9 @@ public class GetFeatureTest extends WFS20TestSupport {
 
         // super.print(doc);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
-        XMLAssert.assertXpathEvaluatesTo(
+        assertXpathEvaluatesTo(
                 "1", "count(//wfs:FeatureCollection/wfs:member/cite:NamedPlaces)", doc);
-        XMLAssert.assertXpathEvaluatesTo(
+        assertXpathEvaluatesTo(
                 "NamedPlaces.1107531895891",
                 "//wfs:FeatureCollection/wfs:member/cite:NamedPlaces/@gml:id",
                 doc);
@@ -277,9 +281,8 @@ public class GetFeatureTest extends WFS20TestSupport {
                         "wfs?request=GetFeature&typeNames=cdf:Fifteen&version=2.0.0&service=wfs&resourceid=Fifteen.2");
         assertGML32(doc);
 
-        XMLAssert.assertXpathEvaluatesTo(
-                "1", "count(//wfs:FeatureCollection/wfs:member/cdf:Fifteen)", doc);
-        XMLAssert.assertXpathEvaluatesTo(
+        assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection/wfs:member/cdf:Fifteen)", doc);
+        assertXpathEvaluatesTo(
                 "Fifteen.2", "//wfs:FeatureCollection/wfs:member/cdf:Fifteen/@gml:id", doc);
 
         doc =
@@ -288,9 +291,9 @@ public class GetFeatureTest extends WFS20TestSupport {
 
         // super.print(doc);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
-        XMLAssert.assertXpathEvaluatesTo(
+        assertXpathEvaluatesTo(
                 "1", "count(//wfs:FeatureCollection/wfs:member/cite:NamedPlaces)", doc);
-        XMLAssert.assertXpathEvaluatesTo(
+        assertXpathEvaluatesTo(
                 "NamedPlaces.1107531895891",
                 "//wfs:FeatureCollection/wfs:member/cite:NamedPlaces/@gml:id",
                 doc);
@@ -331,9 +334,9 @@ public class GetFeatureTest extends WFS20TestSupport {
                             200);
             assertGML32(doc);
 
-            XMLAssert.assertXpathEvaluatesTo(
+            assertXpathEvaluatesTo(
                     "1", "count(//wfs:FeatureCollection/wfs:member/cdf:Fifteen)", doc);
-            XMLAssert.assertXpathEvaluatesTo(
+            assertXpathEvaluatesTo(
                     "Fifteen.2", "//wfs:FeatureCollection/wfs:member/cdf:Fifteen/@gml:id", doc);
         } finally {
             wfs.setCiteCompliant(false);
@@ -347,9 +350,9 @@ public class GetFeatureTest extends WFS20TestSupport {
                 getAsDOM(
                         "wfs?request=GetFeature&version=2.0.0&typeName=sf:PrimitiveGeoFeatureId&BBOX=57.0,-4.5,62.0,1.0,EPSG:4326");
         // print(dom);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeatureId)", dom);
-        XMLAssert.assertXpathEvaluatesTo("f002", "//sf:PrimitiveGeoFeatureId/gml:identifier", dom);
-        XMLAssert.assertXpathEvaluatesTo(
+        assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeatureId)", dom);
+        assertXpathEvaluatesTo("f002", "//sf:PrimitiveGeoFeatureId/gml:identifier", dom);
+        assertXpathEvaluatesTo(
                 MockData.SF_URI, "//sf:PrimitiveGeoFeatureId/gml:identifier/@codeSpace", dom);
     }
 
@@ -358,7 +361,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         Document dom =
                 getAsDOM(
                         "wfs?request=GetFeature&version=2.0.0&typeName=sf:PrimitiveGeoFeature&BBOX=57.0,-4.5,62.0,1.0,EPSG:4326");
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
+        assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
         XMLAssert.assertXpathExists("//sf:PrimitiveGeoFeature/gml:name[text() = 'name-f002']", dom);
     }
 
@@ -367,7 +370,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         Document dom =
                 getAsDOM(
                         "wfs?request=GetFeature&version=2.0.0&typeName=sf:PrimitiveGeoFeature&FILTER=%3Cfes%3AFilter+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%3Cfes%3ABBOX%3E%3Cgml%3AEnvelope+srsName%3D%22EPSG%3A4326%22%3E%3Cgml%3AlowerCorner%3E57.0+-4.5%3C%2Fgml%3AlowerCorner%3E%3Cgml%3AupperCorner%3E62.0+1.0%3C%2Fgml%3AupperCorner%3E%3C%2Fgml%3AEnvelope%3E%3C%2Ffes%3ABBOX%3E%3C%2Ffes%3AFilter%3E");
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
+        assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
         XMLAssert.assertXpathExists("//sf:PrimitiveGeoFeature/gml:name[text() = 'name-f002']", dom);
     }
 
@@ -1048,7 +1051,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         Document dom =
                 getAsDOM(
                         "cdf/Seven/wfs?request=GetFeature&typename=cdf:Fifteen&version=2.0.0&service=wfs");
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
     }
 
     @Test
@@ -1092,7 +1095,7 @@ public class GetFeatureTest extends WFS20TestSupport {
                 getAsDOM(
                         "ows?service=WFS&version=2.0.0&request=GetFeature"
                                 + "&typename="
-                                + getLayerId(MockData.PRIMITIVEGEOFEATURE));
+                                + getLayerId(PRIMITIVEGEOFEATURE));
         XMLAssert.assertXpathExists("//gml:name", dom);
         XMLAssert.assertXpathExists("//gml:description", dom);
         XMLAssert.assertXpathNotExists("//sf:name", dom);
@@ -1105,7 +1108,7 @@ public class GetFeatureTest extends WFS20TestSupport {
                 getAsDOM(
                         "ows?service=WFS&version=2.0.0&request=GetFeature"
                                 + "&typename="
-                                + getLayerId(MockData.PRIMITIVEGEOFEATURE));
+                                + getLayerId(PRIMITIVEGEOFEATURE));
         XMLAssert.assertXpathNotExists("//gml:name", dom);
         XMLAssert.assertXpathNotExists("//gml:description", dom);
         XMLAssert.assertXpathExists("//sf:name", dom);
@@ -1162,7 +1165,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         dom = postAsDOM("wfs", xml);
         print(dom);
         assertGML32(dom);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//cdf:Other)", dom);
+        assertXpathEvaluatesTo("1", "count(//cdf:Other)", dom);
         XMLAssert.assertXpathExists("//cdf:Other/cdf:integers[text() = '7']", dom);
     }
 
@@ -1176,7 +1179,7 @@ public class GetFeatureTest extends WFS20TestSupport {
 
         // GetFeatureById is special, should not be wrapped by wfs:FeatureCollection
         XMLAssert.assertXpathNotExists("//wfs:FeatureCollection", dom);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(/sf:PrimitiveGeoFeature)", dom);
+        assertXpathEvaluatesTo("1", "count(/sf:PrimitiveGeoFeature)", dom);
         XMLAssert.assertXpathExists(
                 "/sf:PrimitiveGeoFeature[@gml:id = 'PrimitiveGeoFeature.f001']", dom);
     }
@@ -1198,7 +1201,7 @@ public class GetFeatureTest extends WFS20TestSupport {
 
         // GetFeatureById is special, should not be wrapped by wfs:FeatureCollection
         XMLAssert.assertXpathNotExists("//wfs:FeatureCollection", dom);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(/sf:PrimitiveGeoFeature)", dom);
+        assertXpathEvaluatesTo("1", "count(/sf:PrimitiveGeoFeature)", dom);
         XMLAssert.assertXpathExists(
                 "/sf:PrimitiveGeoFeature[@gml:id = 'PrimitiveGeoFeature.f001']", dom);
     }
@@ -1217,7 +1220,7 @@ public class GetFeatureTest extends WFS20TestSupport {
 
         Document dom = postAsDOM("wfs", xml);
 
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
+        assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
         XMLAssert.assertXpathExists(
                 "//sf:PrimitiveGeoFeature[@gml:id = 'PrimitiveGeoFeature.f001']", dom);
 
@@ -1229,7 +1232,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         // print(dom);
 
         XMLAssert.assertXpathNotExists("//wfs:FeatureCollection", dom);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(/sf:PrimitiveGeoFeature)", dom);
+        assertXpathEvaluatesTo("1", "count(/sf:PrimitiveGeoFeature)", dom);
         XMLAssert.assertXpathExists(
                 "/sf:PrimitiveGeoFeature[@gml:id = 'PrimitiveGeoFeature.f001']", dom);
     }
@@ -1286,7 +1289,7 @@ public class GetFeatureTest extends WFS20TestSupport {
         dom = postAsDOM("wfs", xml);
         print(dom);
         assertGML32(dom);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
+        assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
         XMLAssert.assertXpathExists("//sf:PrimitiveGeoFeature/gml:name[text() = 'name-f002']", dom);
     }
 
@@ -1318,7 +1321,7 @@ public class GetFeatureTest extends WFS20TestSupport {
                         + "</wfs:Query> "
                         + "</wfs:GetFeature>";
         Document dom = postAsDOM("wfs", xml);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
+        assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
         XMLAssert.assertXpathExists(
                 "//sf:PrimitiveGeoFeature[@gml:id = 'PrimitiveGeoFeature.f008']", dom);
 
@@ -1343,7 +1346,7 @@ public class GetFeatureTest extends WFS20TestSupport {
                         + "</wfs:Query> "
                         + "</wfs:GetFeature>";
         dom = postAsDOM("wfs", xml);
-        XMLAssert.assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
+        assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
         XMLAssert.assertXpathExists(
                 "//sf:PrimitiveGeoFeature[@gml:id = 'PrimitiveGeoFeature.f008']", dom);
     }
@@ -1365,15 +1368,15 @@ public class GetFeatureTest extends WFS20TestSupport {
                         "wfs?version=2.0.0&service=wfs&request=GetFeature&typename=cdf:Fifteen,cdf:Seven");
 
         assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
-        XMLAssert.assertXpathEvaluatesTo("2", "count(wfs:FeatureCollection/wfs:member)", dom);
-        XMLAssert.assertXpathEvaluatesTo(
+        assertXpathEvaluatesTo("2", "count(wfs:FeatureCollection/wfs:member)", dom);
+        assertXpathEvaluatesTo(
                 "2", "count(wfs:FeatureCollection/wfs:member/wfs:FeatureCollection)", dom);
 
-        XMLAssert.assertXpathEvaluatesTo(
+        assertXpathEvaluatesTo(
                 "15",
                 "count(wfs:FeatureCollection/wfs:member[position() = 1]/wfs:FeatureCollection//cdf:Fifteen)",
                 dom);
-        XMLAssert.assertXpathEvaluatesTo(
+        assertXpathEvaluatesTo(
                 "7",
                 "count(wfs:FeatureCollection/wfs:member[position() = 2]/wfs:FeatureCollection//cdf:Seven)",
                 dom);
@@ -1383,15 +1386,15 @@ public class GetFeatureTest extends WFS20TestSupport {
                         "wfs?version=2.0.0&service=wfs&request=GetFeature&typename=cdf:Fifteen,cdf:Seven");
 
         assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
-        XMLAssert.assertXpathEvaluatesTo("2", "count(wfs:FeatureCollection/wfs:member)", dom);
-        XMLAssert.assertXpathEvaluatesTo(
+        assertXpathEvaluatesTo("2", "count(wfs:FeatureCollection/wfs:member)", dom);
+        assertXpathEvaluatesTo(
                 "2", "count(wfs:FeatureCollection/wfs:member/wfs:FeatureCollection)", dom);
 
-        XMLAssert.assertXpathEvaluatesTo(
+        assertXpathEvaluatesTo(
                 "15",
                 "count(wfs:FeatureCollection/wfs:member[position() = 1]/wfs:FeatureCollection//cdf:Fifteen)",
                 dom);
-        XMLAssert.assertXpathEvaluatesTo(
+        assertXpathEvaluatesTo(
                 "7",
                 "count(wfs:FeatureCollection/wfs:member[position() = 2]/wfs:FeatureCollection//cdf:Seven)",
                 dom);
@@ -1495,17 +1498,15 @@ public class GetFeatureTest extends WFS20TestSupport {
                         + "</wfs:GetFeature>";
         Document dom = postAsDOM("wfs", xml);
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
-        XMLAssert.assertXpathEvaluatesTo(
-                "InvalidParameterValue", "//ows:Exception/@exceptionCode", dom);
-        XMLAssert.assertXpathEvaluatesTo("srsName", "//ows:Exception/@locator", dom);
+        assertXpathEvaluatesTo("InvalidParameterValue", "//ows:Exception/@exceptionCode", dom);
+        assertXpathEvaluatesTo("srsName", "//ows:Exception/@locator", dom);
 
         dom =
                 getAsDOM(
                         "wfs?service=WFS&version=2.0.0&request=getFeature&typeName=cdf:Other&srsName=EPSG:XYZ");
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
-        XMLAssert.assertXpathEvaluatesTo(
-                "InvalidParameterValue", "//ows:Exception/@exceptionCode", dom);
-        XMLAssert.assertXpathEvaluatesTo("srsName", "//ows:Exception/@locator", dom);
+        assertXpathEvaluatesTo("InvalidParameterValue", "//ows:Exception/@exceptionCode", dom);
+        assertXpathEvaluatesTo("srsName", "//ows:Exception/@locator", dom);
     }
 
     @Test
@@ -1526,7 +1527,7 @@ public class GetFeatureTest extends WFS20TestSupport {
                         + "</wfs:Query> "
                         + "</wfs:GetFeature>";
         Document dom = postAsDOM("wfs", xml);
-        XMLAssert.assertXpathEvaluatesTo("myHandle", "//ows:Exception/@locator", dom);
+        assertXpathEvaluatesTo("myHandle", "//ows:Exception/@locator", dom);
     }
 
     @Test
@@ -1541,14 +1542,12 @@ public class GetFeatureTest extends WFS20TestSupport {
                         + "</wfs:GetFeature>";
         Document dom = postAsDOM("wfs", xml);
 
-        XMLAssert.assertXpathEvaluatesTo(
-                "InvalidParameterValue", "//ows:Exception/@exceptionCode", dom);
-        XMLAssert.assertXpathEvaluatesTo("typeName", "//ows:Exception/@locator", dom);
+        assertXpathEvaluatesTo("InvalidParameterValue", "//ows:Exception/@exceptionCode", dom);
+        assertXpathEvaluatesTo("typeName", "//ows:Exception/@locator", dom);
 
         dom = getAsDOM("wfs?service=WFS&version=2.0.0&request=getFeature&typeNames=foobar");
-        XMLAssert.assertXpathEvaluatesTo(
-                "InvalidParameterValue", "//ows:Exception/@exceptionCode", dom);
-        XMLAssert.assertXpathEvaluatesTo("typeName", "//ows:Exception/@locator", dom);
+        assertXpathEvaluatesTo("InvalidParameterValue", "//ows:Exception/@exceptionCode", dom);
+        assertXpathEvaluatesTo("typeName", "//ows:Exception/@locator", dom);
     }
 
     @Test
@@ -1571,8 +1570,7 @@ public class GetFeatureTest extends WFS20TestSupport {
 
         Document dom = postAsDOM("wfs", xml);
 
-        XMLAssert.assertXpathEvaluatesTo(
-                "OperationParsingFailed", "//ows:Exception/@exceptionCode", dom);
+        assertXpathEvaluatesTo("OperationParsingFailed", "//ows:Exception/@exceptionCode", dom);
     }
 
     @Test
@@ -1583,9 +1581,8 @@ public class GetFeatureTest extends WFS20TestSupport {
         // print(doc);
         assertGML32(doc);
 
-        XMLAssert.assertXpathEvaluatesTo(
-                "1", "count(//wfs:FeatureCollection/wfs:member/cdf:Fifteen)", doc);
-        XMLAssert.assertXpathEvaluatesTo(
+        assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection/wfs:member/cdf:Fifteen)", doc);
+        assertXpathEvaluatesTo(
                 "Fifteen.2", "//wfs:FeatureCollection/wfs:member/cdf:Fifteen/@gml:id", doc);
     }
 
@@ -1685,7 +1682,7 @@ public class GetFeatureTest extends WFS20TestSupport {
                     getAsDOM(
                             "wfs?request=GetFeature&typeName=cite:NamedPlaces&version=2.0.0&service=wfs&featureId=NamedPlaces.1107531895891");
             // print(doc);
-            XMLAssert.assertXpathEvaluatesTo(
+            assertXpathEvaluatesTo(
                     "-0.001 0.002 -0.001 0.002 -0.001 0.003 -0.001 0.003 -0.001 0.002",
                     "//gml:posList",
                     doc);
@@ -1695,7 +1692,7 @@ public class GetFeatureTest extends WFS20TestSupport {
                     getAsDOM(
                             "wfs?request=GetFeature&typeName=cite:NamedPlaces&version=2.0.0&service=wfs&featureId=NamedPlaces.1107531895891");
             // print(doc);
-            XMLAssert.assertXpathEvaluatesTo(
+            assertXpathEvaluatesTo(
                     "-0.0011 0.0017 -6.0E-4 0.0017 -6.0E-4 0.0025 -0.0011 0.0025 -0.0011 0.0017",
                     "//gml:posList",
                     doc);
@@ -1712,5 +1709,33 @@ public class GetFeatureTest extends WFS20TestSupport {
         catalog.save(ft);
 
         return decimals;
+    }
+
+    @Test
+    public void testCustomizeFeatureType() throws Exception {
+        // customize feature type
+        String layerId = getLayerId(PRIMITIVEGEOFEATURE);
+        FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(layerId);
+        // dynamically compute attributes
+        List<AttributeTypeInfo> attributes = fti.attributes();
+
+        // customize and set statically
+        attributes.get(0).setName("abstract"); // rename
+        attributes.get(0).setSource("description");
+        attributes.remove(2); // remove
+        AttributeTypeInfo att = getCatalog().getFactory().createAttribute();
+        att.setName("new");
+        att.setSource("Concatenate(name, '-abcd')");
+        attributes.add(att);
+        fti.getAttributes().addAll(attributes);
+        getCatalog().save(fti);
+
+        Document dom =
+                getAsDOM(
+                        "wfs?request=GetFeature&version=2.0.0&typeName=sf:PrimitiveGeoFeature&featureId=PrimitiveGeoFeature.f001");
+        assertXpathEvaluatesTo("1", "count(//sf:PrimitiveGeoFeature)", dom);
+        assertXpathEvaluatesTo("PrimitiveGeoFeature.f001", "//sf:PrimitiveGeoFeature/@gml:id", dom);
+        assertXpathNotExists("//sf:PrimitiveGeoFeature/sf:surfaceProperty", dom);
+        assertXpathEvaluatesTo("name-f001-abcd", "//sf:PrimitiveGeoFeature/sf:new", dom);
     }
 }

@@ -22,6 +22,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -90,6 +92,7 @@ import org.geotools.referencing.wkt.Formattable;
 import org.geotools.referencing.wkt.UnformattableObjectException;
 import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.NumberRange;
+import org.geotools.util.SimpleInternationalString;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -1567,8 +1570,8 @@ public class XStreamPersisterTest {
                         .getXStream()
                         .getConverterLookup()
                         .lookupConverterForType(GrowableInternationalString.class);
-        XStreamPersister.GrowableInternationalStringConverter converter =
-                (XStreamPersister.GrowableInternationalStringConverter) candidate;
+        XStreamPersister.InternationalStringConverter converter =
+                (XStreamPersister.InternationalStringConverter) candidate;
 
         // the class
         assertTrue(converter.canConvert(GrowableInternationalString.class));
@@ -1583,6 +1586,30 @@ public class XStreamPersisterTest {
         assertTrue(converter.canConvert(anonymous.getClass()));
         // wont' try to convert object though
         assertFalse(converter.canConvert(Object.class));
+    }
+
+    @Test
+    public void testInternationalStringConverter() throws IOException, ClassNotFoundException {
+        final String message = "This is an unlocalized message";
+        final SimpleInternationalString toTest = new SimpleInternationalString(message);
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final ObjectOutputStream objectOut = new ObjectOutputStream(out);
+        objectOut.writeObject(toTest);
+        objectOut.close();
+        XStreamPersister persister = new XStreamPersisterFactory().createXMLPersister();
+        Converter candidate =
+                persister
+                        .getXStream()
+                        .getConverterLookup()
+                        .lookupConverterForType(SimpleInternationalString.class);
+        assertTrue(candidate instanceof XStreamPersister.InternationalStringConverter);
+        assertEquals(message, toTest.toString());
+        persister.save(toTest, out);
+        final ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+        final ObjectInputStream objectIn = new ObjectInputStream(in);
+        final Object object = objectIn.readObject();
+        objectIn.close();
+        assertEquals(object.getClass(), toTest.getClass());
     }
 
     ByteArrayOutputStream out() {

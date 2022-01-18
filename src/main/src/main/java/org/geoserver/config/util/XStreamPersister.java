@@ -521,31 +521,27 @@ public class XStreamPersister {
         xs.registerLocalConverter(GeneralEnvelope.class, "crs", new SRSConverter());
 
         xs.registerLocalConverter(
-                impl(ResourceInfo.class),
-                "internationalTitle",
-                new GrowableInternationalStringConverter());
+                impl(ResourceInfo.class), "internationalTitle", new InternationalStringConverter());
         xs.registerLocalConverter(
                 impl(ResourceInfo.class),
                 "internationalAbstract",
-                new GrowableInternationalStringConverter());
+                new InternationalStringConverter());
 
         xs.registerLocalConverter(
-                impl(ServiceInfo.class),
-                "internationalTitle",
-                new GrowableInternationalStringConverter());
+                impl(ServiceInfo.class), "internationalTitle", new InternationalStringConverter());
         xs.registerLocalConverter(
                 impl(ServiceInfo.class),
                 "internationalAbstract",
-                new GrowableInternationalStringConverter());
+                new InternationalStringConverter());
 
         xs.registerLocalConverter(
                 impl(LayerGroupInfo.class),
                 "internationalTitle",
-                new GrowableInternationalStringConverter());
+                new InternationalStringConverter());
         xs.registerLocalConverter(
                 impl(LayerGroupInfo.class),
                 "internationalAbstract",
-                new GrowableInternationalStringConverter());
+                new InternationalStringConverter());
         xs.registerLocalConverter(
                 impl(LayerGroupStyle.class),
                 "layers",
@@ -575,7 +571,7 @@ public class XStreamPersister {
         xs.registerConverter(new KeywordInfoConverter());
         xs.registerConverter(new SettingsInfoConverter());
         xs.registerConverter(new WMSLayerInfoConverter());
-        xs.registerConverter(new GrowableInternationalStringConverter());
+        xs.registerConverter(new InternationalStringConverter());
         xs.registerConverter(new LayerGroupStyleConverter());
         // this should have been a metadata map too, but was not registered as such and got a plain
         // map converter. Switched to SettingsTolerantMapConverter to make it work when plugins get
@@ -2671,7 +2667,7 @@ public class XStreamPersister {
         }
     }
 
-    class GrowableInternationalStringConverter extends AbstractReflectionConverter {
+    class InternationalStringConverter extends AbstractReflectionConverter {
 
         @Override
         @SuppressWarnings("unchecked")
@@ -2683,21 +2679,33 @@ public class XStreamPersister {
         @Override
         protected void doMarshal(
                 Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-            GrowableInternationalString internationalString = (GrowableInternationalString) source;
-            Set<Locale> locales = internationalString.getLocales();
-            int size = locales.size();
-            for (Locale l : locales) {
-                if (l != null) {
-                    String elementName = l.toLanguageTag();
-                    if (elementName.contains(" ")) elementName = elementName.replaceAll(" ", "__");
-                    writer.startNode(elementName);
-                    writer.setValue(internationalString.toString(l));
-                    writer.endNode();
-                } else if (size > 1) {
-                    writer.startNode(DEFAULT_LOCALE);
-                    writer.setValue(internationalString.toString(l));
-                    writer.endNode();
+
+            boolean isGrowable = source instanceof GrowableInternationalString;
+            String defaultValue = "";
+            if (isGrowable) {
+                GrowableInternationalString internationalString =
+                        (GrowableInternationalString) source;
+                Set<Locale> locales = internationalString.getLocales();
+                int size = locales.size();
+                for (Locale l : locales) {
+                    if (l != null) {
+                        String elementName = l.toLanguageTag();
+                        if (elementName.contains(" "))
+                            elementName = elementName.replaceAll(" ", "__");
+                        writer.startNode(elementName);
+                        writer.setValue(internationalString.toString(l));
+                        writer.endNode();
+                    } else if (size > 1) {
+                        writer.startNode(DEFAULT_LOCALE);
+                        writer.setValue(internationalString.toString(l));
+                        writer.endNode();
+                    }
                 }
+            } else {
+                defaultValue = source.toString();
+                writer.startNode(DEFAULT_LOCALE);
+                writer.setValue(defaultValue);
+                writer.endNode();
             }
         }
 

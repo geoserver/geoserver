@@ -41,4 +41,9 @@ public class ResourceConfigurationPanel extends Panel {
     public void resourceUpdated(AjaxRequestTarget target) {
         // nothing to do;
     }
+
+    /** Allows panels to perform update actions on the model on resource save. */
+    public void onSave() {
+        // does nothing by default
+    }
 }

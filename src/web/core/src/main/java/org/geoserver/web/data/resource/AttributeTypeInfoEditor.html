@@ -1,0 +1,24 @@
+<html xmlns:wicket="http://wicket.apache.org/">
+<head></head>
+<body>
+<wicket:panel>
+    <wicket:fragment wicket:id="text">
+        <input type="text" wicket:id="text"></input>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="type">
+        <input type="text" wicket:id="type"></input>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="area">
+        <textarea wicket:id="area" class="cql"></textarea>
+    </wicket:fragment>
+    <wicket:fragment wicket:id="check">
+        <input type="checkbox" wicket:id="check"></input>
+    </wicket:fragment>
+    <ul class="action-group">
+        <li><a class="add-link" wicket:id="addAttribute"><wicket:message key="addAttribute">Add</wicket:message></a></li>
+        <li><a class="reset-link" wicket:id="resetAttributes"><wicket:message key="resetAttributes">Reset</wicket:message></a></li>
+    </ul>
+    <div wicket:id="table"></div>
+</wicket:panel>
+</body>
+</html>

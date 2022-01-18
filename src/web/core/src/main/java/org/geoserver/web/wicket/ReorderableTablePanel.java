@@ -19,7 +19,6 @@ import org.apache.wicket.markup.repeater.OddEvenItem;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.geoserver.web.data.layergroup.LayerGroupEntry;
 import org.geoserver.web.wicket.GeoServerDataProvider.Property;
 import org.geoserver.web.wicket.GeoServerDataProvider.PropertyPlaceholder;
 import wicketdnd.DragSource;
@@ -38,6 +37,7 @@ import wicketdnd.theme.WebTheme;
 public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
 
     private static final long serialVersionUID = -6732973402966999112L;
+    private final List<T> items;
 
     static class ReorderableDataProvider<T> extends GeoServerDataProvider<T> {
 
@@ -85,9 +85,15 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
     static Property<?> RENDERING_ORDER = new PropertyPlaceholder<>("order");
 
     @SuppressWarnings("serial")
-    public ReorderableTablePanel(String id, List<T> items, IModel<List<Property<T>>> properties) {
+    public ReorderableTablePanel(
+            String id,
+            Class<T> contentsClass,
+            List<T> items,
+            IModel<List<Property<T>>> properties) {
         super(id, new ReorderableDataProvider<>(items, properties));
+        this.items = items;
         this.setOutputMarkupId(true);
+        this.setSortable(false); // order is manually configured here
         this.add(new WebTheme());
         this.add(new DragSource(Operation.MOVE).drag("tr"));
         this.add(
@@ -97,8 +103,8 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
                     public void onDrop(
                             AjaxRequestTarget target, Transfer transfer, Location location) {
                         if (location == null
-                                || !(location.getComponent().getDefaultModel().getObject()
-                                        instanceof LayerGroupEntry)) {
+                                || !(contentsClass.isInstance(
+                                        location.getComponent().getDefaultModel().getObject()))) {
                             return;
                         }
                         T movedItem = transfer.getData();
@@ -205,5 +211,9 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
                         }
                     });
         }
-    };
+    }
+
+    public List<T> getItems() {
+        return items;
+    }
 }

@@ -15,10 +15,10 @@ Installing the WCS 2.0 EO extension
 
 The steps to install the EO extension as the same as most other extensions:
 
-  * Go to the download page and look among the extensions
-  * Download the WCS 2.0 EO extension package (it's a zip file)
+  * Go to the :website:`website download <download>` page, locate the release used
+  * Look among the extensions for WCS 2.0 EO extension package to download: :download_extension:`wcs2_0-eo`
   * Stop GeoServer (or the web container hosting it)
-  * Unpack the contents of the zip file in the geoserver/WEB-INF/lib folder
+  * Unpack the contents of the zip file in the geoserver :file:`WEB-INF/lib` folder
   * Restart GeoServer
 
 Exposing dataset series

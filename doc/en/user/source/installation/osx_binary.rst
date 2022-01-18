@@ -10,15 +10,15 @@ An alternate way of installing GeoServer on OS X is to use the platform-independ
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** or **Java 11** environment, as provided by `AdoptOpenJDK <https://adoptopenjdk.net>`__ macOS installers.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** or **Java 11** environment, as provided by `Adoptium <https://adoptium.net>`__ macOS installers.
 
    .. note:: For more information about Java and GeoServer compatibility, please see the section on :ref:`production_java`.
 
-#. Navigate to the `GeoServer Download page <http://geoserver.org/download>`_.
+#. Navigate to the :website:`GeoServer Download page <download>`.
 
-#. Select the version of GeoServer that you wish to download.  If you're not sure, select `Stable <http://geoserver.org/release/stable>`_.
+#. Select the version of GeoServer that you wish to download.  If you're not sure, select :website:`Stable <release/stable>` release.
 
-#. Select :guilabel:`Platform Independent Binary` on the download page.
+#. Select :guilabel:`Platform Independent Binary` on the download page: :download_release:`bin`
 
 #. Download the archive and unpack to the directory where you would like the program to be located.
 

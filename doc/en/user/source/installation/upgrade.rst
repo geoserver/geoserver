@@ -11,19 +11,24 @@ The general GeoServer upgrade process is as follows:
 
 #. Make sure that the current data directory is external to the application (not located inside the application file structure).
 
+   Check the GeoServer Server status page for the double check the data directory location.
+
+#. Make a note of any extensions you have installed.
+
+   * The GeoServer :menuselection:`About --> Server Status` page provides a :guilabel:`Modules` tab listing the modules installed.
+   * Some extensions include more than one module, as an example the WPS extension is listed as :file:`gs-wps-core` and :file:`gs-web-wps`.
+
 #. Uninstall the old version and install the new version.
+   
+   * Download :website:`maintenance <release/maintenance>` release to update existing installation
+   * Download :website:`stable <release/stable>` release when ready to upgrade
+   
+#. Be sure to download and install each extension used by your prior installation.
 
-   .. note:: Alternately, you can install the new version directly over top of the old version.
-
-#. Make sure that the new version continues to point to the same data directory used by the previous version.
+#. Make sure that the new installation continues to point to the same data directory used by the previous version.
 
 Notes on upgrading specific versions
 ------------------------------------
-
-GeoJSON encoding (GeoServer 2.6 and newer)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-As of GeoServer 2.6, the GeoJSON produced by the WFS service no longer uses a non-standard encoding for the CRS. To reenable this behavior for compatibility purposes, set ``GEOSERVER_GEOJSON_LEGACY_CRS=true`` as a system property, context parameter, or environment variable.
 
 JTS Type Bindings (GeoServer 2.14 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -56,3 +61,8 @@ After::
 
 
 Any REST clients which rely on this binding information should be updated to support the new names.
+
+GeoJSON encoding (GeoServer 2.6 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.6, the GeoJSON produced by the WFS service no longer uses a non-standard encoding for the CRS. To reenable this behavior for compatibility purposes, set ``GEOSERVER_GEOJSON_LEGACY_CRS=true`` as a system property, context parameter, or environment variable.

@@ -17,9 +17,9 @@ Installing the libjpeg-turbo native library is a precondition to have the relati
 
 To perform the installation of the libjpeg-turbo binaries (or native library) you have to perform the following steps:
 
-1. go to the download site `here <http://sourceforge.net/projects/libjpeg-turbo/files/>`_ and download the latest available stable release (1.2.90 at the time of writing)
-2. select the package that matches the target platform in terms of Operating System (e.g. Linux rather than Windows) and Architecture (32 vs 64 bits)
-3. perform the installation using the target platform conventions. As an instance for Windows you should be using an installer that installs all the needed libs in a location at user's choice. On Ubuntu Linux systems you can use the *deb* files insted.
+1. Go to the download site `here <https://sourceforge.net/projects/libjpeg-turbo/files/>`__ and download the latest available stable release (1.2.90 at the time of writing)
+2. Select the package that matches the target platform in terms of Operating System (e.g. Linux rather than Windows) and Architecture (32 vs 64 bits)
+3. Perform the installation using the target platform conventions. As an instance for Windows you should be using an installer that installs all the needed libs in a location at user's choice. On Ubuntu Linux systems you can use the *deb* files insted.
 4. Once the native libraries are installed, you have to make sure the GeoServer can load them. This should happen automatically after Step 2 on Linux, while on Windows you should make sure that the location where you placed the DLLs is part of the PATH environment variable for the Java Process for the GeoServer.
 
 .. warning:: When installing on Windows, always make sure that the location where you placed the DLLs is part of the PATH environment variable for the Java Process for the GeoServer. This usually means that you have to add such location to the PATH environmental variable for the user that is used to run GeoServer or the system wide variables.
@@ -33,12 +33,15 @@ Installing the GeoServer libjpeg-turbo extension
 
   .. warning:: Before moving on make sure you installed the libjpeg-turbo binaries as per the section above.
 
+#. Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`libjpeg-turbo`
+   
+   .. warning:: Make sure to match the version of the extension (for example |release| above) to the version of the GeoServer instance!
 
- #. Download the extension from the `nightly GeoServer extensions builds <https://build.geoserver.org/geoserver/master/ext-latest/>`_.
+#. Download the extension from the `nightly GeoServer extensions builds <https://build.geoserver.org/geoserver/master/ext-latest/>`_.
 
     .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 
- #. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory of the GeoServer installation.
 
 Checking if the extension is enabled
 ------------------------------------
@@ -52,6 +55,10 @@ or::
 
    10 mar 19:17:12 WARN [turbojpeg.TurboJPEGMapResponse] - The turbo jpeg encoder is available for usage
 
+You can also check in the :menuselection:`Server Status` page. From the :guilabel:`Modules` tab:
+
+* Locate the :guilabel:`GeoServer libjpeg-turbo Module` module. The enabled status indicates if the extension is available
+* Click on the :guilabel:`GeoServer libjpeg-turbo Module` link to check module status. The :guilabel:`Module Info` dialog indicates the JNI LibJPEGTurbo Wrapper Version used.
 
 Disabling the extension
 ------------------------------------

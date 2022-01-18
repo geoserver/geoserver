@@ -135,7 +135,8 @@ As the table shows, the full color PNG image takes usually a lot more time than 
 
 Generating the custom palette
 -----------------------------
-The `nyp.pal <http://geoserver.org/download/attachments/1278244/nyp.pal?version=1>`_ file has been generated using IrfanView, on Windows. The steps are simple:
+
+The :file:`nyp.pal` file has been generated using IrfanView, on Windows:
 
 * open the png 24 bit version of the image
 * use Image/Decrease Color Depth and set 256 colors

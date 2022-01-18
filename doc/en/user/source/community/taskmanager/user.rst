@@ -1,32 +1,23 @@
-User's Guide
-============
+TaskManager User Guide
+======================
 
--  `Installation <#installation>`__
--  `Server Configuration <#server-configuration>`__
--  `Security <#security>`__
--  `Graphical User Interface <#graphical-user-interface>`__
--  `Task Types <#task-types>`__
--  `Bulk Operations <#bulk-operations>`__
--  `Examples <#examples>`__
+.. contents:: Table of Contents
+    :depth: 2
 
 Installation
 ------------
 
 To install the GeoServer Task Manager extension:
 
--  Download the extension from the `GeoServer Download
-   Page <http://geoserver.org/download>`__. The file name is called
-   ``geoserver-*-taskmanager-core-plugin.zip``, where ``*`` is the
-   version/snapshot name. For `S3 support <#s3-file-service>`__, also
-   install the plugin with name
-   ``geoserver-*-taskmanager-s3-plugin.zip``, where ``*`` is the
-   version/snapshot name.
+1. Download the extension from the :website:`GeoServer Download
+   Page <download>` release page: :download_community:`taskmanager-core`. For `S3 support <#s3-file-service>`__, also
+   install the plugin :download_community:`taskmanager-s3`
+   
+2. Extract this file and place the JARs in :file:`WEB-INF/lib`.
 
--  Extract this file and place the JARs in ``WEB-INF/lib``.
-
--  Perform any configuration required by your servlet container, and
+3. Perform any configuration required by your servlet container, and
    then restart. On startup, Task Manager will create a configuration
-   directory ``taskmanager`` in the GeoServer Data Directory. You will
+   directory :file:`taskmanager` in the GeoServer Data Directory. You will
    be able to see the Task Manager configuration pages from the
    GeoServer WebGUI menu.
 

@@ -20,11 +20,11 @@ Installing the SQL Server extension
 GeoServer files
 ```````````````
 
-#. Download the SQL Server extension from the `GeoServer download page <http://geoserver.org/download>`_.
+#. Visit the :website:`website download <download>` page, locate your release, and download: :download_extension:`sqlserver`
+   
+   .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
 
-   .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
-
-#. Extract the contents of the archive into the ``WEB-INF/lib`` directory of the GeoServer installation.
+#. Extract the contents of the archive into the :file:`WEB-INF/lib` directory of the GeoServer installation.
 
 #. Restart the GeoServer to load the extension.
 

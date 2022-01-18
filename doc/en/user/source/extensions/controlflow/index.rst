@@ -13,6 +13,17 @@ This kind of control is useful for a number of reasons:
 
 The control flow method does not normally reject requests, it just queues up those in excess and executes them late. However, it's possible to configure the module to reject requests that have been waited in queue for too long.
 
+Installation
+------------
+
+#. Visit the :website:`website download <download>` page, locate your release, and download: :download_extension:`control-flow`
+   
+   .. warning:: Ensure to match plugin (example |release| above) version to the version of the GeoServer instance.
+
+ #. Extract the files in this archive to the :file:`WEB-INF/lib` directory of your GeoServer installation.
+
+ #. Restart GeoServer
+ 
 Rule syntax reference
 ---------------------
 

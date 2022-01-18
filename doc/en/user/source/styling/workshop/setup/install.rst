@@ -21,15 +21,12 @@ Manual Install
 
 To download and install the required extensions by hand:
 
-#. Download geoserver-2.10-M0-css-plugin.zip and geoserver-2.10-M0-css-plugin.zip from:
+#. * From the :website:`download page <download>` download:
 
-   * `Development Release <http://geoserver.org/download/>`_ (GeoServer WebSite)
+   * :download_extension:`css`
+   * :download_extension:`ysld`
    
    It is important to download the version that matches the GeoServer you are running.
-
-#. Download the geoserver-2.10-SNAPSHOT-ysld-plugin.zip from:
-
-   * `Community Builds <https://build.geoserver.org/geoserver/master/community-latest/>`_ (GeoServer WebSite)
 
 #. Stop the GeoServer application.
 

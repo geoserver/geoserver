@@ -189,6 +189,30 @@ Vector layers have a list of the :guilabel:`Feature Type Details`. These include
 
 The :guilabel:`Nillable` option refers to whether the property requires a value or may be flagged as being null. Meanwhile :guilabel:`Min/Max Occurrences` refers to how many values a field is allowed to have. Currently both :guilabel:`Nillable` and :guilabel:`Min/Max Occurrences` are set to ``true`` and ``0/1`` but may be extended with future work on complex features.
 
+The :guilabel:`Customize attributes` checkbox opens an attribute editor allowing customization.
+
+.. figure:: img/data_layers_feature_customize.png
+
+   Attribute customization
+
+
+It is possible to:
+
+* Change the order of attributes, using either the up/down arrows, or dragging the attribute row.
+* Remove an attribute using the "remove" icon at the end of the attribute row.
+* Add a new attribute, which will be computed based on the :guilabel:`Source` CQL expression.
+* Rename an attribute.
+* Change the nillability of the attribute, for example, making the attribute mandatory even if it's
+  not in the data source, and vice-versa.
+* Change the type of the attribute using the `Type` column. The most common types are available in 
+  a drop-down on editing, but it's possible to indicate any valid Java class, as long as GeoServer
+  has a converter that goes from the value produced by the :guilabel:`Source` expression to the 
+  target type (new converters can be plugged in with some Java programming).
+* Reset the table to the native settings, using the :guilabel:`Reset customization` link.
+
+Some of the feature type edits might result in the layer not being editable anymore, for example,
+by removing an attribute that is marked as mandatory in the data source.
+
 Restricting features showing up in the layer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

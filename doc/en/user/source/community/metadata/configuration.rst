@@ -11,12 +11,10 @@ Installation
 
 To install the GeoServer Metadata extension:
 
--  Download the extension from the `GeoServer Download
-   Page <http://geoserver.org/download>`__. The file name is called
-   ``geoserver-*-metadata-plugin.zip``, where ``*`` is the
-   version/snapshot name.
+-  Download the extension from the :website:`GeoServer Download
+   Page <download>` page for your release: :download_community:`metadata`
 
--  Extract this file and place the JARs in ``WEB-INF/lib``.
+-  Extract this file and place the JARs in :file:`WEB-INF/lib`.
 
 -  Perform any configuration required by your servlet container, and
    then restart.  On startup, Metadata module will create a configuration

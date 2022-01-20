@@ -5,13 +5,15 @@ Installing the WPS extension
 
 The WPS module is not a part of GeoServer core, but instead must be installed as an extension.  To install WPS:
 
-#. Navigate to the `GeoServer download page <http://geoserver.org/download/>`_
+#. Navigate to the :website:`GeoServer download page <download>`.
 
 #. Find the page that matches the exact version of GeoServer you are running.
 
    .. warning::  Be sure to match the version of the extension with that of GeoServer, otherwise errors will occur.
 
-#. Download the WPS extension.  The download link for :guilabel:`WPS` will be in the :guilabel:`Extensions` section under :guilabel:`Other`.
+#. Download the WPS extension: :download_extension:`wps`
+   
+   The download link for :guilabel:`WPS` will be in the :guilabel:`Extensions` section under :guilabel:`Other`.
 
 #. Extract the files in this archive to the :file:`WEB-INF/lib` directory of your GeoServer installation.
 

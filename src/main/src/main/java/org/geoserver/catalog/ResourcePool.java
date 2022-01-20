@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
@@ -182,20 +181,6 @@ public class ResourcePool {
     /** logging */
     static Logger LOGGER = Logging.getLogger("org.geoserver.catalog");
 
-    static Class<?> VERSIONING_FS = null;
-    static Class<?> GS_VERSIONING_FS = null;
-
-    static {
-        try {
-            // only support versioning if on classpath
-            VERSIONING_FS = Class.forName("org.geotools.data.VersioningFeatureSource");
-            GS_VERSIONING_FS =
-                    Class.forName("org.vfny.geoserver.global.GeoServerVersioningFeatureSource");
-        } catch (ClassNotFoundException e) {
-            // fall through
-        }
-    }
-
     /** Default number of hard references */
     static int FEATURETYPE_CACHE_SIZE_DEFAULT = 100;
 
@@ -213,6 +198,12 @@ public class ResourcePool {
     ThreadPoolExecutor coverageExecutor;
     CatalogRepository repository;
     EntityResolverProvider entityResolverProvider;
+    /**
+     * Applies attributes customization. It's a {@link RetypeFeatureTypeCallback}, it needs to be
+     * applied sooner in the process of setting up a FeatureSource, so it does not fit exactly the
+     * extension point lifecycle.
+     */
+    TransformFeatureTypeCallback transformer = new TransformFeatureTypeCallback();
 
     /** Creates a new instance of the resource pool explicitly supplying the application context. */
     public static ResourcePool create(Catalog catalog, ApplicationContext appContext) {
@@ -1057,41 +1048,25 @@ public class ResourcePool {
 
             // Handle the attributes manually
             tb.setAttributes((AttributeDescriptor[]) null);
-            if (info.getAttributes() == null || info.getAttributes().isEmpty()) {
-                // take this to mean just load all native
-                for (PropertyDescriptor pd : ft.getDescriptors()) {
-                    if (!(pd instanceof AttributeDescriptor)) {
-                        continue;
-                    }
-
-                    AttributeDescriptor ad = (AttributeDescriptor) pd;
-                    if (handleProjectionPolicy) {
-                        ad = handleDescriptor(ad, info);
-                    }
-                    tb.add(ad);
+            // take this to mean just load all native with projection handling,
+            // feature type customization happens later
+            for (PropertyDescriptor pd : ft.getDescriptors()) {
+                if (!(pd instanceof AttributeDescriptor)) {
+                    continue;
                 }
-            } else {
-                // only load native attributes configured
-                for (AttributeTypeInfo att : info.getAttributes()) {
-                    String attName = att.getName();
 
-                    // load the actual underlying attribute type
-                    PropertyDescriptor pd = ft.getDescriptor(attName);
-                    if (pd == null || !(pd instanceof AttributeDescriptor)) {
-                        throw new IOException(
-                                "the SimpleFeatureType "
-                                        + info.prefixedName()
-                                        + " does not contains the configured attribute "
-                                        + attName
-                                        + ". Check your schema configuration");
-                    }
-
-                    AttributeDescriptor ad = (AttributeDescriptor) pd;
+                AttributeDescriptor ad = (AttributeDescriptor) pd;
+                if (handleProjectionPolicy) {
                     ad = handleDescriptor(ad, info);
-                    tb.add(ad);
                 }
+                tb.add(ad);
             }
             ft = tb.buildFeatureType();
+
+            // configured attribute customization, to be run before callbacks
+            if (info.getAttributes() != null && !info.getAttributes().isEmpty())
+                ft = transformer.retypeFeatureType(info, ft);
+
             // extension point for retyping the feature type
             for (RetypeFeatureTypeCallback callback :
                     GeoServerExtensions.extensions(RetypeFeatureTypeCallback.class)) {
@@ -1231,13 +1206,12 @@ public class ResourcePool {
         DataAccess<? extends FeatureType, ? extends Feature> dataAccess =
                 getDataStore(info.getStore());
 
-        // TODO: support aliasing (renaming), reprojection, versioning, and locking for DataAccess
+        // TODO: support aliasing (renaming), reprojection, and locking for DataAccess
         if (!(dataAccess instanceof DataStore)) {
             return getFeatureSource(dataAccess, info);
         }
 
         DataStore dataStore = (DataStore) dataAccess;
-        SimpleFeatureSource fs;
 
         // sql view handling
         FeatureTypeCallback initializer = getFeatureTypeInitializer(info, dataAccess);
@@ -1248,20 +1222,20 @@ public class ResourcePool {
         //
         // aliasing and type mapping
         //
-        final String typeName = info.getNativeName();
+        final String nativeName = info.getNativeName();
         final String alias = info.getName();
-        final SimpleFeatureType nativeFeatureType = dataStore.getSchema(typeName);
-        final SimpleFeatureType renamedFeatureType =
-                (SimpleFeatureType) getFeatureType(info, false);
-        if (!typeName.equals(alias)
-                || DataUtilities.compare(nativeFeatureType, renamedFeatureType) != 0) {
+        final SimpleFeatureType targetFeatureType = (SimpleFeatureType) getFeatureType(info, false);
+        SimpleFeatureSource fs = dataStore.getFeatureSource(nativeName);
+
+        // if feature type customization is there, apply it first
+        if (info.getAttributes() != null && !info.getAttributes().isEmpty()) {
+            fs = (SimpleFeatureSource) transformer.wrapFeatureSource(info, fs);
+        }
+        // then check name, and other customizations (e.g., projection policy)
+        if (!nativeName.equals(alias)
+                || DataUtilities.compare(fs.getSchema(), targetFeatureType) != 0) {
             // rename and retype as necessary
-            fs =
-                    RetypingFeatureSource.getRetypingSource(
-                            dataStore.getFeatureSource(typeName), renamedFeatureType);
-        } else {
-            // normal case
-            fs = dataStore.getFeatureSource(info.getQualifiedName());
+            fs = RetypingFeatureSource.getRetypingSource(fs, targetFeatureType);
         }
 
         //
@@ -1315,43 +1289,6 @@ public class ResourcePool {
                     schema = FeatureTypes.transform(schema, resultCRS);
             } catch (Exception e) {
                 throw new DataSourceException("Problem forcing CRS onto feature type", e);
-            }
-
-            //
-            // versioning
-            //
-            try {
-                // only support versioning if on classpath
-                if (VERSIONING_FS != null
-                        && GS_VERSIONING_FS != null
-                        && VERSIONING_FS.isAssignableFrom(fs.getClass())) {
-                    // class implements versioning, reflectively create the versioning wrapper
-                    try {
-                        Method m =
-                                GS_VERSIONING_FS.getMethod(
-                                        "create",
-                                        VERSIONING_FS,
-                                        SimpleFeatureType.class,
-                                        Filter.class,
-                                        CoordinateReferenceSystem.class,
-                                        int.class);
-                        @SuppressWarnings("unchecked")
-                        FeatureSource<? extends FeatureType, ? extends Feature> invoke =
-                                (FeatureSource)
-                                        m.invoke(
-                                                null,
-                                                fs,
-                                                schema,
-                                                info.filter(),
-                                                resultCRS,
-                                                info.getProjectionPolicy().getCode());
-                        return invoke;
-                    } catch (Exception e) {
-                        throw new DataSourceException("Creation of a versioning wrapper failed", e);
-                    }
-                }
-            } catch (ClassCastException e) {
-                // fall through
             }
 
             // joining, check for join hint which requires us to create a shcema with some

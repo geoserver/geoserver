@@ -21,7 +21,9 @@ import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.SubmitLink;
+import org.apache.wicket.markup.html.form.validation.IFormValidator;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -33,6 +35,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.web.ComponentAuthorizer;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.GeoserverAjaxSubmitLink;
 import org.geoserver.web.data.resource.LayerModel;
@@ -108,6 +111,16 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
         add(new Label("publishedinfoname", getPublishedInfo().prefixedName()));
         Form<T> theForm = new Form<>("publishedinfo", myModel);
         add(theForm);
+        theForm.add(
+                new IFormValidator() {
+                    @Override
+                    public FormComponent<?>[] getDependentFormComponents() {
+                        return new FormComponent[0];
+                    }
+
+                    @Override
+                    public void validate(Form<?> form) {}
+                });
 
         List<ITab> tabs = new ArrayList<>();
 
@@ -339,7 +352,7 @@ public abstract class PublishedConfigurationPage<T extends PublishedInfo>
             onSuccessfulSave(doReturn);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error saving layer", e);
-            error(e.getMessage() == null ? e.toString() : e.getMessage());
+            error(GeoServerApplication.getMessage(this, e));
         }
     }
 

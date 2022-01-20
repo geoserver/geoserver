@@ -25,13 +25,7 @@
       -->
     <param-value>PARTIAL-BUFFER2</param-value>
   </context-param>
-  
-  <!-- If true, enable versioning datastore as well -->
-  <context-param>
-    <param-name>enableVersioning</param-name>
-    <param-value>true</param-value>
-  </context-param>
-  
+
   <context-param>
     <!-- see comments on the PARTIAL-BUFFER strategy -->
     <!-- this sets the size of the buffer.  default is "50" = 50kb -->

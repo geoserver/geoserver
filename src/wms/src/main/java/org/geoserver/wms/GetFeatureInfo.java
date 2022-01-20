@@ -18,6 +18,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.featureinfo.FeatureCollectionDecorator;
 import org.geoserver.wms.featureinfo.LayerIdentifier;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.FeatureCollection;
@@ -160,8 +161,13 @@ public class GetFeatureInfo {
             FeatureInfoRequestParameters params, FeatureCollection collection) throws IOException {
         // no general way to reduce attribute names in complex features yet
         String[] names = params.getPropertyNames();
-        if (names != Query.ALL_NAMES && collection instanceof SimpleFeatureCollection) {
-            SimpleFeatureCollection sfc = (SimpleFeatureCollection) collection;
+        if (names != Query.ALL_NAMES
+                && collection != null
+                && collection.getSchema() instanceof SimpleFeatureType) {
+            // some collection wrappers can be made of simple features without being a
+            // SimpleFeatureCollection, e.g. FilteringFeatureCollection
+            @SuppressWarnings("unchecked")
+            SimpleFeatureCollection sfc = DataUtilities.simple(collection);
             SimpleFeatureType source = sfc.getSchema();
             SimpleFeatureType target = SimpleFeatureTypeBuilder.retype(source, names);
             if (!target.equals(source)) {

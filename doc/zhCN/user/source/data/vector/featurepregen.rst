@@ -8,7 +8,7 @@
 安装预用功能插件
 ------------------------------------------------
 
-#.从 `GeoServer download page <http://geoserver.org/download>`_ . 下载预用功能插件。
+#.从 :website:`GeoServer download page <download>` . 下载预用功能插件。
 
    .. warning:: 确保将扩展版本与GeoServer实例的版本匹配!
 

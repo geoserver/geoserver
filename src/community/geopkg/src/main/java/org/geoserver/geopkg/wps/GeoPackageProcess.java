@@ -34,7 +34,6 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.geopkg.GeoPackageGetMapOutputFormat;
 import org.geoserver.geopkg.GeoPkg;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.URLMangler;
@@ -112,13 +111,13 @@ public class GeoPackageProcess implements GeoServerProcess {
 
     private WPSResourceManager resources;
 
-    private GeoPackageGetMapOutputFormat mapOutput;
+    private GeoPackageGetMapOutputFormatWPS mapOutput;
 
     private FilterFactory2 filterFactory;
 
     public GeoPackageProcess(
             GeoServer geoServer,
-            GeoPackageGetMapOutputFormat mapOutput,
+            GeoPackageGetMapOutputFormatWPS mapOutput,
             WPSResourceManager resources,
             FilterFactory2 filterFactory,
             GeoServerDataDirectory dataDirectory,

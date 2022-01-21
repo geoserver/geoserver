@@ -1,24 +1,5 @@
-GeoPackage As Output
-====================
-
-GeoPackage WMS Output Format
-----------------------------
-
-Any WMS :ref:`wms_getmap` request can be returned in the form of a GeoPackage by specifying ``format=geopackage`` as output format (see :ref:`wms_output_formats`). \
-The returned result will be a GeoPackage file with a single tile layer. 
-
-The following additional parameters can be passed on using :ref:`format_options`:
-  * ``tileset_name``: name to be used for tileset in GeoPackage file (default is name of layer(s)).
-  * ``min_zoom``, ``max_zoom``, ``min_column``, ``max_column``, ``min_row``, ``max_row``: set the minimum and maximum zoom level, column, and rows
-  * ``gridset``: name of gridset to use (otherwise default for CRS is used)
-        
-GeoPackage WFS Output Format
-----------------------------    
-
-Any WFS :ref:`wfs_getfeature` request can be returned as a GeoPackage by specifying ``format=geopackage`` as output format (see :ref:`wfs_output_formats`). The returned result will be a GeoPackage file with a single features layer.
-
 GeoPackage WPS Process
-----------------------
+======================
 
 A custom GeoPackage can be created with any number of tiles and features layers using the ``GeoPackage`` WPS Process (see :ref:`wps_processes`).
 

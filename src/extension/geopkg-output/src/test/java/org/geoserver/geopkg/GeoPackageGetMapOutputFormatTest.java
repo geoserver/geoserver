@@ -22,14 +22,15 @@ import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.geopkg.wms.GeoPackageGetMapOutputFormat;
 import org.geoserver.gwc.GWC;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.tiles.FileBackedRawMap;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.WebMap;
-import org.geoserver.wms.map.RawMap;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.geopkg.GeoPackage;
 import org.geotools.geopkg.Tile;
@@ -69,18 +70,19 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
                 .setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
 
         WebMap map = format.produceMap(mapContent);
-        GeoPackage geopkg = createGeoPackage(map);
+        try (GeoPackage geopkg = createGeoPackage(map)) {
+            assertTrue(geopkg.features().isEmpty());
+            assertEquals(1, geopkg.tiles().size());
+            TileEntry tile = geopkg.tile("World_Lakes");
 
-        assertTrue(geopkg.features().isEmpty());
-        assertEquals(1, geopkg.tiles().size());
-        TileEntry tile = geopkg.tile("World_Lakes");
-        assertNotNull(tile);
-        // the bounds should be the ones of the tile matrix, not the ones of the layer
-        ReferencedEnvelope bounds = tile.getTileMatrixSetBounds();
-        assertEquals(-180, bounds.getMinimum(0), 0d);
-        assertEquals(180, bounds.getMaximum(0), 0d);
-        assertEquals(-90, bounds.getMinimum(1), 0d);
-        assertEquals(90, bounds.getMaximum(1), 0d);
+            assertNotNull(tile);
+            // the bounds should be the ones of the tile matrix, not the ones of the layer
+            ReferencedEnvelope bounds = tile.getTileMatrixSetBounds();
+            assertEquals(-180, bounds.getMinimum(0), 0d);
+            assertEquals(180, bounds.getMaximum(0), 0d);
+            assertEquals(-90, bounds.getMinimum(1), 0d);
+            assertEquals(90, bounds.getMaximum(1), 0d);
+        }
     }
 
     @Test
@@ -97,24 +99,18 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
         mapContent.getRequest().setBbox(new Envelope(-180, 180, -90, 90));
 
         WebMap map = format.produceMap(mapContent);
-        GeoPackage geopkg = createGeoPackage(map);
+        try (GeoPackage geopkg = createGeoPackage(map)) {
 
-        assertTrue(geopkg.features().isEmpty());
-        assertEquals(1, geopkg.tiles().size());
+            assertTrue(geopkg.features().isEmpty());
+            assertEquals(1, geopkg.tiles().size());
 
-        Tile topLeftTile = geopkg.reader(geopkg.tiles().get(0), 1, 1, 0, 0, 0, 0).next();
+            Tile topLeftTile = geopkg.reader(geopkg.tiles().get(0), 1, 1, 0, 0, 0, 0).next();
 
-        /*
-        FileOutputStream fous = new FileOutputStream("toplefttile.png");
-        fous.write(topLeftTile.getData());
-        fous.flush();
-        fous.close();
-        */
+            BufferedImage tileImg = ImageIO.read(new ByteArrayInputStream(topLeftTile.getData()));
 
-        BufferedImage tileImg = ImageIO.read(new ByteArrayInputStream(topLeftTile.getData()));
-
-        ImageAssert.assertEquals(
-                URLs.urlToFile(getClass().getResource("toplefttile.png")), tileImg, 250);
+            ImageAssert.assertEquals(
+                    URLs.urlToFile(getClass().getResource("toplefttile.png")), tileImg, 250);
+        }
     }
 
     @Test
@@ -144,33 +140,17 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
     }
 
     GeoPackage createGeoPackage(WebMap map) throws IOException {
-        assertTrue(map instanceof RawMap);
+        assertTrue(map instanceof FileBackedRawMap);
 
-        RawMap rawMap = (RawMap) map;
-        File f = File.createTempFile("temp", ".gpkg", new File("target"));
-        FileOutputStream fout = new FileOutputStream(f);
-        rawMap.writeTo(fout);
-        fout.flush();
-        fout.close();
+        try (FileBackedRawMap rawMap = (FileBackedRawMap) map) {
+            File f = File.createTempFile("temp", ".gpkg", new File("target"));
+            try (FileOutputStream fout = new FileOutputStream(f)) {
+                rawMap.writeTo(fout);
+                fout.flush();
+            }
 
-        return new GeoPackage(f);
-        //        File f = File.createTempFile("geopkg", "zip", new File("target"));
-        //        FileOutputStream fout = new FileOutputStream(f);
-        //        rawMap.writeTo(fout);
-        //        fout.flush();
-        //        fout.close();
-        //
-        //        File g = File.createTempFile("geopkg", "db", new File("target"));
-        //        g.delete();
-        //        g.mkdir();
-        //
-        //        IOUtils.decompress(f, g);
-        //        return new GeoPackage(g.listFiles(new FileFilter() {
-        //            @Override
-        //            public boolean accept(File file) {
-        //                return file.getName().endsWith(".geopackage");
-        //            }
-        //        })[0]);
+            return new GeoPackage(f);
+        }
     }
 
     @Override

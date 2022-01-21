@@ -6,15 +6,17 @@
  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <groupId>org.geoserver</groupId>
-    <artifactId>community</artifactId>
+    <artifactId>extension</artifactId>
     <version>2.21-SNAPSHOT</version>
   </parent>
-  <groupId>org.geoserver.community</groupId>
-  <artifactId>gs-mbtiles</artifactId>
+
+  <groupId>org.geoserver.extension</groupId>
+  <artifactId>gs-geopkg-output</artifactId>
   <packaging>jar</packaging>
-  <name>GeoServer mbtiles Extension</name>
+  <name>GeoPackage output</name>
 
   <dependencies>
     <dependency>
@@ -24,40 +26,23 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-gwc</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
       <artifactId>gs-wms</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-geopkg-output</artifactId>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wfs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-gwc</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.geotools</groupId>
-      <artifactId>gt-mbtiles</artifactId>
+      <artifactId>gt-geopkg</artifactId>
       <version>${gt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-render</artifactId>
-      <version>${gt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-wps-core</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver.extension</groupId>
-      <artifactId>gs-wps-core</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -75,13 +60,9 @@
     </dependency>
     <dependency>
       <groupId>org.geoserver</groupId>
-      <artifactId>gs-ows</artifactId>
+      <artifactId>gs-wfs</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-sample-data</artifactId>
-      <version>${gt.version}</version>
+      <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -90,13 +71,14 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>xmlunit</groupId>
-      <artifactId>xmlunit</artifactId>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.geowebcache</groupId>
-      <artifactId>gwc-core</artifactId>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.geoserver.web</groupId>
@@ -111,21 +93,7 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-restconfig</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.geoserver</groupId>
-      <artifactId>gs-restconfig</artifactId>
-      <version>${project.version}</version>
-      <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
-
   <build>
     <testResources>
       <testResource>
@@ -133,5 +101,4 @@
       </testResource>
     </testResources>
   </build>
-
 </project>

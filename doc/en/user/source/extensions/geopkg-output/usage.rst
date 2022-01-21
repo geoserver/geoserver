@@ -9,17 +9,17 @@ WFS
 ^^^
 
 
-Add ``&outputFormat=geopkg`` to your request. The result will be a GeoPackage (MIME type `application/geopackage+sqlite3`) containing the requested features.
+Add ``&outputFormat=geopkg`` to your request. The result will be a GeoPackage (MIME type ``application/geopackage+sqlite3``) containing the requested features.
 
 .. code-block::  
 
     curl "http://localhost:8080/geoserver/wfs?service=wfs&version=2.0.0&request=GetFeature&typeNames=ws:layername&outputFormat=geopkg" \
     -o wfs.gpkg
 
+You can use `geopkg`, `geopackage`, or `gpkg` as the output format in the request.  Use `1.0.0`, `1.1.0`, or `2.0.0` as ``version=`` to specify which WFS version to use.
+
 .. note::
 
-    You can use `geopkg`, `geopackage`, or `gpkg` as the output format in the request.  Use `1.0.0`, `1.1.0`, or `2.0.0` as ``version=`` to specify which WFS version to use.
-    
     GeoPackages always have the ordinates in X,Y (``EAST_NORTH``) format.
 
 WMS
@@ -27,16 +27,29 @@ WMS
 
 Add ``&format=geopkg`` to your request. The result will be a GeoPackage (MIME type `application/geopackage+sqlite3`) containing the requested tiles.
 
+Using WMS 1.1.0 to access tiled image geopkg:
 
 .. code-block::  
 
-    curl "http://localhost:8080/geoserver/dave/wms?service=WMS&version=1.1.0&request=GetMap&layers=ws:layername&bbox=-123.43670607166865%2C48.3956835%2C-123.2539813%2C48.5128362547052&width=1536&height=984&srs=EPSG%3A4326&styles=&format=geopkg" \
+    curl "http://localhost:8080/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=ws:layername&bbox=-123.43670607166865%2C48.3956835%2C-123.2539813%2C48.5128362547052&width=1536&height=984&srs=EPSG%3A4326&styles=&format=geopkg" \
     -o wms.gpkg
 
-    curl "http://localhost:8080/geoserver/dave/wms?service=WMS&version=1.3.0&request=GetMap&layers=ws:layername&bbox=48.3956835,-123.43670607166865,48.5128362547052,-123.2539813&width=768&height=492&srs=EPSG%3A4326&styles=&format=geopkg" \
+Using WMS 1.3.0 to access tiled image geopkg:
+
+.. code-block:: 
+
+    curl "http://localhost:8080/geoserver/wms?service=WMS&version=1.3.0&request=GetMap&layers=ws:layername&bbox=48.3956835,-123.43670607166865,48.5128362547052,-123.2539813&width=768&height=492&srs=EPSG%3A4326&styles=&format=geopkg" \
     -o wms.gpkg
 
-You can also add format options (``format_options=param1:value1;param2:value2;...``) to the request.  With all default values, you will get a GeoPackage with PNG tiles of multiple resolutions.  There will be a little more than 255 total tiles - all occupying the area in the request's bbox.
+You can use ``format=geopkg``, ``format=geopackage``, or ``format=gpkg`` as the output format in the request.  Use WMS ``version=1.1.0``, or ``version=1.3.0`` to specify which WMS version to use, keeping in mind axis order for ``bbox`` differences.
+
+.. note::
+    Regradless of of WMS axis order used for ``bbox`` the resulting GeoPackages always have the ordinates in X,Y (``EAST_NORTH``) order as required by the specification.
+
+Format options
+~~~~~~~~~~~~~~
+
+You can also add format options (``format_options=param1:value1;param2:value2;...``) to the request.   With all default values, you will get a GeoPackage with PNG tiles of multiple resolutions.  There will be a little more than 255 total tiles - all occupying the area in the request's bbox.
 
 .. list-table:: Format Options
    :widths: auto  
@@ -89,8 +102,3 @@ You can also add format options (``format_options=param1:value1;param2:value2;..
 
        default: TRUE (required for GeoPackage - `The tile coordinate (0,0) always refers to the tile in the upper left corner of the tile matrix...`)
 
-.. note::
-
-    You can use `geopkg`, `geopackage`, or `gpkg` as the output format in the request.  Use `1.1.0`, or `1.3.0` as ``version=`` to specify which WMS version to use.
-    
-    GeoPackages always have the ordinates in X,Y (``EAST_NORTH``) format.

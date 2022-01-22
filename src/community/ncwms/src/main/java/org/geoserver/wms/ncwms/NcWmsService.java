@@ -6,13 +6,24 @@
 package org.geoserver.wms.ncwms;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import net.opengis.wfs.FeatureCollectionType;
 import net.opengis.wfs.WfsFactory;
@@ -25,6 +36,7 @@ import org.geoserver.wms.FeatureInfoRequestParameters;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMS;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.featureinfo.LayerIdentifier;
 import org.geotools.data.Query;
 import org.geotools.data.collection.ListFeatureCollection;
@@ -38,18 +50,23 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.springframework.beans.factory.DisposableBean;
 
 /**
  * Implements the methods of the NcWMS service which are not included on the WMS standard. For the
  * moment, only GetTimeSeries method is supported.
  */
-public class NcWmsService {
+public class NcWmsService implements DisposableBean {
+
+    public static final String WMS_CONFIG_KEY = "NcWMSInfo";
 
     public static final String TIME_SERIES_INFO_FORMAT_PARAM_NAME = "TIME_SERIES_INFO_FORMAT";
 
     public static final String GET_TIME_SERIES_REQUEST = "GetTimeSeries";
 
     private WMS wms;
+
+    protected ExecutorService executor;
 
     /** Simple helper to enforce rendering timeout */
     private static class CountdownClock {
@@ -126,6 +143,37 @@ public class NcWmsService {
 
     public NcWmsService(final WMS wms) {
         this.wms = wms;
+        this.executor = getExecutorService(wms.getServiceInfo());
+    }
+
+    private ExecutorService getExecutorService(WMSInfo wms) {
+        NcWmsInfo info = wms.getMetadata().get(WMS_CONFIG_KEY, NcWmsInfo.class);
+        int poolSize =
+                Optional.ofNullable(info)
+                        .map(i -> i.getTimeSeriesPoolSize())
+                        .orElseGet(() -> Runtime.getRuntime().availableProcessors());
+
+        return Executors.newFixedThreadPool(
+                poolSize,
+                new ThreadFactory() {
+
+                    private final AtomicInteger counter = new AtomicInteger();
+
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        return new Thread(r, "gs-ncwms-" + counter.incrementAndGet());
+                    }
+                });
+    }
+
+    @Override
+    public void destroy() {
+        executor.shutdown();
+    }
+
+    public synchronized void configurationChanged(WMSInfo wms) {
+        executor.shutdownNow();
+        this.executor = getExecutorService(wms);
     }
 
     private LayerIdentifier getLayerIdentifier(MapLayerInfo layer) {
@@ -186,51 +234,52 @@ public class NcWmsService {
         int maxRenderingTime = wms.getMaxRenderingTime(request.getGetMapRequest());
         CountdownClock countdownClock = new CountdownClock(maxRenderingTime);
         LayerIdentifier identifier = getLayerIdentifier(layer);
-        SimpleFeatureBuilder featureBuilder =
-                getResultFeatureBuilder(layer.getName(), buildTypeDescription(layer));
+        SimpleFeatureType resultType = getResultType(layer.getName(), buildTypeDescription(layer));
+
+        // 1) Use a concurrent hash map for collecting date -> feature in parallel
+        // 2) Use a fixed thread pool sized by default by the number of CPUs?
+        // 3) Map in advance the requests to FeatureInfoRequestParameters, then use only them in the
+        // concurrent part
+        // 4) Configuration GUI with custom panel for number of threads? stored in the WMSInfo
+        // metadata map
+        Map<Date, SimpleFeature> features = new ConcurrentHashMap<>();
+
         try {
             // Get available dates, then perform an identify operation for each date in the range
             List<DateRange> availableDates = getAvailableDates(coverage, times);
-            ListFeatureCollection features =
-                    new ListFeatureCollection(featureBuilder.getFeatureType());
-            TreeSet<Date> addedDates = new TreeSet<Date>();
             request.setExcludeNodataResults(true);
+            List<Callable<Void>> callables = new ArrayList<>();
             for (DateRange date : availableDates) {
-                // check timeout
-                countdownClock.checkTimeout();
-
-                // run query
+                // this modifies the request and then transforms it into a feature info
+                // request parameter, which, inside, does not contain a reference
+                // to the request anymore
                 request.getGetMapRequest().setTime(Collections.singletonList(date));
                 FeatureInfoRequestParameters requestParams =
                         new FeatureInfoRequestParameters(request);
-                List<FeatureCollection> identifiedCollections =
-                        identifier.identify(requestParams, 1);
-
-                // collect the data
-                if (identifiedCollections != null) {
-                    for (FeatureCollection c : identifiedCollections) {
-                        try (FeatureIterator featIter = c.features()) {
-                            if (featIter.hasNext()) { // no need to loop, we just want one value
-                                Feature inFeat = featIter.next();
-                                Iterator<Property> propIter = inFeat.getProperties().iterator();
-                                if (propIter.hasNext()) {
-                                    Property prop = propIter.next();
-                                    Date dateValue = date.getMinValue();
-                                    // check for duplicates while updating the collection
-                                    if (!addedDates.contains(dateValue)) {
-                                        featureBuilder.add(dateValue);
-                                        featureBuilder.add(prop.getValue());
-                                        SimpleFeature newFeat = featureBuilder.buildFeature(null);
-                                        features.add(newFeat);
-                                        addedDates.add(dateValue);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                callables.add(
+                        () -> {
+                            // check timeout and then run identify
+                            countdownClock.checkTimeout();
+                            identifyDate(identifier, resultType, features, date, requestParams);
+                            return null;
+                        });
             }
-            result.getFeature().add(features);
+
+            // invoke and get all to make sure no exception was raised
+            List<Future<Void>> futures = executor.invokeAll(callables);
+            for (Future<Void> future : futures) {
+                future.get();
+            }
+
+            // sort by time and accumulate values
+            List<SimpleFeature> featureList =
+                    features.entrySet()
+                            .stream()
+                            .sorted(Comparator.comparing(e -> e.getKey()))
+                            .map(e -> e.getValue())
+                            .collect(Collectors.toList());
+
+            result.getFeature().add(new ListFeatureCollection(resultType, featureList));
         } catch (Exception e) {
             throw new ServiceException("Error processing the operation", e);
         } finally {
@@ -239,6 +288,42 @@ public class NcWmsService {
         }
 
         return result;
+    }
+
+    private void identifyDate(
+            LayerIdentifier identifier,
+            SimpleFeatureType resultType,
+            Map<Date, SimpleFeature> features,
+            DateRange date,
+            FeatureInfoRequestParameters requestParams)
+            throws Exception {
+        // identify
+        List<FeatureCollection> identifiedCollections = identifier.identify(requestParams, 1);
+
+        // collect the data
+        if (identifiedCollections != null) {
+            SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(resultType);
+            for (FeatureCollection c : identifiedCollections) {
+                try (FeatureIterator featIter = c.features()) {
+                    // no need to loop, we just want one value
+                    if (featIter.hasNext()) {
+                        Feature inFeat = featIter.next();
+                        Iterator<Property> propIter = inFeat.getProperties().iterator();
+                        if (propIter.hasNext()) {
+                            Property prop = propIter.next();
+                            Date dateValue = date.getMinValue();
+                            // check for duplicates while updating the collection
+                            if (!features.containsKey(dateValue)) {
+                                featureBuilder.add(dateValue);
+                                featureBuilder.add(prop.getValue());
+                                SimpleFeature newFeat = featureBuilder.buildFeature(null);
+                                features.put(dateValue, newFeat);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private List<DateRange> getAvailableDates(CoverageInfo coverage, List<Object> times)
@@ -296,7 +381,7 @@ public class NcWmsService {
         return name;
     }
 
-    private SimpleFeatureBuilder getResultFeatureBuilder(String name, String description) {
+    private SimpleFeatureType getResultType(String name, String description) {
         // create the builder
         SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
 
@@ -309,8 +394,6 @@ public class NcWmsService {
         // add attributes
         builder.add("date", Date.class);
         builder.add("value", Double.class);
-        SimpleFeatureType featureType = builder.buildFeatureType();
-        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(featureType);
-        return featureBuilder;
+        return builder.buildFeatureType();
     }
 }

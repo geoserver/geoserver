@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ Copyright (C) 2014 - Open Source Geospatial Foundation. All rights reserved.
+ This code is licensed under the GPL 2.0 license, available at the root
+ application directory.
+ -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+    <bean id="geopkgGetMapOutputFormat" class="org.geoserver.geopkg.wms.GeoPackageGetMapOutputFormat">
+      <constructor-arg ref="webMapService" />
+      <constructor-arg ref="wms" />
+      <constructor-arg ref="gwcFacade" />
+    </bean>
+
+    <bean id="FileBackedRawResponse" class="org.geoserver.tiles.FileBackedRawMapResponse">
+    </bean>
+    
+    <bean id="geopkgGetFeatureOutputFormat" class="org.geoserver.geopkg.wfs.GeoPackageGetFeatureOutputFormat">
+      <constructor-arg ref="geoServer" />
+    </bean>
+     
+    <bean id="geopkgDataStoreFactoryInitializer" class="org.geoserver.geopkg.GeoPkgDataStoreFactoryInitializer">
+        <property name="resourceLoader" ref="resourceLoader"/>
+    </bean>
+
+    <!-- bean so this will appear on the Modules list in the GS web interface-->
+    <bean id="GeoPKGOutputExtension"
+          class="org.geoserver.platform.ModuleStatusImpl">
+        <property name="module" value="gs-geopkg-output" />
+        <property name="name" value="GeoPKG Output Extension" />
+        <property name="component" value="GeoPKG WFS/WMS Output" />
+        <property name="available" value="true" />
+        <property name="enabled" value="true" />
+    </bean>
+</beans>

@@ -1,32 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd.spring-beans.dtd">
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd.spring-beans.dtd">
 <!-- Copyright (C) 2014-2016 - Open Source Geospatial Foundation. All rights reserved. This code is licensed 
   under the GPL 2.0 license, available at the root application directory. -->
 
 <beans>
-  <bean id="paletteStyleHandler" class="org.geoserver.wms.style.PaletteStyleHandler" />
+    <bean id="paletteStyleHandler" class="org.geoserver.wms.style.PaletteStyleHandler"/>
 
-  <bean id="ncWmsDatasetCallback" class="org.geoserver.wms.ncwms.NcWmsDatasetCallback">
-    <constructor-arg ref="catalog" />
-  </bean>
+    <bean id="ncWmsDatasetCallback" class="org.geoserver.wms.ncwms.NcWmsDatasetCallback">
+        <constructor-arg ref="catalog"/>
+    </bean>
 
-  <bean id="ncWmsGetMapCallback" class="org.geoserver.wms.ncwms.GetMapNcWmsCallback">
-    <constructor-arg ref="GIFMapResponse" />
-  </bean>
-  
-  <bean id="ncWmsGetTimeSeriesResponse" class="org.geoserver.wms.ncwms.GetTimeSeriesResponse">
+    <bean id="ncWmsGetMapCallback" class="org.geoserver.wms.ncwms.GetMapNcWmsCallback">
+        <constructor-arg ref="GIFMapResponse"/>
+    </bean>
+
+    <bean id="ncWmsGetTimeSeriesResponse" class="org.geoserver.wms.ncwms.GetTimeSeriesResponse">
         <constructor-arg ref="wms"/>
-  </bean>
-  
-  <bean id="ncWmsService" class="org.geoserver.wms.ncwms.NcWmsService">
-        <constructor-arg ref="wms"/>
-  </bean>
-  
-  <bean id="ncWmsServiceCallback" class="org.geoserver.wms.ncwms.NcWmsServiceCallback">
-    <constructor-arg ref="ncWmsService"/>
-  </bean>
-  
-  <bean id="ncWmsInitializer" class="org.geoserver.wms.ncwms.NcWmsInitializer">
-  </bean>
+    </bean>
 
+    <bean id="ncWmsService" class="org.geoserver.wms.ncwms.NcWmsService">
+        <constructor-arg ref="wms"/>
+    </bean>
+
+    <bean id="ncWmsServiceCallback" class="org.geoserver.wms.ncwms.NcWmsServiceCallback">
+        <constructor-arg ref="ncWmsService"/>
+    </bean>
+
+    <bean id="ncWmsInitializer" class="org.geoserver.wms.ncwms.NcWmsInitializer">
+    </bean>
+
+    <bean id="ncWmsListener"
+          class="org.geoserver.wms.ncwms.NcWmsConfigurationListener"
+          lazy-init="false">
+        <constructor-arg ref="geoServer"/>
+    </bean>
+
+    <bean id="ncWmsXStreamInitializer" class="org.geoserver.wms.ncwms.NcWmsXStreamInitializer"/>
+
+    <bean id="ncWmsAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
+        <property name="id" value="ncWmsAdminPanel"/>
+        <property name="titleKey" value="ncwms"/>
+        <property name="componentClass" value="org.geoserver.web.ncwms.NcWmsAdminPanel"/>
+        <property name="serviceClass" value="org.geoserver.wms.WMSInfo"/>
+    </bean>
+    
 </beans>

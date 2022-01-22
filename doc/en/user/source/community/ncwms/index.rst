@@ -165,7 +165,7 @@ Here are a few examples based on the "ArcSample" arcgrid sample layer, containin
    :align: center
    
 ncWMS GetCapabilities extensions
---------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ncWMS allows users to filter the contents of a capabilites document by adding a ``&dataset=datasetName`` parameter to the request.
 
@@ -178,7 +178,7 @@ For example:
   * Getting the "tasmania" layer group: http://localhost:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities&dataset=tasmania
   
 ncWMS GetTimeSeries operation
---------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ncWMS provides a GetTimeSeries operation, which can retrieve a time series of values on a certain point, using a syntax similar to the GetFeatureInfo operation.
 The time series can be retrieved as a chart in PNG or JPEG image, or as a CSV.
@@ -260,3 +260,20 @@ Sample chart output:
     2014-04-01T00:00:00.000Z,4.932330131530762
     2014-05-01T00:00:00.000Z,
     2014-06-01T00:00:00.000Z,0.8373379707336426
+
+ncWMS extension configuration
+-----------------------------
+
+The ncWMS extension adds a panel at the bottom of the WMS administration page:
+
+.. figure:: images/admin.png
+   :align: center
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Option
+     - Description
+   * - GetTimeSeries thread pool size
+     - Size of the thread pool used to compute GetTimeSeries results (paralellized to speed up computation) 

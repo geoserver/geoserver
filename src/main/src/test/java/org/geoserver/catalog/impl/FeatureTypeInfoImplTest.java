@@ -6,6 +6,7 @@ package org.geoserver.catalog.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.Locale;
@@ -51,6 +52,22 @@ public class FeatureTypeInfoImplTest {
         ft2.setAttributes(Collections.singletonList(at2));
 
         assertEquals(ft1, ft2);
+
+        // AttributeTypeInfoImpl's source and nillable are derived properties if unset, make sure
+        // they don't affect equality checks
+        assertEquals(at1.getName(), at1.getSource());
+        assertEquals(at1.getSource(), at2.getSource());
+        assertEquals(at1, at2);
+        assertEquals(at1.hashCode(), at2.hashCode());
+        at1.setSource(at1.getSource());
+        assertEquals(at1, at2);
+        assertEquals(at1.hashCode(), at2.hashCode());
+
+        assertTrue(at1.isNillable());
+        assertTrue(at2.isNillable());
+        at1.setNillable(true);
+        assertEquals(at1, at2);
+        assertEquals(at1.hashCode(), at2.hashCode());
     }
 
     @Test

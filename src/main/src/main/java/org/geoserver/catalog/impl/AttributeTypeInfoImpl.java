@@ -154,27 +154,24 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AttributeTypeInfoImpl that = (AttributeTypeInfoImpl) o;
-        return minOccurs == that.minOccurs
-                && maxOccurs == that.maxOccurs
-                && Objects.equals(nillable, that.nillable)
-                && Objects.equals(id, that.id)
-                && Objects.equals(name, that.name)
-                && Objects.equals(attribute, that.attribute)
-                && Objects.equals(metadata, that.metadata)
-                && Objects.equals(featureType, that.featureType)
-                && Objects.equals(binding, that.binding)
-                && Objects.equals(length, that.length)
-                && Objects.equals(source, that.source);
+        return equalsIngnoreFeatureType(o)
+                && Objects.equals(featureType, ((AttributeTypeInfoImpl) o).featureType);
     }
 
     @Override
     public int hashCode() {
         // feature type excluded, or it's gonna go in infinite recursion
+        String source = this.source == null ? this.name : this.source;
         return Objects.hash(
-                id, name, minOccurs, maxOccurs, nillable, attribute, metadata, binding, length,
+                id,
+                name,
+                minOccurs,
+                maxOccurs,
+                isNillable(),
+                attribute,
+                metadata,
+                binding,
+                length,
                 source);
     }
 
@@ -185,13 +182,15 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
         AttributeTypeInfoImpl that = (AttributeTypeInfoImpl) o;
         return minOccurs == that.minOccurs
                 && maxOccurs == that.maxOccurs
-                && Objects.equals(nillable, that.nillable)
+                && Objects.equals(isNillable(), that.isNillable())
                 && Objects.equals(id, that.id)
                 && Objects.equals(name, that.name)
                 && Objects.equals(attribute, that.attribute)
                 && Objects.equals(metadata, that.metadata)
                 && Objects.equals(binding, that.binding)
                 && Objects.equals(length, that.length)
-                && Objects.equals(source, that.source);
+                // avoid false negatives, source is derived if unset
+                && (Objects.equals(source, that.source)
+                        || Objects.equals(getSource(), that.getSource()));
     }
 }

@@ -88,7 +88,6 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
         final String namespace = SystemTestData.MLINES.getNamespaceURI();
         final String alternamePrefix = "ex";
         final String alternameTypeName = alternamePrefix + ":" + localPart;
-
         Map<String, Object> raw = new HashMap<>();
         raw.put("service", "WFS");
         raw.put("version", "1.1.0");
@@ -121,6 +120,31 @@ public class GetFeatureKvpRequestReaderTest extends GeoServerSystemTestSupport {
         raw.put("request", "GetFeature");
         raw.put("typeName", typeName);
         raw.put("namespace", "xmlns(" + defaultNamespace + ")");
+
+        Map<String, Object> parsed = parseKvp(raw);
+
+        GetFeatureType req = WfsFactory.eINSTANCE.createGetFeatureType();
+        Object read = reader.read(req, parsed, raw);
+        GetFeatureType parsedReq = (GetFeatureType) read;
+        QueryType query = (QueryType) parsedReq.getQuery().get(0);
+        List<QName> typeNames = query.getTypeName();
+        assertEquals(1, typeNames.size());
+        assertEquals(qName, typeNames.get(0));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testUserProvidedDefaultNamespaces() throws Exception {
+        final QName qName = SystemTestData.STREAMS;
+        final String typeName = qName.getLocalPart();
+        final String defaultNamespace = qName.getNamespaceURI();
+
+        Map<String, Object> raw = new HashMap<>();
+        raw.put("service", "WFS");
+        raw.put("version", "1.1.0");
+        raw.put("request", "GetFeature");
+        raw.put("typeName", typeName);
+        raw.put("namespaces", "xmlns(" + defaultNamespace + ")");
 
         Map<String, Object> parsed = parseKvp(raw);
 

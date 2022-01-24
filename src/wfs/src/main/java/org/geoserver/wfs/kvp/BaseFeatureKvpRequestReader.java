@@ -88,6 +88,15 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
                 new String[] {"featureId", "resourceId", "filter", "bbox", "cql_filter"},
                 eObject);
 
+        // check strict cite compliance
+        if (getWFS().isCiteCompliant()) {
+            if (kvp.containsKey("namespace")) {
+                throw new WFSException(
+                        eObject,
+                        "Strict Cite Compliance is enabled.Request contains [namespace].Only [namespaces] is supported for WFS 2.0");
+            }
+        }
+
         // did the user supply alternate namespace prefixes?
         NamespaceSupport namespaces = null;
         if (kvp.containsKey("namespace") || kvp.containsKey("namespaces")) {
@@ -333,11 +342,12 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
                     // namespace
                     namespaceURI = uri;
                 }
-            } else if (namespaces.getURI(prefix) != null) {
+            } else if ((namespaces.getURI(prefix) != null) && (qName.getNamespaceURI() != null)) {
                 // so request used a custom prefix and declared the prefix:uri mapping?
                 namespaceURI = namespaces.getURI(qName.getPrefix());
             }
             NamespaceInfo ns = catalog.getNamespaceByURI(namespaceURI);
+
             if (ns == null) {
                 throw new WFSException(
                         "Unknown namespace [" + qName.getPrefix() + "]",

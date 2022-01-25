@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -20,10 +21,10 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.collections4.comparators.NullComparator;
 import org.geoserver.ows.KvpParser;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
-import org.geotools.util.Version;
 
 /**
  * Utility class for reading Key Value Pairs from a http query string.
@@ -39,6 +40,15 @@ public class KvpUtils {
     /** Class logger */
     private static Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests.readers");
+
+    /**
+     * Comparator used to compare two parsers matching the same service/version/request
+     * specification, and returning the most specific one (nulls are high, put at the end of list)
+     */
+    private static final Comparator<KvpParser> KVP_PARSER_COMPARATOR =
+            Comparator.comparing(KvpParser::getService, new NullComparator<>())
+                    .thenComparing(KvpParser::getVersion, new NullComparator<>())
+                    .thenComparing(KvpParser::getRequest, new NullComparator<>());
 
     /**
      * Defines how to tokenize a string by using some sort of delimiter.
@@ -489,8 +499,7 @@ public class KvpUtils {
      * @param service the service parameter from the kvp (can be null)
      * @param version the version parameter from the kvp (can be null)
      * @param request the request parameter from the kvp (can be null)
-     * @param parsers the purged parsers list (see {@link #purgeParsers(List, String, String,
-     *     String)}
+     * @param parsers the parsers list
      * @return the found parser or null (if no parser is found)
      * @throws IllegalStateException if more than one candidate parser is found
      */
@@ -500,42 +509,31 @@ public class KvpUtils {
             final String request,
             final String version,
             Collection<KvpParser> parsers) {
-        // find the parser for this key value pair
+        // doing a purge eliminating the parsers not matching to service/version/request
+        // used to be an indication in the javadoc but not everyone followed it and the
+        // method ended up doing some re-matching of its own (see previous code in git)
+        List<KvpParser> purgedParsers = new ArrayList<>(parsers);
+        purgeParsers(purgedParsers, service, version, request);
         KvpParser parser = null;
-        final Iterator<KvpParser> pitr = parsers.iterator();
-        while (pitr.hasNext()) {
-            KvpParser candidate = pitr.next();
+
+        for (KvpParser candidate : purgedParsers) {
             if (key.equalsIgnoreCase(candidate.getKey())) {
+                // if key matches, keep the most specific one, under the assumption that
+                // they are already matching service/version/request due to purgeParsers above
                 if (parser == null) {
                     parser = candidate;
                 } else {
-                    // if target service matches, it is a closer match
-                    String trgService = candidate.getService();
-                    if (trgService != null && trgService.equalsIgnoreCase(service)) {
-                        // determine if this parser more closely matches the request
-                        String curService = parser.getService();
-                        if (curService == null) {
-                            parser = candidate;
-                        } else {
-                            // both match, filter by version
-                            Version curVersion = parser.getVersion();
-                            Version trgVersion = candidate.getVersion();
-                            if (trgVersion != null) {
-                                if (curVersion == null && trgVersion.toString().equals(version)) {
-                                    parser = candidate;
-                                }
-                            } else {
-                                if (curVersion == null) {
-                                    // ambiguous, unable to match
-                                    throw new IllegalStateException(
-                                            "Multiple kvp parsers: " + parser + "," + candidate);
-                                }
-                            }
-                        }
-                    }
+                    int result = KVP_PARSER_COMPARATOR.compare(candidate, parser);
+                    if (result == 0)
+                        // ambiguous, unable to match
+                        throw new IllegalStateException(
+                                "Multiple kvp parsers: " + parser + "," + candidate);
+                    else if (result < 0) parser = candidate;
+                    // else skip, current parser is a better match
                 }
             }
         }
+
         return parser;
     }
 

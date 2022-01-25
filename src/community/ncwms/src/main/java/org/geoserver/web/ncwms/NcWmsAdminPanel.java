@@ -28,5 +28,9 @@ public class NcWmsAdminPanel extends AdminPagePanel {
                 new TextField<Integer>(
                         "timeSeriesPoolSize",
                         new PropertyModel<>(ncWmsModel, "timeSeriesPoolSize")));
+        add(
+                new TextField<Integer>(
+                        "maxTimeSeriesValues",
+                        new PropertyModel<>(ncWmsModel, "maxTimeSeriesValues")));
     }
 }

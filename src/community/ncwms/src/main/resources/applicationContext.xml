@@ -45,4 +45,9 @@
         <property name="serviceClass" value="org.geoserver.wms.WMSInfo"/>
     </bean>
     
+    <bean id="ncWmsTimeKvpParser" class="org.geoserver.wms.ncwms.TimeKvpParser">
+        <constructor-arg value="time"/>
+        <constructor-arg ref="wms"/>
+    </bean>
+    
 </beans>

@@ -78,6 +78,10 @@
       <version>${project.version}</version>
       <classifier>tests</classifier>
     </dependency>
-
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

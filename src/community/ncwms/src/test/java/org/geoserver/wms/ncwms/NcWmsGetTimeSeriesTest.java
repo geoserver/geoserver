@@ -7,6 +7,7 @@ package org.geoserver.wms.ncwms;
 import static org.geoserver.catalog.DimensionPresentation.LIST;
 import static org.geoserver.catalog.ResourceInfo.ELEVATION;
 import static org.geoserver.catalog.ResourceInfo.TIME;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
@@ -14,10 +15,15 @@ import java.awt.image.BufferedImage;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMSDimensionsTestSupport;
+import org.geoserver.wms.WMSInfo;
+import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 /**
  * Tests the NcWMS GetTimeSeries method
@@ -66,6 +72,11 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
     static final String CSV_FORMAT = "&INFO_FORMAT=text%2Fcsv";
 
     static final String PNG_FORMAT = "&INFO_FORMAT=image%2Fpng";
+
+    @After
+    public void resetWMSConfig() {
+        revertService(WMSInfo.class, null);
+    }
 
     /**
      * Tests the number of output lines, the CSV headers and the returned date and value per each
@@ -383,5 +394,31 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
         String rawCsv = getAsString(url);
         String[] csvLines = rawCsv.split("\\r?\\n");
         Assert.assertEquals("CSV Number of results", 3, csvLines.length);
+    }
+
+    @Test
+    public void testTooManyValues() throws Exception {
+        // set a specific number of max values
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        NcWmsInfo ncwms = new NcWMSInfoImpl();
+        ncwms.setMaxTimeSeriesValues(3);
+        wms.getMetadata().put(NcWmsService.WMS_CONFIG_KEY, ncwms);
+        gs.save(wms);
+
+        // enable time (otherwise GetTimeSeries is refused)
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, "degrees", true, "PT101M/PT0H");
+
+        // ask for too many (less than the default WMS one, but more than the above configuration)
+        Document dom =
+                getAsDOM(
+                        "wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&FORMAT=image%2Fjpeg&LAYERS"
+                                + "=watertemp&QUERY_LAYERS=watertemp&STYLES&&FEATURE_COUNT=50&X=50&Y=50"
+                                + "&SRS=EPSG%3A4326&WIDTH=101&HEIGHT=101&BBOX=3.724365234375%2C40"
+                                + ".81420898437501%2C5.943603515625%2C43.03344726562501&time=&TIME=2005/2006/P1M");
+        assertThat(
+                checkLegacyException(dom, "InvalidParameterValue", "time"),
+                CoreMatchers.containsString(
+                        "More than 3 times specified in the request, bailing out."));
     }
 }

@@ -233,46 +233,6 @@ public abstract class AbstractUserDetailsServiceTest extends AbstractSecuritySer
         }
     }
 
-    @Test
-    public void testDisAssociateRoleFromUser() throws Exception {
-        setServices("disAssociateRoleFromUser");
-        // populate with values
-        insertValues(roleStore);
-        insertValues(usergroupStore);
-
-        String username = "theUser";
-        GeoServerUser theUser;
-
-        theUser = usergroupStore.createUserObject(username, "", true);
-        usergroupStore.addUser(theUser);
-
-        Set<GeoServerRole> roles = new HashSet<>();
-
-        // no roles
-        checkRoles(username, roles);
-
-        // first direct role
-        GeoServerRole role = roleStore.createRoleObject("userrole1");
-        roleStore.addRole(role);
-        roleStore.associateRoleToUser(role, username);
-        roles.add(role);
-        checkRoles(username, roles);
-
-        // second direct role
-        GeoServerRole role2 = roleStore.createRoleObject("userrole2");
-        roleStore.addRole(role2);
-        roleStore.associateRoleToUser(role2, username);
-        roles.add(role2);
-        checkRoles(username, roles);
-
-        // remove roles from the user
-        roleStore.disAssociateRoleFromUser(role, username);
-        roleStore.disAssociateRoleFromUser(role2, username);
-        roles.remove(role);
-        roles.remove(role2);
-        checkRoles(username, roles);
-    }
-
     protected void checkRoles(String username, Set<GeoServerRole> roles) throws IOException {
         syncbackends();
         UserDetails details = usergroupService.loadUserByUsername(username);

@@ -10,8 +10,7 @@ Image Mosaic JDBC
 Installing the JDBC Image Mosaic extension
 ------------------------------------------
 
-#. Download the JDBC Image Mosaic extension from the `GeoServer download page 
-   <http://geoserver.org/download>`_.
+#. Download :download_community:`imagemosaic-jdbc` nightly GeoServer community module.
 
    .. warning:: Make sure to match the version of the extension to the version of the GeoServer instance!
 

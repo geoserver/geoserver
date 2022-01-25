@@ -92,6 +92,23 @@ public class NcWmsService implements DisposableBean {
         }
     }
 
+    /**
+     * Returns the maximum number of time/elevation/dimensions the service should tolerate
+     *
+     * @param wms
+     * @return
+     */
+    public static int getMaxDimensions(WMS wms) {
+        // use the ncWMS local maximum
+        NcWmsInfo ncWMSInfo =
+                wms.getServiceInfo()
+                        .getMetadata()
+                        .get(NcWmsService.WMS_CONFIG_KEY, NcWmsInfo.class);
+        return Optional.ofNullable(ncWMSInfo)
+                .map(i -> i.getMaxTimeSeriesValues())
+                .orElseGet(wms::getMaxRequestedDimensionValues);
+    }
+
     enum DateFinder {
         NEAREST {
             // This is used when nearest match is supported.
@@ -151,6 +168,7 @@ public class NcWmsService implements DisposableBean {
         int poolSize =
                 Optional.ofNullable(info)
                         .map(i -> i.getTimeSeriesPoolSize())
+                        .filter(size -> size > 0)
                         .orElseGet(() -> Runtime.getRuntime().availableProcessors());
 
         return Executors.newFixedThreadPool(

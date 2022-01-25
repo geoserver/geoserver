@@ -92,11 +92,13 @@
   <bean id="wcs100TimeKvpParser" class="org.geoserver.wcs.kvp.TimeKvpParser">
     <constructor-arg value="TIME"/>
     <constructor-arg ref="geoServer"/>
+    <property name="service" value="WCS"/>
   </bean>
 
   <bean id="wcs100ElevationKvpParser" class="org.geoserver.wcs.kvp.ElevationKvpParser">
     <constructor-arg value="ELEVATION"/>
     <constructor-arg ref="geoServer"/>
+    <property name="service" value="WCS"/>
   </bean>
 
 

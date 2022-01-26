@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.map;
 
+import static org.geoserver.wms.decoration.MapDecorationLayout.FF;
+
 import java.awt.Point;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,6 +31,7 @@ import org.geoserver.wms.decoration.MapDecorationLayout;
 import org.geoserver.wms.decoration.MetatiledMapDecorationLayout;
 import org.geoserver.wms.decoration.WatermarkDecoration;
 import org.geotools.util.logging.Logging;
+import org.opengis.filter.expression.Expression;
 import org.springframework.util.Assert;
 
 /**
@@ -141,9 +144,9 @@ public abstract class AbstractMapOutputFormat implements GetMapOutputFormat {
     public static MapDecorationLayout.Block getWatermark(WMSInfo wms) {
         WatermarkInfo watermark = (wms == null ? null : wms.getWatermark());
         if (watermark != null && watermark.isEnabled()) {
-            Map<String, String> options = new HashMap<>();
-            options.put("url", watermark.getURL());
-            options.put("opacity", Float.toString((255f - watermark.getTransparency()) / 2.55f));
+            Map<String, Expression> options = new HashMap<>();
+            options.put("url", FF.literal(watermark.getURL()));
+            options.put("opacity", FF.literal((255f - watermark.getTransparency()) / 2.55f));
 
             MapDecoration d = new WatermarkDecoration();
             try {

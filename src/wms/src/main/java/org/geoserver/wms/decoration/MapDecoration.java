@@ -10,6 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.Map;
 import org.geoserver.wms.WMSMapContent;
+import org.opengis.filter.expression.Expression;
 
 /**
  * The MapDecoration class encapsulates the rendering code for an overlay to be used to enhance a
@@ -23,10 +24,10 @@ public interface MapDecoration {
      * Load in configuration parameters from a map. All subsequent paint operations should use the
      * provided parameters. Implementations do not need to respect multiple calls to this method.
      *
-     * @param options a Map<String,String> containing the configuration parameters
+     * @param options a Map<String,Expression> containing the configuration parameters
      * @throws Exception if required parameters are missing from the configuration
      */
-    public void loadOptions(Map<String, String> options) throws Exception;
+    public void loadOptions(Map<String, Expression> options) throws Exception;
 
     /**
      * Determine the 'best' size for this decoration, given the request parameters.

@@ -12,6 +12,7 @@ The map and animation downloads work off a set of common parameters:
 
  * ``bbox`` : a geo-referenced bounding box, controlling both output area and desired projection
  * ``decoration`` : the name of a decoration layout to be added on top of the map
+ * ``decorationEnvironment`` : a valid value for the ``env`` parameter used when painting the decoration. Used for :ref:`dynamic decoration layouts<wms_dynamic_decorations>`. 
  * ``time`` : a WMS ``time`` specification used to drive the selection of times across the layers in the map, and to control the frame generation in the animation
  * ``width`` and ``height`` : size of the output map/animation (and in combination with bounding box, also controls the output map scale)
  * ``layer``: a list of layer specifications, from a client side point of view (thus, a layer can be composed of multiple server side layers). When dwn:DecorationName layer option is used, it allows to define a specific layout that will be used when decorations are applied to the layer. It allows to render more than one Legend on the resulting image, when having more than one Layer declared.
@@ -41,10 +42,21 @@ For example:
 Decoration Layout
 -----------------
 
-| The ``decoration`` parameter specifies the file name (without extension) of the layout to be used to decorate the map.
-| The layout is a list of decorators that should draw on top of the requested image.
-| The decorators draw on the image one after the other, so the order of the decorators in the layout file is important: the first decorator output will appear under the others.
-| Decorators are described in detail in the :ref:`wms_decorations` section.
+The ``decoration`` parameter specifies the file name (without extension) of the layout to be used to decorate the map.
+The layout is a list of decorators that should draw on top of the requested image.
+The decorators draw on the image one after the other, so the order of the decorators in the layout file is important: the first decorator output will appear under the others.
+
+Decorators are described in detail in the :ref:`wms_decorations` section.
+It is also possible to use :ref:`dynamic decoration layouts<wms_dynamic_decorations>`, in this
+case the environment parameters for the decoration will be provided using ``dwn:Parameter``, e.g.:
+
+.. code-block:: xml
+
+  <dwn:Layer>
+    <dwn:Name>theLayer</dwn:Name>
+    <dwn:DecorationName>theDynamicDecoration</dwn:DecorationName>
+    <dwn:Parameter key="env">sla:top,right;bg:#FF0000</dwn:Parameter>
+  </dwn:Layer>
 
 Map Download Process
 --------------------

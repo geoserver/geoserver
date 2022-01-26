@@ -13,14 +13,27 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.wms.WMSMapContent;
+import org.geotools.filter.function.EnvFunction;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
+import org.opengis.filter.expression.Expression;
 
 public class MapDecorationLayoutTest {
+    private static final String DYNAMIC_TEXT_DECORATION =
+            "<layout>\n"
+                    + "  <decoration type=\"text\" affinity=\"bottom,right\" offset=\"${env('offset', '6,"
+                    + "6')}\" size=\"auto\">\n"
+                    + "    <option name=\"message\">${expression}</option>\n"
+                    + "    <option name=\"font-family\" value=\"Bitstream Vera Sans\"/>\n"
+                    + "    <option name=\"font-size\" value=\"${env('fs', 12)}\"/>\n"
+                    + "    <option name=\"halo-radius\" value=\"2\"/>\n"
+                    + "  </decoration>\n"
+                    + "</layout>\n";
     // public static TestSuite suite() { return new TestSuite(MapDecorationLayout.class); }
 
     private class MockMapDecoration implements MapDecoration {
@@ -33,7 +46,7 @@ public class MapDecorationLayoutTest {
         }
 
         @Override
-        public void loadOptions(Map<String, String> options) {}
+        public void loadOptions(Map<String, Expression> options) {}
 
         @Override
         public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) {
@@ -319,7 +332,8 @@ public class MapDecorationLayoutTest {
                                     throws Exception {}
 
                             @Override
-                            public void loadOptions(Map<String, String> options) throws Exception {
+                            public void loadOptions(Map<String, Expression> options)
+                                    throws Exception {
                                 // nothing to do
 
                             }
@@ -362,6 +376,42 @@ public class MapDecorationLayoutTest {
         assertEquals(1, blocks.size());
         assertThat(blocks.get(0).decoration, CoreMatchers.instanceOf(TextDecoration.class));
         TextDecoration text = (TextDecoration) blocks.get(0).decoration;
-        assertEquals(messageTemplate, text.messageTemplate);
+        assertEquals(messageTemplate, text.message.evaluate(null));
+    }
+
+    @Test
+    public void testLoadWithExpressionsDefaults() throws Exception {
+        MapDecorationLayout.Block block = loadDynamicDecoration();
+        assertEquals(new Point(6, 6), block.offset);
+        assertThat(block.decoration, CoreMatchers.instanceOf(TextDecoration.class));
+        TextDecoration text = (TextDecoration) block.decoration;
+        assertEquals("${expression}", text.message.evaluate(null)); // not dynamic
+        assertEquals(12f, text.fontSize, 0f); // default value
+    }
+
+    @Test
+    public void testLoadWithExpressionsEnv() throws Exception {
+        Map<String, Object> locals = new HashMap<>();
+        locals.put("offset", "12,12");
+        locals.put("fs", "14");
+        EnvFunction.setLocalValues(locals);
+        try {
+            MapDecorationLayout.Block block = loadDynamicDecoration();
+            assertEquals(new Point(12, 12), block.offset);
+            assertThat(block.decoration, CoreMatchers.instanceOf(TextDecoration.class));
+            TextDecoration text = (TextDecoration) block.decoration;
+            assertEquals(14f, text.fontSize, 0f);
+        } finally {
+            EnvFunction.clearLocalValues();
+        }
+    }
+
+    private MapDecorationLayout.Block loadDynamicDecoration() throws Exception {
+        GeoServerExtensionsHelper.singleton("text", new TextDecoration());
+        MapDecorationLayout layout = MapDecorationLayout.fromString(DYNAMIC_TEXT_DECORATION, false);
+        List<MapDecorationLayout.Block> blocks = layout.blocks;
+        assertEquals(1, blocks.size());
+        MapDecorationLayout.Block block = blocks.get(0);
+        return block;
     }
 }

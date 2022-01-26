@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.decoration;
 
+import static org.geoserver.wms.decoration.MapDecorationLayout.getOption;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -18,6 +20,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import java.util.Map;
 import org.geoserver.wms.WMSMapContent;
+import org.opengis.filter.expression.Expression;
 
 public class ScaleRatioDecoration implements MapDecoration {
 
@@ -25,12 +28,12 @@ public class ScaleRatioDecoration implements MapDecoration {
     String formatLanguage = null;
 
     @Override
-    public void loadOptions(Map<String, String> options) {
-        String format = options.get("format");
+    public void loadOptions(Map<String, Expression> options) {
+        String format = getOption(options, "format");
         if (format != null) {
             this.format = format;
         }
-        String formatLanguage = options.get("formatLanguage");
+        String formatLanguage = getOption(options, "formatLanguage");
         if (format != null) {
             this.formatLanguage = formatLanguage;
         }

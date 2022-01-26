@@ -119,6 +119,12 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                         description = "A WMS decoration layout name to watermark" + " the output"
                     )
                     String decorationName,
+            @DescribeParameter(
+                        name = "decorationEnvironment",
+                        min = 0,
+                        description = "Env parameters used to apply the watermark decoration"
+                    )
+                    String decorationEnvironment,
             @DescribeParameter(name = "headerheight", min = 0, description = "Header height")
                     Integer headerHeight,
             @DescribeParameter(
@@ -223,6 +229,7 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                             mapper.buildImage(
                                     bbox,
                                     decorationName,
+                                    decorationEnvironment,
                                     mapTime,
                                     width,
                                     height,

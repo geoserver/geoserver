@@ -5,6 +5,8 @@
  */
 package org.geoserver.wms.decoration;
 
+import static org.geoserver.wms.decoration.MapDecorationLayout.evaluate;
+
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
@@ -44,6 +46,7 @@ import org.geoserver.wms.map.ImageUtils;
 import org.geotools.map.Layer;
 import org.geotools.renderer.lite.RendererUtilities;
 import org.geotools.styling.FeatureTypeStyle;
+import org.opengis.filter.expression.Expression;
 import org.opengis.style.Rule;
 
 public class LegendDecoration extends AbstractDispatcherCallback implements MapDecoration {
@@ -51,7 +54,7 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
     private static double BETWEEN_LEGENDS_PERCENT_INDENT = 0.05;
 
     private final WMS wms;
-    private Map<String, String> options;
+    private Map<String, Expression> options;
     private ThreadLocal<List<LayerLegend>> legends = new ThreadLocal<>();
     private List<String> layers;
     private boolean useSldTitle;
@@ -69,21 +72,30 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
         this.legends.remove();
     }
 
+    private <T> T remove(Map<String, Expression> options, String key, Class<T> target) {
+        Expression expression = options.remove(key);
+        return evaluate(expression, target);
+    }
+
+    private String remove(Map<String, Expression> options, String key) {
+        return remove(options, key, String.class);
+    }
+
     @Override
-    public void loadOptions(Map<String, String> options) {
+    public void loadOptions(Map<String, Expression> options) {
         this.options = new HashMap<>(options);
-        String layers = this.options.remove("layers");
+        String layers = remove(this.options, "layers");
         if (layers != null) {
             String[] splittedLayers = layers.split(",");
             this.layers.addAll(Arrays.asList(splittedLayers));
         }
 
-        String sldTitle = this.options.remove("sldTitle");
+        String sldTitle = remove(this.options, "sldTitle");
         if ("true".equalsIgnoreCase(sldTitle) || "on".equalsIgnoreCase(sldTitle)) {
             useSldTitle = true;
         }
 
-        String legendOptions = this.options.remove("legend_options");
+        String legendOptions = remove(this.options, "legend_options");
         if (legendOptions != null && !legendOptions.isEmpty()) {
             legendOptionsMap = new HashMap<>();
             String[] splittedLegendOptions = legendOptions.split(";");
@@ -93,9 +105,9 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
             }
         }
 
-        String opacity = this.options.remove("opacity");
-        if (opacity != null && !opacity.isEmpty()) {
-            opacityOption = Float.parseFloat(opacity);
+        Float opacity = remove(this.options, "opacity", Float.class);
+        if (opacity != null) {
+            opacityOption = opacity;
         }
     }
 
@@ -399,9 +411,9 @@ public class LegendDecoration extends AbstractDispatcherCallback implements MapD
     private Map<String, Object> getLegendOptions() {
         CaseInsensitiveMap<String, Object> result = new CaseInsensitiveMap<>(new HashMap<>());
         List parsers = GeoServerExtensions.extensions(KvpParser.class);
-        for (Map.Entry<String, String> entry : options.entrySet()) {
+        for (Map.Entry<String, Expression> entry : options.entrySet()) {
             String key = entry.getKey();
-            String value = entry.getValue();
+            String value = evaluate(entry.getValue(), String.class);
             Object parsed = null;
 
             for (Object o : parsers) {

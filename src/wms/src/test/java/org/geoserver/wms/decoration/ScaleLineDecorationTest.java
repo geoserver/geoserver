@@ -4,6 +4,8 @@
  */
 package org.geoserver.wms.decoration;
 
+import static org.geoserver.wms.decoration.MapDecorationLayout.FF;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -11,6 +13,7 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
+import org.opengis.filter.expression.Expression;
 
 public class ScaleLineDecorationTest extends DecorationTestSupport {
 
@@ -24,8 +27,8 @@ public class ScaleLineDecorationTest extends DecorationTestSupport {
         assertPixel(bi, 180, 160, Color.WHITE);
 
         // setup for transparent background
-        Map<String, String> options = new HashMap<>();
-        options.put("transparent", "true");
+        Map<String, Expression> options = new HashMap<>();
+        options.put("transparent", FF.literal("true"));
         d.loadOptions(options);
 
         // check we get a transparent background in the same location
@@ -39,8 +42,8 @@ public class ScaleLineDecorationTest extends DecorationTestSupport {
         ScaleLineDecoration d = new ScaleLineDecoration();
 
         // setup for metric
-        Map<String, String> options = new HashMap<>();
-        options.put("measurement-system", "metric");
+        Map<String, Expression> options = new HashMap<>();
+        options.put("measurement-system", FF.literal("metric"));
         d.loadOptions(options);
         BufferedImage bi = paintOnImage(d);
 
@@ -52,7 +55,7 @@ public class ScaleLineDecorationTest extends DecorationTestSupport {
 
         // setup for imperial
         options.clear();
-        options.put("measurement-system", "imperial");
+        options.put("measurement-system", FF.literal("imperial"));
         d.loadOptions(options);
         bi = paintOnImage(d);
 
@@ -64,7 +67,7 @@ public class ScaleLineDecorationTest extends DecorationTestSupport {
 
         // setup for both
         options.clear();
-        options.put("measurement-system", "both");
+        options.put("measurement-system", FF.literal("both"));
         d.loadOptions(options);
         bi = paintOnImage(d);
 

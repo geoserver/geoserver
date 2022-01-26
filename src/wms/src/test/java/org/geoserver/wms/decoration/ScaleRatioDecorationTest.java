@@ -8,11 +8,13 @@
  */
 package org.geoserver.wms.decoration;
 
+import static org.geoserver.wms.decoration.MapDecorationLayout.FF;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;
+import org.opengis.filter.expression.Expression;
 
 public class ScaleRatioDecorationTest extends DecorationTestSupport {
 
@@ -38,13 +40,13 @@ public class ScaleRatioDecorationTest extends DecorationTestSupport {
     @Test
     public void testCustomFormat() throws Exception {
         ScaleRatioDecoration d = new ScaleRatioDecoration();
-        Map<String, String> options = new HashMap<>();
-        options.put("format", "#,###");
-        options.put("formatLanguage", "en");
+        Map<String, Expression> options = new HashMap<>();
+        options.put("format", FF.literal("#,###"));
+        options.put("formatLanguage", FF.literal("en"));
         d.loadOptions(options);
         assertEquals("1 : 13,148", d.getScaleText(createMapContent(300)));
 
-        options.put("formatLanguage", "it");
+        options.put("formatLanguage", FF.literal("it"));
         d.loadOptions(options);
         assertEquals("1 : 13.148", d.getScaleText(createMapContent(300)));
     }

@@ -13,7 +13,7 @@ import java.io.Serializable;
 public interface NcWmsInfo extends Serializable {
 
     /** Returns the number of threads used for parallel computation of GetTimeSeries */
-    public int getTimeSeriesPoolSize();
+    int getTimeSeriesPoolSize();
 
     /**
      * Sets the number of threads used for parallel computation of GetTimeSeries
@@ -21,5 +21,20 @@ public interface NcWmsInfo extends Serializable {
      * @param size A positive number. Zero or negative will be interpreted as picking a default
      *     (equal to the number of CPU cores on the machine running GeoServer)
      */
-    public void setTimeSeriesPoolSize(int size);
+    void setTimeSeriesPoolSize(int size);
+
+    /**
+     * Returns the maximum number of times allowed in a GetTimeSeries
+     *
+     * @return
+     */
+    int getMaxTimeSeriesValues();
+
+    /**
+     * Sets the maximum number of times allowed in a GetTimeSeries. Use zero or negative for no
+     * limit.
+     *
+     * @param maxTimeValues
+     */
+    void setMaxTimeSeriesValues(int maxTimeValues);
 }

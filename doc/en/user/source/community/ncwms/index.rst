@@ -277,3 +277,7 @@ The ncWMS extension adds a panel at the bottom of the WMS administration page:
      - Description
    * - GetTimeSeries thread pool size
      - Size of the thread pool used to compute GetTimeSeries results (paralellized to speed up computation) 
+   * - Maximum number of times in GetTimeSeries
+     - Maximum number of times tha GetTimeSeries will process. A user asking for more times will get back a service exception.
+       The configuration is set the first time the admin hits save in the WMS page, even with a value of 0 (from that
+       point on, GetTimeSeries will be independent on the WMS max dimensions setting).

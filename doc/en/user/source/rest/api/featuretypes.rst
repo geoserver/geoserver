@@ -155,6 +155,23 @@ The ``recalculate`` parameter specifies whether to recalculate any bounding boxe
 * ``recalculate=nativebbox``: Recalculate the native bounding box, but do not recalculate the lat/long bounding box.
 * ``recalculate=nativebbox,latlonbbox``: Recalculate both the native bounding box and the lat/long bounding box.
 
+``Projection Policy``
+^^^^^^^^^^^^^^^^^^^^^
+
+When specifying the Projection Policy in a FeatureType defined in the request body, the internal name should be used instead of the one available on the UI. The following table shows the correspondence between display and internal names:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Display Name
+     - Internal Name
+   * - Force declared
+     - FORCE_DECLARED
+   * - Keep native
+     - NONE
+   * - Reproject native to declared
+     - REPROJECT_TO_DECLARED
+
 .. _rest_api_featuretypes_quietOnNotFound:
 
 ``quietOnNotFound``

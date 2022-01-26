@@ -53,7 +53,7 @@
     <dependency>
       <groupId>org.mapfish.print</groupId>
       <artifactId>print-lib</artifactId>
-      <version>2.1.5</version>
+      <version>3.28.2</version>
     </dependency>
 
     <dependency>

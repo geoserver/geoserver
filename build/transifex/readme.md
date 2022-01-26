@@ -4,4 +4,4 @@ tx push
 
 To retrieve translations from Transifex
 
-tx pull -m translator --minimum-perc=10
+tx pull --mode translator --all --minimum-perc=10

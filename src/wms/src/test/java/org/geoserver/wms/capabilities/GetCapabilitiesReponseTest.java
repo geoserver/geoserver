@@ -218,7 +218,7 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
                 "WMT_MS_Capabilities/Capability/Request/GetCapabilities/DCPType/HTTP/Get/OnlineResource/@xlink:href",
                 dom);
         assertXpathEvaluatesTo(
-                "http://localhost:8080/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=nature&Language=it",
+                "http://localhost:8080/geoserver/wms?request=GetLegendGraphic&version=1.1.1&format=image%2Fpng&width=20&height=20&layer=nature&Language=it",
                 "//Layer[Name='nature']/Style/LegendURL/OnlineResource/@xlink:href", dom);
     }
 

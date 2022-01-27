@@ -13,12 +13,11 @@ import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.decoration.MapDecorationLayout;
 
 /**
- * Handles a GetMap request that spects a map in PDF format.
+ * Handles a GetMap request that expects a map in PDF format.
  *
  * @author Pierre-Emmanuel Balageas, ALCER (http://www.alcer.com)
  * @author Simone Giannecchini - GeoSolutions
  * @author Gabriel Roldan
- * @version $Id$
  */
 public class PDFMapOutputFormat extends AbstractMapOutputFormat {
     public PDFMapOutputFormat() {

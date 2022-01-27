@@ -34,14 +34,17 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogException;
 import org.geoserver.catalog.CatalogFactory;
@@ -68,6 +71,7 @@ import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogAddEvent;
+import org.geoserver.catalog.event.CatalogEvent;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.event.CatalogModifyEvent;
 import org.geoserver.catalog.event.CatalogPostModifyEvent;
@@ -1550,12 +1554,15 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
     }
 
     private boolean layerHasSecurityRule(
-            DataAccessRuleDAO dao, String workspaceName, String layerName) {
-
+            DataAccessRuleDAO dao, final String ruleRoot, String ruleLayer) {
+        Objects.requireNonNull(ruleRoot);
+        Objects.requireNonNull(ruleLayer);
         List<DataAccessRule> rules = dao.getRules();
         for (DataAccessRule rule : rules) {
-            if (rule.getRoot().equalsIgnoreCase(workspaceName)
-                    && rule.getLayer().equalsIgnoreCase(layerName)) return true;
+            if (rule.getRoot().equalsIgnoreCase(ruleRoot)
+                    && ruleLayer.equalsIgnoreCase(rule.getLayer())) {
+                return true;
+            }
         }
 
         return false;
@@ -2003,24 +2010,27 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
     public void testExceptionThrowingListener() throws Exception {
         ExceptionThrowingListener l = new ExceptionThrowingListener();
         catalog.addListener(l);
-
-        l.throwCatalogException = false;
-
-        WorkspaceInfo ws = catalog.getFactory().createWorkspace();
-        ws.setName("foo");
-
-        // no exception thrown back
-        catalog.add(ws);
-
-        l.throwCatalogException = true;
-        ws = catalog.getFactory().createWorkspace();
-        ws.setName("bar");
-
         try {
+            l.throwCatalogException = false;
+
+            WorkspaceInfo ws = catalog.getFactory().createWorkspace();
+            ws.setName("foo");
+
+            // no exception thrown back
             catalog.add(ws);
-            fail();
-        } catch (CatalogException ce) {
-            // good
+
+            l.throwCatalogException = true;
+            ws = catalog.getFactory().createWorkspace();
+            ws.setName("bar");
+
+            try {
+                catalog.add(ws);
+                fail();
+            } catch (CatalogException ce) {
+                // good
+            }
+        } finally {
+            catalog.removeListener(l);
         }
     }
 
@@ -2175,8 +2185,119 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testRenameResourceRenamesAssociatedDataRules() throws IOException {
+        CatalogListener listener =
+                new SecuredResourceNameChangeListener(catalog, DataAccessRuleDAO.get());
+        addFeatureType();
+        ft = catalog.getFeatureType(ft.getId());
+
+        final String wsName = ws.getName();
+        final String oldName = ft.getName();
+        final String newName = oldName + "_modified";
+
+        addLayerAccessRule(wsName, oldName, AccessMode.WRITE, "*");
+        addLayerAccessRule(wsName, oldName, AccessMode.READ, "ROLE_USER");
+
+        Predicate<DataAccessRule> filter = layerFilter(wsName, oldName);
+        assertEquals(2, count(filter));
+
+        ft.setName(newName);
+        catalog.save(ft);
+
+        assertEquals(0, count(filter));
+        filter = layerFilter(wsName, newName);
+        assertEquals(2, count(filter));
+        catalog.removeListener(listener);
+    }
+
+    @Test
+    public void testRenameWorkspaceRenamesAssociatedDataRules() throws IOException {
+        CatalogListener listener =
+                new SecuredResourceNameChangeListener(catalog, DataAccessRuleDAO.get());
+
+        lg.setWorkspace(ws);
+        addLayerGroup();
+        lg = catalog.getLayerGroup(lg.getId());
+        ws = catalog.getWorkspace(ws.getId());
+        assertNotNull(lg.getWorkspace());
+        assertEquals(ws.getName(), lg.getWorkspace().getName());
+
+        addLayerAccessRule(ws.getName(), lg.getName(), AccessMode.WRITE, "*");
+        addLayerAccessRule(ws.getName(), lg.getName(), AccessMode.READ, "ROLE_USER");
+
+        Predicate<DataAccessRule> filter = layerFilter(ws.getName(), lg.getName());
+        assertEquals(2, count(filter));
+
+        final String oldWsName = ws.getName();
+        final String newWsName = oldWsName + "_renamed";
+        ws.setName(newWsName);
+        catalog.save(ws);
+
+        assertEquals(0, count(filter));
+        filter = layerFilter(newWsName, lg.getName());
+        assertEquals(2, count(filter));
+        catalog.removeListener(listener);
+    }
+
+    @Test
+    public void testRenameRootLayerGroupRenamesAssociatedDataRules() throws IOException {
+        CatalogListener listener =
+                new SecuredResourceNameChangeListener(catalog, DataAccessRuleDAO.get());
+        addLayerGroup();
+        lg = catalog.getLayerGroup(lg.getId());
+        addLayerAccessRule(lg.getName(), null, AccessMode.WRITE, "*");
+        addLayerAccessRule(lg.getName(), null, AccessMode.READ, "ROLE_USER");
+        assertEquals(2, count(rootFilter(lg.getName())));
+
+        final String oldName = lg.getName();
+        final String newName = oldName + "_renamed";
+        lg.setName(newName);
+        catalog.save(lg);
+
+        assertEquals(0, count(rootFilter(oldName)));
+        assertEquals(2, count(rootFilter(newName)));
+        catalog.removeListener(listener);
+    }
+
+    private Predicate<DataAccessRule> workspaceFilter(String workspaceName) {
+        return r -> r.getRoot().equalsIgnoreCase(workspaceName) && r.getLayer() != null;
+    }
+
+    private Predicate<DataAccessRule> globalLayerGroupFilter(String layerGroupName) {
+        return r -> r.getRoot().equalsIgnoreCase(layerGroupName) && r.getLayer() == null;
+    }
+
+    private Predicate<DataAccessRule> rootFilter(String root) {
+        return r -> r.getRoot().equalsIgnoreCase(root);
+    }
+
+    private Predicate<DataAccessRule> layerFilter(String workspace, String layer) {
+        Objects.requireNonNull(workspace);
+        Objects.requireNonNull(layer);
+        return rootFilter(workspace).and(r -> r.getLayer().equalsIgnoreCase(layer));
+    }
+
+    private int count(Predicate<DataAccessRule> filter) {
+        return (int) findRules(filter).count();
+    }
+
+    private Stream<DataAccessRule> findRules(Predicate<DataAccessRule> filter) {
+        return DataAccessRuleDAO.get().getRules().stream().filter(filter);
+    }
+
+    @Test
+    public void testRemoveLayerGroupAndAssociatedGlobalLayerGroupRules() throws IOException {
+        testRemoveLayerGroupAndAssociatedDataRules(null);
+    }
+
+    @Test
     public void testRemoveLayerGroupAndAssociatedDataRules() throws IOException {
+        testRemoveLayerGroupAndAssociatedDataRules(this.ws);
+    }
+
+    private void testRemoveLayerGroupAndAssociatedDataRules(WorkspaceInfo ws) throws IOException {
         DataAccessRuleDAO dao = DataAccessRuleDAO.get();
+        // SecuredResourceNameChangeListener registers itself...
         CatalogListener listener = new SecuredResourceNameChangeListener(catalog, dao);
         addLayer();
         CatalogFactory factory = catalog.getFactory();
@@ -2187,14 +2308,130 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         lg.getLayers().add(l);
         lg.getStyles().add(s);
         catalog.add(lg);
-        String workspaceName = ws.getName();
-        assertNotNull(catalog.getLayerGroupByName(workspaceName, lg.getName()));
-
-        addLayerAccessRule(workspaceName, lg.getName(), AccessMode.WRITE, "*");
-        assertTrue(layerHasSecurityRule(dao, workspaceName, lg.getName()));
+        final String ruleRoot;
+        final String ruleLayer;
+        Predicate<DataAccessRule> filter;
+        if (ws == null) {
+            assertNotNull(catalog.getLayerGroupByName(lg.getName()));
+            filter = globalLayerGroupFilter(lg.getName());
+            ruleRoot = lg.getName();
+            ruleLayer = null;
+        } else {
+            String workspaceName = ws.getName();
+            assertNotNull(catalog.getLayerGroupByName(workspaceName, lg.getName()));
+            filter = layerFilter(workspaceName, lg.getName());
+            ruleRoot = workspaceName;
+            ruleLayer = lg.getName();
+        }
+        addLayerAccessRule(ruleRoot, ruleLayer, AccessMode.WRITE, "*");
+        assertEquals(1, count(filter));
         catalog.remove(lg);
-        assertNull(catalog.getLayerGroupByName(workspaceName, lg.getName()));
-        assertFalse(layerHasSecurityRule(dao, workspaceName, lg.getName()));
+        if (ws == null) {
+            assertNull(catalog.getLayerGroupByName(lg.getName()));
+        } else {
+            assertNull(catalog.getLayerGroupByName(ws.getName(), lg.getName()));
+        }
+        assertFalse(layerHasSecurityRule(dao, ruleRoot, lg.getName()));
+        catalog.removeListener(listener);
+    }
+
+    /**
+     * A {@link DataAccessRule} for a global layer group is created with the rule's root as the
+     * layergroup's name, and the rule's layer to {@code null}; while a workspace rule has the
+     * workspace name as root, and a non-null layer (it's either a layer(/group) name or the
+     * {@literal *} glob.
+     *
+     * <p>Since a global layer group and a workspace may have the same name, make sure they don't
+     * get confused. More specifically, {@code SecuredResourceNameChangeListener}'s {@link
+     * SecuredResourceNameChangeListener#handleRemoveEvent handleRemoveEvent} and {@link
+     * SecuredResourceNameChangeListener#handlePostModifyEvent handlePostModifyEvent} correctly
+     * resolve which rules to work on based on the event's {@link CatalogEvent#getSource() source}.
+     */
+    @Test
+    public void testRootLayerGroupAndWorkspaceDataRulesDontCollideWhenHandlingEvents()
+            throws IOException {
+        final CatalogListener listener =
+                new SecuredResourceNameChangeListener(catalog, DataAccessRuleDAO.get());
+
+        // workspace and global layer group shared name
+        final String sharedName = "osm";
+        WorkspaceInfo workspace = catalog.getFactory().createWorkspace();
+        LayerGroupInfo layerGroup = this.lg;
+        workspace.setName(sharedName);
+        layerGroup.setName(sharedName);
+
+        catalog.add(workspace);
+        addLayerGroup();
+
+        // workspace rule
+        addLayerAccessRule(sharedName, "*", AccessMode.WRITE);
+        // global layer group rule
+        addLayerAccessRule(sharedName, null, AccessMode.READ);
+
+        // preflight check
+        assertEquals(1, count(workspaceFilter(sharedName)));
+        assertEquals(1, count(globalLayerGroupFilter(sharedName)));
+
+        layerGroup = catalog.getLayerGroup(layerGroup.getId());
+        workspace = catalog.getWorkspace(workspace.getId());
+
+        final String newName = sharedName + "_modified";
+
+        // change the layer group name, make sure the workspace filter hasn't changed
+        layerGroup.setName(newName);
+        layerGroup.setWorkspace(null);
+        catalog.save(layerGroup);
+
+        assertEquals(0, count(globalLayerGroupFilter(sharedName)));
+        assertEquals(1, count(globalLayerGroupFilter(newName)));
+        // filter only on the rule's root
+        assertEquals("only the lg rule should have been updated", 1, count(rootFilter(newName)));
+
+        // restore the lg name and change the ws name, check only the ws rule is updated
+        layerGroup.setName(sharedName);
+        workspace.setName(newName);
+        catalog.save(layerGroup);
+        catalog.save(workspace);
+
+        assertEquals(0, count(workspaceFilter(sharedName)));
+        assertEquals(1, count(workspaceFilter(newName)));
+        assertEquals("only the ws rule should have been updated", 1, count(rootFilter(newName)));
+
+        // now verify deletes
+        layerGroup.setName(sharedName);
+        workspace.setName(sharedName);
+        catalog.save(layerGroup);
+        catalog.save(workspace);
+        // preflight check
+        assertEquals(1, count(workspaceFilter(sharedName)));
+        assertEquals(1, count(globalLayerGroupFilter(sharedName)));
+
+        catalog.remove(layerGroup);
+        assertEquals(0, count(globalLayerGroupFilter(sharedName)));
+        assertEquals("ws rule should have not been deleted", 1, count(workspaceFilter(sharedName)));
+
+        // re-add lg
+        layerGroup = catalog.getFactory().createLayerGroup();
+        layerGroup.setName(sharedName);
+        layerGroup.getLayers().add(l);
+        catalog.add(layerGroup);
+        // prevent CascadeDeleteVisitor to remove the lg automatically
+
+        addLayerAccessRule(sharedName, null, AccessMode.READ);
+
+        assertEquals(1, count(workspaceFilter(sharedName)));
+        assertEquals(1, count(globalLayerGroupFilter(sharedName)));
+
+        // remove ws
+        assertEquals(1, count(globalLayerGroupFilter(sharedName)));
+        catalog.remove(workspace);
+
+        assertEquals(0, count(workspaceFilter(sharedName)));
+        assertEquals(
+                "lg rule should have not been deleted",
+                1,
+                count(globalLayerGroupFilter(sharedName)));
+
         catalog.removeListener(listener);
     }
 

@@ -872,6 +872,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         DataAccessRule rule = new DataAccessRule();
         rule.setRoot(workspace);
         rule.setLayer(layer);
+        rule.setGlobalGroupRule(layer == null);
         rule.setAccessMode(mode);
         rule.getRoles().addAll(Arrays.asList(roles));
         dao.addRule(rule);

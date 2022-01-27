@@ -13,10 +13,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Application;
+import org.apache.wicket.Component;
 import org.apache.wicket.ConverterLocator;
 import org.apache.wicket.DefaultExceptionMapper;
 import org.apache.wicket.IConverterLocator;
@@ -45,6 +47,7 @@ import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.settings.RequestCycleSettings.RenderStrategy;
 import org.apache.wicket.util.IProvider;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.ValidationException;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo.WebUIMode;
 import org.geoserver.platform.GeoServerExtensions;
@@ -54,6 +57,7 @@ import org.geoserver.web.spring.security.GeoServerSession;
 import org.geoserver.web.util.DataDirectoryConverterLocator;
 import org.geoserver.web.util.GeoToolsConverterAdapter;
 import org.geoserver.web.util.converters.StringBBoxConverter;
+import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.data.util.MeasureConverterFactory;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.measure.Measure;
@@ -99,6 +103,28 @@ public class GeoServerApplication extends WebApplication
      * (default is true).
      */
     protected boolean defaultIsRedirect = true;
+
+    /**
+     * Turns an exception into an error message. If the exception is a {@link
+     * org.geoserver.catalog.ValidationException} an attempt is made to look up an internationalized
+     * error message for it.
+     */
+    public static String getMessage(Component c, Exception e) {
+        if (e instanceof ValidationException) {
+            ValidationException ve = (ValidationException) e;
+            try {
+                if (ve.getParameters() == null) {
+                    return new ParamResourceModel(ve.getKey(), c, ve.getParameters()).getString();
+                } else {
+                    return new ParamResourceModel(ve.getKey(), c, ve.getParameters()).getString();
+                }
+            } catch (Exception ex) {
+                LOGGER.log(Level.FINE, "i18n not found, proceeding with default message", ex);
+            }
+        }
+        // just use the message or the toString instead
+        return e.getMessage() == null ? e.toString() : e.getMessage();
+    }
 
     /**
      * Get default redirect mode.

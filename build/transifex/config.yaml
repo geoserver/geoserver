@@ -164,3 +164,8 @@ filters:
   source_file: src/extension/csw/web-csw/src/main/resources/GeoServerApplication.properties
   source_language: en
   translation_files_expression: 'src/extension/csw/web-csw/src/main/resources/GeoServerApplication_<lang>.properties'
+- filter_type: file
+  file_format: PROPERTIES
+  source_file: src/extension/geopkg-output/src/main/resources/GeoServerApplication.properties
+  source_language: en
+  translation_files_expression: 'src/extension/geopkg-output/src/main/resources/GeoServerApplication_<lang>.properties'

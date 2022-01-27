@@ -15,7 +15,7 @@ GeoServer打包为独立的servlet， 可与现有的应用程序服务器如 `A
 
    .. note:: 有关Java和GeoServer的更多信息，请参阅 `production_java`.
 
-#. 导航到 `GeoServer 下载页面 <http://geoserver.org/download>`_.
+#. 导航到 :website:`GeoServer 下载页面 <download>`.
 
 #. 在下载页面上选择 :guilabel:`Web Archive` .
 

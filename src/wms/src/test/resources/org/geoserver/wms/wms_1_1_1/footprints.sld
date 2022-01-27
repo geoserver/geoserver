@@ -8,6 +8,7 @@
                     <ogc:Function name="footprints"/>
                 </Transformation>
                 <Rule>
+                    <MinScaleDenominator>100000</MinScaleDenominator>
                     <PolygonSymbolizer>
                         <Stroke>
                             <CssParameter name="stroke">#000000</CssParameter>
@@ -18,6 +19,12 @@
                             <CssParameter name="fill-opacity">0.5</CssParameter>
                         </Fill>
                     </PolygonSymbolizer>
+                </Rule>
+            </FeatureTypeStyle>
+            <FeatureTypeStyle>
+                <Rule>
+                    <MaxScaleDenominator>100000</MaxScaleDenominator>
+                    <RasterSymbolizer/>
                 </Rule>
             </FeatureTypeStyle>
         </UserStyle>

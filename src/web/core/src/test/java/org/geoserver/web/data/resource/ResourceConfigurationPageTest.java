@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -43,6 +44,7 @@ import org.apache.wicket.extensions.markup.html.tabs.TabbedPanel;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.util.tester.FormTester;
+import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CatalogFactory;
@@ -880,5 +882,66 @@ public class ResourceConfigurationPageTest extends GeoServerWicketTestSupport {
         storeInfo.setDateModified(new Date());
         catalog.add(storeInfo);
         return storeInfo;
+    }
+
+    @Test
+    public void testCustomizeAttributes() {
+        String layerId = getLayerId(MockData.GENERICENTITY);
+        LayerInfo layer = getCatalog().getLayerByName(layerId);
+
+        login();
+        tester.startPage(new ResourceConfigurationPage(layer, false));
+        tester.assertLabel("publishedinfoname", layerId);
+        tester.assertComponent(
+                "publishedinfo:tabs:panel:theList:0:content", BasicResourceConfig.class);
+
+        // starts with the normal attribute viewer enabled
+        String attributesPanel = "publishedinfo:tabs:panel:theList:1:content:attributePanel:";
+        tester.assertVisible(attributesPanel + "attributesTable");
+        tester.assertInvisible(attributesPanel + "attributesEditor");
+        // check one attribute
+        String attribute0 = attributesPanel + "attributesTable:attributes:0:";
+        tester.assertModelValue(attribute0 + "name", "description");
+        tester.assertModelValue(attribute0 + "type", "String");
+        tester.assertModelValue(attribute0 + "nillable", "true");
+        tester.assertModelValue(attribute0 + "minmax", "0/1");
+
+        // click on the customize checkbox
+        FormTester form = tester.newFormTester("publishedinfo");
+        form.setValue("tabs:panel:theList:1:content:attributePanel:customizeFeatureType", "true");
+        tester.executeAjaxEvent(attributesPanel + "customizeFeatureType", "click");
+
+        tester.assertInvisible(attributesPanel + "attributesTable");
+        tester.assertVisible(attributesPanel + "attributesEditor");
+        // check one attribute
+        String edit1 =
+                "publishedinfo:tabs:panel:theList:1:content:attributePanel:attributesEditor:table"
+                        + ":listContainer:items:1:itemProperties:";
+        tester.assertModelValue(edit1 + "2:component:text", "description");
+        tester.assertModelValue(edit1 + "3:component:type", java.lang.String.class);
+        tester.assertModelValue(edit1 + "4:component:area", "description");
+        tester.assertModelValue(edit1 + "5:component:check", true);
+
+        // customize one attribute
+        String formEdit1 =
+                "tabs:panel:theList:1:content:attributePanel:attributesEditor:table"
+                        + ":listContainer:items:1:itemProperties:";
+        form.setValue(formEdit1 + "2:component:text", "abstract");
+        String cql = "Concatenate(description, ' and more!')";
+        form.setValue(formEdit1 + "4:component:area", cql);
+        form.setValue(formEdit1 + "5:component:check", "false");
+
+        // save
+        form.submit("apply");
+        tester.assertNoErrorMessage();
+
+        // check saving happened
+        FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(layerId);
+        List<AttributeTypeInfo> attributes = fti.getAttributes();
+        assertNotNull(attributes);
+        assertEquals(6, attributes.size());
+        AttributeTypeInfo att = attributes.get(0);
+        assertEquals("abstract", att.getName());
+        assertEquals(cql, att.getSource());
     }
 }

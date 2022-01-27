@@ -88,6 +88,11 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
         setupResource(info);
     }
 
+    @Override
+    protected void doSave(boolean doReturn) {
+        super.doSave(doReturn);
+    }
+
     public ResourceConfigurationPage(LayerInfo info, boolean isNew) {
         super(info, isNew);
         this.returnPageClass = LayerPage.class;
@@ -197,6 +202,14 @@ public class ResourceConfigurationPage extends PublishedConfigurationPage<LayerI
         Catalog catalog = getCatalog();
         ResourceInfo resourceInfo = getResourceInfo();
         validateByChildren(resourceInfo);
+        // allow panels to update the model in case they are not directly editing its properties
+        visitChildren(
+                (component, visit) -> {
+                    if (component instanceof ResourceConfigurationPanel) {
+                        ResourceConfigurationPanel rcp = (ResourceConfigurationPanel) component;
+                        rcp.onSave();
+                    }
+                });
         if (isNew) {
             // updating grid if is a coverage
             if (resourceInfo instanceof CoverageInfo) {

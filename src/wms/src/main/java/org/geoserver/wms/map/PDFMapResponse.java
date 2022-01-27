@@ -56,7 +56,7 @@ import org.opengis.referencing.operation.TransformException;
 import org.springframework.util.Assert;
 
 /**
- * Handles a GetMap request that spects a map in PDF format.
+ * Handles a GetMap request that expects a map in PDF format.
  *
  * @author Pierre-Emmanuel Balageas, ALCER (http://www.alcer.com)
  * @author Simone Giannecchini - GeoSolutions
@@ -64,6 +64,7 @@ import org.springframework.util.Assert;
  * @version $Id$
  */
 public class PDFMapResponse extends AbstractMapResponse {
+
     /** A logger for this class. */
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.responses.wms.map.pdf");
@@ -117,153 +118,155 @@ public class PDFMapResponse extends AbstractMapResponse {
             // height of document-object is height*72 inches
             com.lowagie.text.Rectangle pageSize = new com.lowagie.text.Rectangle(width, height);
 
-            Document document = new Document(pageSize);
-            document.setMargins(0, 0, 0, 0);
+            try (Document document = new Document(pageSize)) {
+                document.setMargins(0, 0, 0, 0);
 
-            // step 2: creation of the writer
-            PdfWriter writer = PdfWriter.getInstance(document, output);
+                // step 2: creation of the writer
+                PdfWriter writer = PdfWriter.getInstance(document, output);
 
-            // step 3: we open the document
-            document.open();
+                // step 3: we open the document
+                document.open();
 
-            // step 4: we grab the ContentByte and do some stuff with it
+                // step 4: we grab the ContentByte and do some stuff with it
+                // we create a fontMapper and read all the fonts in the font
+                // directory
+                DefaultFontMapper mapper = new DefaultFontMapper();
+                FontFactory.registerDirectories();
 
-            // we create a fontMapper and read all the fonts in the font
-            // directory
-            DefaultFontMapper mapper = new DefaultFontMapper();
-            FontFactory.registerDirectories();
+                // we create a template and a Graphics2D object that corresponds
+                // with it
+                PdfContentByte cb = writer.getDirectContent();
+                PdfTemplate tp = cb.createTemplate(width, height);
+                PdfGraphics2D graphic = (PdfGraphics2D) tp.createGraphics(width, height, mapper);
 
-            // we create a template and a Graphics2D object that corresponds
-            // with it
-            PdfContentByte cb = writer.getDirectContent();
-            PdfTemplate tp = cb.createTemplate(width, height);
-            PdfGraphics2D graphic = (PdfGraphics2D) tp.createGraphics(width, height, mapper);
+                // we set graphics options
+                if (!mapContent.isTransparent()) {
+                    graphic.setColor(mapContent.getBgColor());
+                    graphic.fillRect(0, 0, width, height);
+                } else {
+                    if (LOGGER.isLoggable(Level.FINE)) {
+                        LOGGER.fine("setting to transparent");
+                    }
 
-            // we set graphics options
-            if (!mapContent.isTransparent()) {
-                graphic.setColor(mapContent.getBgColor());
-                graphic.fillRect(0, 0, width, height);
-            } else {
-                if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine("setting to transparent");
+                    int type = AlphaComposite.SRC;
+                    graphic.setComposite(AlphaComposite.getInstance(type));
+
+                    Color c =
+                            new Color(
+                                    mapContent.getBgColor().getRed(),
+                                    mapContent.getBgColor().getGreen(),
+                                    mapContent.getBgColor().getBlue(),
+                                    0);
+                    graphic.setBackground(mapContent.getBgColor());
+                    graphic.setColor(c);
+                    graphic.fillRect(0, 0, width, height);
+
+                    type = AlphaComposite.SRC_OVER;
+                    graphic.setComposite(AlphaComposite.getInstance(type));
                 }
 
-                int type = AlphaComposite.SRC;
-                graphic.setComposite(AlphaComposite.getInstance(type));
+                Rectangle paintArea = new Rectangle(width, height);
 
-                Color c =
-                        new Color(
-                                mapContent.getBgColor().getRed(),
-                                mapContent.getBgColor().getGreen(),
-                                mapContent.getBgColor().getBlue(),
-                                0);
-                graphic.setBackground(mapContent.getBgColor());
-                graphic.setColor(c);
-                graphic.fillRect(0, 0, width, height);
+                StreamingRenderer renderer;
+                if (ENCODE_TILING_PATTERNS) {
+                    renderer = new PDFStreamingRenderer();
+                } else {
+                    renderer = new StreamingRenderer();
+                }
+                renderer.setMapContent(mapContent);
+                // TODO: expose the generalization distance as a param
+                // ((StreamingRenderer) renderer).setGeneralizationDistance(0);
 
-                type = AlphaComposite.SRC_OVER;
-                graphic.setComposite(AlphaComposite.getInstance(type));
+                RenderingHints hints =
+                        new RenderingHints(
+                                RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                renderer.setJava2DHints(hints);
+
+                // we already do everything that the optimized data loading does...
+                // if we set it to true then it does it all twice...
+                Map<String, Object> rendererParams = new HashMap<>();
+                rendererParams.put("optimizedDataLoadingEnabled", Boolean.TRUE);
+                rendererParams.put("renderingBuffer", Integer.valueOf(mapContent.getBuffer()));
+                // we need the renderer to draw everything on the batik provided graphics object
+                rendererParams.put(StreamingRenderer.OPTIMIZE_FTS_RENDERING_KEY, Boolean.FALSE);
+                // render everything in vector form if possible
+                rendererParams.put(StreamingRenderer.VECTOR_RENDERING_KEY, Boolean.TRUE);
+                if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {
+                    rendererParams.put(StreamingRenderer.LINE_WIDTH_OPTIMIZATION_KEY, true);
+                }
+                rendererParams.put(
+                        StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
+                        mapContent.getRendererScaleMethod());
+
+                renderer.setRendererHints(rendererParams);
+
+                // enforce no more than x rendering errors
+                int maxErrors = wms.getMaxRenderingErrors();
+                MaxErrorEnforcer errorChecker = new MaxErrorEnforcer(renderer, maxErrors);
+
+                // Add a render listener that ignores well known rendering exceptions and reports
+                // back
+                // non
+                // ignorable ones
+                final RenderExceptionStrategy nonIgnorableExceptionListener =
+                        new RenderExceptionStrategy(renderer);
+                renderer.addRenderListener(nonIgnorableExceptionListener);
+
+                // enforce max memory usage
+                int maxMemory = wms.getMaxRequestMemory() * KB;
+                PDFMaxSizeEnforcer memoryChecker =
+                        new PDFMaxSizeEnforcer(renderer, graphic, maxMemory);
+
+                // render the map
+                renderer.paint(
+                        graphic,
+                        paintArea,
+                        mapContent.getRenderingArea(),
+                        mapContent.getRenderingTransform());
+
+                // render the watermark
+                MapDecorationLayout.Block watermark =
+                        RenderedImageMapOutputFormat.getWatermark(wms.getServiceInfo());
+
+                if (pdfMap.layout != null) {
+                    pdfMap.layout.paint(graphic, paintArea, mapContent);
+                } else if (watermark != null) {
+                    MapDecorationLayout layout = new MapDecorationLayout();
+                    layout.paint(graphic, paintArea, mapContent);
+                }
+
+                // check if a non ignorable error occurred
+                if (nonIgnorableExceptionListener.exceptionOccurred()) {
+                    Exception renderError = nonIgnorableExceptionListener.getException();
+                    throw new ServiceException(
+                            "Rendering process failed", renderError, "internalError");
+                }
+
+                // check if too many errors occurred
+                if (errorChecker.exceedsMaxErrors()) {
+                    throw new ServiceException(
+                            "More than " + maxErrors + " rendering errors occurred, bailing out",
+                            errorChecker.getLastException(),
+                            "internalError");
+                }
+
+                // check we did not use too much memory
+                if (memoryChecker.exceedsMaxSize()) {
+                    long kbMax = maxMemory / KB;
+                    throw new ServiceException(
+                            "Rendering request used more memory than the maximum allowed:"
+                                    + kbMax
+                                    + "KB");
+                }
+
+                graphic.dispose();
+                cb.addTemplate(tp, 0, 0);
+
+                // step 5: we clean up
+                document.close();
+                writer.flush();
+                writer.close();
             }
-
-            Rectangle paintArea = new Rectangle(width, height);
-
-            StreamingRenderer renderer;
-            if (ENCODE_TILING_PATTERNS) {
-                renderer = new PDFStreamingRenderer();
-            } else {
-                renderer = new StreamingRenderer();
-            }
-            renderer.setMapContent(mapContent);
-            // TODO: expose the generalization distance as a param
-            // ((StreamingRenderer) renderer).setGeneralizationDistance(0);
-
-            RenderingHints hints =
-                    new RenderingHints(
-                            RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            renderer.setJava2DHints(hints);
-
-            // we already do everything that the optimized data loading does...
-            // if we set it to true then it does it all twice...
-            Map<String, Object> rendererParams = new HashMap<>();
-            rendererParams.put("optimizedDataLoadingEnabled", Boolean.TRUE);
-            rendererParams.put("renderingBuffer", Integer.valueOf(mapContent.getBuffer()));
-            // we need the renderer to draw everything on the batik provided graphics object
-            rendererParams.put(StreamingRenderer.OPTIMIZE_FTS_RENDERING_KEY, Boolean.FALSE);
-            // render everything in vector form if possible
-            rendererParams.put(StreamingRenderer.VECTOR_RENDERING_KEY, Boolean.TRUE);
-            if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {
-                rendererParams.put(StreamingRenderer.LINE_WIDTH_OPTIMIZATION_KEY, true);
-            }
-            rendererParams.put(
-                    StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
-                    mapContent.getRendererScaleMethod());
-
-            renderer.setRendererHints(rendererParams);
-
-            // enforce no more than x rendering errors
-            int maxErrors = wms.getMaxRenderingErrors();
-            MaxErrorEnforcer errorChecker = new MaxErrorEnforcer(renderer, maxErrors);
-
-            // Add a render listener that ignores well known rendering exceptions and reports back
-            // non
-            // ignorable ones
-            final RenderExceptionStrategy nonIgnorableExceptionListener =
-                    new RenderExceptionStrategy(renderer);
-            renderer.addRenderListener(nonIgnorableExceptionListener);
-
-            // enforce max memory usage
-            int maxMemory = wms.getMaxRequestMemory() * KB;
-            PDFMaxSizeEnforcer memoryChecker = new PDFMaxSizeEnforcer(renderer, graphic, maxMemory);
-
-            // render the map
-            renderer.paint(
-                    graphic,
-                    paintArea,
-                    mapContent.getRenderingArea(),
-                    mapContent.getRenderingTransform());
-
-            // render the watermark
-            MapDecorationLayout.Block watermark =
-                    RenderedImageMapOutputFormat.getWatermark(wms.getServiceInfo());
-
-            if (pdfMap.layout != null) {
-                pdfMap.layout.paint(graphic, paintArea, mapContent);
-            } else if (watermark != null) {
-                MapDecorationLayout layout = new MapDecorationLayout();
-                layout.paint(graphic, paintArea, mapContent);
-            }
-
-            // check if a non ignorable error occurred
-            if (nonIgnorableExceptionListener.exceptionOccurred()) {
-                Exception renderError = nonIgnorableExceptionListener.getException();
-                throw new ServiceException(
-                        "Rendering process failed", renderError, "internalError");
-            }
-
-            // check if too many errors occurred
-            if (errorChecker.exceedsMaxErrors()) {
-                throw new ServiceException(
-                        "More than " + maxErrors + " rendering errors occurred, bailing out",
-                        errorChecker.getLastException(),
-                        "internalError");
-            }
-
-            // check we did not use too much memory
-            if (memoryChecker.exceedsMaxSize()) {
-                long kbMax = maxMemory / KB;
-                throw new ServiceException(
-                        "Rendering request used more memory than the maximum allowed:"
-                                + kbMax
-                                + "KB");
-            }
-
-            graphic.dispose();
-            cb.addTemplate(tp, 0, 0);
-
-            // step 5: we close the document
-            document.close();
-            writer.flush();
-            writer.close();
         } catch (DocumentException t) {
             throw new ServiceException("Error setting up the PDF", t, "internalError");
         }
@@ -421,6 +424,7 @@ public class PDFMapResponse extends AbstractMapResponse {
                     // this should not happen given the arguments passed to the lite shape
                     throw new RuntimeException(e);
                 }
+                patternGraphic.dispose();
             } else {
                 throw new IllegalArgumentException("Unsupported style " + graphicFill);
             }

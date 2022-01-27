@@ -86,4 +86,17 @@ public interface AttributeTypeInfo extends Serializable {
      * avoid recursion.
      */
     boolean equalsIngnoreFeatureType(Object obj);
+
+    /**
+     * Source expression (a valid CQL expression). If not set, it will default to the attribute name
+     * (no renaming)
+     */
+    String getSource();
+
+    /**
+     * Sets the attribute source
+     *
+     * @param source A valid CQL expression, in the simple case, the attribute name
+     */
+    void setSource(String source);
 }

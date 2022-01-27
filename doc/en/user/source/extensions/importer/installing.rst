@@ -3,11 +3,9 @@
 Installing the Importer extension
 =================================
 
-The Importer extension is an official extension, available on the `GeoServer download <http://geoserver.org/download>`_ page.
-
-#. Download the extension for your version of GeoServer. (If you see an option, select :guilabel:`Core`.)
-
-   .. warning:: Make sure to match the version of the extension to the version of GeoServer.
+#. Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`importer`
+   
+   Verify that the version number in the filename (for example |release| above) corresponds to the version of GeoServer you are running.
 
 #. Extract the archive and copy the contents into the GeoServer :file:`WEB-INF/lib` directory.
 
@@ -19,4 +17,4 @@ The Importer extension is an official extension, available on the `GeoServer dow
 
       Importer extension successfully installed.
 
- For additional information please see the section on :ref:`extensions_importer_using`.
+For additional information please see the section on :ref:`extensions_importer_using`.

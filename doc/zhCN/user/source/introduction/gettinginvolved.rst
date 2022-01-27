@@ -21,7 +21,7 @@
 
 　　官方文档托管在 `GeoServer源代码仓库 <https://www.github.com/geoserver/>`_ 。作为开放在GitHub上的开源项目，您只需提交Pull Requests就可以参与，我们的团队会对您的提交进行评估。
 
-　　如果想要了解更多关于向GeoServer代码库提交代码的事宜，我们强烈建议您加入GeoServer开发者官方邮件列表（详情见后文）。语法错误或其他细微的修改，可以参考 `快速修复 <http://docs.geoserver.org/latest/en/docguide/quickfix.html>`_ 。
+　　如果想要了解更多关于向GeoServer代码库提交代码的事宜，我们强烈建议您加入GeoServer开发者官方邮件列表（详情见后文）。语法错误或其他细微的修改，可以参考 :website:`快速修复 <quickfix.html>` 。
 
 邮件列表
 ----------
@@ -79,4 +79,4 @@ Bug跟踪
 资助
 ----------
 
-　　最后一种帮助方式是在您的组织中推动对GeoServer的使用。有很多`商业组织 <http://geoserver.org/support/>`_ 为GeoServer的使用提供支持。对这些商业公司的有偿咨询同样会使整个GeoServer社区受益。
+　　最后一种帮助方式是在您的组织中推动对GeoServer的使用。有很多 :website:`商业组织 <support>` 为GeoServer的使用提供支持。对这些商业公司的有偿咨询同样会使整个GeoServer社区受益。

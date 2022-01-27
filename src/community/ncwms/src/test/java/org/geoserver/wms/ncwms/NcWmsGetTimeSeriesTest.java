@@ -4,6 +4,10 @@
  */
 package org.geoserver.wms.ncwms;
 
+import static org.geoserver.catalog.DimensionPresentation.LIST;
+import static org.geoserver.catalog.ResourceInfo.ELEVATION;
+import static org.geoserver.catalog.ResourceInfo.TIME;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
@@ -11,12 +15,15 @@ import java.awt.image.BufferedImage;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
-import org.geoserver.catalog.DimensionPresentation;
-import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.wms.WMSDimensionsTestSupport;
+import org.geoserver.wms.WMSInfo;
+import org.hamcrest.CoreMatchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.w3c.dom.Document;
 
 /**
  * Tests the NcWMS GetTimeSeries method
@@ -25,7 +32,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
  */
 public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
 
-    private static final double DELTA = 0.000000000001;
+    private static final double EPS = 1e-6;
+    private static final double DELTA = EPS;
 
     private static final int CSV_HEADER_ROWS = 3;
 
@@ -65,21 +73,19 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
 
     static final String PNG_FORMAT = "&INFO_FORMAT=image%2Fpng";
 
+    @After
+    public void resetWMSConfig() {
+        revertService(WMSInfo.class, null);
+    }
+
     /**
      * Tests the number of output lines, the CSV headers and the returned date and value per each
      * CSV record.
      */
     @Test
     public void testCsvOutput() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, "degrees");
+        setupRasterDimension(WATTEMP, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, "degrees");
 
         String url = BASE_URL_4326 + CSV_FORMAT + TIME_RANGE_COMPLETE;
         MockHttpServletResponse response = getAsServletResponse(url);
@@ -94,27 +100,20 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
                 csvLines[3],
                 "2008-10-31T00:00:00.000Z",
                 16.88799985218793,
-                0.000000000001);
+                EPS);
         assertCsvLine(
                 "value 2008-11-01",
                 csvLines[4],
                 "2008-11-01T00:00:00.000Z",
                 17.120999863254838,
-                0.000000000001);
+                EPS);
     }
 
     /** Tests that lat lon values are returned for a geographic CRS request */
     @Test
     public void testCsvLatLon() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, "degrees");
+        setupRasterDimension(WATTEMP, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, "degrees");
 
         String url = BASE_URL_4326 + CSV_FORMAT + TIME_RANGE_COMPLETE;
         String rawCsv = getAsString(url);
@@ -129,15 +128,8 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
     /** Tests that x y values are returned for a projected CRS request */
     @Test
     public void testCsvXY() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, "degrees");
+        setupRasterDimension(WATTEMP, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, "degrees");
         String url = BASE_URL_3857 + CSV_FORMAT + TIME_RANGE_COMPLETE;
 
         String rawCsv = getAsString(url);
@@ -161,15 +153,8 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
     /** Ensures we get the right results with shorter or wider time ranges */
     @Test
     public void testTimeRanges() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, "degrees");
+        setupRasterDimension(WATTEMP, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, "degrees");
 
         String url = BASE_URL_4326 + CSV_FORMAT + TIME_RANGE_EXTRA;
         String rawCsv = getAsString(url);
@@ -180,13 +165,13 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
                 csvLines[3],
                 "2008-10-31T00:00:00.000Z",
                 16.88799985218793,
-                0.000000000001);
+                EPS);
         assertCsvLine(
                 "value 2008-11-01",
                 csvLines[4],
                 "2008-11-01T00:00:00.000Z",
                 17.120999863254838,
-                0.000000000001);
+                EPS);
 
         url = BASE_URL_4326 + CSV_FORMAT + TIME_RANGE_SLICE1;
         rawCsv = getAsString(url);
@@ -197,7 +182,7 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
                 csvLines[3],
                 "2008-10-31T00:00:00.000Z",
                 16.88799985218793,
-                0.000000000001);
+                EPS);
 
         url = BASE_URL_4326 + CSV_FORMAT + TIME_RANGE_SLICE2;
         rawCsv = getAsString(url);
@@ -208,7 +193,7 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
                 csvLines[3],
                 "2008-11-01T00:00:00.000Z",
                 17.120999863254838,
-                0.000000000001);
+                EPS);
     }
 
     /**
@@ -217,8 +202,7 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
      */
     @Test
     public void testTimeList() throws Exception {
-        setupRasterDimension(
-                TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(TIMESERIES, TIME, LIST, null, null, null);
 
         String url = BASE_URL_4326_TIMESERIES + CSV_FORMAT + TIME_LIST_PRECISE;
         String rawCsv = getAsString(url);
@@ -259,7 +243,7 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
                 DELTA);
 
         // Enable Nearest Match
-        setNearestMatch(TIMESERIES, ResourceInfo.TIME, "P2D");
+        setNearestMatch(TIMESERIES, TIME, "P2D");
         url = BASE_URL_4326_TIMESERIES + CSV_FORMAT + TIME_LIST_NEAREST;
         rawCsv = getAsString(url);
         csvLines = rawCsv.split("\\r?\\n");
@@ -288,13 +272,12 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
                 "2017-01-01T00:00:00.000Z",
                 17.120999863254838,
                 DELTA);
-        setNearestMatch(TIMESERIES, ResourceInfo.TIME, null);
+        setNearestMatch(TIMESERIES, TIME, null);
     }
 
     @Test
     public void testTimeRangeWithPeriod() throws Exception {
-        setupRasterDimension(
-                TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(TIMESERIES, TIME, LIST, null, null, null);
 
         String url = BASE_URL_4326_TIMESERIES + CSV_FORMAT + TIME_PERIOD;
         String rawCsv = getAsString(url);
@@ -314,7 +297,7 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
                 DELTA);
 
         // Enable nearest match to catch more results at the beginning of each year
-        setNearestMatch(TIMESERIES, ResourceInfo.TIME, "P2D");
+        setNearestMatch(TIMESERIES, TIME, "P2D");
         url = BASE_URL_4326_TIMESERIES + CSV_FORMAT + TIME_PERIOD;
         rawCsv = getAsString(url);
         csvLines = rawCsv.split("\\r?\\n");
@@ -341,14 +324,13 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
                     expectedValues[i],
                     DELTA);
         }
-        setNearestMatch(TIMESERIES, ResourceInfo.TIME, null);
+        setNearestMatch(TIMESERIES, TIME, null);
     }
 
     /** Test we are getting an empty result when hitting a nodata pixel */
     @Test
     public void testEmptyResultsWhenNodata() throws Exception {
-        setupRasterDimension(
-                TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(TIMESERIES, TIME, LIST, null, null, null);
         String url = REQUEST_ON_NODATA_PIXEL;
         String rawCsv = getAsString(url);
         String[] csvLines = rawCsv.split("\\r?\\n");
@@ -377,15 +359,8 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
     /** Tests the chart output */
     @Test
     public void testChartOutput() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, "degrees");
+        setupRasterDimension(WATTEMP, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, "degrees");
         BufferedImage image =
                 getAsImage(BASE_URL_4326 + PNG_FORMAT + TIME_RANGE_COMPLETE, "image/png");
         assertPixel(image, 679, 50, new Color(255, 85, 85));
@@ -399,48 +374,51 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
      */
     @Test
     public void testTimeRangesNearestWithSimpleRange() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.TIME,
-                DimensionPresentation.LIST,
-                null,
-                null,
-                "degrees",
-                true,
-                null);
+        // setup both dimensions to have a reliable output (otherwise which elevation
+        // wins is dependent on the file system listing order)
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, "degrees", true, null);
+        setupRasterDimension(WATTEMP, ELEVATION, LIST, null, null, "degrees", true, null);
         String url = BASE_URL_4326 + CSV_FORMAT + TIME_RANGE_COMPLETE;
         String rawCsv = getAsString(url);
-        String[] csvLines = rawCsv.split("\\r?\\n");
-        Assert.assertEquals("CSV Number of results", 5, csvLines.length);
-        assertCsvLine(
-                "value 2008-10-31",
-                csvLines[3],
-                "2008-10-31T00:00:00.000Z",
-                16.88799985218793,
-                0.000000000001);
-        assertCsvLine(
-                "value 2008-11-01",
-                csvLines[4],
-                "2008-11-01T00:00:00.000Z",
-                17.120999863254838,
-                0.000000000001);
+        String[] lines = rawCsv.split("\\r?\\n");
+        Assert.assertEquals("CSV Number of results", 5, lines.length);
+        assertCsvLine("date 2008-10-31", lines[3], "2008-10-31T00:00:00.000Z", 16.887999, EPS);
+        assertCsvLine("date 2008-11-01", lines[4], "2008-11-01T00:00:00.000Z", 17.120999, EPS);
     }
 
     /** Ensures that with no values found a csv with no dates listed is produced */
     @Test
     public void testTimeRangesNearestWithNoValuesFound() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.TIME,
-                DimensionPresentation.LIST,
-                null,
-                null,
-                "degrees",
-                true,
-                "PT101M/PT0H");
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, "degrees", true, "PT101M/PT0H");
         String url = BASE_URL_4326 + CSV_FORMAT + TIME_RANGE_NO_VALUES;
         String rawCsv = getAsString(url);
         String[] csvLines = rawCsv.split("\\r?\\n");
         Assert.assertEquals("CSV Number of results", 3, csvLines.length);
+    }
+
+    @Test
+    public void testTooManyValues() throws Exception {
+        // set a specific number of max values
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        NcWmsInfo ncwms = new NcWMSInfoImpl();
+        ncwms.setMaxTimeSeriesValues(3);
+        wms.getMetadata().put(NcWmsService.WMS_CONFIG_KEY, ncwms);
+        gs.save(wms);
+
+        // enable time (otherwise GetTimeSeries is refused)
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, "degrees", true, "PT101M/PT0H");
+
+        // ask for too many (less than the default WMS one, but more than the above configuration)
+        Document dom =
+                getAsDOM(
+                        "wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&FORMAT=image%2Fjpeg&LAYERS"
+                                + "=watertemp&QUERY_LAYERS=watertemp&STYLES&&FEATURE_COUNT=50&X=50&Y=50"
+                                + "&SRS=EPSG%3A4326&WIDTH=101&HEIGHT=101&BBOX=3.724365234375%2C40"
+                                + ".81420898437501%2C5.943603515625%2C43.03344726562501&time=&TIME=2005/2006/P1M");
+        assertThat(
+                checkLegacyException(dom, "InvalidParameterValue", "time"),
+                CoreMatchers.containsString(
+                        "More than 3 times specified in the request, bailing out."));
     }
 }

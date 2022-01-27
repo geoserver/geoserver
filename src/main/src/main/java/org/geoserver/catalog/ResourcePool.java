@@ -198,6 +198,12 @@ public class ResourcePool {
     ThreadPoolExecutor coverageExecutor;
     CatalogRepository repository;
     EntityResolverProvider entityResolverProvider;
+    /**
+     * Applies attributes customization. It's a {@link RetypeFeatureTypeCallback}, it needs to be
+     * applied sooner in the process of setting up a FeatureSource, so it does not fit exactly the
+     * extension point lifecycle.
+     */
+    TransformFeatureTypeCallback transformer = new TransformFeatureTypeCallback();
 
     /** Creates a new instance of the resource pool explicitly supplying the application context. */
     public static ResourcePool create(Catalog catalog, ApplicationContext appContext) {
@@ -1042,41 +1048,25 @@ public class ResourcePool {
 
             // Handle the attributes manually
             tb.setAttributes((AttributeDescriptor[]) null);
-            if (info.getAttributes() == null || info.getAttributes().isEmpty()) {
-                // take this to mean just load all native
-                for (PropertyDescriptor pd : ft.getDescriptors()) {
-                    if (!(pd instanceof AttributeDescriptor)) {
-                        continue;
-                    }
-
-                    AttributeDescriptor ad = (AttributeDescriptor) pd;
-                    if (handleProjectionPolicy) {
-                        ad = handleDescriptor(ad, info);
-                    }
-                    tb.add(ad);
+            // take this to mean just load all native with projection handling,
+            // feature type customization happens later
+            for (PropertyDescriptor pd : ft.getDescriptors()) {
+                if (!(pd instanceof AttributeDescriptor)) {
+                    continue;
                 }
-            } else {
-                // only load native attributes configured
-                for (AttributeTypeInfo att : info.getAttributes()) {
-                    String attName = att.getName();
 
-                    // load the actual underlying attribute type
-                    PropertyDescriptor pd = ft.getDescriptor(attName);
-                    if (pd == null || !(pd instanceof AttributeDescriptor)) {
-                        throw new IOException(
-                                "the SimpleFeatureType "
-                                        + info.prefixedName()
-                                        + " does not contains the configured attribute "
-                                        + attName
-                                        + ". Check your schema configuration");
-                    }
-
-                    AttributeDescriptor ad = (AttributeDescriptor) pd;
+                AttributeDescriptor ad = (AttributeDescriptor) pd;
+                if (handleProjectionPolicy) {
                     ad = handleDescriptor(ad, info);
-                    tb.add(ad);
                 }
+                tb.add(ad);
             }
             ft = tb.buildFeatureType();
+
+            // configured attribute customization, to be run before callbacks
+            if (info.getAttributes() != null && !info.getAttributes().isEmpty())
+                ft = transformer.retypeFeatureType(info, ft);
+
             // extension point for retyping the feature type
             for (RetypeFeatureTypeCallback callback :
                     GeoServerExtensions.extensions(RetypeFeatureTypeCallback.class)) {
@@ -1222,7 +1212,6 @@ public class ResourcePool {
         }
 
         DataStore dataStore = (DataStore) dataAccess;
-        SimpleFeatureSource fs;
 
         // sql view handling
         FeatureTypeCallback initializer = getFeatureTypeInitializer(info, dataAccess);
@@ -1233,20 +1222,20 @@ public class ResourcePool {
         //
         // aliasing and type mapping
         //
-        final String typeName = info.getNativeName();
+        final String nativeName = info.getNativeName();
         final String alias = info.getName();
-        final SimpleFeatureType nativeFeatureType = dataStore.getSchema(typeName);
-        final SimpleFeatureType renamedFeatureType =
-                (SimpleFeatureType) getFeatureType(info, false);
-        if (!typeName.equals(alias)
-                || DataUtilities.compare(nativeFeatureType, renamedFeatureType) != 0) {
+        final SimpleFeatureType targetFeatureType = (SimpleFeatureType) getFeatureType(info, false);
+        SimpleFeatureSource fs = dataStore.getFeatureSource(nativeName);
+
+        // if feature type customization is there, apply it first
+        if (info.getAttributes() != null && !info.getAttributes().isEmpty()) {
+            fs = (SimpleFeatureSource) transformer.wrapFeatureSource(info, fs);
+        }
+        // then check name, and other customizations (e.g., projection policy)
+        if (!nativeName.equals(alias)
+                || DataUtilities.compare(fs.getSchema(), targetFeatureType) != 0) {
             // rename and retype as necessary
-            fs =
-                    RetypingFeatureSource.getRetypingSource(
-                            dataStore.getFeatureSource(typeName), renamedFeatureType);
-        } else {
-            // normal case
-            fs = dataStore.getFeatureSource(info.getQualifiedName());
+            fs = RetypingFeatureSource.getRetypingSource(fs, targetFeatureType);
         }
 
         //

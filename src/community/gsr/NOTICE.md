@@ -49,7 +49,7 @@ the creators of the libraries we rely on, GeoServer would certainly not
 be possible without them.  There are also several LGPL libraries that do
 not require us to cite them, but we'd like to thank GeoTools - 
 http://geotools.org, JTS - http://www.vividsolutions.com/jts/jtshome.htm
- WKB4J http://wkb4j.sourceforge.net iText - http://www.lowagie.com/iText/ 
+ WKB4J http://wkb4j.sourceforge.net, OpenPDF - https://github.com/LibrePDF/OpenPDF,
 and J. David Eisenberg's PNG encoder http://www.catcode.com/pngencoder/
 
 ### NeuQuant Neural-Net Quantization Algorithm

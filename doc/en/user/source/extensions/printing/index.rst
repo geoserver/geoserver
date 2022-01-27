@@ -10,12 +10,11 @@ are available from the Mapfish and GeoExt projects.
 Installation
 ------------
 
-* Download the extension (named like ``geoserver-<version>-printing-plugin.zip``)
-  from the geoserver site download page.
+* Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`printing`
 * Extract the contents of the ZIP archive into the :file:`/WEB-INF/lib/` in the
   GeoServer webapp.  For example, if you have installed the GeoServer binary to
-  :file:`/opt/geoserver-2.6/`, the printing extension JAR files should be
-  placed in :file:`/opt/geoserver-2.6/webapps/geoserver/WEB-INF/lib/`.
+  :file:`/opt/geoserver-2.20/`, the printing extension JAR files should be
+  placed in :file:`/opt/geoserver-2.20/webapps/geoserver/WEB-INF/lib/`.
 * After extracting the extension, restart GeoServer in order for the changes to
   take effect.  All further configuration can be done with GeoServer running.
 

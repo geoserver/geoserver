@@ -64,16 +64,16 @@
     </dependency>
     <!-- end of SVG rendering markers support -->
     <dependency>
-      <groupId>com.lowagie</groupId>
-      <artifactId>itext</artifactId>
+      <groupId>com.github.librepdf</groupId>
+      <artifactId>openpdf</artifactId>
       <exclusions>
         <exclusion>
-          <artifactId>bcmail-jdk14</artifactId>
-          <groupId>bouncycastle</groupId>
+          <artifactId>bcmail-jdk15on</artifactId>
+          <groupId>org.bouncycastle</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>bcprov-jdk14</artifactId>
-          <groupId>bouncycastle</groupId>
+          <artifactId>bcprov-jdk15on</artifactId>
+          <groupId>org.bouncycastle</groupId>
         </exclusion>
       </exclusions>
     </dependency>

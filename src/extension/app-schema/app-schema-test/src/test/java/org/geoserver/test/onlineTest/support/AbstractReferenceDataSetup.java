@@ -5,6 +5,8 @@
  */
 package org.geoserver.test.onlineTest.support;
 
+import static org.geoserver.test.AbstractAppSchemaMockData.GEOPKG_DIR;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -91,6 +93,14 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
                 if (exists == null || exists.booleanValue()) {
                     if (fixtureFile.exists()) {
                         fixture = GSFixtureUtilitiesDelegate.loadProperties(fixtureFile);
+                        // update jdbc connection url. take geopkg file from resources and use that
+                        // geopkg in the tests
+                        if (fixtureId.equals("geopkg")) {
+                            fixture.setProperty(
+                                    "url",
+                                    fixture.getProperty("url").substring(0, 11)
+                                            + GEOPKG_DIR.substring(4));
+                        }
                         found.put(fixtureFile.getCanonicalPath(), true);
                         System.setProperty("app-schema.properties", fixtureFile.getPath());
                     } else {

@@ -3,10 +3,10 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-
 package org.geoserver.test;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -16,16 +16,19 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import org.geoserver.data.CatalogWriter;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.onlineTest.setup.AppSchemaTestGeopackageSetup;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestOracleSetup;
 import org.geoserver.test.onlineTest.setup.AppSchemaTestPostgisSetup;
 import org.geoserver.test.onlineTest.support.AbstractReferenceDataSetup;
@@ -126,7 +129,15 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
 
     private final Map<String, String> layerStyles = new LinkedHashMap<>();
 
+    private File appschema;
+
+    private File appschemagml3132;
+
+    private File appschemacache;
+
     private File styles;
+
+    public static String GEOPKG_DIR;
 
     /** the 'featureTypes' directory, under 'data' */
     protected File featureTypesBaseDir;
@@ -172,6 +183,15 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
         styles = new File(data, "styles");
         styles.mkdir();
 
+        appschema = new File(data, "appschema");
+        appschema.mkdir();
+
+        appschemagml3132 = new File(appschema, "appschema-gml3132");
+        appschemagml3132.mkdir();
+
+        appschemacache = new File(appschemagml3132, "app-schema-cache");
+        appschemacache.mkdir();
+
         propertiesFiles = new HashMap<>();
 
         addContent();
@@ -192,6 +212,10 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
 
     public boolean isPostgisOnlineTest() {
         return "postgis".equals(onlineTestId);
+    }
+
+    public boolean isGeopackageOnlineTest() {
+        return "geopkg".equals(onlineTestId);
     }
 
     /** @param catalogLocation file location relative to test-data dir. */
@@ -380,6 +404,21 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     }
 
     /**
+     * Copies from an {@link InputStream} to path under the mock target/test-classes directory.
+     *
+     * @param input source from which file content is copied
+     * @param location path relative to mock target/test-classes directory
+     */
+    private void copyTarget(InputStream input, String location) {
+        File target = new File("target/test-classes");
+        try {
+            IOUtils.copy(input, new File(target, location));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Write an info.xml file describing a feature type to the feature type directory.
      *
      * <p>Stolen from {@link MockData}.
@@ -558,6 +597,11 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             // Run the sql script through setup
             setup.setUp();
             setup.tearDown();
+        } else if (isGeopackageOnlineTest()) {
+            setup = AppSchemaTestGeopackageSetup.getInstance(propertiesFiles);
+            // Run the sql script through setup
+            setup.setUp();
+            setup.tearDown();
         }
     }
 
@@ -721,13 +765,15 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
      * @param mappingFileName Mapping file to be copied
      * @return Modified content string
      */
-    private String modifyOnlineMappingFileContent(String mappingFileName) throws IOException {
+    private String modifyOnlineMappingFileContent(String mappingFileName) throws Exception {
         try (InputStream is = openResource(mappingFileName);
                 BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
             StringBuffer content = new StringBuffer();
             boolean parametersStartFound = false;
             boolean parametersEndFound = false;
             boolean isOracle = onlineTestId.equals("oracle");
+            boolean isPostgis = onlineTestId.equals("postgis");
+            boolean isGeoPkg = onlineTestId.equals("geopkg");
             for (String line = br.readLine(); line != null; line = br.readLine()) {
                 if (!parametersStartFound || (parametersStartFound && parametersEndFound)) {
                     // before <parameters> or after </parameters>
@@ -738,8 +784,30 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                             // copy <parameters> with new db params
                             if (isOracle) {
                                 content.append(AppSchemaTestOracleSetup.DB_PARAMS);
-                            } else {
+                            } else if (isPostgis) {
                                 content.append(AppSchemaTestPostgisSetup.DB_PARAMS);
+                            } else if (isGeoPkg) {
+                                copyGeopkgResourcesFolder();
+                                File[] stations =
+                                        Objects
+                                                .requireNonNull(
+                                                        data.listFiles(
+                                                                (dir, name) ->
+                                                                        name.startsWith(
+                                                                                "appschema")))[0]
+                                                .listFiles(
+                                                        (dir, name) -> name.startsWith("stations"));
+                                File resourceFile = null;
+                                if (stations.length > 0) {
+                                    resourceFile = stations[0];
+                                }
+
+                                GEOPKG_DIR = resourceFile.toURI().toString();
+                                updateURLStringInFiles();
+                                String DB_PARAMS =
+                                        AppSchemaTestGeopackageSetup.DB_PARAMS.replace(
+                                                "PATH_TO_BE_REPLACED", GEOPKG_DIR);
+                                content.append(DB_PARAMS);
                             }
                         } else {
                             // copy content
@@ -772,5 +840,68 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             }
             return content.toString();
         }
+    }
+
+    private void updateURLStringInFiles() throws IOException {
+        String oldIncludedTypes =
+                IOUtils.toString(
+                        getClass()
+                                .getClassLoader()
+                                .getResourceAsStream(
+                                        "appschema/appschema-gml3132/includedTypes.xml"));
+        String newIncludedTypes =
+                oldIncludedTypes.replace("PATH_TO_BE_REPLACED", GEOPKG_DIR).trim();
+        try (ByteArrayInputStream bais =
+                new ByteArrayInputStream(newIncludedTypes.getBytes(StandardCharsets.UTF_8))) {
+            copy(bais, "appschema/appschema-gml3132/includedTypes.xml");
+        }
+
+        try (ByteArrayInputStream bais =
+                new ByteArrayInputStream(newIncludedTypes.getBytes(StandardCharsets.UTF_8))) {
+            copyTarget(bais, "appschema/appschema-gml3132/includedTypes.xml");
+        }
+
+        String oldMeteo =
+                IOUtils.toString(
+                        getClass()
+                                .getClassLoader()
+                                .getResourceAsStream(
+                                        "appschema/appschema-gml3132/meteo.appschema"));
+        String newMeteo = oldMeteo.replace("PATH_TO_BE_REPLACED", GEOPKG_DIR).trim();
+        try (ByteArrayInputStream bais =
+                new ByteArrayInputStream(newMeteo.getBytes(StandardCharsets.UTF_8))) {
+            copy(bais, "appschema/appschema-gml3132/meteo.appschema");
+        }
+
+        try (ByteArrayInputStream bais =
+                new ByteArrayInputStream(newIncludedTypes.getBytes(StandardCharsets.UTF_8))) {
+            copyTarget(bais, "appschema/appschema-gml3132/meteo.appschema");
+        }
+    }
+
+    private void copyGeopkgResourcesFolder() {
+        copy(
+                getClass().getClassLoader().getResourceAsStream("appschema/stations.gpkg"),
+                "appschema/stations.gpkg");
+        copy(
+                getClass()
+                        .getClassLoader()
+                        .getResourceAsStream("appschema/appschema-gml3132/includedTypes31.xml"),
+                "appschema/appschema-gml3132/includedTypes31.xml");
+        copy(
+                getClass()
+                        .getClassLoader()
+                        .getResourceAsStream("appschema/appschema-gml3132/meteo.xsd"),
+                "appschema/appschema-gml3132/meteo.xsd");
+        copy(
+                getClass()
+                        .getClassLoader()
+                        .getResourceAsStream("appschema/appschema-gml3132/meteo31.appschema"),
+                "appschema/appschema-gml3132/meteo31.appschema");
+        copy(
+                getClass()
+                        .getClassLoader()
+                        .getResourceAsStream("appschema/appschema-gml3132/meteo31.xsd"),
+                "appschema/appschema-gml3132/meteo31.xsd");
     }
 }

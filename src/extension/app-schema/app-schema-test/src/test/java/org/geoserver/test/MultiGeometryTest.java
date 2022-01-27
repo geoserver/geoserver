@@ -6,6 +6,8 @@
 
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
+
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -20,11 +22,16 @@ public class MultiGeometryTest extends AbstractAppSchemaTestSupport {
     protected MultiGeometryMockData createTestData() {
         System.setProperty("org.geotools.referencing.forceXY", "true");
 
-        return new MultiGeometryMockData();
+        if (!isGeopkgTest()) {
+            return new MultiGeometryMockData();
+        } else {
+            return null;
+        }
     }
 
     @Test
     public void testMultiGeometry() {
+        if (isGeopkgTest()) return;
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer");
         LOGGER.info("WFS GetFeature&typename=ex:geomContainer response:\n" + prettyString(doc));
 
@@ -56,6 +63,7 @@ public class MultiGeometryTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testMultiGeometryReprojected() {
+        if (isGeopkgTest()) return;
         Document doc =
                 getAsDOM(
                         "wfs?request=GetFeature&version=1.1.0&typename=ex:geomContainer&srsName=urn:x-ogc:def:crs:EPSG:4052");

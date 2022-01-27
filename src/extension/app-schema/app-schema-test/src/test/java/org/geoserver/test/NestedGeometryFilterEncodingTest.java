@@ -1,5 +1,6 @@
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -210,6 +211,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testNestedBBOXFilterEncoding() throws FilterToSQLException, IOException {
+        if (isGeopkgTest()) return;
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
@@ -226,6 +228,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
     @Test
     public void testNestedContainsFilterEncoding()
             throws FilterToSQLException, IOException, ParseException {
+        if (isGeopkgTest()) return;
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
@@ -245,6 +248,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
     @Test
     public void testNestedTouchesFilterEncoding()
             throws FilterToSQLException, IOException, ParseException {
+        if (isGeopkgTest()) return;
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
@@ -262,6 +266,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
     @Test
     public void testNestedIntersectsFilterEncoding()
             throws FilterToSQLException, IOException, ParseException {
+        if (isGeopkgTest()) return;
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
@@ -279,6 +284,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
     @Test
     public void testNestedOverlapsFilterEncoding()
             throws FilterToSQLException, IOException, ParseException {
+        if (isGeopkgTest()) return;
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
@@ -296,6 +302,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testNestedWithinFilterEncoding() throws Exception {
+        if (isGeopkgTest()) return;
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
@@ -312,6 +319,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testNestedCrossesFilterEncoding() throws Exception {
+        if (isGeopkgTest()) return;
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
@@ -328,6 +336,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testNestedDisjointFilterEncoding() throws Exception {
+        if (isGeopkgTest()) return;
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
@@ -344,6 +353,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testNestedEqualsFilterEncoding() throws Exception {
+        if (isGeopkgTest()) return;
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
@@ -360,6 +370,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testNestedBeyondFilterEncoding() throws Exception {
+        if (isGeopkgTest()) return;
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
@@ -378,6 +389,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testNestedDWithinFilterEncoding() throws Exception {
+        if (isGeopkgTest()) return;
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
@@ -398,6 +410,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testNesteGeometryFilterOnNonExistentProperty() throws Exception {
+        if (isGeopkgTest()) return;
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
@@ -422,6 +435,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testNesteGeometryFilterOnNonGeometryProperty() throws Exception {
+        if (isGeopkgTest()) return;
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 

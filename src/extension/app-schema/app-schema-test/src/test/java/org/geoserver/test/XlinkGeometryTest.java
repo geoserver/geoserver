@@ -6,6 +6,8 @@
 
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
+
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -17,12 +19,17 @@ public class XlinkGeometryTest extends AbstractAppSchemaTestSupport {
 
     @Override
     protected XlinkGeometryMockData createTestData() {
-        return new XlinkGeometryMockData();
+        if (!isGeopkgTest()) {
+            return new XlinkGeometryMockData();
+        } else {
+            return null;
+        }
     }
 
     /** Tests whether automatic and manual xlink:href is encoded in all Geometry Types */
     @Test
     public void testGeometry() {
+        if (isGeopkgTest()) return;
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=ex:MyTestFeature");
         LOGGER.info("WFS GetFeature response:\n" + prettyString(doc));
 

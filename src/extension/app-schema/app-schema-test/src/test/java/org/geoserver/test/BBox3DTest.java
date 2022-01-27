@@ -6,6 +6,8 @@
 
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
+
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -18,12 +20,17 @@ public class BBox3DTest extends AbstractAppSchemaTestSupport {
 
     @Override
     protected BBox3DMockData createTestData() {
-        return new BBox3DMockData();
+        if (!isGeopkgTest()) {
+            return new BBox3DMockData();
+        } else {
+            return null;
+        }
     }
 
     /** Tests re-projection of NonFeatureTypeProxy. */
     @Test
     public void testBbox1() {
+        if (isGeopkgTest()) return;
         Document doc =
                 getAsDOM(
                         "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=EPSG:4979&bbox=-200,-200,0,200,200,50");
@@ -51,6 +58,7 @@ public class BBox3DTest extends AbstractAppSchemaTestSupport {
     /** Tests re-projection of NonFeatureTypeProxy. */
     @Test
     public void testBbox2() throws Exception {
+        if (isGeopkgTest()) return;
         Document doc =
                 getAsDOM(
                         "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=EPSG:4979&bbox=-200,-200,50,200,200,200");
@@ -79,6 +87,7 @@ public class BBox3DTest extends AbstractAppSchemaTestSupport {
     /** Tests re-projection of NonFeatureTypeProxy. */
     @Test
     public void testBboxPost() {
+        if (isGeopkgTest()) return;
         String xml = //
                 "<wfs:GetFeature " //
                         + FeatureChainingWfsTest.GETFEATURE_ATTRIBUTES //

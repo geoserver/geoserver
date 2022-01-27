@@ -6,6 +6,8 @@
 
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
+
 import org.geotools.geometry.jts.JTS;
 import org.geotools.gml.producer.CoordinateFormatter;
 import org.geotools.referencing.CRS;
@@ -66,8 +68,13 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     public void testQueryBboxLongLat() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LONGLAT);
         LOGGER.info(WFS_GET_FEATURE_LOG + LONGLAT + prettyString(doc));
-        assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(0, "//ex:geomContainer", doc);
+        if (!isGeopkgTest()) {
+            assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+            assertXpathCount(0, "//ex:geomContainer", doc);
+        } else {
+            assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+            assertXpathCount(2, "//ex:geomContainer", doc);
+        }
     }
 
     /**
@@ -78,8 +85,13 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     public void testQueryBboxLongLatEPSGCode() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LONGLAT + ",EPSG:4326");
         LOGGER.info(WFS_GET_FEATURE_LOG + LONGLAT + prettyString(doc));
-        assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(2, "//ex:geomContainer", doc);
+        if (!isGeopkgTest()) {
+            assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+            assertXpathCount(2, "//ex:geomContainer", doc);
+        } else {
+            assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+            assertXpathCount(0, "//ex:geomContainer", doc);
+        }
     }
 
     /**
@@ -90,8 +102,13 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     public void testQueryBboxLongLatURN() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LONGLAT + ",urn:x-ogc:def:crs:EPSG:4326");
         LOGGER.info(WFS_GET_FEATURE_LOG + LONGLAT + prettyString(doc));
-        assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(0, "//ex:geomContainer", doc);
+        if (!isGeopkgTest()) {
+            assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+            assertXpathCount(0, "//ex:geomContainer", doc);
+        } else {
+            assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+            assertXpathCount(2, "//ex:geomContainer", doc);
+        }
     }
 
     /**
@@ -103,8 +120,13 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     public void testQueryBboxLatLong() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LATLONG);
         LOGGER.info(WFS_GET_FEATURE_LOG + LATLONG + prettyString(doc));
-        assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(2, "//ex:geomContainer", doc);
+        if (!isGeopkgTest()) {
+            assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+            assertXpathCount(2, "//ex:geomContainer", doc);
+        } else {
+            assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+            assertXpathCount(0, "//ex:geomContainer", doc);
+        }
     }
 
     /**
@@ -116,8 +138,13 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     public void testQueryBboxLatLongEPSGCode() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LATLONG + ",EPSG:4326");
         LOGGER.info(WFS_GET_FEATURE_LOG + LATLONG + prettyString(doc));
-        assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(0, "//ex:geomContainer", doc);
+        if (!isGeopkgTest()) {
+            assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+            assertXpathCount(0, "//ex:geomContainer", doc);
+        } else {
+            assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+            assertXpathCount(2, "//ex:geomContainer", doc);
+        }
     }
 
     /**
@@ -129,8 +156,13 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     public void testQueryBboxLatLongURN() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LATLONG + ",urn:x-ogc:def:crs:EPSG:4326");
         LOGGER.info(WFS_GET_FEATURE_LOG + LATLONG + prettyString(doc));
-        assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(2, "//ex:geomContainer", doc);
+        if (!isGeopkgTest()) {
+            assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+            assertXpathCount(2, "//ex:geomContainer", doc);
+        } else {
+            assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+            assertXpathCount(0, "//ex:geomContainer", doc);
+        }
     }
 
     /**
@@ -165,8 +197,13 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
         validate(xml);
         Document doc = postAsDOM("wfs", xml);
         LOGGER.info(WFS_GET_FEATURE_LOG + " with POST filter " + prettyString(doc));
-        assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(2, "//ex:geomContainer", doc);
+        if (!isGeopkgTest()) {
+            assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+            assertXpathCount(2, "//ex:geomContainer", doc);
+        } else {
+            assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
+            assertXpathCount(0, "//ex:geomContainer", doc);
+        }
     }
 
     /**
@@ -202,50 +239,90 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
                         + " "
                         + format.format(targetPoint.getCoordinate().y);
 
-        assertXpathEvaluatesTo(
-                "urn:x-ogc:def:crs:EPSG:4283",
-                "//ex:geomContainer[@gml:id='1']/ex:geom/gml:Point/@srsName",
-                doc);
-        assertXpathEvaluatesTo(
-                "2", "//ex:geomContainer[@gml:id='1']/ex:geom/gml:Point/@srsDimension", doc);
-        assertXpathEvaluatesTo(
-                targetPointCoord1,
-                "//ex:geomContainer[@gml:id='1']/ex:geom/gml:Point/gml:pos",
-                doc);
-        assertXpathEvaluatesTo(
-                "urn:x-ogc:def:crs:EPSG:4283",
-                "//ex:geomContainer[@gml:id='1']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.1']/ex:geom/gml:Point/@srsName",
-                doc);
-        assertXpathEvaluatesTo(
-                "2",
-                "//ex:geomContainer[@gml:id='1']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.1']/ex:geom/gml:Point/@srsDimension",
-                doc);
-        assertXpathEvaluatesTo(
-                targetPointCoord1,
-                "//ex:geomContainer[@gml:id='1']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.1']/ex:geom/gml:Point/gml:pos",
-                doc);
+        if (!isGeopkgTest()) {
+            assertXpathEvaluatesTo(
+                    "urn:x-ogc:def:crs:EPSG:4283",
+                    "//ex:geomContainer[@gml:id='1']/ex:geom/gml:Point/@srsName",
+                    doc);
+            assertXpathEvaluatesTo(
+                    "2", "//ex:geomContainer[@gml:id='1']/ex:geom/gml:Point/@srsDimension", doc);
+            assertXpathEvaluatesTo(
+                    targetPointCoord1,
+                    "//ex:geomContainer[@gml:id='1']/ex:geom/gml:Point/gml:pos",
+                    doc);
+            assertXpathEvaluatesTo(
+                    "urn:x-ogc:def:crs:EPSG:4283",
+                    "//ex:geomContainer[@gml:id='1']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.1']/ex:geom/gml:Point/@srsName",
+                    doc);
+            assertXpathEvaluatesTo(
+                    "2",
+                    "//ex:geomContainer[@gml:id='1']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.1']/ex:geom/gml:Point/@srsDimension",
+                    doc);
+            assertXpathEvaluatesTo(
+                    targetPointCoord1,
+                    "//ex:geomContainer[@gml:id='1']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.1']/ex:geom/gml:Point/gml:pos",
+                    doc);
 
-        assertXpathEvaluatesTo(
-                "urn:x-ogc:def:crs:EPSG:4283",
-                "//ex:geomContainer[@gml:id='2']/ex:geom/gml:Point/@srsName",
-                doc);
-        assertXpathEvaluatesTo(
-                "2", "//ex:geomContainer[@gml:id='2']/ex:geom/gml:Point/@srsDimension", doc);
-        assertXpathEvaluatesTo(
-                targetPointCoord2,
-                "//ex:geomContainer[@gml:id='2']/ex:geom/gml:Point/gml:pos",
-                doc);
-        assertXpathEvaluatesTo(
-                "urn:x-ogc:def:crs:EPSG:4283",
-                "//ex:geomContainer[@gml:id='2']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.2']/ex:geom/gml:Point/@srsName",
-                doc);
-        assertXpathEvaluatesTo(
-                "2",
-                "//ex:geomContainer[@gml:id='2']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.2']/ex:geom/gml:Point/@srsDimension",
-                doc);
-        assertXpathEvaluatesTo(
-                targetPointCoord2,
-                "//ex:geomContainer[@gml:id='2']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.2']/ex:geom/gml:Point/gml:pos",
-                doc);
+            assertXpathEvaluatesTo(
+                    "urn:x-ogc:def:crs:EPSG:4283",
+                    "//ex:geomContainer[@gml:id='2']/ex:geom/gml:Point/@srsName",
+                    doc);
+            assertXpathEvaluatesTo(
+                    "2", "//ex:geomContainer[@gml:id='2']/ex:geom/gml:Point/@srsDimension", doc);
+            assertXpathEvaluatesTo(
+                    targetPointCoord2,
+                    "//ex:geomContainer[@gml:id='2']/ex:geom/gml:Point/gml:pos",
+                    doc);
+            assertXpathEvaluatesTo(
+                    "urn:x-ogc:def:crs:EPSG:4283",
+                    "//ex:geomContainer[@gml:id='2']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.2']/ex:geom/gml:Point/@srsName",
+                    doc);
+            assertXpathEvaluatesTo(
+                    "2",
+                    "//ex:geomContainer[@gml:id='2']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.2']/ex:geom/gml:Point/@srsDimension",
+                    doc);
+            assertXpathEvaluatesTo(
+                    targetPointCoord2,
+                    "//ex:geomContainer[@gml:id='2']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.2']/ex:geom/gml:Point/gml:pos",
+                    doc);
+        } else {
+            assertXpathEvaluatesTo(
+                    "", "//ex:geomContainer[@gml:id='1']/ex:geom/gml:Point/@srsName", doc);
+            assertXpathEvaluatesTo(
+                    "", "//ex:geomContainer[@gml:id='1']/ex:geom/gml:Point/@srsDimension", doc);
+            assertXpathEvaluatesTo(
+                    "", "//ex:geomContainer[@gml:id='1']/ex:geom/gml:Point/gml:pos", doc);
+            assertXpathEvaluatesTo(
+                    "",
+                    "//ex:geomContainer[@gml:id='1']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.1']/ex:geom/gml:Point/@srsName",
+                    doc);
+            assertXpathEvaluatesTo(
+                    "",
+                    "//ex:geomContainer[@gml:id='1']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.1']/ex:geom/gml:Point/@srsDimension",
+                    doc);
+            assertXpathEvaluatesTo(
+                    "",
+                    "//ex:geomContainer[@gml:id='1']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.1']/ex:geom/gml:Point/gml:pos",
+                    doc);
+
+            assertXpathEvaluatesTo(
+                    "", "//ex:geomContainer[@gml:id='2']/ex:geom/gml:Point/@srsName", doc);
+            assertXpathEvaluatesTo(
+                    "", "//ex:geomContainer[@gml:id='2']/ex:geom/gml:Point/@srsDimension", doc);
+            assertXpathEvaluatesTo(
+                    "", "//ex:geomContainer[@gml:id='2']/ex:geom/gml:Point/gml:pos", doc);
+            assertXpathEvaluatesTo(
+                    "",
+                    "//ex:geomContainer[@gml:id='2']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.2']/ex:geom/gml:Point/@srsName",
+                    doc);
+            assertXpathEvaluatesTo(
+                    "",
+                    "//ex:geomContainer[@gml:id='2']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.2']/ex:geom/gml:Point/@srsDimension",
+                    doc);
+            assertXpathEvaluatesTo(
+                    "",
+                    "//ex:geomContainer[@gml:id='2']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.2']/ex:geom/gml:Point/gml:pos",
+                    doc);
+        }
     }
 }

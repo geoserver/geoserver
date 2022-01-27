@@ -5,6 +5,8 @@
  */
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
@@ -33,6 +35,7 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetMapOutcropCharacter() throws Exception {
+        if (isGeopkgTest()) return;
         try (InputStream is =
                 getBinary(
                         "wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
@@ -47,6 +50,7 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetMapOutcropCharacterReprojection() throws Exception {
+        if (isGeopkgTest()) return;
         try (InputStream is =
                 getBinary(
                         "wms?request=GetMap&SRS=EPSG:3857&layers=gsml:MappedFeature&styles=outcropcharacter&BBOX=-222638.981586547,6800125.45439731,0,7170156.29399995&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
@@ -61,6 +65,7 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetMapPositionalAccuracy() throws Exception {
+        if (isGeopkgTest()) return;
         try (InputStream is =
                 getBinary(
                         "wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=positionalaccuracy&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
@@ -75,6 +80,7 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetMapAfterWFS() throws Exception {
+        if (isGeopkgTest()) return;
         Document doc =
                 getAsDOM(
                         "wfs?version=1.1.0&request=getFeature&typeName=gsml:MappedFeature&maxFeatures=1");
@@ -93,6 +99,7 @@ public class WmsGetMapTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetMapWithCount() throws Exception {
+        if (isGeopkgTest()) return;
         Document doc = getAsDOM("wfs?version=1.1.0&request=getFeature&typeName=gsml:MappedFeature");
         LOGGER.info(prettyString(doc));
         try (InputStream is =

@@ -5,6 +5,7 @@
  */
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -47,6 +48,7 @@ public class WmsGetFeatureInfoTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetFeatureInfoText() throws Exception {
+        if (isGeopkgTest()) return;
         String str =
                 getAsString(
                         "wms?request=GetFeatureInfo&SRS=EPSG:4326&BBOX=-1.3,52,0,52.5&LAYERS=gsml:MappedFeature&QUERY_LAYERS=gsml:MappedFeature&X=0&Y=0&width=100&height=100");
@@ -56,6 +58,7 @@ public class WmsGetFeatureInfoTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetFeatureInfoGML() throws Exception {
+        if (isGeopkgTest()) return;
         String request =
                 "wms?request=GetFeatureInfo&SRS=EPSG:4326&BBOX=-1.3,52,0,52.5&LAYERS=gsml:MappedFeature&QUERY_LAYERS=gsml:MappedFeature&X=0&Y=0&width=100&height=100&INFO_FORMAT=application/vnd.ogc.gml/3.1.1";
         Document doc = getAsDOM(request);
@@ -72,6 +75,7 @@ public class WmsGetFeatureInfoTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetFeatureInfoGMLReprojection() throws Exception {
+        if (isGeopkgTest()) return;
         String request =
                 "wms?request=GetFeatureInfo&SRS=EPSG:3857&BBOX=-144715.338031256,6800125.45439731,0,6891041.72389159&LAYERS=gsml:MappedFeature&QUERY_LAYERS=gsml:MappedFeature&X=0&Y=0&width=100&height=100&INFO_FORMAT=application/vnd.ogc.gml/3.1.1";
         Document doc = getAsDOM(request);
@@ -104,6 +108,7 @@ public class WmsGetFeatureInfoTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetFeatureInfoGML21() throws Exception {
+        if (isGeopkgTest()) return;
         String request =
                 "wms?request=GetFeatureInfo&styles=positionalaccuracy21&SRS=EPSG:4326&BBOX=-1.3,53,0,53.5&LAYERS=gsml:MappedFeature&QUERY_LAYERS=gsml:MappedFeature&X=0&Y=0&width=100&height=100&INFO_FORMAT=application/vnd.ogc.gml/3.1.1";
         Document doc = getAsDOM(request);
@@ -116,6 +121,7 @@ public class WmsGetFeatureInfoTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetFeatureInfoHTML() throws Exception {
+        if (isGeopkgTest()) return;
         Document doc =
                 getAsDOM(
                         "wms?request=GetFeatureInfo&SRS=EPSG:4326&BBOX=-1.3,52,0,52.5&LAYERS=gsml:MappedFeature&QUERY_LAYERS=gsml:MappedFeature&X=0&Y=0&width=100&height=100&INFO_FORMAT=text/html");

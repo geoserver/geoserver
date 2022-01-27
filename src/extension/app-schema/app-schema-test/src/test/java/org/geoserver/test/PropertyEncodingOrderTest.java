@@ -5,6 +5,7 @@
  */
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
 import static org.junit.Assert.assertEquals;
 
 import org.geoserver.wfs.WFSInfo;
@@ -17,7 +18,11 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
 
     @Override
     protected PropertyEncodingOrderMockData createTestData() {
-        return new PropertyEncodingOrderMockData();
+        if (!isGeopkgTest()) {
+            return new PropertyEncodingOrderMockData();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -27,6 +32,7 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
      */
     @Test
     public void testPropertyEncodingOrder_Borehole() throws Exception {
+        if (isGeopkgTest()) return;
         String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:Borehole";
         Document doc = getAsDOM(path);
         LOGGER.info("WFS GetFeature&gsml:Borehole:\n" + prettyString(doc));
@@ -127,6 +133,7 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
      */
     @Test
     public void testPropertyEncodingOrder_PlanarOrientation() throws Exception {
+        if (isGeopkgTest()) return;
         String path = "wfs?request=GetFeature&version=1.1.0&typename=er:MineralOccurrence";
         Document doc = getAsDOM(path);
         LOGGER.info("WFS GetFeature&er:MineralOccurrence:\n" + prettyString(doc));
@@ -195,6 +202,7 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
      */
     @Test
     public void testPropertyEncodingOrder_GeologicUnit() throws Exception {
+        if (isGeopkgTest()) return;
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         wfs.setEncodeFeatureMember(true);
         getGeoServer().save(wfs);

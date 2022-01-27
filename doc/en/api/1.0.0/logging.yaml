@@ -1,0 +1,94 @@
+---
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: GeoServer Logging
+  description: The Logging area shows logging options for the server
+  contact:
+    name: GeoServer
+    email: 'geoserver-users@sourceforge.net'
+    url: 'http://geoserver.org/comm/'
+host: localhost:8080
+basePath: /geoserver/rest
+
+paths:
+  /logging:
+    get:
+      operationId: getLogging
+      tags:
+        - "Logging"
+      summary: Get logging configuration of GeoServer
+      description: Displays a list of all logging settings on the server. Use the "Accept:" header to specify format or append an extension to the endpoint (example "/logging.xml" for XML).
+      produces:
+        - application/xml
+        - application/json
+        - text/html
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Logging"
+          examples:
+            application/xml: |
+              <logging>
+                <level>TEST_LOGGING.properties</level>
+                <location>logs/geoserver.log</location>
+                <stdOutLogging>true</stdOutLogging>
+              </logging>
+          
+            application/json: |
+              {
+                "logging": {
+                  "level": "TEST_LOGGING.properties",
+                  "location": "logs/geoserver.log",
+                  "stdOutLogging": true
+                }
+              }
+            
+  
+    put:
+      operationId: putLogging*
+      tags:
+        - "Logging"
+      summary: Update logging
+      description: Updates logging settings on the server.
+
+      parameters:
+        - name: loggingBody
+          description: The logging information to upload.
+          in: body
+          required: true          
+          schema:
+            $ref: "#/definitions/Logging"
+      consumes:
+        - application/xml
+        - application/json
+      responses:
+        200:
+          description: OK
+
+    
+  
+
+
+
+
+definitions:
+  Logging:
+    type: object
+    xml:
+      name: logging
+    properties:
+      id:
+        type: string
+        description: For internal use only. Do not modify.
+      level:
+        type: string
+        description: Logging level of GeoServer such as DEFAULT_LOGGING.properties
+      location:
+        type: string
+        description: Logging file path. Relative to the GeoServer data directory.
+      stdOutLogging:
+        type: boolean
+        description: Enables/disables stdOutLogging
+      

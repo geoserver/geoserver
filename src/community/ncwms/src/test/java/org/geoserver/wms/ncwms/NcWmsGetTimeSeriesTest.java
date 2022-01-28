@@ -5,6 +5,7 @@
 package org.geoserver.wms.ncwms;
 
 import static org.geoserver.catalog.DimensionPresentation.LIST;
+import static org.geoserver.catalog.ResourceInfo.CUSTOM_DIMENSION_PREFIX;
 import static org.geoserver.catalog.ResourceInfo.ELEVATION;
 import static org.geoserver.catalog.ResourceInfo.TIME;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -420,5 +421,33 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
                 checkLegacyException(dom, "InvalidParameterValue", "time"),
                 CoreMatchers.containsString(
                         "More than 3 times specified in the request, bailing out."));
+    }
+
+    @Test
+    public void testSourceWithTimeRanges() throws Exception {
+        // setup all the dimensions
+        setupRasterDimension(TIMERANGES, TIME, LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(
+                TIMERANGES, CUSTOM_DIMENSION_PREFIX + "WAVELENGTH", LIST, null, null, null);
+        // not setting up the date custom dimension as it just uses the same columns as time
+
+        // prepare URL
+        String layer = getLayerId(TIMERANGES);
+        String baseUrl =
+                "wms?LAYERS="
+                        + layer
+                        + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&SRS=EPSG:4326"
+                        + "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&query_layers="
+                        + layer
+                        + "&x=68&y=72";
+        String url = baseUrl + "&TIME=2008-10-31T12:00:00.000Z/2008-11-06T12:00:00.000Z";
+
+        // run and check
+        String rawCsv = getAsString(url);
+        String[] lines = rawCsv.split("\\r?\\n");
+        Assert.assertEquals(5, lines.length);
+        assertCsvLine("date 2008-10-31", lines[3], "2008-10-31T00:00:00.000Z", 20.027, EPS);
+        assertCsvLine("date 2008-11-05", lines[4], "2008-11-05T00:00:00.000Z", 14.782, EPS);
     }
 }

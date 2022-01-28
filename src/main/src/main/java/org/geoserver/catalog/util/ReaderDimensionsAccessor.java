@@ -49,7 +49,7 @@ import org.opengis.filter.PropertyIsBetween;
 import org.opengis.filter.expression.PropertyName;
 
 /**
- * Centralizes the metadata extraction and parsing used to read dimension informations out of a
+ * Centralizes the metadata extraction and parsing used to read dimension information out of a
  * coverage reader
  *
  * @author Andrea Aime - GeoSolutions
@@ -66,7 +66,7 @@ public class ReaderDimensionsAccessor {
     private static FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     /** Comparator for the TreeSet made either by Date objects, or by DateRange objects */
-    private static final Comparator<Object> TEMPORAL_COMPARATOR =
+    public static final Comparator<Object> TEMPORAL_COMPARATOR =
             (o1, o2) -> {
                 // the domain can be a mix of dates and ranges
                 if (o1 instanceof Date) {
@@ -93,7 +93,7 @@ public class ReaderDimensionsAccessor {
 
     /** Comparator for TreeSet made either by Double objects, or by NumberRange objects */
     @SuppressWarnings("unchecked")
-    private static final Comparator<Object> ELEVATION_COMPARATOR =
+    public static final Comparator<Object> ELEVATION_COMPARATOR =
             (o1, o2) -> {
                 if (o1 instanceof Double) {
                     if (o2 instanceof Double) {
@@ -178,7 +178,7 @@ public class ReaderDimensionsAccessor {
 
         // if we got here, the optimization did not work, do the normal path
         if (result == null) {
-            result = new TreeSet<>();
+            result = new TreeSet<>(TEMPORAL_COMPARATOR);
             TreeSet<Object> fullDomain = getTimeDomain();
 
             for (Object o : fullDomain) {

@@ -64,7 +64,7 @@
         <h3>This Page</h3>
         <ul class="this-page-menu">
         {% if display_github %}
-        <li><a href="https://github.com/{{github_user}}/{{ github_repo }}/tree/{{ github_version }}/{{ conf_py_path }}/{{ pagename }}{{ page_source_suffix }}">Edit</a></li>
+        <li><a href="https://github.com/{{github_user}}/{{ github_repo }}/blob/{{ github_version }}/{{ conf_py_path }}/{{ pagename }}{{ page_source_suffix }}">Edit</a></li>
         {%- endif %}
         {%- if show_source and has_source and sourcename %}
           <li><a href="{{ pathto('_sources/' + sourcename, true)|e }}">Source</a></li>

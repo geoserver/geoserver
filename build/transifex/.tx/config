@@ -162,3 +162,9 @@ file_filter  = ../../src/extension/wmts-multi-dimensional/src/main/resources/Geo
 source_file  = ../../src/extension/wmts-multi-dimensional/src/main/resources/GeoServerApplication.properties
 type         = PROPERTIES
 minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:src-extension-printing-src-main-resources-geoserverapplication-properties--main]
+file_filter  = ../../src/extension/printing/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/printing/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10

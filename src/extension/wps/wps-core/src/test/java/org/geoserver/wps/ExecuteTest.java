@@ -58,10 +58,10 @@ import org.geoserver.wps.executor.ProcessStatusTracker;
 import org.geoserver.wps.resource.ProcessArtifactsStore;
 import org.geoserver.wps.resource.WPSResourceManager;
 import org.geotools.data.collection.ListFeatureCollection;
+import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.gml3.GMLConfiguration;
 import org.geotools.ows.v1_1.OWSConfiguration;
@@ -791,8 +791,10 @@ public class ExecuteTest extends WPSTestSupport {
         MockHttpServletResponse r = postAsServletResponse("wps", xml);
         assertEquals("application/json", r.getContentType());
         // System.out.println(r.getOutputStreamContent());
-        FeatureCollection fc = new FeatureJSON().readFeatureCollection(r.getContentAsString());
-        assertEquals(2, fc.size());
+        try (GeoJSONReader reader = new GeoJSONReader(r.getContentAsString())) {
+            FeatureCollection fc = reader.getFeatures();
+            assertEquals(2, fc.size());
+        }
     }
 
     @Test
@@ -828,8 +830,10 @@ public class ExecuteTest extends WPSTestSupport {
         // System.out.println(r.getOutputStreamContent());
         assertEquals("application/json", r.getContentType());
         // System.out.println(r.getOutputStreamContent());
-        FeatureCollection fc = new FeatureJSON().readFeatureCollection(r.getContentAsString());
-        assertEquals(2, fc.size());
+        try (GeoJSONReader reader = new GeoJSONReader(r.getContentAsString())) {
+            FeatureCollection fc = reader.getFeatures();
+            assertEquals(2, fc.size());
+        }
     }
 
     @Test

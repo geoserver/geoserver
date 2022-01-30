@@ -174,3 +174,9 @@ file_filter  = ../../src/extension/vectortiles/src/main/resources/GeoServerAppli
 source_file  = ../../src/extension/vectortiles/src/main/resources/GeoServerApplication.properties
 type         = PROPERTIES
 minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:src-extension-wcs2-0-eo-web-src-main-resources-geoserverapplication-properties--main]
+file_filter  = ../../src/extension/wcs2_0-eo/web/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/wcs2_0-eo/web/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10

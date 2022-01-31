@@ -2,6 +2,7 @@ package org.geoserver.wps.gs.download;
 
 import java.awt.Font;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,19 +74,20 @@ public class BaseDownloadImageProcessTest extends WPSTestSupport {
 
         // add decoration layouts
         File layouts = getDataDirectory().findOrCreateDir("layouts");
-        FileUtils.copyURLToFile(
-                getClass().getResource("watermarker.xml"), new File(layouts, "watermarker.xml"));
-        FileUtils.copyURLToFile(
-                getClass().getResource("geoserver.png"), new File(layouts, "geoserver.png"));
-        FileUtils.copyURLToFile(
-                getClass().getResource("timestamper.xml"), new File(layouts, "timestamper.xml"));
-        FileUtils.copyURLToFile(
-                getClass().getResource("formattedTimestamper.xml"),
-                new File(layouts, "formattedTimestamper.xml"));
+        copyResource("watermarker.xml", layouts);
+        copyResource("dynawatermarker.xml", layouts);
+        copyResource("geoserver.png", layouts);
+        copyResource("osgeo.png", layouts);
+        copyResource("timestamper.xml", layouts);
+        copyResource("formattedTimestamper.xml", layouts);
 
         // register font for timestamping
         Font font = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("Vera.ttf"));
         FontCache.getDefaultInstance().registerFont(font);
+    }
+
+    private void copyResource(String name, File layouts) throws IOException {
+        FileUtils.copyURLToFile(getClass().getResource(name), new File(layouts, name));
     }
 
     /** Strips a full URL to a reduced version that works with the test harness */

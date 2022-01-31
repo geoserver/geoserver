@@ -4,6 +4,7 @@
  */
 package org.geoserver.wms.decoration;
 
+import static org.geoserver.wms.decoration.MapDecorationLayout.FF;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
 import org.junit.After;
 import org.junit.Test;
+import org.opengis.filter.expression.Expression;
 
 public class TextDecorationTest {
 
@@ -33,15 +35,16 @@ public class TextDecorationTest {
         Dispatcher.REQUEST.set(request);
 
         TextDecoration decoration = new TextDecoration();
-        Map<String, String> options = new HashMap<>();
+        Map<String, Expression> options = new HashMap<>();
         options.put(
                 "message",
-                "<#setting datetime_format=\"yyyy-MM-dd'T'HH:mm:ss.SSSX\">\n"
-                        + "<#setting locale=\"en_US\">\n"
-                        + "<#setting time_zone=\"GMT\">"
-                        + "<#if time??>\n"
-                        + "${time?datetime?string[\"dd.MM.yyyy\"]}"
-                        + "</#if>");
+                FF.literal(
+                        "<#setting datetime_format=\"yyyy-MM-dd'T'HH:mm:ss.SSSX\">\n"
+                                + "<#setting locale=\"en_US\">\n"
+                                + "<#setting time_zone=\"GMT\">"
+                                + "<#if time??>\n"
+                                + "${time?datetime?string[\"dd.MM.yyyy\"]}"
+                                + "</#if>"));
         decoration.loadOptions(options);
 
         GetMapRequest getMap = new GetMapRequest();

@@ -80,7 +80,7 @@ CREATE INDEX property_type_collection_idx ON property_type (collection);
 CREATE UNIQUE INDEX default_object_def_key_idx ON default_object (def_key);
 CREATE INDEX default_object_id_idx ON default_object (id);
 
--- views
+-- views - note these views are not used at all in code
 -- workspace view 
 CREATE VIEW workspace AS
 SELECT a.oid, 
@@ -384,6 +384,102 @@ SELECT a.oid,
   FROM object a, type b  
  WHERE a.type_id = b.oid
    AND b.typename = 'org.geoserver.catalog.WMSLayerInfo';
+
+-- wmtsstore view
+CREATE VIEW wmtsstore AS
+SELECT a.oid, 
+       a.id,
+       (SELECT c.value
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'name') as name,
+       (SELECT c.value
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'description') as description,
+       (SELECT c.value
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'capabilitiesURL') as capabilities_url,
+       (SELECT c.value
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'type') as type,
+       (SELECT c.value
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'enabled') as enabled,
+       (SELECT c.related_oid
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'workspace.id') workspace
+  FROM object a, type b  
+ WHERE a.type_id = b.oid
+   AND b.typename = 'org.geoserver.catalog.WMTSStoreInfo';
+
+-- wmts layer view
+CREATE VIEW wmtslayer AS
+SELECT a.oid, 
+       a.id,
+       (SELECT c.value
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'name') as name,
+       (SELECT c.value
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'nativeName') as native_name,
+       (SELECT c.value
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'prefixedName') as prefixed_name,
+       (SELECT c.value
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'title') as title,
+       (SELECT c.value
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'abstract') as abstract,
+       (SELECT c.value
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'SRS') as srs,
+       (SELECT c.value
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'projectionPolicy') as projection_policy,
+       (SELECT c.value
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'enabled') as enabled,
+       (SELECT c.related_oid
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'store.id') store,
+       (SELECT c.related_oid
+          FROM object_property c, property_type d
+         WHERE c.oid = a.oid
+           AND c.property_type = d.oid
+           AND d.name = 'namespace.id') namespace
+  FROM object a, type b  
+ WHERE a.type_id = b.oid
+   AND b.typename = 'org.geoserver.catalog.WMTSLayerInfo';
 
 -- style view
 CREATE VIEW style AS

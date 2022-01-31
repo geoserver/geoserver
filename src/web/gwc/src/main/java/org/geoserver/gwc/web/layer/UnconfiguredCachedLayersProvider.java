@@ -6,6 +6,7 @@
 package org.geoserver.gwc.web.layer;
 
 import com.google.common.collect.Streams;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -74,7 +75,8 @@ class UnconfiguredCachedLayersProvider extends GeoServerDataProvider<TileLayer> 
      * Simple cache for the last computed size based on the keywords, which in turn are the sole
      * input for the filter (at the moment, at least)
      */
-    private class CachedSize {
+    private class CachedSize implements Serializable {
+        private static final long serialVersionUID = 1L;
         private static final long NOT_CACHED = Long.MIN_VALUE;
         private String[] cachedSizeKeywords;
         private long cachedSize = NOT_CACHED;

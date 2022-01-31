@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.collect.Lists;
@@ -25,7 +26,12 @@ import org.geoserver.GeoServerConfigurationLock.LockType;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.jdbcconfig.JDBCConfigTestSupport;
@@ -394,5 +400,34 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         for (Future<?> future : futures) {
             future.get();
         }
+    }
+
+    @Test
+    public void testWMTS() {
+        addWMTSLayer();
+        assertFalse(catalog.getResources(WMTSLayerInfo.class).isEmpty());
+        final WMTSStoreInfo store = catalog.getStore(wmtss.getId(), WMTSStoreInfo.class);
+        final WMTSLayerInfo resource = catalog.getResource(wmtsl.getId(), WMTSLayerInfo.class);
+        assertNotNull(store);
+        assertNotNull(resource);
+
+        ConfigDatabase configDb = testSupport.getDatabase();
+        configDb.clearCache(store); // GEOS-10375, don't hit the cache
+
+        String storeName = store.getName();
+        StoreInfo storeByName = catalog.getStoreByName(ws, storeName, StoreInfo.class);
+        assertEquals(store, storeByName);
+        WMTSStoreInfo wmtsStoreByName = catalog.getStoreByName(ws, storeName, WMTSStoreInfo.class);
+        assertEquals(store, wmtsStoreByName);
+
+        configDb.clearCache(resource); // GEOS-10375, don't hit the cache
+
+        NamespaceInfo ns = resource.getNamespace();
+        String layerName = resource.getName();
+        ResourceInfo resourceByName = catalog.getResourceByName(ns, layerName, ResourceInfo.class);
+        assertEquals(resource, resourceByName);
+        WMTSLayerInfo wmtsLayerByName =
+                catalog.getResourceByName(ns, layerName, WMTSLayerInfo.class);
+        assertEquals(resource, wmtsLayerByName);
     }
 }

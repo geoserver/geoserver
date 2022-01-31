@@ -4,16 +4,10 @@
  */
 package org.geoserver.rest;
 
-import freemarker.template.ObjectWrapper;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.JAIInfo;
 import org.geoserver.config.LoggingInfo;
-import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.OwsUtils;
-import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,16 +63,5 @@ public class LoggingController extends AbstractGeoServerController {
             Type targetType,
             Class<? extends HttpMessageConverter<?>> converterType) {
         return LoggingInfo.class.isAssignableFrom(methodParameter.getParameterType());
-    }
-
-    @Override
-    protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<>(
-                clazz, Arrays.asList(JAIInfo.class, CoverageAccessInfo.class));
-    }
-
-    @Override
-    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
-        persister.setHideFeatureTypeAttributes();
     }
 }

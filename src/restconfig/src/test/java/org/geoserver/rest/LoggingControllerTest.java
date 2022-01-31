@@ -10,9 +10,7 @@ import static org.junit.Assert.assertNotNull;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONObject;
-import org.geoserver.config.CoverageAccessInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.impl.LoggingInfoImpl;
 import org.geoserver.ows.LocalWorkspace;
@@ -30,22 +28,6 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
     @Before
     public void init() {
         geoServer = getGeoServer();
-
-        // revert global settings
-        GeoServerInfo global = getGeoServer().getGlobal();
-        global.getJAI().setAllowInterpolation(false);
-        global.getJAI().setMemoryThreshold(0.75d);
-        global.getJAI().setTilePriority(5);
-        global.getCoverageAccess().setQueueType(CoverageAccessInfo.QueueType.UNBOUNDED);
-        getGeoServer().save(global);
-
-        revertSettings(null);
-
-        // revert local settings
-        revertSettings("sf");
-    }
-
-    public void initLogging() {
         LoggingInfo loggingInfo = new LoggingInfoImpl();
         loggingInfo.setLocation("logs/geoserver-test.log");
         loggingInfo.setLevel("TEST_LOGGING.properties");
@@ -61,7 +43,6 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetLoggingAsJSON() throws Exception {
-        initLogging();
         JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/logging.json");
         print(json);
         JSONObject jsonObject = (JSONObject) json;
@@ -75,7 +56,6 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetLoggingAsXML() throws Exception {
-        initLogging();
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/logging.xml");
         assertEquals("logging", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("TEST_LOGGING.properties", "/logging/level", dom);
@@ -90,7 +70,6 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutLoggingAsJSON() throws Exception {
-        initLogging();
         String inputJson =
                 "{'logging':{"
                         + "    'level':'DEFAULT_LOGGING.properties',"
@@ -112,7 +91,6 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutLoggingAsXML() throws Exception {
-        initLogging();
         String xml =
                 "<logging> <level>DEFAULT_LOGGING.properties</level>"
                         + "<location>logs/geoserver-test-2.log</location>"

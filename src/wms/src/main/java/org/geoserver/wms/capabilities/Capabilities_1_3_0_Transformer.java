@@ -1878,11 +1878,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 } else {
                     element("Title", publishedInfo.getTitle());
                 }
-                if (StringUtils.isEmpty(publishedInfo.getAbstract())) {
-                    element("Abstract", "Layer-Group type layer: " + layerName);
-                } else {
-                    element("Abstract", publishedInfo.getAbstract());
-                }
+                element("Abstract", publishedInfo.getAbstract());
             } else {
                 String title = internationalContentHelper.getTitle(publishedInfo);
                 String abstrct = internationalContentHelper.getAbstract(publishedInfo);

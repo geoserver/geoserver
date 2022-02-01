@@ -748,7 +748,6 @@ public class FeatureTypeControllerTest extends CatalogRESTTestSupport {
                 getAsString(
                         BASEPATH
                                 + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature.json");
-        // System.out.println(json);
         MockHttpServletResponse response =
                 putAsServletResponse(
                         BASEPATH + "/workspaces/sf/datastores/sf/featuretypes/PrimitiveGeoFeature",

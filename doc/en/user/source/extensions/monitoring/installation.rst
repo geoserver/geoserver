@@ -9,11 +9,14 @@ Installing the Monitor Extension
   
 The monitor extension is not part of the GeoServer core and must be installed as a plug-in. To install:
 
-#. Navigate to the `GeoServer download page <http://geoserver.org/download>`_.
-#. Find the page that matches the version of the running GeoServer.
-#. Download the monitor extension. The download link will be in the :guilabel:`Extensions` 
-   section under :guilabel:`Other`.
+#. Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`monitor`
+
+   The download link will be in the :guilabel:`Extensions` section under :guilabel:`Other`.
+   
+   .. warning:: Make sure to match the version of the extension (for example |release| above) to the version of the GeoServer instance!
+   
 #. Extract the files in this archive to the :file:`WEB-INF/lib` directory of your GeoServer installation.
+
 #. Restart GeoServer
 
 Verifying the Installation

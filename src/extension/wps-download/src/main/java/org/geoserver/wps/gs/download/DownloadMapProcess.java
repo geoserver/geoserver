@@ -35,6 +35,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.kml.KMLEncoder;
 import org.geoserver.kml.KmlEncodingContext;
 import org.geoserver.ows.Dispatcher;
+import org.geoserver.ows.kvp.FormatOptionsKvpParser;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -56,6 +57,7 @@ import org.geoserver.wps.gs.GeoServerProcess;
 import org.geoserver.wps.process.ByteArrayRawData;
 import org.geoserver.wps.process.RawData;
 import org.geotools.data.util.DefaultProgressListener;
+import org.geotools.filter.function.EnvFunction;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.http.HTTPClient;
 import org.geotools.http.HTTPClientFinder;
@@ -141,9 +143,15 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             @DescribeParameter(
                         name = "decoration",
                         min = 0,
-                        description = "A WMS decoration layout name to watermark" + " the output"
+                        description = "A WMS decoration layout name to watermark the output"
                     )
                     String decorationName,
+            @DescribeParameter(
+                        name = "decorationEnvironment",
+                        min = 0,
+                        description = "Env parameters used to apply the watermark decoration"
+                    )
+                    String decorationEnvironment,
             @DescribeParameter(
                         name = "time",
                         min = 0,
@@ -197,6 +205,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                     buildImage(
                             bbox,
                             decorationName,
+                            decorationEnvironment,
                             time,
                             width,
                             height,
@@ -309,10 +318,45 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                 bos.toByteArray(), org.geoserver.kml.KMZMapOutputFormat.MIME_TYPE, "kmz");
     }
 
-    @SuppressWarnings("unchecked")
     RenderedImage buildImage(
             ReferencedEnvelope bbox,
             String decorationName,
+            String decorationEnvironment,
+            String time,
+            int width,
+            int height,
+            Integer headerHeight,
+            Layer[] layers,
+            String format,
+            ProgressListener progressListener,
+            Map<String, WebMapServer> serverCache)
+            throws Exception {
+        // going to update the env local values as the frames are rendered
+        // grab these to allow restore
+        Map<String, Object> localValuesBackup = new HashMap<>(EnvFunction.getLocalValues());
+        try {
+            return buildImageInternal(
+                    bbox,
+                    decorationName,
+                    decorationEnvironment,
+                    time,
+                    width,
+                    height,
+                    headerHeight,
+                    layers,
+                    format,
+                    progressListener,
+                    serverCache);
+        } finally {
+            EnvFunction.setLocalValues(localValuesBackup);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private RenderedImage buildImageInternal(
+            ReferencedEnvelope bbox,
+            String decorationName,
+            String decorationEnvironment,
             String time,
             int width,
             int height,
@@ -361,6 +405,13 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             headerHeightSize = headerHeight.intValue();
         }
 
+        // prepare the decoration environment, if any
+        Map<String, Object> decorationEnv = Collections.emptyMap();
+        if (decorationName != null && decorationEnvironment != null) {
+            decorationEnv =
+                    (Map<String, Object>) new FormatOptionsKvpParser().parse(decorationEnvironment);
+        }
+
         // loop over layers and accumulate
         int mapsImageHeight = height - headerHeightSize;
         template.put("height", String.valueOf(mapsImageHeight));
@@ -380,6 +431,10 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                         request.getEnv().put("time", time);
                     }
                 }
+                // required as the dispatcher callback normally doing this won't be invoked here
+                Map<String, Object> layerEnv = new HashMap<>(EnvFunction.getLocalValues());
+                layerEnv.putAll(request.getEnv());
+                EnvFunction.setLocalValues(layerEnv);
                 // render
                 GetMap mapBuilder = new GetMap(wms);
                 RenderedImageMap map = (RenderedImageMap) mapBuilder.run(request);
@@ -419,6 +474,9 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         request.setFormat(format);
         if (decorationName != null) {
             request.setFormatOptions(Collections.singletonMap("layout", decorationName));
+            // required as the dispatcher callback normally doing this won't be invoked here
+            request.getEnv().putAll(decorationEnv);
+            EnvFunction.setLocalValues(request.getEnv());
             WMSMapContent content = new WMSMapContent(request);
             try {
                 content.setMapWidth(width);

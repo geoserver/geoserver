@@ -4,6 +4,9 @@
  */
 package org.geoserver.wms.featureinfo;
 
+import com.bedatadriven.jackson.datatype.jts.JtsModule;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.Template;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -17,7 +20,6 @@ import org.geoserver.wfs.json.GeoJSONGetFeatureResponse;
 import org.geoserver.wms.GetFeatureInfoRequest;
 import org.geoserver.wms.WMS;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.geojson.geom.GeometryJSON;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeatureType;
 
@@ -26,6 +28,14 @@ import org.opengis.feature.simple.SimpleFeatureType;
  * getFeatureInfo request.
  */
 public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
+
+    static final ObjectMapper MAPPER;
+
+    static {
+        MAPPER = new ObjectMapper();
+        JtsModule module = new JtsModule(6);
+        MAPPER.registerModule(module);
+    }
 
     public GeoJSONTemplateManager(
             OutputFormat format, WMS wms, GeoServerResourceLoader resourceLoader) {
@@ -90,8 +100,7 @@ public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
      * Encode geometry to a valid geoJSON representation. The method is aimed to be used in free
      * marker templates.
      */
-    public static String geomToGeoJSON(Geometry geometry) {
-        GeometryJSON geomJSON = new GeometryJSON();
-        return geomJSON.toString(geometry);
+    public static String geomToGeoJSON(Geometry geometry) throws JsonProcessingException {
+        return MAPPER.writeValueAsString(geometry);
     }
 }

@@ -24,7 +24,6 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
-import org.geoserver.security.SecurityUtils;
 import org.geoserver.wfs.request.Delete;
 import org.geoserver.wfs.request.Insert;
 import org.geoserver.wfs.request.Native;
@@ -41,8 +40,6 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.FilterFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Web Feature Service Transaction operation.
@@ -523,17 +520,6 @@ public class Transaction {
     protected DefaultTransaction getDatastoreTransaction(TransactionRequest request)
             throws IOException {
         DefaultTransaction transaction = new DefaultTransaction();
-        // use handle as the log messages
-        String username = "anonymous";
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            username = SecurityUtils.getUsername(authentication.getPrincipal());
-        }
-
-        // Ok, this is a hack. We assume there is only one versioning datastore, the postgis one,
-        // and that we can the following properties won't hurt transactio processing anyways...
-        transaction.putProperty("VersioningCommitAuthor", username);
-        transaction.putProperty("VersioningCommitMessage", request.getHandle());
 
         // transfer any tx extended property down to the geotools transaction.
         // TransactionPlugins can contribute such info in their beforeTransaction()

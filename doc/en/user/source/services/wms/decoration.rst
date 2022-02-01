@@ -164,3 +164,37 @@ Used against the states layer from the default GeoServer data, this layout produ
 .. figure:: img/decoration.png
 
    The default states layer, drawn with the decoration layout above.
+
+.. _wms_dynamic_decorations:
+
+Expressions in decoration attributes and options
+------------------------------------------------
+
+Each decoration can have options to control its appearance, as well as attributes controlling
+its positioning. Option and attribute values are normally static strings specified in the decoration layout.
+
+However, it's also possible to make them dynamic using (E)CQL expressions, 
+using the ``${cql expression}`` syntax. The expression can use functions, and in particular it can 
+access ``env`` variables provided though the request.
+
+For example, this decoration layout:
+
+.. code-block:: xml
+
+    <layout>
+        <decoration type="scaleline" affinity="${env('sla', 'bottom,left')}">
+           <option name="bgcolor" value="${env('bg', '#AAAAAA')}"/>
+        </decoration>
+    </layout>
+
+Would generate a scale line with:
+
+* A light gray background, with a GetMap request that does not contain the ``bg`` env variable.
+* A red backgorund, if the request includes a env section like ``&env=bg:FF0000``.
+* A scaleline positioned on the top right, if the request includes a env section like ``&env=sla:top,right``.
+
+All options allow usage of expressions, with **one notable exception**: the ``message`` option in 
+the ``text`` decoration. This one option cannot use expressions, as it would allow expansion, and
+evaluation, of user provided FreeMarker templates. The template can contain control structures, 
+loops and other active elements, as such, allowing its value to be provided via WMS requests 
+is deemed too risky.

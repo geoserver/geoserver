@@ -62,7 +62,6 @@ import org.geoserver.wps.ProcessEvent;
 import org.geoserver.wps.WPSTestSupport;
 import org.geoserver.wps.executor.ExecutionStatus;
 import org.geoserver.wps.executor.ProcessState;
-import org.geoserver.wps.ppio.ComplexPPIO;
 import org.geoserver.wps.ppio.WFSPPIO;
 import org.geoserver.wps.ppio.ZipArchivePPIO;
 import org.geoserver.wps.process.RawData;
@@ -77,6 +76,7 @@ import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Transaction;
+import org.geotools.data.geojson.GeoJSONReader;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureReader;
@@ -85,7 +85,6 @@ import org.geotools.data.util.NullProgressListener;
 import org.geotools.feature.NameImpl;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
 import org.geotools.geometry.jts.JTS;
@@ -135,6 +134,11 @@ import org.w3c.dom.Node;
  * @author "Alessio Fabiani - alessio.fabiani@geo-solutions.it"
  */
 public class DownloadProcessTest extends WPSTestSupport {
+
+    public interface Parser {
+
+        SimpleFeatureCollection parse(FileInputStream t) throws Exception;
+    }
 
     private static final FilterFactory2 FF = FeatureUtilities.DEFAULT_FILTER_FACTORY;
     private static final double EPS = 1e-6;
@@ -593,7 +597,11 @@ public class DownloadProcessTest extends WPSTestSupport {
                         false);
 
         // Final checks on the result
-        checkResult(rawSource, gml2Zip, "XML", new WFSPPIO.WFS10());
+        checkResult(
+                rawSource,
+                gml2Zip,
+                "XML",
+                is -> (SimpleFeatureCollection) new WFSPPIO.WFS10().decode(is));
 
         // Download as GML 3
         RawData gml3Zip =
@@ -607,7 +615,11 @@ public class DownloadProcessTest extends WPSTestSupport {
                         false);
 
         // Final checks on the result
-        checkResult(rawSource, gml3Zip, "XML", new WFSPPIO.WFS11());
+        checkResult(
+                rawSource,
+                gml3Zip,
+                "XML",
+                is -> (SimpleFeatureCollection) new WFSPPIO.WFS11().decode(is));
     }
 
     private RawData executeVectorDownload(
@@ -665,33 +677,21 @@ public class DownloadProcessTest extends WPSTestSupport {
                         roi,
                         false);
 
-        checkResult(rawSource, jsonZip, "JSON", new FeatureJSON());
+        checkResult(rawSource, jsonZip, "JSON", fis -> new GeoJSONReader(fis).getFeatures());
     }
 
     private void checkResult(
-            SimpleFeatureCollection rawSource,
-            RawData result,
-            String format,
-            Object featureCollectionReader)
+            SimpleFeatureCollection rawSource, RawData result, String format, Parser parser)
             throws Exception {
         Assert.assertNotNull(result);
         File[] files = extractFilesFromResource(result, format);
-        SimpleFeatureCollection rawTarget = null;
-        if (featureCollectionReader instanceof ComplexPPIO) {
-            rawTarget =
-                    (SimpleFeatureCollection)
-                            ((ComplexPPIO) featureCollectionReader)
-                                    .decode(new FileInputStream(files[0]));
-        } else if (featureCollectionReader instanceof FeatureJSON) {
-            rawTarget =
-                    (SimpleFeatureCollection)
-                            ((FeatureJSON) featureCollectionReader)
-                                    .readFeatureCollection(new FileInputStream(files[0]));
+        try (FileInputStream fis = new FileInputStream(files[0])) {
+            SimpleFeatureCollection rawTarget = parser.parse(fis);
+            Assert.assertNotNull(rawTarget);
+            Assert.assertEquals(rawSource.size(), rawTarget.size());
+        } finally {
+            IOUtils.delete(files[0].getParentFile());
         }
-
-        Assert.assertNotNull(rawTarget);
-        Assert.assertEquals(rawSource.size(), rawTarget.size());
-        IOUtils.delete(files[0].getParentFile());
     }
 
     /**

@@ -38,7 +38,6 @@ import org.geoserver.web.wicket.ImageAjaxLink;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geoserver.web.wicket.ReorderableTablePanel;
 import org.geoserver.web.wicket.SimpleAjaxLink;
-import org.geoserver.web.wicket.UpDownPanel;
 
 /** Allows to edit the list of layers contained in a layer group */
 public abstract class LayerGroupEntryPanel<T> extends Panel {
@@ -158,7 +157,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
         add(
                 layerTable =
                         new ReorderableTablePanel<LayerGroupEntry>(
-                                "layers", items, propertiesModel) {
+                                "layers", LayerGroupEntry.class, items, propertiesModel) {
 
                             private static final long serialVersionUID = -3270471094618284639L;
 
@@ -406,12 +405,6 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
                                 "alt",
                                 new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
         return link;
-    }
-
-    Component positionPanel(String id, IModel<LayerGroupEntry> itemModel) {
-        ParamResourceModel upTitle = new ParamResourceModel("moveToBottom", this);
-        ParamResourceModel downTitle = new ParamResourceModel("moveToBottom", this);
-        return new UpDownPanel<>(id, itemModel.getObject(), items, layerTable, upTitle, downTitle);
     }
 
     /**

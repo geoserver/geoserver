@@ -3,9 +3,7 @@
 Installing the Vector Tiles Extension
 -------------------------------------
 
-The Vector Tiles extension is an official extension, available on the `GeoServer download <http://geoserver.org/download>`_ page.
-
-#. Download the extension for your version of GeoServer. 
+#. From the :website:`website download <download>` page, locate your release, and download:  :download_extension:`vectortiles`
 
    .. warning:: Make sure to match the version of the extension to the version of GeoServer.
 

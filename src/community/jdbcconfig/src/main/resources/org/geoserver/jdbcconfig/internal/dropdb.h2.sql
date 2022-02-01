@@ -9,6 +9,8 @@ DROP VIEW IF EXISTS layer;
 DROP VIEW IF EXISTS style;
 DROP VIEW IF EXISTS wmslayer;
 DROP VIEW IF EXISTS wmsstore;
+DROP VIEW IF EXISTS wmtslayer;
+DROP VIEW IF EXISTS wmtsstore;
 DROP VIEW IF EXISTS coverage;
 DROP VIEW IF EXISTS coveragestore;
 DROP VIEW IF EXISTS featuretype;

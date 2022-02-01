@@ -16,6 +16,7 @@ import org.geotools.data.ResourceInfo;
 import org.geotools.data.ServiceInfo;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
+import org.geotools.image.ImageWorker;
 import org.geotools.referencing.CRS;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
@@ -110,6 +111,7 @@ public class CroppedGridCoverage2DReader extends DecoratingGridCoverage2DReader 
         final ParameterValueGroup param = cropParams.clone();
         param.parameter("source").setValue(grid);
         param.parameter("ROI").setValue(clipGeom);
-        return (GridCoverage2D) coverageCropFactory.doOperation(param, null);
+        Hints hints = new Hints(ImageWorker.FORCE_MOSAIC_ROI_PROPERTY, true);
+        return (GridCoverage2D) coverageCropFactory.doOperation(param, hints);
     }
 }

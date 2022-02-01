@@ -5,6 +5,9 @@
  */
 package org.geoserver.wms.wms_1_1_1;
 
+import static org.geoserver.catalog.DimensionPresentation.LIST;
+import static org.geoserver.catalog.ResourceInfo.CUSTOM_DIMENSION_PREFIX;
+import static org.geoserver.catalog.ResourceInfo.TIME;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -14,7 +17,6 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
-import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.util.NearestMatchFinder;
 import org.geoserver.wms.WMSDimensionsTestSupport;
@@ -74,15 +76,8 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     @Test
     public void testDefaultValues() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
 
         // this one should be medium
         assertEquals(14.51, getFeatureAt(BASE_URL, 36, 31, "sf:watertemp"), EPS);
@@ -93,13 +88,7 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     @Test
     public void testSortTime() throws Exception {
         // do not setup time, only elevation, and sort by time
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
 
         // this one should be medium
         assertEquals(
@@ -133,15 +122,8 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     @Test
     public void testElevation() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
 
         // this one should be the no-data
         String url = BASE_URL + "&elevation=100";
@@ -152,15 +134,8 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     @Test
     public void testTime() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
 
         String url = BASE_URL + "&time=2008-10-31T00:00:00.000Z";
 
@@ -171,15 +146,8 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     @Test
     public void testTimeNoNearestClose() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
 
         String url = BASE_URL + "&time=2008-10-31T08:00:00.000Z";
 
@@ -190,21 +158,9 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     @Test
     public void testTimeNearestClose() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.TIME,
-                DimensionPresentation.LIST,
-                null,
-                ResourceInfo.TIME_UNIT,
-                null);
-        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(WATTEMP, TIME, true);
 
         String url = BASE_URL + "&time=2008-10-31T08:00:00.000Z";
 
@@ -217,21 +173,9 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     @Test
     public void testTimeNearestBefore() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.TIME,
-                DimensionPresentation.LIST,
-                null,
-                ResourceInfo.TIME_UNIT,
-                null);
-        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(WATTEMP, TIME, true);
 
         String url = BASE_URL + "&time=1990-10-31";
 
@@ -244,21 +188,9 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     @Test
     public void testTimeNearestAfter() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.TIME,
-                DimensionPresentation.LIST,
-                null,
-                ResourceInfo.TIME_UNIT,
-                null);
-        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(WATTEMP, TIME, true);
 
         String url = BASE_URL + "&time=2018-10-31";
 
@@ -301,15 +233,8 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     @Test
     public void testTimeElevation() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
 
         String url = BASE_URL + "&time=2008-10-31T00:00:00.000Z&elevation=100";
         // this one should be the no-data
@@ -320,18 +245,11 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     @Test
     public void testTimeRange() throws Exception {
+        setupRasterDimension(TIMERANGES, TIME, LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
         setupRasterDimension(
-                TIMERANGES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
-        setupRasterDimension(
-                TIMERANGES,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                TIMERANGES, "wavelength", DimensionPresentation.LIST, null, null, null);
-        setupRasterDimension(TIMERANGES, "date", DimensionPresentation.LIST, null, null, null);
+                TIMERANGES, CUSTOM_DIMENSION_PREFIX + "wavelength", LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, CUSTOM_DIMENSION_PREFIX + "date", LIST, null, null, null);
 
         String layer = getLayerId(TIMERANGES);
         String baseUrl =
@@ -358,24 +276,12 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     @Test
     public void testTimeRangeNearestMatch() throws Exception {
+        setupRasterDimension(TIMERANGES, TIME, LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
         setupRasterDimension(
-                TIMERANGES,
-                ResourceInfo.TIME,
-                DimensionPresentation.LIST,
-                null,
-                ResourceInfo.TIME_UNIT,
-                null);
-        setupRasterDimension(
-                TIMERANGES,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                TIMERANGES, "wavelength", DimensionPresentation.LIST, null, null, null);
-        setupRasterDimension(TIMERANGES, "date", DimensionPresentation.LIST, null, null, null);
-        setupNearestMatch(TIMERANGES, ResourceInfo.TIME, true);
+                TIMERANGES, CUSTOM_DIMENSION_PREFIX + "wavelength", LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, CUSTOM_DIMENSION_PREFIX + "date", LIST, null, null, null);
+        setupNearestMatch(TIMERANGES, TIME, true);
 
         String layer = getLayerId(TIMERANGES);
         String baseUrl =
@@ -433,18 +339,12 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     @Test
     public void testTimeDefaultAsRange() throws Exception {
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
         // setup a default
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
         defaultValueSetting.setStrategyType(Strategy.FIXED);
         defaultValueSetting.setReferenceValue("2008-10-30T23:00:00.000Z/2008-10-31T01:00:00.000Z");
-        setupResourceDimensionDefaultValue(WATTEMP, ResourceInfo.TIME, defaultValueSetting);
+        setupResourceDimensionDefaultValue(WATTEMP, TIME, defaultValueSetting);
 
         // use the default time range, specify elevation
         String url = BASE_URL + "&elevation=100";
@@ -456,8 +356,7 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
 
     @Test
     public void testElevationDefaultAsRange() throws Exception {
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
         // setup a default
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
         defaultValueSetting.setStrategyType(Strategy.FIXED);
@@ -478,7 +377,7 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
         defaultValueSetting.setStrategyType(Strategy.FIXED);
         defaultValueSetting.setReferenceValue("2008-10-30T23:00:00.000Z/2008-10-31T01:00:00.000Z");
-        setupResourceDimensionDefaultValue(WATTEMP, ResourceInfo.TIME, defaultValueSetting);
+        setupResourceDimensionDefaultValue(WATTEMP, TIME, defaultValueSetting);
         // setup a range default for elevation
         defaultValueSetting = new DimensionDefaultValueSetting();
         defaultValueSetting.setStrategyType(Strategy.FIXED);
@@ -496,41 +395,17 @@ public class DimensionsRasterGetFeatureInfoTest extends WMSDimensionsTestSupport
     @Test
     public void testNearestMatchTwoLayers() throws Exception {
         // setup time ranges
+        setupRasterDimension(TIMERANGES, TIME, LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupRasterDimension(TIMERANGES, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
         setupRasterDimension(
-                TIMERANGES,
-                ResourceInfo.TIME,
-                DimensionPresentation.LIST,
-                null,
-                ResourceInfo.TIME_UNIT,
-                null);
-        setupRasterDimension(
-                TIMERANGES,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                TIMERANGES, "wavelength", DimensionPresentation.LIST, null, null, null);
-        setupRasterDimension(TIMERANGES, "date", DimensionPresentation.LIST, null, null, null);
-        setupNearestMatch(TIMERANGES, ResourceInfo.TIME, true);
+                TIMERANGES, CUSTOM_DIMENSION_PREFIX + "wavelength", LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, CUSTOM_DIMENSION_PREFIX + "date", LIST, null, null, null);
+        setupNearestMatch(TIMERANGES, TIME, true);
 
         // setup water temp
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.TIME,
-                DimensionPresentation.LIST,
-                null,
-                ResourceInfo.TIME_UNIT,
-                null);
-        setupNearestMatch(WATTEMP, ResourceInfo.TIME, true);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, TIME, LIST, null, ResourceInfo.TIME_UNIT, null);
+        setupNearestMatch(WATTEMP, TIME, true);
 
         String timeRangesId = getLayerId(TIMERANGES);
         String waterTempId = getLayerId(WATTEMP);

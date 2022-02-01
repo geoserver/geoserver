@@ -6,33 +6,40 @@ package org.geoserver.wms.ncwms;
 
 import static org.junit.Assert.assertEquals;
 
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadPoolExecutor;
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockTestData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.SystemTestData.StyleProperty;
+import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
 import org.geoserver.wms.style.PaletteStyleHandler;
 import org.geotools.image.test.ImageAssert;
 import org.geotools.util.NumberRange;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class NcwmsIntegrationTest extends WMSTestSupport {
+
+    static final int TIME_SERIES_THREADS = 3;
 
     QName RAIN = new QName(MockTestData.CITE_URI, "rain", MockTestData.CITE_PREFIX);
 
@@ -48,6 +55,11 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
     @Before
     public void setupXpath() {
         this.xpath = XMLUnit.newXpathEngine();
+    }
+
+    @After
+    public void resetWMSConfig() {
+        revertService(WMSInfo.class, null);
     }
 
     @Override
@@ -280,5 +292,62 @@ public class NcwmsIntegrationTest extends WMSTestSupport {
                 this.getClass().getResourceAsStream("gray_blue_legend.png")) {
             ImageAssert.assertEquals(ImageIO.read(inputStream), image, 1000);
         }
+    }
+
+    @Test
+    public void testModifyPoolSize() throws Exception {
+
+        // set a specific number of threads (oddball number, unlikely to be have a CPU
+        // with 3 cores
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        NcWmsInfo ncwms = new NcWMSInfoImpl();
+        ncwms.setTimeSeriesPoolSize(TIME_SERIES_THREADS);
+        wms.getMetadata().put(NcWmsService.WMS_CONFIG_KEY, ncwms);
+        gs.save(wms);
+
+        NcWmsService bean = applicationContext.getBean(NcWmsService.class);
+        assertEquals(
+                TIME_SERIES_THREADS, ((ThreadPoolExecutor) bean.executor).getMaximumPoolSize());
+    }
+
+    @Test
+    public void testRESTAPI() throws Exception {
+        // set a specific number of threads
+        GeoServer gs = getGeoServer();
+        WMSInfo wms = gs.getService(WMSInfo.class);
+        NcWmsInfo ncwms = new NcWMSInfoImpl();
+        ncwms.setTimeSeriesPoolSize(TIME_SERIES_THREADS);
+        wms.getMetadata().put(NcWmsService.WMS_CONFIG_KEY, ncwms);
+        gs.save(wms);
+
+        Document dom = getAsDOM("rest/services/wms/settings.xml");
+        XMLAssert.assertXpathEvaluatesTo(
+                "3", "//metadata/entry[@key = 'NcWMSInfo']/ncwms/timeSeriesPoolSize", dom);
+
+        // run update
+        String xml =
+                "<wms>\n"
+                        + "<metadata>\n"
+                        + "    <entry key=\"NcWMSInfo\">\n"
+                        + "      <ncwms>\n"
+                        + "        <timeSeriesPoolSize>7</timeSeriesPoolSize>\n"
+                        + "      </ncwms>\n"
+                        + "    </entry>\n"
+                        + "  </metadata>\n"
+                        + "</wms>";
+        MockHttpServletResponse response =
+                putAsServletResponse("rest/services/wms/settings", xml, "text/xml");
+        assertEquals(200, response.getStatus());
+
+        // config changed
+        WMSInfo updatedWms = gs.getService(WMSInfo.class);
+        NcWmsInfo updatedNcWms =
+                updatedWms.getMetadata().get(NcWmsService.WMS_CONFIG_KEY, NcWmsInfo.class);
+        assertEquals(7, updatedNcWms.getTimeSeriesPoolSize());
+
+        // service changed as well
+        NcWmsService bean = applicationContext.getBean(NcWmsService.class);
+        assertEquals(7, ((ThreadPoolExecutor) bean.executor).getMaximumPoolSize());
     }
 }

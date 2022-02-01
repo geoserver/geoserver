@@ -90,6 +90,7 @@ import org.geotools.referencing.wkt.Formattable;
 import org.geotools.referencing.wkt.UnformattableObjectException;
 import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.NumberRange;
+import org.geotools.util.SimpleInternationalString;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -1567,8 +1568,8 @@ public class XStreamPersisterTest {
                         .getXStream()
                         .getConverterLookup()
                         .lookupConverterForType(GrowableInternationalString.class);
-        XStreamPersister.GrowableInternationalStringConverter converter =
-                (XStreamPersister.GrowableInternationalStringConverter) candidate;
+        XStreamPersister.InternationalStringConverter converter =
+                (XStreamPersister.InternationalStringConverter) candidate;
 
         // the class
         assertTrue(converter.canConvert(GrowableInternationalString.class));
@@ -1583,6 +1584,23 @@ public class XStreamPersisterTest {
         assertTrue(converter.canConvert(anonymous.getClass()));
         // wont' try to convert object though
         assertFalse(converter.canConvert(Object.class));
+    }
+
+    @Test
+    public void testInternationalStringConverter() throws IOException, ClassNotFoundException {
+        final String message = "This is an unlocalized message";
+        final SimpleInternationalString toTest = new SimpleInternationalString(message);
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        XStreamPersister persister = new XStreamPersisterFactory().createXMLPersister();
+        Converter candidate =
+                persister
+                        .getXStream()
+                        .getConverterLookup()
+                        .lookupConverterForType(SimpleInternationalString.class);
+        assertTrue(candidate instanceof XStreamPersister.InternationalStringConverter);
+        persister.save(toTest, out);
+        String result = new String(out.toByteArray());
+        assertTrue(result.contains(message));
     }
 
     ByteArrayOutputStream out() {

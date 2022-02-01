@@ -1596,6 +1596,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                     params(
                             "request",
                             "GetLegendGraphic",
+                            "version",
+                            request.getVersion(),
                             "format",
                             defaultFormat,
                             "width",

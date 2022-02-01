@@ -30,7 +30,6 @@ import org.geoserver.web.GeoServerSecuredPage;
 import org.geoserver.web.wicket.ParamResourceModel;
 import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataAccessFactory;
-import org.h2.store.DataPage;
 import org.opengis.coverage.grid.Format;
 import org.vfny.geoserver.util.DataStoreUtils;
 
@@ -38,7 +37,7 @@ import org.vfny.geoserver.util.DataStoreUtils;
  * Page that presents a list of vector and raster store types available in the classpath in order to
  * choose what kind of data source to create, as well as which workspace to create the store in.
  *
- * <p>Meant to be called by {@link DataPage} when about to add a new datastore or coverage.
+ * <p>Meant to be called by {@link StorePage} when about to add a new datastore or coverage.
  *
  * @author Gabriel Roldan
  */

@@ -10,14 +10,15 @@ GeoServer is packaged as a standalone servlet for use with existing application 
 Installation
 ------------
 
-#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** or **Java 11** environment, available from `OpenJDK <http://openjdk.java.net>`__, `AdoptOpenJDK <https://adoptopenjdk.net>`__ for Windows and macOS installers, or provided by your OS distribution.
+#. Make sure you have a Java Runtime Environment (JRE) installed on your system. GeoServer requires a **Java 8** or **Java 11** environment,available from `OpenJDK <https://openjdk.java.net>`__, `Adoptium <https://adoptium.net>`__, or provided by your OS distribution.
 
+   .. note:: For more information about Java and GeoServer compatibility, please see the section on :ref:`production_java`.
 
-   .. note:: For more information about Java and GeoServer, please see the section on :ref:`production_java`.
+#. Navigate to the :website:`GeoServer Download page <download>`.
 
-#. Navigate to the `GeoServer Download page <http://geoserver.org/download>`_.
+#. Select the version of GeoServer that you wish to download.  If you're not sure, select :website:`Stable <release/stable>` release.
 
-#. Select :guilabel:`Web Archive` on the download page.
+#. Select :guilabel:`Web Archive` on the download page: :download_release:`war`
 
 #. Download and unpack the archive.
 

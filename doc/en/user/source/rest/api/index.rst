@@ -18,6 +18,7 @@ This section describes the GeoServer REST configuration API.
    coverages
    styles
    layers
+   logging
    layergroups
    fonts
    templates

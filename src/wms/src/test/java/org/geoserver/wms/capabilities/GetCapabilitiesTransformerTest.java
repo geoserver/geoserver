@@ -7,7 +7,12 @@ package org.geoserver.wms.capabilities;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathEvaluatesTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import com.google.common.base.Strings;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Arrays;
@@ -36,6 +41,7 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.impl.ContactInfoImpl;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.GeoServerInfoImpl;
+import org.geoserver.data.test.CiteTestData;
 import org.geoserver.wms.ExtendedCapabilitiesProvider;
 import org.geoserver.wms.GetCapabilitiesRequest;
 import org.geoserver.wms.WMS;
@@ -45,13 +51,13 @@ import org.geoserver.wms.WMSTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.NumberRange;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.helpers.NamespaceSupport;
 
@@ -231,12 +237,12 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         tr.transform(req, writer);
         String content = writer.getBuffer().toString();
 
-        Assert.assertTrue(content.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
+        assertTrue(content.startsWith("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
         String dtdDef =
                 "<!DOCTYPE WMT_MS_Capabilities SYSTEM \""
                         + baseUrl
                         + "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd\">";
-        Assert.assertTrue(content.contains(dtdDef));
+        assertTrue(content.contains(dtdDef));
     }
 
     @Test
@@ -568,6 +574,67 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
         assertEquals("aLayerGroup style", title);
         String name = styleEl.getElementsByTagName("Name").item(0).getTextContent();
         assertEquals("default-style-aLayerGroup", name);
+    }
+
+    @Test
+    public void testDefaultLayerAbstract() throws Exception {
+        WMS wms = new WMS(getGeoServer());
+
+        GetCapabilitiesTransformer tr =
+                new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats, null);
+        tr.setIndentation(2);
+        Document dom = WMSTestSupport.transform(req, tr);
+
+        // verify that abstract in document matches layer with abstract set
+        String layerName = CiteTestData.PRIMITIVEGEOFEATURE.getLocalPart();
+        LayerInfo l = getCatalog().getLayerByName(layerName);
+        assertFalse(Strings.isNullOrEmpty(l.getAbstract()));
+
+        Element abstractEl = findAbstractForLayerWithName(layerName, dom);
+        assertNotNull(abstractEl);
+        assertEquals(l.getAbstract(), abstractEl.getFirstChild().getTextContent());
+
+        // verify that abstract in document is empty when layer has no abstract
+        layerName = CiteTestData.WORLD.getLocalPart();
+        l = getCatalog().getLayerByName(layerName);
+        assertTrue(Strings.isNullOrEmpty(l.getAbstract()));
+
+        abstractEl = findAbstractForLayerWithName(layerName, dom);
+        assertNotNull(abstractEl);
+        assertNull(abstractEl.getFirstChild());
+    }
+
+    @Test
+    public void testDefaultLayerGroupAbstract() throws Exception {
+        String layerGroupName = "myLayerGroup";
+        createLayerGroup(layerGroupName);
+
+        GetCapabilitiesTransformer tr =
+                new GetCapabilitiesTransformer(wmsConfig, baseUrl, mapFormats, legendFormats, null);
+        tr.setIndentation(2);
+        Document dom = WMSTestSupport.transform(req, tr);
+
+        Element abstractEl = findAbstractForLayerWithName(layerGroupName, dom);
+        assertNotNull(abstractEl);
+        assertNull(abstractEl.getFirstChild());
+    }
+
+    /** Helper to fetch the abstract for a given layer in the capabilities doc. */
+    private Element findAbstractForLayerWithName(String name, Document dom) {
+        NodeList nodeList = dom.getElementsByTagName("Layer");
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+            if (node instanceof Element && node.getLocalName().equals("Layer")) {
+                Element el = (Element) node;
+                Node title = getFirstElementByTagName(el, "Title");
+                if (title != null
+                        && title.getFirstChild() != null
+                        && name.equals(title.getFirstChild().getTextContent())) {
+                    return getFirstElementByTagName(el, "Abstract");
+                }
+            }
+        }
+        return null;
     }
 
     private void createLayerGroup(String layerGroupName) throws FactoryException {

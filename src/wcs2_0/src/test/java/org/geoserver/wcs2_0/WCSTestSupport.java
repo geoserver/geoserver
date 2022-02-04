@@ -389,7 +389,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         } else {
             tolerance = EPS;
         }
-        assertTrue(expected.equals(actual, tolerance, false));
+        assertTrue("The 2 envelopes aren't equal", expected.equals(actual, tolerance, false));
     }
 
     /**

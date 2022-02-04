@@ -4,14 +4,18 @@
  */
 package org.geoserver.ogcapi.stac;
 
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_ADVANCED;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_ARITHMETIC;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_BASIC;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_BASIC_SPATIAL;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_FUNCTIONS;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_PROPERTY_PROPERTY;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_SPATIAL;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_TEXT;
+import static org.geoserver.ogcapi.ConformanceClass.ECQL;
+import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_ARITHMETIC;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_JSON;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_TEXT;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_FUNCTIONS;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_SPATIAL_OPS;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_TEMPORAL;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_IDENTIFIER;
 import static org.geoserver.opensearch.eo.store.OpenSearchQueries.getProductProperties;
 import static org.geoserver.ows.URLMangler.URLType.RESOURCE;
@@ -168,12 +172,19 @@ public class STACService {
                         STAC_SEARCH,
                         FEATURES_FILTER,
                         FILTER,
-                        FILTER_SPATIAL_OPS,
-                        FILTER_TEMPORAL,
-                        FILTER_FUNCTIONS,
-                        FILTER_ARITHMETIC,
-                        FILTER_CQL_TEXT,
-                        FILTER_CQL_JSON);
+                        ECQL,
+                        ECQL_TEXT,
+                        CQL2_BASIC,
+                        CQL2_ADVANCED,
+                        CQL2_ARITHMETIC,
+                        CQL2_PROPERTY_PROPERTY,
+                        CQL2_BASIC_SPATIAL,
+                        CQL2_SPATIAL,
+                        CQL2_FUNCTIONS,
+                        /* CQL2_TEMPORAL excluded for now, no support for all operators */
+                        /* CQL2_ARRAY excluded, no support for array operations now */
+                        CQL2_TEXT
+                        /* CQL2_JSON very different from the binding we have */ );
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 

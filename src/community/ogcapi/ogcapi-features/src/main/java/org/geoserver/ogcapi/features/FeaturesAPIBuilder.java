@@ -9,10 +9,12 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.ConformanceDocument;
 import org.geoserver.wfs.WFSInfo;
 
@@ -59,6 +61,10 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
                         .map(ft -> ft.prefixedName())
                         .collect(Collectors.toList());
         collectionId.getSchema().setEnum(validCollectionIds);
+
+        // list of valid filter-lang values
+        Parameter filterLang = parameters.get("filter-lang");
+        filterLang.getSchema().setEnum(new ArrayList(APIFilterParser.SUPPORTED_ENCODINGS));
 
         // provide actual values for limit
         Parameter limit = parameters.get("limit");

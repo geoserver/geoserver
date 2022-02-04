@@ -4,14 +4,18 @@
  */
 package org.geoserver.ogcapi.stac;
 
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_ADVANCED;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_ARITHMETIC;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_BASIC;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_BASIC_SPATIAL;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_FUNCTIONS;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_PROPERTY_PROPERTY;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_SPATIAL;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_TEXT;
+import static org.geoserver.ogcapi.ConformanceClass.ECQL;
+import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_ARITHMETIC;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_JSON;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_TEXT;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_FUNCTIONS;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_SPATIAL_OPS;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_TEMPORAL;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
@@ -44,12 +48,16 @@ public class ConformanceTest extends STACTestSupport {
             STACService.STAC_SEARCH,
             FEATURES_FILTER,
             FILTER,
-            FILTER_SPATIAL_OPS,
-            FILTER_TEMPORAL,
-            FILTER_FUNCTIONS,
-            FILTER_ARITHMETIC,
-            FILTER_CQL_TEXT,
-            FILTER_CQL_JSON
+            ECQL,
+            ECQL_TEXT,
+            CQL2_BASIC,
+            CQL2_ADVANCED,
+            CQL2_ARITHMETIC,
+            CQL2_PROPERTY_PROPERTY,
+            CQL2_BASIC_SPATIAL,
+            CQL2_SPATIAL,
+            CQL2_FUNCTIONS,
+            CQL2_TEXT
         };
     }
 

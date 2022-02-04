@@ -17,24 +17,49 @@ public class ConformanceClass {
             "http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/geodata";
 
     /**
-     * CQL filtering conformance classes, shared here to allow STAC usaging them, without depending
-     * on ogc-api-features directly
+     * CQL filtering conformance classes, shared here to allow STAC using them, without depending on
+     * ogc-api-features directly
      */
     public static final String FEATURES_FILTER =
             "http://www.opengis.net/spec/ogcapi-features-3/1.0/req/features-filter";
 
     public static final String FILTER =
             "http://www.opengis.net/spec/ogcapi-features-3/1.0/req/filter";
-    public static final String FILTER_SPATIAL_OPS =
-            "http://www.opengis.net/spec/ogcapi-features-3/1.0/req/enhanced-spatial-operators";
-    public static final String FILTER_TEMPORAL =
-            "http://www.opengis.net/spec/ogcapi-features-3/1.0/req/enhanced-temporal-operators";
-    public static final String FILTER_FUNCTIONS =
-            "http://www.opengis.net/spec/ogcapi-features-3/1.0/req/functions";
-    public static final String FILTER_ARITHMETIC =
-            "http://www.opengis.net/spec/ogcapi-features-3/1.0/req/arithmetic";
-    public static final String FILTER_CQL_TEXT =
-            "http://www.opengis.net/spec/ogcapi-features-3/1.0/req/arithmetic";
-    public static final String FILTER_CQL_JSON =
-            "http://www.opengis.net/spec/ogcapi-features-3/1.0/req/cql-json";
+
+    /**
+     * A custom conformance class for GeoServer own ECQL, not further split into parts (as only
+     * GeoServer implements it anyways
+     */
+    public static final String ECQL = "http://geoserver.org/spec/ecql/1.0/req/gs-ecql";
+
+    public static final String ECQL_TEXT = "http://geoserver.org/spec/ecql/1.0/req/ecql-text";
+
+    /** CQL2 encoding conformance classes */
+    public static final String CQL2_TEXT = "http://www.opengis.net/spec/cql2/1.0/req/cql2-text";
+
+    public static final String CQL2_JSON = "http://www.opengis.net/spec/cql2/1.0/req/cql2-json";
+
+    /** CQL2 capabilities conformance classes */
+    public static final String CQL2_BASIC = "http://www.opengis.net/spec/cql2/1.0/req/basic-cql2";
+
+    public static final String CQL2_ADVANCED =
+            "http://www.opengis.net/spec/cql2/1.0/req/advanced-comparison-operators";
+    // right now includes also accent insensitive under this clause
+    public static final String CQL2_CASE_INSENSITIVE =
+            "http://www.opengis.net/spec/cql2/1.0/req/case-insensitive-comparison";
+    public static final String CQL2_BASIC_SPATIAL =
+            "http://www.opengis.net/spec/cql2/1.0/req/basic-spatial-operators";
+    public static final String CQL2_SPATIAL =
+            "http://www.opengis.net/spec/cql2/1.0/req/spatial-operators";
+
+    // requires implementation of all the operators, basic comparisons do work against temporal data
+    // too
+    public static final String CQL2_TEMPORAL =
+            "http://www.opengis.net/spec/cql2/1.0/req/temporal-operators";
+    public static final String CQL2_PROPERTY_PROPERTY =
+            "http://www.opengis.net/spec/cql2/1.0/req/property-property";
+    public static final String CQL2_FUNCTIONS =
+            "http://www.opengis.net/spec/cql2/1.0/req/functions";
+    public static final String CQL2_ARITHMETIC =
+            "http://www.opengis.net/spec/cql2/1.0/req/arithmetic";
 }

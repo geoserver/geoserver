@@ -18,6 +18,7 @@ package org.geoserver.wcs2_0.kvp;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import net.opengis.wcs20.ExtensionItemType;
 import net.opengis.wcs20.GetCoverageType;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
@@ -27,17 +28,38 @@ import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs.kvp.GetCoverageRequestReader;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.geoserver.wcs2_0.WebCoverageService20;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.referencing.CRS;
 import org.geotools.wcs.v1_1.WCSConfiguration;
 import org.junit.Before;
 import org.opengis.coverage.grid.GridCoverage;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /** @author Simone Giannecchini, GeoSolutions SAS */
 public abstract class WCSKVPTestSupport extends WCSTestSupport {
 
-    static final double EPS = 10 - 6;
+    protected static CoordinateReferenceSystem EPSG_3857;
+    protected static CoordinateReferenceSystem EPSG_4326;
+
+    static final double EPS = 10E-6;
     WCSConfiguration configuration;
     GetCoverageRequestReader kvpreader;
     WebCoverageService20 service;
+
+    static {
+        try {
+            EPSG_3857 = CRS.decode("EPSG:3857", true);
+        } catch (FactoryException e) {
+            throw new RuntimeException("Unable to parse EPSG:3857 CRS", e);
+        }
+        try {
+            EPSG_4326 = CRS.decode("EPSG:4326", true);
+        } catch (FactoryException e) {
+            throw new RuntimeException("Unable to parse EPSG:4326 CRS", e);
+        }
+    }
 
     public WCSKVPTestSupport() {
         super();
@@ -93,5 +115,20 @@ public abstract class WCSKVPTestSupport extends WCSTestSupport {
                         applicationContext.getBean("wcs111GetCoverageRequestReader");
         service = (WebCoverageService20) applicationContext.getBean("wcs20ServiceTarget");
         configuration = new WCSConfiguration();
+    }
+
+    protected void clean(GeoTiffReader reader, GridCoverage2D... coverages) {
+        try {
+            reader.dispose();
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+        }
+        for (GridCoverage2D coverage : coverages) {
+            try {
+                scheduleForCleaning(coverage);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
+            }
+        }
     }
 }

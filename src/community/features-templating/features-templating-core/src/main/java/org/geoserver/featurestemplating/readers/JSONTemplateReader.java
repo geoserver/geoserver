@@ -10,9 +10,12 @@ import static org.geoserver.featurestemplating.builders.VendorOptions.JSONLD_TYP
 import static org.geoserver.featurestemplating.builders.VendorOptions.JSON_LD_STRING_ENCODE;
 import static org.geoserver.featurestemplating.builders.VendorOptions.SEPARATOR;
 import static org.geoserver.featurestemplating.readers.JSONMerger.*;
+import static org.geoserver.featurestemplating.readers.RecursiveJSONParser.INCLUDE_FLAT_EXPR;
 import static org.geoserver.featurestemplating.readers.RecursiveJSONParser.INCLUDE_FLAT_KEY;
+import static org.geoserver.featurestemplating.readers.RecursiveJSONParser.INCLUDING_NODE;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -136,15 +139,22 @@ public class JSONTemplateReader implements TemplateReader {
                     maker.name(entryName).jsonNode(valueNode);
                     currentBuilder.addChild(maker.build());
                 } else if (entryName.startsWith(INCLUDE_FLAT_KEY)) {
+                    currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
+                    ObjectNode objectNode = (ObjectNode) node;
+                    ObjectNode container = (ObjectNode) objectNode.remove(INCLUDE_FLAT_KEY);
+                    JsonNode includingNode = container.remove(INCLUDING_NODE);
+                    JsonNode exprNode = container.remove(INCLUDE_FLAT_EXPR);
                     currentBuilder.addChild(
                             maker.jsonNode(valueNode)
-                                    .name(entryName)
                                     .dynamicIncludeFlatBuilder(true)
+                                    .baseNode(includingNode)
+                                    .textContent(exprNode.asText())
                                     .build());
                 } else {
                     if (valueNode.isObject()) {
                         if (entryName.startsWith(DYNAMIC_MERGE_KEY)) {
                             if (valueNode.fields().hasNext()) {
+                                currentBuilder = createCompositeIfNeeded(currentBuilder, maker);
                                 Map.Entry<String, JsonNode> fieldNode = valueNode.fields().next();
                                 String key = fieldNode.getKey();
                                 JsonNode innerNode = fieldNode.getValue();
@@ -152,9 +162,9 @@ public class JSONTemplateReader implements TemplateReader {
                                 JsonNode baseMergeNode = innerNode.get(DYNAMIC_MERGE_BASE);
 
                                 currentBuilder.addChild(
-                                        maker.overlayMergeNode(overlay)
+                                        maker.overlayNode(overlay)
                                                 .name(key)
-                                                .baseMergeNode(baseMergeNode)
+                                                .baseNode(baseMergeNode)
                                                 .build());
                             }
                         } else {

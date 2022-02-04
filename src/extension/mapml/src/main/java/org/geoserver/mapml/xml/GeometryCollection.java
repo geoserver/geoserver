@@ -48,27 +48,27 @@ public class GeometryCollection {
     @XmlElements({
         @XmlElement(name = "point", type = Point.class, namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(
-            name = "linestring",
+            name = "map-linestring",
             type = LineString.class,
             namespace = "http://www.w3.org/1999/xhtml"
         ),
         @XmlElement(
-            name = "polygon",
+            name = "map-polygon",
             type = Polygon.class,
             namespace = "http://www.w3.org/1999/xhtml"
         ),
         @XmlElement(
-            name = "multipoint",
+            name = "map-multipoint",
             type = MultiPoint.class,
             namespace = "http://www.w3.org/1999/xhtml"
         ),
         @XmlElement(
-            name = "multilinestring",
+            name = "map-multilinestring",
             type = MultiLineString.class,
             namespace = "http://www.w3.org/1999/xhtml"
         ),
         @XmlElement(
-            name = "multipolygon",
+            name = "map-multipolygon",
             type = MultiPolygon.class,
             namespace = "http://www.w3.org/1999/xhtml"
         )

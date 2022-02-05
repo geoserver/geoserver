@@ -33,9 +33,8 @@ public class CapabilitiesController extends BaseSLDServiceController {
     }
 
     @GetMapping(
-        path = "/capabilities",
-        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
-    )
+            path = "/capabilities",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public Object classificationCapabilities() {
         return wrapObject(new SldServiceCapabilities(), SldServiceCapabilities.class);
     }

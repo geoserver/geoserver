@@ -13,11 +13,10 @@ public interface CoverageResponseMapper extends ResourceResponseMapper {
 
     @Mapping(source = "dimensions.coverageDimension", target = "dimensions")
     @Mapping(
-        target = "nativeCoverageName",
-        source = "nativeCoverageName", //
-        defaultExpression =
-                "java(source.getParameters() == null? null : (String)source.getParameters().get(\"nativeCoverageName\"))"
-    )
+            target = "nativeCoverageName",
+            source = "nativeCoverageName", //
+            defaultExpression =
+                    "java(source.getParameters() == null? null : (String)source.getParameters().get(\"nativeCoverageName\"))")
     CoverageInfo map(CoverageResponse source);
 
     public default CoverageStoreInfo namedLinkToCoverageStoreInfo(NamedLink namedLink) {

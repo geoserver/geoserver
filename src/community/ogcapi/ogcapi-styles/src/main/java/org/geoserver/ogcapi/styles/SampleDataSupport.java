@@ -24,8 +24,7 @@ public class SampleDataSupport implements ApplicationContextAware {
     private List<SampleDataProvider> providers;
 
     public List<Link> getSampleDataFor(LayerInfo layer) {
-        return providers
-                .stream()
+        return providers.stream()
                 .flatMap(p -> p.getSampleData(layer).stream())
                 .collect(Collectors.toList());
     }

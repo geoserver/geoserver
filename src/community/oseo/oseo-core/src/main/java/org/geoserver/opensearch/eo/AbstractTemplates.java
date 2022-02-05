@@ -96,8 +96,7 @@ public abstract class AbstractTemplates {
         if (ctx instanceof FeatureType) {
             FeatureType ft = (FeatureType) ctx;
             String values =
-                    ft.getDescriptors()
-                            .stream()
+                    ft.getDescriptors().stream()
                             .map(ad -> attributeName(ad, ns))
                             .collect(Collectors.joining(", "));
             if (!StringUtils.isEmpty(values)) return " Available attributes: " + values;

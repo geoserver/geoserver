@@ -49,9 +49,7 @@ public class ServiceResourceProvider implements ApplicationContextAware {
     }
 
     private List<String> servicesList() {
-        return geoServer
-                .getServices()
-                .stream()
+        return geoServer.getServices().stream()
                 .map(si -> si.getName())
                 .collect(Collectors.toList());
     }

@@ -31,11 +31,10 @@ import org.hibernate.annotations.FilterDef;
 /** @author Niels Charlier */
 @Entity
 @Table(
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"name", "configuration", "removeStamp"}),
-        @UniqueConstraint(columnNames = {"nameNoConfig", "removeStamp"})
-    }
-)
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"name", "configuration", "removeStamp"}),
+            @UniqueConstraint(columnNames = {"nameNoConfig", "removeStamp"})
+        })
 @FilterDef(name = "activeElementFilter", defaultCondition = "removeStamp = 0")
 public class BatchImpl extends BaseImpl implements Batch {
 
@@ -48,11 +47,10 @@ public class BatchImpl extends BaseImpl implements Batch {
     private Long id;
 
     @OneToMany(
-        fetch = FetchType.LAZY,
-        targetEntity = BatchElementImpl.class,
-        mappedBy = "batch",
-        cascade = CascadeType.ALL
-    )
+            fetch = FetchType.LAZY,
+            targetEntity = BatchElementImpl.class,
+            mappedBy = "batch",
+            cascade = CascadeType.ALL)
     @OrderBy("index, id")
     @Filter(name = "activeElementFilter")
     private List<BatchElement> elements = new ArrayList<BatchElement>();
@@ -83,11 +81,10 @@ public class BatchImpl extends BaseImpl implements Batch {
     private Long removeStamp = 0L;
 
     @OneToMany(
-        fetch = FetchType.LAZY,
-        targetEntity = BatchRunImpl.class,
-        mappedBy = "batch",
-        cascade = CascadeType.ALL
-    )
+            fetch = FetchType.LAZY,
+            targetEntity = BatchRunImpl.class,
+            mappedBy = "batch",
+            cascade = CascadeType.ALL)
     @OrderBy("id")
     @XStreamOmitField
     private List<BatchRun> batchRuns = new ArrayList<BatchRun>();

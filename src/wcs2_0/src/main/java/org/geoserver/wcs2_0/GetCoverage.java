@@ -1233,8 +1233,7 @@ public class GetCoverage {
             List<GeneralParameterDescriptor> descriptors =
                     readParametersDescriptor.getDescriptor().descriptors();
             String sortBySpec =
-                    request.getSortBy()
-                            .stream()
+                    request.getSortBy().stream()
                             .map(
                                     sb ->
                                             sb.getPropertyName().getPropertyName()

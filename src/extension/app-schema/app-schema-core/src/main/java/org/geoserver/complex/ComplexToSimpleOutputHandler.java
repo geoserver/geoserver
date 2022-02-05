@@ -119,8 +119,7 @@ public class ComplexToSimpleOutputHandler {
             if (object instanceof Map) return Collections.emptyList();
             @SuppressWarnings("unchecked")
             Map<String, String> nsMap = (Map<String, String>) object;
-            return nsMap.entrySet()
-                    .stream()
+            return nsMap.entrySet().stream()
                     .map(es -> Pair.of(es.getKey(), es.getValue()))
                     .collect(Collectors.toList());
         } catch (IOException e) {

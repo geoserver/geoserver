@@ -124,10 +124,9 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         assertThat(component, instanceOf(ListView.class));
         List<String> modules =
                 ((ListView<ModuleStatus>) component)
-                        .getList()
-                        .stream()
-                        .map(ModuleStatus::getModule)
-                        .collect(Collectors.toList());
+                        .getList().stream()
+                                .map(ModuleStatus::getModule)
+                                .collect(Collectors.toList());
 
         // verify that the expected modules are present
         assertThat(modules, hasItem("gs-main"));

@@ -49,10 +49,7 @@ public class APIServiceFactoryBean implements FactoryBean, ApplicationContextAwa
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         List<Object> serviceBeans =
-                applicationContext
-                        .getBeansWithAnnotation(APIService.class)
-                        .values()
-                        .stream()
+                applicationContext.getBeansWithAnnotation(APIService.class).values().stream()
                         .filter(
                                 bean -> {
                                     APIService annotation =
@@ -72,8 +69,7 @@ public class APIServiceFactoryBean implements FactoryBean, ApplicationContextAwa
         }
 
         List<Object> coreBeans =
-                serviceBeans
-                        .stream()
+                serviceBeans.stream()
                         .filter(
                                 bean -> {
                                     APIService annotation =
@@ -104,8 +100,7 @@ public class APIServiceFactoryBean implements FactoryBean, ApplicationContextAwa
         APIService annotation = coreBean.getClass().getAnnotation(APIService.class);
 
         List<String> operations =
-                serviceBeans
-                        .stream()
+                serviceBeans.stream()
                         .flatMap(sb -> Arrays.stream(sb.getClass().getMethods()))
                         .filter(m -> APIDispatcher.hasRequestMapping(m))
                         .map(m -> APIDispatcher.getOperationName(m))

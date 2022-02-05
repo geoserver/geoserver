@@ -89,8 +89,7 @@ public class FeatureDataConverter {
         Set<String> fromAttrNames = attributeNames(from);
         Set<String> toAttrNames = attributeNames(to);
         Set<String> commonNames =
-                fromAttrNames
-                        .stream()
+                fromAttrNames.stream()
                         .filter(name -> toAttrNames.contains(convertAttributeName(name)))
                         .collect(Collectors.toSet());
         for (String attrName : commonNames) {

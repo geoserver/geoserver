@@ -143,8 +143,7 @@ public class ComplexToSimpleOutputDispatcherCallback extends AbstractDispatcherC
         if (StringUtils.isBlank(format)) return false;
         // get a list of output format that don't support complex features
         List<WFSGetFeatureOutputFormat> formats =
-                GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class)
-                        .stream()
+                GeoServerExtensions.extensions(WFSGetFeatureOutputFormat.class).stream()
                         .filter(of -> !supportsComplexFeatures(of, value, operation))
                         .collect(Collectors.toList());
         // check if format is on the resulting list

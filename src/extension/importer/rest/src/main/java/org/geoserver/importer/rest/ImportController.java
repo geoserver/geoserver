@@ -39,9 +39,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping(
-    path = RestBaseController.ROOT_PATH + "/imports",
-    produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE}
-)
+        path = RestBaseController.ROOT_PATH + "/imports",
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE})
 public class ImportController extends ImportBaseController {
 
     private static final Logger LOGGER = Logging.getLogger(ImportController.class);

@@ -23,11 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @APIService(
-    service = "Hello",
-    version = "1.0",
-    landingPage = "ogc/hello",
-    serviceClass = HelloController.HelloServiceInfo.class
-)
+        service = "Hello",
+        version = "1.0",
+        landingPage = "ogc/hello",
+        serviceClass = HelloController.HelloServiceInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH)
 public class HelloController {
 

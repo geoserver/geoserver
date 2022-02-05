@@ -32,9 +32,8 @@ public class GeoFenceController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = "/info",
-        produces = {MediaType.TEXT_PLAIN_VALUE}
-    )
+            path = "/info",
+            produces = {MediaType.TEXT_PLAIN_VALUE})
     public String getInfo() {
         return configManager.getConfiguration().getInstanceName();
     }

@@ -194,8 +194,7 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals("andrea.aime@gmail.com", auth.getPrincipal());
 
         assertThat(
-                auth.getAuthorities()
-                        .stream()
+                auth.getAuthorities().stream()
                         .map(a -> a.getAuthority())
                         .collect(Collectors.toList()),
                 CoreMatchers.hasItems("R1", "R2", "ROLE_AUTHENTICATED"));

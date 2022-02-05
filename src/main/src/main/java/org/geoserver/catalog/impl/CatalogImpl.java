@@ -1772,8 +1772,8 @@ public class CatalogImpl implements Catalog {
     public void removeListeners(Class<? extends CatalogListener> listenerClass) {
         new ArrayList<>(listeners)
                 .stream()
-                .filter(l -> listenerClass.isInstance(l))
-                .forEach(l -> listeners.remove(l));
+                        .filter(l -> listenerClass.isInstance(l))
+                        .forEach(l -> listeners.remove(l));
     }
 
     public Iterator search(String cql) {

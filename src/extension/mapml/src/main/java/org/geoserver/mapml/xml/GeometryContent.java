@@ -33,16 +33,14 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "GeometryContent",
-    propOrder = {"geometryContent"}
-)
+        name = "GeometryContent",
+        propOrder = {"geometryContent"})
 public class GeometryContent {
 
     @XmlElementRef(
-        name = "GeometryContent",
-        type = JAXBElement.class,
-        namespace = "http://www.w3.org/1999/xhtml"
-    )
+            name = "GeometryContent",
+            type = JAXBElement.class,
+            namespace = "http://www.w3.org/1999/xhtml")
     protected JAXBElement<?> geometryContent;
 
     /**

@@ -218,13 +218,11 @@ public abstract class Dimension {
 
             // map out domain representation and histogram value representation
             List<Integer> counts =
-                    results.values()
-                            .stream()
+                    results.values().stream()
                             .map(v -> ((Number) v).intValue())
                             .collect(Collectors.toList());
             String domainRepresentation =
-                    results.keySet()
-                            .stream()
+                    results.keySet().stream()
                             .map(v -> v.toString())
                             .collect(Collectors.joining(","));
 

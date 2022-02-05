@@ -269,8 +269,7 @@ class ComplexGeoJsonWriter {
      */
     private boolean areAllPropertiesAttributeNameEquals(
             List<Property> properties, String attributeName) {
-        return properties
-                .stream()
+        return properties.stream()
                 .allMatch(prop -> Objects.equals(attributeName, prop.getName().getLocalPart()));
     }
 

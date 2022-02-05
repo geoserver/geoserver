@@ -37,16 +37,14 @@ import org.springframework.web.bind.annotation.RestController;
  * <p>Also includes all endpoints from {@link QueryController}
  */
 @APIService(
-    service = "Feature",
-    version = "1.0",
-    landingPage = "/gsr/services",
-    serviceClass = WFSInfo.class
-)
+        service = "Feature",
+        version = "1.0",
+        landingPage = "/gsr/services",
+        serviceClass = WFSInfo.class)
 @RestController
 @RequestMapping(
-    path = "/gsr/services/{workspaceName:.*}/FeatureServer",
-    produces = MediaType.APPLICATION_JSON_VALUE
-)
+        path = "/gsr/services/{workspaceName:.*}/FeatureServer",
+        produces = MediaType.APPLICATION_JSON_VALUE)
 public class FeatureServiceController extends QueryController {
 
     @Autowired

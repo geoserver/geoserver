@@ -200,8 +200,7 @@ public class CascadeDeleteVisitor implements CatalogVisitor {
             }
         }
         List<LayerGroupStyle> groupStyleList =
-                group.getLayerGroupStyles()
-                        .stream()
+                group.getLayerGroupStyles().stream()
                         .filter(lgs -> !toRemove.contains(lgs.getId()))
                         .collect(Collectors.toList());
         group.setLayerGroupStyles(groupStyleList);

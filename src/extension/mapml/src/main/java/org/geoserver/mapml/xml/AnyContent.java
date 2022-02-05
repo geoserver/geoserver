@@ -32,9 +32,8 @@ import org.w3c.dom.Element;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "any_content",
-    propOrder = {"anyElement"}
-)
+        name = "any_content",
+        propOrder = {"anyElement"})
 @XmlSeeAlso({PropertyContent.class})
 public class AnyContent {
 

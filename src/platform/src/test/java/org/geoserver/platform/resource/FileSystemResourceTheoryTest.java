@@ -314,8 +314,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
         // while exiting soon for faster ones
         for (int step = 0; step < 2000; step++) {
             Thread.sleep(20);
-            if (notifications
-                            .stream()
+            if (notifications.stream()
                             .map(ResourceNotification::events)
                             .flatMap(List::stream)
                             .count()
@@ -331,8 +330,7 @@ public class FileSystemResourceTheoryTest extends ResourceTheoryTest {
                 notifications.stream().filter(n -> n.getKind() == Kind.ENTRY_MODIFY).count());
 
         List<Event> fileEvents =
-                notifications
-                        .stream()
+                notifications.stream()
                         .map(ResourceNotification::events)
                         .flatMap(List::stream)
                         .collect(Collectors.toList());

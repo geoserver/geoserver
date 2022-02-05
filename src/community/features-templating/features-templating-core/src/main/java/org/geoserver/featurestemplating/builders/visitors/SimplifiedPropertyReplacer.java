@@ -152,8 +152,7 @@ public class SimplifiedPropertyReplacer extends DefaultTemplateVisitor {
                         isNested = true;
                     } else {
                         List<AttributeMapping> filteredMappings =
-                                context.getAttributeMappings()
-                                        .stream()
+                                context.getAttributeMappings().stream()
                                         .filter(m -> !(m instanceof NestedAttributeMapping))
                                         .collect(Collectors.toList());
                         xpathPart = findMatchingXpathInAttributeMappingList(part, filteredMappings);

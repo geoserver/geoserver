@@ -33,24 +33,22 @@ public class LoggingController extends AbstractGeoServerController {
     }
 
     @GetMapping(
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public RestWrapper<LoggingInfo> settingsGet() {
         return wrapObject(geoServer.getLogging(), LoggingInfo.class);
     }
 
     @PutMapping(
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public void settingsPut(@RequestBody LoggingInfo loggingInfo) {
         LoggingInfo original = geoServer.getLogging();
         OwsUtils.copy(loggingInfo, original, LoggingInfo.class);

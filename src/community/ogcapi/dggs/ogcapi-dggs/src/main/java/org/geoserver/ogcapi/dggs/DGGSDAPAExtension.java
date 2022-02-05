@@ -69,12 +69,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /** Implementation of OGC API - DGGS DAPA extensions */
 @APIService(
-    service = "DGGS",
-    version = "1.0",
-    landingPage = "ogc/dggs",
-    serviceClass = DGGSInfo.class,
-    core = false
-)
+        service = "DGGS",
+        version = "1.0",
+        landingPage = "ogc/dggs",
+        serviceClass = DGGSInfo.class,
+        core = false)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/dggs")
 public class DGGSDAPAExtension {
 
@@ -121,9 +120,8 @@ public class DGGSDAPAExtension {
 
     // this is exactly the same as "zones"
     @GetMapping(
-        path = "collections/{collectionId}/processes/area:retrieve",
-        name = "dapaAreaRetrieve"
-    )
+            path = "collections/{collectionId}/processes/area:retrieve",
+            name = "dapaAreaRetrieve")
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse area(
@@ -139,10 +137,9 @@ public class DGGSDAPAExtension {
             @RequestParam(name = "zones", required = false) String zones,
             @RequestParam(name = "variables", required = false) String variableNames,
             @RequestParam(
-                        name = "f",
-                        required = false,
-                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
-                    )
+                            name = "f",
+                            required = false,
+                            defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE)
                     String format)
             throws Exception {
         return service.zones(
@@ -159,9 +156,8 @@ public class DGGSDAPAExtension {
     }
 
     @GetMapping(
-        path = "collections/{collectionId}/processes/area:aggregate-space",
-        name = "dapaAreaSpaceAggregate"
-    )
+            path = "collections/{collectionId}/processes/area:aggregate-space",
+            name = "dapaAreaSpaceAggregate")
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public SimpleFeatureCollection areaSpaceAggregation(
@@ -229,8 +225,7 @@ public class DGGSDAPAExtension {
                     gr.getValues().forEach(v -> fb.add(v));
                     return fb.buildFeature(
                             "area_space_time_"
-                                    + gr.getKey()
-                                            .stream()
+                                    + gr.getKey().stream()
                                             .map(k -> k.toString())
                                             .collect(Collectors.joining("_"))
                                             .replace(" ", "_"));
@@ -248,9 +243,8 @@ public class DGGSDAPAExtension {
     }
 
     @GetMapping(
-        path = "collections/{collectionId}/processes/area:aggregate-time",
-        name = "dapaAreaTimeAggregate"
-    )
+            path = "collections/{collectionId}/processes/area:aggregate-time",
+            name = "dapaAreaTimeAggregate")
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public SimpleFeatureCollection areaTimeAggregation(
@@ -328,9 +322,8 @@ public class DGGSDAPAExtension {
     }
 
     @GetMapping(
-        path = "collections/{collectionId}/processes/area:aggregate-space-time",
-        name = "dapaAreaSpaceTimeAggregate"
-    )
+            path = "collections/{collectionId}/processes/area:aggregate-space-time",
+            name = "dapaAreaSpaceTimeAggregate")
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public SimpleFeatureCollection areaSpaceTimeAggregation(
@@ -414,9 +407,8 @@ public class DGGSDAPAExtension {
 
     // this is exactly the same as "zone"
     @GetMapping(
-        path = "collections/{collectionId}/processes/position:retrieve",
-        name = "dapaPositionRetrieve"
-    )
+            path = "collections/{collectionId}/processes/position:retrieve",
+            name = "dapaPositionRetrieve")
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse position(
@@ -432,10 +424,9 @@ public class DGGSDAPAExtension {
             @RequestParam(name = "zone_id", required = false) String zoneId,
             @RequestParam(name = "variables", required = false) String variableNames,
             @RequestParam(
-                        name = "f",
-                        required = false,
-                        defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE
-                    )
+                            name = "f",
+                            required = false,
+                            defaultValue = OGCAPIMediaTypes.GEOJSON_VALUE)
                     String format)
             throws Exception {
         @SuppressWarnings("PMD.CloseResource") // managed by the store
@@ -447,9 +438,8 @@ public class DGGSDAPAExtension {
 
     // this is exactly the same as "zone"
     @GetMapping(
-        path = "collections/{collectionId}/processes/position:aggregate-time",
-        name = "dapaPositionTimeAggregate"
-    )
+            path = "collections/{collectionId}/processes/position:aggregate-time",
+            name = "dapaPositionTimeAggregate")
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public SimpleFeatureCollection positionTimeAggregate(
@@ -570,8 +560,7 @@ public class DGGSDAPAExtension {
         builder.setName(featureType.getTypeName() + "_area_space_aggregate");
         builder.add(GEOMETRY, Geometry.class, 4326);
         LinkedHashSet<String> timeAttributes =
-                timeGroupExpressions
-                        .stream()
+                timeGroupExpressions.stream()
                         .map(e -> e.evaluate(featureType, AttributeDescriptor.class).getLocalName())
                         .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
         timeAttributes.forEach(att -> builder.add(att, Date.class));
@@ -611,9 +600,7 @@ public class DGGSDAPAExtension {
 
     private String[] parseVariables(String collectionId, String variableNames) throws IOException {
         Set<String> allVariables =
-                variableNames(collectionId)
-                        .getVariables()
-                        .stream()
+                variableNames(collectionId).getVariables().stream()
                         .map(dv -> dv.getId())
                         .collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
         if (variableNames == null) return allVariables.toArray(new String[allVariables.size()]);

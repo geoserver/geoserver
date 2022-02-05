@@ -26,8 +26,7 @@ public class OpenSearchQueries {
     public static List<PropertyName> getProductProperties(OpenSearchAccess osa) throws IOException {
         Collection<PropertyDescriptor> descriptors =
                 osa.getProductSource().getSchema().getDescriptors();
-        return descriptors
-                .stream()
+        return descriptors.stream()
                 .filter(pd -> isSimple(pd) || isCollection(pd))
                 .map(pd -> FF.property(pd.getName()))
                 .collect(Collectors.toList());

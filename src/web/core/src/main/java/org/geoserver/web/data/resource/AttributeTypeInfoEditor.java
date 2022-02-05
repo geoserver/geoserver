@@ -99,8 +99,7 @@ class AttributeTypeInfoEditor extends Panel {
         if (attributes.stream().anyMatch(a -> a.getBinding() == null)) {
             List<AttributeTypeInfo> nativeAttributes = loadNativeAttributes(typeInfo, parent);
             Map<String, Class> bindings =
-                    nativeAttributes
-                            .stream()
+                    nativeAttributes.stream()
                             .collect(Collectors.toMap(a -> a.getName(), a -> a.getBinding()));
             for (AttributeTypeInfo at : attributes) {
                 if (at.getBinding() == null) {

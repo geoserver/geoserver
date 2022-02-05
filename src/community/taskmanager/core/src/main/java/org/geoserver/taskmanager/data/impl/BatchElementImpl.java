@@ -48,11 +48,10 @@ public class BatchElementImpl extends BaseImpl implements BatchElement {
     @Column private Integer index;
 
     @OneToMany(
-        fetch = FetchType.LAZY,
-        targetEntity = RunImpl.class,
-        mappedBy = "batchElement",
-        cascade = CascadeType.ALL
-    )
+            fetch = FetchType.LAZY,
+            targetEntity = RunImpl.class,
+            mappedBy = "batchElement",
+            cascade = CascadeType.ALL)
     @OrderBy("start")
     @XStreamOmitField
     private List<Run> runs = new ArrayList<Run>();

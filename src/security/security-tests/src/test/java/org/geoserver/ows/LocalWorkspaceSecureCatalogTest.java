@@ -105,8 +105,7 @@ public class LocalWorkspaceSecureCatalogTest extends AbstractAuthorizationTest {
     }
 
     private long getWorkspaceAccessibleGroupSize(String workspaceName) {
-        return catalog.getLayerGroups()
-                .stream()
+        return catalog.getLayerGroups().stream()
                 .filter(
                         lg ->
                                 lg.getWorkspace() == null

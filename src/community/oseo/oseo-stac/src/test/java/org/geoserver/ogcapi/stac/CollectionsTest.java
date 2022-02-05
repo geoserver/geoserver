@@ -53,8 +53,7 @@ public class CollectionsTest extends STACTestSupport {
 
         // the collection titles
         Set<String> titles =
-                document.select("div.card-header h2")
-                        .stream()
+                document.select("div.card-header h2").stream()
                         .map(e -> e.text())
                         .collect(Collectors.toSet());
         assertThat(

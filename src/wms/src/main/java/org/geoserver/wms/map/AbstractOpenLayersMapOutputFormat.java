@@ -251,9 +251,7 @@ public abstract class AbstractOpenLayersMapOutputFormat implements GetMapOutputF
      */
     private boolean supportsFiltering(WMSMapContent mapContent) {
         // returns TRUE if at least one layer supports filtering
-        return mapContent
-                .layers()
-                .stream()
+        return mapContent.layers().stream()
                 .anyMatch(
                         layer -> {
                             if (layer instanceof FeatureLayer) {

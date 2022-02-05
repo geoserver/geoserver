@@ -193,8 +193,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
                 if (getWFS().isCiteCompliant() && typeNames != null && !typeNames.isEmpty()) {
                     QName qName = getTypeNameFromFeatureId(fid);
                     if (qName != null) {
-                        if (!typeNames
-                                .stream()
+                        if (!typeNames.stream()
                                 .flatMap(List::stream)
                                 .anyMatch(q -> typeNameMatch(qName, q))) {
                             String locator = isFeatureId ? "FEATUREID" : "RESOURCEID";

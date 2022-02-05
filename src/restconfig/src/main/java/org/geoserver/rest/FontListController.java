@@ -16,9 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(
-    path = RestBaseController.ROOT_PATH + "/fonts",
-    produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
-)
+        path = RestBaseController.ROOT_PATH + "/fonts",
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 public class FontListController extends RestBaseController {
 
     @GetMapping

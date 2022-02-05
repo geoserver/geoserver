@@ -1761,8 +1761,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
     private Map<GeneralParameterDescriptor, Object> getParametersMap(
             List<GeneralParameterValue> readParameters) {
-        return readParameters
-                .stream()
+        return readParameters.stream()
                 .filter(pv -> ((ParameterValue) pv).getValue() != null)
                 .collect(
                         Collectors.toMap(
@@ -1801,8 +1800,7 @@ public class ClassifierTest extends SLDServiceBaseTest {
 
             // check no duplicates
             Set<String> parameterCodes =
-                    readParameters
-                            .stream()
+                    readParameters.stream()
                             .map(rp -> rp.getDescriptor().getName().getCode())
                             .collect(Collectors.toSet());
             assertEquals(readParameters.size(), parameterCodes.size());

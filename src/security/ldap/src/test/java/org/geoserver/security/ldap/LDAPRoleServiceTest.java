@@ -120,13 +120,11 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
 
     @RunWith(FrameworkRunner.class)
     @CreateLdapServer(
-        transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
-        allowAnonymousAccess = true
-    )
+            transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
+            allowAnonymousAccess = true)
     @CreateDS(
-        name = "myDS",
-        partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)}
-    )
+            name = "myDS",
+            partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)})
     @ApplyLdifFiles({"data.ldif"})
     public static class LDAPRoleServiceLdiffTest extends LDAPRoleServiceTest {
 
@@ -228,13 +226,11 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
 
     @RunWith(FrameworkRunner.class)
     @CreateLdapServer(
-        transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
-        allowAnonymousAccess = true
-    )
+            transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
+            allowAnonymousAccess = true)
     @CreateDS(
-        name = "myDS",
-        partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)}
-    )
+            name = "myDS",
+            partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)})
     @ApplyLdifFiles({"data2.ldif"})
     public static class LDAPRoleServiceLdiff2Test extends LDAPRoleServiceTest {
 
@@ -262,13 +258,11 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
 
     @RunWith(FrameworkRunner.class)
     @CreateLdapServer(
-        transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
-        allowAnonymousAccess = true
-    )
+            transports = {@CreateTransport(protocol = "LDAP", address = "localhost")},
+            allowAnonymousAccess = true)
     @CreateDS(
-        name = "myDS",
-        partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)}
-    )
+            name = "myDS",
+            partitions = {@CreatePartition(name = "test", suffix = LDAPTestUtils.LDAP_BASE_PATH)})
     @ApplyLdifFiles({"data4.ldif"})
     public static class LDAPRoleServiceLdiff4Test extends LDAPRoleServiceTest {
 

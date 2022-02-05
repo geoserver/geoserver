@@ -256,8 +256,7 @@ public abstract class AbstractOpenSearchController extends RestBaseController {
             }
 
             links =
-                    linkProperties
-                            .stream()
+                    linkProperties.stream()
                             .map(p -> (SimpleFeature) p)
                             .sorted(LinkFeatureComparator.INSTANCE)
                             .map(

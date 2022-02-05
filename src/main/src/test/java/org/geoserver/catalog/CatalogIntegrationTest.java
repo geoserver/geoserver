@@ -603,8 +603,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
     public void testReloadDefaultStyles() throws Exception {
         // clear up all "point" styles
         final Resource styles = getDataDirectory().getStyles();
-        styles.list()
-                .stream()
+        styles.list().stream()
                 .filter(r -> r.getType() == Resource.Type.RESOURCE && r.name().contains("point"))
                 .forEach(r -> r.delete());
 

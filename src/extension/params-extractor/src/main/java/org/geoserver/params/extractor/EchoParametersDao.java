@@ -118,8 +118,7 @@ public final class EchoParametersDao {
     public static void deleteEchoParameters(
             InputStream inputStream, OutputStream outputStream, String... forwardParameterIds) {
         writeEchoParameters(
-                getEchoParameters(inputStream)
-                        .stream()
+                getEchoParameters(inputStream).stream()
                         .filter(p -> !ArrayUtils.contains(forwardParameterIds, p.getId()))
                         .collect(Collectors.toList()),
                 outputStream);

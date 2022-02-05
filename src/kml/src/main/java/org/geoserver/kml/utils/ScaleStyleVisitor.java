@@ -43,8 +43,7 @@ public class ScaleStyleVisitor extends DuplicatingStyleVisitor {
         for (FeatureTypeStyle fts : copy.featureTypeStyles()) {
             // do the same filtering as streaming renderer
             if (fts.featureTypeNames().isEmpty()
-                    || fts.featureTypeNames()
-                            .stream()
+                    || fts.featureTypeNames().stream()
                             .anyMatch(tn -> FeatureTypes.matches(schema, tn))) {
                 filtered.add(fts);
             }

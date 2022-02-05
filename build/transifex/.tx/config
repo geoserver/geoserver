@@ -180,3 +180,9 @@ file_filter  = ../../src/extension/wcs2_0-eo/web/src/main/resources/GeoServerApp
 source_file  = ../../src/extension/wcs2_0-eo/web/src/main/resources/GeoServerApplication.properties
 type         = PROPERTIES
 minimum_perc = 10
+
+[o:GeoServer:p:geoserver-github-integration:r:extension-authkey]
+file_filter  = ../../src/extension/authkey/src/main/resources/GeoServerApplication_<lang>.properties
+source_file  = ../../src/extension/authkey/src/main/resources/GeoServerApplication.properties
+type         = PROPERTIES
+minimum_perc = 10

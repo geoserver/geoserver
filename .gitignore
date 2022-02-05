@@ -38,3 +38,7 @@ build/cite/logs
 src/release/installer/win/*.rtf
 src/release/installer/win/source/
 src/release/installer/win/target/
+
+# spotless up to date checks
+.spotless-index
+

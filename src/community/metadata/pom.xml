@@ -16,7 +16,7 @@
   <name>GeoServer Metadata Customizer</name>
   <description>GeoServer Metadata Customizer
 
-        use before committing: mvn fmt:format</description>
+        use before committing: mvn spotless:apply</description>
 
   <dependencies>
     <dependency>

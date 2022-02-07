@@ -5,6 +5,7 @@
 package org.geoserver.gwc.wmts.dimensions;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.FixedValueRange;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.wmts.Tuple;
@@ -58,7 +60,7 @@ public abstract class Dimension {
     protected final String dimensionName;
     protected final LayerInfo layerInfo;
     protected final DimensionInfo dimensionInfo;
-
+    protected FixedValueRange fixedValueInfo;
     protected final ResourceInfo resourceInfo;
 
     public Dimension(
@@ -81,8 +83,9 @@ public abstract class Dimension {
      * count will be returned, otherwise min and max will also be returned
      */
     protected DomainSummary getDomainSummary(
-            FeatureCollection features, String attribute, int expandLimit) {
+            FeatureCollection features, String attribute, int expandLimit) throws ParseException {
         // grab domain, but at most expandLimit + 1, to know if there are too many
+        fixedValueInfo = new FixedValueRange();
         if (expandLimit != 0) {
             Set<Comparable> uniqueValues =
                     DimensionsUtils.getUniqueValues(features, attribute, expandLimit + 1);
@@ -90,6 +93,14 @@ public abstract class Dimension {
                 return new DomainSummary(new TreeSet<>(uniqueValues));
             }
         }
+
+        if (dimensionInfo.getFixedValueRange() != null) {
+            TreeSet<Comparable> fixedValues =
+                    fixedValueInfo.getFixedValueRangeComp(dimensionInfo.getFixedValueRange());
+
+            return new DomainSummary(new TreeSet<>(fixedValues));
+        }
+
         Map<Aggregate, Comparable> minMax =
                 DimensionsUtils.getAggregates(attribute, features, Aggregate.MIN, Aggregate.MAX);
         // we return only the number of non null mix/max elements, as computing the whole count
@@ -128,7 +139,8 @@ public abstract class Dimension {
      * domain can be provided (for example enumerated values) NULL will be returned and the same
      * allies the histogram values.
      */
-    public Tuple<String, List<Integer>> getHistogram(Filter filter, String resolutionSpec) {
+    public Tuple<String, List<Integer>> getHistogram(Filter filter, String resolutionSpec)
+            throws ParseException {
         if (loadDataInMemory()) {
             return HistogramUtils.buildHistogram(getDomainValues(filter, false), resolutionSpec);
         }
@@ -309,8 +321,8 @@ public abstract class Dimension {
     }
 
     /** Returns a list of formatted domain values */
-    public Tuple<Integer, List<String>> getDomainValuesAsStrings(
-            Query query, int maxNumberOfValues) {
+    public Tuple<Integer, List<String>> getDomainValuesAsStrings(Query query, int maxNumberOfValues)
+            throws ParseException {
         DomainSummary summary = getDomainSummary(query, maxNumberOfValues);
         return Tuple.tuple(summary.getCount(), DimensionsUtils.getDomainValuesAsStrings(summary));
     }
@@ -326,7 +338,8 @@ public abstract class Dimension {
         return Tuple.tuple(summary.getCount(), DimensionsUtils.getDomainValuesAsStrings(summary));
     }
 
-    protected abstract DomainSummary getDomainSummary(Query query, int expandLimit);
+    protected abstract DomainSummary getDomainSummary(Query query, int expandLimit)
+            throws ParseException;
 
     /** Returns a page of domain values */
     protected abstract DomainSummary getPagedDomainValues(

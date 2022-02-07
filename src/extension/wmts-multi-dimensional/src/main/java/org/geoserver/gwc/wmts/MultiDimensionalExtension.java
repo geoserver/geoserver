@@ -5,6 +5,7 @@
 package org.geoserver.gwc.wmts;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -203,7 +204,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
             List<Dimension> dimensions =
                     DimensionsUtils.extractDimensions(wms, layerInfo, ALL_DOMAINS);
             encodeLayerDimensions(xmlBuilder, dimensions);
-        } catch (OWSException e) {
+        } catch (OWSException | ParseException e) {
             // should not happen
             throw new RuntimeException(e);
         }
@@ -543,7 +544,7 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
      * nothing will be done.
      */
     private void encodeLayerDimensions(XMLBuilder xml, List<Dimension> dimensions)
-            throws IOException {
+            throws IOException, ParseException {
         for (Dimension dimension : dimensions) {
             // encode each dimension as top element
             encodeLayerDimension(xml, dimension);
@@ -554,7 +555,8 @@ public final class MultiDimensionalExtension extends WMTSExtensionImpl {
      * Helper method that will encode a dimension, if the dimension is NULL nothing will be done.
      * All optional attributes that are NULL will be ignored.
      */
-    private void encodeLayerDimension(XMLBuilder xml, Dimension dimension) throws IOException {
+    private void encodeLayerDimension(XMLBuilder xml, Dimension dimension)
+            throws IOException, ParseException {
         xml.indentElement("Dimension");
         // identifier is mandatory
         xml.simpleElement("ows:Identifier", dimension.getDimensionName(), true);

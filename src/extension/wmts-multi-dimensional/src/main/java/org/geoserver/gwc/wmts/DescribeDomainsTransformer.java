@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.wmts;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,10 +61,15 @@ class DescribeDomainsTransformer extends TransformerBase {
             domains.getDimensions()
                     .forEach(
                             dimension -> {
-                                Tuple<Integer, List<String>> dimensionValues =
-                                        dimension.getDomainValuesAsStrings(
-                                                new Query(null, domains.getFilter()),
-                                                domains.getExpandLimit());
+                                Tuple<Integer, List<String>> dimensionValues = null;
+                                try {
+                                    dimensionValues =
+                                            dimension.getDomainValuesAsStrings(
+                                                    new Query(null, domains.getFilter()),
+                                                    domains.getExpandLimit());
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
                                 domainsValues.put(dimension.getDimensionName(), dimensionValues);
                             });
             if (domains.getSpatialDomain() != null && !domains.getSpatialDomain().isEmpty()) {

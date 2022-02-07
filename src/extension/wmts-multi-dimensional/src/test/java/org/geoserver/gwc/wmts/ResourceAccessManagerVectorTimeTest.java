@@ -16,6 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -107,7 +108,7 @@ public class ResourceAccessManagerVectorTimeTest extends VectorTimeTestSupport {
     }
 
     @Test
-    public void testGetHistogramHigh() {
+    public void testGetHistogramHigh() throws ParseException {
         login("cite_high", "cite_high");
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
@@ -118,7 +119,7 @@ public class ResourceAccessManagerVectorTimeTest extends VectorTimeTestSupport {
     }
 
     @Test
-    public void testGetHistogramLow() {
+    public void testGetHistogramLow() throws ParseException {
         login("cite_low", "cite_low");
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);

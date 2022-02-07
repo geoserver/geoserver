@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.wmts.dimensions;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -74,7 +75,7 @@ public abstract class VectorDimension extends Dimension {
     }
 
     @Override
-    protected DomainSummary getDomainSummary(Query query, int expandLimit) {
+    protected DomainSummary getDomainSummary(Query query, int expandLimit) throws ParseException {
         FeatureCollection features = getDomain(query);
         String attribute = dimensionInfo.getAttribute();
 

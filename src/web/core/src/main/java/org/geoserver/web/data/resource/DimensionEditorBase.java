@@ -23,8 +23,10 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
@@ -36,6 +38,7 @@ import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.FixedValueRange;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.ows.kvp.ElevationKvpParser;
@@ -87,6 +90,10 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
     private final CheckBox rawNearestMatch;
 
     private final TextField<String> acceptableInterval;
+
+    private CheckBox fixedValueCheckbox;
+
+    private TextArea<String> fixedValueRange;
 
     boolean time;
 
@@ -417,6 +424,50 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
                                                 .setVariable("actual", validatable.getValue()));
                             }
                         });
+
+        // add support for Fixed Value Range
+        boolean checkResult = false;
+        if (model.getObject().getFixedValueRange() != null) {
+            checkResult = true;
+        }
+        final WebMarkupContainer fixedValueRangeContainer =
+                new WebMarkupContainer("fixedValueRangeContainer");
+        fixedValueRangeContainer.setOutputMarkupId(true);
+
+        fixedValueRange =
+                new TextArea<String>(
+                        "fixedValueRange", new PropertyModel<>(model, "fixedValueRange"));
+        fixedValueRange.setVisible(checkResult);
+        fixedValueRangeContainer.add(fixedValueRange);
+        fixedValueRange.add(
+                (IValidator<String>)
+                        validatable -> {
+                            try {
+                                System.out.println("getAttributeType() " + getAttributeType());
+                                FixedValueRange.checkFixedValueRange(
+                                        validatable.getValue(), getAttributeType());
+                            } catch (Exception e) {
+                                String messageKey = "invalidFixedValueRange";
+                                validatable.error(
+                                        new ValidationError(messageKey)
+                                                .addKey(messageKey)
+                                                .setVariable("actual", validatable.getValue()));
+                            }
+                        });
+        fixedValueCheckbox = new CheckBox("fixedValue", Model.of(checkResult));
+        configs.add(fixedValueCheckbox);
+        fixedValueCheckbox.add(
+                new AjaxFormComponentUpdatingBehavior("click") {
+
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        Boolean visible = fixedValueCheckbox.getModelObject();
+                        fixedValueRange.setVisible(visible);
+                        target.add(fixedValueRangeContainer);
+                    }
+                });
+        configs.add(fixedValueRangeContainer);
+
         initComponents();
     }
 
@@ -571,6 +622,10 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         } else {
             info.setRawNearestMatchEnabled(false);
         }
+
+        fixedValueRange.processInput();
+
+        info.setFixedValueRange(fixedValueRange.getModelObject());
 
         convertInputExtensions(info);
 

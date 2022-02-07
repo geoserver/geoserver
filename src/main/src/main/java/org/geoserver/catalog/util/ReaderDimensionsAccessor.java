@@ -26,6 +26,7 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.catalog.FixedValueRange;
 import org.geoserver.catalog.StructuredCoverageViewReader;
 import org.geoserver.ows.kvp.TimeParser;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
@@ -64,6 +65,8 @@ public class ReaderDimensionsAccessor {
     private static final String UTC_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     private static FilterFactory FF = CommonFactoryFinder.getFilterFactory();
+
+    FixedValueRange fixedValueInfo;
 
     /** Comparator for the TreeSet made either by Date objects, or by DateRange objects */
     public static final Comparator<Object> TEMPORAL_COMPARATOR =
@@ -145,18 +148,27 @@ public class ReaderDimensionsAccessor {
         if (!hasTime()) {
             Collections.emptySet();
         }
-        final SimpleDateFormat df = getTimeFormat();
-        String domain = reader.getMetadataValue(TIME_DOMAIN);
-        String[] timeInstants = domain.split("\\s*,\\s*");
-        TreeSet<Object> values = new TreeSet<>(TEMPORAL_COMPARATOR);
-        for (String tp : timeInstants) {
+        TreeSet<Object> values = null;
+        String fixedValueRange = reader.getMetadataValue("FixedValueRange");
+        if (fixedValueRange != null) {
             try {
-                values.add(parseTimeOrRange(df, tp));
+                values = fixedValueInfo.getFixedValueRange(fixedValueRange);
             } catch (ParseException e) {
                 LOGGER.log(Level.WARNING, e.getMessage(), e);
             }
+        } else {
+            final SimpleDateFormat df = getTimeFormat();
+            String domain = reader.getMetadataValue(TIME_DOMAIN);
+            String[] timeInstants = domain.split("\\s*,\\s*");
+            values = new TreeSet<>(TEMPORAL_COMPARATOR);
+            for (String tp : timeInstants) {
+                try {
+                    values.add(parseTimeOrRange(df, tp));
+                } catch (ParseException e) {
+                    LOGGER.log(Level.WARNING, e.getMessage(), e);
+                }
+            }
         }
-
         return values;
     }
 
@@ -169,31 +181,38 @@ public class ReaderDimensionsAccessor {
         if (!hasTime()) {
             Collections.emptySet();
         }
-
+        String fixedValueRange = reader.getMetadataValue("FixedValueRange");
         TreeSet<Object> result = null;
-        if (reader instanceof StructuredGridCoverage2DReader) {
-            StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
-            result = getDimensionValuesInRange("time", range, maxEntries, sr);
-        }
+        if (fixedValueRange != null) {
+            try {
+                result = fixedValueInfo.getFixedValueRange(fixedValueRange);
+            } catch (ParseException e) {
+                LOGGER.log(Level.WARNING, e.getMessage(), e);
+            }
+        } else {
+            if (reader instanceof StructuredGridCoverage2DReader) {
+                StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
+                result = getDimensionValuesInRange("time", range, maxEntries, sr);
+            }
 
-        // if we got here, the optimization did not work, do the normal path
-        if (result == null) {
-            result = new TreeSet<>(TEMPORAL_COMPARATOR);
-            TreeSet<Object> fullDomain = getTimeDomain();
+            // if we got here, the optimization did not work, do the normal path
+            if (result == null) {
+                result = new TreeSet<>(TEMPORAL_COMPARATOR);
+                TreeSet<Object> fullDomain = getTimeDomain();
 
-            for (Object o : fullDomain) {
-                if (o instanceof Date) {
-                    if (range.contains((Date) o)) {
-                        result.add(o);
-                    }
-                } else if (o instanceof DateRange) {
-                    if (range.intersects((DateRange) o)) {
-                        result.add(o);
+                for (Object o : fullDomain) {
+                    if (o instanceof Date) {
+                        if (range.contains((Date) o)) {
+                            result.add(o);
+                        }
+                    } else if (o instanceof DateRange) {
+                        if (range.intersects((DateRange) o)) {
+                            result.add(o);
+                        }
                     }
                 }
             }
         }
-
         return result;
     }
 
@@ -295,14 +314,24 @@ public class ReaderDimensionsAccessor {
         if (!hasElevation()) {
             return null;
         }
-        // parse the values from the reader, they are exposed as strings...
-        String[] elevationValues = reader.getMetadataValue(ELEVATION_DOMAIN).split(",");
-        TreeSet<Object> elevations = new TreeSet<>(ELEVATION_COMPARATOR);
-        for (String val : elevationValues) {
+        String fixedValueRange = reader.getMetadataValue("FixedValueRange");
+        TreeSet<Object> elevations = null;
+        if (fixedValueRange != null) {
             try {
-                elevations.add(parseNumberOrRange(val));
-            } catch (Exception e) {
+                elevations = fixedValueInfo.getFixedValueRange(fixedValueRange);
+            } catch (ParseException e) {
                 LOGGER.log(Level.WARNING, e.getMessage(), e);
+            }
+        } else {
+            // parse the values from the reader, they are exposed as strings...
+            String[] elevationValues = reader.getMetadataValue(ELEVATION_DOMAIN).split(",");
+            elevations = new TreeSet<>(ELEVATION_COMPARATOR);
+            for (String val : elevationValues) {
+                try {
+                    elevations.add(parseNumberOrRange(val));
+                } catch (Exception e) {
+                    LOGGER.log(Level.WARNING, e.getMessage(), e);
+                }
             }
         }
 
@@ -323,29 +352,36 @@ public class ReaderDimensionsAccessor {
 
         // special optimization for structured coverage readers
         TreeSet<Object> result = null;
+        String fixedValueRange = reader.getMetadataValue("FixedValueRange");
+        if (fixedValueRange != null) {
+            try {
+                result = fixedValueInfo.getFixedValueRange(fixedValueRange);
+            } catch (ParseException e) {
+                LOGGER.log(Level.WARNING, e.getMessage(), e);
+            }
+        }
         if (reader instanceof StructuredGridCoverage2DReader) {
             StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
             result = getDimensionValuesInRange("elevation", range, maxEntries, sr);
-        }
+        } else {
+            // if we got here, the optimization did not work, do the normal path
+            if (result == null) {
+                result = new TreeSet<>();
+                TreeSet<Object> fullDomain = getElevationDomain();
 
-        // if we got here, the optimization did not work, do the normal path
-        if (result == null) {
-            result = new TreeSet<>();
-            TreeSet<Object> fullDomain = getElevationDomain();
-
-            for (Object o : fullDomain) {
-                if (o instanceof Double) {
-                    if (range.contains((Number) o)) {
-                        result.add(o);
-                    }
-                } else if (o instanceof NumberRange) {
-                    if (range.intersects((NumberRange) o)) {
-                        result.add(o);
+                for (Object o : fullDomain) {
+                    if (o instanceof Double) {
+                        if (range.contains((Number) o)) {
+                            result.add(o);
+                        }
+                    } else if (o instanceof NumberRange) {
+                        if (range.intersects((NumberRange) o)) {
+                            result.add(o);
+                        }
                     }
                 }
             }
         }
-
         return result;
     }
 

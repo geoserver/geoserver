@@ -10,7 +10,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.Serializable;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.wicket.markup.Markup;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.Model;
 import org.geoserver.catalog.Catalog;
@@ -54,5 +56,41 @@ public class VectorCustomDimensionEditorTest extends GeoServerWicketTestSupport 
         TextField<String> dimNameInput =
                 (TextField) tester.getComponentFromLastRenderedPage("form:dimEditor:customDimName");
         assertEquals("name", dimNameInput.getModelObject());
+    }
+
+    @Test
+    public void testDimensionEditor() {
+        final Catalog catalog = getCatalog();
+        final LayerInfo layerInfo = catalog.getLayerByName("RoadSegments");
+        assertTrue(layerInfo.getResource() instanceof FeatureTypeInfo);
+        final FeatureTypeInfo featureTypeInfo = (FeatureTypeInfo) layerInfo.getResource();
+        final MetadataMap metadataMap = featureTypeInfo.getMetadata();
+        final DimensionInfo dimension = new DimensionInfoImpl();
+        dimension.setEnabled(true);
+        dimension.setAttribute("name");
+        dimension.setPresentation(DimensionPresentation.LIST);
+        dimension.setFixedValueRange("2017-02-27 14:00:10");
+        metadataMap.put("dim_name", dimension);
+        catalog.save(featureTypeInfo);
+        Pair<String, DimensionInfo> entry = Pair.of("dim_name", dimension);
+        VectorCustomDimensionEntry dimEntry = new VectorCustomDimensionEntry(entry);
+        VectorCustomDimensionEditor editor =
+                new VectorCustomDimensionEditor(
+                        "dimEditor", Model.of(dimEntry), featureTypeInfo, Serializable.class);
+        Form form = new Form("form");
+        form.add(editor);
+        form = tester.startComponentInPage(form, Markup.of(markup));
+        @SuppressWarnings("unchecked")
+        CheckBox dimFixedValueCheckBoxInput =
+                (CheckBox)
+                        tester.getComponentFromLastRenderedPage(
+                                "form:dimEditor:configContainer:configs:fixedValue");
+        assertEquals(true, dimFixedValueCheckBoxInput.getModelObject());
+
+        TextArea<String> dimFixedValueRangeInput =
+                (TextArea)
+                        tester.getComponentFromLastRenderedPage(
+                                "form:dimEditor:configContainer:configs:fixedValueRangeContainer:fixedValueRange");
+        assertEquals("2017-02-27 14:00:10", dimFixedValueRangeInput.getModelObject());
     }
 }

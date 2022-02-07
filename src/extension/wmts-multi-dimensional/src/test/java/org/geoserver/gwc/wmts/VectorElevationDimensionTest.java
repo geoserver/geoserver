@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
@@ -74,7 +75,7 @@ public class VectorElevationDimensionTest extends TestsSupport {
     }
 
     @Test
-    public void testGetHistogram() {
+    public void testGetHistogram() throws ParseException {
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "1");
@@ -83,7 +84,7 @@ public class VectorElevationDimensionTest extends TestsSupport {
     }
 
     @Test
-    public void testGetHistogramMisaligned() {
+    public void testGetHistogramMisaligned() throws ParseException {
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "0.75");

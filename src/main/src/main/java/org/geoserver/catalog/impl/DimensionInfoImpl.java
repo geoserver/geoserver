@@ -44,6 +44,8 @@ public class DimensionInfoImpl implements DimensionInfo {
 
     String acceptableInterval;
 
+    String fixedValueRange;
+
     /** The default constructor */
     public DimensionInfoImpl() {
         super();
@@ -62,6 +64,7 @@ public class DimensionInfoImpl implements DimensionInfo {
         this.defaultValue = info.getDefaultValue();
         this.nearestMatchEnabled = info.isNearestMatchEnabled();
         this.rawNearestMatchEnabled = info.isRawNearestMatchEnabled();
+        this.fixedValueRange = info.getFixedValueRange();
     }
 
     @Override
@@ -167,6 +170,16 @@ public class DimensionInfoImpl implements DimensionInfo {
     }
 
     @Override
+    public String getFixedValueRange() {
+        return fixedValueRange;
+    }
+
+    @Override
+    public void setFixedValueRange(String fixedValueRange) {
+        this.fixedValueRange = fixedValueRange;
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("DimensionInfoImpl [attribute=").append(attribute);
@@ -179,6 +192,7 @@ public class DimensionInfoImpl implements DimensionInfo {
         sb.append(", nearest=").append(nearestMatchEnabled);
         sb.append(", rawNearestMatch=").append(rawNearestMatchEnabled);
         sb.append(", acceptableInterval=").append(acceptableInterval);
+        sb.append(", fixedValueRange=").append(fixedValueRange);
         sb.append("]");
         return sb.toString();
     }
@@ -204,6 +218,7 @@ public class DimensionInfoImpl implements DimensionInfo {
                                 : rawNearestMatchEnabled.hashCode());
         result =
                 prime * result + ((acceptableInterval == null) ? 0 : acceptableInterval.hashCode());
+        result = prime * result + ((fixedValueRange == null) ? 0 : fixedValueRange.hashCode());
         return result;
     }
 
@@ -222,7 +237,8 @@ public class DimensionInfoImpl implements DimensionInfo {
                 && Objects.equals(defaultValue, that.defaultValue)
                 && Objects.equals(nearestMatchEnabled, that.nearestMatchEnabled)
                 && Objects.equals(rawNearestMatchEnabled, that.rawNearestMatchEnabled)
-                && Objects.equals(acceptableInterval, that.acceptableInterval);
+                && Objects.equals(acceptableInterval, that.acceptableInterval)
+                && Objects.equals(fixedValueRange, that.fixedValueRange);
     }
 
     @Override

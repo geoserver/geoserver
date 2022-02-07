@@ -122,4 +122,8 @@ public interface DimensionInfo extends Serializable {
      * #getAcceptableInterval()}.
      */
     public void setAcceptableInterval(String acceptableInterval);
+
+    public String getFixedValueRange();
+
+    public void setFixedValueRange(String fixedValueRange);
 }

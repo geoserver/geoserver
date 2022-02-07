@@ -4,6 +4,7 @@
  */
 package org.geoserver.gwc.wmts;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.geoserver.wms.WMS;
@@ -39,7 +40,12 @@ class HistogramTransformer extends TransformerBase {
                                 + object.getClass().getCanonicalName());
             }
             Domains domains = (Domains) object;
-            Tuple<String, List<Integer>> histogram = domains.getHistogramValues();
+            Tuple<String, List<Integer>> histogram = null;
+            try {
+                histogram = domains.getHistogramValues();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             Attributes nameSpaces =
                     createAttributes(
                             new String[] {

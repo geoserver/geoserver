@@ -1,0 +1,38 @@
+<project name="user" default="full">
+  <target name="init">
+    <property environment="env"/>
+	<property file="build.properties"/>
+
+    <condition property="tx.available">
+      <or>
+        <available file="tx" filepath="${env.PATH}"/>
+        <available file="tx.exe" filepath="${env.Path}"/>
+        <available file="tx.exe" filepath="${env.PATH}"/>
+      </or>
+    </condition>
+  </target>
+
+  <target name="full" depends="tx-push,tx-pull">
+  </target>
+
+  <target name="tx-pull" depends="init" description="Get translations from Transifex">
+    <antcall target="tx">
+      <param name="tx.command" value="pull"/>
+      <param name="tx.options" value="--mode translator --all --minimum-perc=10"/>
+    </antcall>
+  </target>
+  
+  <target name="tx-push" depends="init" description="Update resources to translate on Transifex">
+    <antcall target="tx">
+      <param name="tx.command" value="push"/>
+      <param name="tx.options" value=""/>
+    </antcall>
+  </target>
+  
+  <target name="tx" if="tx.available">
+    <exec executable="tx" failonerror="true" dir="${basedir}">
+      <arg line="--token ${tx.token} ${tx.command} ${tx.options}"/>
+    </exec>
+  </target>
+
+</project>

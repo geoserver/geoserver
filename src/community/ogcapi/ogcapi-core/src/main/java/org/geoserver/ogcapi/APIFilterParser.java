@@ -4,11 +4,13 @@
  */
 package org.geoserver.ogcapi;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import org.geootols.filter.text.cql_2.CQL2;
 import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.filter.FilterFactoryImpl;
 import org.geotools.filter.spatial.DefaultCRSFilterVisitor;
 import org.geotools.filter.text.cql2.CQLException;
-import org.geotools.filter.text.cqljson.CQLJsonCompiler;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.filter.Filter;
@@ -18,8 +20,14 @@ import org.opengis.filter.FilterFactory2;
 public class APIFilterParser {
 
     private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
-    public static String CQL_TEXT = "cql-text";
-    public static String CQL_JSON = "cql-json";
+    public static String CQL_TEXT =
+            "cql-text"; // for compatibility, but should not really be advertised
+    public static String ECQL_TEXT = "ecql-text"; // GeoServer own CQL
+    public static String CQL2_TEXT = "cql2-text"; // OGC CQL2
+
+    /** The list of encodings that should go in API documents */
+    public static Set<String> SUPPORTED_ENCODINGS =
+            new LinkedHashSet<>(Arrays.asList(ECQL_TEXT, CQL2_TEXT));
 
     /**
      * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT} and
@@ -30,16 +38,19 @@ public class APIFilterParser {
             return null;
         }
 
+        // for backwards compatibility
+        if (CQL_TEXT.equals(filterLang)) filterLang = ECQL_TEXT;
+
+        // by OGC-API filter spec
+        if (filterLang == null) filterLang = CQL2_TEXT;
+
         // right now there is a spec only for cql-text and cql-object, will be extended when more
-        // languages are
-        // recognized (could have its own extension point too, if we want to allow easy extension
-        // with new custom languages)
-        if (filterLang != null && (!filterLang.equals(CQL_TEXT) && !filterLang.equals(CQL_JSON))) {
+        // languages are recognized (could have its own extension point too,
+        // if we want to allow easy extension with new custom languages)
+        if (filterLang != null && (!SUPPORTED_ENCODINGS.contains(filterLang))) {
             throw new InvalidParameterValueException(
                     "Only supported filter-lang options at the moment are "
-                            + CQL_TEXT
-                            + " and "
-                            + CQL_JSON
+                            + SUPPORTED_ENCODINGS
                             + " but '"
                             + filterLang
                             + "' was found instead");
@@ -47,14 +58,19 @@ public class APIFilterParser {
 
         try {
             Filter parsedFilter = null;
-            if (filterLang == null || filterLang.equals(CQL_TEXT)) {
+            if (filterLang.equals(ECQL_TEXT)) {
                 parsedFilter = ECQL.toFilter(filter);
-            } else if (filterLang.equals(CQL_JSON)) {
-                CQLJsonCompiler cqlJsonCompiler =
-                        new CQLJsonCompiler(filter, new FilterFactoryImpl());
-                cqlJsonCompiler.compileFilter();
-                parsedFilter = cqlJsonCompiler.getFilter();
+            } else {
+                parsedFilter = CQL2.toFilter(filter);
             }
+
+            // commented out as it does not match any published standard anymore
+            //            else if (filterLang.equals(CQL_JSON)) {
+            //                CQLJsonCompiler cqlJsonCompiler =
+            //                        new CQLJsonCompiler(filter, new FilterFactoryImpl());
+            //                cqlJsonCompiler.compileFilter();
+            //                parsedFilter = cqlJsonCompiler.getFilter();
+            //            }
 
             // in OGC APIs assume CRS84 as the default, but the underlying machinery may default to
             // the native CRS in EPSG axis order instead, best making the CRS explicit instead

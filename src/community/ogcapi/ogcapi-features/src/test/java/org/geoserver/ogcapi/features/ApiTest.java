@@ -24,10 +24,12 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.servers.Server;
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import org.geoserver.ogcapi.APIFilterParser;
 import org.geoserver.ogcapi.OpenAPIMessageConverter;
 import org.geoserver.test.GeoServerBaseTestSupport;
 import org.geoserver.wfs.WFSInfo;
@@ -161,6 +163,11 @@ public class ApiTest extends FeaturesTestSupport {
                         "#/components/parameters/crs",
                         "#/components/parameters/bbox-crs",
                         "#/components/parameters/otherParameters"));
+
+        // filter languages
+        Parameter langs = api.getComponents().getParameters().get("filter-lang");
+        assertEquals(
+                langs.getSchema().getEnum(), new ArrayList(APIFilterParser.SUPPORTED_ENCODINGS));
 
         // ... feature
         PathItem item = paths.get("/collections/{collectionId}/items/{featureId}");

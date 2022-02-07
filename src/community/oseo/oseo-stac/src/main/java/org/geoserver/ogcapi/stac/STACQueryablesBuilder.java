@@ -6,9 +6,9 @@ package org.geoserver.ogcapi.stac;
 
 import io.swagger.v3.oas.models.media.Schema;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
@@ -19,20 +19,32 @@ import org.geoserver.ogcapi.AttributeType;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.QueryablesBuilder;
 import org.geotools.filter.visitor.ExpressionTypeVisitor;
-import org.locationtech.jts.geom.MultiPolygon;
 import org.opengis.feature.type.FeatureType;
-import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.PropertyDescriptor;
 
 public class STACQueryablesBuilder {
 
+    public static final String GEOMETRY_SCHEMA_REF =
+            "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json#/geometry";
+    public static final String ID_SCHEMA_REF =
+            "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json#/id";
+    public static final String COLLECTION_SCHEMA_REF =
+            "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/item.json#/collection";
+    public static final String DATETIME_SCHEMA_REF =
+            "https://schemas.stacspec.org/v1.0.0/item-spec/json-schema/datetime.json#/properties/datetime";
     private static Set<String> SKIP_PROPERTIES = new HashSet<>();
 
     static {
-        // replaced by "time"
+        // replaced by "datetime"
         SKIP_PROPERTIES.add("start_datetime");
         SKIP_PROPERTIES.add("end_datetime");
         SKIP_PROPERTIES.add("datetime");
+        // replaced by "geometry"
+        SKIP_PROPERTIES.add("footprint");
+        // replaced by "id"
+        SKIP_PROPERTIES.add("eoIdentifier");
+        // replaced by "collection"
+        SKIP_PROPERTIES.add("parentIdentifier");
     }
 
     private final TemplateBuilder template;
@@ -53,18 +65,20 @@ public class STACQueryablesBuilder {
             if (properties != null) visitTemplateBuilder(null, properties, true);
         }
         // force in the extra properties not found under properties
-        this.queryables.getProperties().put("geometry", getGeometrySchema());
-        this.queryables.getProperties().put("datetime", QueryablesBuilder.getSchema(Date.class));
+        Map<String, Schema> properties = this.queryables.getProperties();
+        properties.put("id", getSchema("ID", ID_SCHEMA_REF));
+        properties.put("collection", getSchema("Collection", COLLECTION_SCHEMA_REF));
+        properties.put("geometry", getSchema("Geometry", GEOMETRY_SCHEMA_REF));
+        properties.put("datetime", getSchema("Datetime", DATETIME_SCHEMA_REF));
 
         return this.queryables;
     }
 
-    private Schema<?> getGeometrySchema() {
-        GeometryDescriptor gd = itemsSchema.getGeometryDescriptor();
-        if (gd == null) {
-            return QueryablesBuilder.getSchema(MultiPolygon.class);
-        }
-        return QueryablesBuilder.getSchema(gd.getType().getBinding());
+    private Schema<?> getSchema(String description, String ref) {
+        Schema schema = new Schema();
+        schema.set$ref(ref);
+        schema.setDescription(description);
+        return schema;
     }
 
     private AbstractTemplateBuilder lookupBuilder(TemplateBuilder parent, String key) {

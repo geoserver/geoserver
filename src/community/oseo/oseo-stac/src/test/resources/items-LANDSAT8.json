@@ -19,11 +19,12 @@
           "additional": "$${opt:cloudCover}",
           "href":"will replace",
           "type":"will replace"
-        },
-        "dynamicIncludeFlatTest": {
-          "randomNumber":"23",
-          "$includeFlat":"${assets}"
         }
+      },
+      "dynamicIncludeFlatTest": {
+        "randomNumber":"23",
+        "thumbnail2":"thumbnail2",
+        "$includeFlat":"${assets}"
       },
       "links": [ // custom link here
         "$includeFlat{mandatoryLinks.json}",

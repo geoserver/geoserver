@@ -11,6 +11,7 @@
       <includes>
         <include>gs-mbstyle-*.jar</include>
         <include>gt-mbstyle-*.jar</include>
+        <include>json-simple-*.jar</include>
       </includes>
     </fileSet>
     <fileSet>

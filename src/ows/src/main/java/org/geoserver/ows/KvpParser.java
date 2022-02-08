@@ -88,6 +88,12 @@ public abstract class KvpParser {
     /** The request to bind to */
     String request;
 
+    /**
+     * Setup key-value-pair for a service, binding key to a specific Java class.
+     *
+     * @param key key, non-case sensitive
+     * @param binding java type
+     */
     public KvpParser(String key, Class<?> binding) {
         this.key = key;
         this.binding = binding;
@@ -141,4 +147,18 @@ public abstract class KvpParser {
      * @throws Exception In the event of an unsuccesful parse.
      */
     public abstract Object parse(String value) throws Exception;
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer();
+        sb.append(getClass().getSimpleName()).append('{');
+
+        sb.append(service).append(' ');
+        sb.append(version).append(' ');
+        sb.append(request).append(": ");
+        sb.append(key).append('=');
+        sb.append(binding.getSimpleName());
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -4,14 +4,18 @@
  */
 package org.geoserver.ogcapi.stac;
 
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_ADVANCED;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_ARITHMETIC;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_BASIC;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_BASIC_SPATIAL;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_FUNCTIONS;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_PROPERTY_PROPERTY;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_SPATIAL;
+import static org.geoserver.ogcapi.ConformanceClass.CQL2_TEXT;
+import static org.geoserver.ogcapi.ConformanceClass.ECQL;
+import static org.geoserver.ogcapi.ConformanceClass.ECQL_TEXT;
 import static org.geoserver.ogcapi.ConformanceClass.FEATURES_FILTER;
 import static org.geoserver.ogcapi.ConformanceClass.FILTER;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_ARITHMETIC;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_JSON;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_CQL_TEXT;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_FUNCTIONS;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_SPATIAL_OPS;
-import static org.geoserver.ogcapi.ConformanceClass.FILTER_TEMPORAL;
 import static org.geoserver.opensearch.eo.store.OpenSearchAccess.EO_IDENTIFIER;
 import static org.geoserver.opensearch.eo.store.OpenSearchQueries.getProductProperties;
 import static org.geoserver.ows.URLMangler.URLType.RESOURCE;
@@ -32,6 +36,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
+import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.ogcapi.APIBBoxParser;
 import org.geoserver.ogcapi.APIDispatcher;
 import org.geoserver.ogcapi.APIException;
@@ -72,6 +77,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.PropertyIsEqualTo;
 import org.opengis.filter.expression.Literal;
+import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.FactoryException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -93,7 +99,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/stac")
 public class STACService {
 
-    private static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
+    static final FilterFactory2 FF = CommonFactoryFinder.getFilterFactory2();
 
     public static final String STAC_VERSION = "1.0.0";
 
@@ -168,12 +174,19 @@ public class STACService {
                         STAC_SEARCH,
                         FEATURES_FILTER,
                         FILTER,
-                        FILTER_SPATIAL_OPS,
-                        FILTER_TEMPORAL,
-                        FILTER_FUNCTIONS,
-                        FILTER_ARITHMETIC,
-                        FILTER_CQL_TEXT,
-                        FILTER_CQL_JSON);
+                        ECQL,
+                        ECQL_TEXT,
+                        CQL2_BASIC,
+                        CQL2_ADVANCED,
+                        CQL2_ARITHMETIC,
+                        CQL2_PROPERTY_PROPERTY,
+                        CQL2_BASIC_SPATIAL,
+                        CQL2_SPATIAL,
+                        CQL2_FUNCTIONS,
+                        /* CQL2_TEMPORAL excluded for now, no support for all operators */
+                        /* CQL2_ARRAY excluded, no support for array operations now */
+                        CQL2_TEXT
+                        /* CQL2_JSON very different from the binding we have */ );
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
@@ -284,7 +297,8 @@ public class STACService {
             @RequestParam(name = "bbox", required = false) String bbox,
             @RequestParam(name = "datetime", required = false) String datetime,
             @RequestParam(name = "filter", required = false) String filter,
-            @RequestParam(name = "filter-lang", required = false) String filterLanguage)
+            @RequestParam(name = "filter-lang", required = false) String filterLanguage,
+            @RequestParam(name = "sortby", required = false) SortBy[] sortBy)
             throws Exception {
         // check the collection is enabled
         Feature collection = getCollection(collectionId);
@@ -305,6 +319,7 @@ public class STACService {
                         datetime,
                         filter,
                         filterLanguage,
+                        sortBy,
                         false);
 
         // build the links
@@ -337,7 +352,8 @@ public class STACService {
             @RequestParam(name = "intersects", required = false) String intersects,
             @RequestParam(name = "datetime", required = false) String datetime,
             @RequestParam(name = "filter", required = false) String filter,
-            @RequestParam(name = "filter-lang", required = false) String filterLanguage)
+            @RequestParam(name = "filter-lang", required = false) String filterLanguage,
+            @RequestParam(name = "sortby", required = false) SortBy[] sortBy)
             throws Exception {
         // query the items based on the request parameters
         QueryResult qr =
@@ -350,6 +366,7 @@ public class STACService {
                         datetime,
                         filter,
                         filterLanguage,
+                        sortBy,
                         true);
 
         // build the links
@@ -460,6 +477,7 @@ public class STACService {
         return new TemplatePropertyMapper(source, templates).mapProperties(collectionIds, parsed);
     }
 
+    /** TODO: Factor out this method into a Query mapper object */
     private QueryResult queryItems(
             List<String> collectionIds,
             int startIndex,
@@ -469,6 +487,7 @@ public class STACService {
             String datetime,
             String filter,
             String filterLanguage,
+            SortBy[] sortby,
             boolean excludeDisabledCollection)
             throws IOException, FactoryException, ParseException {
         FeatureSource<FeatureType, Feature> source =
@@ -501,8 +520,29 @@ public class STACService {
         q.setMaxFeatures(limit);
         q.setFilter(filters.and());
         q.setProperties(getProductProperties(accessProvider.getOpenSearchAccess()));
+        q.setSortBy(mapSortProperties(collectionIds, sortby));
 
         return queryItems(source, q);
+    }
+
+    private SortBy[] mapSortProperties(List<String> collectionIds, SortBy[] sortby)
+            throws IOException {
+        // nothing to map, easy way out
+        if (sortby == null) return null;
+
+        // do we map for a specific collection, or have to deal with multiple ones?
+        FeatureType itemsSchema =
+                accessProvider.getOpenSearchAccess().getProductSource().getSchema();
+        TemplateBuilder builder;
+        if (collectionIds == null || collectionIds.size() > 1) {
+            // right now assuming multiple collections means using search, where the
+            // sortables are generic
+            builder = templates.getItemTemplate(null);
+        } else {
+            builder = templates.getItemTemplate(collectionIds.get(0));
+        }
+        STACSortablesMapper mapper = new STACSortablesMapper(builder, itemsSchema);
+        return mapper.map(sortby);
     }
 
     private List<String> getDisabledCollections(List<String> collectionIds) throws IOException {

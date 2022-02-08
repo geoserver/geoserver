@@ -52,23 +52,31 @@ public class STACQueryablesBuilderTest {
         STACQueryablesBuilder builder =
                 new STACQueryablesBuilder(FAKE_ID, template.getRootBuilder(), products.getSchema());
         Queryables queryables = builder.getQueryables();
-        System.out.println(queryables.getProperties().keySet());
 
         // check the time range properties have been replaced by a single property
         Map<String, Schema> properties = queryables.getProperties();
         assertThat(properties, not(hasKey("start_datetime")));
         assertThat(properties, not(hasKey("end_datetime")));
 
+        // check the id
+        Schema id = properties.get("id");
+        assertNotNull(id);
+        assertEquals(STACQueryablesBuilder.ID_SCHEMA_REF, id.get$ref());
+
         // check the geometry
         Schema geometry = properties.get("geometry");
         assertNotNull(geometry);
-        assertEquals("https://geojson.org/schema/Polygon.json", geometry.get$ref());
+        assertEquals(STACQueryablesBuilder.GEOMETRY_SCHEMA_REF, geometry.get$ref());
+
+        // check the collection
+        Schema collection = properties.get("collection");
+        assertNotNull(collection);
+        assertEquals(STACQueryablesBuilder.COLLECTION_SCHEMA_REF, collection.get$ref());
 
         // check the datetime
         Schema datetime = properties.get("datetime");
         assertNotNull(datetime);
-        assertEquals("string", datetime.getType());
-        assertEquals("date-time", datetime.getFormat());
+        assertEquals(STACQueryablesBuilder.DATETIME_SCHEMA_REF, datetime.get$ref());
 
         // check the creation time
         Schema created = properties.get("created");

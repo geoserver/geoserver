@@ -6,6 +6,7 @@ package org.geoserver.ogcapi.stac;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
@@ -79,7 +80,7 @@ public class SearchTest extends STACTestSupport {
         DocumentContext doc =
                 getAsJSONPath(
                         "ogc/stac/search?collections=SAS1,LANDSAT8"
-                                + "&filter=constellation='landsat8'&filter-lang=cql-text",
+                                + "&filter=constellation='landsat8'&filter-lang=cql2-text",
                         200);
         checkCollectionsSinglePage(doc, 1, containsInAnyOrder("LANDSAT8"));
     }
@@ -458,5 +459,111 @@ public class SearchTest extends STACTestSupport {
         assertEquals(Integer.valueOf(1), json.read("numberMatched"));
         assertEquals(Integer.valueOf(1), json.read("numberReturned"));
         assertThat(json.read("features[*].id"), containsInAnyOrder("LS8_TEST.02"));
+    }
+
+    @Test
+    public void testGeometryQueryable() throws Exception {
+        // two sentinel, one landsat, one sas
+        DocumentContext doc =
+                getAsJSONPath(
+                        "ogc/stac/search?filter=S_INTERSECTS(geometry, ENVELOPE(16,42,17,43))",
+                        200);
+
+        checkCollectionsItemsSinglePage(
+                doc,
+                5,
+                containsInAnyOrder("LANDSAT8", "SAS1", "SAS1", "SENTINEL2", "SENTINEL2"),
+                containsInAnyOrder(
+                        "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWG_N02.01",
+                        "S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01",
+                        "LS8_TEST.02",
+                        "SAS1_20180226102021.01",
+                        "SAS1_20180227102021.02"));
+    }
+
+    @Test
+    public void testCollectionQueryable() throws Exception {
+        // using the "collection" queryable
+        DocumentContext doc =
+                getAsJSONPath(
+                        "ogc/stac/search?&filter=collection='LANDSAT8'&filter-lang=cql2-text", 200);
+        checkCollectionsSinglePage(doc, 1, containsInAnyOrder("LANDSAT8"));
+    }
+
+    @Test
+    public void testIdQueryable() throws Exception {
+        DocumentContext doc =
+                getAsJSONPath("ogc/stac/search?filter=id='SAS1_20180226102021.01'", 200);
+
+        checkCollectionsItemsSinglePage(
+                doc, 1, containsInAnyOrder("SAS1"), containsInAnyOrder("SAS1_20180226102021.01"));
+    }
+
+    @Test
+    public void testDateTimeQueryable() throws Exception {
+        DocumentContext doc =
+                getAsJSONPath(
+                        "ogc/stac/search?filter=datetime > DATE('2017-02-25') and datetime < DATE('2017-03-31')",
+                        200);
+
+        checkCollectionsItemsSinglePage(
+                doc,
+                3,
+                containsInAnyOrder("SENTINEL2", "SENTINEL2", "gsTestCollection"),
+                containsInAnyOrder(
+                        "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
+                        "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04",
+                        "GS_TEST_PRODUCT.01"));
+    }
+
+    @Test
+    public void testSearchSortByTimeAscending() throws Exception {
+        DocumentContext doc =
+                getAsJSONPath(
+                        "ogc/stac/search?filter=datetime > DATE('2017-02-25') and datetime < DATE('2017-03-31')&sortby=datetime",
+                        200);
+
+        checkCollectionsItemsSinglePage(
+                doc,
+                3,
+                containsInAnyOrder("SENTINEL2", "SENTINEL2", "gsTestCollection"),
+                contains(
+                        "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04",
+                        "GS_TEST_PRODUCT.01",
+                        "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04"));
+    }
+
+    @Test
+    public void testSearchSortByTimeDescending() throws Exception {
+        DocumentContext doc =
+                getAsJSONPath(
+                        "ogc/stac/search?filter=datetime > DATE('2017-02-25') and datetime < DATE('2017-03-31')&sortby=-datetime",
+                        200);
+
+        checkCollectionsItemsSinglePage(
+                doc,
+                3,
+                containsInAnyOrder("SENTINEL2", "SENTINEL2", "gsTestCollection"),
+                contains(
+                        "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
+                        "GS_TEST_PRODUCT.01",
+                        "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04"));
+    }
+
+    @Test
+    public void testSearchSortByCloudCover() throws Exception {
+        DocumentContext doc =
+                getAsJSONPath(
+                        "ogc/stac/search?filter=datetime > DATE('2017-02-25') and datetime < DATE('2017-03-31')&sortby=eo:cloud_cover",
+                        200);
+
+        checkCollectionsItemsSinglePage(
+                doc,
+                3,
+                containsInAnyOrder("SENTINEL2", "SENTINEL2", "gsTestCollection"),
+                contains(
+                        "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04",
+                        "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
+                        "GS_TEST_PRODUCT.01"));
     }
 }

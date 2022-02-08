@@ -1096,9 +1096,20 @@ Notes:
 4) The ``subArray.json`` template (line 6) must be an array itself, the container array will be stripped and
    its values directly integrated inside ``anArray``.
 
-In case of an includeFlat directive is specified and it's attribute value is a property interpolation directive, if the property name evaluates to a json it gets included flat in the final output.
+In case an includeFlat directive is specified and it's attribute value is a property interpolation directive, if the property name evaluates to a json it gets included flat in the final output e.g
 
-${property}:
+including json:
+
+.. code-block:: json
+   :linenos: 
+
+    {
+       "property":"${property}", 
+       "bProperty":"15",
+       "cProperty":"30"
+    }
+
+${property} value:
 
 .. code-block:: json
    :linenos: 
@@ -1108,7 +1119,19 @@ ${property}:
        "bProperty": "20"
     }
 
-The ``${property}`` template (line 7) evaluates to a json, its properties will be passed to parent json without ``"$includeFlat"`` keyword.
+result:
+
+.. code-block:: json
+   :linenos: 
+
+    {
+       "aProperty":"10", 
+       "bProperty":"20",
+       "cProperty":"30"
+    }
+
+
+The ``${property}`` directive evaluates to a JSON that will be merged with the including one. In case the including JSON as an attribute with the name equal to one of the attributes in the included JSON, the included will override the property with the same name in the including one.
 
 
 XML based templates (GML)

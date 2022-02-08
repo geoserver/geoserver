@@ -78,10 +78,8 @@ public class QueryablesTest extends STACTestSupport {
     private void checkQueryableProperties(DocumentContext json) {
         // check a couple properties, more in depth tests are found in STACQueryablesBuilderTest
         assertEquals(
-                "https://geojson.org/schema/Polygon.json", json.read("properties.geometry.$ref"));
-
-        DocumentContext datetime = readContext(json, "properties.datetime");
-        assertEquals("string", datetime.read("type"));
-        assertEquals("date-time", datetime.read("format"));
+                STACQueryablesBuilder.GEOMETRY_SCHEMA_REF, json.read("properties.geometry.$ref"));
+        assertEquals(
+                STACQueryablesBuilder.DATETIME_SCHEMA_REF, json.read("properties.datetime.$ref"));
     }
 }

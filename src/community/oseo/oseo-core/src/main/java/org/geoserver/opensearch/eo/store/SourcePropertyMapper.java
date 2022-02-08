@@ -24,9 +24,21 @@ class SourcePropertyMapper {
     }
 
     PropertyDescriptor getDescriptor(String name) {
-        for (PropertyDescriptor pd : schema.getDescriptors()) {
-            if (name.equals(pd.getName().getLocalPart())) {
-                return pd;
+        if (name.contains(":")) {
+            String[] split = name.split(":");
+            // TODO: find a way to make use of the prefix, or just get a full namespace...
+            String prefix = split[0];
+            String localName = split[1];
+            for (PropertyDescriptor pd : schema.getDescriptors()) {
+                if (localName.equals(pd.getName().getLocalPart())) {
+                    return pd;
+                }
+            }
+        } else {
+            for (PropertyDescriptor pd : schema.getDescriptors()) {
+                if (name.equals(pd.getName().getLocalPart())) {
+                    return pd;
+                }
             }
         }
 

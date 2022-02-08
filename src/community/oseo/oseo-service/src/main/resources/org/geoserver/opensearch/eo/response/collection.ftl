@@ -1,5 +1,6 @@
 <#ftl output_format="XML">
 <#setting number_format="#0.0#">
+<#setting locale="en_US">
 <#assign a = model.attributes />
 <entry>
     <id>${oseoLink('search', 'uid', a.identifier.value, 'httpAccept', 'application/atom+xml')}</id>

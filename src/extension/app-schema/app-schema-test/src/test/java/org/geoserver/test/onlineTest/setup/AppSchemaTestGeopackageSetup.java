@@ -57,18 +57,22 @@ public class AppSchemaTestGeopackageSetup extends ReferenceDataGeopackageSetup {
      * corresponding tables on the database based on data from properties files.
      *
      * @param propertyFiles Property file name and its feature type directory map
+     * @param geopkgDir geopkg file path
      */
-    public static AppSchemaTestGeopackageSetup getInstance(Map<String, File> propertyFiles)
-            throws Exception {
-        return new AppSchemaTestGeopackageSetup(propertyFiles);
+    public static AppSchemaTestGeopackageSetup getInstance(
+            Map<String, File> propertyFiles, String geopkgDir) throws Exception {
+        return new AppSchemaTestGeopackageSetup(propertyFiles, geopkgDir);
     }
 
     /**
      * Factory method.
      *
      * @param propertyFiles Property file name and its parent directory map
+     * @param geopkgDir geopkg file path
      */
-    public AppSchemaTestGeopackageSetup(Map<String, File> propertyFiles) throws Exception {
+    public AppSchemaTestGeopackageSetup(Map<String, File> propertyFiles, String geopkgDir)
+            throws Exception {
+        this.geopkgDir = geopkgDir;
         configureFixture();
         createTables(propertyFiles);
     }

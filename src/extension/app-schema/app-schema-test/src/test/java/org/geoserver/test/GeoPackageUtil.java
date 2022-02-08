@@ -4,8 +4,14 @@
  */
 package org.geoserver.test;
 
+/** This class is responsible for containing utility methods for GeoPackage tests. */
 public class GeoPackageUtil {
 
+    /**
+     * Checks if the running test is geopkg test.
+     *
+     * @return true if the running test is geopkg.
+     */
     public static boolean isGeopkgTest() {
         String onlineTestId = System.getProperty("testDatabase");
         if (onlineTestId != null && onlineTestId.equals("geopkg")) {

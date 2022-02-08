@@ -6,17 +6,16 @@
 package org.geoserver.test;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -131,13 +130,9 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
 
     private File appschema;
 
-    private File appschemagml3132;
-
-    private File appschemacache;
-
     private File styles;
 
-    public static String GEOPKG_DIR;
+    private String geopkgDir;
 
     /** the 'featureTypes' directory, under 'data' */
     protected File featureTypesBaseDir;
@@ -185,12 +180,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
 
         appschema = new File(data, "appschema");
         appschema.mkdir();
-
-        appschemagml3132 = new File(appschema, "appschema-gml3132");
-        appschemagml3132.mkdir();
-
-        appschemacache = new File(appschemagml3132, "app-schema-cache");
-        appschemacache.mkdir();
 
         propertiesFiles = new HashMap<>();
 
@@ -404,21 +393,6 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
     }
 
     /**
-     * Copies from an {@link InputStream} to path under the mock target/test-classes directory.
-     *
-     * @param input source from which file content is copied
-     * @param location path relative to mock target/test-classes directory
-     */
-    private void copyTarget(InputStream input, String location) {
-        File target = new File("target/test-classes");
-        try {
-            IOUtils.copy(input, new File(target, location));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * Write an info.xml file describing a feature type to the feature type directory.
      *
      * <p>Stolen from {@link MockData}.
@@ -598,7 +572,7 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
             setup.setUp();
             setup.tearDown();
         } else if (isGeopackageOnlineTest()) {
-            setup = AppSchemaTestGeopackageSetup.getInstance(propertiesFiles);
+            setup = AppSchemaTestGeopackageSetup.getInstance(propertiesFiles, geopkgDir);
             // Run the sql script through setup
             setup.setUp();
             setup.tearDown();
@@ -787,26 +761,23 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
                             } else if (isPostgis) {
                                 content.append(AppSchemaTestPostgisSetup.DB_PARAMS);
                             } else if (isGeoPkg) {
-                                copyGeopkgResourcesFolder();
+                                copy(
+                                        getClass()
+                                                .getClassLoader()
+                                                .getResourceAsStream("appschema/stations.gpkg"),
+                                        "appschema/stations.gpkg");
                                 File[] stations =
-                                        Objects
-                                                .requireNonNull(
-                                                        data.listFiles(
-                                                                (dir, name) ->
-                                                                        name.startsWith(
-                                                                                "appschema")))[0]
-                                                .listFiles(
-                                                        (dir, name) -> name.startsWith("stations"));
+                                        Objects.requireNonNull(data.listFiles(getAppschema()))[0]
+                                                .listFiles(getGpkgFile());
                                 File resourceFile = null;
                                 if (stations.length > 0) {
                                     resourceFile = stations[0];
                                 }
 
-                                GEOPKG_DIR = resourceFile.toURI().toString();
-                                updateURLStringInFiles();
+                                geopkgDir = resourceFile.toURI().toString();
                                 String DB_PARAMS =
                                         AppSchemaTestGeopackageSetup.DB_PARAMS.replace(
-                                                "PATH_TO_BE_REPLACED", GEOPKG_DIR);
+                                                "PATH_TO_BE_REPLACED", geopkgDir);
                                 content.append(DB_PARAMS);
                             }
                         } else {
@@ -842,66 +813,11 @@ public abstract class AbstractAppSchemaMockData extends SystemTestData
         }
     }
 
-    private void updateURLStringInFiles() throws IOException {
-        String oldIncludedTypes =
-                IOUtils.toString(
-                        getClass()
-                                .getClassLoader()
-                                .getResourceAsStream(
-                                        "appschema/appschema-gml3132/includedTypes.xml"));
-        String newIncludedTypes =
-                oldIncludedTypes.replace("PATH_TO_BE_REPLACED", GEOPKG_DIR).trim();
-        try (ByteArrayInputStream bais =
-                new ByteArrayInputStream(newIncludedTypes.getBytes(StandardCharsets.UTF_8))) {
-            copy(bais, "appschema/appschema-gml3132/includedTypes.xml");
-        }
-
-        try (ByteArrayInputStream bais =
-                new ByteArrayInputStream(newIncludedTypes.getBytes(StandardCharsets.UTF_8))) {
-            copyTarget(bais, "appschema/appschema-gml3132/includedTypes.xml");
-        }
-
-        String oldMeteo =
-                IOUtils.toString(
-                        getClass()
-                                .getClassLoader()
-                                .getResourceAsStream(
-                                        "appschema/appschema-gml3132/meteo.appschema"));
-        String newMeteo = oldMeteo.replace("PATH_TO_BE_REPLACED", GEOPKG_DIR).trim();
-        try (ByteArrayInputStream bais =
-                new ByteArrayInputStream(newMeteo.getBytes(StandardCharsets.UTF_8))) {
-            copy(bais, "appschema/appschema-gml3132/meteo.appschema");
-        }
-
-        try (ByteArrayInputStream bais =
-                new ByteArrayInputStream(newIncludedTypes.getBytes(StandardCharsets.UTF_8))) {
-            copyTarget(bais, "appschema/appschema-gml3132/meteo.appschema");
-        }
+    private FilenameFilter getAppschema() {
+        return (dir, name) -> name.startsWith("appschema");
     }
 
-    private void copyGeopkgResourcesFolder() {
-        copy(
-                getClass().getClassLoader().getResourceAsStream("appschema/stations.gpkg"),
-                "appschema/stations.gpkg");
-        copy(
-                getClass()
-                        .getClassLoader()
-                        .getResourceAsStream("appschema/appschema-gml3132/includedTypes31.xml"),
-                "appschema/appschema-gml3132/includedTypes31.xml");
-        copy(
-                getClass()
-                        .getClassLoader()
-                        .getResourceAsStream("appschema/appschema-gml3132/meteo.xsd"),
-                "appschema/appschema-gml3132/meteo.xsd");
-        copy(
-                getClass()
-                        .getClassLoader()
-                        .getResourceAsStream("appschema/appschema-gml3132/meteo31.appschema"),
-                "appschema/appschema-gml3132/meteo31.appschema");
-        copy(
-                getClass()
-                        .getClassLoader()
-                        .getResourceAsStream("appschema/appschema-gml3132/meteo31.xsd"),
-                "appschema/appschema-gml3132/meteo31.xsd");
+    private FilenameFilter getGpkgFile() {
+        return (dir, name) -> name.endsWith("gpkg");
     }
 }

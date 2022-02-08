@@ -7,7 +7,6 @@
 package org.geoserver.test;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -201,7 +200,6 @@ public class RestconfigWfsTest extends CatalogRESTTestSupport {
         DataStoreInfo ds = getCatalog().getDataStoreByName("gsml", "MappedFeature");
         assertNotNull(ds);
         // copy the mapping and properties files
-        if (isGeopkgTest()) return;
         copyFiles();
         // create featuretype
         response =

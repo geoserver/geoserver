@@ -136,10 +136,9 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
         if (testData == null) {
             test = this;
             testData = createTestData();
-            if (testData != null) {
-                testData.setUp();
-                setUp((T) testData);
-            }
+            testData.setUp();
+
+            setUp((T) testData);
         }
     }
 

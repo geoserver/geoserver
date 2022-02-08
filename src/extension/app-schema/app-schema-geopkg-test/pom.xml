@@ -230,7 +230,17 @@
           <!-- These tests are already run on the parent module -->
           <excludes>
             <exclude>**/onlineTest/*.java</exclude>
-            <exclude>**/DefaultGeometryTest.java</exclude>
+            <exclude>**/DefaultGeometryTest</exclude>
+            <exclude>**/BBox3DTest</exclude>
+            <exclude>**/GeoJsonOutputFormatWfsTest</exclude>
+            <exclude>**/PropertyEncodingOrderTest</exclude>
+            <exclude>**/MultiGeometryTest</exclude>
+            <exclude>**/XlinkGeometryTest</exclude>
+            <exlclude>**/WmsGetFeatureInfoTest</exlclude>
+            <exclude>**/NestedGeometryFilterEncodingTest</exclude>
+            <exclude>**/WmsGetMapTest</exclude>
+            <exclude>**/RestConfigWfsTest</exclude>
+            <exclude>**/ReprojectionAxisFlipTest</exclude>
             <exclude>${test.exclude.pattern}</exclude>
           </excludes>
           <argLine>-Xmx${test.maxHeapSize} -enableassertions ${jvm.opts}

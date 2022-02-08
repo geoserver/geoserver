@@ -4,7 +4,6 @@
  */
 package org.geoserver.test;
 
-import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -23,12 +22,8 @@ import org.junit.Test;
 public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected StationsMockData createTestData() {
-        if (!isGeopkgTest()) {
-            return new MockData();
-        } else {
-            return null;
-        }
+    protected AbstractAppSchemaMockData createTestData() {
+        return new MockData();
     }
 
     /** Helper class that will setup custom complex feature types using the stations data set. */
@@ -80,7 +75,6 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testGetGeoJsonResponseWfs11() throws Exception {
-        if (isGeopkgTest()) return;
         // execute the WFS 1.1.0 request
         JSON response =
                 getAsJSON(
@@ -92,7 +86,6 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testGetGeoJsonResponseWfs20() throws Exception {
-        if (isGeopkgTest()) return;
         // execute the WFS 2.0 request
         JSON response =
                 getAsJSON(
@@ -122,7 +115,6 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testGetGeoJsonResponseWfs20WithNullGeometryAttribute() throws Exception {
-        if (isGeopkgTest()) return;
         // tests that with a null geometry value and minOccurs 0 in mappings
         // conf, ComplexGeoJSONWriter doesn't throw npe but encode a geometry:null attribute
         JSON response =
@@ -171,7 +163,6 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testSimpleContentTimeEncoding() throws Exception {
-        if (isGeopkgTest()) return;
         String path = "wfs?request=GetFeature&typename=gsmlbh:Borehole&outputFormat=json";
         JSON json = getAsJSON(path);
         JSONObject properties = getFeaturePropertiesById(json, "borehole.GA.17322");
@@ -193,7 +184,6 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testOneDimensionalEncoding() throws Exception {
-        if (isGeopkgTest()) return;
         String path = "wfs?request=GetFeature&typename=gsmlbh:Borehole&outputFormat=json";
         JSON json = getAsJSON(path);
         JSONObject properties = getFeaturePropertiesById(json, "borehole.GA.17322");
@@ -213,7 +203,6 @@ public final class GeoJsonOutputFormatWfsTest extends AbstractAppSchemaTestSuppo
 
     @Test
     public void testNestedFeatureEncoding() throws Exception {
-        if (isGeopkgTest()) return;
         String path = "wfs?request=GetFeature&typename=gsml:Borehole&outputFormat=json";
         JSON json = getAsJSON(path);
         JSONObject properties = getFeaturePropertiesById(json, "BOREHOLE.WTB5");

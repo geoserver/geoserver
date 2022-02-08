@@ -5,8 +5,6 @@
  */
 package org.geoserver.test.onlineTest.support;
 
-import static org.geoserver.test.AbstractAppSchemaMockData.GEOPKG_DIR;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,6 +31,9 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
 
     /** System property set to totally disable any online tests */
     public static final String ONLINE_TEST_PROFILE = "onlineTestProfile";
+
+    /** Geopkg file path to setup correctly */
+    protected String geopkgDir;
 
     protected Logger LOGGER = Logger.getLogger(AbstractReferenceDataSetup.class);
 
@@ -99,7 +100,7 @@ public abstract class AbstractReferenceDataSetup extends JDBCTestSetup {
                             fixture.setProperty(
                                     "url",
                                     fixture.getProperty("url").substring(0, 11)
-                                            + GEOPKG_DIR.substring(4));
+                                            + geopkgDir.substring(4));
                         }
                         found.put(fixtureFile.getCanonicalPath(), true);
                         System.setProperty("app-schema.properties", fixtureFile.getPath());

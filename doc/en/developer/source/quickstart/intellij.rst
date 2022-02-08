@@ -38,7 +38,7 @@ Import modules into Intellij
 Before Running Geoserver
 ---------------------------
 
-Geoserver rely on other libraries that are manatined in parallel under the same project umbrella. Those are Geotools and GeoWebCacheException. So for good installation and setup of geoserver dev environment you better want to apply the following:
+GeoServer relies on other libraries that are manatined in parallel under the same project umbrella. These are Geotools and GeoWebCache. So for easier installation and setup of the GeoServer developmwnt environment you need to apply the following:
 
 #. Download the code of both and execute mvn clean install to them.
     `Geotools <https://github.com/geotools/geotools>`_

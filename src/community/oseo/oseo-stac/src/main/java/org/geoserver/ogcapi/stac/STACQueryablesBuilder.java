@@ -14,7 +14,6 @@ import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
 import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
-import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 import org.geoserver.ogcapi.AttributeType;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.ogcapi.QueryablesBuilder;
@@ -62,7 +61,16 @@ public class STACQueryablesBuilder {
         AbstractTemplateBuilder features = lookupBuilder(template, "features");
         if (features != null) {
             AbstractTemplateBuilder properties = lookupBuilder(features, "properties");
-            if (properties != null) visitTemplateBuilder(null, properties, true);
+            if (properties != null) {
+                TemplatePropertyVisitor visitor =
+                        new TemplatePropertyVisitor(
+                                properties,
+                                (path, vb) -> {
+                                    if (SKIP_PROPERTIES.contains(path)) return;
+                                    queryables.getProperties().put(path, getSchema(vb));
+                                });
+                visitor.visit();
+            }
         }
         // force in the extra properties not found under properties
         Map<String, Schema> properties = this.queryables.getProperties();
@@ -93,33 +101,6 @@ public class STACQueryablesBuilder {
             }
         }
         return null;
-    }
-
-    private void visitTemplateBuilder(String parentPath, TemplateBuilder atb, boolean skipPath) {
-        // no queryables out of static builders for the moment, we migth want
-        // to revisit once we consider eventual filters
-        if (atb instanceof StaticBuilder || !(atb instanceof AbstractTemplateBuilder)) return;
-
-        // check the key, if we get a null it means the key is dynamic and it's not possible
-        // to do anything with this JSON sub-tree
-        String key = ((AbstractTemplateBuilder) atb).getKey(null);
-        if (key == null) return;
-
-        String path = getPath(parentPath, key, skipPath);
-        if (atb instanceof DynamicValueBuilder) {
-            DynamicValueBuilder db = (DynamicValueBuilder) atb;
-            if (SKIP_PROPERTIES.contains(key)) return;
-            queryables.getProperties().put(path, getSchema(db));
-        } else {
-            for (TemplateBuilder child : atb.getChildren()) {
-                visitTemplateBuilder(path, child, false);
-            }
-        }
-    }
-
-    private String getPath(String parentPath, String key, boolean skipPath) {
-        if (skipPath) return null;
-        return parentPath == null ? key : parentPath + "." + key;
     }
 
     private Schema getSchema(DynamicValueBuilder db) {

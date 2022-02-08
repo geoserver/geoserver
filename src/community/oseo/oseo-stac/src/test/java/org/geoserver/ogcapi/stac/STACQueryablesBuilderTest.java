@@ -52,7 +52,6 @@ public class STACQueryablesBuilderTest {
         STACQueryablesBuilder builder =
                 new STACQueryablesBuilder(FAKE_ID, template.getRootBuilder(), products.getSchema());
         Queryables queryables = builder.getQueryables();
-        System.out.println(queryables.getProperties().keySet());
 
         // check the time range properties have been replaced by a single property
         Map<String, Schema> properties = queryables.getProperties();

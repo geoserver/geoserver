@@ -366,10 +366,11 @@ public class ItemsTest extends STACTestSupport {
         DocumentContext result = getAsJSONPath("ogc/stac/collections/LANDSAT8/items", 200);
 
         // tests before the dynamic merge with expression on overlay
-        String randomNumber = result.read("features[0].assets.dynamicIncludeFlatTest.randomNumber");
-        String href = result.read("features[0].assets.dynamicIncludeFlatTest.thumbnail.href");
-        String title = result.read("features[0].assets.dynamicIncludeFlatTest.thumbnail.title");
-        String type = result.read("features[0].assets.dynamicIncludeFlatTest.thumbnail.type");
+        String randomNumber = result.read("features[0].dynamicIncludeFlatTest.randomNumber");
+        String href = result.read("features[0].dynamicIncludeFlatTest.thumbnail.href");
+        String title = result.read("features[0].dynamicIncludeFlatTest.thumbnail.title");
+        String type = result.read("features[0].dynamicIncludeFlatTest.thumbnail.type");
+        String thumbnail2 = result.read("features[0].dynamicIncludeFlatTest.thumbnail2");
 
         assertEquals("23", randomNumber);
         assertEquals(
@@ -377,5 +378,62 @@ public class ItemsTest extends STACTestSupport {
                 href);
         assertEquals("image/jpeg", type);
         assertEquals("Thumbnail", title);
+        assertEquals("thumbnail2", thumbnail2);
+    }
+
+    @Test
+    public void dynamicIncludeFlatTest2() throws Exception {
+        // test dynamic flat inclusion with a JSON object with multiple attributes and
+        // with a base node with an attributeName equal to one of the attributes in the
+        // item json property. The item json property should override the base one.
+        DocumentContext json =
+                getAsJSONPath("ogc/stac/collections/SAS1/items/SAS1_20180226102021.01", 200);
+
+        String thumbnailTitle = json.read("dynamicIncludeFlatTest.thumbnail.title");
+        String thumbnailTitle2 = json.read("dynamicIncludeFlatTest.thumbnail2.title");
+        assertEquals("the_title", thumbnailTitle);
+        assertEquals("the_title2", thumbnailTitle2);
+    }
+
+    @Test
+    public void testSearchSortByTimeAscending() throws Exception {
+        DocumentContext doc =
+                getAsJSONPath(
+                        "ogc/stac/collections/SENTINEL2/items?filter=datetime > DATE('2017-02-25') and datetime < DATE('2017-03-31')&sortby=datetime",
+                        200);
+
+        assertThat(
+                (List<String>) doc.read("features[*].id"),
+                contains(
+                        "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04",
+                        "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04"));
+    }
+
+    @Test
+    public void testSearchSortByTimeDescending() throws Exception {
+        DocumentContext doc =
+                getAsJSONPath(
+                        "ogc/stac/collections/SENTINEL2/items?filter=datetime > DATE('2017-02-25') and datetime < DATE('2017-03-31')&sortby=-datetime",
+                        200);
+
+        assertThat(
+                (List<String>) doc.read("features[*].id"),
+                contains(
+                        "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
+                        "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04"));
+    }
+
+    @Test
+    public void testSearchSortByCloudCover() throws Exception {
+        DocumentContext doc =
+                getAsJSONPath(
+                        "ogc/stac/collections/SENTINEL2/items?filter=datetime > DATE('2017-02-25') and datetime < DATE('2017-03-31')&sortby=eo:cloud_cover",
+                        200);
+
+        assertThat(
+                (List<String>) doc.read("features[*].id"),
+                contains(
+                        "S2A_OPER_MSI_L1C_TL_SGS__20170226T171842_A008785_T32TPN_N02.04",
+                        "S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04"));
     }
 }

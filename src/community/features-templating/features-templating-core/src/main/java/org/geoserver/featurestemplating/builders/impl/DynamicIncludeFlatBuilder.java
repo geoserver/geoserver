@@ -25,14 +25,14 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
 
     private static Logger LOGGER = Logging.getLogger(DynamicIncludeFlatBuilder.class);
 
+    private JsonNode includingNode;
+
     public DynamicIncludeFlatBuilder(
             String expression, NamespaceSupport namespaces, JsonNode includingNode) {
         // key is null since the $includeFlat key should not appear
         super(null, expression, namespaces);
         this.includingNode = includingNode;
     }
-
-    private JsonNode includingNode;
 
     @Override
     public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
@@ -88,19 +88,33 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
         }
     }
 
-    void iterateAndEvaluateNestedTree(
+    /**
+     * Iterate an ObjectNode and create a Builder from every attribute. Then each builder is
+     * evaluate and its result is written. Use this if the ObjectNode being passed as one or more
+     * property interpolation or expression directive and it cannot be written as it is.
+     *
+     * @param context the current evaluation context.
+     * @param writer the writer.
+     * @param node the ObjectNode to iterate and from which build nested builders.
+     * @throws IOException
+     */
+    private void iterateAndEvaluateNestedTree(
             TemplateBuilderContext context, TemplateOutputWriter writer, ObjectNode node)
             throws IOException {
         TemplateReaderConfiguration configuration =
                 new TemplateReaderConfiguration(getNamespaces());
         JSONTemplateReader jsonTemplateReader =
                 new JSONTemplateReader(node, configuration, new ArrayList<>());
+
         TemplateBuilderMaker maker = configuration.getBuilderMaker();
         maker.namespaces(configuration.getNamespaces());
         Iterator<String> names = node.fieldNames();
         while (names != null && names.hasNext()) {
+            // create a builder tree from each first level attribute
             String n = names.next();
             JsonNode childNode = node.get(n);
+            // make sure we have a CompositeBuilder in case of ObjectNode
+            // the reader will not create it for us when passing to it directly a JSON Object
             TemplateBuilder current = getCurrentBuilder(childNode, n);
             jsonTemplateReader.getBuilderFromJson(n, node.get(n), current, maker);
         }
@@ -109,11 +123,10 @@ public class DynamicIncludeFlatBuilder extends DynamicValueBuilder {
             for (TemplateBuilder child : children) child.evaluate(writer, context);
     }
 
-    // returns a new compositeBuilder in case the node is a objectNode.
+    // returns a new compositeBuilder in case the node is an objectNode.
     private TemplateBuilder getCurrentBuilder(JsonNode childNode, String name) {
         TemplateBuilder result = this;
         if (childNode.isObject()) {
-            // create composite, the template is not doing it for top level JSON Object
             result = new CompositeBuilder(name, getNamespaces(), false);
             this.addChild(result);
         }

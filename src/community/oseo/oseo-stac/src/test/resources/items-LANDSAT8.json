@@ -31,6 +31,11 @@
           "type":"will replace"
         }
       },
+      "dynamicIncludeFlatTest": {
+        "randomNumber":"23",
+        "thumbnail2":"thumbnail2",
+        "$includeFlat":"${assets}"
+      },
       "links": [ // custom link here
         "$includeFlat{mandatoryLinks.json}",
         "$${jsonPointer(assets, '/MTL')}",

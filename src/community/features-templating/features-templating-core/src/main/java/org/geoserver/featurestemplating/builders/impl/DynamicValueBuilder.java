@@ -6,15 +6,12 @@ package org.geoserver.featurestemplating.builders.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.featurestemplating.builders.*;
 import org.geoserver.featurestemplating.builders.visitors.TemplateVisitor;
 import org.geoserver.featurestemplating.expressions.TemplateCQLManager;
-import org.geoserver.featurestemplating.readers.JSONTemplateReader;
-import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.geotools.feature.ComplexAttributeImpl;
 import org.geotools.filter.AttributeExpressionImpl;
@@ -87,9 +84,16 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
     protected void writeValue(
             TemplateOutputWriter writer, Object value, TemplateBuilderContext context)
             throws IOException {
+        writeValue(null, writer, value, context);
+    }
+
+    protected void writeValue(
+            String name, TemplateOutputWriter writer, Object value, TemplateBuilderContext context)
+            throws IOException {
         if (encodeNull || canWriteValue(value)) {
             EncodingHints encodingHints = getEncodingHints();
-            writer.writeElementNameAndValue(getKey(context), value, encodingHints);
+            if (name == null) name = getKey(context);
+            writer.writeElementNameAndValue(name, value, encodingHints);
         }
     }
 
@@ -218,18 +222,7 @@ public class DynamicValueBuilder extends AbstractTemplateBuilder {
         return contextObject;
     }
 
-    void writeFromNestedTree(
-            TemplateBuilderContext context, TemplateOutputWriter writer, JsonNode node)
-            throws IOException {
-        TemplateReaderConfiguration configuration =
-                new TemplateReaderConfiguration(getNamespaces());
-        JSONTemplateReader jsonTemplateReader =
-                new JSONTemplateReader(node, configuration, new ArrayList<>());
-        TemplateBuilderMaker maker = configuration.getBuilderMaker();
-        maker.namespaces(configuration.getNamespaces());
-        writer.startObject(getKey(context), getEncodingHints());
-        jsonTemplateReader.getBuilderFromJson(getKey(context), node, this, maker);
-        for (TemplateBuilder child : getChildren()) child.evaluate(writer, context);
-        writer.endObject(getKey(context), encodingHints);
+    protected boolean hasDynamic(JsonNode node) {
+        return node.toString().contains("${");
     }
 }

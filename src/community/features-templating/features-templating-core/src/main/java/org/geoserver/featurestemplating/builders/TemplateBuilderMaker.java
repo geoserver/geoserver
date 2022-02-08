@@ -56,9 +56,9 @@ public class TemplateBuilderMaker {
 
     private String separator = "_";
 
-    private JsonNode baseMergeNode;
+    private JsonNode baseNode;
 
-    private JsonNode overlayMergeNode;
+    private JsonNode overlayNode;
 
     public TemplateBuilderMaker() {
         this.encondingHints = new EncodingHints();
@@ -102,8 +102,8 @@ public class TemplateBuilderMaker {
      * @param baseMergeNode the dynamic merge content
      * @return this TemplateBuilderMaker
      */
-    public TemplateBuilderMaker baseMergeNode(JsonNode baseMergeNode) {
-        this.baseMergeNode = baseMergeNode;
+    public TemplateBuilderMaker baseNode(JsonNode baseMergeNode) {
+        this.baseNode = baseMergeNode;
         return this;
     }
 
@@ -114,8 +114,8 @@ public class TemplateBuilderMaker {
      * @param overlayMergeNode the dynamic merge content
      * @return this TemplateBuilderMaker
      */
-    public TemplateBuilderMaker overlayMergeNode(JsonNode overlayMergeNode) {
-        this.overlayMergeNode = overlayMergeNode;
+    public TemplateBuilderMaker overlayNode(JsonNode overlayMergeNode) {
+        this.overlayNode = overlayMergeNode;
         return this;
     }
 
@@ -325,8 +325,8 @@ public class TemplateBuilderMaker {
         this.rootBuilder = false;
         this.topLevelFeature = false;
         this.dynamicIncludeFlatBuilder = false;
-        this.baseMergeNode = null;
-        this.overlayMergeNode = null;
+        this.baseNode = null;
+        this.overlayNode = null;
     }
 
     /**
@@ -389,13 +389,13 @@ public class TemplateBuilderMaker {
         boolean overlayExpression = true;
         String expression;
         JsonNode node;
-        if (baseMergeNode.isTextual()) {
-            expression = baseMergeNode.textValue();
+        if (baseNode.isTextual()) {
+            expression = baseNode.textValue();
             overlayExpression = false;
-            node = overlayMergeNode;
+            node = overlayNode;
         } else {
-            expression = overlayMergeNode.textValue();
-            node = baseMergeNode;
+            expression = overlayNode.textValue();
+            node = baseNode;
         }
         DynamicMergeBuilder dynamicMergeBuilder =
                 new DynamicMergeBuilder(name, expression, namespaces, node, overlayExpression);
@@ -408,7 +408,7 @@ public class TemplateBuilderMaker {
     private DynamicIncludeFlatBuilder buildDynamicIncludeFlatBuilder() {
         DynamicIncludeFlatBuilder dynamicIncludeFlatBuilder;
         dynamicIncludeFlatBuilder =
-                new DynamicIncludeFlatBuilder(name, jsonNode.textValue(), namespaces);
+                new DynamicIncludeFlatBuilder(textContent, namespaces, baseNode);
         if (filter != null) dynamicIncludeFlatBuilder.setFilter(filter);
         if (!encondingHints.isEmpty())
             dynamicIncludeFlatBuilder.getEncodingHints().putAll(encondingHints);
@@ -445,7 +445,7 @@ public class TemplateBuilderMaker {
     public TemplateBuilder build() {
         TemplateBuilder result;
         if (rootBuilder) result = buildRootBuilder();
-        else if (baseMergeNode != null && overlayMergeNode != null) {
+        else if (baseNode != null && overlayNode != null) {
             result = buildDynamicMergeBuilder();
         } else if (textContent == null && jsonNode == null) {
             if (isCollection) result = buildIteratingBuilder();

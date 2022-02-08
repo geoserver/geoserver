@@ -98,6 +98,5 @@ Run GeoServer from Intellij on Windows
 #. Add bash to your Windows environment path and restart Intellij.  
 #. If there are errors such as "cannot find symbol AbstractUserGroupServiceTest", rebuild the security-tests project in the security module.  Right click on the security-tests project and click Rebuild.
 #. In the last versions of Intellij Annotations processors are enabled. If there are errors because of this uncheck this options from compiler settings.
-
     .. image::img/intellij_disable_annotation_processors.jpeg
 

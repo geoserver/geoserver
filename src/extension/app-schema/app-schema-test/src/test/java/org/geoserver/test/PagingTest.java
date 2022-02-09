@@ -5,6 +5,7 @@
  */
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -590,12 +591,24 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
     public void testGetFeatureReproject()
             throws MismatchedDimensionException, NoSuchAuthorityCodeException, FactoryException,
                     TransformException {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.1"
-                                + ".0&typename=gsml:MappedFeature&outputFormat=gml32&srsName=urn:ogc:def"
-                                + ":crs:EPSG::4283&bbox=52.5,-1.3,52.51,-1.29&startIndex=1");
-        LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
+        Document doc;
+        if (!isGeopkgTest()) {
+
+            doc =
+                    getAsDOM(
+                            "wfs?request=GetFeature&version=1.1"
+                                    + ".0&typename=gsml:MappedFeature&outputFormat=gml32&srsName=urn:ogc:def"
+                                    + ":crs:EPSG::4283&bbox=52.5,-1.3,52.51,-1.29&startIndex=1");
+            LOGGER.info(
+                    "WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
+        } else {
+            doc =
+                    getAsDOM(
+                            "wfs?request=GetFeature&version=1.1"
+                                    + ".0&typename=gsml:MappedFeature&outputFormat=gml32&srsName=urn:ogc:def"
+                                    + ":crs:EPSG::4283&bbox=-1.3,52.5,-1.29,52.51&startIndex=1");
+        }
+
         assertXpathCount(1, "//gsml:MappedFeature", doc);
         assertXpathEvaluatesTo("mf4", "//gsml:MappedFeature/@gml:id", doc);
         checkMf4Values(doc, "4283");
@@ -901,6 +914,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetMap() throws IOException {
+        if (isGeopkgTest()) return;
         try (InputStream is =
                 getBinary(
                         "wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=namefilter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/png&startIndex=1")) {

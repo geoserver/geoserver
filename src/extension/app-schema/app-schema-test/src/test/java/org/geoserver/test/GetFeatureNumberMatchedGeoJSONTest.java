@@ -1,5 +1,6 @@
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
 import static org.junit.Assert.assertEquals;
 
 import net.sf.json.JSON;
@@ -86,6 +87,7 @@ public class GetFeatureNumberMatchedGeoJSONTest extends AbstractAppSchemaTestSup
 
     @Test
     public void testGetFeatureNumberMatchedWithGeomComplexFilter() throws Exception {
+        if (isGeopkgTest()) return;
         JSON json =
                 getAsJSON(
                         "ows?service=WFS&outputFormat=application/json&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature"
@@ -97,6 +99,7 @@ public class GetFeatureNumberMatchedGeoJSONTest extends AbstractAppSchemaTestSup
 
     @Test
     public void testGetFeatureNumberMatchedWithGeomComplexFilterWithPagination() throws Exception {
+        if (isGeopkgTest()) return;
         JSON json =
                 getAsJSON(
                         "ows?service=WFS&outputFormat=application/json&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature"
@@ -108,6 +111,7 @@ public class GetFeatureNumberMatchedGeoJSONTest extends AbstractAppSchemaTestSup
 
     @Test
     public void testGetFeatureNumberMatchedWithGeomComplexFilterManyAND() throws Exception {
+        if (isGeopkgTest()) return;
         JSON json =
                 getAsJSON(
                         "ows?service=WFS&outputFormat=application/json&version=1.1.0&request=GetFeature&typeName=gsml:MappedFeature"

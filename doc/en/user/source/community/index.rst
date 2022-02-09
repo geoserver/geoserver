@@ -59,3 +59,4 @@ officially part of the GeoServer releases. They are however built along with the
    schemaless-features/index
    web-service-auth/index
    gwc-mbtiles/index
+   vsi/index

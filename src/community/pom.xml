@@ -88,6 +88,7 @@
             <descriptor>release/ext-mongodb-schemaless.xml</descriptor>
             <descriptor>release/ext-web-service-auth.xml</descriptor>
             <descriptor>release/ext-gwc-mbtiles.xml</descriptor>
+            <descriptor>release/ext-vsi.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
@@ -251,6 +252,7 @@
         <module>schemaless-features</module>
         <module>web-service-auth</module>
         <module>gwc-mbtiles</module>
+        <module>vsi</module>
       </modules>
     </profile>
     <profile>
@@ -670,6 +672,12 @@
       <id>gwc-mbtiles</id>
       <modules>
         <module>gwc-mbtiles</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>vsi</id>
+      <modules>
+        <module>vsi</module>
       </modules>
     </profile>
   </profiles>

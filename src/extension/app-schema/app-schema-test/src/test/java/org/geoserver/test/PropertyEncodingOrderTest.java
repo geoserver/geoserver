@@ -16,7 +16,7 @@ import org.w3c.dom.Node;
 public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected PropertyEncodingOrderMockData createTestData() {
+    protected AbstractAppSchemaMockData createTestData() {
         return new PropertyEncodingOrderMockData();
     }
 

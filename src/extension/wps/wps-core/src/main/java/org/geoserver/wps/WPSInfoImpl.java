@@ -97,6 +97,9 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
      */
     Integer maxAsynchronousTotalTime;
 
+    /** The flag indicating whether remote inputs are enabled. */
+    boolean remoteInputDisabled;
+
     public WPSInfoImpl() {
         title = "Prototype GeoServer WPS";
     }
@@ -313,6 +316,16 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     @Override
     public void setMaxAsynchronousTotalTime(Integer maxAsynchronousTotalTime) {
         this.maxAsynchronousTotalTime = maxAsynchronousTotalTime;
+    }
+
+    @Override
+    public boolean isRemoteInputDisabled() {
+        return remoteInputDisabled;
+    }
+
+    @Override
+    public void setRemoteInputDisabled(boolean remoteInputDisabled) {
+        this.remoteInputDisabled = remoteInputDisabled;
     }
 
     @Override

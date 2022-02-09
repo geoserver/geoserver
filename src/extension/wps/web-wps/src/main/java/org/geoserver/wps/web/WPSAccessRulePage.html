@@ -42,6 +42,17 @@
             </fieldset>
             <fieldset>
               <legend>
+                <span><wicket:message key="complexInputs">complexInputs</wicket:message></span>
+              </legend>
+              <ul>
+                <li class="choiceItem">
+                  <input wicket:id="remoteInputDisabled" type="checkbox" />
+                  <label for="remoteInputDisabled"><wicket:message key="remoteInputDisabled">remoteInputDisabled</wicket:message></label>
+                </li>
+              </ul>
+            </fieldset>
+            <fieldset>
+              <legend>
                 <span><wicket:message key="processAccessMode">Process access mode</wicket:message></span>
                 <a href="#" wicket:id="processAccessModeHelp" class="help-link"></a>
               </legend>

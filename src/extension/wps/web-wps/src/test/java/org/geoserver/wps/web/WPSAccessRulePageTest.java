@@ -9,9 +9,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.util.tester.FormTester;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.wps.ProcessGroupInfo;
+import org.geoserver.wps.WPSInfo;
 import org.junit.Test;
 
 public class WPSAccessRulePageTest extends WPSPagesTestSupport {
@@ -77,5 +79,25 @@ public class WPSAccessRulePageTest extends WPSPagesTestSupport {
         ft.submit();
         assertFalse(dp.getItems().get(0).isEnabled());
         assertFalse(dp.getItems().get(3).isEnabled());
+    }
+
+    @Test
+    public void testDisableRemoteInputs() throws Exception {
+        login();
+        tester.startPage(new WPSAccessRulePage());
+        tester.assertRenderedPage(WPSAccessRulePage.class);
+        tester.assertComponent("form:remoteInputDisabled", CheckBox.class);
+
+        // disable remote inputs
+        FormTester ft1 = tester.newFormTester("form");
+        ft1.setValue("remoteInputDisabled", "false");
+        ft1.submit("apply");
+        assertFalse(getGeoServer().getService(WPSInfo.class).isRemoteInputDisabled());
+
+        // enable remote inputs
+        FormTester ft2 = tester.newFormTester("form");
+        ft2.setValue("remoteInputDisabled", "true");
+        ft2.submit("apply");
+        assertTrue(getGeoServer().getService(WPSInfo.class).isRemoteInputDisabled());
     }
 }

@@ -238,6 +238,20 @@ The Groups tab provides configuration options for groups in this user/group serv
 
 .. _security_webadmin_groups:
 
+Remove User
+~~~~~~~~~~~
+
+There are two related buttons that are responsible for removing users: :guilabel:`Remove Selected`, and :guilabel:`Remove Selected and remove role associations`. 
+
+* :guilabel:`Remove Selected` removes user from `users.xml <https://github.com/geoserver/geoserver/blob/main/data/release/security/usergroup/default/users.xml>`_ and leave untouched `roles.xml <https://github.com/geoserver/geoserver/blob/main/data/release/security/role/default/roles.xml>`_.
+* :guilabel:`Remove Selected and remove role associations` removes user from `users.xml <https://github.com/geoserver/geoserver/blob/main/data/release/security/usergroup/default/users.xml>`_ and also removes user and associated role to user from `roles.xml <https://github.com/geoserver/geoserver/blob/main/data/release/security/role/default/roles.xml>`_.
+
+
+.. figure:: images/ugr_ugusers.png
+   :align: center
+
+   *Users tab*
+
 Add group
 ~~~~~~~~~
 

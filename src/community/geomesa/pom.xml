@@ -38,7 +38,7 @@ application directory.
 
         <!-- environment-dependent versions -->
         <zookeeper.version>3.4.5</zookeeper.version>
-        <accumulo.version>1.5.1</accumulo.version>
+        <accumulo.version>1.10.1</accumulo.version>
         <hadoop.version>2.2.0</hadoop.version>
 
         <!-- logging properties

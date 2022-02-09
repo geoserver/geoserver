@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -36,13 +37,12 @@ import org.geoserver.wcs2_0.WCS20Const;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.jts.JTS;
-import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.image.test.ImageAssert;
 import org.geotools.referencing.CRS;
 import org.geotools.wcs.v2_0.RangeSubset;
 import org.geotools.wcs.v2_0.Scaling;
 import org.junit.Test;
-import org.locationtech.jts.geom.Envelope;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class GetCoverageKvpTest extends WCSKVPTestSupport {
@@ -355,20 +355,71 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
 
         // check the tiff structure is the one requested
         final GeoTiffReader reader = new GeoTiffReader(file);
-        assertTrue(
-                CRS.equalsIgnoreMetadata(
-                        reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326", true)));
-        assertEquals(720, reader.getOriginalGridRange().getSpan(0));
-        assertEquals(360, reader.getOriginalGridRange().getSpan(1));
-        final GridCoverage2D coverage = reader.read(null);
-        assertNotNull(coverage);
+        GridCoverage2D coverage = null;
+        try {
+            assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), EPSG_4326));
+            assertEquals(720, reader.getOriginalGridRange().getSpan(0));
+            assertEquals(360, reader.getOriginalGridRange().getSpan(1));
+            coverage = reader.read(null);
+            assertNotNull(coverage);
 
-        Envelope expected =
-                new ReferencedEnvelope(-180.01, 180.01, -90, 90, CRS.decode("EPSG:4326"));
-        assertTrue(
-                JTS.equals(expected, ReferencedEnvelope.reference(coverage.getEnvelope2D()), 0.01));
-        reader.dispose();
-        scheduleForCleaning(coverage);
+            GeneralEnvelope expected =
+                    new GeneralEnvelope(new double[] {-180.01, -90}, new double[] {180.01, 90});
+            expected.setCoordinateReferenceSystem(EPSG_4326);
+
+            final double scale = getScale(coverage);
+            assertEnvelopeEquals(expected, scale, (GeneralEnvelope) coverage.getEnvelope(), scale);
+
+        } finally {
+            clean(reader, coverage);
+        }
+    }
+
+    @Test
+    @SuppressWarnings("PMD.UseAssertEqualsInsteadOfAssertTrue")
+    public void testScalingWithRequestCrossingDateline() throws Exception {
+        MockHttpServletResponse response =
+                getAsServletResponse(
+                        "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=sf__world"
+                                + "&subset=http://www.opengis.net/def/axis/OGC/0/Long(40,240)"
+                                + "&subset=http://www.opengis.net/def/axis/OGC/0/Lat(-50,50)"
+                                + "&format=image/tiff"
+                                + "&SCALESIZE="
+                                + "http://www.opengis.net/def/axis/OGC/1/"
+                                + "i(400),"
+                                + "http://www.opengis.net/def/axis/OGC/1/"
+                                + "j(200)");
+        // got back a tiff
+        assertEquals("image/tiff", response.getContentType());
+        assertEquals(200, response.getStatus());
+
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile("world", "world.tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+
+        // check the tiff structure is the one requested
+        final GeoTiffReader reader = new GeoTiffReader(file);
+        GridCoverage2D coverage = null;
+        try {
+            assertEquals(400, reader.getOriginalGridRange().getSpan(0));
+            assertEquals(200, reader.getOriginalGridRange().getSpan(1));
+            coverage = reader.read(null);
+            assertNotNull(coverage);
+
+            GeneralEnvelope expected =
+                    new GeneralEnvelope(new double[] {40, -50}, new double[] {240, 50});
+            expected.setCoordinateReferenceSystem(EPSG_4326);
+
+            final double scale = getScale(coverage);
+            assertEnvelopeEquals(expected, scale, (GeneralEnvelope) coverage.getEnvelope(), scale);
+            RenderedImage image = coverage.getRenderedImage();
+            ImageAssert.assertEquals(
+                    new File("src/test/resources/org/geoserver/wcs2_0/dateline-world.png"),
+                    image,
+                    250);
+        } finally {
+            clean(reader, coverage);
+        }
     }
 
     private void assertOriginPixelColor(MockHttpServletResponse response, int[] expected)

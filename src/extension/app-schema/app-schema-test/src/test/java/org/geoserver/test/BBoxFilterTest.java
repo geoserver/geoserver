@@ -6,6 +6,8 @@
 
 package org.geoserver.test;
 
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
+
 import org.geotools.geometry.jts.JTS;
 import org.geotools.gml.producer.CoordinateFormatter;
 import org.geotools.referencing.CRS;
@@ -65,8 +67,11 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     public void testQueryBboxLongLat() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LONGLAT);
         LOGGER.info(WFS_GET_FEATURE_LOG + LONGLAT + prettyString(doc));
-        assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(0, "//ex:geomContainer", doc);
+        if (!isGeopkgTest()) {
+            assertNumberMatched(doc, 0);
+        } else {
+            assertNumberMatched(doc, 2);
+        }
     }
 
     /**
@@ -77,8 +82,11 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     public void testQueryBboxLongLatEPSGCode() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LONGLAT + ",EPSG:4326");
         LOGGER.info(WFS_GET_FEATURE_LOG + LONGLAT + prettyString(doc));
-        assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(2, "//ex:geomContainer", doc);
+        if (!isGeopkgTest()) {
+            assertNumberMatched(doc, 2);
+        } else {
+            assertNumberMatched(doc, 0);
+        }
     }
 
     /**
@@ -89,8 +97,11 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     public void testQueryBboxLongLatURN() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LONGLAT + ",urn:x-ogc:def:crs:EPSG:4326");
         LOGGER.info(WFS_GET_FEATURE_LOG + LONGLAT + prettyString(doc));
-        assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(0, "//ex:geomContainer", doc);
+        if (!isGeopkgTest()) {
+            assertNumberMatched(doc, 0);
+        } else {
+            assertNumberMatched(doc, 2);
+        }
     }
 
     /**
@@ -102,8 +113,11 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     public void testQueryBboxLatLong() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LATLONG);
         LOGGER.info(WFS_GET_FEATURE_LOG + LATLONG + prettyString(doc));
-        assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(2, "//ex:geomContainer", doc);
+        if (!isGeopkgTest()) {
+            assertNumberMatched(doc, 2);
+        } else {
+            assertNumberMatched(doc, 0);
+        }
     }
 
     /**
@@ -115,8 +129,11 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     public void testQueryBboxLatLongEPSGCode() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LATLONG + ",EPSG:4326");
         LOGGER.info(WFS_GET_FEATURE_LOG + LATLONG + prettyString(doc));
-        assertXpathEvaluatesTo("0", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(0, "//ex:geomContainer", doc);
+        if (!isGeopkgTest()) {
+            assertNumberMatched(doc, 0);
+        } else {
+            assertNumberMatched(doc, 2);
+        }
     }
 
     /**
@@ -128,8 +145,11 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     public void testQueryBboxLatLongURN() {
         Document doc = getAsDOM(WFS_GET_FEATURE + LATLONG + ",urn:x-ogc:def:crs:EPSG:4326");
         LOGGER.info(WFS_GET_FEATURE_LOG + LATLONG + prettyString(doc));
-        assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(2, "//ex:geomContainer", doc);
+        if (!isGeopkgTest()) {
+            assertNumberMatched(doc, 2);
+        } else {
+            assertNumberMatched(doc, 0);
+        }
     }
 
     /**
@@ -164,8 +184,11 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
         validate(xml);
         Document doc = postAsDOM("wfs", xml);
         LOGGER.info(WFS_GET_FEATURE_LOG + " with POST filter " + prettyString(doc));
-        assertXpathEvaluatesTo("2", "/wfs:FeatureCollection/@numberOfFeatures", doc);
-        assertXpathCount(2, "//ex:geomContainer", doc);
+        if (!isGeopkgTest()) {
+            assertNumberMatched(doc, 2);
+        } else {
+            assertNumberMatched(doc, 0);
+        }
     }
 
     /**
@@ -176,6 +199,8 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
     public void testQueryBboxLatLongSrs4283()
             throws NoSuchAuthorityCodeException, FactoryException, MismatchedDimensionException,
                     TransformException {
+        if (isGeopkgTest()) return;
+
         Document doc = getAsDOM(WFS_GET_FEATURE + LATLONG + "&srsName=urn:x-ogc:def:crs:EPSG:4283");
         LOGGER.info(WFS_GET_FEATURE_LOG + LONGLAT + prettyString(doc));
 
@@ -246,5 +271,11 @@ public class BBoxFilterTest extends AbstractAppSchemaTestSupport {
                 targetPointCoord2,
                 "//ex:geomContainer[@gml:id='2']/ex:nestedFeature/ex:nestedGeom[@gml:id='nested.2']/ex:geom/gml:Point/gml:pos",
                 doc);
+    }
+
+    private void assertNumberMatched(Document doc, Integer numberMatched) {
+        assertXpathEvaluatesTo(
+                numberMatched.toString(), "/wfs:FeatureCollection/@numberOfFeatures", doc);
+        assertXpathCount(numberMatched, "//ex:geomContainer", doc);
     }
 }

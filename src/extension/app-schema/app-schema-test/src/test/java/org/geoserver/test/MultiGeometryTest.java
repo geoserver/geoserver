@@ -17,9 +17,8 @@ import org.w3c.dom.Document;
 public class MultiGeometryTest extends AbstractAppSchemaTestSupport {
 
     @Override
-    protected MultiGeometryMockData createTestData() {
+    protected AbstractAppSchemaMockData createTestData() {
         System.setProperty("org.geotools.referencing.forceXY", "true");
-
         return new MultiGeometryMockData();
     }
 

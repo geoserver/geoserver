@@ -5,6 +5,7 @@
 package org.geoserver.test;
 
 import static org.apache.commons.lang3.StringUtils.countMatches;
+import static org.geoserver.test.GeoPackageUtil.isGeopkgTest;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -55,6 +56,7 @@ public final class ReprojectionAxisFlipTest extends AbstractAppSchemaTestSupport
 
     @Test
     public void testWfsGetFeatureWithBbox() throws Exception {
+        if (isGeopkgTest()) return;
         genericWfsGetFeatureWithBboxTest(
                 () ->
                         getAsServletResponse(
@@ -65,6 +67,7 @@ public final class ReprojectionAxisFlipTest extends AbstractAppSchemaTestSupport
 
     @Test
     public void testWfsGetFeatureWithBboxPost() throws Exception {
+        if (isGeopkgTest()) return;
         // execute the WFS 2.0 request
         genericWfsGetFeatureWithBboxTest(
                 () ->

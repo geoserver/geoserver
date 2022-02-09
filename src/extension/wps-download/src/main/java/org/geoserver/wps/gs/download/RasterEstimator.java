@@ -5,18 +5,22 @@
  */
 package org.geoserver.wps.gs.download;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.CoverageDimensionInfo;
-import org.geoserver.catalog.CoverageInfo;
+
+import org.apache.wicket.model.CompoundPropertyModel;
+import org.geoserver.catalog.*;
+import org.geoserver.web.GeoServerApplication;
+import org.geoserver.web.data.resource.CoverageBandsConfigurationPanel;
 import org.geotools.coverage.TypeMap;
 import org.geotools.coverage.grid.GridGeometry2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.util.FeatureUtilities;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -24,6 +28,10 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.util.ProgressListener;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+
+import static org.apache.wicket.ThreadContext.getApplication;
 
 /**
  * This class check whether or not the provided download request goes beyond the provided limits for
@@ -39,6 +47,7 @@ class RasterEstimator {
     private DownloadServiceConfiguration downloadServiceConfiguration;
 
     private Catalog catalog;
+
 
     /**
      * Constructor
@@ -200,6 +209,16 @@ class RasterEstimator {
 
         // Use sample info type for each output band to estimate size
         List<CoverageDimensionInfo> coverageDimensionInfoList = coverageInfo.getDimensions();
+
+        if (coverageDimensionInfoList.stream().anyMatch(cdi -> cdi.getDimensionType() == null)) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.log(
+                        Level.FINE,
+                        "Recalculating Band Dimensions Types");
+            }
+            reloadBands(coverageInfo);
+
+        }
         int accumulatedPixelSizeInBits = 0;
 
         // Use only selected bands for output, if specified
@@ -249,5 +268,25 @@ class RasterEstimator {
                             + ")");
         }
         return true;
+    }
+
+    protected void reloadBands(CoverageInfo ci) throws Exception {
+        String nativeName = ci.getNativeCoverageName();
+        CatalogBuilder cb = new CatalogBuilder(catalog);
+        cb.setStore(ci.getStore());
+        MetadataMap metadata = ci.getMetadata();
+        CoverageInfo rebuilt;
+        if (metadata != null && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
+            GridCoverage2DReader reader =
+                    (GridCoverage2DReader)
+                            catalog.getResourcePool()
+                                    .getGridCoverageReader(
+                                            ci, nativeName, GeoTools.getDefaultHints());
+            rebuilt = cb.buildCoverage(reader, nativeName, null);
+        } else {
+            rebuilt = cb.buildCoverage(nativeName);
+        }
+        ci.getDimensions().clear();
+        ci.getDimensions().addAll(rebuilt.getDimensions());
     }
 }

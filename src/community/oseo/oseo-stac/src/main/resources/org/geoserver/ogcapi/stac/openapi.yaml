@@ -82,6 +82,38 @@ paths:
           $ref: '#/components/responses/FilterCapabilities'
         '500':
           $ref: '#/components/responses/ServerError'
+  '/collections/queryables':
+    get:
+      tags:
+        - Capabilities
+      summary: |-
+        lists the queryable attributes for the search request
+      operationId: getSearchQueryables
+      parameters:
+        - $ref: '#/components/parameters/otherParameters'
+      responses:
+        '200':
+          $ref: '#/components/responses/Queryables'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'          
+  '/collections/sortables':
+    get:
+      tags:
+        - Capabilities
+      summary: |-
+        lists the sortable attributes for the search request
+      operationId: getSearchSortables
+      parameters:
+        - $ref: '#/components/parameters/otherParameters'
+      responses:
+        '200':
+          $ref: '#/components/responses/Sortables'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/collections':
     get:
       tags:
@@ -129,6 +161,23 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/sortables':
+    get:
+      tags:
+        - Capabilities
+      summary: |-
+        lists the sortable attributes for the feature collection with id `collectionId`
+      operationId: getSortables
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/otherParameters'
+      responses:
+        '200':
+          $ref: '#/components/responses/Sortables'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
   '/collections/{collectionId}/items':
     get:
       tags:
@@ -150,6 +199,7 @@ paths:
         - $ref: '#/components/parameters/datetime'
         - $ref: '#/components/parameters/filter'
         - $ref: '#/components/parameters/filter-lang'
+        - $ref: '#/components/parameters/sortby'
         - $ref: '#/components/parameters/crs'
         - $ref: '#/components/parameters/bbox-crs'
         - $ref: '#/components/parameters/otherParameters'
@@ -514,6 +564,18 @@ components:
         enum:
           - cql-text
         default: cql-text
+    sortby:
+      name: sortby
+      in: query
+      required: false
+      schema:
+        type: array
+        minItems: 1
+        items:
+          type: string
+          pattern: '[+|-][A-Za-z_][A-Za-z_0-9]*'
+      style: form
+      explode: false        
     otherParameters:
       style: form
       in: query
@@ -573,6 +635,38 @@ components:
       properties:
         id:
           description: identifier of the attribute that can be used in CQL filters
+          type: string
+          example: address
+        type:
+          description: the property type
+          type: string
+          enum:
+            - string
+            - uri
+            - number
+            - integer
+            - date
+            - dateTime
+            - boolean
+            - geometry
+    sortables:
+      type: object
+      required:
+        - queryables
+      properties:
+        queryables:
+          description: list of queryable properties
+          type: array
+          items:
+            $ref: "#/components/schemas/sortable" 
+    sortable:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        id:
+          description: identifier of the attribute that can be used in sortby
           type: string
           example: address
         type:
@@ -1434,14 +1528,6 @@ components:
       required:
         - datetime
       type: object      
-    itemCollectionLinks:
-      description: 'An array of links. Can be used for pagination, e.g. by providing a link with the `next` relation type.'
-      example:
-        - rel: next
-          href: 'http://api.cool-sat.com/search?next=ANsXtp9mrqN0yrKWhf-y2PUpHRLQb1GT-mtxNcXou8TwkXhi1Jbk'
-      items:
-        $ref: '#/components/schemas/link'
-      type: array      
   responses:
     LandingPage:
       description: |-
@@ -1585,6 +1671,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/queryables'
+    Sortables:
+      description: |-
+        Information about the feature collection sortable properties
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/sortables'
     Collection:
       description: |-
         Information about the feature collection with id `collectionId`.

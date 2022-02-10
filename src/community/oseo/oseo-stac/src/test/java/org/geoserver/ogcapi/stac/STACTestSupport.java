@@ -176,16 +176,16 @@ public class STACTestSupport extends OGCApiTestSupport {
         assertEquals(Integer.valueOf(7), s2Sample.read("properties.eo:cloud_cover", Integer.class));
         // ... links
         assertEquals(
-                "http://localhost:8080/geoserver/ogcapi/stac/collections/SENTINEL2",
+                "http://localhost:8080/geoserver/ogc/stac/collections/SENTINEL2",
                 readSingle(s2Sample, "links[?(@.rel == 'collection')].href"));
         assertEquals(
                 "application/json", readSingle(s2Sample, "links[?(@.rel == 'collection')].type"));
         assertEquals(
-                "http://localhost:8080/geoserver/ogcapi/stac",
+                "http://localhost:8080/geoserver/ogc/stac",
                 readSingle(s2Sample, "links[?(@.rel == 'root')].href"));
         assertEquals("application/json", readSingle(s2Sample, "links[?(@.rel == 'root')].type"));
         assertEquals(
-                "http://localhost:8080/geoserver/ogcapi/stac/collections/SENTINEL2/items/S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
+                "http://localhost:8080/geoserver/ogc/stac/collections/SENTINEL2/items/S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04",
                 readSingle(s2Sample, "links[?(@.rel == 'self')].href"));
         assertEquals(
                 "application/geo+json", readSingle(s2Sample, "links[?(@.rel == 'self')].type"));

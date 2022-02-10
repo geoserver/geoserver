@@ -40,6 +40,16 @@
       </div>
     </div>
     
+    <div class="col-6 col-xl-3 mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2>Sortables</h2>
+          <p>The <a id="sortablesLink" href="${model.getLinkUrl('sortables', 'text/html')!}">Sortables</a> page list all properties that can be used to sort the results of a cross-collection search. 
+          </p>
+        </div>
+      </div>
+    </div>
+    
     
     <div class="col-6 col-xl-3 mb-3">
       <div class="card h-100">

@@ -22,9 +22,11 @@ import org.geoserver.featurestemplating.readers.TemplateReaderConfiguration;
 import org.geoserver.ogcapi.Queryables;
 import org.geoserver.opensearch.eo.store.JDBCOpenSearchAccessTest;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geoserver.platform.resource.Resource;
 import org.geotools.data.FeatureSource;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opengis.feature.Feature;
@@ -38,6 +40,11 @@ public class STACQueryablesBuilderTest {
     @BeforeClass
     public static void setupClass() throws IOException, SQLException {
         data = JDBCOpenSearchAccessTest.setupAndReturnStore();
+    }
+
+    @AfterClass
+    public static void clearExtensions() {
+        GeoServerExtensionsHelper.clear();
     }
 
     @Test

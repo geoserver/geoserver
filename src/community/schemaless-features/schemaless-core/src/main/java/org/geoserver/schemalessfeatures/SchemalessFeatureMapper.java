@@ -123,7 +123,7 @@ public abstract class SchemalessFeatureMapper<T> {
         if (shouldRemove) parentType.removePropertyDescriptor(attrDescriptor);
         if (attrDescriptor == null || shouldRemove) {
             typeBuilder
-                    .binding(value.getClass())
+                    .binding(value instanceof Number ? Number.class : value.getClass())
                     .name(attrName)
                     .namespaceURI(namespaceURI)
                     .maxOccurs(isCollection ? Integer.MAX_VALUE : 1)

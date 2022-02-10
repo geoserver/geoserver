@@ -8,7 +8,9 @@ import static org.geoserver.gwc.wmts.MultiDimensionalExtension.ALL_DOMAINS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
@@ -49,6 +51,38 @@ public class VectorTimeDimensionTest extends VectorTimeTestSupport {
     }
 
     @Test
+    public void testFixedValueRangeSingleValueDimension() throws Exception {
+        // enable a time dimension
+        DimensionInfo dimensionInfo = new DimensionInfoImpl();
+        dimensionInfo.setFixedValueRange("2012-02-11T00:00:00.000Z");
+        dimensionInfo.setEnabled(true);
+        FeatureTypeInfo vectorInfo = getVectorInfo();
+        vectorInfo.getMetadata().put(ResourceInfo.TIME, dimensionInfo);
+        getCatalog().save(vectorInfo);
+        // check that we correctly retrieve the time dimension
+        assertThat(
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
+        // Testing the fixed value range
+        assertEquals("2012-02-11T00:00:00.000Z",dimensionInfo.getFixedValueRange());
+    }
+
+    @Test
+    public void testFixedValueRangeListDimension() throws Exception {
+        // enable a time dimension
+        DimensionInfo dimensionInfo = new DimensionInfoImpl();
+        dimensionInfo.setFixedValueRange("2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z");
+        dimensionInfo.setEnabled(true);
+        FeatureTypeInfo vectorInfo = getVectorInfo();
+        vectorInfo.getMetadata().put(ResourceInfo.TIME, dimensionInfo);
+        getCatalog().save(vectorInfo);
+        // check that we correctly retrieve the time dimension
+        assertThat(
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
+        // Testing the fixed value range
+        assertEquals("2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z",dimensionInfo.getFixedValueRange());
+    }
+
+    @Test
     public void testGetDefaultValue() {
         testDefaultValueStrategy(Strategy.MINIMUM, "2012-02-11T00:00:00Z");
         testDefaultValueStrategy(Strategy.MAXIMUM, "2012-02-12T00:00:00Z");
@@ -72,7 +106,7 @@ public class VectorTimeDimensionTest extends VectorTimeTestSupport {
     }
 
     @Test
-    public void testGetHistogram() {
+    public void testGetHistogram() throws ParseException {
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "P1D");

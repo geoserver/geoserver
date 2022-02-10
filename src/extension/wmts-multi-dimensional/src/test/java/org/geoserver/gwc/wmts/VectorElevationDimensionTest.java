@@ -9,7 +9,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
@@ -51,6 +53,38 @@ public class VectorElevationDimensionTest extends TestsSupport {
     }
 
     @Test
+    public void testFixedValueRangeSingleValueDimension() throws Exception {
+        // enable a elevation dimension
+        DimensionInfo dimensionInfo = new DimensionInfoImpl();
+        dimensionInfo.setFixedValueRange("0.1");
+        dimensionInfo.setEnabled(true);
+        FeatureTypeInfo vectorInfo = getVectorInfo();
+        vectorInfo.getMetadata().put(ResourceInfo.ELEVATION, dimensionInfo);
+        getCatalog().save(vectorInfo);
+        // check that we correctly retrieve the elevation dimension
+        assertThat(
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
+        // Testing the fixed value range
+        assertEquals("0.1",dimensionInfo.getFixedValueRange());
+    }
+
+    @Test
+    public void testFixedValueRangeListDimension() throws Exception {
+        // enable a elevation dimension
+        DimensionInfo dimensionInfo = new DimensionInfoImpl();
+        dimensionInfo.setFixedValueRange("0.1,1.0");
+        dimensionInfo.setEnabled(true);
+        FeatureTypeInfo vectorInfo = getVectorInfo();
+        vectorInfo.getMetadata().put(ResourceInfo.ELEVATION, dimensionInfo);
+        getCatalog().save(vectorInfo);
+        // check that we correctly retrieve the elevation dimension
+        assertThat(
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
+        // Testing the fixed value range
+        assertEquals("0.1,1.0",dimensionInfo.getFixedValueRange());
+    }
+
+    @Test
     public void testGetDefaultValue() {
         testDefaultValueStrategy(Strategy.MINIMUM, "1.0");
         testDefaultValueStrategy(Strategy.MAXIMUM, "5.0");
@@ -74,7 +108,7 @@ public class VectorElevationDimensionTest extends TestsSupport {
     }
 
     @Test
-    public void testGetHistogram() {
+    public void testGetHistogram() throws ParseException {
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "1");
@@ -83,7 +117,7 @@ public class VectorElevationDimensionTest extends TestsSupport {
     }
 
     @Test
-    public void testGetHistogramMisaligned() {
+    public void testGetHistogramMisaligned() throws ParseException {
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "0.75");

@@ -23,6 +23,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.catalog.impl.DimensionInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
@@ -507,6 +508,175 @@ public class DimensionsVectorCapabilitiesTest extends WMSDimensionsTestSupport {
         assertXpathEvaluatesTo("elevation", "//Layer/Extent/@name", dom);
         assertXpathEvaluatesTo("0.0", "//Layer/Extent/@default", dom);
         assertXpathEvaluatesTo("0.0/3.0/0", "//Layer/Extent", dom);
+    }
+
+    @Test
+    public void testExtentFixedValueElevationContinousIntervalDimension() throws Exception {
+        Catalog catalog = getCatalog();
+        TestResourceAccessManager tam = getResourceAccessManager();
+        FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByName("sf:TimeElevation");
+        tam.putLimits(
+                "admin2",
+                featureTypeInfo,
+                new VectorAccessLimits(
+                        CatalogMode.CHALLENGE, null, Filter.EXCLUDE, null, Filter.EXCLUDE));
+        final DimensionInfo dimension = new DimensionInfoImpl();
+        dimension.setEnabled(true);
+        dimension.setFixedValueRange("0.0/3.0/0");
+        featureTypeInfo.getMetadata().put(ResourceInfo.ELEVATION, dimension);
+        getCatalog().save(featureTypeInfo);
+        catalog.save(featureTypeInfo);
+        setupVectorDimension(
+                ResourceInfo.ELEVATION,
+                "elevation",
+                DimensionPresentation.CONTINUOUS_INTERVAL,
+                null,
+                UNITS,
+                UNIT_SYMBOL);
+
+        setRequestAuth("admin2", "geoserver");
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+
+        // check we have the fixed value extent
+        assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
+        assertXpathEvaluatesTo("elevation", "//Layer/Extent/@name", dom);
+        assertXpathEvaluatesTo("0.0", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo("0.0/3.0/0", "//Layer/Extent", dom);
+    }
+
+    @Test
+    public void testExtentFixedValueElevationDiscreteIntervalDimension() throws Exception {
+        Catalog catalog = getCatalog();
+        TestResourceAccessManager tam = getResourceAccessManager();
+        FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByName("sf:TimeElevation");
+        tam.putLimits(
+                "admin2",
+                featureTypeInfo,
+                new VectorAccessLimits(
+                        CatalogMode.CHALLENGE, null, Filter.EXCLUDE, null, Filter.EXCLUDE));
+        final DimensionInfo dimension = new DimensionInfoImpl();
+        dimension.setEnabled(true);
+        dimension.setFixedValueRange("0.0/3.0");
+        featureTypeInfo.getMetadata().put(ResourceInfo.ELEVATION, dimension);
+        getCatalog().save(featureTypeInfo);
+        catalog.save(featureTypeInfo);
+        setupVectorDimension(
+                ResourceInfo.ELEVATION,
+                "elevation",
+                DimensionPresentation.DISCRETE_INTERVAL,
+                null,
+                UNITS,
+                UNIT_SYMBOL);
+
+        setRequestAuth("admin2", "geoserver");
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+
+        // check we have the fixed value extent
+        assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
+        assertXpathEvaluatesTo("elevation", "//Layer/Extent/@name", dom);
+        assertXpathEvaluatesTo("0.0", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo("0.0/3.0/1.0", "//Layer/Extent", dom);
+    }
+
+    @Test
+    public void testExtentFixedValueElevationListDimension() throws Exception {
+        Catalog catalog = getCatalog();
+        TestResourceAccessManager tam = getResourceAccessManager();
+        FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByName("sf:TimeElevation");
+        tam.putLimits(
+                "admin2",
+                featureTypeInfo,
+                new VectorAccessLimits(
+                        CatalogMode.CHALLENGE, null, Filter.EXCLUDE, null, Filter.EXCLUDE));
+        final DimensionInfo dimension = new DimensionInfoImpl();
+        dimension.setEnabled(true);
+        dimension.setFixedValueRange("0.0,1.0,2.0,3.0");
+        featureTypeInfo.getMetadata().put(ResourceInfo.ELEVATION, dimension);
+        getCatalog().save(featureTypeInfo);
+        catalog.save(featureTypeInfo);
+        setupVectorDimension(
+                ResourceInfo.ELEVATION,
+                "elevation",
+                DimensionPresentation.LIST,
+                null,
+                UNITS,
+                UNIT_SYMBOL);
+
+        setRequestAuth("admin2", "geoserver");
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+
+        // check we have the fixed value extent
+        assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
+        assertXpathEvaluatesTo("elevation", "//Layer/Extent/@name", dom);
+        assertXpathEvaluatesTo("0.0", "//Layer/Extent/@default", dom);
+        assertXpathEvaluatesTo("0.0,1.0,2.0,3.0", "//Layer/Extent", dom);
+    }
+
+    @Test
+    public void testExtentFixedValueTimeContinuousIntervalDimension() throws Exception {
+        Catalog catalog = getCatalog();
+        TestResourceAccessManager tam = getResourceAccessManager();
+        FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByName("sf:TimeElevation");
+        tam.putLimits(
+                "admin2",
+                featureTypeInfo,
+                new VectorAccessLimits(
+                        CatalogMode.CHALLENGE, null, Filter.EXCLUDE, null, Filter.EXCLUDE));
+        final DimensionInfo dimension = new DimensionInfoImpl();
+        dimension.setEnabled(true);
+        dimension.setFixedValueRange("2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z");
+        featureTypeInfo.getMetadata().put(ResourceInfo.TIME, dimension);
+        getCatalog().save(featureTypeInfo);
+        catalog.save(featureTypeInfo);
+        setupVectorDimension(
+                ResourceInfo.TIME,
+                "time",
+                DimensionPresentation.CONTINUOUS_INTERVAL,
+                null,
+                null,
+                null);
+
+        setRequestAuth("admin2", "geoserver");
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+
+        // check we have the fixed value extent
+
+        assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
+        assertXpathEvaluatesTo("time", "//Layer/Extent/@name", dom);
+        assertXpathEvaluatesTo(
+                "2011-05-01T00:00:00.000Z/2011-05-04T00:00:00.000Z/PT1S", "//Layer/Extent", dom);
+    }
+
+    @Test
+    public void testExtentFixedValueTimeListDimension() throws Exception {
+        Catalog catalog = getCatalog();
+        TestResourceAccessManager tam = getResourceAccessManager();
+        FeatureTypeInfo featureTypeInfo = catalog.getFeatureTypeByName("sf:TimeElevation");
+        tam.putLimits(
+                "admin2",
+                featureTypeInfo,
+                new VectorAccessLimits(
+                        CatalogMode.CHALLENGE, null, Filter.EXCLUDE, null, Filter.EXCLUDE));
+        final DimensionInfo dimension = new DimensionInfoImpl();
+        dimension.setEnabled(true);
+        dimension.setFixedValueRange("2011-05-01T00:00:00.000Z,2011-05-04T00:00:00.000Z");
+        featureTypeInfo.getMetadata().put(ResourceInfo.TIME, dimension);
+        getCatalog().save(featureTypeInfo);
+        catalog.save(featureTypeInfo);
+        setupVectorDimension(
+                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+
+        setRequestAuth("admin2", "geoserver");
+        Document dom = dom(get("wms?request=getCapabilities&version=1.1.1"), false);
+
+        // check we have the fixed value extent
+
+        assertXpathEvaluatesTo("1", "count(//Layer/Extent)", dom);
+        assertXpathEvaluatesTo("time", "//Layer/Extent/@name", dom);
+        assertXpathEvaluatesTo(
+                "2011-05-01T00:00:00.000Z,2011-05-02T00:00:00.000Z,2011-05-03T00:00:00.000Z,2011-05-04T00:00:00.000Z",
+                "//Layer/Extent",
+                dom);
     }
 
     protected TestResourceAccessManager getResourceAccessManager() {

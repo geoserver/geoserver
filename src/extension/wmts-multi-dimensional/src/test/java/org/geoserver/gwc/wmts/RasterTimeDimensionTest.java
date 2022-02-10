@@ -8,7 +8,9 @@ import static org.geoserver.gwc.wmts.MultiDimensionalExtension.ALL_DOMAINS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -74,6 +76,38 @@ public class RasterTimeDimensionTest extends TestsSupport {
         // no dimensions should be available
         assertThat(
                 DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(0));
+    }
+
+    @Test
+    public void testFixedValueRangeSingleValueDimension() throws Exception {
+        // enable a time dimension
+        DimensionInfo dimensionInfo = new DimensionInfoImpl();
+        dimensionInfo.setFixedValueRange("2012-02-11T00:00:00.000Z");
+        dimensionInfo.setEnabled(true);
+        CoverageInfo rasterInfo = getCoverageInfo();
+        rasterInfo.getMetadata().put(ResourceInfo.TIME, dimensionInfo);
+        getCatalog().save(rasterInfo);
+        // check that we correctly retrieve the time dimension
+        assertThat(
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
+        // no dimensions should be available
+        assertEquals("2012-02-11T00:00:00.000Z",dimensionInfo.getFixedValueRange());
+    }
+
+    @Test
+    public void testFixedValueRangeListDimension() throws Exception {
+        // enable a time dimension
+        DimensionInfo dimensionInfo = new DimensionInfoImpl();
+        dimensionInfo.setFixedValueRange("2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z");
+        dimensionInfo.setEnabled(true);
+        CoverageInfo rasterInfo = getCoverageInfo();
+        rasterInfo.getMetadata().put(ResourceInfo.TIME, dimensionInfo);
+        getCatalog().save(rasterInfo);
+        // check that we correctly retrieve the time dimension
+        assertThat(
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
+        // no dimensions should be available
+        assertEquals("2012-02-11T00:00:00.000Z,2012-02-12T00:00:00.000Z",dimensionInfo.getFixedValueRange());
     }
 
     @Test
@@ -147,7 +181,7 @@ public class RasterTimeDimensionTest extends TestsSupport {
     }
 
     @Test
-    public void testGetHistogram() {
+    public void testGetHistogram() throws ParseException {
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "P1Y");

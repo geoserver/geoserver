@@ -9,7 +9,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 
+import java.text.ParseException;
 import java.util.List;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.DimensionDefaultValueSetting.Strategy;
@@ -50,6 +52,38 @@ public class RasterElevationDimensionTest extends TestsSupport {
     }
 
     @Test
+    public void testFixedValueRangeSingleValueDimension() throws Exception {
+        // enable a elevation dimension
+        DimensionInfo dimensionInfo = new DimensionInfoImpl();
+        dimensionInfo.setFixedValueRange("0.1");
+        dimensionInfo.setEnabled(true);
+        CoverageInfo rasterInfo = getCoverageInfo();
+        rasterInfo.getMetadata().put(ResourceInfo.ELEVATION, dimensionInfo);
+        getCatalog().save(rasterInfo);
+        // check that we correctly retrieve the elevation dimension
+        assertThat(
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
+        // no dimensions should be available
+        assertEquals("0.1",dimensionInfo.getFixedValueRange());
+    }
+
+    @Test
+    public void testFixedValueRangeListDimension() throws Exception {
+        // enable a elevation dimension
+        DimensionInfo dimensionInfo = new DimensionInfoImpl();
+        dimensionInfo.setFixedValueRange("0.1,1.0,2.0");
+        dimensionInfo.setEnabled(true);
+        CoverageInfo rasterInfo = getCoverageInfo();
+        rasterInfo.getMetadata().put(ResourceInfo.ELEVATION, dimensionInfo);
+        getCatalog().save(rasterInfo);
+        // check that we correctly retrieve the elevation dimension
+        assertThat(
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
+        // no dimensions should be available
+        assertEquals("0.1,1.0,2.0",dimensionInfo.getFixedValueRange());
+    }
+
+    @Test
     public void testGetDefaultValue() {
         testDefaultValueStrategy(Strategy.MINIMUM, "0.0");
         testDefaultValueStrategy(Strategy.MAXIMUM, "100.0");
@@ -67,7 +101,7 @@ public class RasterElevationDimensionTest extends TestsSupport {
     }
 
     @Test
-    public void testGetHistogram() {
+    public void testGetHistogram() throws ParseException {
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         Tuple<String, List<Integer>> histogram = dimension.getHistogram(Filter.INCLUDE, "50");

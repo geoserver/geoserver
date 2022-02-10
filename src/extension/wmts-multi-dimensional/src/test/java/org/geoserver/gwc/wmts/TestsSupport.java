@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
@@ -115,8 +116,8 @@ public abstract class TestsSupport extends WMSTestSupport {
 
     protected abstract Dimension buildDimension(DimensionInfo dimensionInfo);
 
-    protected void testDomainsValuesRepresentation(
-            int expandLimit, String... expectedDomainValues) {
+    protected void testDomainsValuesRepresentation(int expandLimit, String... expectedDomainValues)
+            throws ParseException {
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension = buildDimension(dimensionInfo);
         List<String> valuesAsStrings =

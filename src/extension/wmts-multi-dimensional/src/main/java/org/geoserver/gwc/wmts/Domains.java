@@ -5,6 +5,7 @@
 package org.geoserver.gwc.wmts;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
@@ -113,7 +114,7 @@ public class Domains {
         return expandLimit;
     }
 
-    Tuple<String, List<Integer>> getHistogramValues() {
+    Tuple<String, List<Integer>> getHistogramValues() throws ParseException {
         for (Dimension dimension : dimensions) {
             if (dimension.getDimensionName().equalsIgnoreCase(histogram)) {
                 return dimension.getHistogram(filter, resolution);

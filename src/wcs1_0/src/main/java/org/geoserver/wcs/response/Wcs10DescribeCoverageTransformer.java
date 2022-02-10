@@ -10,6 +10,7 @@ import static org.geoserver.ows.util.ResponseUtils.buildURL;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +30,7 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
+import org.geoserver.catalog.FixedValueRange;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.PublishedType;
@@ -77,6 +79,8 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
     private static final Map<String, String> METHOD_NAME_MAP = new HashMap<>();
 
     private final boolean skipMisconfigured;
+
+    FixedValueRange fixedValueInfo;
 
     static {
         METHOD_NAME_MAP.put("nearest neighbor", "nearest");
@@ -401,43 +405,59 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
         /** */
         private void handleTemporalDomain(
                 CoverageInfo ci, DimensionInfo timeInfo, ReaderDimensionsAccessor dimensions)
-                throws IOException {
+                throws IOException, ParseException {
             SimpleDateFormat timeFormat = dimensions.getTimeFormat();
             start("wcs:temporalDomain");
             if (timeInfo.getPresentation() == DimensionPresentation.LIST) {
-                for (Object item : dimensions.getTimeDomain()) {
-                    if (item instanceof Date) {
+                if (timeInfo.getFixedValueRange() != null) {
+                    TreeSet<Object> fixedValueInfoSet =
+                            fixedValueInfo.getFixedValueRange(timeInfo.getFixedValueRange());
+                    for (Object item : fixedValueInfoSet) {
                         element("gml:timePosition", timeFormat.format((Date) item));
-                    } else {
-                        DateRange range = (DateRange) item;
-                        start("wcs:timePeriod");
-                        String minTime = timeFormat.format(range.getMinValue());
-                        String maxTime = timeFormat.format(range.getMaxValue());
-                        element("wcs:beginPosition", minTime);
-                        element("wcs:endPosition", maxTime);
-                        end("wcs:timePeriod");
+                    }
+                } else {
+                    for (Object item : dimensions.getTimeDomain()) {
+                        if (item instanceof Date) {
+                            element("gml:timePosition", timeFormat.format((Date) item));
+                        } else {
+                            DateRange range = (DateRange) item;
+                            start("wcs:timePeriod");
+                            String minTime = timeFormat.format(range.getMinValue());
+                            String maxTime = timeFormat.format(range.getMaxValue());
+                            element("wcs:beginPosition", minTime);
+                            element("wcs:endPosition", maxTime);
+                            end("wcs:timePeriod");
+                        }
                     }
                 }
             } else {
-                String minTime = timeFormat.format(dimensions.getMinTime());
-                String maxTime = timeFormat.format(dimensions.getMaxTime());
-                start("wcs:timePeriod");
-                element("wcs:beginPosition", minTime);
-                element("wcs:endPosition", maxTime);
-                if (timeInfo.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL) {
-                    BigDecimal resolution = timeInfo.getResolution();
-                    if (resolution == null) {
-                        resolution =
-                                new BigDecimal(
-                                        dimensions.getMaxTime().getTime()
-                                                - dimensions.getMinTime().getTime());
+                if (timeInfo.getFixedValueRange() != null) {
+                    TreeSet<Object> fixedValueInfoSet =
+                            fixedValueInfo.getFixedValueRange(timeInfo.getFixedValueRange());
+                    for (Object item : fixedValueInfoSet) {
+                        element("gml:timePosition", timeFormat.format((Date) item));
                     }
-                    // this will format the time period properly
-                    element(
-                            "wcs:timeResolution",
-                            new DefaultPeriodDuration(resolution.longValue()).toString());
+                } else {
+                    String minTime = timeFormat.format(dimensions.getMinTime());
+                    String maxTime = timeFormat.format(dimensions.getMaxTime());
+                    start("wcs:timePeriod");
+                    element("wcs:beginPosition", minTime);
+                    element("wcs:endPosition", maxTime);
+                    if (timeInfo.getPresentation() == DimensionPresentation.DISCRETE_INTERVAL) {
+                        BigDecimal resolution = timeInfo.getResolution();
+                        if (resolution == null) {
+                            resolution =
+                                    new BigDecimal(
+                                            dimensions.getMaxTime().getTime()
+                                                    - dimensions.getMinTime().getTime());
+                        }
+                        // this will format the time period properly
+                        element(
+                                "wcs:timeResolution",
+                                new DefaultPeriodDuration(resolution.longValue()).toString());
+                    }
+                    end("wcs:timePeriod");
                 }
-                end("wcs:timePeriod");
             }
             end("wcs:temporalDomain");
         }
@@ -504,7 +524,7 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
         }
 
         /** */
-        private void handleRange(CoverageInfo ci) throws IOException {
+        private void handleRange(CoverageInfo ci) throws IOException, ParseException {
             // rangeSet
             start("wcs:rangeSet");
             start("wcs:RangeSet");
@@ -571,19 +591,30 @@ public class Wcs10DescribeCoverageTransformer extends TransformerBase {
                     // we cannot expose ranges, so if we find them, we turn them into
                     // their mid point
                     TreeSet<Double> elevations = new TreeSet<>();
-                    for (Object raw : rawElevations) {
-                        if (raw instanceof Double) {
-                            elevations.add((Double) raw);
-                        } else {
-                            @SuppressWarnings("unchecked")
-                            NumberRange<Double> range = (NumberRange<Double>) raw;
-                            double midValue = (range.getMinimum() + range.getMaximum()) / 2;
-                            elevations.add(midValue);
+                    if (elevationInfo.getFixedValueRange() != null) {
+                        elevations =
+                                fixedValueInfo.getFixedValueRangeElevation(
+                                        elevationInfo.getFixedValueRange());
+                        for (Double elevation : elevations) {
+                            element("wcs:singleValue", Double.toString(elevation));
+                        }
+                    } else {
+
+                        for (Object raw : rawElevations) {
+                            if (raw instanceof Double) {
+                                elevations.add((Double) raw);
+                            } else {
+                                @SuppressWarnings("unchecked")
+                                NumberRange<Double> range = (NumberRange<Double>) raw;
+                                double midValue = (range.getMinimum() + range.getMaximum()) / 2;
+                                elevations.add(midValue);
+                            }
+                        }
+                        for (Double elevation : elevations) {
+                            element("wcs:singleValue", Double.toString(elevation));
                         }
                     }
-                    for (Double elevation : elevations) {
-                        element("wcs:singleValue", Double.toString(elevation));
-                    }
+
                     element("wcs:default", Double.toString(elevations.first()));
 
                     end("wcs:values");

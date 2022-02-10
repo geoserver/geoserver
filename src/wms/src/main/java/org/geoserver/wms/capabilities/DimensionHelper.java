@@ -28,6 +28,7 @@ import org.geoserver.catalog.DimensionDefaultValueSetting;
 import org.geoserver.catalog.DimensionInfo;
 import org.geoserver.catalog.DimensionPresentation;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.FixedValueRange;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
@@ -341,13 +342,19 @@ abstract class DimensionHelper {
             CoverageInfo cvInfo, DimensionInfo elevInfo, ReaderDimensionsAccessor dimensions)
             throws IOException {
         TreeSet<Object> elevations = null;
+        FixedValueRange fixedValueInfo = new FixedValueRange();
         try {
             if (elevInfo.getPresentation() != DimensionPresentation.LIST) {
-                Double minValue = dimensions.getMinElevation();
-                if (minValue != null) {
-                    elevations = new TreeSet<>();
-                    elevations.add(minValue);
-                    elevations.add(dimensions.getMaxElevation());
+                if (elevInfo.getFixedValueRange() != null) {
+                    elevations = fixedValueInfo.getFixedValueRange(elevInfo.getFixedValueRange());
+
+                } else {
+                    Double minValue = dimensions.getMinElevation();
+                    if (minValue != null) {
+                        elevations = new TreeSet<>();
+                        elevations.add(minValue);
+                        elevations.add(dimensions.getMaxElevation());
+                    }
                 }
             }
             if (elevations == null) {
@@ -387,13 +394,19 @@ abstract class DimensionHelper {
             CoverageInfo cvInfo, DimensionInfo timeInfo, ReaderDimensionsAccessor dimension)
             throws IOException {
         TreeSet<Object> temporalDomain = null;
+        FixedValueRange fixedValueInfo = new FixedValueRange();
         try {
             if (timeInfo.getPresentation() != DimensionPresentation.LIST) {
-                Date minValue = dimension.getMinTime();
-                if (minValue != null) {
-                    temporalDomain = new TreeSet<>();
-                    temporalDomain.add(minValue);
-                    temporalDomain.add(dimension.getMaxTime());
+                if (timeInfo.getFixedValueRange() != null) {
+                    temporalDomain =
+                            fixedValueInfo.getFixedValueRange(timeInfo.getFixedValueRange());
+                } else {
+                    Date minValue = dimension.getMinTime();
+                    if (minValue != null) {
+                        temporalDomain = new TreeSet<>();
+                        temporalDomain.add(minValue);
+                        temporalDomain.add(dimension.getMaxTime());
+                    }
                 }
             }
             if (temporalDomain == null) {

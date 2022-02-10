@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 import org.geoserver.ogcapi.Link;
 import org.geoserver.ogcapi.Queryables;
+import org.geoserver.ogcapi.Sortables;
 import org.geoserver.opensearch.eo.store.OpenSearchAccess;
 import org.geoserver.platform.Service;
 import org.geotools.data.Query;
@@ -44,7 +45,9 @@ public class LandingPageTest extends STACTestSupport {
                         "searchGet",
                         "searchPost",
                         "getCollectionQueryables",
-                        "getSearchQueryables"));
+                        "getCollectionSortables",
+                        "getSearchQueryables",
+                        "getSearchSortables"));
     }
 
     @Test
@@ -145,6 +148,11 @@ public class LandingPageTest extends STACTestSupport {
                 "links[?(@.href =~ /.*ogc\\/stac\\/queryables.*/)].rel",
                 Queryables.REL,
                 Queryables.REL);
+        assertJSONList(
+                json,
+                "links[?(@.href =~ /.*ogc\\/stac\\/sortables.*/)].rel",
+                Sortables.REL,
+                Sortables.REL);
         // check title
         assertEquals(STAC_TITLE, json.read("title"));
         // check description

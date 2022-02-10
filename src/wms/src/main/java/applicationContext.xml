@@ -277,7 +277,7 @@
  	<bean id="validateSldKvpParser" class="org.geoserver.ows.kvp.BooleanKvpParser">
  		<constructor-arg value="validateschema"/>
  	</bean>
-    <bean id="sldKvpParser" class="org.geoserver.ows.kvp.URLKvpParser">
+    <bean id="sldKvpParser" class="org.geoserver.ows.kvp.URIKvpParser">
         <constructor-arg value="sld"/>
     </bean>
  	<bean id="startIndexKvpParser" class="org.geoserver.ows.kvp.IntegerKvpParser">

@@ -35,6 +35,9 @@ import org.opengis.feature.type.FeatureType;
 public class STACQueryablesBuilderTest {
 
     private static final String FAKE_ID = "foobar";
+    private static final String TYPE_NUMBER = "number";
+    private static final String TYPE_STRING = "string";
+    private static final String TYPE_INTEGER = "integer";
     static OpenSearchAccess data;
 
     @BeforeClass
@@ -88,33 +91,75 @@ public class STACQueryablesBuilderTest {
         // check the creation time
         Schema created = properties.get("created");
         assertNotNull(datetime);
-        assertEquals("string", created.getType());
+        assertEquals(TYPE_STRING, created.getType());
         assertEquals("date-time", created.getFormat());
 
         // check the constellation
         Schema constellation = properties.get("constellation");
         assertNotNull(constellation);
-        assertEquals("string", constellation.getType());
+        assertEquals(TYPE_STRING, constellation.getType());
         assertNull(constellation.getFormat());
 
         // check the cloud cover, which has a math expression
         Schema cloudCover = properties.get("eo:cloud_cover");
         assertNotNull(cloudCover);
-        assertEquals("integer", cloudCover.getType());
+        assertEquals(TYPE_INTEGER, cloudCover.getType());
 
         // check the minimum incidence angle, uses a float property
         Schema mia = properties.get("sar:minimum_incidence_angle");
         assertNotNull(mia);
-        assertEquals("number", mia.getType());
+        assertEquals(TYPE_NUMBER, mia.getType());
 
         // check the test:the_max, uses a function between doubles
         Schema max = properties.get("test:the_max");
         assertNotNull(max);
-        assertEquals("number", max.getType());
+        assertEquals(TYPE_NUMBER, max.getType());
 
         // check a nested property
         Schema nested = properties.get("one.two.three");
         assertNotNull(nested);
-        assertEquals("number", max.getType());
+        assertEquals(TYPE_NUMBER, max.getType());
+    }
+
+    @Test
+    public void testQueryablesIncludeFlat() throws Exception {
+        FileSystemResourceStore resourceStore =
+                new FileSystemResourceStore(new File("./src/test/resources"));
+        Resource templateDefinition = resourceStore.get("items-SAS1.json");
+        FeatureSource<FeatureType, Feature> products = data.getProductSource();
+        TemplateReaderConfiguration config =
+                new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
+        Template template = new Template(templateDefinition, config);
+        STACQueryablesBuilder builder =
+                new STACQueryablesBuilder(FAKE_ID, template.getRootBuilder(), products.getSchema());
+        Queryables queryables = builder.getQueryables();
+        Map<String, Schema> properties = queryables.getProperties();
+        System.out.println(properties.keySet());
+
+        // queryables from spec
+        Schema id = properties.get("id");
+        assertNotNull(id);
+        assertEquals(STACQueryablesBuilder.ID_SCHEMA_REF, id.get$ref());
+
+        Schema geometry = properties.get("geometry");
+        assertNotNull(geometry);
+        assertEquals(STACQueryablesBuilder.GEOMETRY_SCHEMA_REF, geometry.get$ref());
+
+        Schema collection = properties.get("collection");
+        assertNotNull(collection);
+        assertEquals(STACQueryablesBuilder.COLLECTION_SCHEMA_REF, collection.get$ref());
+
+        Schema datetime = properties.get("datetime");
+        assertNotNull(datetime);
+        assertEquals(STACQueryablesBuilder.DATETIME_SCHEMA_REF, datetime.get$ref());
+
+        // custom queryables from mapping file
+        Schema azimuth = properties.get("view:sun_azimuth");
+        assertNotNull(azimuth);
+        assertEquals(TYPE_NUMBER, azimuth.getType());
+
+        Schema clouds = properties.get("custom:clouds");
+        assertNotNull(clouds);
+        assertEquals(TYPE_INTEGER, clouds.getType());
     }
 }

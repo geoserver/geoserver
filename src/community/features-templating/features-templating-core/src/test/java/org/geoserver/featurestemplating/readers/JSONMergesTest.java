@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -126,9 +127,22 @@ public class JSONMergesTest {
         Resource mergeBase = store.get("simpleBase.json");
         File file = mergeBase.file();
         file.setLastModified(new Date().getTime());
-        Thread.sleep(1000);
 
-        assertTrue(rootBuilder.needsReload());
+        assertReloadNeeded(rootBuilder);
+    }
+
+    /**
+     * Utility method that waits up to a minute for the builder to figure out
+     *
+     * @param rootBuilder
+     * @throws InterruptedException
+     */
+    public static void assertReloadNeeded(RootBuilder rootBuilder) throws InterruptedException {
+        for (int i = 0; i < 600; i++) {
+            if (rootBuilder.needsReload()) return;
+            Thread.sleep(100);
+        }
+        fail("Should have found a reload 60 seconds, but did not");
     }
 
     @Test

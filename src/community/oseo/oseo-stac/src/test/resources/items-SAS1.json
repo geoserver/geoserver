@@ -28,8 +28,10 @@
         "view:sun_azimuth": "${eop:illuminationAzimuthAngle}",
         "view:sun_elevation": "${eop:illuminationElevationAngle}",
         "sat:orbit_state": "$${strToLowerCase(eop:orbitDirection)}",
+        "custom:clouds": "${opt:cloudCover}",
         "sat:absolute_orbit": "${eop:orbitNumber}",
-        "sat:anx_datetime": "${eop:startTimeFromAscendingNode}"
+        "sat:anx_datetime": "${eop:startTimeFromAscendingNode}",
+        "$includeFlat":"${extraProperties}"
       },
       "collection": "${eop:parentIdentifier}",
       "assets": "${assets}",

@@ -22,6 +22,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -37,8 +38,11 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import javax.media.jai.PlanarImage;
@@ -52,6 +56,9 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.easymock.Capture;
 import org.easymock.CaptureType;
 import org.easymock.EasyMock;
+import org.geoserver.catalog.impl.DataStoreInfoImpl;
+import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.catalog.util.ReaderUtils;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -113,6 +120,7 @@ import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.geometry.Envelope;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.ExternalGraphic;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -599,6 +607,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         ResourcePool rp = getCatalog().getResourcePool();
 
         WMSStoreInfo info = getCatalog().getFactory().createWebMapServer();
+        ((WMSStoreInfoImpl) info).setId(UUID.randomUUID().toString());
         URL url = getClass().getResource("1.3.0Capabilities-xxe.xml");
         info.setCapabilitiesURL(url.toExternalForm());
         info.setEnabled(true);
@@ -682,7 +691,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         style.setName("foo");
         style.setFilename("foo.sld");
         style.setFormat(null);
-
+        ((StyleInfoImpl) style).setId(UUID.randomUUID().toString());
         File sldFile =
                 new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "styles/foo.sld");
 
@@ -970,5 +979,291 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         // the CoverageReaderFileConverter should have successfully converted the URL string to a
         // File object
         assertTrue(reader.getSource() instanceof File);
+    }
+
+    @Test
+    public void testGetDataStoreConcurrency() throws Exception {
+        ResourcePool pool = null;
+        try {
+            final Catalog catalog = getCatalog();
+            DataStoreInfo ds = storeInfo(catalog, "concurrencyTest1");
+            pool =
+                    new ResourcePool(getCatalog()) {
+                        @Override
+                        protected DataAccess<? extends FeatureType, ? extends Feature>
+                                createDataAccess(DataStoreInfo info, DataStoreInfo expandedStore)
+                                        throws IOException {
+                            return super.createDataAccess(info, expandedStore);
+                        }
+                    };
+
+            ResourcePoolLatchedThread.PoolBiFunction<DataStoreInfo, DataAccess> function =
+                    (resPool, info) -> resPool.getDataStore(info);
+            CountDownLatch taskLatch = new CountDownLatch(1);
+            int numberOfThreads = 5;
+            CountDownLatch completeLatch = new CountDownLatch(numberOfThreads);
+            List<ResourcePoolLatchedThread<DataStoreInfo, DataAccess>> threads =
+                    getLatchedThreads(
+                            taskLatch, completeLatch, numberOfThreads, pool, ds, function);
+            threads.forEach(t -> t.start());
+            taskLatch.countDown();
+            completeLatch.await();
+            DataAccess dA = pool.dataStoreCache.get(ds.getId());
+            assertNotNull(dA);
+            for (ResourcePoolLatchedThread<DataStoreInfo, DataAccess> t : threads) {
+                assertSame(dA, t.getResult());
+                assertTrue(t.getErrors().isEmpty());
+            }
+        } finally {
+            if (pool != null) pool.dispose();
+        }
+    }
+
+    @Test
+    public void testNonBlockingThreadOnGetStore() throws Exception {
+        // test that if a thread is accessing a store in the cache
+        // and is blocked, other threads can retrieve other instances from the cache.
+        ResourcePool resPool = null;
+        try {
+            final Catalog catalog = getCatalog();
+            DataStoreInfo ds = storeInfo(catalog, "concurrencyTest2");
+            DataStoreInfo ds2 = storeInfo(catalog, "concurrencyTest3");
+            CountDownLatch taskLatch = new CountDownLatch(1);
+            CountDownLatch taskLatch2 = new CountDownLatch(1);
+            resPool =
+                    new ResourcePool(catalog) {
+                        @Override
+                        protected DataAccess<? extends FeatureType, ? extends Feature>
+                                createDataAccess(DataStoreInfo info, DataStoreInfo expandedStore)
+                                        throws IOException {
+                            if (ds.getId().equalsIgnoreCase(info.getId())) {
+                                Thread thread = Thread.currentThread();
+                                synchronized (thread) {
+                                    try {
+                                        // lets the other thread start and try retrieve
+                                        // another store.
+                                        taskLatch2.countDown();
+                                        thread.wait(60 * 1000);
+                                    } catch (InterruptedException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+                            }
+                            return super.createDataAccess(info, expandedStore);
+                        }
+                    };
+            ResourcePoolLatchedThread.PoolBiFunction<DataStoreInfo, DataAccess> function =
+                    (pool, info) -> pool.getDataStore(info);
+            CountDownLatch completeLatch = new CountDownLatch(2);
+            ResourcePoolLatchedThread<DataStoreInfo, DataAccess> latchedThread1 =
+                    new ResourcePoolLatchedThread<>(
+                            taskLatch, completeLatch, resPool, ds, function);
+            ResourcePoolLatchedThread<DataStoreInfo, DataAccess> latchedThread2 =
+                    new ResourcePoolLatchedThread<>(
+                            taskLatch2, completeLatch, resPool, ds2, function);
+            latchedThread1.start();
+            latchedThread2.start();
+            // let's start just the first thread
+            // when it will arrive at store creation time will unblock
+            // the second thread.
+            taskLatch.countDown();
+            latchedThread2.join();
+            // thread2 completed and retrieved the data Access.
+            DataAccess access = resPool.dataStoreCache.get(ds2.getId());
+            assertSame(access, latchedThread2.getResult());
+            assertNull(latchedThread1.getResult());
+
+            synchronized (latchedThread1) {
+                latchedThread1.notify();
+            }
+            completeLatch.await();
+
+            DataAccess dA = resPool.dataStoreCache.get(ds.getId());
+            assertNotNull(dA);
+            assertSame(dA, latchedThread1.getResult());
+        } finally {
+            if (resPool != null) resPool.dispose();
+        }
+    }
+
+    @Test
+    public void testConcurrencyOnFeatureTypeCache() throws Exception {
+        ResourcePool pool = null;
+        try {
+            pool = ResourcePool.create(getCatalog());
+            FeatureTypeInfo info =
+                    getCatalog()
+                            .getFeatureTypeByName(
+                                    MockData.LAKES.getNamespaceURI(),
+                                    MockData.LAKES.getLocalPart());
+            CountDownLatch taskLatch = new CountDownLatch(1);
+            int numberOfThreads = 5;
+            CountDownLatch completeLatch = new CountDownLatch(numberOfThreads);
+            ResourcePoolLatchedThread.PoolBiFunction<FeatureTypeInfo, FeatureType> function =
+                    (rl, fti) -> rl.getFeatureType(info, false);
+            List<ResourcePoolLatchedThread<FeatureTypeInfo, FeatureType>> threads =
+                    getLatchedThreads(
+                            taskLatch, completeLatch, numberOfThreads, pool, info, function);
+            threads.forEach(t -> t.start());
+            taskLatch.countDown();
+            completeLatch.await();
+            FeatureType featureType = pool.getFeatureType(info, false);
+            for (ResourcePoolLatchedThread<FeatureTypeInfo, FeatureType> t : threads) {
+                assertSame(featureType, t.getResult());
+                assertTrue(t.getErrors().isEmpty());
+            }
+        } finally {
+            if (pool != null) {
+                pool.dispose();
+            }
+        }
+    }
+
+    @Test
+    public void testConcurrencyOnCRSCache() throws Exception {
+        ResourcePool pool = null;
+        try {
+            pool = ResourcePool.create(getCatalog());
+            String srs = "EPSG:4326";
+            CountDownLatch taskLatch = new CountDownLatch(1);
+            int numberOfThreads = 5;
+            CountDownLatch completeLatch = new CountDownLatch(numberOfThreads);
+            ResourcePoolLatchedThread.PoolBiFunction<String, CoordinateReferenceSystem> function =
+                    (rl, srsName) -> rl.getCRS(srsName);
+            List<ResourcePoolLatchedThread<String, CoordinateReferenceSystem>> threads =
+                    getLatchedThreads(
+                            taskLatch, completeLatch, numberOfThreads, pool, srs, function);
+            threads.forEach(t -> t.start());
+            taskLatch.countDown();
+            completeLatch.await();
+            CoordinateReferenceSystem crs = pool.getCrsCache().get(srs);
+            for (ResourcePoolLatchedThread<String, CoordinateReferenceSystem> t : threads) {
+                assertSame(crs, t.getResult());
+                assertTrue(t.getErrors().isEmpty());
+            }
+        } finally {
+            if (pool != null) pool.dispose();
+        }
+    }
+
+    @Test
+    public void testConcurrencyOnStyleCache() throws Exception {
+        ResourcePool pool = null;
+        try {
+            pool = ResourcePool.create(getCatalog());
+            StyleInfo info = getCatalog().getStyleByName(HUMANS);
+            CountDownLatch taskLatch = new CountDownLatch(1);
+            int numberOfThreads = 5;
+            CountDownLatch completeLatch = new CountDownLatch(numberOfThreads);
+            ResourcePoolLatchedThread.PoolBiFunction<StyleInfo, Style> function =
+                    (rl, styleInfo) -> rl.getStyle(styleInfo);
+            List<ResourcePoolLatchedThread<StyleInfo, Style>> threads =
+                    getLatchedThreads(
+                            taskLatch, completeLatch, numberOfThreads, pool, info, function);
+            threads.forEach(t -> t.start());
+            taskLatch.countDown();
+            completeLatch.await();
+            Style style = pool.getStyleCache().get(info.getId());
+            for (ResourcePoolLatchedThread<StyleInfo, Style> t : threads) {
+                assertSame(style, t.getResult());
+                assertTrue(t.getErrors().isEmpty());
+            }
+        } finally {
+            if (pool != null) pool.dispose();
+        }
+    }
+
+    @Test
+    public void testConcurrencyOnSLDCache() throws Exception {
+        ResourcePool pool = null;
+        try {
+            pool = ResourcePool.create(getCatalog());
+            StyleInfo info = getCatalog().getStyleByName(HUMANS);
+            CountDownLatch taskLatch = new CountDownLatch(1);
+            int numberOfThreads = 5;
+            CountDownLatch completeLatch = new CountDownLatch(numberOfThreads);
+            ResourcePoolLatchedThread.PoolBiFunction<StyleInfo, StyledLayerDescriptor> function =
+                    (rl, styleInfo) -> rl.getSld(styleInfo);
+            List<ResourcePoolLatchedThread<StyleInfo, StyledLayerDescriptor>> threads =
+                    getLatchedThreads(
+                            taskLatch, completeLatch, numberOfThreads, pool, info, function);
+            threads.forEach(t -> t.start());
+            taskLatch.countDown();
+            completeLatch.await();
+            StyledLayerDescriptor sld = pool.getSldCache().get(info.getId());
+            for (ResourcePoolLatchedThread<StyleInfo, StyledLayerDescriptor> t : threads) {
+                assertSame(sld, t.getResult());
+                assertTrue(t.getErrors().isEmpty());
+            }
+        } finally {
+            if (pool != null) pool.dispose();
+        }
+    }
+
+    @Test
+    public void testConcurrencyOnFeatureTypeAttrsCache() throws Exception {
+        ResourcePool pool = null;
+        try {
+            pool = ResourcePool.create(getCatalog());
+            FeatureTypeInfo info =
+                    getCatalog()
+                            .getFeatureTypeByName(
+                                    MockData.LAKES.getNamespaceURI(),
+                                    MockData.LAKES.getLocalPart());
+            CountDownLatch taskLatch = new CountDownLatch(1);
+            int numberOfThreads = 5;
+            CountDownLatch completeLatch = new CountDownLatch(numberOfThreads);
+            ResourcePoolLatchedThread.PoolBiFunction<FeatureTypeInfo, List<AttributeTypeInfo>>
+                    function = (rl, fti) -> rl.getAttributes(info);
+            List<ResourcePoolLatchedThread<FeatureTypeInfo, List<AttributeTypeInfo>>> threads =
+                    getLatchedThreads(
+                            taskLatch, completeLatch, numberOfThreads, pool, info, function);
+            threads.forEach(t -> t.start());
+            taskLatch.countDown();
+            completeLatch.await();
+            List<AttributeTypeInfo> list = pool.getAttributes(info);
+            for (ResourcePoolLatchedThread<FeatureTypeInfo, List<AttributeTypeInfo>> t : threads) {
+                assertSame(list, t.getResult());
+                assertTrue(t.getErrors().isEmpty());
+            }
+        } finally {
+            if (pool != null) pool.dispose();
+        }
+    }
+
+    private DataStoreInfo storeInfo(Catalog catalog, String name) {
+        // prepare a store that supports sql views
+        DataStoreInfoImpl ds = new DataStoreInfoImpl(catalog);
+        ds.setId(UUID.randomUUID().toString());
+        ds.setName(name);
+        WorkspaceInfo ws = catalog.getDefaultWorkspace();
+        ds.setWorkspace(ws);
+        ds.setEnabled(true);
+
+        Map<String, Serializable> params = ds.getConnectionParameters();
+        params.put("dbtype", "h2");
+        File dbFile =
+                new File(getTestData().getDataDirectoryRoot().getAbsolutePath(), "data/h2test");
+        params.put("database", dbFile.getAbsolutePath());
+        catalog.add(ds);
+        return ds;
+    }
+
+    private <P, R> List<ResourcePoolLatchedThread<P, R>> getLatchedThreads(
+            CountDownLatch taskLatch,
+            CountDownLatch completeLatch,
+            int numberOfThreads,
+            ResourcePool resourcePool,
+            P funParam,
+            ResourcePoolLatchedThread.PoolBiFunction<P, R> function) {
+        List<ResourcePoolLatchedThread<P, R>> threads = new ArrayList<>(numberOfThreads);
+        int i = 0;
+        while (i < numberOfThreads) {
+            threads.add(
+                    new ResourcePoolLatchedThread<>(
+                            taskLatch, completeLatch, resourcePool, funParam, function));
+            i++;
+        }
+        return threads;
     }
 }

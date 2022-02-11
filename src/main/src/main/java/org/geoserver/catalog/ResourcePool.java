@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
@@ -108,6 +109,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleImpl;
 import org.geotools.styling.StyledLayerDescriptor;
+import org.geotools.util.CanonicalSet;
 import org.geotools.util.SoftValueHashMap;
 import org.geotools.util.URLs;
 import org.geotools.util.Utilities;
@@ -192,8 +194,8 @@ public class ResourcePool {
     Map<String, WebMapServer> wmsCache;
     Map<String, WebMapTileServer> wmtsCache;
     Map<CoverageHintReaderKey, GridCoverageReader> hintCoverageReaderCache;
-    Map<StyleInfo, StyledLayerDescriptor> sldCache;
-    Map<StyleInfo, Style> styleCache;
+    Map<String, StyledLayerDescriptor> sldCache;
+    Map<String, Style> styleCache;
     List<Listener> listeners;
     ThreadPoolExecutor coverageExecutor;
     CatalogRepository repository;
@@ -204,6 +206,18 @@ public class ResourcePool {
      * extension point lifecycle.
      */
     TransformFeatureTypeCallback transformer = new TransformFeatureTypeCallback();
+
+    /**
+     * Holds the keys for all the cache having String keys. By ensuring identity allows to
+     * synchronize on id values.
+     */
+    private CanonicalSet<String> stringCacheKeys;
+
+    /**
+     * Holds the key for the CoverageHintReaderCache. By ensuring identity allows to synchronize on
+     * the key.
+     */
+    private CanonicalSet<CoverageHintReaderKey> coverageHintReaderKeys;
 
     /** Creates a new instance of the resource pool explicitly supplying the application context. */
     public static ResourcePool create(Catalog catalog, ApplicationContext appContext) {
@@ -232,6 +246,8 @@ public class ResourcePool {
         sldCache = createSldCache();
         styleCache = createStyleCache();
 
+        stringCacheKeys = CanonicalSet.newInstance(String.class);
+        coverageHintReaderKeys = CanonicalSet.newInstance(CoverageHintReaderKey.class);
         listeners = new CopyOnWriteArrayList<>();
     }
 
@@ -270,7 +286,7 @@ public class ResourcePool {
     }
 
     protected Map<String, CoordinateReferenceSystem> createCrsCache() {
-        return new HashMap<>();
+        return new ConcurrentHashMap<>();
     }
 
     /**
@@ -347,12 +363,12 @@ public class ResourcePool {
      *
      * <p>The concrete Map implementation is determined by {@link #createSldCache()}
      */
-    public Map<StyleInfo, StyledLayerDescriptor> getSldCache() {
+    public Map<String, StyledLayerDescriptor> getSldCache() {
         return sldCache;
     }
 
-    protected Map<StyleInfo, StyledLayerDescriptor> createSldCache() {
-        return new HashMap<>();
+    protected Map<String, StyledLayerDescriptor> createSldCache() {
+        return new ConcurrentHashMap<>();
     }
 
     /**
@@ -360,12 +376,12 @@ public class ResourcePool {
      *
      * <p>The concrete Map implementation is determined by {@link #createStyleCache()}
      */
-    public Map<StyleInfo, Style> getStyleCache() {
+    public Map<String, Style> getStyleCache() {
         return styleCache;
     }
 
-    protected Map<StyleInfo, Style> createStyleCache() {
-        return new HashMap<>();
+    protected Map<String, Style> createStyleCache() {
+        return new ConcurrentHashMap<>();
     }
 
     /**
@@ -401,6 +417,7 @@ public class ResourcePool {
             featureTypeCache = createFeatureTypeCache(featureTypeCacheSize);
             featureTypeAttributeCache.clear();
             featureTypeAttributeCache = createFeatureTypeAttributeCache(featureTypeCacheSize);
+            stringCacheKeys.clear();
         }
     }
 
@@ -463,10 +480,10 @@ public class ResourcePool {
     public CoordinateReferenceSystem getCRS(String srsName) throws IOException {
 
         if (srsName == null) return null;
-
+        srsName = stringCacheKeys.unique(srsName);
         CoordinateReferenceSystem crs = crsCache.get(srsName);
         if (crs == null) {
-            synchronized (crsCache) {
+            synchronized (srsName) {
                 crs = crsCache.get(srsName);
                 if (crs == null) {
                     try {
@@ -488,7 +505,7 @@ public class ResourcePool {
      * <p>This method first uses {@link DataStoreInfo#getType()} to obtain the datastore. In the
      * event of a failure it falls back on {@link DataStoreInfo#getConnectionParameters()}.
      *
-     * @param info The data store metadata.
+     * @param info The data stofre metadata.
      * @return The datastore factory, or null if no such factory could be found, or the factory is
      *     not available.
      * @throws IOException Any I/O errors.
@@ -529,115 +546,20 @@ public class ResourcePool {
 
         DataAccess<? extends FeatureType, ? extends Feature> dataStore = null;
         try {
-            String id = info.getId();
-            dataStore = dataStoreCache.get(id);
+
+            String storeId = info.getId();
+            // cache only if the id is not null, no need to cache the stores
+            // returned from un-saved DataStoreInfo objects (it would be actually
+            // harmful, NPE when trying to dispose of them)
+            if (storeId == null) return createDataAccess(info, expandedStore);
+            String key = stringCacheKeys.unique(storeId);
+            dataStore = dataStoreCache.get(key);
             if (dataStore == null) {
-                synchronized (dataStoreCache) {
-                    dataStore = dataStoreCache.get(id);
+                synchronized (key) {
+                    dataStore = dataStoreCache.get(key);
                     if (dataStore == null) {
-                        // create data store
-                        Map<String, Serializable> connectionParameters =
-                                expandedStore.getConnectionParameters();
-
-                        // call this method to execute the hack which recognizes
-                        // urls which are relative to the data directory
-                        // TODO: find a better way to do this
-                        connectionParameters =
-                                ResourcePool.getParams(
-                                        connectionParameters, catalog.getResourceLoader());
-
-                        // obtain the factory
-                        DataAccessFactory factory = null;
-                        try {
-                            factory = getDataStoreFactory(info);
-                        } catch (IOException e) {
-                            throw new IOException(
-                                    "Failed to find the datastore factory for "
-                                            + info.getName()
-                                            + ", did you forget to install the store extension jar?");
-                        }
-                        if (factory == null) {
-                            throw new IOException(
-                                    "Failed to find the datastore factory for "
-                                            + info.getName()
-                                            + ", did you forget to install the store extension jar?");
-                        }
-                        Param[] params = factory.getParametersInfo();
-
-                        // ensure that the namespace parameter is set for the datastore
-                        if (!connectionParameters.containsKey("namespace") && params != null) {
-                            // if we grabbed the factory, check that the factory actually supports
-                            // a namespace parameter, if we could not get the factory, assume that
-                            // it does
-                            boolean supportsNamespace = false;
-
-                            for (Param p : params) {
-                                if ("namespace".equalsIgnoreCase(p.key)) {
-                                    supportsNamespace = true;
-                                    break;
-                                }
-                            }
-
-                            if (supportsNamespace) {
-                                WorkspaceInfo ws = info.getWorkspace();
-                                NamespaceInfo ns =
-                                        info.getCatalog().getNamespaceByPrefix(ws.getName());
-                                if (ns == null) {
-                                    ns = info.getCatalog().getDefaultNamespace();
-                                }
-                                if (ns != null) {
-                                    connectionParameters.put("namespace", ns.getURI());
-                                }
-                            }
-                        }
-
-                        // see if the store has a repository param, if so, pass the one wrapping
-                        // the store
-                        if (params != null) {
-                            for (Param p : params) {
-                                if (Repository.class.equals(p.getType())) {
-                                    connectionParameters.put(p.getName(), repository);
-                                }
-                            }
-                        }
-
-                        // see if the store has a entity resolver param, if so, pass it down
-                        EntityResolver resolver = getEntityResolver();
-                        if (resolver != null && params != null) {
-                            for (Param p : params) {
-                                if (EntityResolver.class.equals(p.getType())) {
-                                    if (!(resolver instanceof Serializable)) {
-                                        resolver = new SerializableEntityResolver(resolver);
-                                    }
-                                    connectionParameters.put(p.getName(), (Serializable) resolver);
-                                }
-                            }
-                        }
-
-                        dataStore = DataStoreUtils.getDataAccess(connectionParameters);
-                        if (dataStore == null) {
-                            /*
-                             * Preserve DataStore retyping behaviour by calling
-                             * DataAccessFinder.getDataStore after the call to
-                             * DataStoreUtils.getDataStore above.
-                             *
-                             * TODO: DataAccessFinder can also find DataStores, and when retyping is
-                             * supported for DataAccess, we can use a single mechanism.
-                             */
-                            dataStore = DataAccessFinder.getDataStore(connectionParameters);
-                        }
-
-                        if (dataStore == null) {
-                            throw new NullPointerException(
-                                    "Could not acquire data access '" + info.getName() + "'");
-                        }
-
-                        // cache only if the id is not null, no need to cache the stores
-                        // returned from un-saved DataStoreInfo objects (it would be actually
-                        // harmful, NPE when trying to dispose of them)
-                        if (id != null) {
-                            dataStoreCache.put(id, dataStore);
-                        }
+                        dataStore = createDataAccess(info, expandedStore);
+                        dataStoreCache.put(key, dataStore);
                     }
                 }
             }
@@ -658,6 +580,105 @@ public class ResourcePool {
                 throw (IOException) new IOException().initCause(e);
             }
         }
+    }
+
+    protected DataAccess<? extends FeatureType, ? extends Feature> createDataAccess(
+            DataStoreInfo info, DataStoreInfo expandedStore) throws IOException {
+        DataAccess<? extends FeatureType, ? extends Feature> dataStore = null;
+        // create data store
+        Map<String, Serializable> connectionParameters = expandedStore.getConnectionParameters();
+
+        // call this method to execute the hack which recognizes
+        // urls which are relative to the data directory
+        // TODO: find a better way to do this
+        connectionParameters =
+                ResourcePool.getParams(connectionParameters, catalog.getResourceLoader());
+
+        // obtain the factory
+        DataAccessFactory factory = null;
+        try {
+            factory = getDataStoreFactory(info);
+        } catch (IOException e) {
+            throw new IOException(
+                    "Failed to find the datastore factory for "
+                            + info.getName()
+                            + ", did you forget to install the store extension jar?");
+        }
+        if (factory == null) {
+            throw new IOException(
+                    "Failed to find the datastore factory for "
+                            + info.getName()
+                            + ", did you forget to install the store extension jar?");
+        }
+        Param[] params = factory.getParametersInfo();
+
+        // ensure that the namespace parameter is set for the datastore
+        if (!connectionParameters.containsKey("namespace") && params != null) {
+            // if we grabbed the factory, check that the factory actually supports
+            // a namespace parameter, if we could not get the factory, assume that
+            // it does
+            boolean supportsNamespace = false;
+
+            for (Param p : params) {
+                if ("namespace".equalsIgnoreCase(p.key)) {
+                    supportsNamespace = true;
+                    break;
+                }
+            }
+
+            if (supportsNamespace) {
+                WorkspaceInfo ws = info.getWorkspace();
+                NamespaceInfo ns = info.getCatalog().getNamespaceByPrefix(ws.getName());
+                if (ns == null) {
+                    ns = info.getCatalog().getDefaultNamespace();
+                }
+                if (ns != null) {
+                    connectionParameters.put("namespace", ns.getURI());
+                }
+            }
+        }
+
+        // see if the store has a repository param, if so, pass the one wrapping
+        // the store
+        if (params != null) {
+            for (Param p : params) {
+                if (Repository.class.equals(p.getType())) {
+                    connectionParameters.put(p.getName(), repository);
+                }
+            }
+        }
+
+        // see if the store has a entity resolver param, if so, pass it down
+        EntityResolver resolver = getEntityResolver();
+        if (resolver != null && params != null) {
+            for (Param p : params) {
+                if (EntityResolver.class.equals(p.getType())) {
+                    if (!(resolver instanceof Serializable)) {
+                        resolver = new SerializableEntityResolver(resolver);
+                    }
+                    connectionParameters.put(p.getName(), (Serializable) resolver);
+                }
+            }
+        }
+
+        dataStore = DataStoreUtils.getDataAccess(connectionParameters);
+        if (dataStore == null) {
+            /*
+             * Preserve DataStore retyping behaviour by calling
+             * DataAccessFinder.getDataStore after the call to
+             * DataStoreUtils.getDataStore above.
+             *
+             * TODO: DataAccessFinder can also find DataStores, and when retyping is
+             * supported for DataAccess, we can use a single mechanism.
+             */
+            dataStore = DataAccessFinder.getDataStore(connectionParameters);
+        }
+
+        if (dataStore == null) {
+            throw new NullPointerException(
+                    "Could not acquire data access '" + info.getName() + "'");
+        }
+        return dataStore;
     }
 
     /**
@@ -742,7 +763,11 @@ public class ResourcePool {
      * @param info The data store metadata.
      */
     public void clear(DataStoreInfo info) {
-        dataStoreCache.remove(info.getId());
+        String id = info.getId();
+        if (id != null) {
+            dataStoreCache.remove(id);
+            stringCacheKeys.remove(id);
+        }
     }
 
     public List<AttributeTypeInfo> getAttributes(FeatureTypeInfo info) throws IOException {
@@ -757,34 +782,36 @@ public class ResourcePool {
                 && info.getAttributes().get(0).getBinding() != null) {
             return info.getAttributes();
         }
-
+        // cache attributes only if the id is not null -> the feature type is not new
+        if (info.getId() == null) return attributeTypeInfos(info);
         // check the cache
-        List<AttributeTypeInfo> atts = featureTypeAttributeCache.get(info.getId());
+        String key = stringCacheKeys.unique(info.getId());
+        List<AttributeTypeInfo> atts = featureTypeAttributeCache.get(key);
         if (atts == null) {
-            synchronized (featureTypeAttributeCache) {
-                atts = featureTypeAttributeCache.get(info.getId());
+            synchronized (key) {
+                atts = featureTypeAttributeCache.get(key);
                 if (atts == null) {
-                    // load from feature type
-                    atts = loadAttributes(info);
-
-                    // check for a schema override
-                    try {
-                        handleSchemaOverride(atts, info);
-                    } catch (Exception e) {
-                        LOGGER.log(
-                                Level.WARNING,
-                                "Error occured applying schema override for " + info.getName(),
-                                e);
-                    }
-
-                    // cache attributes only if the id is not null -> the feature type is not new
-                    if (info.getId() != null) {
-                        featureTypeAttributeCache.put(info.getId(), atts);
-                    }
+                    atts = attributeTypeInfos(info);
+                    featureTypeAttributeCache.put(key, atts);
                 }
             }
         }
+        return atts;
+    }
 
+    private List<AttributeTypeInfo> attributeTypeInfos(FeatureTypeInfo info) throws IOException {
+        // load from feature type
+        List<AttributeTypeInfo> atts = loadAttributes(info);
+
+        // check for a schema override
+        try {
+            handleSchemaOverride(atts, info);
+        } catch (Exception e) {
+            LOGGER.log(
+                    Level.WARNING,
+                    "Error occured applying schema override for " + info.getName(),
+                    e);
+        }
         return atts;
     }
 
@@ -932,28 +959,36 @@ public class ResourcePool {
 
     FeatureType getCacheableFeatureType(FeatureTypeInfo info, boolean handleProjectionPolicy)
             throws IOException {
-        String key = getFeatureTypeInfoKey(info, handleProjectionPolicy);
+
+        String id = info.getId();
+        if (id == null) return acquireFeatureType(info, handleProjectionPolicy);
+        id = getFeatureTypeInfoKey(info, handleProjectionPolicy);
+        String key = stringCacheKeys.unique(id);
         FeatureType ft = featureTypeCache.get(key);
         if (ft == null) {
-            synchronized (featureTypeCache) {
+            synchronized (key) {
                 ft = featureTypeCache.get(key);
                 if (ft == null) {
-
-                    // grab the underlying feature type
-                    DataAccess<? extends FeatureType, ? extends Feature> dataAccess =
-                            getDataStore(info.getStore());
-                    FeatureTypeCallback initializer = getFeatureTypeInitializer(info, dataAccess);
-                    if (initializer != null) {
-                        initializer.initialize(info, dataAccess, null);
-                    }
-                    // ft = jstore.getSchema(vt.getName());
-                    ft = dataAccess.getSchema(info.getQualifiedNativeName());
-                    ft = buildFeatureType(info, handleProjectionPolicy, ft);
-
+                    ft = acquireFeatureType(info, handleProjectionPolicy);
                     featureTypeCache.put(key, ft);
                 }
             }
         }
+        return ft;
+    }
+
+    private FeatureType acquireFeatureType(FeatureTypeInfo info, boolean handleProjectionPolicy)
+            throws IOException {
+        // grab the underlying feature type
+        DataAccess<? extends FeatureType, ? extends Feature> dataAccess =
+                getDataStore(info.getStore());
+        FeatureTypeCallback initializer = getFeatureTypeInitializer(info, dataAccess);
+        if (initializer != null) {
+            initializer.initialize(info, dataAccess, null);
+        }
+        // ft = jstore.getSchema(vt.getName());
+        FeatureType ft = dataAccess.getSchema(info.getQualifiedNativeName());
+        ft = buildFeatureType(info, handleProjectionPolicy, ft);
         return ft;
     }
 
@@ -1184,9 +1219,19 @@ public class ResourcePool {
      * @param info The feature type metadata.
      */
     public void clear(FeatureTypeInfo info) {
-        featureTypeCache.remove(getFeatureTypeInfoKey(info, true));
-        featureTypeCache.remove(getFeatureTypeInfoKey(info, false));
-        featureTypeAttributeCache.remove(info.getId());
+        String id = info.getId();
+        if (id != null) {
+            String id2 = getFeatureTypeInfoKey(info, true);
+            String id3 = getFeatureTypeInfoKey(info, false);
+            featureTypeCache.remove(id2);
+            featureTypeCache.remove(id3);
+            featureTypeAttributeCache.remove(id);
+            featureTypeAttributeCache.remove(id2);
+            featureTypeAttributeCache.remove(id3);
+            stringCacheKeys.remove(id);
+            stringCacheKeys.remove(id2);
+            stringCacheKeys.remove(id3);
+        }
     }
 
     /**
@@ -1483,12 +1528,13 @@ public class ResourcePool {
             hints.add(new RenderingHints(Hints.EXECUTOR_SERVICE, coverageExecutor));
         }
         // look into the cache
-        Object key = new CoverageHintReaderKey(info.getId(), hints);
+        CoverageHintReaderKey key = new CoverageHintReaderKey(info.getId(), hints);
+        key = coverageHintReaderKeys.unique(key);
         GridCoverageReader reader = hintCoverageReaderCache.get(key);
 
         // if not found in cache, create it
         if (reader == null) {
-            synchronized (hintCoverageReaderCache) {
+            synchronized (key) {
                 if (key != null) {
                     reader = hintCoverageReaderCache.get(key);
                 }
@@ -1512,7 +1558,7 @@ public class ResourcePool {
                                         + hints);
                     }
                     if (key != null) {
-                        hintCoverageReaderCache.put((CoverageHintReaderKey) key, reader);
+                        hintCoverageReaderCache.put(key, reader);
                     }
                 }
             }
@@ -1601,6 +1647,7 @@ public class ResourcePool {
         for (CoverageHintReaderKey key : keys) {
             if (key.id != null && key.id.equals(storeId)) {
                 hintCoverageReaderCache.remove(key);
+                coverageHintReaderKeys.remove(key);
             }
         }
     }
@@ -1746,6 +1793,10 @@ public class ResourcePool {
             EntityResolver entityResolver = getEntityResolver();
 
             String id = info.getId();
+            if (id == null) {
+                return createWebMapServer(expandedStore, entityResolver);
+            }
+            id = stringCacheKeys.unique(id);
             WebMapServer wms = wmsCache.get(id);
             // if we have a hit but the resolver has been changed, clean and build again
             if (wms != null
@@ -1756,23 +1807,10 @@ public class ResourcePool {
                 wms = null;
             }
             if (wms == null) {
-                synchronized (wmsCache) {
+                synchronized (id) {
                     wms = wmsCache.get(id);
                     if (wms == null) {
-                        HTTPClient client = getHTTPClient(expandedStore);
-                        String capabilitiesURL = expandedStore.getCapabilitiesURL();
-                        URL serverURL = new URL(capabilitiesURL);
-                        Map<String, Object> hints = new HashMap<>();
-                        hints.put(
-                                DocumentHandler.DEFAULT_NAMESPACE_HINT_KEY,
-                                WMSSchema.getInstance());
-                        hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
-                        if (entityResolver != null) {
-                            hints.put(XMLHandlerHints.ENTITY_RESOLVER, entityResolver);
-                        }
-
-                        wms = new WebMapServer(serverURL, client, hints);
-
+                        wms = createWebMapServer(expandedStore, entityResolver);
                         wmsCache.put(id, wms);
                     }
                 }
@@ -1786,6 +1824,22 @@ public class ResourcePool {
         }
     }
 
+    private WebMapServer createWebMapServer(
+            WMSStoreInfo expandedStore, EntityResolver entityResolver)
+            throws IOException, org.geotools.ows.ServiceException {
+        HTTPClient client = getHTTPClient(expandedStore);
+        String capabilitiesURL = expandedStore.getCapabilitiesURL();
+        URL serverURL = new URL(capabilitiesURL);
+        Map<String, Object> hints = new HashMap<>();
+        hints.put(DocumentHandler.DEFAULT_NAMESPACE_HINT_KEY, WMSSchema.getInstance());
+        hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
+        if (entityResolver != null) {
+            hints.put(XMLHandlerHints.ENTITY_RESOLVER, entityResolver);
+        }
+
+        return new WebMapServer(serverURL, client, hints);
+    }
+
     /**
      * Returns the {@link WebMapTileServer} for a {@link WMTSStoreInfo} object
      *
@@ -1795,8 +1849,11 @@ public class ResourcePool {
 
         try {
             EntityResolver entityResolver = getEntityResolver();
-
             String id = info.getId();
+            if (id == null) {
+                return createWebMapTileServer(info, entityResolver);
+            }
+            id = stringCacheKeys.unique(info.getId());
             WebMapTileServer wmts = wmtsCache.get(id);
             // if we have a hit but the resolver has been changed, clean and build again
             if (wmts != null
@@ -1807,26 +1864,10 @@ public class ResourcePool {
                 wmts = null;
             }
             if (wmts == null) {
-                synchronized (wmtsCache) {
+                synchronized (id) {
                     wmts = wmtsCache.get(id);
                     if (wmts == null) {
-                        WMTSStoreInfo expandedStore = clone(info, true);
-
-                        HTTPClient client = getHTTPClient(expandedStore);
-                        URL serverURL = new URL(expandedStore.getCapabilitiesURL());
-
-                        if (StringUtils.isNotEmpty(info.getHeaderName())
-                                && StringUtils.isNotEmpty(info.getHeaderValue())) {
-                            wmts =
-                                    new WebMapTileServer(
-                                            serverURL,
-                                            client,
-                                            Collections.singletonMap(
-                                                    info.getHeaderName(), info.getHeaderValue()));
-                        } else {
-                            wmts = new WebMapTileServer(serverURL, client);
-                        }
-
+                        wmts = createWebMapTileServer(info, entityResolver);
                         wmtsCache.put(id, wmts);
                     }
                 }
@@ -1838,6 +1879,26 @@ public class ResourcePool {
         } catch (Exception e) {
             throw new IOException(e);
         }
+    }
+
+    private WebMapTileServer createWebMapTileServer(WMTSStoreInfo info, EntityResolver resolver)
+            throws IOException, org.geotools.ows.ServiceException {
+        WMTSStoreInfo expandedStore = clone(info, true);
+
+        HTTPClient client = getHTTPClient(expandedStore);
+        URL serverURL = new URL(expandedStore.getCapabilitiesURL());
+        WebMapTileServer wmts;
+        if (StringUtils.isNotEmpty(info.getHeaderName())
+                && StringUtils.isNotEmpty(info.getHeaderValue())) {
+            wmts =
+                    new WebMapTileServer(
+                            serverURL,
+                            client,
+                            Collections.singletonMap(info.getHeaderName(), info.getHeaderValue()));
+        } else {
+            wmts = new WebMapTileServer(serverURL, client);
+        }
+        return wmts;
     }
 
     /**
@@ -1932,12 +1993,20 @@ public class ResourcePool {
 
     /** Clears the cached resource for a web map server */
     public void clear(WMSStoreInfo info) {
-        wmsCache.remove(info.getId());
+        String id = info.getId();
+        if (id != null) {
+            wmsCache.remove(id);
+            stringCacheKeys.remove(id);
+        }
     }
 
     /** Clears the cached resource for a web map server */
     public void clear(WMTSStoreInfo info) {
-        wmtsCache.remove(info.getId());
+        String id = info.getId();
+        if (id != null) {
+            wmtsCache.remove(id);
+            stringCacheKeys.remove(id);
+        }
     }
 
     /**
@@ -1952,21 +2021,24 @@ public class ResourcePool {
      * @throws IOException Any parsing errors.
      */
     public StyledLayerDescriptor getSld(final StyleInfo info) throws IOException {
-        StyledLayerDescriptor sld = sldCache.get(info);
+        String id = info.getId();
+        if (id == null) return dataDir().parsedSld(info);
+        String key = stringCacheKeys.unique(id);
+        StyledLayerDescriptor sld = sldCache.get(key);
         if (sld == null) {
-            synchronized (sldCache) {
-                sld = sldCache.get(info);
+            synchronized (key) {
+                sld = sldCache.get(key);
                 if (sld == null) {
                     sld = dataDir().parsedSld(info);
 
-                    sldCache.put(info, sld);
+                    sldCache.put(key, sld);
 
                     final Resource styleResource = dataDir().style(info);
                     styleResource.addListener(
                             new ResourceListener() {
                                 @Override
                                 public void changed(ResourceNotification notify) {
-                                    sldCache.remove(info);
+                                    sldCache.remove(key);
                                     styleResource.removeListener(this);
                                 }
                             });
@@ -1988,31 +2060,23 @@ public class ResourcePool {
      * @throws IOException Any parsing errors.
      */
     public Style getStyle(final StyleInfo info) throws IOException {
-        Style style = styleCache.get(info);
+        String styleId = info.getId();
+        if (styleId == null) return createStyle(info);
+        String key = stringCacheKeys.unique(styleId);
+        Style style = styleCache.get(key);
         if (style == null) {
-            synchronized (styleCache) {
-                style = styleCache.get(info);
+            synchronized (key) {
+                style = styleCache.get(key);
                 if (style == null) {
-                    style = dataDir().parsedStyle(info);
-
-                    if (style == null) {
-                        throw new ServiceException(
-                                "Could not extract a UserStyle definition from " + info.getName());
-                    }
-                    // Make sure we don't change the name of an object in sldCache
-                    if (style instanceof StyleImpl) {
-                        style = (Style) ((StyleImpl) style).clone();
-                    }
-                    // remove this when wms works off style info
-                    style.setName(info.getName());
-                    styleCache.put(info, style);
+                    style = createStyle(info);
+                    styleCache.put(key, style);
 
                     final Resource styleResource = dataDir().style(info);
                     styleResource.addListener(
                             new ResourceListener() {
                                 @Override
                                 public void changed(ResourceNotification notify) {
-                                    styleCache.remove(info);
+                                    styleCache.remove(key);
                                     styleResource.removeListener(this);
                                 }
                             });
@@ -2023,14 +2087,34 @@ public class ResourcePool {
         return style;
     }
 
+    private Style createStyle(StyleInfo info) throws IOException {
+        Style style = dataDir().parsedStyle(info);
+
+        if (style == null) {
+            throw new ServiceException(
+                    "Could not extract a UserStyle definition from " + info.getName());
+        }
+        // Make sure we don't change the name of an object in sldCache
+        if (style instanceof StyleImpl) {
+            style = (Style) ((StyleImpl) style).clone();
+        }
+        // remove this when wms works off style info
+        style.setName(info.getName());
+        return style;
+    }
+
     /**
      * Clears a style resource from the cache.
      *
      * @param info The style metadata.
      */
     public void clear(StyleInfo info) {
-        styleCache.remove(info);
-        sldCache.remove(info);
+        String id = info.getId();
+        if (id != null) {
+            styleCache.remove(id);
+            sldCache.remove(id);
+            stringCacheKeys.remove(id);
+        }
     }
 
     /**
@@ -2173,6 +2257,9 @@ public class ResourcePool {
         wmtsCache.clear();
         styleCache.clear();
         listeners.clear();
+
+        stringCacheKeys.clear();
+        coverageHintReaderKeys.clear();
     }
 
     /**

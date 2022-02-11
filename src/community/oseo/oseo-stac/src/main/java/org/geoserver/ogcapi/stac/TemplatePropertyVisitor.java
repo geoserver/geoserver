@@ -19,6 +19,8 @@ package org.geoserver.ogcapi.stac;
 import java.util.function.BiConsumer;
 import org.geoserver.featurestemplating.builders.AbstractTemplateBuilder;
 import org.geoserver.featurestemplating.builders.TemplateBuilder;
+import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
+import org.geoserver.featurestemplating.builders.impl.DynamicIncludeFlatBuilder;
 import org.geoserver.featurestemplating.builders.impl.DynamicValueBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 
@@ -46,6 +48,20 @@ class TemplatePropertyVisitor {
         // no queryables out of static builders for the moment, we migth want
         // to revisit once we consider eventual filters
         if (atb instanceof StaticBuilder || !(atb instanceof AbstractTemplateBuilder)) return;
+
+        // dynamic include flat builders eat their parent node to perform dynamic merge,
+        // get it out and visit its children directly, without further checks (the returned builder
+        // is a key-less composite)
+        if (atb instanceof DynamicIncludeFlatBuilder) {
+            DynamicIncludeFlatBuilder dyn = (DynamicIncludeFlatBuilder) atb;
+            TemplateBuilder builder = dyn.getIncludingNodeBuilder(parentPath);
+            if (builder instanceof CompositeBuilder) {
+                for (TemplateBuilder child : builder.getChildren()) {
+                    visitTemplateBuilder(parentPath, child, false);
+                }
+            }
+            return;
+        }
 
         // check the key, if we get a null it means the key is dynamic and it's not possible
         // to do anything with this JSON sub-tree

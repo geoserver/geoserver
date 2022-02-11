@@ -126,6 +126,7 @@ public class STACQueryablesBuilder {
     private Schema getGenericSchema() {
         Schema schema = new Schema();
         schema.setType(AttributeType.STRING.getType());
+        schema.setDescription(AttributeType.STRING.getType());
         return schema;
     }
 }

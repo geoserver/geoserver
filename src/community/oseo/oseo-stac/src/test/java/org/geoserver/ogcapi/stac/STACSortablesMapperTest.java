@@ -64,4 +64,27 @@ public class STACSortablesMapperTest {
         // one custom, and nested, property
         assertThat(sortables, hasEntry("one.two.three", "eop:illuminationAzimuthAngle"));
     }
+
+    @Test
+    public void testSortablesIncludeFlat() throws Exception {
+        FileSystemResourceStore resourceStore =
+                new FileSystemResourceStore(new File("./src/test/resources"));
+        Resource templateDefinition = resourceStore.get("items-SAS1.json");
+        FeatureSource<FeatureType, Feature> products = data.getProductSource();
+        TemplateReaderConfiguration config =
+                new TemplateReaderConfiguration(STACTemplates.getNamespaces(products));
+        Template template = new Template(templateDefinition, config);
+        STACSortablesMapper builder =
+                new STACSortablesMapper(template.getRootBuilder(), products.getSchema());
+        Map<String, String> sortables = builder.getSortablesMap();
+
+        // common sortables from spec
+        assertThat(sortables, hasEntry("collection", "parentIdentifier"));
+        assertThat(sortables, hasEntry("datetime", "timeStart"));
+        assertThat(sortables, hasEntry("id", "identifier"));
+
+        // custom sortables from template
+        assertThat(sortables, hasEntry("view:sun_azimuth", "eop:illuminationAzimuthAngle"));
+        assertThat(sortables, hasEntry("custom:clouds", "opt:cloudCover"));
+    }
 }

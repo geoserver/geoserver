@@ -1,3 +1,7 @@
+/* (c) 2021 Open Source Geospatial Foundation - all rights reserved
+ * This code is licensed under the GPL 2.0 license, available at the root
+ * application directory.
+ */
 package org.geoserver.featurestemplating.readers;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -6,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
@@ -193,9 +198,12 @@ public class JSONIncludesTest {
         Resource included = store.get("object.json");
         File file = included.file();
         file.setLastModified(new Date().getTime());
-        Thread.sleep(1000);
 
-        assertTrue(rootBuilder.needsReload());
+        for (int i = 0; i < 600; i++) {
+            if (rootBuilder.needsReload()) return; // ok worked
+            Thread.sleep(100);
+        }
+        fail("Should have found a reload 60 seconds, but did not");
     }
 
     @Test

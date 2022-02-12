@@ -46,13 +46,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path = RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}",
-    produces = {
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaType.TEXT_HTML_VALUE,
-        MediaType.APPLICATION_XML_VALUE
-    }
-)
+        path = RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}",
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.TEXT_HTML_VALUE,
+            MediaType.APPLICATION_XML_VALUE
+        })
 public class MongoStoreRestController extends AbstractGeoServerController {
 
     private static final Logger LOGGER = Logging.getLogger(MongoStoreRestController.class);
@@ -238,8 +237,8 @@ public class MongoStoreRestController extends AbstractGeoServerController {
 
     /** Clears schema files and entries for the provided MongoDB store. */
     @PostMapping(
-        value = "/appschemastores/{appschemaStoreName}/datastores/{storeId}/rebuildMongoSchemas"
-    )
+            value =
+                    "/appschemastores/{appschemaStoreName}/datastores/{storeId}/rebuildMongoSchemas")
     public ResponseEntity<?> rebuildSchema(
             @PathVariable String workspaceName,
             @PathVariable String appschemaStoreName,

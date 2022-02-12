@@ -89,8 +89,7 @@ class WFS3GetFeature extends org.geoserver.wfs.GetFeature {
         // wait for the filtering/crs extensions to show up before deciding exactly what exactly to
         // do
         kvp =
-                kvp.entrySet()
-                        .stream()
+                kvp.entrySet().stream()
                         .collect(
                                 Collectors.toMap(
                                         entry -> entry.getKey().toLowerCase(),

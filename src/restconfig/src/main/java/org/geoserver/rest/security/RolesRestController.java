@@ -40,42 +40,37 @@ public class RolesRestController {
     }
 
     @GetMapping(
-        value = "",
-        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
-    )
+            value = "",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public JaxbRoleList get() throws IOException {
         return get(securityManager.getActiveRoleService());
     }
 
     @GetMapping(
-        value = "/user/{user}",
-        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
-    )
+            value = "/user/{user}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     protected JaxbRoleList getUser(@PathVariable("user") String userName) throws IOException {
         return getUser(securityManager.getActiveRoleService(), userName);
     }
 
     @GetMapping(
-        value = "/group/{group}",
-        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
-    )
+            value = "/group/{group}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     protected JaxbRoleList getGroup(@PathVariable("group") String groupName) throws IOException {
         return getGroup(securityManager.getActiveRoleService(), groupName);
     }
 
     @PostMapping(
-        value = "/role/{role}",
-        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
-    )
+            value = "/role/{role}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public @ResponseStatus(HttpStatus.CREATED) void insert(@PathVariable("role") String roleName)
             throws IOException {
         insert(securityManager.getActiveRoleService(), roleName);
     }
 
     @DeleteMapping(
-        value = "/role/{role}",
-        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
-    )
+            value = "/role/{role}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public @ResponseStatus(HttpStatus.OK) void delete(@PathVariable("role") String roleName)
             throws IOException {
         delete(securityManager.getActiveRoleService(), roleName);
@@ -110,17 +105,15 @@ public class RolesRestController {
     }
 
     @GetMapping(
-        value = "/service/{serviceName}",
-        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
-    )
+            value = "/service/{serviceName}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     protected JaxbRoleList get(@PathVariable("serviceName") String serviceName) throws IOException {
         return get(getService(serviceName));
     }
 
     @GetMapping(
-        value = "/service/{serviceName}/user/{user}",
-        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
-    )
+            value = "/service/{serviceName}/user/{user}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     protected JaxbRoleList getUser(
             @PathVariable("serviceName") String serviceName, @PathVariable("user") String userName)
             throws IOException {
@@ -128,9 +121,8 @@ public class RolesRestController {
     }
 
     @GetMapping(
-        value = "/service/{serviceName}/group/{group}",
-        produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
-    )
+            value = "/service/{serviceName}/group/{group}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     protected JaxbRoleList getGroup(
             @PathVariable("serviceName") String serviceName,
             @PathVariable("group") String groupName)

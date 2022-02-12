@@ -66,12 +66,11 @@ public class TransformController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = {"", "{transform}"},
-        produces = {
-            MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE
-        }
-    )
+            path = {"", "{transform}"},
+            produces = {
+                MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE
+            })
     public RestWrapper getTransformsInfo(
             @PathVariable(name = "transform", required = false) String transformInfoName) {
         if (transformInfoName == null) {
@@ -102,12 +101,11 @@ public class TransformController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE
-        }
-    )
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE
+            })
     public ResponseEntity<String> postTransformInfo(
             @RequestBody TransformInfo transformInfo, UriComponentsBuilder builder) {
         validate(transformInfo);
@@ -151,13 +149,12 @@ public class TransformController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        path = "{transform}",
-        consumes = {
-            MediaType.TEXT_XML_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE
-        }
-    )
+            path = "{transform}",
+            consumes = {
+                MediaType.TEXT_XML_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.APPLICATION_JSON_VALUE
+            })
     public void putTransformInfo(
             @RequestBody TransformInfo transformInfo,
             @PathVariable(name = "transform") String transformInfoName) {

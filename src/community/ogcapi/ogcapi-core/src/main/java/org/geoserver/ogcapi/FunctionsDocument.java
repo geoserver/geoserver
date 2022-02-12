@@ -57,8 +57,7 @@ public class FunctionsDocument {
             this.returns = toParameter(fn.getReturn());
             this.description = null; // no support for descriptions in GeoTools functions
             this.arguments =
-                    fn.getArguments()
-                            .stream()
+                    fn.getArguments().stream()
                             .map(FunctionsDocument::toParameter)
                             .collect(Collectors.toList());
         }
@@ -88,12 +87,11 @@ public class FunctionsDocument {
     public FunctionsDocument() {
         functions =
                 new FunctionFinder(null)
-                        .getAllFunctionDescriptions()
-                        .stream()
-                        .filter(FunctionsDocument::isSimpleFunction)
-                        .map(Function::new)
-                        .distinct()
-                        .collect(Collectors.toList());
+                        .getAllFunctionDescriptions().stream()
+                                .filter(FunctionsDocument::isSimpleFunction)
+                                .map(Function::new)
+                                .distinct()
+                                .collect(Collectors.toList());
     }
 
     private static boolean isSimpleFunction(FunctionName functionName) {

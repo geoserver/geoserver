@@ -106,9 +106,7 @@ public class CollectionsTest extends CoveragesTestSupport {
     public void testCollectionsWorkspaceSpecificJson() throws Exception {
         DocumentContext json = getAsJSONPath("rs/ogc/coverages/collections", 200);
         long expected =
-                getCatalog()
-                        .getCoverages()
-                        .stream()
+                getCatalog().getCoverages().stream()
                         .filter(ci -> "rs".equals(ci.getStore().getWorkspace().getName()))
                         .count();
         // check the filtering

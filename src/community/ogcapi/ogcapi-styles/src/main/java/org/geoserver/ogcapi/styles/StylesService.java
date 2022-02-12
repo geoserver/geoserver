@@ -71,11 +71,10 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.xml.sax.EntityResolver;
 
 @APIService(
-    service = "Styles",
-    version = "1.0",
-    landingPage = "ogc/styles",
-    serviceClass = StylesServiceInfo.class
-)
+        service = "Styles",
+        version = "1.0",
+        landingPage = "ogc/styles",
+        serviceClass = StylesServiceInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/styles")
 public class StylesService {
 
@@ -157,14 +156,13 @@ public class StylesService {
     }
 
     @GetMapping(
-        path = "api",
-        name = "getApi",
-        produces = {
-            OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
-            "application/x-yaml",
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            path = "api",
+            name = "getApi",
+            produces = {
+                OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE,
+                "application/x-yaml",
+                MediaType.TEXT_XML_VALUE
+            })
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
@@ -250,8 +248,7 @@ public class StylesService {
             return MediaType.valueOf(SLDHandler.MIMETYPE_10);
         }
         StyleHandler handler =
-                writers.values()
-                        .stream()
+                writers.values().stream()
                         .map(sw -> sw.getHandler())
                         .filter(sh -> styleInfo.getFormat().equals(sh.getFormat()))
                         .findFirst()
@@ -267,8 +264,7 @@ public class StylesService {
     }
 
     private Optional<StyleWriterConverter> getWriter(MediaType mediaType) {
-        return writers.entrySet()
-                .stream()
+        return writers.entrySet().stream()
                 .filter(e -> e.getKey().isCompatibleWith(mediaType))
                 .map(e -> e.getValue())
                 .findFirst();
@@ -284,10 +280,9 @@ public class StylesService {
     }
 
     @GetMapping(
-        path = "styles/{styleId}/thumbnail",
-        name = "getStyleThumbnail",
-        produces = "image/png"
-    )
+            path = "styles/{styleId}/thumbnail",
+            name = "getStyleThumbnail",
+            produces = "image/png")
     @ResponseBody
     public void getStyleThumbnail(
             @PathVariable(name = "styleId") String styleId, HttpServletResponse response)
@@ -308,10 +303,9 @@ public class StylesService {
     }
 
     @PostMapping(
-        path = "styles",
-        name = "addStyle",
-        consumes = {MediaType.ALL_VALUE}
-    )
+            path = "styles",
+            name = "addStyle",
+            consumes = {MediaType.ALL_VALUE})
     @ResponseBody
     public ResponseEntity postStyle(
             InputStream inputStream,
@@ -397,10 +391,9 @@ public class StylesService {
     }
 
     @PutMapping(
-        path = "styles/{styleId}",
-        consumes = {MediaType.ALL_VALUE},
-        name = "updateStyle"
-    )
+            path = "styles/{styleId}",
+            consumes = {MediaType.ALL_VALUE},
+            name = "updateStyle")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void putStyle(
             InputStream inputStream,
@@ -524,10 +517,9 @@ public class StylesService {
     }
 
     @PatchMapping(
-        path = "styles/{styleId}/metadata",
-        consumes = MediaType.APPLICATION_JSON_VALUE,
-        name = "patchStyleMetadata"
-    )
+            path = "styles/{styleId}/metadata",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            name = "patchStyleMetadata")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void patchMetadata(
             @PathVariable("styleId") String styleId, @RequestBody StyleMetadataDocument metadata) {

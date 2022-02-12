@@ -201,9 +201,7 @@ public class StyleLayer implements Serializable {
         acceptvisitor(source, extractor);
         Map<PropertyName, Class<?>> propertyTypes = extractor.getPropertyTypes();
 
-        return propertyTypes
-                .entrySet()
-                .stream()
+        return propertyTypes.entrySet().stream()
                 .map(
                         e -> {
                             StyleAttribute sa = new StyleAttribute();

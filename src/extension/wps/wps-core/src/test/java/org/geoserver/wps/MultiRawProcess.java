@@ -23,9 +23,8 @@ import org.geotools.util.SimpleInternationalString;
  * @author Andrea Aime - GeoSolutions
  */
 @DescribeProcess(
-    title = "MultiRaw",
-    description = "Process used to test processes with multiple raw outputs"
-)
+        title = "MultiRaw",
+        description = "Process used to test processes with multiple raw outputs")
 public class MultiRawProcess {
 
     static final ProcessFactory getFactory() {
@@ -41,17 +40,15 @@ public class MultiRawProcess {
 
     @DescribeResults({
         @DescribeResult(
-            name = "text",
-            description = "Text output",
-            meta = {"mimeTypes=text/plain"},
-            type = RawData.class
-        ),
+                name = "text",
+                description = "Text output",
+                meta = {"mimeTypes=text/plain"},
+                type = RawData.class),
         @DescribeResult(
-            name = "binary",
-            description = "Binary output",
-            meta = {"mimeTypes=application/zip,image/png", "chosenMimeType=binaryMimeType"},
-            type = RawData.class
-        ),
+                name = "binary",
+                description = "Binary output",
+                meta = {"mimeTypes=application/zip,image/png", "chosenMimeType=binaryMimeType"},
+                type = RawData.class),
         @DescribeResult(name = "literal", description = "A string", type = String.class)
     })
     public Map<String, Object> execute(

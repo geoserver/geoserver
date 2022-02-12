@@ -43,13 +43,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path = EchoesController.ECHOES_ROOT,
-    produces = {
-        MediaType.APPLICATION_XML_VALUE,
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaTypeExtensions.TEXT_JSON_VALUE
-    }
-)
+        path = EchoesController.ECHOES_ROOT,
+        produces = {
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaTypeExtensions.TEXT_JSON_VALUE
+        })
 public class EchoesController extends RestBaseController {
     static final String ECHOES_ROOT = RestBaseController.ROOT_PATH + "/params-extractor/echoes";
 
@@ -60,13 +59,12 @@ public class EchoesController extends RestBaseController {
     }
 
     @PostMapping(
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public ResponseEntity<String> postEchoParameter(@RequestBody EchoParameter newValue)
             throws URISyntaxException {
         // force a new id like the UI would, using a random UUID
@@ -87,8 +85,7 @@ public class EchoesController extends RestBaseController {
     @GetMapping(path = "{id}")
     public RestWrapper<EchoParameter> getEchoParameter(@PathVariable String id) {
         EchoParameter result =
-                EchoParametersDao.getEchoParameters()
-                        .stream()
+                EchoParametersDao.getEchoParameters().stream()
                         .filter(ep -> id.equals(ep.getId()))
                         .findFirst()
                         .orElseThrow(
@@ -108,14 +105,13 @@ public class EchoesController extends RestBaseController {
     }
 
     @PutMapping(
-        path = "{id}",
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            path = "{id}",
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public void putEchoParameter(@RequestBody EchoParameter newValue, @PathVariable String id) {
         // just want the 404 side effect here
         getEchoParameter(id);

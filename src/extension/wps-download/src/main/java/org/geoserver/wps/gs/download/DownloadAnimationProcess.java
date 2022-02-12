@@ -52,12 +52,11 @@ import org.jcodec.common.model.Rational;
 import org.opengis.util.ProgressListener;
 
 @DescribeProcess(
-    title = "Animation Download Process",
-    description =
-            "Builds an animation given a set of layer "
-                    + "definitions, "
-                    + "area of interest, size and a series of times for animation frames."
-)
+        title = "Animation Download Process",
+        description =
+                "Builds an animation given a set of layer "
+                        + "definitions, "
+                        + "area of interest, size and a series of times for animation frames.")
 public class DownloadAnimationProcess implements GeoServerProcess {
 
     static final Logger LOGGER = Logging.getLogger(DownloadAnimationProcess.class);
@@ -95,63 +94,56 @@ public class DownloadAnimationProcess implements GeoServerProcess {
 
     @DescribeResults({
         @DescribeResult(
-            name = "result",
-            description = "The animation",
-            type = RawData.class,
-            meta = {"mimeTypes=" + VIDEO_MP4, "chosenMimeType=format"}
-        ),
+                name = "result",
+                description = "The animation",
+                type = RawData.class,
+                meta = {"mimeTypes=" + VIDEO_MP4, "chosenMimeType=format"}),
         @DescribeResult(
-            name = "metadata",
-            type = AnimationMetadata.class,
-            description = "Animation metadata, including dimension match warnings"
-        )
+                name = "metadata",
+                type = AnimationMetadata.class,
+                description = "Animation metadata, including dimension match warnings")
     })
     public Map<String, Object> execute(
             @DescribeParameter(
-                        name = "bbox",
-                        min = 1,
-                        description = "The map area and output projection"
-                    )
+                            name = "bbox",
+                            min = 1,
+                            description = "The map area and output projection")
                     ReferencedEnvelope bbox,
             @DescribeParameter(
-                        name = "decoration",
-                        min = 0,
-                        description = "A WMS decoration layout name to watermark" + " the output"
-                    )
+                            name = "decoration",
+                            min = 0,
+                            description =
+                                    "A WMS decoration layout name to watermark" + " the output")
                     String decorationName,
             @DescribeParameter(name = "headerheight", min = 0, description = "Header height")
                     Integer headerHeight,
             @DescribeParameter(
-                        name = "time",
-                        min = 1,
-                        description =
-                                "Map time specification (a range with "
-                                        + "periodicity or a list of time values)"
-                    )
+                            name = "time",
+                            min = 1,
+                            description =
+                                    "Map time specification (a range with "
+                                            + "periodicity or a list of time values)")
                     String time,
             @DescribeParameter(name = "width", min = 1, description = "Output width", minValue = 1)
                     int width,
             @DescribeParameter(
-                        name = "height",
-                        min = 1,
-                        description = "Output height",
-                        minValue = 1
-                    )
+                            name = "height",
+                            min = 1,
+                            description = "Output height",
+                            minValue = 1)
                     int height,
             @DescribeParameter(
-                        name = "fps",
-                        min = 1,
-                        description = "Frames per second",
-                        minValue = 0,
-                        defaultValue = "1"
-                    )
+                            name = "fps",
+                            min = 1,
+                            description = "Frames per second",
+                            minValue = 0,
+                            defaultValue = "1")
                     double fps,
             @DescribeParameter(
-                        name = "layer",
-                        min = 1,
-                        description = "The list of layers",
-                        minValue = 1
-                    )
+                            name = "layer",
+                            min = 1,
+                            description = "The list of layers",
+                            minValue = 1)
                     Layer[] layers,
             ProgressListener progressListener)
             throws Exception {

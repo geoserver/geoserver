@@ -35,12 +35,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * provided by the {@link org.geotools.tile.TileService}
  */
 @APIService(
-    service = "Features",
-    version = "1.0",
-    landingPage = "ogc/features",
-    serviceClass = WFSInfo.class,
-    core = false
-)
+        service = "Features",
+        version = "1.0",
+        landingPage = "ogc/features",
+        serviceClass = WFSInfo.class,
+        core = false)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features")
 public class TiledFeatureService {
 
@@ -53,10 +52,9 @@ public class TiledFeatureService {
     }
 
     @HTMLResponseBody(
-        templateName = "tileMatrixSets.ftl",
-        fileName = "tileMatrixSets.html",
-        baseClass = TilesService.class
-    )
+            templateName = "tileMatrixSets.ftl",
+            fileName = "tileMatrixSets.html",
+            baseClass = TilesService.class)
     @ResponseBody
     @GetMapping(path = "tileMatrixSets", name = "getTileMatrixSets")
     public TileMatrixSets getTileMatrixSets() {
@@ -66,10 +64,9 @@ public class TiledFeatureService {
     }
 
     @HTMLResponseBody(
-        templateName = "tileMatrixSet.ftl",
-        fileName = "tileMatrixSet.html",
-        baseClass = TilesService.class
-    )
+            templateName = "tileMatrixSet.ftl",
+            fileName = "tileMatrixSet.html",
+            baseClass = TilesService.class)
     @ResponseBody
     @GetMapping(path = "tileMatrixSets/{tileMatrixSetId}", name = "getTileMatrixSet")
     public TileMatrixSetDocument getTileMatrixSet(
@@ -82,10 +79,9 @@ public class TiledFeatureService {
     @GetMapping(path = "collections/{collectionId}/tiles", name = "describeTilesets")
     @ResponseBody
     @HTMLResponseBody(
-        templateName = "tiles.ftl",
-        fileName = "tiles.html",
-        baseClass = TilesService.class
-    )
+            templateName = "tiles.ftl",
+            fileName = "tiles.html",
+            baseClass = TilesService.class)
     public TilesDocument describeTiles(@PathVariable(name = "collectionId") String collectionId)
             throws FactoryException, TransformException, IOException {
         if (!isTiledVectorLayer(collectionId)) {
@@ -133,9 +129,8 @@ public class TiledFeatureService {
     }
 
     @GetMapping(
-        path = "/collections/{collectionId}/tiles/{tileMatrixSetId}/metadata",
-        name = "getTilesMetadata"
-    )
+            path = "/collections/{collectionId}/tiles/{tileMatrixSetId}/metadata",
+            name = "getTilesMetadata")
     @ResponseBody
     public TileJSON getTileJSON(
             @PathVariable(name = "collectionId") String collectionId,
@@ -153,11 +148,10 @@ public class TiledFeatureService {
 
     @ResponseBody
     @GetMapping(
-        path =
-                "/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow"
-                        + "}/{tileCol}",
-        name = "getTile"
-    )
+            path =
+                    "/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow"
+                            + "}/{tileCol}",
+            name = "getTile")
     public ResponseEntity<byte[]> getRawTile(
             @PathVariable(name = "collectionId") String collectionId,
             @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId,

@@ -128,8 +128,7 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
                 "Alaska Polar Stereographic-based tiled "
                         + "coordinate reference system for the Arctic region.");
         addInternal(APSTILE);
-        getGridSets()
-                .stream()
+        getGridSets().stream()
                 .forEach(
                         g -> {
                             if (!gwc.getGridSetBroker().getGridSetNames().contains(g.getName())) {

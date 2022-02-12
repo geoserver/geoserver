@@ -177,8 +177,7 @@ public class STACTemplates extends AbstractTemplates {
         if (resource.getType() != Resource.Type.DIRECTORY) return Collections.emptySet();
 
         Set<String> candidates =
-                resource.list()
-                        .stream()
+                resource.list().stream()
                         .filter(r -> r.getType() == Resource.Type.RESOURCE)
                         .map(r -> r.name())
                         .filter(n -> n.startsWith("items-") && n.endsWith(".json"))

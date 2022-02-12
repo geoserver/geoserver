@@ -41,8 +41,7 @@ class ZonesFeatureIterator implements SimpleFeatureReader {
         this.iterator = iterator;
         fb = new SimpleFeatureBuilder(schema);
         requestedProperties =
-                schema.getAttributeDescriptors()
-                        .stream()
+                schema.getAttributeDescriptors().stream()
                         .map(ad -> ad.getLocalName())
                         .collect(Collectors.toList());
     }

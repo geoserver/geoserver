@@ -214,8 +214,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         // there are groups, so there might be more specific rules overriding the catalog one,
         // search for them
         List<LayerGroupSummary> groupOverrides =
-                containers
-                        .stream()
+                containers.stream()
                         .filter(
                                 sg -> {
                                     LayerGroupInfo gi = rawCatalog.getLayerGroup(sg.getId());
@@ -230,8 +229,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         if (!groupOverrides.isEmpty()) {
             // if there are overrides, see if at least one of them allows access
             rulesAllowAccess =
-                    groupOverrides
-                            .stream()
+                    groupOverrides.stream()
                             .anyMatch(
                                     sg -> {
                                         if (directAccess && sg.getMode() == Mode.OPAQUE_CONTAINER) {
@@ -252,8 +250,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
 
         // the rules allow no access, but there might still be a non secured layer group allowing
         // access to the resource
-        return containers
-                .stream()
+        return containers.stream()
                 .anyMatch(
                         sg -> {
                             if (directAccess && sg.getMode() == Mode.OPAQUE_CONTAINER) {
@@ -480,8 +477,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                 // do we have at least one path that authorizes access to this group? need to check
                 // group by group
                 allowAccess =
-                        directContainers
-                                .stream()
+                        directContainers.stream()
                                 .anyMatch(
                                         sg -> {
                                             if (directAccess

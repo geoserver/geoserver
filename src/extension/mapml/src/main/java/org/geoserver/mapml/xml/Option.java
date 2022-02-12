@@ -34,9 +34,8 @@ import javax.xml.bind.annotation.XmlValue;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"content"}
-)
+        name = "",
+        propOrder = {"content"})
 @XmlRootElement(name = "map-option", namespace = "http://www.w3.org/1999/xhtml")
 public class Option {
 

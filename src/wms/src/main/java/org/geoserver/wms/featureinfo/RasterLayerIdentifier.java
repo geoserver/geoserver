@@ -241,8 +241,7 @@ public class RasterLayerIdentifier implements LayerIdentifier<GridCoverage2DRead
                 int[] bands = new int[propertyNames.length];
                 Set<String> requestedNames = new HashSet<>(Arrays.asList(propertyNames));
                 List<String> dimensionNames =
-                        cinfo.getDimensions()
-                                .stream()
+                        cinfo.getDimensions().stream()
                                 .map(d -> d.getName())
                                 .collect(Collectors.toList());
                 for (int i = 0, j = 0;

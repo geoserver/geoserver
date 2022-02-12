@@ -52,8 +52,7 @@ public class ExportMapControllerTest extends ControllerTest {
         print(json);
         Integer basicPolygonsId =
                 (Integer)
-                        json.getJSONArray("layers")
-                                .stream()
+                        json.getJSONArray("layers").stream()
                                 .filter(o -> "BasicPolygons".equals(((JSONObject) o).get("name")))
                                 .map(o -> ((JSONObject) o).get("id"))
                                 .findFirst()

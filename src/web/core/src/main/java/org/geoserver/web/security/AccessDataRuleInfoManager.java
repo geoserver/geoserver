@@ -46,9 +46,7 @@ public class AccessDataRuleInfoManager {
 
     public Set<String> getAvailableRoles() {
         try {
-            return getSecurityManager()
-                    .getRolesForAccessControl()
-                    .stream()
+            return getSecurityManager().getRolesForAccessControl().stream()
                     .map(r -> r.getAuthority())
                     .collect(Collectors.toSet());
         } catch (IOException ioex) {
@@ -84,8 +82,7 @@ public class AccessDataRuleInfoManager {
     }
 
     public Set<DataAccessRule> getWorkspaceDataAccessRules(String workspaceName) {
-        return getRules()
-                .stream()
+        return getRules().stream()
                 .filter(
                         r ->
                                 r.getRoot().equalsIgnoreCase(workspaceName)
@@ -95,16 +92,14 @@ public class AccessDataRuleInfoManager {
 
     public Set<DataAccessRule> getGlobalLayerGroupSecurityRule(String layerGroupName) {
 
-        return getRules()
-                .stream()
+        return getRules().stream()
                 .filter(r -> r.getRoot().equalsIgnoreCase(layerGroupName))
                 .collect(Collectors.toSet());
     }
 
     public Set<DataAccessRule> getLayerSecurityRule(String workspaceName, String layerName) {
 
-        return getRules()
-                .stream()
+        return getRules().stream()
                 .filter(
                         r ->
                                 r.getRoot().equalsIgnoreCase(workspaceName)

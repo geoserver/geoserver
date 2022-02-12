@@ -43,13 +43,12 @@ public class UserPasswordController extends RestBaseController {
     }
 
     @PutMapping(
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE
-        }
-    )
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE
+            })
     public void passwordPut(@RequestBody Map<String, String> putMap) {
         if (!getManager()
                 .checkAuthenticationForRole(

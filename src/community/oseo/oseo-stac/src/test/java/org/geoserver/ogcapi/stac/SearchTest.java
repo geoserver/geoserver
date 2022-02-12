@@ -418,8 +418,7 @@ public class SearchTest extends STACTestSupport {
 
         // the item identifiers
         Set<String> titles =
-                doc.select("div.card-header h2")
-                        .stream()
+                doc.select("div.card-header h2").stream()
                         .map(e -> e.text())
                         .collect(Collectors.toSet());
         assertThat(titles, Matchers.everyItem(Matchers.startsWith("S2A_OPER_MSI")));

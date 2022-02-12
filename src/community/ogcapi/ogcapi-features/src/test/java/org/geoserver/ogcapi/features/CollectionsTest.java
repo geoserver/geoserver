@@ -121,9 +121,7 @@ public class CollectionsTest extends FeaturesTestSupport {
     public void testCollectionsWorkspaceSpecificJson() throws Exception {
         DocumentContext json = getAsJSONPath("cdf/ogc/features/collections", 200);
         long expected =
-                getCatalog()
-                        .getFeatureTypes()
-                        .stream()
+                getCatalog().getFeatureTypes().stream()
                         .filter(ft -> "cdf".equals(ft.getStore().getWorkspace().getName()))
                         .count();
         // check the filtering

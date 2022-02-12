@@ -74,9 +74,8 @@ import org.vfny.geoserver.util.WCSUtils;
  * @author Andrea Aime - OpenGeo
  */
 @DescribeProcess(
-    title = "Import to Catalog",
-    description = "Imports a feature collection into the catalog"
-)
+        title = "Import to Catalog",
+        description = "Imports a feature collection into the catalog")
 public class ImportProcess implements GeoServerProcess {
 
     static final Logger LOGGER = Logging.getLogger(ImportProcess.class);
@@ -106,44 +105,38 @@ public class ImportProcess implements GeoServerProcess {
             @DescribeParameter(name = "coverage", min = 0, description = "Input raster")
                     GridCoverage2D coverage,
             @DescribeParameter(
-                        name = "workspace",
-                        min = 0,
-                        description = "Target workspace (default is the system default)"
-                    )
+                            name = "workspace",
+                            min = 0,
+                            description = "Target workspace (default is the system default)")
                     String workspace,
             @DescribeParameter(
-                        name = "store",
-                        min = 0,
-                        description = "Target store (default is the workspace default)"
-                    )
+                            name = "store",
+                            min = 0,
+                            description = "Target store (default is the workspace default)")
                     String store,
             @DescribeParameter(
-                        name = "name",
-                        min = 0,
-                        description =
-                                "Name of the new featuretype/coverage (default is the name of the features in the collection)"
-                    )
+                            name = "name",
+                            min = 0,
+                            description =
+                                    "Name of the new featuretype/coverage (default is the name of the features in the collection)")
                     String name,
             @DescribeParameter(
-                        name = "srs",
-                        min = 0,
-                        description =
-                                "Target coordinate reference system (default is based on source when possible)"
-                    )
+                            name = "srs",
+                            min = 0,
+                            description =
+                                    "Target coordinate reference system (default is based on source when possible)")
                     CoordinateReferenceSystem srs,
             @DescribeParameter(
-                        name = "srsHandling",
-                        min = 0,
-                        description =
-                                "Desired SRS handling (default is FORCE_DECLARED, others are REPROJECT_TO_DECLARED or NONE)"
-                    )
+                            name = "srsHandling",
+                            min = 0,
+                            description =
+                                    "Desired SRS handling (default is FORCE_DECLARED, others are REPROJECT_TO_DECLARED or NONE)")
                     ProjectionPolicy srsHandling,
             @DescribeParameter(
-                        name = "styleName",
-                        min = 0,
-                        description =
-                                "Name of the style to be associated with the layer (default is a standard geometry-specific style)"
-                    )
+                            name = "styleName",
+                            min = 0,
+                            description =
+                                    "Name of the style to be associated with the layer (default is a standard geometry-specific style)")
                     String styleName,
             ProgressListener listener)
             throws ProcessException {

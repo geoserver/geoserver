@@ -56,10 +56,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path =
-            RestBaseController.ROOT_PATH
-                    + "/workspaces/{workspaceName}/coveragestores/{storeName}/{method}.{format}"
-)
+        path =
+                RestBaseController.ROOT_PATH
+                        + "/workspaces/{workspaceName}/coveragestores/{storeName}/{method}.{format}")
 public class CoverageStoreFileController extends AbstractStoreUploadController {
 
     /** Keys every known coverage format by lowercase name */

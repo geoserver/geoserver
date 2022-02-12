@@ -122,10 +122,7 @@ public class WfsVersioningConfig extends PublishedConfigurationPanel<LayerInfo> 
 
     private List<String> getAttributesNames(FeatureTypeInfo featureTypeInfo) {
         try {
-            return featureTypeInfo
-                    .getFeatureType()
-                    .getDescriptors()
-                    .stream()
+            return featureTypeInfo.getFeatureType().getDescriptors().stream()
                     .map(attribute -> attribute.getName().getLocalPart())
                     .collect(Collectors.toList());
         } catch (Exception exception) {
@@ -139,10 +136,7 @@ public class WfsVersioningConfig extends PublishedConfigurationPanel<LayerInfo> 
 
     private List<String> getTimeAttributesNames(FeatureTypeInfo featureTypeInfo) {
         try {
-            return featureTypeInfo
-                    .getFeatureType()
-                    .getDescriptors()
-                    .stream()
+            return featureTypeInfo.getFeatureType().getDescriptors().stream()
                     .filter(
                             attribute -> {
                                 Class<?> binding = attribute.getType().getBinding();

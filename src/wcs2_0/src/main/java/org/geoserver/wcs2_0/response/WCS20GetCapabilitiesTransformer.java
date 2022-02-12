@@ -797,9 +797,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             if (i18nRequested) {
                 start("ows:Languages");
                 List<String> languages =
-                        internationalContentHelper
-                                .getSupportedLocales()
-                                .stream()
+                        internationalContentHelper.getSupportedLocales().stream()
                                 .map(l -> l.toLanguageTag())
                                 .collect(Collectors.toList());
                 for (String lang : languages) {

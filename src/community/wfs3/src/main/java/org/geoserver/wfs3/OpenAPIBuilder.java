@@ -114,8 +114,7 @@ public class OpenAPIBuilder {
         Parameter collectionId = parameters.get("collectionId");
         Catalog catalog = wfs.getGeoServer().getCatalog();
         List<String> validCollectionIds =
-                catalog.getFeatureTypes()
-                        .stream()
+                catalog.getFeatureTypes().stream()
                         .map(ft -> NCNameResourceCodec.encode(ft))
                         .collect(Collectors.toList());
         collectionId.getSchema().setEnum(validCollectionIds);
@@ -181,8 +180,7 @@ public class OpenAPIBuilder {
     private String getGeoServerVersion() {
         ManifestLoader.AboutModel versions = ManifestLoader.getVersions();
         TreeSet<ManifestLoader.AboutModel.ManifestModel> manifests = versions.getManifests();
-        return manifests
-                .stream()
+        return manifests.stream()
                 .filter(m -> m.getName().equalsIgnoreCase("GeoServer"))
                 .map(m -> m.getEntries().get("Version"))
                 .findFirst()

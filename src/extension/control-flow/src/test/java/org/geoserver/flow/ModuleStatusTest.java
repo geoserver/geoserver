@@ -20,8 +20,7 @@ public class ModuleStatusTest {
                 new ClassPathXmlApplicationContext("applicationContext.xml", this.getClass())) {
             assertNotNull(context);
             Optional<ModuleStatus> status =
-                    GeoServerExtensions.extensions(ModuleStatus.class, context)
-                            .stream()
+                    GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
                             .filter(s -> s.getModule().equalsIgnoreCase("gs-control-flow"))
                             .findFirst();
             assertTrue(status.isPresent());

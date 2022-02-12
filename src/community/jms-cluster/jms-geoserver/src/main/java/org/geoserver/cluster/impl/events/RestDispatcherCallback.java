@@ -27,9 +27,7 @@ public class RestDispatcherCallback implements DispatcherCallback {
     public void init(HttpServletRequest request, HttpServletResponse response) {
         // get request parameters
         Map<String, String> parameters =
-                request.getParameterMap()
-                        .entrySet()
-                        .stream()
+                request.getParameterMap().entrySet().stream()
                         .map(
                                 entry -> {
                                     String[] values = entry.getValue();

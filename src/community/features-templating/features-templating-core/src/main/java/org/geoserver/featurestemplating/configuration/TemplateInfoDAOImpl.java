@@ -70,8 +70,7 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
     public TemplateInfo saveOrUpdate(TemplateInfo templateData) {
         reloadIfNeeded();
         boolean isUpdate =
-                templateDataSet
-                        .stream()
+                templateDataSet.stream()
                         .anyMatch(ti -> ti.getIdentifier().equals(templateData.getIdentifier()));
         if (isUpdate) {
             fireTemplateUpdateEvent(templateData);
@@ -121,8 +120,7 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
     public TemplateInfo findByFullName(String fullName) {
         reloadIfNeeded();
         Optional<TemplateInfo> templateInfo =
-                templateDataSet
-                        .stream()
+                templateDataSet.stream()
                         .filter(ti -> ti.getFullName().equals(fullName))
                         .findFirst();
         if (templateInfo.isPresent()) return templateInfo.get();
@@ -134,8 +132,7 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
         reloadIfNeeded();
         String workspace = featureTypeInfo.getStore().getWorkspace().getName();
         String name = featureTypeInfo.getName();
-        return templateDataSet
-                .stream()
+        return templateDataSet.stream()
                 .filter(
                         ti ->
                                 (ti.getWorkspace() == null && ti.getFeatureType() == null)
@@ -250,8 +247,7 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
             TemplateInfoDAO dao = TemplateInfoDAO.get();
             List<TemplateInfo> templateInfos = dao.findByFeatureTypeInfo(ft);
             dao.delete(
-                    templateInfos
-                            .stream()
+                    templateInfos.stream()
                             .filter(ti -> ti.getFeatureType() != null)
                             .collect(Collectors.toList()));
         }
@@ -259,8 +255,7 @@ public class TemplateInfoDAOImpl implements TemplateInfoDAO {
         private void removeWSTemplates(WorkspaceInfo ws) {
             TemplateInfoDAO dao = TemplateInfoDAO.get();
             List<TemplateInfo> templateInfos =
-                    dao.findAll()
-                            .stream()
+                    dao.findAll().stream()
                             .filter(ti -> ti.getWorkspace().equals(ws.getName()))
                             .collect(Collectors.toList());
             dao.delete(templateInfos);

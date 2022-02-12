@@ -26,11 +26,14 @@ Limitations
 The ``authkey`` module is meant to be used with OGC services. It won't work properly against the
 administration GUI, nor RESTConfig.
 
+The ``authkey`` module replaces the default basic authentication provider, therefore when editing a user
+the Enabled checkbox does not affect the ``authkey`` provider and you cannot disable users this way.
+
 Key providers
 -------------
 
 Key providers are responsible for mapping the authentication keys to a user. The authentication key
-itself is a UUID (Universal unique Identifier). A key provider needs a user/group service and it is
+itself is a UUID (Universally Unique IDentifier (UUID)). A key provider needs a user/group service and it is
 responsible for synchronizing the authentication keys with the users contained in this service.  
 
 Key provider using user properties

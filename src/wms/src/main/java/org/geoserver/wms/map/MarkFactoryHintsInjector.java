@@ -100,8 +100,7 @@ public class MarkFactoryHintsInjector {
 
     private boolean validateIdentifiers(List<String> identifiers) {
         List<String> availableFactories =
-                IteratorUtils.toList(DynamicSymbolFactoryFinder.getMarkFactories())
-                        .stream()
+                IteratorUtils.toList(DynamicSymbolFactoryFinder.getMarkFactories()).stream()
                         .map(mf -> mf.getClass().getSimpleName())
                         .collect(Collectors.toList());
         for (String identifier : identifiers) {

@@ -430,8 +430,7 @@ public class TemplatesProcessor {
                 feature.getProperties(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME);
         if (linkProperties != null) {
             Map<String, List<SimpleFeature>> linksByOffering =
-                    linkProperties
-                            .stream()
+                    linkProperties.stream()
                             .map(p -> (SimpleFeature) p)
                             .sorted(LinkFeatureComparator.INSTANCE)
                             .collect(

@@ -34,9 +34,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"head", "body"}
-)
+        name = "",
+        propOrder = {"head", "body"})
 @XmlRootElement(name = "mapml-", namespace = "http://www.w3.org/1999/xhtml")
 public class Mapml {
 

@@ -1214,8 +1214,7 @@ public class GeofenceAccessManager
     private void addGroupStyles(LayerGroupInfo groupInfo, List<String> requestedStyles) {
         List<StyleInfo> groupStyles = groupInfo.styles();
         requestedStyles.addAll(
-                groupStyles
-                        .stream()
+                groupStyles.stream()
                         .map(s -> s != null ? s.prefixedName() : null)
                         .collect(Collectors.toList()));
     }

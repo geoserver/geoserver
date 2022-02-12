@@ -24,8 +24,7 @@ public class ModuleStatusTest {
                 new ClassPathXmlApplicationContext("applicationContext.xml")) {
 
             Optional<ModuleStatus> status =
-                    GeoServerExtensions.extensions(ModuleStatus.class, context)
-                            .stream()
+                    GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
                             .filter(s -> s.getModule().equalsIgnoreCase("gs-teradata"))
                             .findFirst();
             assertEquals(expect, status.isPresent());

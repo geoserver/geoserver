@@ -139,8 +139,7 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
         if (featureType == null
                 || (featureType.getName().getLocalPart() != null)
                         && (fts.featureTypeNames().isEmpty()
-                                || fts.featureTypeNames()
-                                        .stream()
+                                || fts.featureTypeNames().stream()
                                         .anyMatch(tn -> FeatureTypes.matches(featureType, tn)))) {
             Expression tx = fts.getTransformation();
             if (tx != null) {

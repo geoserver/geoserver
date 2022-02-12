@@ -4,7 +4,6 @@
  */
 package org.geoserver.platform;
 /** @author Morgan Thompson - Boundless */
-
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;

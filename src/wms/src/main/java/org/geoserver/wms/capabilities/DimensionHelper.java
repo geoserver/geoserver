@@ -180,9 +180,7 @@ abstract class DimensionHelper {
     }
 
     private Map<String, DimensionInfo> getCustomDimensions(final FeatureTypeInfo typeInfo) {
-        return typeInfo.getMetadata()
-                .entrySet()
-                .stream()
+        return typeInfo.getMetadata().entrySet().stream()
                 .filter(
                         e ->
                                 e.getValue() instanceof DimensionInfo

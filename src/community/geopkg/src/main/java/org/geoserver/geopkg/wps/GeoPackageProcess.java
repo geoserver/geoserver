@@ -159,9 +159,8 @@ public class GeoPackageProcess implements GeoServerProcess {
     @DescribeResult(name = "geopackage", description = "Link to Compiled Geopackage File")
     public URL execute(
             @DescribeParameter(
-                        name = "contents",
-                        description = "xml scheme describing geopackage contents"
-                    )
+                            name = "contents",
+                            description = "xml scheme describing geopackage contents")
                     GeoPackageProcessRequest contents,
             ProgressListener listener)
             throws IOException {
@@ -459,8 +458,7 @@ public class GeoPackageProcess implements GeoServerProcess {
         }
         if (features.getPropertyNames() != null) {
             q.setPropertyNames(
-                    features.getPropertyNames()
-                            .stream()
+                    features.getPropertyNames().stream()
                             .map(qn -> qn.getLocalPart())
                             .toArray(n -> new String[n]));
         }

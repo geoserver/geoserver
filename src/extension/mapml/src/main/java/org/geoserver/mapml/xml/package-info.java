@@ -1,7 +1,6 @@
 @XmlSchema(
-    xmlns = {@XmlNs(prefix = "html", namespaceURI = "http://www.w3.org/1999/xhtml")},
-    elementFormDefault = XmlNsForm.UNQUALIFIED
-)
+        xmlns = {@XmlNs(prefix = "html", namespaceURI = "http://www.w3.org/1999/xhtml")},
+        elementFormDefault = XmlNsForm.UNQUALIFIED)
 package org.geoserver.mapml.xml;
 
 import javax.xml.bind.annotation.XmlNs;

@@ -365,8 +365,7 @@ public class WMSRequests {
         if (kvpMap.get("elevation") != null) {
             params.put("elevation", kvpMap.get("elevation"));
         }
-        kvpMap.entrySet()
-                .stream()
+        kvpMap.entrySet().stream()
                 .filter(e -> e.getKey().toLowerCase().startsWith("dim_"))
                 .forEach(e -> params.put(e.getKey().toLowerCase(), e.getValue()));
 

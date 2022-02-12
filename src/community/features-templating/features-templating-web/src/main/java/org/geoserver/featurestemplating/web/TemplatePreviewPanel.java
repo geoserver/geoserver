@@ -450,8 +450,7 @@ public class TemplatePreviewPanel extends Panel {
         WorkspaceInfo result = null;
         if (workspaceInfoDropDownChoice != null && !workspaces.isEmpty()) {
             Optional<WorkspaceInfo> selectedWs =
-                    workspaces
-                            .stream()
+                    workspaces.stream()
                             .filter(ws -> ws.getName().equals(workspaceValue))
                             .findFirst();
             if (selectedWs.isPresent()) {
@@ -483,8 +482,7 @@ public class TemplatePreviewPanel extends Panel {
             String featureTypeInfoValue, List<FeatureTypeInfo> featureTypeInfos) {
         if (featureTypesDD != null && !featureTypeInfos.isEmpty()) {
             Optional<FeatureTypeInfo> op =
-                    featureTypeInfos
-                            .stream()
+                    featureTypeInfos.stream()
                             .filter(fti -> fti.getName().equals(featureTypeInfoValue))
                             .findFirst();
 

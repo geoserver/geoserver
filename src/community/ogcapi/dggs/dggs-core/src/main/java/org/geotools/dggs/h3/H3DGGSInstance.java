@@ -291,9 +291,7 @@ public class H3DGGSInstance implements DGGSInstance {
         // Using H3 facilities. Upside fast and accurate (considering dateline and pole neighbors
         // too), downside, will quickly go OOM, radius should be limited
         long h3Id = this.h3.stringToH3(id);
-        return this.h3
-                .kRing(h3Id, radius)
-                .stream()
+        return this.h3.kRing(h3Id, radius).stream()
                 .filter(zoneId -> h3Id != zoneId)
                 .map(zoneId -> (Zone) new H3Zone(this, zoneId))
                 .iterator();

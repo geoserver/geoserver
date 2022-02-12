@@ -28,8 +28,7 @@ public class DAPAVariables extends AbstractDocument {
         SimpleFeatureType schema = (SimpleFeatureType) info.getFeatureType();
         this.collectionId = collectionId;
         this.variables =
-                schema.getAttributeDescriptors()
-                        .stream()
+                schema.getAttributeDescriptors().stream()
                         .filter(
                                 ad ->
                                         !(ad instanceof GeometryDescriptor)

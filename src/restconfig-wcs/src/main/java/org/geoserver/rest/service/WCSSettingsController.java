@@ -31,13 +31,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-    path = RestBaseController.ROOT_PATH + "/services/wcs",
-    produces = {
-        MediaType.APPLICATION_JSON_VALUE,
-        MediaType.APPLICATION_XML_VALUE,
-        MediaType.TEXT_HTML_VALUE
-    }
-)
+        path = RestBaseController.ROOT_PATH + "/services/wcs",
+        produces = {
+            MediaType.APPLICATION_JSON_VALUE,
+            MediaType.APPLICATION_XML_VALUE,
+            MediaType.TEXT_HTML_VALUE
+        })
 public class WCSSettingsController extends ServiceSettingsController<WCSInfo> {
 
     @Autowired
@@ -47,14 +46,13 @@ public class WCSSettingsController extends ServiceSettingsController<WCSInfo> {
 
     @Override
     @PutMapping(
-        value = {"/settings", "/workspaces/{workspaceName}/settings"},
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            value = {"/settings", "/workspaces/{workspaceName}/settings"},
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public void serviceSettingsPut(
             @RequestBody WCSInfo info, @PathVariable(required = false) String workspaceName) {
         super.serviceSettingsPut(info, workspaceName);

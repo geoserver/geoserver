@@ -84,8 +84,7 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
         if (kvp.containsKey("featureId") || kvp.containsKey("resourceId")) {
             List<String> featureIdList = (List) kvp.get("featureId");
             Set<FeatureId> ids =
-                    featureIdList
-                            .stream()
+                    featureIdList.stream()
                             .map(id -> filterFactory.featureId(id))
                             .collect(Collectors.toSet());
             filters.add(filterFactory.id(ids));
@@ -192,8 +191,7 @@ public class GetFeatureKvpRequestReader extends org.geoserver.wfs.kvp.GetFeature
             return Collections.emptyList();
         }
         FeatureType schema = ft.getFeatureType();
-        return schema.getDescriptors()
-                .stream()
+        return schema.getDescriptors().stream()
                 .filter(pd -> Date.class.isAssignableFrom(pd.getType().getBinding()))
                 .map(pd -> pd.getName().getLocalPart())
                 .collect(Collectors.toList());

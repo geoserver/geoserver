@@ -35,13 +35,12 @@ public abstract class ServiceSettingsController<T extends ServiceInfo>
     }
 
     @GetMapping(
-        value = {"/settings", "/workspaces/{workspaceName}/settings"},
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            value = {"/settings", "/workspaces/{workspaceName}/settings"},
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public RestWrapper serviceSettingsGet(@PathVariable(required = false) String workspaceName) {
         T service;
         if (workspaceName != null) {

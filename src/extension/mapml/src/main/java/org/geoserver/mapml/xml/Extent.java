@@ -61,38 +61,32 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(
-    name = "",
-    propOrder = {"inputOrDatalistOrLink"}
-)
+        name = "",
+        propOrder = {"inputOrDatalistOrLink"})
 @XmlRootElement(name = "map-extent", namespace = "http://www.w3.org/1999/xhtml")
 public class Extent {
 
     @XmlElements({
         @XmlElement(
-            name = "map-input",
-            type = Input.class,
-            namespace = "http://www.w3.org/1999/xhtml"
-        ),
+                name = "map-input",
+                type = Input.class,
+                namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(
-            name = "map-datalist",
-            type = Datalist.class,
-            namespace = "http://www.w3.org/1999/xhtml"
-        ),
+                name = "map-datalist",
+                type = Datalist.class,
+                namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(
-            name = "map-link",
-            type = Link.class,
-            namespace = "http://www.w3.org/1999/xhtml"
-        ),
+                name = "map-link",
+                type = Link.class,
+                namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(
-            name = "map-select",
-            type = Select.class,
-            namespace = "http://www.w3.org/1999/xhtml"
-        ),
+                name = "map-select",
+                type = Select.class,
+                namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(
-            name = "map-label",
-            type = Label.class,
-            namespace = "http://www.w3.org/1999/xhtml"
-        )
+                name = "map-label",
+                type = Label.class,
+                namespace = "http://www.w3.org/1999/xhtml")
     })
     protected List<Object> inputOrDatalistOrLink;
 

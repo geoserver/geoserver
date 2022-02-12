@@ -39,12 +39,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** Controller for the root Catalog service endpoint. */
 @APIService(
-    service = "GSR",
-    version = "10.51",
-    landingPage = "gsr/services",
-    core = true,
-    serviceClass = GSRServiceInfo.class
-)
+        service = "GSR",
+        version = "10.51",
+        landingPage = "gsr/services",
+        core = true,
+        serviceClass = GSRServiceInfo.class)
 @RestController
 @RequestMapping(path = "/gsr/services", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CatalogServiceController extends AbstractGSRController {
@@ -55,9 +54,8 @@ public class CatalogServiceController extends AbstractGSRController {
     }
 
     @GetMapping(
-        path = {""},
-        name = "GetServices"
-    )
+            path = {""},
+            name = "GetServices")
     @HTMLResponseBody(templateName = "catalog.ftl", fileName = "catalog.html")
     public CatalogService catalogGet() {
         List<AbstractService> services = new ArrayList<>();
@@ -75,9 +73,8 @@ public class CatalogServiceController extends AbstractGSRController {
     }
 
     @GetMapping(
-        path = {"/{folder:.*}"},
-        name = "GetServices"
-    )
+            path = {"/{folder:.*}"},
+            name = "GetServices")
     @HTMLResponseBody(templateName = "catalog.ftl", fileName = "catalog.html")
     public CatalogService catalogGet(@PathVariable(required = true) String folder) {
         List<AbstractService> services = new ArrayList<>();

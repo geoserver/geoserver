@@ -53,8 +53,7 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
         Parameter collectionId = parameters.get("collectionId");
         Catalog catalog = wfs.getGeoServer().getCatalog();
         List<String> validCollectionIds =
-                catalog.getFeatureTypes()
-                        .stream()
+                catalog.getFeatureTypes().stream()
                         .map(ft -> ft.prefixedName())
                         .collect(Collectors.toList());
         collectionId.getSchema().setEnum(validCollectionIds);

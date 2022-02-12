@@ -89,9 +89,7 @@ public class AggregateProcessJSONPPIO extends CDataPPIO {
      * @return aggregation functions result values
      */
     private Number[] encodeSimpleResult(AggregateProcess.Results processResult) {
-        return processResult
-                .getFunctions()
-                .stream()
+        return processResult.getFunctions().stream()
                 .map(function -> processResult.getResults().get(function))
                 .toArray(Number[]::new);
     }

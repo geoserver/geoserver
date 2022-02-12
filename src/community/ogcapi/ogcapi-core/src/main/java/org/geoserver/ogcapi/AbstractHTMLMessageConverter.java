@@ -155,8 +155,7 @@ public abstract class AbstractHTMLMessageConverter<T> extends AbstractHttpMessag
     }
 
     public List<Object> unwrapArguments(List<Object> arguments) {
-        return arguments
-                .stream()
+        return arguments.stream()
                 .map(
                         v -> {
                             if (v instanceof TemplateModel) {

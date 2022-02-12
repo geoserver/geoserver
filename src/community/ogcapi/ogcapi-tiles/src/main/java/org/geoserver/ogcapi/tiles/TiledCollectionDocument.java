@@ -177,8 +177,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
     private CollectionExtents getExtentFromGridsets(TileLayer tileLayer)
             throws FactoryException, TransformException {
         Set<String> srsSet =
-                layer.getGridSubsets()
-                        .stream()
+                layer.getGridSubsets().stream()
                         .map(gs -> tileLayer.getGridSubset(gs).getSRS().toString())
                         .collect(Collectors.toSet());
         if (srsSet.isEmpty()) {

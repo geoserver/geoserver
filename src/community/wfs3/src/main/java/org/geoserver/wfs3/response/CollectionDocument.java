@@ -86,9 +86,7 @@ public class CollectionDocument extends AbstractDocument {
 
     private boolean isWMSAvailable(GeoServer geoServer) {
         ServiceInfo si =
-                geoServer
-                        .getServices()
-                        .stream()
+                geoServer.getServices().stream()
                         .filter(s -> "WMS".equals(s.getName()))
                         .findFirst()
                         .orElse(null);

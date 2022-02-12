@@ -189,11 +189,10 @@ public class ObjectFactory {
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link MultiPoint }{@code >}} */
     @XmlElementDecl(
-        namespace = "http://www.w3.org/1999/xhtml",
-        name = "map-multipoint",
-        substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
-        substitutionHeadName = "GeometryContent"
-    )
+            namespace = "http://www.w3.org/1999/xhtml",
+            name = "map-multipoint",
+            substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
+            substitutionHeadName = "GeometryContent")
     public JAXBElement<MultiPoint> createMultiPoint(MultiPoint value) {
         return new JAXBElement<>(_MultiPoint_QNAME, MultiPoint.class, null, value);
     }
@@ -206,11 +205,10 @@ public class ObjectFactory {
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link MultiLineString }{@code >}} */
     @XmlElementDecl(
-        namespace = "http://www.w3.org/1999/xhtml",
-        name = "map-multilinestring",
-        substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
-        substitutionHeadName = "GeometryContent"
-    )
+            namespace = "http://www.w3.org/1999/xhtml",
+            name = "map-multilinestring",
+            substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
+            substitutionHeadName = "GeometryContent")
     public JAXBElement<MultiLineString> createMultiLineString(MultiLineString value) {
         return new JAXBElement<>(_MultiLineString_QNAME, MultiLineString.class, null, value);
     }
@@ -227,11 +225,10 @@ public class ObjectFactory {
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link Point }{@code >}} */
     @XmlElementDecl(
-        namespace = "http://www.w3.org/1999/xhtml",
-        name = "map-point",
-        substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
-        substitutionHeadName = "GeometryContent"
-    )
+            namespace = "http://www.w3.org/1999/xhtml",
+            name = "map-point",
+            substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
+            substitutionHeadName = "GeometryContent")
     public JAXBElement<Point> createPoint(Point value) {
         return new JAXBElement<>(_Point_QNAME, Point.class, null, value);
     }
@@ -256,33 +253,30 @@ public class ObjectFactory {
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link GeometryCollection }{@code >}} */
     @XmlElementDecl(
-        namespace = "http://www.w3.org/1999/xhtml",
-        name = "map-geometrycollection",
-        substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
-        substitutionHeadName = "GeometryContent"
-    )
+            namespace = "http://www.w3.org/1999/xhtml",
+            name = "map-geometrycollection",
+            substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
+            substitutionHeadName = "GeometryContent")
     public JAXBElement<GeometryCollection> createGeometryCollection(GeometryCollection value) {
         return new JAXBElement<>(_GeometryCollection_QNAME, GeometryCollection.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link LineString }{@code >}} */
     @XmlElementDecl(
-        namespace = "http://www.w3.org/1999/xhtml",
-        name = "map-linestring",
-        substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
-        substitutionHeadName = "GeometryContent"
-    )
+            namespace = "http://www.w3.org/1999/xhtml",
+            name = "map-linestring",
+            substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
+            substitutionHeadName = "GeometryContent")
     public JAXBElement<LineString> createLineString(LineString value) {
         return new JAXBElement<>(_LineString_QNAME, LineString.class, null, value);
     }
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link MultiPolygon }{@code >}} */
     @XmlElementDecl(
-        namespace = "http://www.w3.org/1999/xhtml",
-        name = "map-multipolygon",
-        substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
-        substitutionHeadName = "GeometryContent"
-    )
+            namespace = "http://www.w3.org/1999/xhtml",
+            name = "map-multipolygon",
+            substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
+            substitutionHeadName = "GeometryContent")
     public JAXBElement<MultiPolygon> createMultiPolygon(MultiPolygon value) {
         return new JAXBElement<>(_MultiPolygon_QNAME, MultiPolygon.class, null, value);
     }
@@ -295,11 +289,10 @@ public class ObjectFactory {
 
     /** Create an instance of {@link JAXBElement }{@code <}{@link Polygon }{@code >}} */
     @XmlElementDecl(
-        namespace = "http://www.w3.org/1999/xhtml",
-        name = "map-polygon",
-        substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
-        substitutionHeadName = "GeometryContent"
-    )
+            namespace = "http://www.w3.org/1999/xhtml",
+            name = "map-polygon",
+            substitutionHeadNamespace = "http://www.w3.org/1999/xhtml",
+            substitutionHeadName = "GeometryContent")
     public JAXBElement<Polygon> createPolygon(Polygon value) {
         return new JAXBElement<>(_Polygon_QNAME, Polygon.class, null, value);
     }
@@ -316,10 +309,9 @@ public class ObjectFactory {
      */
     @SuppressWarnings("rawtypes")
     @XmlElementDecl(
-        namespace = "http://www.w3.org/1999/xhtml",
-        name = "map-coordinates",
-        scope = MultiPoint.class
-    )
+            namespace = "http://www.w3.org/1999/xhtml",
+            name = "map-coordinates",
+            scope = MultiPoint.class)
     public JAXBElement<List<String>> createMultiPointCoordinates(List<String> value) {
         return new JAXBElement<>(
                 _MultiPointCoordinates_QNAME,
@@ -334,10 +326,9 @@ public class ObjectFactory {
      */
     @SuppressWarnings("rawtypes")
     @XmlElementDecl(
-        namespace = "http://www.w3.org/1999/xhtml",
-        name = "map-coordinates",
-        scope = Polygon.class
-    )
+            namespace = "http://www.w3.org/1999/xhtml",
+            name = "map-coordinates",
+            scope = Polygon.class)
     public JAXBElement<List<String>> createPolygonCoordinates(List<String> value) {
         return new JAXBElement<>(
                 _MultiPointCoordinates_QNAME,
@@ -352,10 +343,9 @@ public class ObjectFactory {
      */
     @SuppressWarnings("rawtypes")
     @XmlElementDecl(
-        namespace = "http://www.w3.org/1999/xhtml",
-        name = "map-coordinates",
-        scope = MultiLineString.class
-    )
+            namespace = "http://www.w3.org/1999/xhtml",
+            name = "map-coordinates",
+            scope = MultiLineString.class)
     public JAXBElement<List<String>> createMultiLineStringCoordinates(List<String> value) {
         return new JAXBElement<>(
                 _MultiPointCoordinates_QNAME,

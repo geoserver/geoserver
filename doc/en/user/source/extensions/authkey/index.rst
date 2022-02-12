@@ -33,7 +33,7 @@ Key providers
 -------------
 
 Key providers are responsible for mapping the authentication keys to a user. The authentication key
-itself is a UUID (Universal Unique Identifier). A key provider needs a user/group service and it is
+itself is a UUID (Universally Unique IDentifier (UUID)). A key provider needs a user/group service and it is
 responsible for synchronizing the authentication keys with the users contained in this service.  
 
 Key provider using user properties

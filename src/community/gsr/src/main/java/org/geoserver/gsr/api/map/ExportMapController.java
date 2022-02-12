@@ -39,10 +39,9 @@ public class ExportMapController extends AbstractGSRController {
     }
 
     @GetMapping(
-        produces = "application/json",
-        path = "/gsr/services/{workspaceName}/MapServer/export",
-        name = "MapServerExportMap"
-    )
+            produces = "application/json",
+            path = "/gsr/services/{workspaceName}/MapServer/export",
+            name = "MapServerExportMap")
     @ResponseBody
     public ExportMap exportMap(@PathVariable String workspaceName, HttpServletRequest request) {
         String requestURL = request.getRequestURL().toString();
@@ -54,9 +53,8 @@ public class ExportMapController extends AbstractGSRController {
     }
 
     @GetMapping(
-        path = "/gsr/services/{workspaceName}/MapServer/export",
-        name = "MapServerExportMapImage"
-    )
+            path = "/gsr/services/{workspaceName}/MapServer/export",
+            name = "MapServerExportMapImage")
     public void exportMap(
             @PathVariable String workspaceName,
             HttpServletRequest request,
@@ -66,9 +64,8 @@ public class ExportMapController extends AbstractGSRController {
     }
 
     @GetMapping(
-        path = "/gsr/services/{workspaceName}/MapServer/{layerId}/export",
-        name = "MapServerExportLayerMap"
-    )
+            path = "/gsr/services/{workspaceName}/MapServer/{layerId}/export",
+            name = "MapServerExportLayerMap")
     public void exportMapOfLayer(
             @PathVariable String workspaceName,
             @PathVariable String layerId,
@@ -211,8 +208,7 @@ public class ExportMapController extends AbstractGSRController {
 
     private String getAllLayersInEsriFormat(String workspaceName) {
         return "show:"
-                + catalog.getLayers()
-                        .stream()
+                + catalog.getLayers().stream()
                         .filter(
                                 li ->
                                         li.getResource()

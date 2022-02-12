@@ -36,8 +36,7 @@ public class StylesAPIBuilder extends OpenAPIBuilder<StylesServiceInfo> {
         Parameter styleId = parameters.get("styleId");
         Catalog catalog = service.getGeoServer().getCatalog();
         List<String> validStyleIds =
-                catalog.getStyles()
-                        .stream()
+                catalog.getStyles().stream()
                         .map(si -> si.prefixedName())
                         .collect(Collectors.toList());
         styleId.getSchema().setEnum(validStyleIds);

@@ -287,9 +287,8 @@ public class ProductsController extends AbstractOpenSearchController {
      * Note, the .+ regular expression allows the product id to contain dots instead of having them interpreted as format extension
      */
     @GetMapping(
-        path = "{product:.+}",
-        produces = {MediaType.APPLICATION_JSON_VALUE}
-    )
+            path = "{product:.+}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public SimpleFeature getProduct(
             HttpServletRequest request,
@@ -396,9 +395,8 @@ public class ProductsController extends AbstractOpenSearchController {
      * Note, the .+ regular expression allows the product id to contain dots instead of having them interpreted as format extension
      */
     @GetMapping(
-        path = "{product:.+}/ogcLinks",
-        produces = {MediaType.APPLICATION_JSON_VALUE}
-    )
+            path = "{product:.+}/ogcLinks",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public OgcLinks getProductOgcLinks(
             HttpServletRequest request,
@@ -457,9 +455,8 @@ public class ProductsController extends AbstractOpenSearchController {
      * Note, the .+ regular expression allows the product id to contain dots instead of having them interpreted as format extension
      */
     @GetMapping(
-        path = "{product:.+}/metadata",
-        produces = {MediaType.APPLICATION_JSON_VALUE}
-    )
+            path = "{product:.+}/metadata",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     public void getProductMetadata(
             @PathVariable(name = "collection", required = true) String collection,
             @PathVariable(name = "product", required = true) String product,
@@ -529,9 +526,8 @@ public class ProductsController extends AbstractOpenSearchController {
      * Note, the .+ regular expression allows the product id to contain dots instead of having them interpreted as format extension
      */
     @GetMapping(
-        path = "{product:.+}/description",
-        produces = {MediaType.TEXT_HTML_VALUE}
-    )
+            path = "{product:.+}/description",
+            produces = {MediaType.TEXT_HTML_VALUE})
     public void getProductDescription(
             @PathVariable(name = "collection", required = true) String collection,
             @PathVariable(name = "product", required = true) String product,
@@ -601,9 +597,8 @@ public class ProductsController extends AbstractOpenSearchController {
      * Note, the .+ regular expression allows the product id to contain dots instead of having them interpreted as format extension
      */
     @GetMapping(
-        path = "{product:.+}/thumbnail",
-        produces = {MediaType.ALL_VALUE}
-    )
+            path = "{product:.+}/thumbnail",
+            produces = {MediaType.ALL_VALUE})
     public void getProductThumbnail(
             @PathVariable(name = "collection", required = true) String collection,
             @PathVariable(name = "product", required = true) String product,
@@ -632,9 +627,8 @@ public class ProductsController extends AbstractOpenSearchController {
     }
 
     @PutMapping(
-        path = "{product:.+}/thumbnail",
-        consumes = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE}
-    )
+            path = "{product:.+}/thumbnail",
+            consumes = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
     public void putProductThumbnail(
             @PathVariable(name = "collection", required = true) String collection,
             @PathVariable(name = "product", required = true) String product,
@@ -660,9 +654,8 @@ public class ProductsController extends AbstractOpenSearchController {
     }
 
     @GetMapping(
-        path = "{product:.+}/granules",
-        produces = {MediaType.APPLICATION_JSON_VALUE}
-    )
+            path = "{product:.+}/granules",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public SimpleFeatureCollection getProductGranules(
             @PathVariable(name = "collection", required = true) String collection,
@@ -673,9 +666,8 @@ public class ProductsController extends AbstractOpenSearchController {
     }
 
     @PutMapping(
-        path = "{product:.+}/granules",
-        produces = {MediaType.APPLICATION_JSON_VALUE}
-    )
+            path = "{product:.+}/granules",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     public void putProductGranules(
             @PathVariable(name = "collection", required = true) String collection,
             @PathVariable(name = "product", required = true) String product,

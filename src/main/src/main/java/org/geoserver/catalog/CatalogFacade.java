@@ -510,8 +510,7 @@ public interface CatalogFacade {
      * @return The namespace, or <code>null</code> if no such namespace exists
      */
     default List<NamespaceInfo> getNamespacesByURI(String uri) {
-        return getNamespaces()
-                .stream()
+        return getNamespaces().stream()
                 .filter(namespace -> namespace.getURI().equals(uri))
                 .collect(Collectors.toList());
     }

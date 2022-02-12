@@ -60,8 +60,7 @@ public class TemplateOutputValidator {
             parser.setValidating(true);
             parser.parse(is);
             validationErrors.addAll(
-                    parser.getValidationErrors()
-                            .stream()
+                    parser.getValidationErrors().stream()
                             .map(e -> e.getMessage())
                             .collect(Collectors.toList()));
         } catch (Exception e) {

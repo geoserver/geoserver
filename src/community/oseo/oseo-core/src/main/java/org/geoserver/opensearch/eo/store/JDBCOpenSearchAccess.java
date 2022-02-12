@@ -451,7 +451,8 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
                     typeName.substring(
                             idx
                                     + org.geoserver.opensearch.eo.store.OpenSearchAccess
-                                            .BAND_LAYER_SEPARATOR.length());
+                                            .BAND_LAYER_SEPARATOR
+                                            .length());
         } else {
             collection = typeName;
             band = null;
@@ -689,9 +690,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         // granule attributes
         SimpleFeatureType granuleSchema = delegate.getSchema(granuleTableName);
         final String productIdColumn =
-                granuleSchema
-                        .getAttributeDescriptors()
-                        .stream()
+                granuleSchema.getAttributeDescriptors().stream()
                         .map(ad -> ad.getLocalName())
                         .filter(s -> "product_id".equalsIgnoreCase(s))
                         .findFirst()
@@ -719,9 +718,7 @@ public class JDBCOpenSearchAccess implements org.geoserver.opensearch.eo.store.O
         granulesQuery.setFilter(
                 FF.equal(FF.property(productIdColumn), FF.literal(dbProductId), true));
         List<String> names =
-                granuleSchema
-                        .getAttributeDescriptors()
-                        .stream()
+                granuleSchema.getAttributeDescriptors().stream()
                         .map(ad -> ad.getLocalName())
                         .filter(s -> !s.equals(productIdColumn))
                         .collect(Collectors.toList());

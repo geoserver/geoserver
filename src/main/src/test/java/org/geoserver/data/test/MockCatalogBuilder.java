@@ -760,8 +760,7 @@ public class MockCatalogBuilder {
                         .anyTimes();
                 expect(catalog.getResourcesByStore(ds, ResourceInfo.class))
                         .andReturn(
-                                featureTypes
-                                        .stream()
+                                featureTypes.stream()
                                         .map(ft -> (ResourceInfo) ft)
                                         .collect(Collectors.toList()))
                         .anyTimes();
@@ -776,8 +775,7 @@ public class MockCatalogBuilder {
                         .anyTimes();
                 expect(catalog.getResourcesByStore(cs, ResourceInfo.class))
                         .andReturn(
-                                coverages
-                                        .stream()
+                                coverages.stream()
                                         .map(c -> (ResourceInfo) c)
                                         .collect(Collectors.toList()))
                         .anyTimes();

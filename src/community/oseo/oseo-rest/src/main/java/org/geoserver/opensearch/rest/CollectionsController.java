@@ -251,9 +251,8 @@ public class CollectionsController extends AbstractOpenSearchController {
     }
 
     @GetMapping(
-        path = "{collection}",
-        produces = {MediaType.APPLICATION_JSON_VALUE}
-    )
+            path = "{collection}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public SimpleFeature getCollection(
             HttpServletRequest request,
@@ -345,9 +344,8 @@ public class CollectionsController extends AbstractOpenSearchController {
     }
 
     @GetMapping(
-        path = "{collection}/layer",
-        produces = {MediaType.APPLICATION_JSON_VALUE}
-    )
+            path = "{collection}/layer",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public CollectionLayer getDefaultCollectionLayer(
             HttpServletRequest request,
@@ -637,9 +635,8 @@ public class CollectionsController extends AbstractOpenSearchController {
     }
 
     @GetMapping(
-        path = "{collection}/ogcLinks",
-        produces = {MediaType.APPLICATION_JSON_VALUE}
-    )
+            path = "{collection}/ogcLinks",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public OgcLinks getCollectionOgcLinks(
             HttpServletRequest request,
@@ -691,9 +688,8 @@ public class CollectionsController extends AbstractOpenSearchController {
     }
 
     @GetMapping(
-        path = "{collection}/metadata",
-        produces = {MediaType.TEXT_XML_VALUE}
-    )
+            path = "{collection}/metadata",
+            produces = {MediaType.TEXT_XML_VALUE})
     public void getCollectionMetadata(
             @PathVariable(name = "collection", required = true) String collection,
             HttpServletResponse response)
@@ -752,9 +748,8 @@ public class CollectionsController extends AbstractOpenSearchController {
     }
 
     @GetMapping(
-        path = "{collection}/description",
-        produces = {MediaType.TEXT_HTML_VALUE}
-    )
+            path = "{collection}/description",
+            produces = {MediaType.TEXT_HTML_VALUE})
     public void getCollectionDescription(
             @PathVariable(name = "collection", required = true) String collection,
             HttpServletResponse response)
@@ -850,9 +845,8 @@ public class CollectionsController extends AbstractOpenSearchController {
     }
 
     @GetMapping(
-        path = "{collection}/layers",
-        produces = {MediaType.APPLICATION_JSON_VALUE}
-    )
+            path = "{collection}/layers",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public LayerReferences getCollectionLayers(
             HttpServletRequest request,
@@ -898,9 +892,8 @@ public class CollectionsController extends AbstractOpenSearchController {
     }
 
     @GetMapping(
-        path = "{collection}/layers/{layer}",
-        produces = {MediaType.APPLICATION_JSON_VALUE}
-    )
+            path = "{collection}/layers/{layer}",
+            produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public CollectionLayer getCollectionLayer(
             HttpServletRequest request,

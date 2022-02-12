@@ -306,9 +306,7 @@ public class SLDHandler extends StyleHandler {
         try (Reader reader = toReader(input)) {
             final SLDValidator validator = new SLDValidator();
             validator.setEntityResolver(entityResolver);
-            return validator
-                    .validateSLD(new InputSource(reader))
-                    .stream()
+            return validator.validateSLD(new InputSource(reader)).stream()
                     .map(e -> (Exception) e)
                     .collect(Collectors.toList());
         }

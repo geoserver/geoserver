@@ -502,15 +502,13 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
                         styleJson.getJSONObject("metadata").getJSONArray("entry"),
                         JSONObject.class);
         assertTrue(
-                entryCollection
-                        .stream()
+                entryCollection.stream()
                         .anyMatch(
                                 j ->
                                         "cacheAgeMax".equals(j.getString("@key"))
                                                 && "300".equals(j.getString("$"))));
         assertTrue(
-                entryCollection
-                        .stream()
+                entryCollection.stream()
                         .anyMatch(
                                 j ->
                                         "surename".equals(j.getString("@key"))

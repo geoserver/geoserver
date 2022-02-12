@@ -147,8 +147,7 @@ public class FileRootsFinder implements Serializable {
         Resource resource = loader.get(ddSplitter.base);
         File dataDirectoryRoot = loader.get("/").dir();
         Stream<String> result =
-                resource.list()
-                        .stream()
+                resource.list().stream()
                         .filter(r -> r.name().toLowerCase().contains(ddSplitter.name))
                         .filter(
                                 r ->

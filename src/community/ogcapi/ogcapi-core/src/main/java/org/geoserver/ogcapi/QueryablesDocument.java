@@ -26,8 +26,7 @@ public class QueryablesDocument extends AbstractDocument {
         this.collectionId = fti.prefixedName();
         SimpleFeatureType ft = (SimpleFeatureType) fti.getFeatureType();
         this.queryables =
-                ft.getAttributeDescriptors()
-                        .stream()
+                ft.getAttributeDescriptors().stream()
                         .map(ad -> new Queryable(ad.getLocalName(), ad.getType().getBinding()))
                         .collect(Collectors.toList());
 

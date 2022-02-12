@@ -875,8 +875,7 @@ public class GetFeature {
             return Filter.EXCLUDE;
         }
         Set<FeatureId> ids =
-                lockedFeatures
-                        .stream()
+                lockedFeatures.stream()
                         .map(fid -> filterFactory.featureId(fid.getID()))
                         .collect(Collectors.toSet());
         return filterFactory.id(ids);
@@ -1009,8 +1008,7 @@ public class GetFeature {
     }
 
     private KvpMap<String, String> mapValuesToStrings(Map<String, Object> rawKvp) {
-        return rawKvp.entrySet()
-                .stream()
+        return rawKvp.entrySet().stream()
                 .collect(
                         Collectors.toMap(
                                 e -> e.getKey(),

@@ -75,11 +75,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 @DescribeProcess(
-    title = "Map Download Process",
-    description =
-            "Builds a large map given a set of layer definitions, "
-                    + "area of interest, size and eventual target time."
-)
+        title = "Map Download Process",
+        description =
+                "Builds a large map given a set of layer definitions, "
+                        + "area of interest, size and eventual target time.")
 public class DownloadMapProcess implements GeoServerProcess, ApplicationContextAware {
 
     static final Logger LOGGER = Logging.getLogger(DownloadMapProcess.class);
@@ -115,51 +114,46 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
 
     /** This process returns a potentially large map */
     @DescribeResult(
-        description = "The output map",
-        meta = {
-            "mimeTypes=image/png,image/png8,"
-                    + "image/gif,image/jpeg,image/geotiff,image/geotiff8,image/vnd.jpeg-png,application/vnd.google-earth.kmz",
-            "chosenMimeType=format"
-        }
-    )
+            description = "The output map",
+            meta = {
+                "mimeTypes=image/png,image/png8,"
+                        + "image/gif,image/jpeg,image/geotiff,image/geotiff8,image/vnd.jpeg-png,application/vnd.google-earth.kmz",
+                "chosenMimeType=format"
+            })
     public RawData execute(
             @DescribeParameter(
-                        name = "bbox",
-                        min = 1,
-                        description = "The map area and output projection"
-                    )
+                            name = "bbox",
+                            min = 1,
+                            description = "The map area and output projection")
                     ReferencedEnvelope bbox,
             @DescribeParameter(
-                        name = "decoration",
-                        min = 0,
-                        description = "A WMS decoration layout name to watermark" + " the output"
-                    )
+                            name = "decoration",
+                            min = 0,
+                            description =
+                                    "A WMS decoration layout name to watermark" + " the output")
                     String decorationName,
             @DescribeParameter(
-                        name = "time",
-                        min = 0,
-                        description =
-                                "Map time specification (a single time value or "
-                                        + "a range like in WMS time parameter)"
-                    )
+                            name = "time",
+                            min = 0,
+                            description =
+                                    "Map time specification (a single time value or "
+                                            + "a range like in WMS time parameter)")
                     String time,
             @DescribeParameter(name = "width", min = 1, description = "Output width", minValue = 1)
                     int width,
             @DescribeParameter(
-                        name = "height",
-                        min = 1,
-                        description = "Output height",
-                        minValue = 1
-                    )
+                            name = "height",
+                            min = 1,
+                            description = "Output height",
+                            minValue = 1)
                     int height,
             @DescribeParameter(name = "headerheight", min = 0, description = "Header height")
                     Integer headerHeight,
             @DescribeParameter(
-                        name = "layer",
-                        min = 1,
-                        description = "List of layers",
-                        minValue = 1
-                    )
+                            name = "layer",
+                            min = 1,
+                            description = "List of layers",
+                            minValue = 1)
                     Layer[] layers,
             @DescribeParameter(name = "format", min = 0, defaultValue = "image/png")
                     final String format,
@@ -480,8 +474,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         String requestFormat = getCascadingFormat(server);
 
         // going low level to apply all the properties we have verbatim
-        template.keySet()
-                .stream()
+        template.keySet().stream()
                 .filter(
                         k ->
                                 !"version".equalsIgnoreCase((String) k)

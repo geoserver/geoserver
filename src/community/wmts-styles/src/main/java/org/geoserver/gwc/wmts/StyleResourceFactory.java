@@ -201,8 +201,7 @@ public class StyleResourceFactory implements ResourceFactory {
 
             if (published instanceof LayerInfo) {
                 LayerInfo layer = (LayerInfo) published;
-                if (!layer.getStyles()
-                        .stream()
+                if (!layer.getStyles().stream()
                         .anyMatch(s -> s != null && s.getName().equalsIgnoreCase(styleName))) {
                     layer.getStyles().add(sinfo);
                     catalog.save(layer);

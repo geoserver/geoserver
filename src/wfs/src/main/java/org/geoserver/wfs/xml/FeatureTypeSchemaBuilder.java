@@ -399,8 +399,7 @@ public abstract class FeatureTypeSchemaBuilder {
                                     if (schemaNamespacesMap.containsValue(uri)) return;
                                     // exists a prefix available in catalog for this URI?
                                     final Optional<NamespaceInfo> nsFromCatalog =
-                                            catalogNamespaces
-                                                    .stream()
+                                            catalogNamespaces.stream()
                                                     .filter(
                                                             nsi ->
                                                                     Objects.equals(
@@ -416,8 +415,7 @@ public abstract class FeatureTypeSchemaBuilder {
             // Check if xlink namespace was added, otherwise add it, it is a required namespace
             if (!schemaNamespacesMap.containsValue(XLINK.NAMESPACE)) {
                 Optional<NamespaceInfo> xlinkNSFromCatalog =
-                        catalogNamespaces
-                                .stream()
+                        catalogNamespaces.stream()
                                 .filter(x -> XLINK.NAMESPACE.equals(x.getURI()))
                                 .findFirst();
                 schemaNamespacesMap.put(

@@ -75,12 +75,11 @@ public class DataStoreController extends AbstractCatalogController {
      */
 
     @GetMapping(
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public RestWrapper<DataStoreInfo> dataStoresGet(@PathVariable String workspaceName) {
         WorkspaceInfo ws = catalog.getWorkspaceByName(workspaceName);
         if (ws == null) {
@@ -91,13 +90,12 @@ public class DataStoreController extends AbstractCatalogController {
     }
 
     @GetMapping(
-        path = "{storeName}",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        }
-    )
+            path = "{storeName}",
+            produces = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_HTML_VALUE
+            })
     public RestWrapper<DataStoreInfo> dataStoreGet(
             @PathVariable String workspaceName, @PathVariable String storeName) {
 
@@ -106,13 +104,12 @@ public class DataStoreController extends AbstractCatalogController {
     }
 
     @PostMapping(
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public ResponseEntity<String> dataStorePost(
             @RequestBody DataStoreInfo dataStore,
             @PathVariable String workspaceName,
@@ -174,14 +171,13 @@ public class DataStoreController extends AbstractCatalogController {
     }
 
     @PutMapping(
-        value = "{storeName}",
-        consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaTypeExtensions.TEXT_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_XML_VALUE
-        }
-    )
+            value = "{storeName}",
+            consumes = {
+                MediaType.APPLICATION_JSON_VALUE,
+                MediaTypeExtensions.TEXT_JSON_VALUE,
+                MediaType.APPLICATION_XML_VALUE,
+                MediaType.TEXT_XML_VALUE
+            })
     public void dataStorePut(
             @RequestBody DataStoreInfo info,
             @PathVariable String workspaceName,

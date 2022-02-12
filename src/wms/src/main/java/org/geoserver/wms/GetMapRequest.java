@@ -557,9 +557,7 @@ public class GetMapRequest extends WMSRequest implements Cloneable {
         if (this.optionalParams.sortBy == null) {
             return null;
         } else {
-            return this.optionalParams
-                    .sortBy
-                    .stream()
+            return this.optionalParams.sortBy.stream()
                     .map(l -> l.toArray(new SortBy[l.size()]))
                     .collect(Collectors.toList());
         }

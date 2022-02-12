@@ -209,8 +209,7 @@ public class JDBCOpenSearchAccessTest {
         // grab all non comment, non empty lines
         try (InputStream is = JDBCOpenSearchAccess.class.getResourceAsStream(scriptLocation)) {
             List<String> lines =
-                    IOUtils.readLines(is)
-                            .stream()
+                    IOUtils.readLines(is).stream()
                             .map(l -> l.trim())
                             .filter(l -> !l.startsWith("--") && !l.isEmpty())
                             .collect(Collectors.toList());
@@ -712,8 +711,7 @@ public class JDBCOpenSearchAccessTest {
         MatcherAssert.assertThat(layerProperty, notNullValue());
         MatcherAssert.assertThat(layerProperty, not(empty()));
 
-        return layerProperty
-                .stream()
+        return layerProperty.stream()
                 .map(p -> (SimpleFeature) p)
                 .collect(
                         Collectors.toMap(

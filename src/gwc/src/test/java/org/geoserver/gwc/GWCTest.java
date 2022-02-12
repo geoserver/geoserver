@@ -748,10 +748,7 @@ public class GWCTest {
 
         when(tileBreeder.findTileLayer(layerName)).thenReturn(tileLayer);
         final Set<Map<String, String>> cachedParameters =
-                tileLayer
-                        .getInfo()
-                        .cachedStyles()
-                        .stream()
+                tileLayer.getInfo().cachedStyles().stream()
                         .map(style -> Collections.singletonMap("STYLES", style))
                         .collect(Collectors.toSet());
 
@@ -809,14 +806,10 @@ public class GWCTest {
 
         when(tileBreeder.findTileLayer(layerName)).thenReturn(tileLayer);
         final Set<Map<String, String>> cachedParameters =
-                tileLayer
-                        .getInfo()
-                        .cachedStyles()
-                        .stream()
+                tileLayer.getInfo().cachedStyles().stream()
                         .flatMap(
                                 style ->
-                                        cachedTimes
-                                                .stream()
+                                        cachedTimes.stream()
                                                 .map(
                                                         time -> {
                                                             Map<String, String> map =

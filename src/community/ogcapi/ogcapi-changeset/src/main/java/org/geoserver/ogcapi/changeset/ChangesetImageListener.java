@@ -67,8 +67,7 @@ public class ChangesetImageListener implements ImageListener {
 
     /** Truncates all the GWC tiles involved in this change */
     private void truncateTilesForCoverage(CoverageInfo ci, SimpleFeature feature) {
-        catalog.getLayers(ci)
-                .stream()
+        catalog.getLayers(ci).stream()
                 .map(l -> gwc.getTileLayer(l))
                 .filter(tl -> tl != null)
                 .forEach(tl -> truncateTilesForTileLayer(tl, feature));

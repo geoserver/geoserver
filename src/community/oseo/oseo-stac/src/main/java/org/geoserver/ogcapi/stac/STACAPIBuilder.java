@@ -96,8 +96,7 @@ public class STACAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<OSEOInfo
         UniqueVisitor visitor = new UniqueVisitor(name);
         fs.getFeatures().accepts(visitor, null);
         Set<Attribute> uniqueValues = visitor.getUnique();
-        return uniqueValues
-                .stream()
+        return uniqueValues.stream()
                 .map(o -> (String) o.getValue())
                 .sorted()
                 .collect(Collectors.toList());
